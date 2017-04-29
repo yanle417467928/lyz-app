@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>lyz-app</artifactId>
+        <groupId>cn.com.leyizhuang</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>lyz-app-management</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <description>乐易装一站式家装平台Version2.0中App的后台工程</description>
+
+    <properties>
+        <lyz-app-api.version>${project.version}</lyz-app-api.version>
+        <lyz-app-service.version>${project.version}</lyz-app-service.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- 依赖API模块 -->
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>
+            <artifactId>lyz-app-api</artifactId>
+            <version>${lyz-app-api.version}</version>
+        </dependency>
+        <!-- 依赖Service模块 -->
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>
+            <artifactId>lyz-app-service</artifactId>
+            <version>${lyz-app-service.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

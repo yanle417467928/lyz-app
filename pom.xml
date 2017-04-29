@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>lyz-app-pojo</module>
+        <module>lyz-app-dao</module>
+        <module>lyz-app-service</module>
+        <module>lyz-app-api</module>
+        <module>lyz-app-management</module>
+        <module>lyz-app-facade</module>
+    </modules>
+    <parent>
+        <groupId>cn.com.leyizhuang</groupId>
+        <artifactId>lyz-dependencies</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>lyz-app</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <description>乐易装一站式家装平台Version2.0的App项目，包括前台和后台，该工程仅起到一个整合的作用</description>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
