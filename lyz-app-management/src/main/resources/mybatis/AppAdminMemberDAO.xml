@@ -8,7 +8,7 @@
         MANAGER_MOBILE, LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
     </sql>
 
-    <resultMap id="memberResult" type="cn.com.leyizhuang.app.foundation.pojo.AppMemberDO">
+    <resultMap id="memberResult" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
         <id column="ID" property="id"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
@@ -52,7 +52,7 @@
     </resultMap>
 
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppMemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
         INSERT INTO APP_MEMBER (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
             STORE_ID, STORE_NAME, STORE_CODE, AREA_ID, AREA_NAME, SOB_ID, MANAGER_ID, MANAGER_NAME,
@@ -84,7 +84,7 @@
         </foreach>
     </delete>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppMemberDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
         UPDATE APP_MEMBER
         <set>
             <if test="null != store.id">

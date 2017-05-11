@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.web.controller.views.member;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import com.github.pagehelper.PageInfo;
-import cn.com.leyizhuang.app.foundation.pojo.AppMemberDO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,7 +31,7 @@ public class AppAdminMemberViewController {
     public String memberList(HttpServletRequest request, ModelMap map, Integer page, Integer size,Long menuId) {
         page = null == page ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
         size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
-        PageInfo<AppMemberDO> memberDOPage = memberService.queryPage(page, size);
+        PageInfo<MemberDO> memberDOPage = memberService.queryPage(page, size);
         map.addAttribute("memberDOPage", memberDOPage);
         return "/views/user/user_page";
     }
@@ -43,7 +43,7 @@ public class AppAdminMemberViewController {
 
     @PostMapping(value = "/add")
     public String memberAdd(String city,String store,String seller,String status,String name,String birthday,String mobile,String email){
-        AppMemberDO appMemberDO = new AppMemberDO();
+        MemberDO memberDO = new MemberDO();
 
         System.out.println(name);
         return "redirect:page";

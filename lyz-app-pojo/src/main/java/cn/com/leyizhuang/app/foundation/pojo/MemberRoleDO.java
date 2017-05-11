@@ -12,15 +12,15 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AppMemberRoleDO extends BaseDO {
+public class MemberRoleDO extends BaseDO {
 
     private static final long serialVersionUID = -7689232560379303914L;
 
-    public AppMemberRoleDO() {
+    public MemberRoleDO() {
         super();
     }
 
-    public AppMemberRoleDO(String title, Boolean isDefault) {
+    public MemberRoleDO(String title, Boolean isDefault) {
         super();
         this.title = title;
         this.isDefault = isDefault;

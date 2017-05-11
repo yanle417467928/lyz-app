@@ -12,14 +12,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AppMemberWalletDO extends BaseDO {
+public class MemberWalletDO extends BaseDO {
 
     private static final long serialVersionUID = 886328763602198092L;
 
-    public AppMemberWalletDO() {
+    public MemberWalletDO() {
     }
 
-    public AppMemberWalletDO(Long memberId, Long balance, Long treasure) {
+    public MemberWalletDO(Long memberId, Long balance, Long treasure) {
         this.memberId = memberId;
         this.balance = balance;
         this.treasure = treasure;

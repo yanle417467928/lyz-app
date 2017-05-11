@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
-import cn.com.leyizhuang.app.foundation.pojo.AppMemberDO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
 
 /**
  * App后台管理会员服务
@@ -10,7 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppMemberDO;
  * @author Richard
  *         Created on 2017-05-09 9:52
  **/
-public interface AppAdminMemberService extends BaseService<AppMemberDO> {
+public interface AppAdminMemberService extends BaseService<MemberDO> {
 
-    PageInfo<AppMemberDO> queryPage(Integer page, Integer size);
+    PageInfo<MemberDO> queryPage(Integer page, Integer size);
 }

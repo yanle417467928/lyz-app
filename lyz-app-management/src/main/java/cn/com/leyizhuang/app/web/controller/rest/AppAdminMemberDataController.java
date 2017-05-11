@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.vo.TableDataVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import com.github.pagehelper.PageInfo;
-import cn.com.leyizhuang.app.foundation.pojo.AppMemberDO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +28,12 @@ public class AppAdminMemberDataController {
     private AppAdminMemberService memberService;
 
     @GetMapping(value = "/page/grid")
-    public TableDataVO<AppMemberDO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
+    public TableDataVO<MemberDO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
 
         // 根据偏移量计算当前页数
         Integer page = (offset / size) + 1;
-        PageInfo<AppMemberDO> memberDOPage = memberService.queryPage(page, size);
-        return new TableDataVO<AppMemberDO>().transform(memberDOPage);
+        PageInfo<MemberDO> memberDOPage = memberService.queryPage(page, size);
+        return new TableDataVO<MemberDO>().transform(memberDOPage);
     }
 
 }

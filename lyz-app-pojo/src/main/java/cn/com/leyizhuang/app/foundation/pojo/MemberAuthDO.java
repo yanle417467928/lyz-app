@@ -14,17 +14,17 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class AppMemberAuthDO extends BaseDO {
+public class MemberAuthDO extends BaseDO {
 
     private static final long serialVersionUID = 7068812928546792515L;
 
-    public AppMemberAuthDO() {
+    public MemberAuthDO() {
     }
 
-    public AppMemberAuthDO(Long memberId, String username, String password,
-                           String mobile, String email, String qqToken,
-                           String wechatToken, String alipayToken,
-                           String sinaToken, Boolean usable, Date unusableEndTime) {
+    public MemberAuthDO(Long memberId, String username, String password,
+                        String mobile, String email, String qqToken,
+                        String wechatToken, String alipayToken,
+                        String sinaToken, Boolean usable, Date unusableEndTime) {
         this.memberId = memberId;
         this.username = username;
         this.password = password;

@@ -5,7 +5,7 @@ import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.com.leyizhuang.app.foundation.pojo.AppMemberDO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.List;
  **/
 @Service
 @Transactional
-public class AppAdminMemberServiceImpl extends BaseServiceImpl<AppMemberDO> implements AppAdminMemberService {
+public class AppAdminMemberServiceImpl extends BaseServiceImpl<MemberDO> implements AppAdminMemberService {
 
     private AppAdminMemberDAO memberDAO;
     @Autowired
@@ -30,9 +30,9 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<AppMemberDO> impl
     }
 
     @Override
-    public PageInfo<AppMemberDO> queryPage(Integer page, Integer size) {
+    public PageInfo<MemberDO> queryPage(Integer page, Integer size) {
         PageHelper.startPage(page,size);
-        List<AppMemberDO> memberDOList = memberDAO.queryList();
+        List<MemberDO> memberDOList = memberDAO.queryList();
         return new PageInfo<>(memberDOList);
     }
 }

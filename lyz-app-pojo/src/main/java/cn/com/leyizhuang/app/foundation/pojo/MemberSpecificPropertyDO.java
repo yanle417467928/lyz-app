@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class AppMemberTempDO extends BaseDO {
+public class MemberSpecificPropertyDO extends BaseDO {
 
     private static final long serialVersionUID = -6264820157386364557L;
 
