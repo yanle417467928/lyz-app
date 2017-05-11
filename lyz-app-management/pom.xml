@@ -16,6 +16,7 @@
     <properties>
         <lyz-app-api.version>${project.version}</lyz-app-api.version>
         <lyz-app-service.version>${project.version}</lyz-app-service.version>
+        <druid-spring-boot-starter.version>1.0.0</druid-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -31,6 +32,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- 依赖自定义Druid Starter -->
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
         <!-- 依赖API模块 -->
         <dependency>
             <groupId>cn.com.leyizhuang</groupId>
@@ -44,6 +51,29 @@
             <version>${lyz-app-service.version}</version>
         </dependency>
 
+        <!-- 持久层：Spring Boot MyBatis -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- MyBaits 分页插件 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- MyBatis JDK8时间API 扩展 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-typehandlers-jsr310</artifactId>
+        </dependency>
+
+        <!-- MySQL 驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
         <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -58,6 +88,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+
+        <!-- freemarker -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+        <!-- 页面布局工具：SiteMesh -->
+        <dependency>
+            <groupId>org.sitemesh</groupId>
+            <artifactId>sitemesh</artifactId>
         </dependency>
     </dependencies>
 
