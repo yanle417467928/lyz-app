@@ -19,7 +19,6 @@ public class Area {
         this.name = name;
         this.sobId = sobId;
     }
-
     private Long id;
     private String name;
     private Integer sobId;

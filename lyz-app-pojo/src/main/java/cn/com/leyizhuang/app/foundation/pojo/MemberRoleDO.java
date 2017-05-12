@@ -8,6 +8,7 @@ import lombok.ToString;
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
+ * <section>会员角色信息表</section>
  */
 @Getter
 @Setter
@@ -20,14 +21,12 @@ public class MemberRoleDO extends BaseDO {
         super();
     }
 
-    public MemberRoleDO(String title, Boolean isDefault) {
+    public MemberRoleDO(String title) {
         super();
         this.title = title;
-        this.isDefault = isDefault;
     }
-
+    //会员角色名称
     private String title;
-    private Boolean isDefault = Boolean.FALSE;
 
 
 }

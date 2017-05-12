@@ -8,6 +8,7 @@ import lombok.ToString;
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
+ * <section>会员资产信息表</section>
  */
 @Getter
 @Setter
@@ -24,9 +25,11 @@ public class MemberWalletDO extends BaseDO {
         this.balance = balance;
         this.treasure = treasure;
     }
-
+    //会员主键
     private Long memberId;
+    //会员预存款
     private Long balance;
+    //会员乐易宝
     private Long treasure;
 
 

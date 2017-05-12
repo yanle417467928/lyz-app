@@ -10,6 +10,7 @@ import java.util.Date;
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
+ * <section>会员鉴权信息表</section>
  */
 @Getter
 @Setter
@@ -22,32 +23,28 @@ public class MemberAuthDO extends BaseDO {
     }
 
     public MemberAuthDO(Long memberId, String username, String password,
-                        String mobile, String email, String qqToken,
-                        String wechatToken, String alipayToken,
-                        String sinaToken, Boolean usable, Date unusableEndTime) {
+                        String mobile, String email, Boolean usable, Date unusableEndTime) {
         this.memberId = memberId;
         this.username = username;
         this.password = password;
         this.mobile = mobile;
         this.email = email;
-        this.qqToken = qqToken;
-        this.wechatToken = wechatToken;
-        this.alipayToken = alipayToken;
-        this.sinaToken = sinaToken;
         this.usable = usable;
         this.unusableEndTime = unusableEndTime;
     }
-
+    //会员主键
     private Long memberId;
+    //会员名字
     private String username;
+    //会员密码
     private String password;
+    //会员手机号码
     private String mobile;
+    //会员电子邮箱
     private String email;
-    private String qqToken;
-    private String wechatToken;
-    private String alipayToken;
-    private String sinaToken;
+    //会员账号是否启用
     private Boolean usable;
+    //会员账号禁用结束时间
     private Date unusableEndTime;
 
     public static Boolean validateMobile(String origin) {

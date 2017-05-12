@@ -8,6 +8,7 @@ import lombok.ToString;
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
+ * <section>会员等级信息表</section>
  */
 @Getter
 @Setter
@@ -18,17 +19,17 @@ public class MemberLevelDO extends BaseDO {
 
     public MemberLevelDO() {}
 
-    public MemberLevelDO(String title, String iconUri, Integer rank, Boolean isDefault) {
+    public MemberLevelDO(String title, String iconUri, Integer rank) {
         this.title = title;
         this.iconUri = iconUri;
         this.rank = rank;
-        this.isDefault = isDefault;
     }
-
+    //会员等级名称
     private String title;
+    //会员图标地址路径
     private String iconUri;
+    //会员级别（表示会员等级高低）
     private Integer rank;
-    private Boolean isDefault = Boolean.FALSE;
 
 
 }
