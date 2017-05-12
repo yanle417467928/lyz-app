@@ -13,12 +13,7 @@
 </head>
 <body>
 <section class="content-header">
-    <h1>添加会员</h1>
-    <ol class="breadcrumb">
-        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-        <li><a href="javascript:void(0);">会员管理</a></li>
-        <li class="active">添加会员</li>
-    </ol>
+    <h1>新增会员</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -29,7 +24,7 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
-                <form name="add_member" id="add_member" action="/views/admin/member/add" method="post">
+                <form id="add_user" action="/views/admin/member/add" method="post">
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="user-panel">
@@ -47,56 +42,54 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>所在城市</label>
-                                <select class="form-control select" name="city" data-live-search="true">
-                                    <option selected="selected">北京</option>
-                                    <option>成都</option>
-                                    <option>郑州</option>
-                                    <option>重庆</option>
-                                    <option>西安</option>
-                                    <option>贵州</option>
-                                    <option>太原</option>
+                                <label>城市</label>
+                                <select class="form-control select" name="city" data-live-search="true" >
+                                    <option disabled selected>请选择分公司</option>
+                                    <option>郑州分公司</option>
+                                    <option>成都分公司</option>
+                                    <option>重庆分公司</option>
+                                    <option>西安分公司</option>
+                                    <option>太原分公司</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label> 归属门店</label>
+                                <label>门店</label>
                                 <select class="form-control select" name="store" data-live-search="true">
-                                    <option selected="selected">富之美</option>
+                                    <option disabled selected>请选择门店</option>
                                     <option>富之源</option>
+                                    <option>富之美</option>
+                                    <option>润彩店</option>
                                     <option>美丽店</option>
-                                    <option>森贝店</option>
-                                    <option>华贝贝店</option>
-                                    <option>亿彩店</option>
-                                    <option>真彩店</option>
                                 </select>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label>专属导购</label>
-                                <select class="form-control select" name="seller" data-live-search="true">
-                                    <option selected="selected">谢娜</option>
+                                <select class="form-control select" name="seller" data-live-search="true" >
+                                    <option disabled selected>请选择专属导购</option>
+                                    <option>杨平</option>
                                     <option>刘申芳</option>
-                                    <option>陈亨萍</option>
-                                    <option>王艺璇</option>
-                                    <option>陈清华</option>
                                     <option>李秀琳</option>
-                                    <option>卢燕梅</option>
+                                    <option>程静</option>
+                                    <option>刘洁</option>
                                 </select>
                             </div>
-                            </div>
+                        </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>账户状态</label>
-                                <select class="form-control select" name="status" data-live-search="true">
-                                    <option selected="selected">启用</option>
-                                    <option>停用</option>
+                                <label>会员性质</label>
+                                <select class="form-control select" name="identityType" data-live-search="true">
+                                    <option disabled selected>请选择会员性质</option>
+                                    <option>会员</option>
+                                    <option>零售</option>
                                 </select>
                             </div>
                         </div>
@@ -120,31 +113,19 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="birthday">出生日期</label>
-                                <div class="input-group">
-                                    <input name="birthday" type="text" class="form-control datepicker"
-                                           id="birthday" placeholder="出生日期">
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
                                 <label>性别</label>
-                                <select class="form-control select" name="sex" data-live-search="true">
-                                    <option selected="selected">男</option>
+                                <select class="form-control select" name="sex" data-live-search="true" >
+                                    <option disabled selected>请选择性别</option>
+                                    <option>男</option>
                                     <option>女</option>
                                     <option>保密</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="email">企业邮箱</label>
@@ -154,15 +135,28 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>会员性质</label>
-                                <select class="form-control select" name="sex" data-live-search="true">
-                                    <option selected="selected">会员</option>
-                                    <option>零售</option>
+                                <label for="birthday">出生日期</label>
+                                <div class="input-group">
+                                    <input name="birthday" type="text" value="${(birthday?string('yyyy-MM-dd'))!}" class="form-control datepicker"
+                                           id="birthday" placeholder="出生日期">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label>账号状态</label>
+                                <select class="form-control select" name="status" data-live-search="true" >
+                                    <option disabled selected>请选择账号状态</option>
+                                    <option value="0">启用</option>
+                                    <option value="1">停用</option>
                                 </select>
                             </div>
-                        <div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-2 col-xs-12 col-md-offset-10">
@@ -193,7 +187,7 @@
     });
 
     function submitForm() {
-        $("#add_member").submit();
+        $("#add_user").submit();
     }
 </script>
 </body>

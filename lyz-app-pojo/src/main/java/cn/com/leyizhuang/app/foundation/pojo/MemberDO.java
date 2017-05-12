@@ -41,6 +41,7 @@ public class MemberDO extends BaseDO {
     //会员头像路径
     private String headImageUri;
     //会员生日
+
     private Date birthday;
     //会员性别
     private Sex sex;
@@ -56,6 +57,8 @@ public class MemberDO extends BaseDO {
     private RegistryType registryType;
     //会员性质:会员，准会员（零售）
     private IdentityType identityType;
+    //城市
+    private String city;
 
     /**
      * 空构造方法
@@ -63,27 +66,7 @@ public class MemberDO extends BaseDO {
     public MemberDO() {
     }
 
-    /**
-     * 自定义构造方法
-     * @param store
-     * @param manager
-     * @param level
-     * @param role
-     * @param auth
-     * @param wallet
-     * @param specProp
-     * @param name
-     * @param headImageUri
-     * @param birthday
-     * @param sex
-     * @param effectiveConsumption
-     * @param effectiveOrderCount
-     * @param lastLoginTime
-     * @param registryTime
-     * @param registryType
-     * @param identityType
-     */
-    public MemberDO(Store store, Manager manager, MemberLevelDO level, MemberRoleDO role, MemberAuthDO auth, MemberWalletDO wallet, MemberSpecificPropertyDO specProp, String name, String headImageUri, Date birthday, Sex sex, Long effectiveConsumption, Integer effectiveOrderCount, Date lastLoginTime, Date registryTime, RegistryType registryType, IdentityType identityType) {
+    public MemberDO(Store store, Manager manager, MemberLevelDO level, MemberRoleDO role, MemberAuthDO auth, MemberWalletDO wallet, MemberSpecificPropertyDO specProp, String name, String headImageUri, Date birthday, Sex sex, Long effectiveConsumption, Integer effectiveOrderCount, Date lastLoginTime, Date registryTime, RegistryType registryType, IdentityType identityType, String city) {
         this.store = store;
         this.manager = manager;
         this.level = level;
@@ -101,5 +84,6 @@ public class MemberDO extends BaseDO {
         this.registryTime = registryTime;
         this.registryType = registryType;
         this.identityType = identityType;
+        this.city = city;
     }
 }
