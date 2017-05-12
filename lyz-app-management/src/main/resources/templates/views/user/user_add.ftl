@@ -90,7 +90,7 @@
                                     <option>卢燕梅</option>
                                 </select>
                             </div>
-                        </div>
+                            </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label>账户状态</label>
@@ -113,6 +113,18 @@
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
+                                <label for="mobile">联系电话</label>
+                                <div class="input-group">
+                                    <input name="mobile" type="text" class="form-control" id="mobile" placeholder="联系电话">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
                                 <label for="birthday">出生日期</label>
                                 <div class="input-group">
                                     <input name="birthday" type="text" class="form-control datepicker"
@@ -121,17 +133,18 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="mobile">联系电话</label>
-                                <div class="input-group">
-                                    <input name="mobile" type="text" class="form-control" id="mobile" placeholder="联系电话">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                </div>
+                                <label>性别</label>
+                                <select class="form-control select" name="sex" data-live-search="true">
+                                    <option selected="selected">男</option>
+                                    <option>女</option>
+                                    <option>保密</option>
+                                </select>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="email">企业邮箱</label>
@@ -141,6 +154,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label>会员性质</label>
+                                <select class="form-control select" name="sex" data-live-search="true">
+                                    <option selected="selected">会员</option>
+                                    <option>零售</option>
+                                </select>
+                            </div>
+                        <div>
                     </div>
                     <div class="row">
                         <div class="col-md-2 col-xs-12 col-md-offset-10">

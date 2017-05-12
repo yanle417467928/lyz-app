@@ -33,7 +33,7 @@
     </resultMap>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO APP_ADMIN_MENU (
+        INSERT INTO ADMIN_MENU (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
             TITLE, ICON_STYLE, PARENT_ID, PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
         ) VALUES (
@@ -47,17 +47,17 @@
     </insert>
 
     <delete id="remove" parameterType="java.lang.Long">
-        DELETE FROM APP_ADMIN_MENU WHERE ID = #{id}
+        DELETE FROM ADMIN_MENU WHERE ID = #{id}
     </delete>
     <delete id="batchRemove">
-        DELETE FROM APP_ADMIN_MENU WHERE ID IN
+        DELETE FROM ADMIN_MENU WHERE ID IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
-        UPDATE APP_ADMIN_MENU
+        UPDATE ADMIN_MENU
         <set>
             <if test="null != title">
                 TITLE = #{title},
@@ -93,13 +93,13 @@
     <select id="queryById" parameterType="java.lang.Long" resultMap="menuResult">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM APP_ADMIN_MENU WHERE ID = #{id}
+        FROM ADMIN_MENU WHERE ID = #{id}
     </select>
     
     <select id="queryList" resultMap="menuResult">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM APP_ADMIN_MENU
+        FROM ADMIN_MENU
     </select>
 
     <select id="queryByParentId" resultMap="menuResult">

@@ -53,7 +53,7 @@
 
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
-        INSERT INTO APP_MEMBER (
+        INSERT INTO MEMBER (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
             STORE_ID, STORE_NAME, STORE_CODE, AREA_ID, AREA_NAME, SOB_ID, MANAGER_ID, MANAGER_NAME,
             MANAGER_MOBILE, ROLE_ID, LEVEL_ID, LAST_LOGIN_TIME, REGISTRY_TIME,
@@ -75,17 +75,17 @@
     </insert>
 
     <delete id="remove" parameterType="java.lang.Long">
-        DELETE FROM APP_MEMBER WHERE ID = #{id}
+        DELETE FROM MEMBER WHERE ID = #{id}
     </delete>
     <delete id="batchRemove">
-        DELETE FROM APP_MEMBER WHERE ID IN
+        DELETE FROM MEMBER WHERE ID IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
-        UPDATE APP_MEMBER
+        UPDATE MEMBER
         <set>
             <if test="null != store.id">
                 STORE_ID = #{store.id},
@@ -139,12 +139,12 @@
     <select id="queryById" parameterType="java.lang.Long" resultMap="memberResult">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM APP_MEMBER WHERE ID = #{id}
+        FROM MEMBER WHERE ID = #{id}
     </select>
     
     <select id="queryList" resultMap="memberResult">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM APP_MEMBER
+        FROM MEMBER
     </select>
 </mapper>
