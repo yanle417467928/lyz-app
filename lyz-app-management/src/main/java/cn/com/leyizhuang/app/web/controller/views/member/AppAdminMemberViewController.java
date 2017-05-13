@@ -49,7 +49,10 @@ public class AppAdminMemberViewController {
         return "redirect:page";
     }
 
-
+    @RequestMapping(value = "/details")
+    public String UserDetails(){
+        return "views/user/user_details";
+    }
 
 
 }
