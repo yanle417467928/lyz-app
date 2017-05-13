@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
 
 /**
  * App后台管理会员控制器
@@ -66,7 +68,14 @@ public class AppAdminMemberViewController {
     }
 
     @RequestMapping(value = "/details")
-    public String UserDetails(){
+    public String MemberDetails(ModelMap map){
+        MemberDO member= memberService.queryById(1L);
+        System.out.println(member);
+        String registryTime= new SimpleDateFormat("yyyy-MM-dd").format(member.getRegistryTime());
+        String birthday = new SimpleDateFormat("yyyy-MM-dd").format(member.getBirthday());
+        map.addAttribute("birthday",birthday);
+        map.addAttribute("registryTime",registryTime);
+        map.addAttribute("member", member);
         return "views/user/user_details";
     }
 

@@ -25,12 +25,80 @@
                 javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <association property="store" resultMap="storeResult"/>
-        <association property="area" resultMap="areaResult"/>
         <association property="manager" resultMap="managerResult"/>
         <!--<association column="LEVEL_ID" property="level"
                      select="cn.com.leyizhuang.foundation.mapper.TdMemberLevelMapper.query"/>
         <association column="ROLE_ID" property="role"
                      select="cn.com.leyizhuang.foundation.mapper.TdMemberRoleMapper.query"/>-->
+    </resultMap>
+
+    <resultMap id="memberAllList" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+        <id column="ID" property="id"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
+        <result column="REGISTRY_TIME" property="registryTime"/>
+        <result column="NAME" property="name"/>
+        <result column="HEAD_IMAGE_URI" property="headImageUri"/>
+        <result column="BIRTHDAY" property="birthday"/>
+        <result column="EFFECTIVE_CONSUMPTION" property="effectiveConsumption"/>
+        <result column="EFFECTIVE_ORDER_COUNT" property="effectiveOrderCount"/>
+        <result column="CITY" property="city"/>
+        <result column="REGISTRY_TYPE" property="registryType"
+                javaType="cn.com.leyizhuang.app.core.constant.RegistryType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="IDENTITY_TYPE" property="identityType"
+                javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <association property="store" resultMap="storeResult"/>
+        <association property="manager" resultMap="managerResult"/>
+        <association property="auth" resultMap="memberAuth"/>
+        <association property="level" resultMap="memberLevel"/>
+        <association property="role" resultMap="memberRole"/>
+        <association property="specProp" resultMap="memberSpecificProperty"/>
+        <association property="wallet" resultMap="memberWallet"/>
+        <!--<association column="LEVEL_ID" property="level"
+                     select="cn.com.leyizhuang.foundation.mapper.TdMemberLevelMapper.query"/>
+        <association column="ROLE_ID" property="role"
+                     select="cn.com.leyizhuang.foundation.mapper.TdMemberRoleMapper.query"/>-->
+    </resultMap>
+
+    <resultMap id="memberAuth" type="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="USER_NAME" property="username"/>
+        <result column="PASS_WORD" property="password"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="EMAIL" property="email"/>
+        <result column="USABLE" property="usable"/>
+        <result column="UNUSABLE_END_TIME" property="unusableEndTime"/>
+    </resultMap>
+
+    <resultMap id="memberLevel" type="cn.com.leyizhuang.app.foundation.pojo.MemberLevelDO">
+        <result column="TITLE" property="title"/>
+        <result column="ICON_URI" property="iconUri"/>
+        <result column="RANK" property="rank"/>
+    </resultMap>
+
+    <resultMap id="memberRole" type="cn.com.leyizhuang.app.foundation.pojo.MemberRoleDO">
+        <result column="TITLE" property="title"/>
+    </resultMap>
+
+    <resultMap id="memberSpecificProperty" type="cn.com.leyizhuang.app.foundation.pojo.MemberSpecificPropertyDO">
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="IS_LOGIN" property="isLogin"/>
+        <result column="LAST_VISIT_TIME" property="lastVisitTime"/>
+        <result column="LOGIN_SESSION" property="loginSession"/>
+        <result column="IS_CASH_ON_DELIVERY" property="isCashOnDelivery"/>
+    </resultMap>
+
+    <resultMap id="memberWallet" type="cn.com.leyizhuang.app.foundation.pojo.MemberWalletDO">
+        <result column="MEMBER_ID" property="memberId"/>
+        <result column="BALANCE" property="balance"/>
+        <result column="TREASURE" property="treasure"/>
     </resultMap>
 
     <resultMap id="storeResult" type="cn.com.leyizhuang.app.foundation.pojo.Store">
@@ -136,15 +204,23 @@
         WHERE ID = #{id}
     </update>
 
-    <select id="queryById" parameterType="java.lang.Long" resultMap="memberResult">
+    <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllList">
         SELECT
-        <include refid="ALL_FIELDS"/>
-        FROM MEMBER WHERE ID = #{id}
-    </select>
+          *
+       FROM MEMBER AS  me
+       INNER JOIN  MEMBER_WALLET AS wallet ON wallet.MEMBER_ID = me.ID
+       INNER JOIN MEMBER_SPECIFIC_PROPERTY AS cpepro ON cpepro.MEMBER_ID = me.ID
+       INNER JOIN MEMBER_AUTH AS auth ON auth.MEMBER_ID = me.ID
+       INNER JOIN MEMBER_LEVEL AS level ON level.ID = me.LEVEL_ID
+       INNER JOIN MEMBER_ROLE AS role ON role.ID = me.ROLE_ID
+       WHERE me.ID = #{id}
+</select>
     
     <select id="queryList" resultMap="memberResult">
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM MEMBER
     </select>
+
+
 </mapper>
