@@ -54,6 +54,15 @@
             title: 'ID',
             align: 'center'
         }, {
+            field: 'name',
+            title: '姓名',
+            align: 'center'
+        },{
+            field: 'city',
+            title: '城市',
+            align: 'center'
+        },
+            {
             field: 'store.name',
             title: '门店名称',
             align: 'center',
@@ -61,11 +70,11 @@
                 var id = row.id;
                 return '<a href="/view/member/info/' + id + '">' + value + '</a>';
             }
-        }, {
-            field: 'area.name',
+        }, /*{
+            field: '',
             title: '区域名称',
             align: 'center'
-        }/*, {
+        }*//*, {
             field: 'linkUri',
             title: '链接地址'
         }, {

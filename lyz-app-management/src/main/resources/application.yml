@@ -33,7 +33,7 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
-  type-aliases-package: cn.com.leyizhuang.hq.foundation.pojo
+  type-aliases-package: cn.com.leyizhuang.app.foundation.pojo
   configuration:
     map-underscore-to-camel-case: true
 

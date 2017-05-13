@@ -4,8 +4,9 @@
 
     <sql id="ALL_FIELDS">
         ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,
-        MANAGER_MOBILE, LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
+        STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,MANAGER_MOBILE,LEVEL_ID,
+        ROLE_ID,NAME,HEAD_IMAGE_URI,BIRTHDAY,SEX,EFFECTIVE_CONSUMPTION,EFFECTIVE_ORDER_COUNT,
+        LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
     </sql>
 
     <resultMap id="memberResult" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
@@ -25,7 +26,7 @@
                 javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <association property="store" resultMap="storeResult"/>
-        <association property="area" resultMap="areaResult"/>
+        <!--<association property="area" resultMap="areaResult"/>-->
         <association property="manager" resultMap="managerResult"/>
         <!--<association column="LEVEL_ID" property="level"
                      select="cn.com.leyizhuang.foundation.mapper.TdMemberLevelMapper.query"/>
@@ -39,11 +40,11 @@
         <result column="STORE_CODE" property="code"/>
     </resultMap>
 
-    <resultMap id="areaResult" type="cn.com.leyizhuang.app.foundation.pojo.Area">
+   <!-- <resultMap id="areaResult" type="cn.com.leyizhuang.app.foundation.pojo.Area">
         <result column="AREA_ID" property="id"/>
         <result column="AREA_NAME" property="name"/>
         <result column="SOB_ID" property="sobId"/>
-    </resultMap>
+    </resultMap>-->
 
     <resultMap id="managerResult" type="cn.com.leyizhuang.app.foundation.pojo.Manager">
         <result column="MANAGER_ID" property="id"/>
@@ -54,15 +55,20 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
         INSERT INTO MEMBER (
-            CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-            STORE_ID, STORE_NAME, STORE_CODE, AREA_ID, AREA_NAME, SOB_ID, MANAGER_ID, MANAGER_NAME,
-            MANAGER_MOBILE, ROLE_ID, LEVEL_ID, LAST_LOGIN_TIME, REGISTRY_TIME,
-            REGISTRY_TYPE, IDENTITY_TYPE
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,MANAGER_MOBILE,LEVEL_ID,
+        ROLE_ID,NAME,HEAD_IMAGE_URI,BIRTHDAY,SEX,EFFECTIVE_CONSUMPTION,EFFECTIVE_ORDER_COUNT,
+        LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
         ) VALUES (
             #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{store.id}, #{store.name}, #{store.code}, #{area.id}, #{area.name}, #{area.sobId}, #{manager.id}, #{manager.name},
-            #{manager.mobile}, #{role.id}, #{level.id},
-            #{lastLoginTime}, #{registryTime},
+            #{store.id}, #{store.name}, #{store.code}, #{manager.id}, #{manager.name},
+            #{manager.mobile}, #{level.id}, #{role.id},#{name},#{headImageUri},#{birthday},
+            #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.Sex,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler
+            },
+            #{effectiveConsumption},
+            #{effectiveOrderCount},#{lastLoginTime}, #{registryTime},
             #{registryType,
                 javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler
