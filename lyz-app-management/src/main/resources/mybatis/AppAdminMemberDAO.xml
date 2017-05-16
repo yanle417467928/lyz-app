@@ -50,6 +50,9 @@
         <result column="EFFECTIVE_CONSUMPTION" property="effectiveConsumption"/>
         <result column="EFFECTIVE_ORDER_COUNT" property="effectiveOrderCount"/>
         <result column="CITY" property="city"/>
+        <result column="SEX" property="sex"
+                javaType="cn.com.leyizhuang.app.core.constant.Sex"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="REGISTRY_TYPE" property="registryType"
                 javaType="cn.com.leyizhuang.app.core.constant.RegistryType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
@@ -59,8 +62,6 @@
         <association property="store" resultMap="storeResult"/>
         <association property="manager" resultMap="managerResult"/>
         <association property="auth" resultMap="memberAuth"/>
-        <association property="level" resultMap="memberLevel"/>
-        <association property="role" resultMap="memberRole"/>
         <association property="specProp" resultMap="memberSpecificProperty"/>
         <association property="wallet" resultMap="memberWallet"/>
         <!--<association column="LEVEL_ID" property="level"
@@ -213,13 +214,25 @@
 
     <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllList">
         SELECT
-          *
+   	me.CITY CITY,
+	me.BIRTHDAY BIRTHDAY,
+	me.STORE_NAME STORE_NAME,
+	me.MANAGER_NAME MANAGER_NAME,
+	me.`NAME` `NAME`,
+	me.SEX SEX,
+	me.MANAGER_MOBILE MANAGER_MOBILE,
+	me.REGISTRY_TYPE REGISTRY_TYPE,
+	me.IDENTITY_TYPE IDENTITY_TYPE,
+	me.REGISTRY_TIME REGISTRY_TIME,
+	me.EFFECTIVE_CONSUMPTION EFFECTIVE_CONSUMPTION,
+	me.EFFECTIVE_ORDER_COUNT EFFECTIVE_ORDER_COUNT,
+	auth.MOBILE MOBILE,
+	auth.EMAIL EMAIL,
+	auth.USABLE USABLE
        FROM MEMBER AS  me
        INNER JOIN  MEMBER_WALLET AS wallet ON wallet.MEMBER_ID = me.ID
        INNER JOIN MEMBER_SPECIFIC_PROPERTY AS cpepro ON cpepro.MEMBER_ID = me.ID
        INNER JOIN MEMBER_AUTH AS auth ON auth.MEMBER_ID = me.ID
-       INNER JOIN MEMBER_LEVEL AS level ON level.ID = me.LEVEL_ID
-       INNER JOIN MEMBER_ROLE AS role ON role.ID = me.ROLE_ID
        WHERE me.ID = #{id}
 </select>
     

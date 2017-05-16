@@ -116,11 +116,33 @@ public class AppAdminMemberViewController {
     }
 
     @RequestMapping(value = "/details")
-    public String MemberDetails(ModelMap map){
-        MemberDO member= memberService.queryById(1L);
-        System.out.println(member);
+    public String MemberDetails(ModelMap map,Long id){
+        MemberDO member= memberService.queryById(id);
+        String status = "";
+        if(member.getAuth().getUsable()){
+            status = "启用";
+        }else {
+            status = "禁用";
+        }
+        String sex ="";
+        if(member.getSex().equals(Sex.FEMALE)){
+            sex = "女";
+        }else if(member.getSex().equals(Sex.MALE)){
+            sex = "男";
+        }else {
+            sex = "保密";
+        }
+        String identityType = "";
+        if(member.getIdentityType().equals(IdentityType.MEMBER)){
+            identityType = "会员";
+        }else{
+            identityType = "零售";
+        }
         String registryTime= new SimpleDateFormat("yyyy-MM-dd").format(member.getRegistryTime());
         String birthday = new SimpleDateFormat("yyyy-MM-dd").format(member.getBirthday());
+        map.addAttribute("identityType",identityType);
+        map.addAttribute("status",status);
+        map.addAttribute("sex",sex);
         map.addAttribute("birthday",birthday);
         map.addAttribute("registryTime",registryTime);
         map.addAttribute("member", member);
