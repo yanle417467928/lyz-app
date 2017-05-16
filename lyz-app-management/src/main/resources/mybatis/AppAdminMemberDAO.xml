@@ -9,30 +9,6 @@
         LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
     </sql>
 
-    <resultMap id="memberResult" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
-        <id column="ID" property="id"/>
-        <result column="CREATOR_ID" property="creatorId"/>
-        <result column="CREATOR_TYPE" property="creatorType"/>
-        <result column="CREATE_TIME" property="createTime"/>
-        <result column="MODIFIER_ID" property="modifierId"/>
-        <result column="MODIFIER_TYPE" property="modifierType"/>
-        <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
-        <result column="REGISTRY_TIME" property="registryTime"/>
-        <result column="REGISTRY_TYPE" property="registryType"
-                javaType="cn.com.leyizhuang.app.core.constant.RegistryType"
-                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
-        <result column="IDENTITY_TYPE" property="identityType"
-                javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
-                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
-        <association property="store" resultMap="storeResult"/>
-        <!--<association property="area" resultMap="areaResult"/>-->
-        <association property="manager" resultMap="managerResult"/>
-        <!--<association column="LEVEL_ID" property="level"
-                     select="cn.com.leyizhuang.foundation.mapper.TdMemberLevelMapper.query"/>
-        <association column="ROLE_ID" property="role"
-                     select="cn.com.leyizhuang.foundation.mapper.TdMemberRoleMapper.query"/>-->
-    </resultMap>
 
     <resultMap id="memberAllList" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
         <id column="ID" property="id"/>
