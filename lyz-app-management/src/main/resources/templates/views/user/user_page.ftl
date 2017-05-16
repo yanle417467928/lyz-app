@@ -56,7 +56,11 @@
         }, {
             field: 'name',
             title: '姓名',
-            align: 'center'
+            align: 'center',
+            formatter: function(value, row) {
+                var id = row.id;
+                return '<a href="/views/admin/member/details/' + id + '">' + value + '</a>';
+            }
         },{
             field: 'city',
             title: '城市',
