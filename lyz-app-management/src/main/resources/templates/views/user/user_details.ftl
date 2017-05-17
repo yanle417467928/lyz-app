@@ -16,16 +16,14 @@
     <h1>会员信息详情</h1>
     <ol class="breadcrumb">
         <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-        <li><a href="javascript:void(0);">会员列表</a></li>
+        <li><a href="/views/admin/member/page">会员列表</a></li>
         <li class="active">会员信息详情</li>
     </ol>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-
-            <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
-            <li><a href="#tab_1-2" data-toggle="tab">账户安全</a></li>
+            <li class="active"><a href="#tab_1-1" data-toggle="tab">详细信息</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">

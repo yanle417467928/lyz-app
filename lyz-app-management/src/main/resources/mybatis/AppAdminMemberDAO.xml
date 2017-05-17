@@ -136,35 +136,52 @@
         </foreach>
     </delete>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
         UPDATE MEMBER
         <set>
+            <if test="null != city">
+                CITY = #{city},
+            </if>
+            <if test="null != name">
+                NAME = #{name},
+            </if>
+            <if test="null != headImageUri">
+                HEAD_IMAGE_URI = #{headImageUri},
+            </if>
+            <if test="null != birthday">
+                BIRTHDAY = #{birthday},
+            </if>
+            <if test="null != sex">
+                SEX = #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.Sex,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != effectiveConsumption">
+                EFFECTIVE_CONSUMPTION = #{effectiveConsumption},
+            </if>
+            <if test="null != effectiveOrderCount">
+                EFFECTIVE_ORDER_COUNT = #{effectiveOrderCount},
+            </if>
+
+
             <if test="null != store.id">
                 STORE_ID = #{store.id},
             </if>
-            <if test="null != store$name">
-                STORE_NAME = #{store$name},
+            <if test="null != store.name">
+                STORE_NAME = #{store.name},
             </if>
-            <if test="null != store$code">
-                STORE_CODE = #{store$code},
+            <if test="null != store.code">
+                STORE_CODE = #{store.code},
             </if>
-            <if test="null != area.id">
-                AREA_ID = #{area.id},
-            </if>
-            <if test="null != area$name">
-                AREA_NAME = #{area$name},
-            </if>
-            <if test="null != area$sobId">
-                SOB_ID = #{area$sobId},
-            </if>
+
             <if test="null != manager.id">
                 MANAGER_ID = #{manager.id},
             </if>
-            <if test="null != manager$name">
-                MANAGER_NAME = #{manager$name},
+            <if test="null != manager.name">
+                MANAGER_NAME = #{manager.name},
             </if>
-            <if test="null != manager$mobile">
-                MANAGER_MOBILE = #{manager$mobile},
+            <if test="null != manager.mobile">
+                MANAGER_MOBILE = #{manager.mobile},
             </if>
             <if test="null != role.id">
                 ROLE_ID = #{role.id},
@@ -179,17 +196,49 @@
                 REGISTRY_TIME = #{registryTime},
             </if>
             <if test="null != registryType">
-                REGISTRY_TYPE = #{registryType},
+                REGISTRY_TYPE = #{registryType,
+                javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
-            <if test="null != identifyType">
-                IDENTITY_TYPE = #{identifyType},
+            <if test="null != identityType">
+                IDENTITY_TYPE = #{identityType,
+                javaType=cn.com.leyizhuang.app.core.constant.IdentityType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
         </set>
         WHERE ID = #{id}
     </update>
 
+    <update id="updateUserAuth" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+        UPDATE MEMBER_AUTH
+        <set>
+        <if test="null != username">
+            USER_NAME = #{username},
+        </if>
+        <if test="null != password">
+            PASSWORD = #{password},
+        </if>
+        <if test="null != mobile">
+            MOBILE = #{mobile},
+        </if>
+        <if test="null != email">
+            EMAIL = #{email},
+        </if>
+        <if test="null != usable">
+            USABLE = #{usable},
+        </if>
+        <if test="null != unusableEndTime">
+            UNUSABLE_END_TIME = #{unusableEndTime},
+        </if>
+        </set>
+        WHERE
+        MEMBER_ID = #{memberId}
+
+    </update>
+
     <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllList">
         SELECT
+    me.ID ID,
    	me.CITY CITY,
 	me.BIRTHDAY BIRTHDAY,
 	me.STORE_NAME STORE_NAME,
@@ -211,6 +260,19 @@
        INNER JOIN MEMBER_AUTH AS auth ON auth.MEMBER_ID = me.ID
        WHERE me.ID = #{id}
 </select>
+    <select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
+        SELECT
+        MEMBER_ID,
+        USER_NAME,
+        PASSWORD,
+        MOBILE,
+        EMAIL,
+        USABLE,
+        UNUSABLE_END_TIME
+        FROM  MEMBER_AUTH
+        WHERE MEMBER_ID = #{id}
+
+    </select>
     
     <select id="queryList" resultMap="memberAllList">
         SELECT

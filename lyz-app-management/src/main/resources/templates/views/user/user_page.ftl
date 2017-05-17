@@ -95,7 +95,7 @@
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/view/menu/edit/{id}')
+            $grid.modify($('#dataGrid'), '/views/admin/member/select/{id}')
         });
 
         $('#btn_delete').on('click', function() {

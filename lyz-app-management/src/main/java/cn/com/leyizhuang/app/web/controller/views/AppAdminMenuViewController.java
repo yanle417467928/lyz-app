@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = AppAdminMenuViewController.PRE_URL, produces = "text/html;charset=utf-8")
 public class AppAdminMenuViewController {
 
-    protected final static String PRE_URL = "/views/menu";
+    protected final static String PRE_URL = "/views/admin/menu";
 
     @Autowired
     private AppAdminMenuService menuService;

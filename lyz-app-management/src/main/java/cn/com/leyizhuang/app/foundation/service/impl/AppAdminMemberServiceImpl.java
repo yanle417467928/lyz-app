@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppAdminMemberDAO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -34,5 +35,27 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<MemberDO> impleme
         PageHelper.startPage(page,size);
         List<MemberDO> memberDOList = memberDAO.queryList();
         return new PageInfo<>(memberDOList);
+    }
+
+    @Override
+    public void update(MemberDO memberDO) {
+        if (null != memberDO){
+            memberDAO.update(memberDO);
+        }
+    }
+
+    @Override
+    public void updateUserAuth(MemberAuthDO memberAuthDO) {
+        if(null != memberAuthDO) {
+            memberDAO.updateUserAuth(memberAuthDO);
+        }
+    }
+
+    @Override
+    public MemberAuthDO queryAuthById(Long id) {
+        if (null != id) {
+         return memberDAO.queryAuthById(id);
+        }
+        return null;
     }
 }
