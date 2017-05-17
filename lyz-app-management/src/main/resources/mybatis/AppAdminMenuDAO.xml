@@ -105,6 +105,6 @@
     <select id="queryByParentId" resultMap="menuResult">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM APP_Admin_MENU WHERE PARENT_ID = #{parentId}
+        FROM ADMIN_MENU WHERE PARENT_ID = #{parentId}
     </select>
 </mapper>
