@@ -19,4 +19,10 @@ public interface AppAdminMenuService extends BaseService<AppAdminMenuDO>{
     List<AppAdminMenuListVO> loadAdminMenuTree();
 
     PageInfo<AppAdminMenuDO> loadTopMenu(Integer page, Integer size);
+
+    void add(AppAdminMenuDO appAdminMenuDO);
+
+    AppAdminMenuDO queryMenuById(Long id);
+
+    void update(AppAdminMenuDO appAdminMenuDO);
 }

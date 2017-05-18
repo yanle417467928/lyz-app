@@ -16,4 +16,7 @@ import java.util.List;
 public interface AppAdminMenuDAO extends BaseDAO<AppAdminMenuDO> {
 
     List<AppAdminMenuDO> queryByParentId(Long parentId);
+    void add(AppAdminMenuDO appAdminMenuDO);
+    AppAdminMenuDO queryMenuById(Long id);
+    void update(AppAdminMenuDO appAdminMenuDO);
 }

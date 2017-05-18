@@ -32,7 +32,7 @@
         <result column="PARENT_TITLE" property="title"/>
     </resultMap>
 
-    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ADMIN_MENU (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
             TITLE, ICON_STYLE, PARENT_ID, PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
@@ -90,7 +90,51 @@
         WHERE ID = #{id}
     </update>
 
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
+        UPDATE ADMIN_MENU
+        <set>
+            <if test="null != title">
+                TITLE = #{title},
+            </if>
+            <if test="null != iconStyle">
+                ICON_STYLE = #{iconStyle},
+            </if>
+            <if test="null != parent.id">
+                PARENT_ID = #{parent.id},
+            </if>
+            <if test="null != parent.title">
+                PARENT_TITLE = #{parent.title},
+            </if>
+            <if test="null != linkUri">
+                LINK_URI = #{linkUri},
+            </if>
+            <if test="null != sortId">
+                SORT_ID = #{sortId},
+            </if>
+            <if test="null != type">
+                TYPE = #{type,
+                            javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
+                            typeHandler=org.apache.ibatis.type.EnumTypeHandler
+                        },
+            </if>
+            <if test="null != referenceTable">
+                REFERENCE_TABLE = #{referenceTable},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
     <select id="queryById" parameterType="java.lang.Long" resultMap="menuResult">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM ADMIN_MENU WHERE ID = #{id}
+    </select>
+
+    <select id="queryMenuById" parameterType="java.lang.Long" resultMap="menuResult">
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM ADMIN_MENU WHERE ID = #{id}

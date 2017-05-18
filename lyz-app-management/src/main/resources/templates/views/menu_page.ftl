@@ -64,7 +64,7 @@
             title: '菜单标题',
             formatter: function(value, row) {
                 var id = row.id;
-                return '<a href="/view/menu/info/' + id + '">' + value + '</a>';
+                return '<a href="/views/admin/menu/details/' + id + '">' + value + '</a>';
             }
         }, {
             field: 'type',
@@ -90,11 +90,11 @@
         }]);
 
         $('#btn_add').on('click', function () {
-            $grid.add('/view/menu/edit/0');
+            $grid.add('/views/admin/menu/add');
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/view/menu/edit/{id}')
+            $grid.modify($('#dataGrid'), '/views/admin/menu/select/{id}')
         });
 
         $('#btn_delete').on('click', function() {

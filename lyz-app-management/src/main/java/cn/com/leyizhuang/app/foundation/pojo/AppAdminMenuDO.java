@@ -45,5 +45,6 @@ public class AppAdminMenuDO extends BaseDO {
         private Long id;
         // 节点标题
         private String title;
+
     }
 }

@@ -71,4 +71,22 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
         List<AppAdminMenuDO> topMenuDOList = menuDAO.queryByParentId(0L);
         return new PageInfo<>(topMenuDOList);
     }
+
+    @Override
+    public void add(AppAdminMenuDO appAdminMenuDO) {
+        if(null != appAdminMenuDO){
+            menuDAO.add(appAdminMenuDO);
+        }
+    }
+
+    @Override
+    public AppAdminMenuDO queryMenuById(Long id) {
+        return menuDAO.queryMenuById(id);
+    }
+
+    @Override
+    public void update(AppAdminMenuDO appAdminMenuDO) {
+        menuDAO.update(appAdminMenuDO);
+    }
+
 }
