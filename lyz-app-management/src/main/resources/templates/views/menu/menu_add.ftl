@@ -69,7 +69,7 @@
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="name">菜单类型</label>
-                                <select class="form-control select" name="type" data-live-search="true" >
+                                <select class="form-control select" name="type" data-live-search="true" onchange="checkMenuType(this.value);" >
                                 <option disabled selected>请选择菜单类型</option>
                                 <option value="PARENT">一级菜单</option>
                                 <option value="CHILD">二级菜单</option>
@@ -86,7 +86,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="parent_info">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label>父节点ID</label>
@@ -137,6 +137,16 @@
 
     function submitForm() {
         $("#add_user").submit();
+    }
+
+    function checkMenuType(menuType){
+        if (menuType == "CHILD") {
+            $('#parent_info').show()
+
+        }else if (menuType == "PARENT"){
+            $('#parent_info').hide()
+
+        }
     }
 </script>
 </body>
