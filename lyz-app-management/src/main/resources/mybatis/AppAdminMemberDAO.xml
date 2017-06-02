@@ -27,13 +27,13 @@
         <result column="EFFECTIVE_ORDER_COUNT" property="effectiveOrderCount"/>
         <result column="CITY" property="city"/>
         <result column="SEX" property="sex"
-                javaType="cn.com.leyizhuang.app.core.constant.Sex"
+                javaType="cn.com.leyizhuang.app.core.constant.SexEnum"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="REGISTRY_TYPE" property="registryType"
                 javaType="cn.com.leyizhuang.app.core.constant.RegistryType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="IDENTITY_TYPE" property="identityType"
-                javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
+                javaType="cn.com.leyizhuang.app.core.constant.IdentityTypeEnum"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <association property="store" resultMap="storeResult"/>
         <association property="manager" resultMap="managerResult"/>
@@ -52,8 +52,8 @@
         <result column="PASS_WORD" property="password"/>
         <result column="MOBILE" property="mobile"/>
         <result column="EMAIL" property="email"/>
-        <result column="USABLE" property="usable"/>
-        <result column="UNUSABLE_END_TIME" property="unusableEndTime"/>
+        <result column="STATUS" property="status"/>
+        <result column="DISABLE_END_TIME" property="disableEndTime"/>
     </resultMap>
 
     <resultMap id="memberLevel" type="cn.com.leyizhuang.app.foundation.pojo.MemberLevelDO">
@@ -100,17 +100,20 @@
 
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+             select LAST_INSERT_ID()
+        </selectKey>
         INSERT INTO MEMBER (
-        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,CITY,
         STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,MANAGER_MOBILE,LEVEL_ID,
         ROLE_ID,NAME,HEAD_IMAGE_URI,BIRTHDAY,SEX,EFFECTIVE_CONSUMPTION,EFFECTIVE_ORDER_COUNT,
         LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
         ) VALUES (
             #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{store.id}, #{store.name}, #{store.code}, #{manager.id}, #{manager.name},
+            #{city},#{store.id}, #{store.name}, #{store.code}, #{manager.id}, #{manager.name},
             #{manager.mobile}, #{level.id}, #{role.id},#{name},#{headImageUri},#{birthday},
             #{sex,
-                javaType=cn.com.leyizhuang.app.core.constant.Sex,
+                javaType=cn.com.leyizhuang.app.core.constant.SexEnum,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler
             },
             #{effectiveConsumption},
@@ -120,7 +123,7 @@
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler
             },
             #{identityType,
-                javaType=cn.com.leyizhuang.app.core.constant.IdentityType,
+                javaType=cn.com.leyizhuang.app.core.constant.IdentityTypeEnum,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler
             }
         )
@@ -136,7 +139,77 @@
         </foreach>
     </delete>
 
-    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+        UPDATE MEMBER
+        <set>
+            <if test="null != city">
+                CITY = #{city},
+            </if>
+            <if test="null != name">
+                NAME = #{name},
+            </if>
+            <if test="null != headImageUri">
+                HEAD_IMAGE_URI = #{headImageUri},
+            </if>
+            <if test="null != birthday">
+                BIRTHDAY = #{birthday},
+            </if>
+            <if test="null != sex">
+                SEX = #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.SexEnum,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != effectiveConsumption">
+                EFFECTIVE_CONSUMPTION = #{effectiveConsumption},
+            </if>
+            <if test="null != effectiveOrderCount">
+                EFFECTIVE_ORDER_COUNT = #{effectiveOrderCount},
+            </if>
+            <if test="null != store.id">
+                STORE_ID = #{store.id},
+            </if>
+            <if test="null != store.name">
+                STORE_NAME = #{store.name},
+            </if>
+            <if test="null != store.code">
+                STORE_CODE = #{store.code},
+            </if>
+            <if test="null != manager.id">
+                MANAGER_ID = #{manager.id},
+            </if>
+            <if test="null != manager.name">
+                MANAGER_NAME = #{manager.name},
+            </if>
+            <if test="null != manager.mobile">
+                MANAGER_MOBILE = #{manager.mobile},
+            </if>
+            <!--<if test="null != role.id">
+                ROLE_ID = #{role.id},
+            </if>
+            <if test="null != level.id">
+                LEVEL_ID = #{level.id},
+            </if>-->
+            <if test="null != lastLoginTime">
+                LAST_LOGIN_TIME = #{lastLoginTime},
+            </if>
+            <if test="null != registryTime">
+                REGISTRY_TIME = #{registryTime},
+            </if>
+            <if test="null != registryType">
+                REGISTRY_TYPE = #{registryType,
+                javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != identityType">
+                IDENTITY_TYPE = #{identityType,
+                javaType=cn.com.leyizhuang.app.core.constant.IdentityTypeEnum,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="modifyMember" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
         UPDATE MEMBER
         <set>
             <if test="null != city">
@@ -209,57 +282,19 @@
         WHERE ID = #{id}
     </update>
 
-    <update id="updateUserAuth" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
-        UPDATE MEMBER_AUTH
-        <set>
-        <if test="null != username">
-            USER_NAME = #{username},
-        </if>
-        <if test="null != password">
-            PASSWORD = #{password},
-        </if>
-        <if test="null != mobile">
-            MOBILE = #{mobile},
-        </if>
-        <if test="null != email">
-            EMAIL = #{email},
-        </if>
-        <if test="null != usable">
-            USABLE = #{usable},
-        </if>
-        <if test="null != unusableEndTime">
-            UNUSABLE_END_TIME = #{unusableEndTime},
-        </if>
-        </set>
-        WHERE
-        MEMBER_ID = #{memberId}
 
-    </update>
 
     <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllList">
         SELECT
-    me.ID ID,
-   	me.CITY CITY,
-	me.BIRTHDAY BIRTHDAY,
-	me.STORE_NAME STORE_NAME,
-	me.MANAGER_NAME MANAGER_NAME,
-	me.`NAME` `NAME`,
-	me.SEX SEX,
-	me.MANAGER_MOBILE MANAGER_MOBILE,
-	me.REGISTRY_TYPE REGISTRY_TYPE,
-	me.IDENTITY_TYPE IDENTITY_TYPE,
-	me.REGISTRY_TIME REGISTRY_TIME,
-	me.EFFECTIVE_CONSUMPTION EFFECTIVE_CONSUMPTION,
-	me.EFFECTIVE_ORDER_COUNT EFFECTIVE_ORDER_COUNT,
-	auth.MOBILE MOBILE,
-	auth.EMAIL EMAIL,
-	auth.USABLE USABLE
-       FROM MEMBER AS  me
-       INNER JOIN  MEMBER_WALLET AS wallet ON wallet.MEMBER_ID = me.ID
-       INNER JOIN MEMBER_SPECIFIC_PROPERTY AS cpepro ON cpepro.MEMBER_ID = me.ID
-       INNER JOIN MEMBER_AUTH AS auth ON auth.MEMBER_ID = me.ID
-       WHERE me.ID = #{id}
-</select>
+            m.*, auth.MOBILE MOBILE,
+            auth.EMAIL EMAIL,
+            auth.`STATUS` `STATUS`
+        FROM
+            MEMBER m
+        LEFT JOIN MEMBER_AUTH auth ON auth.MEMBER_ID = m.ID
+        WHERE
+            m.ID = #{id};
+    </select>
     <select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
         SELECT
         MEMBER_ID,
@@ -275,9 +310,9 @@
     </select>
     
     <select id="queryList" resultMap="memberAllList">
-        SELECT
-        <include refid="ALL_FIELDS"/>
-        FROM MEMBER
+        SELECT m.*,ma.MOBILE,ma.STATUS
+        FROM member m LEFT JOIN member_auth ma
+        on m.id = ma.MEMBER_ID
     </select>
 
 

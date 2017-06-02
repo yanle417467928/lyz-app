@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppAdminMemberAuthDAO">
+
+    <sql id="ALL_FIELDS">
+        ID,CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        MEMBER_ID, USERNAME,PASSWORD, MODULE, EMAIL,DISABLE_END_TIME
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+        INSERT INTO MEMBER_AUTH (
+            CREATOR_ID,
+            CREATOR_TYPE,
+            CREATE_TIME,
+            MODIFIER_ID,
+            MODIFIER_TYPE,
+            MODIFY_TIME,
+            MEMBER_ID,
+            USER_NAME,
+            PASSWORD,
+            MOBILE,
+            EMAIL,
+            STATUS,
+            DISABLE_END_TIME
+        )
+        VALUES
+            (
+                #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+                              #{memberId},#{username},#{password},#{mobile},#{email},#{status},#{disableEndTime}
+            )
+    </insert>
+
+    <select id="existsByMobile" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1 FROM member_auth auth WHERE auth.MOBILE= #{mobile})
+    </select>
+
+    <select id="existsByMobileAndIdNot" resultType="java.lang.Boolean">
+        SELECT
+            EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        member_auth
+                    WHERE
+                       MOBILE = #{mobile}
+                    AND
+                       MEMBER_ID != #{id});
+    </select>
+
+    <select id="queryByMemberId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+        SELECT
+            *
+        FROM
+            member_auth
+        WHERE
+            MEMBER_ID = #{memberId};
+    </select>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+        UPDATE MEMBER_AUTH
+        <set>
+            <if test="null != password">
+                PASSWORD = #{password},
+            </if>
+            <if test="null != mobile">
+                MOBILE = #{mobile},
+            </if>
+            <if test="null != status">
+                STATUS = #{status},
+            </if>
+            <if test="null != disableEndTime">
+                DISABLE_END_TIME = #{disableEndTime},
+            </if>
+        </set>
+        WHERE
+        MEMBER_ID = #{memberId}
+    </update>
+
+    <update id="modifyMemberPassword" >
+        UPDATE member_auth
+          SET PASSWORD = #{password}
+        WHERE
+          MEMBER_ID=#{id}
+    </update>
+
+</mapper>

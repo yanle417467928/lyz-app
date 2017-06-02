@@ -19,7 +19,7 @@ public class AppAdminViewControllerAdvice {
     @Autowired
     private AppAdminMenuService menuService;
 
-    @ModelAttribute(value = "menuVOList")
+    @ModelAttribute(value = "IndexMenuVOList")
     public List<AppAdminMenuListVO> menuVOList() {
         return menuService.loadAdminMenuTree();
     }
@@ -32,5 +32,10 @@ public class AppAdminViewControllerAdvice {
             System.out.println(menuService.queryById(menuId).toString());
             return menuService.queryById(menuId);
         }
+    }
+
+    @ModelAttribute(value = "parentMenuId")
+    public Long parentMenu(Long parentMenuId) {
+        return parentMenuId;
     }
 }

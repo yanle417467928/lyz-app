@@ -1,13 +1,16 @@
 <aside class="main-sidebar">
     <section class="sidebar">
-        <!-- Sidebar user panel -->
+        <!-- Sidememberuser panel -->
         <div class="user-panel">
             <div class="pull-left image">
                 <img src="/images/user2-160x160.jpg" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
-                <p>Alexander Pierce</p>
-                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                <p>开发人员</p>
+                <a href="#">
+                    <i class="fa fa-send-o"></i>
+                    开发部
+                </a>
             </div>
         </div>
         <form action="#" method="get" class="sidebar-form">
@@ -22,8 +25,32 @@
         </form>
         <ul class="sidebar-menu">
             <li class="header">操作菜单</li>
-            <#if menuVOList?? && menuVOList?size gt 0>
-                <#list menuVOList as item>
+            <#if IndexMenuVOList?? && IndexMenuVOList?size gt 0>
+                <#list IndexMenuVOList as item>
+                    <li class="treeview <#if parentMenuId?? && parentMenuId?c == item.id?c>active</#if>">
+                        <a href="${item.linkUr!'#'}?menuId=${item.id?c}">
+                            <i class="${item.iconStyle!''}"></i>
+                            <span>${item.title!'加载中...'}</span>
+                            <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                        </a>
+                        <#if item.children?? && item.children?size gt 0>
+                            <ul class="treeview-menu">
+                                <#list item.children as child>
+                                    <li>
+                                        <a href="${child.linkUri!'#'}?menuId=${child.id?c}&parentMenuId=${item.id?c}">
+                                            <i class="${child.iconStyle!'fa fa-circle-o'}"></i>
+                                        ${child.title!'加载中...'}
+                                        </a>
+                                    </li>
+                                </#list>
+                            </ul>
+                        </#if>
+                    </li>
+                </#list>
+
+                <#--<#list IndexMenuVOList as item>
                     <#if selectedMenu?? && selectedMenu.parent.id == item.id>
                     <li class="treeview menu-open active ">
                         <a href="${item.linkUr!'#'}?menuId=${item.id?c}">
@@ -92,7 +119,7 @@
                             </#if>
                         </li>
                     </#if>
-                </#list>
+                </#list>-->
             </#if>
         </ul>
     </section>

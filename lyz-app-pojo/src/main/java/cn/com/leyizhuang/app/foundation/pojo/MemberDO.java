@@ -1,8 +1,9 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.IdentityType;
+import cn.com.leyizhuang.app.core.constant.IdentityTypeEnum;
+import cn.com.leyizhuang.app.core.constant.IdentityTypeEnum;
 import cn.com.leyizhuang.app.core.constant.RegistryType;
-import cn.com.leyizhuang.app.core.constant.Sex;
+import cn.com.leyizhuang.app.core.constant.SexEnum;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +45,7 @@ public class MemberDO extends BaseDO {
 
     private Date birthday;
     //会员性别
-    private Sex sex;
+    private SexEnum sex;
     //会员有效消费额
     private Long effectiveConsumption;
     //会员有效单量
@@ -56,7 +57,7 @@ public class MemberDO extends BaseDO {
     //注册途径
     private RegistryType registryType;
     //会员性质:会员，准会员（零售）
-    private IdentityType identityType;
+    private IdentityTypeEnum identityType;
     //城市
     private String city;
 
@@ -66,7 +67,7 @@ public class MemberDO extends BaseDO {
     public MemberDO() {
     }
 
-    public MemberDO(Store store, Manager manager, MemberLevelDO level, MemberRoleDO role, MemberAuthDO auth, MemberWalletDO wallet, MemberSpecificPropertyDO specProp, String name, String headImageUri, Date birthday, Sex sex, Long effectiveConsumption, Integer effectiveOrderCount, Date lastLoginTime, Date registryTime, RegistryType registryType, IdentityType identityType, String city) {
+    public MemberDO(Store store, Manager manager, MemberLevelDO level, MemberRoleDO role, MemberAuthDO auth, MemberWalletDO wallet, MemberSpecificPropertyDO specProp, String name, String headImageUri, Date birthday, SexEnum sex, Long effectiveConsumption, Integer effectiveOrderCount, Date lastLoginTime, Date registryTime, RegistryType registryType, IdentityTypeEnum identityType, String city) {
         this.store = store;
         this.manager = manager;
         this.level = level;

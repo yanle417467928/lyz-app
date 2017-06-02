@@ -11,7 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
  *         Created on 2017-05-09 10:11
  **/
 public interface AppAdminMemberDAO  extends BaseDAO<MemberDO>{
-    void update(MemberDO memberDO);
+    MemberDO modifyMember(MemberDO memberDO);
     void updateUserAuth(MemberAuthDO memberAuthDO);
     MemberAuthDO queryAuthById(Long id);
 }

@@ -1,6 +1,6 @@
 # 通用配置
 server:
-  port: 8080
+  port: 8088
   display-name: 乐易装APP后台管理中心
 
 spring:
@@ -29,7 +29,9 @@ spring:
         enable: true
         url: /*
         exclusions: /druid/*,/druid*,*.html,*.js,*.css,*.gif,*.jpg,*.jpeg,*.png,*.ico
-
+  http:
+    encoding:
+      force: true
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
@@ -41,6 +43,7 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   row-bounds-with-count: true
+
 
 ---
 # 开发环境配置

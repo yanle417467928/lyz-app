@@ -19,12 +19,12 @@ import java.util.Arrays;
  *         Created on 2017/5/6.
  */
 @RestController
-@RequestMapping(value = AppAdminMenuDataController.PRE_URL, produces = "application/json;charset=utf8")
-public class AppAdminMenuDataController {
+@RequestMapping(value = AppAdminMenuRestController.PRE_URL, produces = "application/json;charset=utf8")
+public class AppAdminMenuRestController {
 
     protected final static String PRE_URL = "/rest/menu";
 
-    private final Logger LOG = LoggerFactory.getLogger(AppAdminMenuDataController.class);
+    private final Logger LOG = LoggerFactory.getLogger(AppAdminMenuRestController.class);
 
     @Autowired
     private AppAdminMenuService menuService;

@@ -1,3 +1,13 @@
+<head>
+    <script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.5.4/extension/bmap.min.js"></script>
+
+    <script src="/javascript/index.js"></script>
+
+</head>
 <body>
-    <h1>这里是首页，暂时还没有想好怎么做</h1>
+<section class="content">
+    <div id="container" style="height: 100%; width: 100%;">
+    </div>
+</section>
 </body>
