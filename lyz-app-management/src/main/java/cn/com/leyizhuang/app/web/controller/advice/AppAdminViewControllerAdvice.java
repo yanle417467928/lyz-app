@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.advice;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuListVO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,7 +20,7 @@ public class AppAdminViewControllerAdvice {
     private AppAdminMenuService menuService;
 
     @ModelAttribute(value = "IndexMenuVOList")
-    public List<AppAdminMenuListVO> menuVOList() {
+    public List<AppAdminMenuVO> menuVOList() {
         return menuService.loadAdminMenuTree();
     }
 

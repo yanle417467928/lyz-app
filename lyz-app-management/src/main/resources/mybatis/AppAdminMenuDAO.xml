@@ -4,7 +4,7 @@
 
     <sql id="ALL_FIELDS">
         ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        TITLE, ICON_STYLE, PARENT_ID, PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+        TITLE, ICON_STYLE, PARENT_ID,PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
     </sql>
 
     <resultMap id="menuResult" type="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
@@ -15,30 +15,30 @@
         <result column="MODIFIER_ID" property="modifierId"/>
         <result column="MODIFIER_TYPE" property="modifierType"/>
         <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="MEMBER_ID" property="memberId"/>
         <result column="TITLE" property="title"/>
         <result column="ICON_STYLE" property="iconStyle"/>
+        <result column="PARENT_ID" property="parentId"/>
+        <result column="PARENT_TITLE" property="parentTitle"/>
         <result column="LINK_URI" property="linkUri"/>
         <result column="SORT_ID" property="sortId"/>
         <result column="TYPE" property="type"
                 javaType="cn.com.leyizhuang.app.core.constant.AppAdminMenuType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="REFERENCE_TABLE" property="referenceTable"/>
-        <association property="parent" resultMap="parentNodeResult"/>
     </resultMap>
 
-    <resultMap id="parentNodeResult" type="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO$ParentNode">
+    <!--<resultMap id="parentNodeResult" type="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO$ParentNode">
         <result column="PARENT_ID" property="id"/>
         <result column="PARENT_TITLE" property="title"/>
-    </resultMap>
+    </resultMap>-->
 
     <insert id="add" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ADMIN_MENU (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-            TITLE, ICON_STYLE, PARENT_ID, PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+            TITLE, ICON_STYLE, PARENT_ID,PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
         ) VALUES (
             #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{title}, #{iconStyle}, #{parent.id}, #{parent.title}, #{linkUri}, #{sortId},
+            #{title}, #{iconStyle}, #{parentId},#{parentTitle}, #{linkUri}, #{sortId},
             #{type,
                 javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler
@@ -65,11 +65,11 @@
             <if test="null != iconStyle">
                 ICON_STYLE = #{iconStyle},
             </if>
-            <if test="null != parent.id">
-                PARENT_ID = #{parent.id},
+            <if test="null != parentId">
+                PARENT_ID = #{parentId},
             </if>
-            <if test="null != parent$title">
-                PARENT_TITLE = #{parent$title},
+            <if test="null != parentTitle">
+                PARENT_TITLE = #{parentTitle},
             </if>
             <if test="null != linkUri">
                 LINK_URI = #{linkUri},
@@ -100,11 +100,11 @@
             <if test="null != iconStyle">
                 ICON_STYLE = #{iconStyle},
             </if>
-            <if test="null != parent.id">
-                PARENT_ID = #{parent.id},
+            <if test="null != parentId">
+                PARENT_ID = #{parentId},
             </if>
-            <if test="null != parent.title">
-                PARENT_TITLE = #{parent.title},
+            <if test="null != parentTitle">
+                PARENT_ID = #{parentTitle},
             </if>
             <if test="null != linkUri">
                 LINK_URI = #{linkUri},
@@ -151,4 +151,23 @@
         <include refid="ALL_FIELDS"/>
         FROM ADMIN_MENU WHERE PARENT_ID = #{parentId}
     </select>
+    <select id="existsByTitleAndIdNot" resultType="java.lang.Boolean">
+        SELECT
+            EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        admin_menu
+                    WHERE
+                        TITLE = #{title}
+                            <if test="null != id">
+                                AND id != #{id});
+                            </if>
+
+    </select>
+
+    <select id="countByParentId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM admin_menu WHERE PARENT_ID = #{parentId}
+    </select>
+
 </mapper>

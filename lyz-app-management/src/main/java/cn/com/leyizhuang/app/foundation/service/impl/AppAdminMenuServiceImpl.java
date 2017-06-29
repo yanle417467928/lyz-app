@@ -1,12 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminMenuType;
+import cn.com.leyizhuang.app.core.exception.ChangeMenuTypeException;
 import cn.com.leyizhuang.app.foundation.dao.AppAdminMenuDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuListVO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMemberDTO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMenuDTO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMenuService;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,27 +47,27 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
     }
 
     @Override
-    public List<AppAdminMenuListVO> loadAdminMenuTree() {
-        List<AppAdminMenuListVO> appAdminMenuListVOList = new ArrayList<>();
+    public List<AppAdminMenuVO> loadAdminMenuTree() {
+        List<AppAdminMenuVO> appAdminMenuListVO = new ArrayList<>();
         //获取所有的菜单DO
         List<AppAdminMenuDO> appAdminMenuDOList = menuDAO.queryList();
         if (null != appAdminMenuDOList){
-            List<AppAdminMenuListVO> allMenuVOList = AppAdminMenuListVO.transform(appAdminMenuDOList);
+            List<AppAdminMenuVO> allMenuVOList = AppAdminMenuVO.transform(appAdminMenuDOList);
             // 先筛选出所有的顶层菜单
-            appAdminMenuListVOList = allMenuVOList.stream().filter(menuVO -> 0 == menuVO.getParentId())
+            appAdminMenuListVO = allMenuVOList.stream().filter(menuVO -> 0 == menuVO.getParentId())
                     .collect(Collectors.toList());
             // 再通过Stream的过滤器获取顶层菜单的子菜单
-            appAdminMenuListVOList.forEach(topMenuVO -> {
-                List<AppAdminMenuListVO> children = allMenuVOList.stream()
+            appAdminMenuListVO.forEach(topMenuVO -> {
+                List<AppAdminMenuVO> children = allMenuVOList.stream()
                         .filter(menuVO -> topMenuVO.getId().equals(menuVO.getParentId()))
                         .collect(Collectors.toList());
                 topMenuVO.setChildren(children);
             });
 
             // 最后按照sortId进行排序
-            appAdminMenuListVOList.sort(Comparator.comparing(AppAdminMenuListVO::getSortId));
+            appAdminMenuListVO.sort(Comparator.comparing(AppAdminMenuVO::getSortId));
         }
-        return appAdminMenuListVOList;
+        return appAdminMenuListVO;
     }
 
     @Override
@@ -73,11 +78,12 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
     }
 
     @Override
-    public void add(AppAdminMenuDO appAdminMenuDO) {
-        if(null != appAdminMenuDO){
-            menuDAO.add(appAdminMenuDO);
-        }
+    public void add(AppAdminMenuDTO menuDTO) {
+        AppAdminMenuDO menuDO = transformDTO(menuDTO);
+        menuDO.setCreatorInfoByManager(0L);
+        menuDAO.add(menuDO);
     }
+
 
     @Override
     public AppAdminMenuDO queryMenuById(Long id) {
@@ -85,8 +91,60 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
     }
 
     @Override
-    public void update(AppAdminMenuDO appAdminMenuDO) {
-        menuDAO.update(appAdminMenuDO);
+    public void update(AppAdminMenuDTO menuDTO) {
+        AppAdminMenuDO menuDO = transformDTO(menuDTO);
+        menuDO.setModifierInfoByManager(0L);
+        if (0L != menuDO.getParentId()) {
+            Long count = menuDAO.countByParentId(menuDO.getId());
+            if (count > 0) {
+                throw new ChangeMenuTypeException("该菜单下还存在其它子菜单，不能将其修改为子菜单挂载在另一父级菜单下");
+            }
+        }
+        menuDAO.update(menuDO);
+    }
+
+    @Override
+    public List<AppAdminMenuDO> queryByParentId(Long parentId) {
+        if(null != parentId){
+            return menuDAO.queryByParentId(parentId);
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean existsByTitleAndIdNot(String title, Long id) {
+        return menuDAO.existsByTitleAndIdNot(title, id);
+    }
+
+    @Override
+    public Long countByParentId(Long id) {
+        if (null == id){
+            return 0L;
+        }
+        return menuDAO.countByParentId(id);
+    }
+
+
+    private AppAdminMenuDO transformDTO(AppAdminMenuDTO menuDTO) {
+        AppAdminMenuDO menuDO = new AppAdminMenuDO();
+        menuDO.setId(menuDTO.getId());
+        menuDO.setTitle(menuDTO.getTitle());
+        menuDO.setIconStyle(menuDTO.getIconStyle());
+
+        menuDO.setLinkUri(menuDTO.getLinkUri());
+        menuDO.setSortId(menuDTO.getSortId());
+        menuDO.setReferenceTable(menuDTO.getReferenceTable());
+
+        Long parentId = menuDTO.getParentId();
+        menuDO.setParentId(parentId);
+
+        if (0L == parentId) {
+            menuDO.setType(AppAdminMenuType.PARENT);
+        } else {
+            menuDO.setType(AppAdminMenuType.CHILD);
+        }
+
+        return menuDO;
     }
 
 }

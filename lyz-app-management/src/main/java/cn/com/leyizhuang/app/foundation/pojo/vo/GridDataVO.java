@@ -15,14 +15,20 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class TableDataVO<Data> implements Serializable {
+public class GridDataVO<Data> implements Serializable {
 
     private List<Data> rows;
     private Long total;
 
-    public TableDataVO<Data> transform(PageInfo<Data> pageInfo) {
+    public GridDataVO<Data> transform(PageInfo<Data> pageInfo) {
         this.setRows(pageInfo.getList());
         this.setTotal(pageInfo.getTotal());
+        return this;
+    }
+
+    public GridDataVO<Data> transform(List<Data> rows, Long total) {
+        this.setRows(rows);
+        this.setTotal(total);
         return this;
     }
 

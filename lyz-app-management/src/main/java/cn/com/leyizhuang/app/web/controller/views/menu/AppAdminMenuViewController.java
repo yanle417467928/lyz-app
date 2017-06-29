@@ -1,12 +1,17 @@
-package cn.com.leyizhuang.app.web.controller.views;
+package cn.com.leyizhuang.app.web.controller.views.menu;
 
 import cn.com.leyizhuang.app.core.constant.AppAdminMenuType;
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMenuService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author CrazyApeDX
@@ -22,9 +29,11 @@ import java.time.LocalDateTime;
  */
 @Controller
 @RequestMapping(value = AppAdminMenuViewController.PRE_URL, produces = "text/html;charset=utf-8")
-public class AppAdminMenuViewController {
+public class AppAdminMenuViewController extends BaseController {
 
     protected final static String PRE_URL = "/views/admin/menu";
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(AppAdminMenuViewController.class);
 
     @Autowired
     private AppAdminMenuService menuService;
@@ -35,7 +44,7 @@ public class AppAdminMenuViewController {
         size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
         PageInfo<AppAdminMenuDO> menuDOPage = menuService.loadTopMenu(page, size);
         map.addAttribute("menuDOPage", menuDOPage);
-        return "/views/menu_page";
+        return "/views/menu/menu_page";
     }
 
     /**
@@ -43,11 +52,14 @@ public class AppAdminMenuViewController {
      * @return
      */
     @GetMapping(value = "/add")
-    public String add(){
+    public String add(Model model){
+        List<AppAdminMenuDO> menuDOList = menuService.queryByParentId(0L);
+        List<AppAdminMenuVO> menuVOList = AppAdminMenuVO.transform(menuDOList);
+        model.addAttribute("menuVOList",menuVOList);
         return "/views/menu/menu_add";
     }
 
-    /**
+   /* *//**
      * 添加菜单方法，返回菜单列表页面
      * @param title 菜单标题
      * @param iconStyle 图标样式
@@ -58,7 +70,7 @@ public class AppAdminMenuViewController {
      * @param parentID  父节点ID
      * @param parentTitle   父节点标题
      * @return
-     */
+     *//*
     @PostMapping(value = "/add")
     public String addMenu(String title,String iconStyle,String linkUri,Integer sortId,String type,String referenceTable,Long parentID,String parentTitle){
     AppAdminMenuDO menuDO =  new AppAdminMenuDO();
@@ -75,16 +87,13 @@ public class AppAdminMenuViewController {
     menuDO.setLinkUri(linkUri);
     menuDO.setSortId(sortId);
     menuDO.setReferenceTable(referenceTable);
-    AppAdminMenuDO.ParentNode parent = new AppAdminMenuDO.ParentNode();
-    parent.setId(parentID);
-    parent.setTitle(parentTitle);
-    menuDO.setParent(parent);
+    menuDO.setParentId(parentID);
     if(null != type){
         menuDO.setType(Enum.valueOf(AppAdminMenuType.class,type));
     }
     menuService.add(menuDO);
     return "redirect:/views/admin/menu/page";
-    }
+    }*/
 
     /**
      * 根据ID查询菜单，返回修改页面
@@ -118,7 +127,7 @@ public class AppAdminMenuViewController {
      * @param parentID  父节点ID
      * @param parentTitle   父节点标题
      * @return
-     */
+     *//*
     @PostMapping(value = "/update")
     public String updateMenu(Long id,String title,String iconStyle,String linkUri,Integer sortId,String type,String referenceTable,Long parentID,String parentTitle){
         AppAdminMenuDO appAdminMenuDO = menuService.queryMenuById(id);
@@ -150,7 +159,7 @@ public class AppAdminMenuViewController {
 
         menuService.update(appAdminMenuDO);
         return "redirect:/views/admin/menu/page";
-    }
+    }*/
 
     /**
      * 查看菜单详情方法，返回详情页面
@@ -182,9 +191,28 @@ public class AppAdminMenuViewController {
     }
 
     @GetMapping(value = "/edit/{id}")
-    public String menuEdit(HttpServletRequest request, ModelMap map, @PathVariable(value = "id")Long id) {
-        AppAdminMenuDO menuDO = menuService.queryById(id);
-        map.addAttribute("menuDO", menuDO);
-        return "/views/menu_edit";
+    public String menuEdit(ModelMap map, @PathVariable(value = "id")Long id) {
+        if (!id.equals(0L)) {
+            AppAdminMenuDO menuDO = menuService.queryById(id);
+            if (null == menuDO) {
+                LOGGER.warn("跳转到修改菜单的页面失败，MenuDO(id = {}) == null", id);
+                error404();
+                return "/error/404";
+            } else {
+                map.addAttribute("menuDO", menuDO);
+            }
+        }
+
+        List<AppAdminMenuDO> menuDOList = menuService.queryByParentId(0L);
+        List<AppAdminMenuVO> menuVOList = AppAdminMenuVO.transform(menuDOList);
+
+        menuVOList = menuVOList
+                .stream().
+                        filter(menuVO -> !id.equals(menuVO.getId()))
+                .collect(Collectors.toList());
+
+        map.addAttribute("menuVOList", menuVOList);
+
+        return "/views/menu/menu_edit";
     }
 }

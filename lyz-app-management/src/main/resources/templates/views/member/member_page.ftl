@@ -33,7 +33,7 @@
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
                     <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 修改
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
                     <#--<button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
@@ -155,7 +155,7 @@
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/views/admin/member/select/{id}')
+            $grid.modify($('#dataGrid'), '/views/admin/member/select/{id}?parentMenuId=${(parentMenuId!'0')?c}')
         });
 
         /*$('#btn_delete').on('click', function() {

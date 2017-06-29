@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuListVO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMenuDTO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
 
@@ -16,13 +17,20 @@ import java.util.List;
 public interface AppAdminMenuService extends BaseService<AppAdminMenuDO>{
     PageInfo<AppAdminMenuDO> queryPage(Integer page, Integer size);
 
-    List<AppAdminMenuListVO> loadAdminMenuTree();
+    List<AppAdminMenuVO> loadAdminMenuTree();
 
     PageInfo<AppAdminMenuDO> loadTopMenu(Integer page, Integer size);
 
-    void add(AppAdminMenuDO appAdminMenuDO);
+    void add(AppAdminMenuDTO menuDTO);
 
     AppAdminMenuDO queryMenuById(Long id);
 
-    void update(AppAdminMenuDO appAdminMenuDO);
+    void update(AppAdminMenuDTO menuDTO);
+
+    List<AppAdminMenuDO> queryByParentId(Long parentId);
+
+    Boolean existsByTitleAndIdNot(String title, Long id);
+
+    Long countByParentId(Long id);
+
 }

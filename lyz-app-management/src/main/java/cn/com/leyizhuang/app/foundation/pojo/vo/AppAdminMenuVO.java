@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.vo;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminMenuType;
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,34 +17,40 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class AppAdminMenuListVO implements Serializable {
+public class AppAdminMenuVO implements Serializable {
 
     private Long id;
     private String title;
+    private AppAdminMenuType type;
     private String iconStyle;
     private String linkUri;
     private Long parentId;
+    private String parentTitle;
+    private String referenceTable;
     private Integer sortId;
-    private List<AppAdminMenuListVO> children;
+    private List<AppAdminMenuVO> children;
 
-    public final static AppAdminMenuListVO transform(AppAdminMenuDO menuDO) {
-        AppAdminMenuListVO menuVO;
+
+    public final static AppAdminMenuVO transform(AppAdminMenuDO menuDO) {
+        AppAdminMenuVO menuVO;
         if (null != menuDO) {
-        menuVO = new AppAdminMenuListVO();
+        menuVO = new AppAdminMenuVO();
         menuVO.setId(menuDO.getId());
         menuVO.setTitle(menuDO.getTitle());
         menuVO.setIconStyle(menuDO.getIconStyle());
         menuVO.setLinkUri(menuDO.getLinkUri());
-        menuVO.setParentId(menuDO.getParent().getId());
+        menuVO.setParentId(menuDO.getParentId());
+        menuVO.setType(menuDO.getType());
         menuVO.setSortId(menuDO.getSortId());
+        menuVO.setReferenceTable(menuDO.getReferenceTable());
         } else {
             menuVO = null;
         }
         return menuVO;
     }
 
-    public final static List<AppAdminMenuListVO> transform(List<AppAdminMenuDO> menuDOList) {
-        List<AppAdminMenuListVO> menuVOList = new ArrayList<>();
+    public final static List<AppAdminMenuVO> transform(List<AppAdminMenuDO> menuDOList) {
+        List<AppAdminMenuVO> menuVOList = new ArrayList<>();
         if (null != menuDOList) {
             menuDOList.forEach(menuDO -> menuVOList.add(transform(menuDO)));
         }

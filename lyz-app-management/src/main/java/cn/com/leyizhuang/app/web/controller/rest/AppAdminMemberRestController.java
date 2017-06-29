@@ -2,10 +2,9 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMemberDTO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.TableDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
-import cn.com.leyizhuang.app.foundation.service.impl.AppAdminMemberServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
@@ -39,14 +38,26 @@ public class AppAdminMemberRestController extends BaseRestController{
     @Autowired
     private AppAdminMemberAuthService memberAuthService;
 
+    /**
+     * 会员列表
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
     @GetMapping(value = "/page/grid")
-    public TableDataVO<MemberDO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
+    public GridDataVO<MemberDO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
         // 根据偏移量计算当前页数
         Integer page = (offset / size) + 1;
         PageInfo<MemberDO> memberDOPage = memberService.queryPage(page, size);
-        return new TableDataVO<MemberDO>().transform(memberDOPage);
+        return new GridDataVO<MemberDO>().transform(memberDOPage);
     }
 
+    /**
+     * 会员详情
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/{id}")
     public ResultDTO<AppAdminMemberDTO> restMemberIdGet(@PathVariable(value = "id")Long id) {
         MemberDO memberDO = memberService.queryById(id);
@@ -59,8 +70,12 @@ public class AppAdminMemberRestController extends BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, memberDTO);
         }
     }
-
-
+    /**
+     * 手机号码验证
+     * @param mobile
+     * @param id
+     * @return
+     */
     @PostMapping(value = "/validator/mobile/{id}")
     public ValidatorResultDTO employeeValidatorMobileByIdPost(@RequestParam String mobile,@PathVariable Long id) {
         Boolean result = Boolean.TRUE;
@@ -73,6 +88,11 @@ public class AppAdminMemberRestController extends BaseRestController{
         return new ValidatorResultDTO(!result);
     }
 
+    /**
+     * 手机号码验证
+     * @param mobile
+     * @return
+     */
     @PostMapping(value = "/validator/mobile")
     public ValidatorResultDTO employeeValidatorMobilePost(@RequestParam String mobile) {
         Boolean result = Boolean.TRUE;

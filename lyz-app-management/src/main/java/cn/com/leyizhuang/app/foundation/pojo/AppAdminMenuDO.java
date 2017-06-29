@@ -25,8 +25,13 @@ public class AppAdminMenuDO extends BaseDO {
     private String title;
     // 小图片样式
     private String iconStyle;
-    // 父节点信息
-    private ParentNode parent;
+
+    // 父节点id
+    private Long parentId;
+
+    //父节点名称
+    private String parentTitle;
+
     // 链接地址
     private String linkUri;
     // 排序号
@@ -36,15 +41,6 @@ public class AppAdminMenuDO extends BaseDO {
     // 相关数据表
     private String referenceTable;
 
-    @Getter
-    @Setter
-    @ToString
-    public static class ParentNode implements Serializable {
-        private static final long serialVersionUID = 5707669760932909419L;
-        // 节点ID
-        private Long id;
-        // 节点标题
-        private String title;
 
-    }
+
 }

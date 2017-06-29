@@ -22,7 +22,7 @@
 </head>
 <body>
 <section class="content-header">
-    <h1>修改会员信息</h1>
+    <h1>编辑会员信息</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
