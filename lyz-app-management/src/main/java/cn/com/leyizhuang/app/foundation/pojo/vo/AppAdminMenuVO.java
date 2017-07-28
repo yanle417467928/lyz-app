@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * App后台菜单视图模型
+ *
  * @author Richard
  *         Created on 2017/5/6.
  */

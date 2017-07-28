@@ -35,10 +35,10 @@
     <insert id="add" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ADMIN_MENU (
             CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-            TITLE, ICON_STYLE, PARENT_ID,PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
-        ) VALUES (
+            TITLE, ICON_STYLE, PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+        ) VALUES(
             #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{title}, #{iconStyle}, #{parentId},#{parentTitle}, #{linkUri}, #{sortId},
+            #{title}, #{iconStyle}, #{parentId}, #{linkUri},#{sortId},
             #{type,
                 javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler

@@ -1,11 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.RegistryType;
+import cn.com.leyizhuang.app.core.constant.RegistrationType;
 import cn.com.leyizhuang.app.foundation.dao.AppAdminMemberDAO;
-import cn.com.leyizhuang.app.foundation.pojo.Manager;
-import cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO;
-import cn.com.leyizhuang.app.foundation.pojo.Store;
+import cn.com.leyizhuang.app.foundation.pojo.Member;
+import cn.com.leyizhuang.app.foundation.pojo.MemberAuth;
 import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMemberDTO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
@@ -13,7 +13,6 @@ import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import cn.com.leyizhuang.common.util.CryptologyUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,128 +29,167 @@ import java.util.List;
  *         Created on 2017-05-09 10:04
  **/
 @Service
-@Transactional
-public class AppAdminMemberServiceImpl extends BaseServiceImpl<MemberDO> implements AppAdminMemberService {
+public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implements AppAdminMemberService {
 
+    @Autowired
     private AppAdminMemberDAO memberDAO;
 
     @Autowired
     private AppAdminMemberAuthService memberAuthService;
-    @Autowired
+
     public AppAdminMemberServiceImpl(AppAdminMemberDAO memberDAO) {
         super(memberDAO);
         this.memberDAO = memberDAO;
     }
 
     @Override
-    public PageInfo<MemberDO> queryPage(Integer page, Integer size) {
+    public PageInfo<AppAdminMemberVO> queryMemberVOPage(Integer page, Integer size) {
         PageHelper.startPage(page,size);
-        List<MemberDO> memberDOList = memberDAO.queryList();
-        return new PageInfo<>(memberDOList);
+        List<AppAdminMemberVO> memberList = memberDAO.queryMemberVOPage();
+        return new PageInfo<>(memberList);
     }
 
-    @Override
-    public void saveMemberInfo(AppAdminMemberDTO memberDTO) {
-        MemberDO memberDO = new MemberDO();
-        try {
-           memberDO=transform(memberDTO);
-        } catch (ParseException e) {
-            throw new InvalidDataException("日期转换异常");
-        }
-        memberDO.setCreatorInfoByManager(0L);
-        memberDO.setEffectiveOrderCount(0);
-        memberDO.setEffectiveConsumption(0L);
-        memberDO.setLastLoginTime(new Date());
-        memberDO.setRegistryTime(new Date());
-        memberDO.setRegistryType(RegistryType.MANAGER);
-        memberDO.setHeadImageUri("/images/user2-160x160.jpg");
-        MemberAuthDO memberAuthDO = memberDO.getAuth();
-        memberAuthDO.setCreatorInfoByManager(0L);
-        memberAuthDO.setUsername("保密");
-        memberAuthDO.setPassword(CryptologyUtils.MD5Encrypt("123456"));
-
-        //存储member表信息
-        MemberDO returnMemberDO =  this.save(memberDO);
-        //将member表返回的主键id设置到member_auth表member_id字段中
-        memberAuthDO.setMemberId(returnMemberDO.getId());
-        //存储member_auth表信息
-        MemberAuthDO returnAuthDO = memberAuthService.save(memberDO.getAuth());
-    }
-
-    @Override
-    public void modifyMemberInfo(AppAdminMemberDTO memberDTO) {
-        if (null != memberDTO){
-            MemberDO memberDO = new MemberDO();
+    public void modifyMemberInfo(AppAdminMemberVO memberVO) {
+        if (null != memberVO){
+            Member member = new Member();
             try {
-                memberDO  = transform(memberDTO);
+                member  = transformMemberVoToMember(memberVO);
             } catch (ParseException e) {
                 throw new InvalidDataException("日期转换异常");
             }
-            memberDO.setModifierInfoByManager(0L);
-            //this.save(memberDO);
-            MemberAuthDO memberAuthDO = memberDO.getAuth();
-            memberAuthDO.setModifierInfoByManager(0L);
+            member.setModifierInfoByManager(0L);
+            MemberAuth memberAuth = new MemberAuth();
+            memberAuth.setModifierInfoByManager(0L);
+            MemberAuth oldMemberAuth = memberAuthService.queryByMemberId(member.getId());
+            memberAuth.setId(oldMemberAuth.getId());
+            memberAuth.setStatus(memberVO.getStatus());
+            memberAuth.setMobile(memberVO.getMobile());
             //更新member表信息
-            this.modify(memberDO);
+            this.modify(member);
             //更新member_auth表信息
-            MemberAuthDO oldMemberAuthDO = memberAuthService.queryByMemberId(memberDO.getId());
-            memberAuthDO.setId(oldMemberAuthDO.getId());
-            memberAuthService.modify(memberAuthDO);
+            memberAuthService.modify(memberAuth);
         }
     }
 
     @Override
-    public void updateUserAuth(MemberAuthDO memberAuthDO) {
-        if(null != memberAuthDO) {
-            memberDAO.updateUserAuth(memberAuthDO);
+    public void updateUserAuth(MemberAuth memberAuth) {
+        if(null != memberAuth) {
+            memberDAO.updateUserAuth(memberAuth);
         }
     }
 
     @Override
-    public MemberAuthDO queryAuthById(Long id) {
+    public MemberAuth queryAuthById(Long id) {
         if (null != id) {
          return memberDAO.queryAuthById(id);
         }
         return null;
     }
 
+    @Transactional
+    public void saveMemberInfo(AppAdminMemberVO memberVO) {
+        Member member = new Member();
+        try {
+            member=transformMemberVoToMember(memberVO);
+        } catch (ParseException e) {
+            throw new InvalidDataException("日期转换异常");
+        }
+        member.setCreatorInfoByManager(0L);
+        member.setEffectiveOrderCount(0);
+        member.setEffectiveConsumption(0L);
+        member.setLastLoginTime(new Date());
+        member.setRegistrationTime(new Date());
+        member.setRegistrationType(RegistrationType.MANAGER);
+        member.setHeadImageUri("/images/user2-160x160.jpg");
+        MemberAuth memberAuth = new MemberAuth();
+        memberAuth.setCreatorInfoByManager(0L);
+        memberAuth.setUsername("保密");
+        memberAuth.setPassword(CryptologyUtils.MD5Encrypt("123456"));
+        memberAuth.setMobile(memberVO.getMobile());
+        memberAuth.setStatus(memberVO.getStatus());
+        //存储member表信息
+        Member returnMemberDO =  this.save(member);
+        //将member表返回的主键id设置到member_auth表member_id字段中
+        memberAuth.setMemberId(returnMemberDO.getId());
+        //存储member_auth表信息
+        MemberAuth returnAuth = memberAuthService.save(memberAuth);
+    }
+
+    @Override
+    public AppAdminMemberVO queryMemberVOById(Long id) {
+        if (null != id){
+            return memberDAO.queryMemberVOById(id);
+        }
+        return null;
+    }
 
 
-    public static MemberDO transform(AppAdminMemberDTO memberDTO) throws ParseException {
-        MemberDO memberDO = new MemberDO();
-        if(null != memberDTO.getId()){
-            memberDO.setId(memberDTO.getId());
+   /* public static Member transform(AppAdminMemberVO memberVO) throws ParseException {
+        Member member = new Member();
+        if(null != memberVO.getId()){
+            member.setId(memberVO.getId());
         }
-        if(null != memberDTO.getCity()){
-            memberDO.setCity(memberDTO.getCity());
+       if (null != memberVO.getStore()){
+           member.setStoreId(memberVO.getStore());
         }
-        if (null != memberDTO.getStore()){
-            memberDO.setStore(new Store(0L,memberDTO.getStore(),"MD"));
+        if(null != memberVO.getSalesConsult()){
+            member.setConsultId(memberVO.getSalesConsult());
         }
-        if(null != memberDTO.getSeller()){
-            memberDO.setManager(new Manager(0L,memberDTO.getSeller(),"12345678910"));
+        if(null != memberVO.getIdentityType()){
+            member.setIdentityType(memberVO.getIdentityType());
         }
-        if(null != memberDTO.getIdentityType()){
-            memberDO.setIdentityType(memberDTO.getIdentityType());
+        if(null != memberVO.getName()){
+            member.setMemberName(memberVO.getName());
         }
-        if(null != memberDTO.getName()){
-            memberDO.setName(memberDTO.getName());
-        }
-        if(null != memberDTO.getBirthday()){
+        if(null != memberVO.getBirthday()){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            memberDO.setBirthday(sdf.parse(memberDTO.getBirthday()));
+            member.setBirthday(sdf.parse(memberVO.getBirthday()));
         }
-        if(null != memberDTO.getSex()){
-            memberDO.setSex(memberDTO.getSex());
+        if(null != memberVO.getSex()){
+            member.setSex(memberDTO.getSex());
         }
-        MemberAuthDO memberAuthDO = new MemberAuthDO();
+        MemberAuth memberAuth = new MemberAuth();
         if(null != memberDTO.getMobile()){
-            memberAuthDO.setMobile(memberDTO.getMobile());
+            memberAuth.setMobile(memberDTO.getMobile());
         }
         if(null != memberDTO.getStatus()){
-            memberAuthDO.setStatus(memberDTO.getStatus());
+            memberAuth.setStatus(memberDTO.getStatus());
         }
-        memberDO.setAuth(memberAuthDO);
+        //memberDO.setAuth(memberAuthDO);
         return memberDO;
+    }*/
+
+    public static Member transformMemberVoToMember(AppAdminMemberVO memberVO) throws ParseException {
+        Member member = new Member();
+        if(null != memberVO.getId()){
+            member.setId(memberVO.getId());
+        }
+        if (null != memberVO.getStore()){
+            member.setStoreId(memberVO.getStore());
+        }
+        if(null != memberVO.getSalesConsult()){
+            member.setConsultId(memberVO.getSalesConsult());
+        }
+        if(null != memberVO.getIdentityType()){
+            member.setIdentityType(memberVO.getIdentityType());
+        }
+        if(null != memberVO.getName()){
+            member.setMemberName(memberVO.getName());
+        }
+        if(null != memberVO.getBirthday()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            member.setBirthday(sdf.parse(memberVO.getBirthday()));
+        }
+        if(null != memberVO.getSex()){
+            member.setSex(memberVO.getSex());
+        }
+        MemberAuth memberAuth = new MemberAuth();
+        if(null != memberVO.getMobile()){
+            memberAuth.setMobile(memberVO.getMobile());
+        }
+        if(null != memberVO.getStatus()){
+            memberAuth.setStatus(memberVO.getStatus());
+        }
+        return member;
     }
 }

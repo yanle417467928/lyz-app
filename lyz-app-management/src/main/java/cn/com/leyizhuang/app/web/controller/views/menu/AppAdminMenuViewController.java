@@ -40,7 +40,7 @@ public class AppAdminMenuViewController extends BaseController {
 
     @GetMapping(value = "/page")
     public String menuList(HttpServletRequest request, ModelMap map, Integer page, Integer size) {
-        page = null == page ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
+        page = (null == page) ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
         size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
         PageInfo<AppAdminMenuDO> menuDOPage = menuService.loadTopMenu(page, size);
         map.addAttribute("menuDOPage", menuDOPage);
@@ -58,42 +58,6 @@ public class AppAdminMenuViewController extends BaseController {
         model.addAttribute("menuVOList",menuVOList);
         return "/views/menu/menu_add";
     }
-
-   /* *//**
-     * 添加菜单方法，返回菜单列表页面
-     * @param title 菜单标题
-     * @param iconStyle 图标样式
-     * @param linkUri   链接地址
-     * @param sortId    排序号
-     * @param type  菜单类型
-     * @param referenceTable    相关数据表
-     * @param parentID  父节点ID
-     * @param parentTitle   父节点标题
-     * @return
-     *//*
-    @PostMapping(value = "/add")
-    public String addMenu(String title,String iconStyle,String linkUri,Integer sortId,String type,String referenceTable,Long parentID,String parentTitle){
-    AppAdminMenuDO menuDO =  new AppAdminMenuDO();
-    menuDO.setCreatorId(0L);
-    menuDO.setCreatorType("MANAGER");
-    menuDO.setCreateTime(LocalDateTime.now());
-    menuDO.setModifierId(0L);
-    menuDO.setModifierType("MANAGER");
-    menuDO.setModifyTime(LocalDateTime.now());
-
-
-    menuDO.setTitle(title);
-    menuDO.setIconStyle(iconStyle);
-    menuDO.setLinkUri(linkUri);
-    menuDO.setSortId(sortId);
-    menuDO.setReferenceTable(referenceTable);
-    menuDO.setParentId(parentID);
-    if(null != type){
-        menuDO.setType(Enum.valueOf(AppAdminMenuType.class,type));
-    }
-    menuService.add(menuDO);
-    return "redirect:/views/admin/menu/page";
-    }*/
 
     /**
      * 根据ID查询菜单，返回修改页面
@@ -116,50 +80,6 @@ public class AppAdminMenuViewController extends BaseController {
         return "/views/menu/menu_update";
     }
 
-    /**
-     * 修改菜单信息方法，返回菜单列表
-     * @param title 菜单标题
-     * @param iconStyle 图标样式
-     * @param linkUri   链接地址
-     * @param sortId    排序号
-     * @param type  菜单类型
-     * @param referenceTable    相关数据表
-     * @param parentID  父节点ID
-     * @param parentTitle   父节点标题
-     * @return
-     *//*
-    @PostMapping(value = "/update")
-    public String updateMenu(Long id,String title,String iconStyle,String linkUri,Integer sortId,String type,String referenceTable,Long parentID,String parentTitle){
-        AppAdminMenuDO appAdminMenuDO = menuService.queryMenuById(id);
-        if (null != title){
-            appAdminMenuDO.setTitle(title);
-        }
-        if (null != iconStyle){
-            appAdminMenuDO.setIconStyle(iconStyle);
-        }
-        if (null != linkUri){
-            appAdminMenuDO.setLinkUri(linkUri);
-        }
-        if (null != sortId){
-            appAdminMenuDO.setSortId(sortId);
-        }
-        if (null != type){
-            appAdminMenuDO.setType(Enum.valueOf(AppAdminMenuType.class,type));
-        }
-        if (null != referenceTable){
-            appAdminMenuDO.setReferenceTable(referenceTable);
-        }
-        if (null != parentID){
-            appAdminMenuDO.getParent().setId(parentID);
-        }
-        if (null != parentTitle){
-            appAdminMenuDO.getParent().setTitle(parentTitle);
-        }
-        appAdminMenuDO.setModifyTime(LocalDateTime.now());
-
-        menuService.update(appAdminMenuDO);
-        return "redirect:/views/admin/menu/page";
-    }*/
 
     /**
      * 查看菜单详情方法，返回详情页面

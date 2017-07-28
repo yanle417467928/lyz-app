@@ -107,36 +107,6 @@ $(function() {
         },
         verbose: false,
         fields: {
-            number: {
-                message: '员工工号校验失败',
-                validators: {
-                    notEmpty: {
-                        message: '员工工号不能为空'
-                    },
-                    regexp: {
-                        regexp: /^[0-9a-zA-z]+$/,
-                        message: '员工工号只能输入字母或数字'
-                    },
-                    stringLength: {
-                        min: 4,
-                        max: 10,
-                        message: '员工工号的长度必须在4~10位之间'
-                    },
-                    threshold: 4,
-                    remote: {
-                        type: 'POST',
-                        url: '/rest/employee/validator/number',
-                        message: '员工工号已经存在',
-                        delay: 500,
-                        data: function() {
-                            return {
-                                number: $('#number').val(),
-                                id: $('#id').val()
-                            }
-                        }
-                    }
-                }
-            },
             name: {
                 message: '会员姓名校验失败',
                 validators: {
@@ -154,14 +124,6 @@ $(function() {
                     }
                 }
             },
-            city: {
-                message: '会员所在城市校验失败',
-                validators: {
-                    notEmpty: {
-                        message: '会员所在城市不能为空!'
-                    }
-                }
-            },
             store: {
                 message: '会员归属门店校验失败',
                 validators: {
@@ -170,7 +132,7 @@ $(function() {
                     }
                 }
             },
-            seller: {
+            salesConsult: {
                 message: '会员服务导购校验失败',
                 validators: {
                     notEmpty: {

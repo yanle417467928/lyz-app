@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppAdminMemberAuthDAO;
-import cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO;
+import cn.com.leyizhuang.app.foundation.pojo.MemberAuth;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import cn.com.leyizhuang.common.util.CryptologyUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  **/
 @Service
 @Transactional
-public class AppAdminMemberAuthServiceImpl extends BaseServiceImpl<MemberAuthDO> implements AppAdminMemberAuthService {
+public class AppAdminMemberAuthServiceImpl extends BaseServiceImpl<MemberAuth> implements AppAdminMemberAuthService {
 
     private AppAdminMemberAuthDAO memberAuthDAO;
     @Autowired
@@ -46,7 +45,7 @@ public class AppAdminMemberAuthServiceImpl extends BaseServiceImpl<MemberAuthDO>
     }
 
     @Override
-    public MemberAuthDO queryByMemberId(Long memberId) {
+    public MemberAuth queryByMemberId(Long memberId) {
         if(null != memberId){
             return memberAuthDAO.queryByMemberId(memberId);
         }

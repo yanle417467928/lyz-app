@@ -15,14 +15,14 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class MemberAuthDO extends BaseDO {
+public class MemberAuth extends BaseDO {
 
     private static final long serialVersionUID = 7068812928546792515L;
 
-    public MemberAuthDO() {
+    public MemberAuth() {
     }
 
-    public MemberAuthDO(Long memberId, String username, String password,
+    public MemberAuth(Long memberId, String username, String password,
                         String mobile, String email, Boolean status, Date disableEndTime) {
         this.memberId = memberId;
         this.username = username;

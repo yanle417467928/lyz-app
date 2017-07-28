@@ -7,7 +7,7 @@
         MEMBER_ID, USERNAME,PASSWORD, MODULE, EMAIL,DISABLE_END_TIME
     </sql>
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
         INSERT INTO MEMBER_AUTH (
             CREATOR_ID,
             CREATOR_TYPE,
@@ -47,7 +47,7 @@
                        MEMBER_ID != #{id});
     </select>
 
-    <select id="queryByMemberId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+    <select id="queryByMemberId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
         SELECT
             *
         FROM
@@ -56,7 +56,7 @@
             MEMBER_ID = #{memberId};
     </select>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
         UPDATE MEMBER_AUTH
         <set>
             <if test="null != password">
@@ -73,7 +73,7 @@
             </if>
         </set>
         WHERE
-        MEMBER_ID = #{memberId}
+         id = #{id}
     </update>
 
     <update id="modifyMemberPassword" >

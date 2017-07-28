@@ -1,50 +1,35 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 
+import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
  */
-public class Store {
+@Getter
+@Setter
+@ToString
+public class Store extends BaseDO{
 
-    private static final long serialVersionUID = 928068647093677455L;
+
+    private static final long serialVersionUID = 8159082443377417556L;
 
     public Store() {
         super();
     }
 
-    public Store(Long id, String name, String code) {
+    public Store( String storeName, String storeCode) {
         super();
-        this.id = id;
-        this.name = name;
-        this.code = code;
+
+        this.storeName = storeName;
+        this.storeCode = storeCode;
     }
 
-    private Long id;
-    private String name;
-    private String code;
+    private String storeName;
+    private String storeCode;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }

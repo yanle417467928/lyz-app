@@ -1,25 +1,27 @@
 package cn.com.leyizhuang.app.web.controller.views.member;
 
-import cn.com.leyizhuang.app.core.constant.AccountStatusEnum;
-import cn.com.leyizhuang.app.core.constant.IdentityTypeEnum;
-import cn.com.leyizhuang.app.core.constant.IdentityTypeEnum;
-import cn.com.leyizhuang.app.core.constant.RegistryType;
-import cn.com.leyizhuang.app.core.constant.SexEnum;
-import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.core.constant.AccountStatus;
+import cn.com.leyizhuang.app.core.constant.IdentityType;
+import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.foundation.pojo.Member;
+import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
+import cn.com.leyizhuang.app.foundation.pojo.Store;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
+import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
+import cn.com.leyizhuang.app.foundation.service.AppAdminStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,8 +36,24 @@ import java.util.List;
 public class AppAdminMemberViewController {
     protected final static String PRE_URL = "/views/admin/member";
 
-    @Autowired
+
     private AppAdminMemberService memberService;
+    @Autowired
+    public void setMemberService(AppAdminMemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    private AppAdminStoreService storeService;
+    @Autowired
+    public void setStoreService(AppAdminStoreService storeService) {
+        this.storeService = storeService;
+    }
+
+    private AppAdminSalesConsultService salesConsultService;
+    @Autowired
+    public void setSalesConsultService(AppAdminSalesConsultService salesConsultService) {
+        this.salesConsultService = salesConsultService;
+    }
 
     /**
      * 后台会员列表展示
@@ -50,13 +68,22 @@ public class AppAdminMemberViewController {
     public String memberList(HttpServletRequest request, ModelMap map, Integer page, Integer size,Long menuId) {
         page = null == page ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
         size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
-        PageInfo<MemberDO> memberDOPage = memberService.queryPage(page, size);
-        map.addAttribute("memberDOPage", memberDOPage);
+        //PageInfo<Member> memberDOPage = memberService.queryPage(page, size);
+        //map.addAttribute("memberDOPage", memberDOPage);
         return "/views/member/member_page";
     }
 
     @GetMapping(value = "/add")
-    public String memberAddPage() {
+    public String memberAddPage(Model model) {
+        List<Store> storeList;
+        storeList = storeService.findAll();
+        List<SalesConsult> consultList;
+        consultList = salesConsultService.findAll();
+        model.addAttribute("store_list",storeList);
+        model.addAttribute("sales_consult_list",consultList);
+        model.addAttribute("identityType_list", IdentityType.values());
+        model.addAttribute("sex_list", SexType.values());
+        model.addAttribute("account_status_list", AccountStatus.values());
         return "/views/member/member_add";
     }
 
@@ -66,26 +93,19 @@ public class AppAdminMemberViewController {
      * @param id 会员ID
      * @return 返回会员信息修改页面
      */
-    @RequestMapping(value = "/select/{id}")
+    @RequestMapping(value = "/edit/{id}")
     public String selectUser(Model model, @PathVariable Long id){
-        MemberDO member= memberService.queryById(id);
-
-
-        String [] sellerArray = new String[]{"杨平","刘申芳","李秀琳","程静","刘洁"};
-        String [] storeArray = new String []{"富之源","富之美","贝彩店","亿彩店","真彩店"};
-        String [] cityArray = new String []{"郑州分公司","成都分公司","重庆分公司","贵州分公司","太原分公司"};
-        List<String> sellerList = Arrays.asList(sellerArray);
-        List<String> storeList = Arrays.asList(storeArray);
-        List<String> cityList = Arrays.asList(cityArray);
-
-
-        model.addAttribute("seller_list",sellerList);
+        AppAdminMemberVO memberVO= memberService.queryMemberVOById(id);
+        List<Store> storeList = new ArrayList<>();
+        storeList = storeService.findAll();
+        List<SalesConsult> salesConsultList = new ArrayList<>();
+        salesConsultList = salesConsultService.findAll();
+        model.addAttribute("sales_consult_list",salesConsultList);
         model.addAttribute("store_list",storeList);
-        model.addAttribute("city_list",cityList);
-        model.addAttribute("identityType_list", IdentityTypeEnum.values());
-        model.addAttribute("sex_list", SexEnum.values());
-        model.addAttribute("account_status_list", AccountStatusEnum.values());
-        model.addAttribute("member",member);
+        model.addAttribute("identityType_list", IdentityType.values());
+        model.addAttribute("sex_list", SexType.values());
+        model.addAttribute("account_status_list", AccountStatus.values());
+        model.addAttribute("member",memberVO);
 
         return "views/member/member_edit";
     }

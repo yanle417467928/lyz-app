@@ -19,6 +19,51 @@
             -webkit-appearance: none;
         }
     </style>
+    <script type="text/javascript">
+        function changeStore(){
+            var storeId = $("#store").val();
+            $.ajax({
+                url: "/rest/member/change/store",
+                cache:false,
+                type: "post",
+                dataType: "json",
+                data: {"storeId": storeId},
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function(data) {
+                    $("#salesConsult").html("");
+                    $.each(data.sales_consult_list, function (i, val) {
+                        $("#salesConsult").append("<option value='" + val.id + "'>" + val.consultName + "</option>");
+                    });
+                    $("#salesConsult").selectpicker('refresh');
+                }
+            });
+        }
+        function changeSalesConsult() {
+            var consultId = $("#salesConsult").val();
+            $.ajax({
+                url: "/rest/member/change/consult",
+                cache:false,
+                type: "post",
+                dataType: "json",
+                data: {"consultId": consultId},
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function(data) {
+                    $("#store").html("");
+                    $.each(data.all_store_list, function (i, val) {
+                        if(val.id == data.storeId){
+                            $("#store").append("<option value='" + val.id + "' selected >" + val.storeName + "</option>");
+                        }else{
+                            $("#store").append("<option value='" + val.id + "'>" + val.storeName + "</option>");
+                        }
+
+                    });
+                    $("#store").selectpicker('refresh');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <section class="content-header">
@@ -27,13 +72,13 @@
 <section class="content">
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
-            <#if member?? && member.id?? ><li><a href="#tab_1-2" data-toggle="tab">账户安全</a></li></#if>
+        <#if member?? && member.id?? >
+            <li><a href="#tab_1-2" data-toggle="tab">账户安全</a></li></#if>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
-                    <form id="member_edit" action="/views/admin/member/update" method="post">
+                <form id="member_edit" action="/views/admin/member/update" method="post">
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="user-panel">
@@ -52,27 +97,39 @@
                         </div>
                     </div>
                     <div class="row">
+                    <#-- <div class="col-md-6 col-xs-12">
+                         <div class="form-group">
+                             <label>城市</label>
+                             <select class="form-control select" name="city" data-live-search="true" >
+                                 <#if city_list??>
+                                     <#list city_list as item>
+                                         <option <#if item == member.city > selected</#if>>${item}</option>
+                                     </#list>
+                                 </#if>
+                             </select>
+                         </div>
+                     </div>-->
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>城市</label>
-                                <select class="form-control select" name="city" data-live-search="true" >
-                                    <#if city_list??>
-                                        <#list city_list as item>
-                                            <option <#if item == member.city > selected</#if>>${item}</option>
-                                        </#list>
-                                    </#if>
+                                <label>门店</label>
+                                <select class="form-control select" name="store" id="store" data-live-search="true" onchange="changeStore();">
+                                <#if store_list??>
+                                    <#list store_list as item>
+                                        <option value="${item.id}" <#if item ?? && member ?? && item.id == member.store > selected</#if>>${item.storeName}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>门店</label>
-                                <select class="form-control select" name="store" data-live-search="true">
-                                    <#if store_list??>
-                                        <#list store_list as item>
-                                            <option <#if item ==member.store.name > selected</#if>>${item}</option>
-                                        </#list>
-                                    </#if>
+                                <label>专属导购</label>
+                                <select class="form-control select" name="salesConsult" id="salesConsult" data-live-search="true" onchange="changeSalesConsult();">
+                                <#if sales_consult_list??>
+                                    <#list sales_consult_list as item>
+                                        <option value="${item.id}" <#if item.id == member.salesConsult > selected</#if>>${item.consultName}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
@@ -80,25 +137,27 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>专属导购</label>
-                                <select class="form-control select" name="seller" data-live-search="true" >
-                                    <#if seller_list??>
-                                        <#list seller_list as item>
-                                            <option <#if item == member.manager.name > selected</#if>>${item}</option>
-                                        </#list>
-                                    </#if>
+                                <label>会员性质</label>
+                                <select class="form-control select" name="identityType" data-live-search="true">
+                                <#if identityType_list??>
+                                    <#list identityType_list as item>
+                                        <option value="${item}" <#if item.getValue() == member.identityType.getValue() >
+                                                selected</#if>>${item.getValue()}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>会员性质</label>
-                                <select class="form-control select" name="identityType" data-live-search="true">
-                                    <#if identityType_list??>
-                                        <#list identityType_list as item>
-                                            <option value="${item}" <#if item.getValue() == member.identityType.getValue() > selected</#if>>${item.getValue()}</option>
-                                        </#list>
-                                    </#if>
+                                <label>性别</label>
+                                <select class="form-control select" name="sex" data-live-search="true">
+                                <#if sex_list ??>
+                                    <#list sex_list as item>
+                                        <option value="${item}" <#if item.getValue() == member.sex.getValue() >
+                                                selected</#if>>${item.getValue()}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
@@ -109,7 +168,8 @@
                                 <label for="name">会员姓名</label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="name" type="text" class="form-control" id="name" value="<#if member.name??>${member.name}</#if>">
+                                    <input name="name" type="text" class="form-control" id="name"
+                                           value="<#if member.name??>${member.name}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -118,45 +178,26 @@
                                 <label for="mobile">联系电话</label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="mobile" type="text" class="form-control" id="mobile" value="<#if member.auth.mobile??>${member.auth.mobile}</#if>">
+                                    <input name="mobile" type="text" class="form-control" id="mobile"
+                                           value="<#if member.mobile??>${member.mobile}</#if>">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label>性别</label>
-                                <select class="form-control select" name="sex" data-live-search="true">
-                                    <#if sex_list ??>
-                                        <#list sex_list as item>
-                                            <option value="${item}" <#if item.getValue() == member.sex.getValue() > selected</#if>>${item.getValue()}</option>
-                                        </#list>
-                                    </#if>
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="birthday">出生日期</label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="birthday" type="text" value="<#if member.birthday??>${member.birthday?string("yyyy-MM-dd")}</#if>" class="form-control datepicker"
+                                    <input name="birthday" type="text"
+                                           value="<#if member.birthday??>${member.birthday}</#if>"
+                                           class="form-control datepicker"
                                            id="birthday">
                                 </div>
                             </div>
                         </div>
-                        <#--<div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label for="email">企业邮箱</label>
-                                <div class="input-group">
-                                    <input name="email" type="text" class="form-control" id="email" value="<#if member.auth.email??>${member.auth.email} </#if>">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                </div>
-                            </div>
-                        </div>-->
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="row">
                                 <div class="col-md-6 col-xs-12">
@@ -164,11 +205,20 @@
                                         <label for="status">是否启用</label>
                                         <br>
                                         <input name="status" id="status" class="switch" type="checkbox"
-                                               <#if member.auth?? && member.auth.status?? && member.auth.status>checked</#if>>
+                                        <#if member.status?? && member.status>checked</#if>>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    <#--<div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label for="email">企业邮箱</label>
+                            <div class="input-group">
+                                <input name="email" type="text" class="form-control" id="email" value="<#if member.auth.email??>${member.auth.email} </#if>">
+                                <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                            </div>
+                        </div>
+                    </div>-->
                     </div>
                     <div class="row">
                         <div class="col-md-8 col-xs-12"></div>
@@ -241,7 +291,7 @@
     </div>
 </section>
 <script>
-    $(function() {
+    $(function () {
         if (!$global.validateMobile()) {
             $('.select').selectpicker();
         }

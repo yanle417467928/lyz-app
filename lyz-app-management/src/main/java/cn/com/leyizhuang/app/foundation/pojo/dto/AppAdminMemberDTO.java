@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.dto;
 
-import cn.com.leyizhuang.app.core.constant.IdentityTypeEnum;
-import cn.com.leyizhuang.app.core.constant.SexEnum;
-import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
+import cn.com.leyizhuang.app.core.constant.IdentityType;
+import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.foundation.pojo.Member;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,18 +29,22 @@ public class AppAdminMemberDTO {
     @Length(max = 10,message = "城市名称不能超过10个汉字")
     private String city;
 
-    @NotNull(message = "必须选择会员归属门店")
-    private String store;
+    private Long storeId;
 
+    @NotNull(message = "必须选择会员归属门店")
+    private String storeName;
+
+    private Long salesConsultId;
     @NotNull(message = "必须选择服务导购")
-    private String seller;
+    private String salesConsultName;
 
     @NotNull(message = "必须选择会员身份")
-    private IdentityTypeEnum identityType;
+    private IdentityType identityType;
 
     @NotNull(message = "会员姓名不能为空")
     @Length(min = 2,max = 10,message = "会员姓名的长度必须控制在2~10位")
-    private String name;
+    private String memberName;
+
     private String birthday;
 
     private String birthdayStr;
@@ -50,24 +54,20 @@ public class AppAdminMemberDTO {
     @NotNull(message = "'联系电话'不能为空")
     private String mobile;
 
-    private SexEnum sex;
+    private SexType sex;
     @NotNull(message = "会员状态不能为空")
     private Boolean status;
 
-    public static AppAdminMemberDTO transform(MemberDO memberDO) {
+    public static AppAdminMemberDTO transform(Member member) {
         AppAdminMemberDTO memberDTO = new AppAdminMemberDTO();
-        memberDTO.setId(memberDO.getId());
-        memberDTO.setCity(memberDO.getCity());
-        memberDTO.setStore(memberDO.getStore().getName());
-        memberDTO.setSeller(memberDO.getManager().getName());
-        memberDTO.setIdentityType(memberDO.getIdentityType());
-        memberDTO.setName(memberDO.getName());
-        memberDTO.setBirthday(memberDO.getBirthday().toString());
-        memberDTO.setMobile(memberDO.getAuth().getMobile());
-        memberDTO.setSex(memberDO.getSex());
-        memberDTO.setStatus(memberDO.getAuth().getStatus());
+        memberDTO.setId(member.getId());
+        memberDTO.setMemberName(member.getMemberName());
+        memberDTO.setIdentityType(member.getIdentityType());
+        memberDTO.setMemberName(member.getMemberName());
+        memberDTO.setBirthday(member.getBirthday().toString());
+        memberDTO.setSex(member.getSex());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        memberDTO.setBirthdayStr(sdf.format(memberDO.getBirthday()));
+        memberDTO.setBirthdayStr(sdf.format(member.getBirthday()));
         return memberDTO;
     }
 }

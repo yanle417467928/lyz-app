@@ -19,6 +19,51 @@
             -webkit-appearance: none;
         }
     </style>
+    <script type="text/javascript">
+        function changeStore(){
+            var storeId = $("#store").val();
+            $.ajax({
+                url: "/rest/member/change/store",
+                cache:false,
+                type: "post",
+                dataType: "json",
+                data: {"storeId": storeId},
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function(data) {
+                    $("#salesConsult").html("");
+                    $.each(data.sales_consult_list, function (i, val) {
+                        $("#salesConsult").append("<option value='" + val.id + "'>" + val.consultName + "</option>");
+                    });
+                    $("#salesConsult").selectpicker('refresh');
+                }
+            });
+        }
+        function changeSalesConsult() {
+            var consultId = $("#salesConsult").val();
+            $.ajax({
+                url: "/rest/member/change/consult",
+                cache:false,
+                type: "post",
+                dataType: "json",
+                data: {"consultId": consultId},
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                },
+                success: function(data) {
+                    $("#store").html("");
+                    $.each(data.all_store_list, function (i, val) {
+                        if(val.id == data.storeId){
+                            $("#store").append("<option value='" + val.id + "' selected >" + val.storeName + "</option>");
+                        }else{
+                            $("#store").append("<option value='" + val.id + "'>" + val.storeName + "</option>");
+                        }
+
+                    });
+                    $("#store").selectpicker('refresh');
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <section class="content-header">
@@ -59,32 +104,33 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>城市
+                                <label>门店
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="选择会员所在城市/分公司"></i>
+                                       data-content="选择会员所属门店"></i>
                                 </label>
-                                <select class="form-control select" name="city" id="city" data-live-search="true" >
-                                    <option disabled selected>请选择分公司</option>
-                                    <option>郑州分公司</option>
-                                    <option>成都分公司</option>
-                                    <option>重庆分公司</option>
-                                    <option>西安分公司</option>
-                                    <option>太原分公司</option>
+                                <select class="form-control select" name="store" id="store" data-live-search="true" onchange="changeStore();">
+                                    <option selected disabled>请选择会员的归属门店</option>
+                                    <#if store_list??>
+                                        <#list store_list as item>
+                                            <option value="${item.id}">${item.storeName}</option>
+                                        </#list>
+                                    </#if>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>门店
+                                <label>专属导购
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="选择会员所属门店"></i>
+                                       data-content="选择会员所属销售经理"></i>
                                 </label>
-                                <select class="form-control select" name="store" id="store" data-live-search="true">
-                                    <option disabled selected>请选择门店</option>
-                                    <option>富之源</option>
-                                    <option>富之美</option>
-                                    <option>润彩店</option>
-                                    <option>美丽店</option>
+                                <select class="form-control select" name="salesConsult" id="salesConsult" data-live-search="true" onchange="changeSalesConsult();">
+                                    <option selected disabled>请选择会员服务导购</option>
+                                    <#if sales_consult_list??>
+                                        <#list sales_consult_list as item>
+                                            <option value="${item.id}">${item.consultName}</option>
+                                        </#list>
+                                    </#if>
                                 </select>
                             </div>
                         </div>
@@ -92,30 +138,31 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>专属导购
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="选择会员所属销售经理"></i>
-                                </label>
-                                <select class="form-control select" name="seller" id="seller" data-live-search="true" >
-                                    <option disabled selected>请选择专属导购</option>
-                                    <option>杨平</option>
-                                    <option>刘申芳</option>
-                                    <option>李秀琳</option>
-                                    <option>程静</option>
-                                    <option>刘洁</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
                                 <label>会员性质
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="选择会员性质"></i>
                                 </label>
                                 <select class="form-control select" name="identityType" id="identityType" data-live-search="true">
-                                    <option disabled selected>请选择会员性质</option>
-                                    <option value="MEMBER">会员</option>
-                                    <option value="RETAIL">零售</option>
+                                    <#if identityType_list??>
+                                        <#list identityType_list as item>
+                                            <option value="${item}">${item.getValue()}</option>
+                                        </#list>
+                                    </#if>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label>性别
+                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                       data-content="选择会员性别（如不愿透露，可选“保密”）"></i>
+                                </label>
+                                <select class="form-control select" name="sex" id="sex" data-live-search="true" >
+                                    <#if sex_list ??>
+                                        <#list sex_list as item>
+                                            <option value="${item}">${item.getValue()}</option>
+                                        </#list>
+                                    </#if>
                                 </select>
                             </div>
                         </div>
@@ -149,20 +196,6 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>性别
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="选择会员性别（如不愿透露，可选“保密”）"></i>
-                                </label>
-                                <select class="form-control select" name="sex" id="sex" data-live-search="true" >
-                                   <#-- <option disabled selected>请选择性别</option>-->
-                                    <option selected value="MALE">男</option>
-                                    <option value="FEMALE">女</option>
-                                    <option value="SECRET">保密</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
                                 <label for="birthday">出生日期
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="填写会员生日（可不填）"></i>
@@ -174,43 +207,15 @@
                                 </div>
                             </div>
                         </div>
-                        <#--<div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label for="email">会员邮箱
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="填写会员邮箱（可不填）"></i>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="email" type="text" class="form-control" id="email" placeholder="会员邮箱地址">
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group">
+                                    <label for="status">是否启用</label>
+                                    <br>
+                                    <input name="status" id="status" class="switch" type="checkbox"
+                                           <#if !employeeDO?? || (employeeDO.status?? && employeeDO.status)>checked</#if>>
                                 </div>
                             </div>
-                        </div>-->
-                    </div>
-                    <div class="row">
-
-                        <div class="col-md-6 col-xs-12">
-                            <div class="row">
-                                <div class="col-md-6 col-xs-12">
-                                    <div class="form-group">
-                                        <label for="status">是否启用</label>
-                                        <br>
-                                        <input name="status" id="status" class="switch" type="checkbox"
-                                               <#if !employeeDO?? || (employeeDO.status?? && employeeDO.status)>checked</#if>>
-                                    </div>
-                                </div>
-                            </div>
-                           <#-- <div class="form-group">
-                                <label>账号状态
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="选择会员状态（默认启用）"></i>
-                                </label>
-                                <select class="form-control select" name="status" id="status" data-live-search="true" >
-                                    &lt;#&ndash;<option disabled selected>请选择账号状态</option>&ndash;&gt;
-                                    <option value="0" selected>启用</option>
-                                    <option value="1">停用</option>
-                                </select>
-                            </div>-->
                         </div>
                     </div>
                     <div class="row">

@@ -63,26 +63,26 @@
                     </span>
                     <span id="identityType" class="description"></span>
                     <ul id="memberAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
-                        <li class="list-group-item">
+                       <#-- <li class="list-group-item">
                             <b>所在城市</b> <a class="pull-right" id="city"></a>
+                        </li>-->
+                        <li class="list-group-item">
+                            <b>归属门店</b> <span class="pull-right" id="store"></span>
                         </li>
                         <li class="list-group-item">
-                            <b>归属门店</b> <a class="pull-right" id="store"></a>
+                            <b>服务导购</b> <span class="pull-right" id="salesConsult"></span>
                         </li>
                         <li class="list-group-item">
-                            <b>服务导购</b> <a class="pull-right" id="seller"></a>
+                            <b>联系电话</b> <span class="pull-right" id="mobile"></span>
                         </li>
                         <li class="list-group-item">
-                            <b>联系电话</b> <a class="pull-right" id="mobile"></a>
+                            <b>出生日期</b> <span class="pull-right" id="birthday"></span>
                         </li>
                         <li class="list-group-item">
-                            <b>出生日期</b> <a class="pull-right" id="birthday"></a>
+                            <b>性别</b> <span class="pull-right" id="sex"></span>
                         </li>
                         <li class="list-group-item">
-                            <b>性别</b> <a class="pull-right" id="sex"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>状态</b> <a class="pull-right" id="status"></a>
+                            <b>状态</b> <span class="pull-right" id="status"></span>
                         </li>
                     </ul>
                 </div>
@@ -122,25 +122,33 @@
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         },{
-            field: 'auth.mobile',
+            field: 'mobile',
             title: '电话',
-            align: 'center'
-        }, {
-            field: 'city',
-            title: '城市',
-            align: 'center'
-        }, {
-            field: 'store.name',
-            title: '门店名称',
-            align: 'center'
-            /*formatter: function(value, row) {
-                var id = row.id;
-                return '<a href="/view/member/info/' + id + '">' + value + '</a>';
-            }*/
-        }, {
-            field: 'auth.status',
-            title: '员工状态',
             align: 'center',
+            width: '20%'
+        }, {
+            field: 'storeName',
+            title: '门店',
+            align: 'center'
+        },{
+            field: 'salesConsultName',
+            title: '导购',
+            align: 'center'
+        }, {
+            field: 'identityType',
+            title: '会员身份',
+            align: 'center',
+            formatter: function(value) {
+                if ('MEMBER' === value) {
+                    return '<span class="label label-success">会员</span>';
+                } else {
+                    return '<span class="label label-danger">零售</span>';
+                }
+            }
+            },{
+                field: 'status',
+                title: '会员状态',
+                align: 'center',
                 formatter: function(value) {
                     if (true === value) {
                         return '<span class="label label-success">生效</span>';
@@ -148,14 +156,15 @@
                         return '<span class="label label-danger">失效</span>';
                     }
                 }
-            }]);
+            }
+        ]);
 
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/member/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/views/admin/member/select/{id}?parentMenuId=${(parentMenuId!'0')?c}')
+            $grid.modify($('#dataGrid'), '/views/admin/member/edit/{id}?parentMenuId=${(parentMenuId!'0')?c}')
         });
 
         /*$('#btn_delete').on('click', function() {
@@ -190,30 +199,25 @@
                                 } else{
                                     $('#identityType').html("<i class='fa fa-user'></i> 零售");
                                 }
-                                if(null === data.city){
-                                    data.city='-'
+                                if(null === data.storeName){
+                                    data.storeName='-'
                                 }
-                                $('#city').html(data.city);
+                                $('#store').html(data.storeName);
 
-                                if(null === data.store){
-                                    data.store='-'
+                                if(null === data.salesConsultName){
+                                    data.salesConsultName='-'
                                 }
-                                $('#store').html(data.store);
-
-                                if(null === data.seller){
-                                    data.city='-'
-                                }
-                                $('#seller').html(data.seller);
+                                $('#salesConsult').html(data.salesConsultName);
 
                                 if (null === data.mobile) {
                                     data.mobile = '-';
                                 }
                                 $('#mobile').html(data.mobile);
 
-                                if (null === data.birthdayStr) {
-                                    data.birthdayStr = '-';
+                                if (null === data.birthday) {
+                                    data.birthday = '-';
                                 }
-                                $('#birthday').html(data.birthdayStr);
+                                $('#birthday').html(data.birthday);
 
                                 if (null === data.sex) {
                                     data.sex = '保密';

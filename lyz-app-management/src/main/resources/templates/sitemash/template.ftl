@@ -35,6 +35,7 @@
 <body class="hold-transition skin-blue sidebar-mini">
 
     <#include "./modal.ftl">
+    <#include "./loading.ftl">
 
     <div class="wrapper">
 

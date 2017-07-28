@@ -13,13 +13,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class MemberLevelDO extends BaseDO {
+public class MemberLevel extends BaseDO {
 
     private static final long serialVersionUID = -5423603901188207188L;
 
-    public MemberLevelDO() {}
+    public MemberLevel() {}
 
-    public MemberLevelDO(String title, String iconUri, Integer rank) {
+    public MemberLevel(String title, String iconUri, Integer rank) {
         this.title = title;
         this.iconUri = iconUri;
         this.rank = rank;

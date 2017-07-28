@@ -2,9 +2,12 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMemberDTO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
+import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
+import cn.com.leyizhuang.app.foundation.service.AppAdminStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
@@ -17,7 +20,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * App后台管理会员列表数据控制器
@@ -28,46 +34,65 @@ import java.util.List;
 @RestController
 @RequestMapping(value = AppAdminMemberRestController.PRE_URL, produces = "application/json;charset=utf8")
 public class AppAdminMemberRestController extends BaseRestController{
-    protected final static String PRE_URL = "/rest/member";
+    public final static String PRE_URL = "/rest/member";
 
     private final Logger LOG = LoggerFactory.getLogger(AppAdminMemberRestController.class);
 
-    @Autowired
+
     private AppAdminMemberService memberService;
+    @Autowired
+    public void setMemberService(AppAdminMemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    private AppAdminMemberAuthService memberAuthService;
+    @Autowired
+    public void setMemberAuthService(AppAdminMemberAuthService memberAuthService) {
+        this.memberAuthService = memberAuthService;
+    }
+
+    private AppAdminSalesConsultService salesConsultService;
 
     @Autowired
-    private AppAdminMemberAuthService memberAuthService;
+    public void setSalesConsultService(AppAdminSalesConsultService salesConsultService) {
+        this.salesConsultService = salesConsultService;
+    }
+
+    private AppAdminStoreService storeService;
+
+    @Autowired
+    public void setStoreService(AppAdminStoreService storeService) {
+        this.storeService = storeService;
+    }
 
     /**
      * 会员列表
      * @param offset
      * @param size
      * @param keywords
-     * @return
+     * @return 会员列表
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<MemberDO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
+    public GridDataVO<AppAdminMemberVO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
         // 根据偏移量计算当前页数
         Integer page = (offset / size) + 1;
-        PageInfo<MemberDO> memberDOPage = memberService.queryPage(page, size);
-        return new GridDataVO<MemberDO>().transform(memberDOPage);
+        PageInfo<AppAdminMemberVO> memberPage = memberService.queryMemberVOPage(page, size);
+        return new GridDataVO<AppAdminMemberVO>().transform(memberPage);
     }
 
     /**
      * 会员详情
-     * @param id
-     * @return
+     * @param id 会员id
+     * @return MemberVO
      */
     @GetMapping(value = "/{id}")
-    public ResultDTO<AppAdminMemberDTO> restMemberIdGet(@PathVariable(value = "id")Long id) {
-        MemberDO memberDO = memberService.queryById(id);
-        if (null == memberDO) {
+    public ResultDTO<AppAdminMemberVO> restMemberIdGet(@PathVariable(value = "id")Long id) {
+        AppAdminMemberVO memberVO = memberService.queryMemberVOById(id);
+        if (null == memberVO) {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            //EmployeePageVO employeeVO = EmployeePageVO.transform(employeeDO);
-            AppAdminMemberDTO memberDTO = AppAdminMemberDTO.transform(memberDO);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, memberDTO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, memberVO);
         }
     }
     /**
@@ -78,7 +103,7 @@ public class AppAdminMemberRestController extends BaseRestController{
      */
     @PostMapping(value = "/validator/mobile/{id}")
     public ValidatorResultDTO employeeValidatorMobileByIdPost(@RequestParam String mobile,@PathVariable Long id) {
-        Boolean result = Boolean.TRUE;
+        Boolean result;
         if (null != id){
              result = memberAuthService.existsByMobileAndIdNot(mobile,id);
 
@@ -95,21 +120,21 @@ public class AppAdminMemberRestController extends BaseRestController{
      */
     @PostMapping(value = "/validator/mobile")
     public ValidatorResultDTO employeeValidatorMobilePost(@RequestParam String mobile) {
-        Boolean result = Boolean.TRUE;
+        Boolean result;
         result = memberAuthService.existsByMobile(mobile);
         return new ValidatorResultDTO(!result);
     }
 
     /**
      * 管理员新增会员
-     * @param memberDTO
-     * @param result
-     * @return
+     * @param memberVO 会员信息
+     * @param result 处理结果
+     * @return 处理结果
      */
     @PostMapping
-    public ResultDTO<String> restMemberIdPost(@Valid AppAdminMemberDTO memberDTO, BindingResult result) {
+    public ResultDTO<String> restMemberIdPost(@Valid AppAdminMemberVO memberVO, BindingResult result) {
         if (!result.hasErrors()) {
-            memberService.saveMemberInfo(memberDTO);
+            memberService.saveMemberInfo(memberVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }else {
             List<ObjectError> allErrors = result.getAllErrors();
@@ -121,14 +146,14 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 管理员修改会员信息
-     * @param memberDTO
+     * @param memberVO
      * @param result
      * @return
      */
     @PutMapping(value = "/{id}")
-    public ResultDTO<String> modifyMemberIdPut(@Valid AppAdminMemberDTO memberDTO, BindingResult result) {
+    public ResultDTO<String> modifyMemberIdPut(@Valid AppAdminMemberVO memberVO, BindingResult result) {
         if (!result.hasErrors()) {
-            memberService.modifyMemberInfo(memberDTO);
+            memberService.modifyMemberInfo(memberVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }else {
             List<ObjectError> allErrors = result.getAllErrors();
@@ -150,4 +175,40 @@ public class AppAdminMemberRestController extends BaseRestController{
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 
+    /**
+     * 新增会员页面改变门店触发的事件
+     * @param storeId 导购所属门店ID
+     * @return 异步请求的数据
+     */
+    @PostMapping(value = "/change/store")
+    public Map<String,Object> restMemberChangeStore(Long storeId) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<SalesConsult> salesConsultList = new ArrayList<>();
+        if (null != storeId){
+            salesConsultList = salesConsultService.findByStoreId(storeId);
+        }
+        map.put("code", 0);
+        map.put("sales_consult_list", salesConsultList);
+        return map;
+    }
+
+    /**
+     * 新增会员改变导购触发的事件
+     * @param consultId
+     * @return
+     */
+    @PostMapping(value = "/change/consult")
+    public Map<String,Object> restMemberChangeSalesConsult(Long consultId) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Store> allStoreList = new ArrayList<>();
+        if (null != consultId){
+            allStoreList = storeService.findAll();
+        }
+        SalesConsult consult = salesConsultService.findByConsultId(consultId);
+        Long storeId = consult.getAscriptionStoreId();
+        map.put("code", 0);
+        map.put("all_store_list", allStoreList);
+        map.put("storeId",storeId);
+        return map;
+    }
 }

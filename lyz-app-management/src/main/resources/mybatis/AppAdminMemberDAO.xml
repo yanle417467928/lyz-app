@@ -4,13 +4,10 @@
 
     <sql id="ALL_FIELDS">
         ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        CITY,STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,MANAGER_MOBILE,LEVEL_ID,
-        ROLE_ID,NAME,HEAD_IMAGE_URI,BIRTHDAY,SEX,EFFECTIVE_CONSUMPTION,EFFECTIVE_ORDER_COUNT,
-        LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
+        MEMBER_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, AUTH_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
+        EFFECTIVE_ORDER_COUNT, LAST_LOGIN_TIME, IS_LOGIN, REGISTRATION_TIME, REGISTRATION_TYPE, IDENTITY_TYPE,
     </sql>
-
-
-    <resultMap id="memberAllList" type="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+    <resultMap id="memberAllFields" type="cn.com.leyizhuang.app.foundation.pojo.Member">
         <id column="ID" property="id"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
@@ -18,120 +15,93 @@
         <result column="MODIFIER_ID" property="modifierId"/>
         <result column="MODIFIER_TYPE" property="modifierType"/>
         <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
-        <result column="REGISTRY_TIME" property="registryTime"/>
-        <result column="NAME" property="name"/>
-        <result column="HEAD_IMAGE_URI" property="headImageUri"/>
+        <result column="MEMBER_NAME" property="memberName"/>
+        <result column="SEX" property="sex"
+                javaType="cn.com.leyizhuang.app.core.constant.SexType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="BIRTHDAY" property="birthday"/>
+        <result column="STORE_ID" property="storeId"/>
+        <result column="CONSULT_ID" property="consultId"/>
+        <result column="AUTH_ID" property="authId"/>
+        <result column="HEAD_IMAGE_URI" property="headImageUri"/>
         <result column="EFFECTIVE_CONSUMPTION" property="effectiveConsumption"/>
         <result column="EFFECTIVE_ORDER_COUNT" property="effectiveOrderCount"/>
-        <result column="CITY" property="city"/>
-        <result column="SEX" property="sex"
-                javaType="cn.com.leyizhuang.app.core.constant.SexEnum"
-                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
-        <result column="REGISTRY_TYPE" property="registryType"
-                javaType="cn.com.leyizhuang.app.core.constant.RegistryType"
+        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
+        <result column="IS_LOGIN" property="isLogin"/>
+        <result column="REGISTRATION_TIME" property="registrationTime"/>
+        <result column="REGISTRATION_TYPE" property="registrationType"
+                javaType="cn.com.leyizhuang.app.core.constant.RegistrationType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="IDENTITY_TYPE" property="identityType"
-                javaType="cn.com.leyizhuang.app.core.constant.IdentityTypeEnum"
+                javaType="cn.com.leyizhuang.app.core.constant.IdentityType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
-        <association property="store" resultMap="storeResult"/>
-        <association property="manager" resultMap="managerResult"/>
-        <association property="auth" resultMap="memberAuth"/>
-        <association property="specProp" resultMap="memberSpecificProperty"/>
-        <association property="wallet" resultMap="memberWallet"/>
-        <!--<association column="LEVEL_ID" property="level"
-                     select="cn.com.leyizhuang.foundation.mapper.TdMemberLevelMapper.query"/>
-        <association column="ROLE_ID" property="role"
-                     select="cn.com.leyizhuang.foundation.mapper.TdMemberRoleMapper.query"/>-->
     </resultMap>
 
-    <resultMap id="memberAuth" type="cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO">
-        <result column="MEMBER_ID" property="memberId"/>
-        <result column="USER_NAME" property="username"/>
-        <result column="PASS_WORD" property="password"/>
-        <result column="MOBILE" property="mobile"/>
-        <result column="EMAIL" property="email"/>
-        <result column="STATUS" property="status"/>
-        <result column="DISABLE_END_TIME" property="disableEndTime"/>
-    </resultMap>
-
-    <resultMap id="memberLevel" type="cn.com.leyizhuang.app.foundation.pojo.MemberLevelDO">
-        <result column="TITLE" property="title"/>
-        <result column="ICON_URI" property="iconUri"/>
-        <result column="RANK" property="rank"/>
-    </resultMap>
-
-    <resultMap id="memberRole" type="cn.com.leyizhuang.app.foundation.pojo.MemberRoleDO">
-        <result column="TITLE" property="title"/>
-    </resultMap>
-
-    <resultMap id="memberSpecificProperty" type="cn.com.leyizhuang.app.foundation.pojo.MemberSpecificPropertyDO">
-        <result column="MEMBER_ID" property="memberId"/>
-        <result column="IS_LOGIN" property="isLogin"/>
-        <result column="LAST_VISIT_TIME" property="lastVisitTime"/>
-        <result column="LOGIN_SESSION" property="loginSession"/>
-        <result column="IS_CASH_ON_DELIVERY" property="isCashOnDelivery"/>
-    </resultMap>
-
-    <resultMap id="memberWallet" type="cn.com.leyizhuang.app.foundation.pojo.MemberWalletDO">
-        <result column="MEMBER_ID" property="memberId"/>
-        <result column="BALANCE" property="balance"/>
-        <result column="TREASURE" property="treasure"/>
-    </resultMap>
-
-    <resultMap id="storeResult" type="cn.com.leyizhuang.app.foundation.pojo.Store">
-        <result column="STORE_ID" property="id"/>
-        <result column="STORE_NAME" property="name"/>
-        <result column="STORE_CODE" property="code"/>
-    </resultMap>
-
-   <!-- <resultMap id="areaResult" type="cn.com.leyizhuang.app.foundation.pojo.Area">
-        <result column="AREA_ID" property="id"/>
-        <result column="AREA_NAME" property="name"/>
-        <result column="SOB_ID" property="sobId"/>
-    </resultMap>-->
-
-    <resultMap id="managerResult" type="cn.com.leyizhuang.app.foundation.pojo.Manager">
-        <result column="MANAGER_ID" property="id"/>
-        <result column="MANAGER_NAME" property="name"/>
-        <result column="MANAGER_MOBILE" property="mobile"/>
-    </resultMap>
-
-
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.Member" useGeneratedKeys="true"
+            keyColumn="ID" keyProperty="id">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-             select LAST_INSERT_ID()
+            select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO MEMBER (
-        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,CITY,
-        STORE_ID, STORE_NAME, STORE_CODE,MANAGER_ID, MANAGER_NAME,MANAGER_MOBILE,LEVEL_ID,
-        ROLE_ID,NAME,HEAD_IMAGE_URI,BIRTHDAY,SEX,EFFECTIVE_CONSUMPTION,EFFECTIVE_ORDER_COUNT,
-        LAST_LOGIN_TIME, REGISTRY_TIME, REGISTRY_TYPE, IDENTITY_TYPE
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        MEMBER_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
+        EFFECTIVE_ORDER_COUNT, LAST_LOGIN_TIME, IS_LOGIN, REGISTRATION_TIME, REGISTRATION_TYPE,IDENTITY_TYPE
         ) VALUES (
-            #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{city},#{store.id}, #{store.name}, #{store.code}, #{manager.id}, #{manager.name},
-            #{manager.mobile}, #{level.id}, #{role.id},#{name},#{headImageUri},#{birthday},
-            #{sex,
-                javaType=cn.com.leyizhuang.app.core.constant.SexEnum,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler
-            },
-            #{effectiveConsumption},
-            #{effectiveOrderCount},#{lastLoginTime}, #{registryTime},
-            #{registryType,
-                javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler
-            },
-            #{identityType,
-                javaType=cn.com.leyizhuang.app.core.constant.IdentityTypeEnum,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler
-            }
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},#{memberName},
+        #{sex,
+            javaType=cn.com.leyizhuang.app.core.constant.SexType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler
+        },
+        #{birthday}, #{storeId}, #{consultId},#{headImageUri}, #{effectiveConsumption},
+        #{effectiveOrderCount},#{lastLoginTime},#{isLogin},#{registrationTime},
+        #{registrationType,
+          javaType=cn.com.leyizhuang.app.core.constant.RegistrationType,
+          typeHandler=org.apache.ibatis.type.EnumTypeHandler
+         },
+        #{identityType,
+        javaType=cn.com.leyizhuang.app.core.constant.IdentityType,
+        typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
+    <select id="queryMemberVOPage" resultType="AppAdminMemberVO">
+        SELECT
+            m.ID            ID,
+            s.STORE_NAME    STORE_NAME,
+            sc.CONSULT_NAME SALES_CONSULT_NAME,
+            m.IDENTITY_TYPE IDENTITY_TYPE,
+            m.MEMBER_NAME   NAME,
+            m.BIRTHDAY      BIRTHDAY,
+            ma.MOBILE       MOBILE,
+            m.SEX           SEX,
+            ma.STATUS       STATUS
+        FROM member m LEFT JOIN store s ON m.STORE_ID = s.ID
+            LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
+            LEFT JOIN member_auth ma ON m.id = ma.MEMBER_ID
+    </select>
+    <select id="queryMemberVOById" resultType="AppAdminMemberVO">
+        SELECT
+            m.ID            ID,
+            m.STORE_ID      STORE,
+            m.CONSULT_ID    SALES_CONSULT,
+            s.STORE_NAME    STORE_NAME,
+            sc.CONSULT_NAME SALES_CONSULT_NAME,
+            m.IDENTITY_TYPE IDENTITY_TYPE,
+            m.MEMBER_NAME   NAME,
+            DATE_FORMAT(m.BIRTHDAY,'%Y-%m-%d') BIRTHDAY,
+            ma.MOBILE       MOBILE,
+            m.SEX           SEX,
+            ma.STATUS       STATUS
+        FROM member m LEFT JOIN store s ON m.STORE_ID = s.ID
+            LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
+            LEFT JOIN member_auth ma ON m.id = ma.MEMBER_ID
+        WHERE m.ID = #{id};
+    </select>
 
     <delete id="remove" parameterType="java.lang.Long">
-        DELETE FROM MEMBER WHERE ID = #{id}
+        DELETE FROM MEMBER
+        WHERE ID = #{id}
     </delete>
+
     <delete id="batchRemove">
         DELETE FROM MEMBER WHERE ID IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
@@ -139,25 +109,37 @@
         </foreach>
     </delete>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.Member">
         UPDATE MEMBER
         <set>
-            <if test="null != city">
-                CITY = #{city},
+            <if test="null != modifierId">
+                MODIFIER_ID = #{modifierId},
             </if>
-            <if test="null != name">
-                NAME = #{name},
+            <if test="null != modifierType">
+                MODIFIER_TYPE = #{modifierType},
             </if>
-            <if test="null != headImageUri">
-                HEAD_IMAGE_URI = #{headImageUri},
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+            <if test="null != memberName">
+                MEMBER_NAME = #{memberName},
+            </if>
+            <if test="null != sex">
+                SEX = #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.SexType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != birthday">
                 BIRTHDAY = #{birthday},
             </if>
-            <if test="null != sex">
-                SEX = #{sex,
-                javaType=cn.com.leyizhuang.app.core.constant.SexEnum,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            <if test="null != storeId">
+                STORE_ID = #{storeId},
+            </if>
+            <if test="null != consultId">
+                CONSULT_ID = #{consultId},
+            </if>
+            <if test="null != headImageUri">
+                HEAD_IMAGE_URI = #{headImageUri},
             </if>
             <if test="null != effectiveConsumption">
                 EFFECTIVE_CONSUMPTION = #{effectiveConsumption},
@@ -165,137 +147,42 @@
             <if test="null != effectiveOrderCount">
                 EFFECTIVE_ORDER_COUNT = #{effectiveOrderCount},
             </if>
-            <if test="null != store.id">
-                STORE_ID = #{store.id},
-            </if>
-            <if test="null != store.name">
-                STORE_NAME = #{store.name},
-            </if>
-            <if test="null != store.code">
-                STORE_CODE = #{store.code},
-            </if>
-            <if test="null != manager.id">
-                MANAGER_ID = #{manager.id},
-            </if>
-            <if test="null != manager.name">
-                MANAGER_NAME = #{manager.name},
-            </if>
-            <if test="null != manager.mobile">
-                MANAGER_MOBILE = #{manager.mobile},
-            </if>
-            <!--<if test="null != role.id">
-                ROLE_ID = #{role.id},
-            </if>
-            <if test="null != level.id">
-                LEVEL_ID = #{level.id},
-            </if>-->
             <if test="null != lastLoginTime">
                 LAST_LOGIN_TIME = #{lastLoginTime},
             </if>
-            <if test="null != registryTime">
-                REGISTRY_TIME = #{registryTime},
+            <if test="null != isLogin">
+                IS_LOGIN = #{isLogin},
             </if>
-            <if test="null != registryType">
-                REGISTRY_TYPE = #{registryType,
-                javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            <if test="null != registrationTime">
+                REGISTRATION_TIME = #{registrationTime},
             </if>
-            <if test="null != identityType">
-                IDENTITY_TYPE = #{identityType,
-                javaType=cn.com.leyizhuang.app.core.constant.IdentityTypeEnum,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-            </if>
-        </set>
-        WHERE ID = #{id}
-    </update>
-
-    <update id="modifyMember" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberDO">
-        UPDATE MEMBER
-        <set>
-            <if test="null != city">
-                CITY = #{city},
-            </if>
-            <if test="null != name">
-                NAME = #{name},
-            </if>
-            <if test="null != headImageUri">
-                HEAD_IMAGE_URI = #{headImageUri},
-            </if>
-            <if test="null != birthday">
-                BIRTHDAY = #{birthday},
-            </if>
-            <if test="null != sex">
-                SEX = #{sex,
-                javaType=cn.com.leyizhuang.app.core.constant.Sex,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-            </if>
-            <if test="null != effectiveConsumption">
-                EFFECTIVE_CONSUMPTION = #{effectiveConsumption},
-            </if>
-            <if test="null != effectiveOrderCount">
-                EFFECTIVE_ORDER_COUNT = #{effectiveOrderCount},
-            </if>
-
-
-            <if test="null != store.id">
-                STORE_ID = #{store.id},
-            </if>
-            <if test="null != store.name">
-                STORE_NAME = #{store.name},
-            </if>
-            <if test="null != store.code">
-                STORE_CODE = #{store.code},
-            </if>
-
-            <if test="null != manager.id">
-                MANAGER_ID = #{manager.id},
-            </if>
-            <if test="null != manager.name">
-                MANAGER_NAME = #{manager.name},
-            </if>
-            <if test="null != manager.mobile">
-                MANAGER_MOBILE = #{manager.mobile},
-            </if>
-            <if test="null != role.id">
-                ROLE_ID = #{role.id},
-            </if>
-            <if test="null != level.id">
-                LEVEL_ID = #{level.id},
-            </if>
-            <if test="null != lastLoginTime">
-                LAST_LOGIN_TIME = #{lastLoginTime},
-            </if>
-            <if test="null != registryTime">
-                REGISTRY_TIME = #{registryTime},
-            </if>
-            <if test="null != registryType">
-                REGISTRY_TYPE = #{registryType,
-                javaType=cn.com.leyizhuang.app.core.constant.RegistryType,
+            <if test="null != registrationType">
+                REGISTRATION_TYPE = #{registrationType,
+                javaType=cn.com.leyizhuang.app.core.constant.RegistrationType,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != identityType">
                 IDENTITY_TYPE = #{identityType,
                 javaType=cn.com.leyizhuang.app.core.constant.IdentityType,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler}
             </if>
         </set>
         WHERE ID = #{id}
     </update>
 
-
-
-    <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllList">
+    <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllFields">
         SELECT
-            m.*, auth.MOBILE MOBILE,
-            auth.EMAIL EMAIL,
+            m.*,
+            auth.MOBILE   MOBILE,
+            auth.EMAIL    EMAIL,
             auth.`STATUS` `STATUS`
         FROM
             MEMBER m
-        LEFT JOIN MEMBER_AUTH auth ON auth.MEMBER_ID = m.ID
+            LEFT JOIN MEMBER_AUTH auth ON auth.MEMBER_ID = m.ID
         WHERE
             m.ID = #{id};
     </select>
-    <select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
+    <!--<select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
         SELECT
         MEMBER_ID,
         USER_NAME,
@@ -307,12 +194,15 @@
         FROM  MEMBER_AUTH
         WHERE MEMBER_ID = #{id}
 
-    </select>
-    
-    <select id="queryList" resultMap="memberAllList">
-        SELECT m.*,ma.MOBILE,ma.STATUS
+    </select>-->
+
+    <select id="queryList" resultMap="memberAllFields">
+        SELECT
+            m.*,
+            ma.MOBILE,
+            ma.STATUS
         FROM member m LEFT JOIN member_auth ma
-        on m.id = ma.MEMBER_ID
+                ON m.id = ma.MEMBER_ID
     </select>
 
 

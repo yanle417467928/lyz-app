@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppAdminStoreInventoryDAO">
+
+    <sql id="ALL_FIELDS">
+        ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        STORE_ID, GOODS_ID, REAL_INVENTORY,SOLD_INVENTORY
+    </sql>
+
+    <resultMap id="storeInventoryResult" type="cn.com.leyizhuang.app.foundation.pojo.StoreInventory">
+        <id column="ID" property="id"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="STORE_ID" property="storeId"/>
+        <result column="GOODS_ID" property="goodsId"/>
+        <result column="REAL_INVENTORY" property="realInventory"/>
+        <result column="SOLD_INVENTORY" property="soldInventory"/>
+    </resultMap>
+
+    <select id="queryListVO" resultType="AppAdminStoreInventoryVO">
+        SELECT
+            inv.ID ID,
+            inv.STORE_ID STORE_ID,
+            s.STORE_NAME STORE_NAME,
+            inv.GOODS_ID GOODS_ID,
+            g.GOODS_NAME GOODS_NAME,
+            g.GOODS_CODE GOODS_CODE,
+            inv.REAL_INVENTORY REAL_INVENTORY,
+            inv.SOLD_INVENTORY SOLD_INVENTORY
+        FROM
+            store_inventory inv
+            LEFT JOIN store s ON inv.STORE_ID = s.ID
+            LEFT JOIN goods g ON inv.GOODS_ID = g.ID
+    </select>
+
+
+</mapper>

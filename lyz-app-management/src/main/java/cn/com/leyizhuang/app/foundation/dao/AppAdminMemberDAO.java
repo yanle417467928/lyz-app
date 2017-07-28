@@ -1,8 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.MemberAuthDO;
+import cn.com.leyizhuang.app.foundation.pojo.Member;
+import cn.com.leyizhuang.app.foundation.pojo.MemberAuth;
+import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
-import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
+
+import java.util.List;
+
 
 /**
  * App后台管理会员服务Dao层
@@ -10,8 +14,11 @@ import cn.com.leyizhuang.app.foundation.pojo.MemberDO;
  * @author Richard
  *         Created on 2017-05-09 10:11
  **/
-public interface AppAdminMemberDAO  extends BaseDAO<MemberDO>{
-    MemberDO modifyMember(MemberDO memberDO);
-    void updateUserAuth(MemberAuthDO memberAuthDO);
-    MemberAuthDO queryAuthById(Long id);
+public interface AppAdminMemberDAO  extends BaseDAO<Member>{
+    Member modifyMember(Member memberDO);
+    void updateUserAuth(MemberAuth memberAuth);
+    MemberAuth queryAuthById(Long id);
+    List<AppAdminMemberVO> queryMemberVOPage();
+
+    AppAdminMemberVO queryMemberVOById(Long id);
 }
