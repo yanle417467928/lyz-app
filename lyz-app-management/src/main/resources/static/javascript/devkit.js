@@ -131,6 +131,9 @@ var $grid = {
                         $global.timer = null;
                         if (0 === result.code) {
                             container.bootstrapTable('refresh');
+                            if(null !== result.message){
+                            $notify.success(result.message);
+                            }
                         } else {
                             $notify.danger(result.message);
                         }

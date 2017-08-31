@@ -13,6 +13,7 @@ public class SiteMeshFilter extends ConfigurableSiteMeshFilter {
     protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
         builder.addDecoratorPath("/*", "/sitemash/template")
                 .addExcludedPath("/sitemash/template")
-                .addExcludedPath("/login");
+                .addExcludedPath("/login")
+                .addExcludedPath("/druid/**");
     }
 }

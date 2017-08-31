@@ -14,7 +14,7 @@
     <#if selectedMenu??>
         <h1>${selectedMenu.title!'??'}</h1>
         <ol class="breadcrumb">
-            <li><a href="/view"><i class="fa fa-home"></i> 首页</a></li>
+            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
             <#if selectedMenu.parent??>
                 <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
             </#if>

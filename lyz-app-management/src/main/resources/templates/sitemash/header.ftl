@@ -2,7 +2,7 @@
 
     <a href="/" class="logo">
         <span class="logo-mini"><b>易</b></span>
-        <span class="logo-lg"><b>乐易装后台管理中心</b></span>
+        <span class="logo-lg"><b>电商运营管理平台</b></span>
     </a>
     <nav class="navbar navbar-static-top">
         <a href="javascript:void(0);" class="sidebar-toggle" data-toggle="offcanvas" role="button"></a>
@@ -12,7 +12,7 @@
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="/images/user2-160x160.jpg" class="user-image" alt="User Image">
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <span class="hidden-xs"><@shiro.principal property="name" /></span>
                     </a>
                     <ul class="dropdown-menu">
                         <li class="user-header">
@@ -40,7 +40,7 @@
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
                             </div>
                             <div class="pull-right">
-                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
                             </div>
                         </li>
                     </ul>
