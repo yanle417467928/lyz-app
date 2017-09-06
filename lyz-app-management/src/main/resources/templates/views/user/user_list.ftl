@@ -65,19 +65,19 @@
                             <b>序列号</b> <a class="pull-right" id="id"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>资源名称</b> <a class="pull-right" id="name"></a>
+                            <b>用户姓名</b> <a class="pull-right" id="name"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>资源描述</b> <a class="pull-right" id="description"></a>
+                            <b>登录名</b> <a class="pull-right" id="loginName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>资源路径</b> <a class="pull-right" id="url"></a>
+                            <b>性别</b> <a class="pull-right" id="sex"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>图标</b> <a class="pull-right" id="icon"></a>
+                            <b>年龄</b> <a class="pull-right" id="age"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>资源类型</b> <a class="pull-right" id="resourceType"></a>
+                            <b>用户类型</b> <a class="pull-right" id="userType"></a>
                         </li>
                         <li class="list-group-item">
                             <b>状态</b> <a class="pull-right" id="status"></a>
@@ -173,11 +173,11 @@
                 }
             }*/
             {
-                field: 'roleList',
+                field: 'rolesList',
                 align: 'center',
                 title: '角色',
                 sortable: true,
-                formatter : function(value, row, index) {
+                formatter : function(value, row) {
                     var roles = [];
                     for(var p in value) {
                         roles.push(value[p].name);
@@ -188,10 +188,10 @@
                 field: 'userType',
                 title: '用户类型',
                 formatter: function(value) {
-                    if (0 === value) {
+                    if (1 === value) {
                         return '<span class="label label-primary">管理员</span>'
                     } else {
-                        return '<span class="label label-success">用户</span>'
+                        return '<span class="label label-success">普通用户</span>'
                     }
                 },
                 align: 'center'
@@ -200,9 +200,9 @@
                 align: 'center',
                 title: '状态',
                 formatter: function(value) {
-                    if (true === value) {
+                    if (1 === value) {
                         return '<span class="label label-primary">正常</span>'
-                    } else if(false===value) {
+                    } else if(2===value) {
                         return '<span class="label label-danger">停用</span>'
                     }else{
                         return '<span class="label label-danger">-</span>'
@@ -212,7 +212,7 @@
         ]);
 
         $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
+            $grid.add('/views/admin/user/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
         $('#btn_edit').on('click', function() {
@@ -230,7 +230,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/resource/' + id,
+                        url: '/rest/user/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -244,7 +244,7 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html("资源详情");
+                                $('#menuTitle').html("用户详情");
 
                                 $('#id').html(data.id);
 
@@ -252,30 +252,34 @@
                                     data.name = '-';
                                 }
                                 $('#name').html(data.name);
-                                if (null === data.description) {
-                                    data.description = '-';
+                                if (null === data.loginName) {
+                                    data.loginName = '-';
                                 }
-                                $('#description').html(data.description);
+                                $('#loginName').html(data.loginName);
 
-                                if (null === data.url) {
-                                    data.url = '-';
+                                if (null === data.sex) {
+                                    data.sex = '-';
+                                }else if(data.sex ==="MALE"){
+                                    data.sex = '男';
+                                }else if(data.sex ==="FEMALE"){
+                                    data.sex = '女';
                                 }
-                                $('#url').html(data.url);
-                                if (null === data.icon) {
-                                    data.icon = '-';
+                                $('#sex').html(data.sex);
+                                if (null === data.age) {
+                                    data.age = '-';
                                 }
-                                $('#icon').html('<i class="' + data.icon + '"></i>');
+                                $('#age').html(data.age);
 
-                                if (data.resourceType===0) {
-                                    $('#resourceType').html("菜单");
-                                }else if(data.resourceType===1){
-                                    $('#resourceType').html("资源");
+                                if (data.userType===1) {
+                                    $('#userType').html("超级管理员");
+                                }else if(data.resourceType===2){
+                                    $('#userType').html("普通用户");
                                 }else{
-                                    $('#resourceType').html("-");
+                                    $('#userType').html("-");
                                 }
-                                if (true === data.status) {
+                                if (1 === data.status) {
                                     $('#status').html('<span class="label label-primary">正常</span>');
-                                } else if (false === data.status) {
+                                } else if (2 === data.status) {
                                     $('#status').html('<span class="label label-danger">停用</span>');
                                 } else {
                                     $('#status').html('-');

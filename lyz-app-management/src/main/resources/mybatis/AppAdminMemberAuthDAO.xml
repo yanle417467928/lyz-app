@@ -8,7 +8,7 @@
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
-        INSERT INTO MEMBER_AUTH (
+        INSERT INTO member_auth (
             CREATOR_ID,
             CREATOR_TYPE,
             CREATE_TIME,
@@ -57,7 +57,7 @@
     </select>
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
-        UPDATE MEMBER_AUTH
+        UPDATE member_auth
         <set>
             <if test="null != password">
                 PASSWORD = #{password},

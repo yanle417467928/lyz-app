@@ -51,8 +51,10 @@ public class RoleServiceImpl implements RoleService {
             List<Map<Long, String>> resourceList = roleDAO.selectResourceListByRoleId(roleId);
             if (resourceList != null) {
                 for (Map<Long, String> map : resourceList) {
-                    if (StringUtils.isNotBlank(map.get("url"))) {
-                        urlSet.add(map.get("url"));
+                    if (map != null && map.size() > 0) {
+                        if (StringUtils.isNotBlank(map.get("url"))) {
+                            urlSet.add(map.get("url"));
+                        }
                     }
                 }
             }
@@ -109,7 +111,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role queryById(Long id) {
-        if (null != id){
+        if (null != id) {
             return roleDAO.queryById(id);
         }
         return null;
@@ -117,7 +119,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(Role role) {
-        if(null != role.getId()){
+        if (null != role.getId()) {
             roleDAO.update(role);
         }
     }

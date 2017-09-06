@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.vo;
 
+import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.User;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class UserVO implements Serializable {
 
     private String password;
 
-    private Integer sex;
+    private SexType sex;
 
     private Integer age;
 

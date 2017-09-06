@@ -18,4 +18,8 @@ public interface UserService {
     PageInfo<User> queryPage(Integer page, Integer size);
 
     PageInfo<UserVO> queryPageVO(Integer page, Integer size);
+
+    User queryById(Long id);
+
+    void save(User user);
 }

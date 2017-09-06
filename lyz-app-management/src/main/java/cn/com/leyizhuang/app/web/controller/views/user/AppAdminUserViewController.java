@@ -42,10 +42,8 @@ public class AppAdminUserViewController extends BaseController{
      */
     @GetMapping(value = "/add")
     public String add(Model model){
-        logger.info("新增资源");
-        List<Resource> resourceList = resourceService.queryByPid(0L);
-        model.addAttribute("resourceList",resourceList);
-        return "/views/resource/resource_add";
+        logger.info("新增用户");
+        return "/views/user/user_add";
     }
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
