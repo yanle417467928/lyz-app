@@ -4,6 +4,7 @@ server:
   display-name: 乐易装APP后台管理中心
 
 
+
 spring:
   profiles:
     active: dev
@@ -35,6 +36,8 @@ spring:
       force: true
   application:
     name: lyz-app-management
+  jersey:
+    application-path:
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
@@ -89,7 +92,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://119.23.149.7:1111/eureka/
+      defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
 ---
 # 生产环境配置
 spring:
