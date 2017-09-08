@@ -43,7 +43,7 @@ public class User implements Serializable {
     //1：超级管理员 2：普通用户
     private Integer userType;
 
-    private Integer status;
+    private Boolean status;
 
     private Date createTime;
 

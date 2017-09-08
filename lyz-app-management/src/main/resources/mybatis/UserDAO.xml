@@ -10,7 +10,7 @@
         <result column="sex" property="sex" jdbcType="TINYINT"/>
         <result column="age" property="age" jdbcType="TINYINT"/>
         <result column="user_type" property="userType" jdbcType="TINYINT"/>
-        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="BIT"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="phone" property="phone" jdbcType="VARCHAR"/>
 
