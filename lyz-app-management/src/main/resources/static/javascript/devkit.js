@@ -236,3 +236,52 @@ var $loading = {
         }, 500);
     }
 };
+
+var $localDateTime = $localDateTime || {};
+$localDateTime.toString = function (value) {
+    return value.year + '-' +
+        value.monthValue + "-" +
+        value.dayOfMonth + " " +
+        value.hour + ":" +
+        value.minute + ":" +
+        value.second;
+};
+
+var $http = $http || {};
+$http.ajax = function(url, method, data, fun) {
+    if (null === $global.timer) {
+        $global.timer = setTimeout($loading.show, 2000);
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            traditional: true,
+            error: function() {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function(result) {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                fun(result);
+            }
+        })
+    }
+};
+$http.GET = function(url, data, fun) {
+    this.ajax(url, 'GET', data, fun);
+};
+$http.POST = function(url, data, fun) {
+    this.ajax(url, 'POST', data, fun);
+};
+$http.PUT = function(url, data, fun) {
+    data._method = 'PUT';
+    this.ajax(url, 'PUT', data, fun);
+};
+$http.DELETE = function(url, data, fun) {
+    data._method = 'DELETE';
+    this.ajax(url, 'DELETE', data, fun);
+};
