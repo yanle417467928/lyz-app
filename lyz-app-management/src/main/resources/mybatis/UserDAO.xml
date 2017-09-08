@@ -58,6 +58,13 @@
             </if>
         </where>
     </select>
+    <select id="queryById" parameterType="java.lang.Long" resultType="User">
+        select * from user where ID = #{id};
+    </select>
 
+    <insert id="save" parameterType="User">
+        INSERT INTO user( LOGIN_NAME,NAME,PASSWORD,SEX,AGE,PHONE,USER_TYPE,STATUS,CREATE_TIME)
+        VALUES (#{loginName}, #{name}, #{password}, #{sex}, #{age}, #{phone}, #{userType}, #{status}, #{createTime})
+    </insert>
 
 </mapper>

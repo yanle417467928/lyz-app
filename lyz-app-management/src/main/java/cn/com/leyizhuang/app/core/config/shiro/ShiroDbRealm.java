@@ -61,8 +61,8 @@ public class ShiroDbRealm extends AuthorizingRealm {
         }
         User user = list.get(0);
         //账号未启用
-        if (user.getStatus()==1){
-            return null;
+        if (user.getStatus()==2){
+            throw new DisabledAccountException("账号未启用");
         }
         //读取用户的角色和url
         Map<String,Set<String>> resourceMap = roleService.selectResourceMapByUserId(user.getId());

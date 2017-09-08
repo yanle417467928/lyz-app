@@ -37,6 +37,13 @@ public class AppAdminUserRestController extends BaseRestController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 管理员列表分页显示
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
     @GetMapping(value = "/page/grid")
     public GridDataVO<UserVO> dataUserPageGridGet(Integer offset, Integer size, String keywords) {
         // 根据偏移量计算当前页数
@@ -45,6 +52,38 @@ public class AppAdminUserRestController extends BaseRestController {
         PageInfo<UserVO> userPage = userService.queryPageVO(page, size);
         List<UserVO> userList = userPage.getList();
         return new GridDataVO<UserVO>().transform(userList,userPage.getTotal());
+    }
+
+    /**
+     * 查看管理员详情
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/{id}")
+    public ResultDTO<User> restUserIdGet(@PathVariable(value = "id") Long id) {
+        User user = userService.queryById(id);
+        if (null == user) {
+            logger.warn("查找用户详情失败：Resource(id = {}) == null", id);
+            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                    "指定数据不存在，请联系管理员", null);
+        } else {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,user);
+        }
+    }
+
+    @PostMapping
+    public ResultDTO<?> restUserPost(@Valid User user, BindingResult result) {
+        if(!result.hasErrors()){
+            user.setCreateTime(new Date());
+            userService.save(user);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+        }else{
+            return actFor400(result);
+        }
+    }
+
+    protected ResultDTO<?> actFor400(BindingResult result) {
+        return super.actFor400(result, "新增用户页面提交的数据有误");
     }
 
    /* @PostMapping
@@ -65,17 +104,7 @@ public class AppAdminUserRestController extends BaseRestController {
         return super.actFor400(result, "菜单编辑页面提交的数据有误");
     }
 
-    @GetMapping(value = "/{id}")
-    public ResultDTO<Resource> restResourceIdGet(@PathVariable(value = "id") Long id) {
-        Resource resource = resourceService.queryById(id);
-        if (null == resource) {
-            logger.warn("查找资源失败：Resource(id = {}) == null", id);
-            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
-                    "指定数据不存在，请联系管理员", null);
-        } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,resource);
-        }
-    }
+
 
     @PutMapping(value = "/{id}")
     public ResultDTO<?> restResourceIdPut(@Valid Resource resource, BindingResult result) {

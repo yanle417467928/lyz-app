@@ -4,7 +4,7 @@
 
     <sql id="ALL_FIELDS">
         ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        MEMBER_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, AUTH_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
+        member_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, AUTH_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
         EFFECTIVE_ORDER_COUNT, LAST_LOGIN_TIME, IS_LOGIN, REGISTRATION_TIME, REGISTRATION_TYPE, IDENTITY_TYPE,
     </sql>
     <resultMap id="memberAllFields" type="cn.com.leyizhuang.app.foundation.pojo.Member">
@@ -15,7 +15,7 @@
         <result column="MODIFIER_ID" property="modifierId"/>
         <result column="MODIFIER_TYPE" property="modifierType"/>
         <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="MEMBER_NAME" property="memberName"/>
+        <result column="member_NAME" property="memberName"/>
         <result column="SEX" property="sex"
                 javaType="cn.com.leyizhuang.app.core.constant.SexType"
                 typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
@@ -42,9 +42,9 @@
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO MEMBER (
+        INSERT INTO member (
         CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        MEMBER_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
+        member_NAME, SEX, BIRTHDAY, STORE_ID, CONSULT_ID, HEAD_IMAGE_URI, EFFECTIVE_CONSUMPTION,
         EFFECTIVE_ORDER_COUNT, LAST_LOGIN_TIME, IS_LOGIN, REGISTRATION_TIME, REGISTRATION_TYPE,IDENTITY_TYPE
         ) VALUES (
         #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},#{memberName},
@@ -69,14 +69,14 @@
             s.STORE_NAME    STORE_NAME,
             sc.CONSULT_NAME SALES_CONSULT_NAME,
             m.IDENTITY_TYPE IDENTITY_TYPE,
-            m.MEMBER_NAME   NAME,
+            m.member_NAME   NAME,
             m.BIRTHDAY      BIRTHDAY,
             ma.MOBILE       MOBILE,
             m.SEX           SEX,
             ma.STATUS       STATUS
         FROM member m LEFT JOIN store s ON m.STORE_ID = s.ID
             LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
-            LEFT JOIN member_auth ma ON m.id = ma.MEMBER_ID
+            LEFT JOIN member_auth ma ON m.id = ma.member_ID
     </select>
     <select id="queryMemberVOById" resultType="AppAdminMemberVO">
         SELECT
@@ -86,31 +86,31 @@
             s.STORE_NAME    STORE_NAME,
             sc.CONSULT_NAME SALES_CONSULT_NAME,
             m.IDENTITY_TYPE IDENTITY_TYPE,
-            m.MEMBER_NAME   NAME,
+            m.member_NAME   NAME,
             DATE_FORMAT(m.BIRTHDAY,'%Y-%m-%d') BIRTHDAY,
             ma.MOBILE       MOBILE,
             m.SEX           SEX,
             ma.STATUS       STATUS
         FROM member m LEFT JOIN store s ON m.STORE_ID = s.ID
             LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
-            LEFT JOIN member_auth ma ON m.id = ma.MEMBER_ID
+            LEFT JOIN member_auth ma ON m.id = ma.member_ID
         WHERE m.ID = #{id};
     </select>
 
     <delete id="remove" parameterType="java.lang.Long">
-        DELETE FROM MEMBER
+        DELETE FROM member
         WHERE ID = #{id}
     </delete>
 
     <delete id="batchRemove">
-        DELETE FROM MEMBER WHERE ID IN
+        DELETE FROM member WHERE ID IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.Member">
-        UPDATE MEMBER
+        UPDATE member
         <set>
             <if test="null != modifierId">
                 MODIFIER_ID = #{modifierId},
@@ -122,7 +122,7 @@
                 MODIFY_TIME = #{modifyTime},
             </if>
             <if test="null != memberName">
-                MEMBER_NAME = #{memberName},
+                member_NAME = #{memberName},
             </if>
             <if test="null != sex">
                 SEX = #{sex,
@@ -177,22 +177,22 @@
             auth.EMAIL    EMAIL,
             auth.`STATUS` `STATUS`
         FROM
-            MEMBER m
-            LEFT JOIN MEMBER_AUTH auth ON auth.MEMBER_ID = m.ID
+            member m
+            LEFT JOIN member_AUTH auth ON auth.member_ID = m.ID
         WHERE
             m.ID = #{id};
     </select>
     <!--<select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
         SELECT
-        MEMBER_ID,
+        member_ID,
         USER_NAME,
         PASSWORD,
         MOBILE,
         EMAIL,
         USABLE,
         UNUSABLE_END_TIME
-        FROM  MEMBER_AUTH
-        WHERE MEMBER_ID = #{id}
+        FROM  member_AUTH
+        WHERE member_ID = #{id}
 
     </select>-->
 
@@ -202,7 +202,7 @@
             ma.MOBILE,
             ma.STATUS
         FROM member m LEFT JOIN member_auth ma
-                ON m.id = ma.MEMBER_ID
+                ON m.id = ma.member_ID
     </select>
 
 

@@ -48,4 +48,19 @@ public class UserServiceImpl implements UserService {
         List<UserVO> userList = userDAO.queryListVO();
         return new PageInfo<>(userList);
     }
+
+    @Override
+    public User queryById(Long id) {
+        if(null != id){
+            return userDAO.queryById(id);
+        }
+        return null;
+    }
+
+    @Override
+    public void save(User user) {
+        if(null != user){
+            userDAO.save(user);
+        }
+    }
 }
