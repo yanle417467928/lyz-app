@@ -1,6 +1,7 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="http://trentrichardson.com/examples/timepicker/css/jquery-ui-timepicker-addon.css" rel="stylesheet" />
     <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
           rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
@@ -35,9 +36,15 @@
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
             <li><a href="#tab_1-2" data-toggle="tab">扩展选项</a></li>
         </ul>
-        <form id="employeeFrom" class="bv-form tab-content">
+        <form id="goodsFrom" class="bv-form tab-content">
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_1-1">
+                    <input type="hidden" name="id" id="id"
+                        <#if goodsVO?? && goodsVO.id??>
+                           value="${(goodsVO.id)?c}"
+                        <#else>
+                           value="0"
+                        </#if>/>
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
@@ -173,7 +180,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="onSaleTime" type="text" class="form-control datepicker"
+                                    <input name="onSaleTime" type="text" class="form-control datepicker ui_timepicker"
                                            value="${(goodsVO.onSaleTime)!''}"
                                            id="onSaleTime" placeholder="上架时间">
                                 </div>
@@ -304,4 +311,6 @@
 <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
 <script src="/javascript/goods_edit.js"></script>
+
+
 </body>

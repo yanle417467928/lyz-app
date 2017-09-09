@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
 
@@ -11,5 +12,7 @@ import com.github.pagehelper.PageInfo;
 public interface GoodsService extends BaseService<GoodsDO> {
 
     PageInfo<GoodsDO> queryPage(Integer page, Integer size);
+
+    GoodsDO managerSaveGoods(GoodsDTO goodsDTO);
 
 }

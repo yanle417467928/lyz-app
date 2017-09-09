@@ -67,4 +67,62 @@
         </foreach>
     </delete>
 
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+        UPDATE GOODS
+        <set>
+            <if test="null != modifierId">
+                MODIFIER_ID = #{modifierId},
+            </if>
+            <if test="null != modifierType">
+                MODIFIER_TYPE = #{modifierType},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+            <if test="null != goodsName">
+                GOODS_NAME = #{goodsName},
+            </if>
+            <if test="null != goodsCode">
+                GOODS_CODE = #{goodsCode},
+            </if>
+            <if test="null != title">
+                TITLE = #{title},
+            </if>
+            <if test="null != isGift">
+                IS_GIFT = #{isGift},
+            </if>
+            <if test="null != subTitle">
+                SUB_TITLE = #{subTitle},
+            </if>
+            <if test="null != coverImageUri">
+                COVER_IMAGE_URI = #{coverImageUri},
+            </if>
+            <if test="null != showPictures">
+                SHOW_PICTURES = #{showPictures},
+            </if>
+            <if test="null != isOnSale">
+                IS_ON_SALE = #{isOnSale},
+            </if>
+            <if test="null != categoryId">
+                CATEGORY_ID = #{categoryId},
+            </if>
+            <if test="null != leftNumber">
+                LEFT_NUMBER = #{leftNumber},
+            </if>
+            <if test="null != onSaleTime">
+                ONSALE_TIME = #{onSaleTime},
+            </if>
+            <if test="null != brandId">
+                BRAND_ID = #{brandId},
+            </if>
+            <if test="null != isColorPackage">
+                IS_COLOR_PACKAGE = #{isColorPackage},
+            </if>
+            <if test="null != isColorful">
+                IS_COLORFUL = #{isColorful},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
 </mapper>
