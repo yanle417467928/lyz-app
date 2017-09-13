@@ -31,11 +31,29 @@ public class GoodsViewController extends BaseController{
     @Autowired
     private GoodsService goodsServiceImpl;
 
+    /**
+     * @title 去商品信息列表页面
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/9
+     */
     @GetMapping(value = "/page")
     public String storePage(HttpServletRequest request, ModelMap map) {
         return "/views/goods/goods_page";
     }
 
+    /**
+     * @title   去编辑商品信息页面
+     * @descripe
+     * @param id
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/9
+     */
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {

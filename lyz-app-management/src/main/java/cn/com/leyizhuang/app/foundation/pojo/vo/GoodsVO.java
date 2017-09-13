@@ -63,7 +63,7 @@ public class GoodsVO implements Serializable {
     //销售价
     private Double salePrice;
     //库存数量
-    private Long leftNumber;
+    private String leftNumber;
     //商品价格单位
     private String priceUnit;
     //上架时间
@@ -136,7 +136,7 @@ public class GoodsVO implements Serializable {
             goodsVO.setItemBarcode(goodsDO.getItemBarcode());
             goodsVO.setItemTypeCode(goodsDO.getItemTypeCode());
             goodsVO.setItemTypeName(goodsDO.getItemTypeName());
-            goodsVO.setLeftNumber(goodsDO.getLeftNumber());
+            goodsVO.setLeftNumber(goodsDO.getLeftNumber() + "");
             goodsVO.setMarketPrice(goodsDO.getMarketPrice());
             if (null != goodsDO.getOnSaleTime()) {
                 String onSaleTime = goodsDO.getOnSaleTime()

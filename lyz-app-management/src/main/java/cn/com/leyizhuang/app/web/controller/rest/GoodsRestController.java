@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
+import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -11,8 +12,11 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +34,15 @@ public class GoodsRestController extends BaseRestController {
     @Autowired
     private GoodsService goodsServiceImpl;
 
+    /**
+     * @title 商品信息分页查询
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/8
+     */
     @GetMapping(value = "/page/grid")
     public GridDataVO<GoodsVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
         size = getSize(size);
@@ -41,6 +54,15 @@ public class GoodsRestController extends BaseRestController {
         return new GridDataVO<GoodsVO>().transform(goodsVOList,goodsDOPage.getTotal());
     }
 
+    /**
+     * @title   根据ID查询商品信息
+     * @descripe
+     * @param id
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/9
+     */
     @GetMapping(value = "/{id}")
     public ResultDTO<GoodsVO> restGoodsIdGet(@PathVariable(value = "id") Long id) {
         GoodsDO goodsDO = this.goodsServiceImpl.queryById(id);
@@ -54,10 +76,42 @@ public class GoodsRestController extends BaseRestController {
         }
     }
 
+    /**
+     * @title   根据ID删除商品
+     * @descripe
+     * @param ids
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/9
+     */
     @DeleteMapping
     public ResultDTO<?> restMenuDelete(Long[] ids) {
         this.goodsServiceImpl.batchRemove(Arrays.asList(ids));
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "资源已成功删除", null);
+    }
+
+    /**
+     * @title   编辑商品信息
+     * @descripe
+     * @param goodsDTO
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/9
+     */
+    @PutMapping(value = "/{id}")
+    public ResultDTO<String> restEmployeeIdPost(@Valid GoodsDTO goodsDTO, BindingResult result) {
+        if (!result.hasErrors()) {
+            this.goodsServiceImpl.managerSaveGoods(goodsDTO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
+            List<ObjectError> allErrors = result.getAllErrors();
+            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+            System.err.print(allErrors);
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    errorMsgToHtml(allErrors), null);
+        }
     }
 
 }

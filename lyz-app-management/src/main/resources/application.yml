@@ -1,6 +1,6 @@
 # 通用配置
 server:
-  port: 8088
+  port: 8089
   display-name: 乐易装APP后台管理中心
 
 
