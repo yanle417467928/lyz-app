@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.views;
+package cn.com.leyizhuang.app.web.controller.login;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroDbRealm;
 import cn.com.leyizhuang.app.core.utils.LoggerUtils;
@@ -12,7 +12,6 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

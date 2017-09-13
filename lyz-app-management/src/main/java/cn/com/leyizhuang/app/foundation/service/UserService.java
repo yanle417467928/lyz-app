@@ -22,4 +22,13 @@ public interface UserService {
     User queryById(Long id);
 
     void save(User user);
+
+    void delete(Long id);
+
+    void update(User user);
+
+    Boolean existsByLoginName(String loginName);
+
+
+
 }

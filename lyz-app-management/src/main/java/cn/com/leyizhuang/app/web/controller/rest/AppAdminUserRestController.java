@@ -1,30 +1,31 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
 import cn.com.leyizhuang.app.foundation.pojo.User;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
-import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Richard
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @RestController
 @RequestMapping(value = AppAdminUserRestController.PRE_URL, produces = "application/json;charset=utf8")
@@ -37,8 +38,12 @@ public class AppAdminUserRestController extends BaseRestController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CommonService commonService;
+
     /**
      * 管理员列表分页显示
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -51,11 +56,12 @@ public class AppAdminUserRestController extends BaseRestController {
         Integer page = (offset / size) + 1;
         PageInfo<UserVO> userPage = userService.queryPageVO(page, size);
         List<UserVO> userList = userPage.getList();
-        return new GridDataVO<UserVO>().transform(userList,userPage.getTotal());
+        return new GridDataVO<UserVO>().transform(userList, userPage.getTotal());
     }
 
     /**
      * 查看管理员详情
+     *
      * @param id
      * @return
      */
@@ -67,18 +73,27 @@ public class AppAdminUserRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,user);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, user);
         }
     }
 
     @PostMapping
-    public ResultDTO<?> restUserPost(@Valid User user, BindingResult result) {
-        if(!result.hasErrors()){
-            user.setCreateTime(new Date());
-            userService.save(user);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
-        }else{
-            return actFor400(result);
+    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]") String[] roleIdsStr, BindingResult result) {
+        if (!result.hasErrors()) {
+            userVO.setCreateTime(new Date());
+            Long[] roleIds = new Long[roleIdsStr.length];
+            for (int i = 0; i < roleIdsStr.length; i++) {
+                roleIds[i] = Long.parseLong(roleIdsStr[i]);
+            }
+            userVO.setRoleIds(roleIds);
+            userVO.setPassword(DigestUtils.md5DigestAsHex((null == userVO.getPassword() ? "123456" : userVO.getPassword()).getBytes(Charsets.UTF_8)));
+            commonService.saveUserAndUserRoleByUserVO(userVO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
+            List<ObjectError> allErrors = result.getAllErrors();
+            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    errorMsgToHtml(allErrors), null);
         }
     }
 
@@ -86,48 +101,18 @@ public class AppAdminUserRestController extends BaseRestController {
         return super.actFor400(result, "新增用户页面提交的数据有误");
     }
 
-   /* @PostMapping
-    public ResultDTO<?> restResourcePost(Resource resource, BindingResult result) {
-        if(!result.hasErrors()){
-            resource.setCreateTime(new Date());
-            if(resource.getPid() == null){
-                resource.setPid(0);
-            }
-            resourceService.save(resource);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
-        }else{
-            return actFor400(result);
-        }
-    }
-
-    protected ResultDTO<?> actFor400(BindingResult result) {
-        return super.actFor400(result, "菜单编辑页面提交的数据有误");
-    }
-
-
-
-    @PutMapping(value = "/{id}")
-    public ResultDTO<?> restResourceIdPut(@Valid Resource resource, BindingResult result) {
-        if (!result.hasErrors()) {
-            resourceService.update(resource);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        } else {
-            return actFor400(result);
-        }
-    }
-
     @DeleteMapping
-    public ResultDTO<?> dataResourceDelete(Long[] ids) {
+    public ResultDTO<?> dataUserDelete(Long[] ids) {
         try {
             for (Long id : ids) {
-                Long childrenNumber = resourceService.countByPId(id);
-                if (childrenNumber > 0L) {
-                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "资源id{"+id+"}下还有挂靠的子资源,不能删除！", null);
+                User user = userService.queryById(id);
+                if (user.getUserType() == 1) {
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户是超级管理员,不能删除！", null);
                 } else {
-                    this.resourceService.batchRemove(Arrays.asList(id));
+                    this.userService.delete(id);
                 }
             }
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "资源已成功删除", null);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "用户已成功删除", null);
         } catch (InvalidDataException e) {
             logger.error("批量删除资源数据发生错误");
             logger.error(e.getMessage());
@@ -139,8 +124,37 @@ public class AppAdminUserRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "出现未知错误，请稍后重试或联系管理员", null);
         }
-    }*/
+    }
 
+    @PutMapping(value = "/{id}")
+    public ResultDTO<?> restUserIdPut(@Valid User user, BindingResult result) {
+        if (!result.hasErrors()) {
+            if (null != user.getPassword()) {
+                user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(Charsets.UTF_8)));
+            }
+            userService.update(user);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
+            List<ObjectError> allErrors = result.getAllErrors();
+            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    errorMsgToHtml(allErrors), null);
+        }
+    }
+
+
+    /**
+     * 验证用户名是否已存在
+     *
+     * @param loginName
+     * @return
+     */
+    @PostMapping(value = "/loginName/check")
+    public ValidatorResultDTO userValidatorLoginNamePost(@RequestParam String loginName) {
+        Boolean result;
+        result = userService.existsByLoginName(loginName);
+        return new ValidatorResultDTO(!result);
+    }
 
 
 }

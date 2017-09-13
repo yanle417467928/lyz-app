@@ -11,13 +11,13 @@
 
 <section class="content-header">
 <#if selectedMenu??>
-    <h1>${selectedMenu.title!'??'}</h1>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
     <ol class="breadcrumb">
         <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-        <#if selectedMenu.parent??>
-            <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
         </#if>
-        <li class="active">${selectedMenu.title!'??'}</li>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
     <h1>加载中...</h1>
@@ -134,13 +134,15 @@
             align: 'center',
             title: '性别',
             formatter: function(value) {
-                if (0 === value) {
+                if ("MALE" === value) {
                     return '<span class="label label-success">男</span>'
-                } else {
+                } else if("FEMALE"==value) {
                     return '<span class="label label-danger">女</span>'
+                }else{
+                    return '<span class="label label-default">-</span>'
                 }
             },
-        },{
+        },/*{
             field: 'age',
             align: 'center',
             title: '年龄'
@@ -148,7 +150,7 @@
             field: 'phone',
             align: 'center',
             title: '电话'
-        },/*{
+        },*//*{
             field: 'resourceType',
             title: '资源类型',
             formatter: function(value) {
@@ -200,9 +202,9 @@
                 align: 'center',
                 title: '状态',
                 formatter: function(value) {
-                    if (1 === value) {
+                    if (true === value) {
                         return '<span class="label label-primary">正常</span>'
-                    } else if(2===value) {
+                    } else if(false === value) {
                         return '<span class="label label-danger">停用</span>'
                     }else{
                         return '<span class="label label-danger">-</span>'
@@ -216,11 +218,11 @@
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/views/admin/resource/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+            $grid.modify($('#dataGrid'), '/views/admin/user/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
         $('#btn_delete').on('click', function() {
-            $grid.remove($('#dataGrid'), '/rest/resource', 'delete');
+            $grid.remove($('#dataGrid'), '/rest/user', 'delete');
         });
     });
 

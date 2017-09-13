@@ -32,7 +32,6 @@ public class User implements Serializable {
     @Length(max = 20,min = 2,message = "姓名长度必须在2-20之间")
     private String name;
 
-    @Length(max = 20,min = 2,message = "密码长度必须在2-20之间")
     private String password;
 
     private SexType sex;

@@ -5,6 +5,9 @@
    <select id="selectRoleIdListByUserId" resultType="java.lang.Long">
       SELECT ROLE_ID FROM  user_role where USER_ID = #{userId};
    </select>
-
+   <insert id="save" parameterType="UserRole">
+           INSERT INTO user_role( USER_ID,ROLE_ID)
+           VALUES (#{userId}, #{roleId})
+   </insert>
 
 </mapper>

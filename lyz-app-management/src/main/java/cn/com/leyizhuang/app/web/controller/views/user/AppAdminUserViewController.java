@@ -1,7 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.views.user;
 
 import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.Role;
+import cn.com.leyizhuang.app.foundation.pojo.User;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.service.RoleService;
+import cn.com.leyizhuang.app.foundation.service.UserService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +33,10 @@ public class AppAdminUserViewController extends BaseController{
     private static final Logger logger = LoggerFactory.getLogger(AppAdminUserViewController.class);
 
     @Autowired
-    private ResourceService resourceService;
+    private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @GetMapping(value = "/list")
     public String userList() {
@@ -37,35 +44,36 @@ public class AppAdminUserViewController extends BaseController{
     }
 
     /**
-     * 新增资源页面跳转
+     * 跳转到新增用户页面
      * @return
      */
     @GetMapping(value = "/add")
     public String add(Model model){
         logger.info("新增用户");
+        List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
+        model.addAttribute("roleList",roleList);
         return "/views/user/user_add";
     }
+
+    /**
+     * 跳转到编辑用户页面
+     * @param map
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
-            Resource resource = resourceService.queryById(id);
-            if (null == resource) {
-                logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
+            User user = userService.queryById(id);
+            if (null == user) {
+                logger.warn("跳转用户编辑页面失败，User(id = {}) == null", id);
                 error404();
                 return "/error/404";
             } else {
-                map.addAttribute("resource",resource);
+                map.addAttribute("user",user);
             }
         }
-
-        List<Resource> resourceList = resourceService.queryByPid(0L);
-        resourceList = resourceList
-                .stream().
-                        filter(menuVO -> !id.equals(menuVO.getId()))
-                .collect(Collectors.toList());
-
-        map.addAttribute("resourceList", resourceList);
-        return "/views/resource/resource_edit";
+        return "/views/user/user_edit";
     }
 
 }

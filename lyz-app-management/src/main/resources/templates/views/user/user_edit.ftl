@@ -7,20 +7,15 @@
     <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
           rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
-
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
-    <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
     <script>
         $(function () {
-            $(".select2").select2();
             $('.btn-cancel').on('click', function () {
                 history.go(-1);
             });
@@ -52,7 +47,6 @@
                 fields: {
                     loginName: {
                         message: '登录名称校验失败',
-                        threshold: 5,
                         validators: {
                             notEmpty: {
                                 message: '登录名称不能为空'
@@ -64,20 +58,8 @@
                             stringLength: {
                                 min: 2,
                                 max: 20,
-                                message: '登录名称的长度必须在2~10位之间'
+                                message: '资源名称的长度必须在2~10位之间'
                             },
-                            remote: {
-                                type: 'POST',
-                                url: '/rest/user/loginName/check',
-                                message: '该用户名已被使用',
-                                delay: 500,
-                                data: function () {
-                                    return {
-                                        mobile: $('#loginName').val(),
-                                        // id: $('#id').val()
-                                    }
-                                }
-                            }
                         }
                     },
                     name: {
@@ -138,27 +120,19 @@
                 var data = {};
 
                 $.each(origin, function () {
-                    if(null != this.value && "" != this.value){
-                        data[this.name] = this.value;
-                    }
+                    data[this.name] = this.value;
                 });
-                var reslist=$("#role").select2("data");
-                var roleIds=[];
-                $.each(reslist,function() {
-                    roleIds.push(this.id);
-                });
-                data["roleIdsStr"] = roleIds;
 
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
 
-                    var url = '/rest/user';
+                    var url = '/rest/user/'+data.id;
 
                     data.headImageUri = $('#headImageUri').attr("src");
                     data.status = (undefined === data.status) ? false : data.status;
                     $.ajax({
                         url: url,
-                        method: 'POST',
+                        method: 'PUT',
                         data: data,
                         error: function () {
                             clearTimeout($global.timer);
@@ -192,7 +166,7 @@
 <body>
 
 <section class="content-header">
-    <h1>新增用户</h1>
+    <h1>编辑用户</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -202,18 +176,18 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="user_add">
+                    <input type="hidden" id="id" name="id" value="${user.id}"/>
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
                                     登录名称
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="只能输入中英文字符，长度在2~20之间"></i>
+                                       data-content="用户登录名不允许修改"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="loginName" type="text" class="form-control" id="loginName"
-                                           placeholder="登录名称">
+                                    <input name="loginName" type="text" class="form-control" id="loginName" placeholder="登录名称" value="${user.loginName}" readonly >
                                 </div>
                             </div>
                         </div>
@@ -227,7 +201,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="name" type="text" class="form-control" id="name"
-                                           placeholder="用户姓名">
+                                           placeholder="用户姓名" value="${user.name}">
                                 </div>
                             </div>
                         </div>
@@ -239,9 +213,9 @@
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="选择用户性别（如不愿透露，可选“保密”）"></i>
                                 </label>
-                                <select class="form-control select" name="sex" id="sex" data-live-search="true">
-                                    <option value="MALE">男</option>
-                                    <option value="FEMALE">女</option>
+                                <select class="form-control select" name="sex" id="sex" data-live-search="true" >
+                                    <option value="MALE" <#if user?? && user.sex?? && user.sex=="MALE" > selected</#if>>男</option>
+                                    <option value="FEMALE" <#if user?? && user.sex?? && user.sex=="FEMALE" > selected</#if>>女</option>
                                 </select>
                             </div>
                         </div>
@@ -254,8 +228,8 @@
                                 </label>
                                 <select id="userType" name="userType" class="form-control select"
                                         data-live-search="true">
-                                    <option value=2>普通用户</option>
-                                    <option value=1>超级管理员</option>
+                                    <option value=2  <#if user?? && user.userType?? && user.userType==2 > selected</#if>>普通用户</option>
+                                    <option value=1 <#if user?? && user.userType?? && user.userType==1 > selected</#if>>超级管理员</option>
                                 </select>
                             </div>
                         </div>
@@ -270,49 +244,16 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="password" type="text" class="form-control" id="password"
-                                           placeholder="用户密码">
+                                    <input name="password" type="text" class="form-control" id="password" placeholder="填写新密码；如不修改，请不填">
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 col-xs-12">
-                                <div class="form-group">
-                                    <label for="role">用户角色</label>
-                                    <select class="form-control select2" multiple="multiple"
-                                            data-placeholder="请为用户分配角色" style="width: 100%;" id="role" name="role">
-                                    <#if roleList??>
-                                        <#list roleList as item>
-                                            <option value="${item.id}" >${item.name}</option>
-                                        </#list>
-                                    </#if>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <#--<div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label for="type">
-                                    用户密码
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="请填写用户密码，如不填，默认123456"></i>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="password" type="text" class="form-control" id="password"
-                                           placeholder="用户密码">
-                                </div>
-                            </div>
-                        </div>-->
                         <div class="row">
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group">
                                     <label for="status">是否启用</label>
                                     <br>
-                                    <input name="status" class="switch" id="status" type="checkbox" checked
-                                           data-on-text="启用" data-off-text="停用"/>
+                                    <input name="status" class="switch" id="status" type="checkbox"  data-on-text="启用" data-off-text="停用"<#if user?? && user.status?? && user.status==true > checked </#if> />
                                 </div>
                             </div>
                         </div>

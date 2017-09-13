@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.Resource;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +33,8 @@ public interface RoleDAO {
     Role queryById(Long id);
 
     void update(Role role);
+
+    List<Role> findByStatus(@Param(value = "status") Boolean status);
+
+    List<Resource> selectResourceListByRoleIdList(List<Long> roleIdList);
 }

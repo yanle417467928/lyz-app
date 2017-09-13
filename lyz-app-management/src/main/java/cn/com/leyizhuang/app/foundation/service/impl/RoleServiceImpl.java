@@ -7,11 +7,14 @@ import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.RoleResource;
 import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
+import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.service.RoleResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -39,7 +42,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Autowired
-    private RoleResourceDAO roleResourceDAO;
+    private RoleResourceService roleResourceService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Override
     public Map<String, Set<String>> selectResourceMapByUserId(Long userId) {
@@ -83,16 +89,26 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional
     public void updateRoleResource(Long id, String[] resourceIds) {
         RoleResource roleResource = new RoleResource();
-        roleResource.setRoleId(id);
-        roleResourceDAO.deleteByRoleId(id);
+
+        List<Long> parentIdList =resourceService.queryParentIdsByIds(resourceIds);
+        roleResourceService.deleteByRoleId(id);
         for (String resourceId : resourceIds) {
             if (Long.parseLong(resourceId) > 0) {
                 roleResource = new RoleResource();
                 roleResource.setRoleId(id);
                 roleResource.setResourceId(Long.parseLong(resourceId));
-                roleResourceDAO.save(roleResource);
+                roleResourceService.save(roleResource);
+            }
+        }
+        for (Long resourceId : parentIdList) {
+            if (resourceId > 0) {
+                roleResource = new RoleResource();
+                roleResource.setRoleId(id);
+                roleResource.setResourceId(resourceId);
+                roleResourceService.save(roleResource);
             }
         }
     }
@@ -122,5 +138,13 @@ public class RoleServiceImpl implements RoleService {
         if (null != role.getId()) {
             roleDAO.update(role);
         }
+    }
+
+    @Override
+    public List<Role> findByStatus(Boolean status) {
+        if(null != status){
+            return roleDAO.findByStatus(status);
+        }
+        return null;
     }
 }

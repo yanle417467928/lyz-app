@@ -30,7 +30,7 @@ public class Resource implements Serializable {
     @NotNull(message = "资源图标不允许为空！")
     private String icon;
 
-    private Integer pid;
+    private Long pid;
 
     private Integer seq;
     private Boolean status;

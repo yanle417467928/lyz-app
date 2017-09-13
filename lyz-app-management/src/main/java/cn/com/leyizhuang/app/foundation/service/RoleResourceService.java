@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.RoleResource;
+
 import java.util.Set;
 
 /**
@@ -8,4 +10,8 @@ import java.util.Set;
  **/
 public interface RoleResourceService {
     Set<Long> findResouceIdSetByRoleId(Long roleId);
+
+    void deleteByRoleId(Long id);
+
+    void save(RoleResource roleResource);
 }

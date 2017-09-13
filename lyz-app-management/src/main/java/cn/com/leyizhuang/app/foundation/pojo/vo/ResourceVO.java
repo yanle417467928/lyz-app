@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 权限页面VO
@@ -42,6 +43,8 @@ public class ResourceVO {
     //资源类型
     @NotNull(message = "资源类型不允许为空！")
     private Integer resourceType;//0 :菜单，1:按钮
+
+    private List<ResourceVO> children;
 
 
 }

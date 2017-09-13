@@ -1,6 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
+import cn.com.leyizhuang.app.foundation.pojo.UserRole;
+import cn.com.leyizhuang.app.foundation.service.UserRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 用户-角色对应表API实现
@@ -9,5 +15,16 @@ import org.springframework.stereotype.Service;
  * Created on 2017-07-28 15:15
  **/
 @Service
-public class UserRoleServiceImpl {
+public class UserRoleServiceImpl  implements UserRoleService{
+
+    @Autowired
+    private UserRoleDAO userRoleDAO;
+
+    @Override
+    @Transactional
+    public void save(UserRole userRole) {
+        if(null != userRole){
+            userRoleDAO.save(userRole);
+        }
+    }
 }

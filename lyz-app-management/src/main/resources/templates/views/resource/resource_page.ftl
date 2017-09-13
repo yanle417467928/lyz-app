@@ -11,13 +11,13 @@
 
 <section class="content-header">
 <#if selectedMenu??>
-    <h1>${selectedMenu.title!'??'}</h1>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
     <ol class="breadcrumb">
         <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-        <#if selectedMenu.parent??>
-            <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
         </#if>
-        <li class="active">${selectedMenu.title!'??'}</li>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
     <h1>加载中...</h1>
@@ -29,9 +29,11 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                    <button id="btn_add" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                    </button>
+                    <@shiro.hasPermission name="/views/admin/resource/add">
+                        <button id="btn_add" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                    </@shiro.hasPermission>
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>

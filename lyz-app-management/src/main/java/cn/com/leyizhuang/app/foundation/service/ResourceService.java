@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.Resource;
 import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
 import com.github.pagehelper.PageInfo;
@@ -32,4 +33,12 @@ public interface ResourceService {
     Long countByPId(Long id);
 
     void batchRemove(List<Long> longs);
+
+    List<ResourceVO> loadAdminMenuTree(ShiroUser shiroUser);
+
+    List<Resource> selectByType(int type);
+
+    ResourceVO queryVOById(Long id);
+
+    List<Long> queryParentIdsByIds(String[] resourceIds);
 }

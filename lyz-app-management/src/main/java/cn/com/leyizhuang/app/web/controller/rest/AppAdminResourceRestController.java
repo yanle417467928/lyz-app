@@ -50,7 +50,7 @@ public class AppAdminResourceRestController extends BaseRestController {
         if(!result.hasErrors()){
             resource.setCreateTime(new Date());
             if(resource.getPid() == null){
-                resource.setPid(0);
+                resource.setPid(0L);
             }
             resourceService.save(resource);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);

@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.UserRole;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,7 @@ import java.util.List;
 @Repository
 public interface UserRoleDAO {
     List<Long> selectRoleIdListByUserId(@Param("userId") Long userId);
+
+    void save(UserRole userRole);
 }
+

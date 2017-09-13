@@ -115,4 +115,38 @@
         </foreach>
     </delete>
 
+    <select id="selectByType" parameterType="java.lang.Integer" resultType="Resource">
+        SELECT * FROM resource WHERE RESOURCE_TYPE = #{type}
+    </select>
+    <select id="queryVOById" parameterType="java.lang.Long" resultType="ResourceVO">
+        SELECT
+            r.ID id,
+            r.`NAME` resource_name,
+            r.DESCRIPTION resource_description,
+            r.PID parent_resource_id,
+            r1.`NAME` parent_resource_name,
+            r1.DESCRIPTION parent_resource_description,
+            r.URL url,
+            r.SEQ seq,
+            r.ICON icon,
+            r.`STATUS` STATUS,
+            r.RESOURCE_TYPE resource_type
+        FROM
+            resource r
+            LEFT JOIN resource r1 ON r.PID = r1.ID
+        WHERE r.ID = #{id}
+    </select>
+
+    <select id="queryParentIdsByIds" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT
+            DISTINCT  PID
+        FROM
+            resource
+        WHERE
+            ID IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

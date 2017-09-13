@@ -28,9 +28,9 @@
             <#if IndexMenuVOList?? && IndexMenuVOList?size gt 0>
                 <#list IndexMenuVOList as item>
                     <li class="treeview <#if parentMenuId?? && parentMenuId?c == item.id?c>active</#if>">
-                        <a href="${item.linkUr!'#'}?menuId=${item.id?c}">
-                            <i class="${item.iconStyle!''}"></i>
-                            <span>${item.title!'加载中...'}</span>
+                        <a href="${item.url!'#'}?menuId=${item.id?c}">
+                            <i class="${item.icon!''}"></i>
+                            <span>${item.resourceName!'加载中...'}</span>
                             <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
@@ -39,9 +39,9 @@
                             <ul class="treeview-menu">
                                 <#list item.children as child>
                                     <li>
-                                        <a href="${child.linkUri!'#'}?menuId=${child.id?c}&parentMenuId=${item.id?c}">
-                                            <i class="${child.iconStyle!'fa fa-circle-o'}"></i>
-                                        ${child.title!'加载中...'}
+                                        <a href="${child.url!'#'}?menuId=${child.id?c}&parentMenuId=${item.id?c}">
+                                            <i class="${child.icon!'fa fa-circle-o'}"></i>
+                                        ${child.resourceName!'加载中...'}
                                         </a>
                                     </li>
                                 </#list>

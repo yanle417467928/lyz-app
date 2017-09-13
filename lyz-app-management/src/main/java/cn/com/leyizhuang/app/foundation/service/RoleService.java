@@ -30,4 +30,6 @@ public interface RoleService {
     Role queryById(Long id);
 
     void update(Role role);
+
+    List<Role> findByStatus(Boolean status);
 }

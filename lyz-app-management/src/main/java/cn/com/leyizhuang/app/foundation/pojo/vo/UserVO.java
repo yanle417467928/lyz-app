@@ -6,7 +6,9 @@ import cn.com.leyizhuang.app.foundation.pojo.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +26,12 @@ public class UserVO implements Serializable {
     private static final long serialVersionUID = 1122196596335613641L;
     private Long id;
 
+    @NotNull(message = "登录名不允许为空")
+    @Length(max = 20,min = 2,message = "登录名长度必须在2-20之间")
     private String loginName;
 
+    @NotNull(message = "姓名不允许为空")
+    @Length(max = 20,min = 2,message = "姓名长度必须在2-20之间")
     private String name;
 
     private String password;
@@ -36,7 +42,7 @@ public class UserVO implements Serializable {
 
     private Integer userType;
 
-    private Integer status;
+    private Boolean status;
 
     private Date createTime;
 
@@ -44,7 +50,7 @@ public class UserVO implements Serializable {
 
     private List<Role> rolesList;
 
-    private String roleIds;
+    private Long roleIds [];
 
     private Date createdateStart;
     private Date createdateEnd;

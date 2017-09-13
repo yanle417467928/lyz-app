@@ -24,4 +24,12 @@ public interface  UserDAO {
     User queryById(@Param(value = "id") Long id);
 
     void save(User user);
+
+    void delete(@Param(value = "id") Long id);
+
+    void update(User user);
+
+    Boolean existsByLoginName(@Param(value = "loginName") String loginName);
+
+    void saveUserVO(UserVO userVO);
 }

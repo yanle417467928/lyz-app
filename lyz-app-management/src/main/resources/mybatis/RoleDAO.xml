@@ -46,9 +46,11 @@
             #{id}
         </foreach>
     </delete>
-    
+
     <select id="queryById" parameterType="java.lang.Long" resultType="Role">
-        SELECT * FROM role where id = #{id}
+        SELECT *
+        FROM role
+        WHERE id = #{id}
     </select>
 
     <update id="update" parameterType="Role">
@@ -69,5 +71,34 @@
         </set>
         WHERE ID = #{id}
     </update>
+
+    <select id="findByStatus" parameterType="java.lang.Boolean" resultType="Role">
+        SELECT *
+        FROM role
+        WHERE STATUS = #{status};
+    </select>
+
+    <select id="selectResourceListByRoleIdList" resultType="Resource" parameterType="java.lang.Long">
+        SELECT
+        s.ID id,
+        s.NAME name,
+        s.URL url,
+        s.DESCRIPTION description,
+        s.ICON icon,
+        s.PID pid,
+        s.SEQ seq,
+        s.STATUS status,
+        s.RESOURCE_TYPE resource_type,
+        s.CREATE_TIME create_time
+        FROM role r
+        LEFT JOIN role_resource rs ON r.ID = rs.ROLE_ID
+        LEFT JOIN resource s ON rs.RESOURCE_ID = s.ID
+        WHERE r.ID IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND s.resource_type = 0
+        ORDER BY seq
+    </select>
 
 </mapper>

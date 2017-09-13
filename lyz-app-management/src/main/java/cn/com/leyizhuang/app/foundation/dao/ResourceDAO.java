@@ -36,4 +36,10 @@ public interface ResourceDAO {
     Long countByPId(Long id);
 
     void batchRemove(List<Long> longs);
+
+    List<Resource> selectByType(@Param(value = "type") int type);
+
+    ResourceVO queryVOById(@Param(value = "id") Long id);
+
+    List<Long> queryParentIdsByIds(@Param(value = "ids") String[] resourceIds);
 }
