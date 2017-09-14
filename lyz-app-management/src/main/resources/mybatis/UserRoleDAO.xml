@@ -10,4 +10,10 @@
            VALUES (#{userId}, #{roleId})
    </insert>
 
+    <select id="findRoleIdsByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT ROLE_ID FROM user_role where USER_ID = #{id}
+    </select>
+    <delete id="deleteUserRoleByUserId" parameterType="java.lang.Long">
+        DELETE FROM user_role where USER_ID = #{id}
+    </delete>
 </mapper>

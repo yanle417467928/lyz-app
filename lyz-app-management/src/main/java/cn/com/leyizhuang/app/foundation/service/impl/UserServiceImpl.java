@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void update(User user) {
         if (null != user) {
             userDAO.update(user);
@@ -98,6 +99,7 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
 
 
 

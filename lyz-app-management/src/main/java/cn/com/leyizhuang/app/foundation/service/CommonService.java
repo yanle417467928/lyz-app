@@ -11,4 +11,5 @@ import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
 public interface CommonService {
 
     void saveUserAndUserRoleByUserVO(UserVO userVO);
+    void updateUserAndUserRoleByUserVO(UserVO userVO);
 }

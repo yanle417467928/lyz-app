@@ -279,9 +279,9 @@
                                 }else{
                                     $('#userType').html("-");
                                 }
-                                if (1 === data.status) {
+                                if (true === data.status) {
                                     $('#status').html('<span class="label label-primary">正常</span>');
-                                } else if (2 === data.status) {
+                                } else if (false === data.status) {
                                     $('#status').html('<span class="label label-danger">停用</span>');
                                 } else {
                                     $('#status').html('-');

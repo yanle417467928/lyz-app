@@ -7,15 +7,20 @@
     <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
           rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
+
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+    <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
     <script>
         $(function () {
+            $(".select2").select2();
             $('.btn-cancel').on('click', function () {
                 history.go(-1);
             });
@@ -122,6 +127,12 @@
                 $.each(origin, function () {
                     data[this.name] = this.value;
                 });
+                var reslist=$("#role").select2("data");
+                var roleIds=[];
+                $.each(reslist,function() {
+                    roleIds.push(this.id);
+                });
+                data["roleIdsStr"] = roleIds;
 
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
@@ -251,6 +262,23 @@
                         <div class="row">
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group">
+                                    <label for="role">用户角色</label>
+                                    <select class="form-control select2" multiple="multiple"
+                                            data-placeholder="请为用户分配角色" style="width: 100%;" id="role" name="role">
+                                    <#if roleList??>
+                                        <#list roleList as item>
+                                            <option value="${item.id}" <#if roleIds?? && roleIds?seq_contains(item.id)>selected</#if> > ${item.name}</option>
+                                        </#list>
+                                    </#if>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group" style="margin-left: 2%">
                                     <label for="status">是否启用</label>
                                     <br>
                                     <input name="status" class="switch" id="status" type="checkbox"  data-on-text="启用" data-off-text="停用"<#if user?? && user.status?? && user.status==true > checked </#if> />

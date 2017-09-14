@@ -21,7 +21,7 @@ import java.util.Date;
  * Created on 2017-09-12 15:44
  **/
 @Service
-public class CommonServiceImpl implements CommonService{
+public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private UserRoleService userRoleService;
@@ -37,11 +37,43 @@ public class CommonServiceImpl implements CommonService{
         userService.save(user);
         Long id = user.getId();
         Long[] roles = userVO.getRoleIds();
-        UserRole userRole = new UserRole();
-        for (Long role : roles) {
-            userRole.setUserId(id);
-            userRole.setRoleId(role);
-            userRoleService.save(userRole);
+        if (null != roles && roles.length > 0) {
+            UserRole userRole = new UserRole();
+            for (Long role : roles) {
+                userRole.setUserId(id);
+                userRole.setRoleId(role);
+                userRoleService.save(userRole);
+            }
         }
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateUserAndUserRoleByUserVO(UserVO userVO) {
+        if (null != userVO) {
+            User user = new User();
+            user.setName(userVO.getName());
+            user.setLoginName(userVO.getLoginName());
+            user.setPassword(userVO.getPassword());
+            user.setId(userVO.getId());
+            user.setAge(userVO.getAge());
+            user.setPhone(userVO.getPhone());
+            user.setSex(userVO.getSex());
+            user.setStatus(userVO.getStatus());
+            user.setUserType(userVO.getUserType());
+            userService.update(user);
+            userRoleService.deleteUserRoleByUserId(userVO.getId());
+            Long[] roles = userVO.getRoleIds();
+            if (null != roles && roles.length > 0) {
+                UserRole userRole = new UserRole();
+                for (Long role : roles) {
+                    userRole.setUserId(userVO.getId());
+                    userRole.setRoleId(role);
+                    userRoleService.save(userRole);
+                }
+            }
+        }
+    }
+
+
 }

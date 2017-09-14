@@ -78,14 +78,16 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PostMapping
-    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]") String[] roleIdsStr, BindingResult result) {
+    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]",required = false) String[] roleIdsStr, BindingResult result) {
         if (!result.hasErrors()) {
             userVO.setCreateTime(new Date());
-            Long[] roleIds = new Long[roleIdsStr.length];
-            for (int i = 0; i < roleIdsStr.length; i++) {
-                roleIds[i] = Long.parseLong(roleIdsStr[i]);
+            if(null != roleIdsStr && roleIdsStr.length>0){
+                Long[] roleIds = new Long[roleIdsStr.length];
+                for (int i = 0; i < roleIdsStr.length; i++) {
+                    roleIds[i] = Long.parseLong(roleIdsStr[i]);
+                }
+                userVO.setRoleIds(roleIds);
             }
-            userVO.setRoleIds(roleIds);
             userVO.setPassword(DigestUtils.md5DigestAsHex((null == userVO.getPassword() ? "123456" : userVO.getPassword()).getBytes(Charsets.UTF_8)));
             commonService.saveUserAndUserRoleByUserVO(userVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -127,12 +129,19 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResultDTO<?> restUserIdPut(@Valid User user, BindingResult result) {
+    public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]",required = false) String[] roleIdsStr,BindingResult result) {
         if (!result.hasErrors()) {
-            if (null != user.getPassword()) {
-                user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(Charsets.UTF_8)));
+            if (null != userVO.getPassword()) {
+                userVO.setPassword(DigestUtils.md5DigestAsHex(userVO.getPassword().getBytes(Charsets.UTF_8)));
             }
-            userService.update(user);
+            if(null != roleIdsStr && roleIdsStr.length>0){
+                Long[] roleIds = new Long[roleIdsStr.length];
+                for (int i = 0; i < roleIdsStr.length; i++) {
+                    roleIds[i] = Long.parseLong(roleIdsStr[i]);
+                }
+                userVO.setRoleIds(roleIds);
+            }
+            commonService.updateUserAndUserRoleByUserVO(userVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
             List<ObjectError> allErrors = result.getAllErrors();

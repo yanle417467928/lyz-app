@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.User;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
+import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -38,6 +39,9 @@ public class AppAdminUserViewController extends BaseController{
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private UserRoleService userRoleService;
+
     @GetMapping(value = "/list")
     public String userList() {
         return "/views/user/user_list";
@@ -70,6 +74,10 @@ public class AppAdminUserViewController extends BaseController{
                 error404();
                 return "/error/404";
             } else {
+                List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
+                List<Long> roleIds = userRoleService.findRoleIdsByUserId(id);
+                map.addAttribute("roleIds",roleIds);
+                map.addAttribute("roleList",roleList);
                 map.addAttribute("user",user);
             }
         }

@@ -119,11 +119,18 @@ var $grid = {
                     type: type,
                     traditional: true,
                     data: data,
-                    error: function () {
+                    error: function (result) {
                         clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
-                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                        if(-1 === result.code){
+                            if(null !== result.message){
+                                $notify.success(result.message);
+                            }
+                        }else{
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        }
+
                     },
                     success: function (result) {
                         clearTimeout($global.timer);

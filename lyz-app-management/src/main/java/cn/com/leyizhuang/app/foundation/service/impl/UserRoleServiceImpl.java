@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 用户-角色对应表API实现
  *
@@ -25,6 +27,22 @@ public class UserRoleServiceImpl  implements UserRoleService{
     public void save(UserRole userRole) {
         if(null != userRole){
             userRoleDAO.save(userRole);
+        }
+    }
+
+    @Override
+    public List<Long> findRoleIdsByUserId(Long id) {
+        if(null != id){
+            return userRoleDAO.findRoleIdsByUserId(id);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserRoleByUserId(Long id) {
+        if(null != id){
+            userRoleDAO.deleteUserRoleByUserId(id);
         }
     }
 }

@@ -104,6 +104,12 @@ public class AppAdminRoleRestController extends BaseRestController {
     public ResultDTO<?> dataRoleDelete(Long[] ids) {
         try {
             for (Long id : ids) {
+                Role role = roleService.queryById(id);
+                if(role.getName().contains("admin")||role.getName().contains("超级管理员")){
+                    logger.error("超级管理员角色不允许删除!");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                            "超级管理员角色不允许删除", null);
+                }
                 this.roleService.batchRemove(Arrays.asList(id));
             }
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "角色以及用户-角色关联已删除！", null);

@@ -18,5 +18,9 @@ public interface UserRoleDAO {
     List<Long> selectRoleIdListByUserId(@Param("userId") Long userId);
 
     void save(UserRole userRole);
+
+    List<Long> findRoleIdsByUserId(Long id);
+
+    void deleteUserRoleByUserId(Long id);
 }
 

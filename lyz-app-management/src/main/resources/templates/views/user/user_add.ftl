@@ -308,7 +308,7 @@
                         </div>-->
                         <div class="row">
                             <div class="col-md-6 col-xs-12">
-                                <div class="form-group">
+                                <div class="form-group" style="margin-left: 2%">
                                     <label for="status">是否启用</label>
                                     <br>
                                     <input name="status" class="switch" id="status" type="checkbox" checked

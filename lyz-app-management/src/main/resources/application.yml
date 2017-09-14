@@ -49,6 +49,13 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   row-bounds-with-count: true
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
 
 
 ---
