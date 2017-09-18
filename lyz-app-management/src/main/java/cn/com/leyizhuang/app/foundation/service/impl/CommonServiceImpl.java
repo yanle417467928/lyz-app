@@ -1,18 +1,22 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
+import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.pojo.User;
 import cn.com.leyizhuang.app.foundation.pojo.UserRole;
 import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 通用方法实现
@@ -22,6 +26,9 @@ import java.util.Date;
  **/
 @Service
 public class CommonServiceImpl implements CommonService {
+
+    private static final int hashIterations = 3;
+    private static final String algorithmName  = "md5";
 
     @Autowired
     private UserRoleService userRoleService;
@@ -34,6 +41,9 @@ public class CommonServiceImpl implements CommonService {
     public void saveUserAndUserRoleByUserVO(UserVO userVO) {
         User user = BeanUtils.copy(userVO, User.class);
         user.setCreateTime(new Date());
+        Map<String,String> paramMap = EncryptUtils.getPasswordAndSalt(userVO.getLoginName(),userVO.getPassword());
+        user.setSalt(paramMap.get("salt"));
+        user.setPassword(paramMap.get("encodedPassword"));
         userService.save(user);
         Long id = user.getId();
         Long[] roles = userVO.getRoleIds();
@@ -51,16 +61,12 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateUserAndUserRoleByUserVO(UserVO userVO) {
         if (null != userVO) {
-            User user = new User();
-            user.setName(userVO.getName());
-            user.setLoginName(userVO.getLoginName());
-            user.setPassword(userVO.getPassword());
-            user.setId(userVO.getId());
-            user.setAge(userVO.getAge());
-            user.setPhone(userVO.getPhone());
-            user.setSex(userVO.getSex());
-            user.setStatus(userVO.getStatus());
-            user.setUserType(userVO.getUserType());
+            User user = userVO.convert2User();
+            if(null != user.getPassword() && !"".equalsIgnoreCase(user.getPassword())){
+                Map<String,String> paramMap = EncryptUtils.getPasswordAndSalt(user.getLoginName(),user.getPassword());
+                user.setSalt(paramMap.get("salt"));
+                user.setPassword(paramMap.get("encodedPassword"));
+            }
             userService.update(user);
             userRoleService.deleteUserRoleByUserId(userVO.getId());
             Long[] roles = userVO.getRoleIds();

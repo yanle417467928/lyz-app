@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,6 +35,8 @@ public class User implements Serializable {
 
     private String password;
 
+    private String salt;
+
     private SexType sex;
 
     private Integer age;
@@ -46,5 +49,21 @@ public class User implements Serializable {
 
     private Date createTime;
 
+    public String getCredentialsSalt() {
+        return loginName + salt;
+    }
+
+    public UserVO convert2UserVO(){
+        UserVO userVO = new UserVO();
+        userVO.setLoginName(loginName);
+        userVO.setName(name);
+        userVO.setId(id);
+        userVO.setPhone(phone);
+        userVO.setAge(age);
+        userVO.setSex(sex);
+        userVO.setStatus(status);
+        userVO.setUserType(userType);
+        return userVO;
+    }
 
 }

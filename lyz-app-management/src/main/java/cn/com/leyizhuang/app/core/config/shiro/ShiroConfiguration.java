@@ -89,6 +89,7 @@ public class ShiroConfiguration {
         sessionManager.setSessionValidationSchedulerEnabled(true);
         sessionManager.setDeleteInvalidSessions(true);
         sessionManager.setSessionIdCookieEnabled(true);
+        sessionManager.setSessionIdUrlRewritingEnabled(true);
         sessionManager.setSessionIdCookie(getSessionIdCookie());
         EnterpriseCacheSessionDAO cacheSessionDAO = new EnterpriseCacheSessionDAO();
         cacheSessionDAO.setCacheManager(getCacheManage());
@@ -132,8 +133,8 @@ public class ShiroConfiguration {
     @Bean(name = "hashedCredentialsMatcher")
     public HashedCredentialsMatcher getHashedCredentialsMatcher() {
         HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
-        credentialsMatcher.setHashAlgorithmName("MD5");
-        credentialsMatcher.setHashIterations(1);
+        credentialsMatcher.setHashAlgorithmName("md5");
+        credentialsMatcher.setHashIterations(3);
         credentialsMatcher.setStoredCredentialsHexEncoded(true);
         return credentialsMatcher;
     }

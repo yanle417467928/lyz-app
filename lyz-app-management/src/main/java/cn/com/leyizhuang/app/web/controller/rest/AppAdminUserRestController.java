@@ -88,7 +88,7 @@ public class AppAdminUserRestController extends BaseRestController {
                 }
                 userVO.setRoleIds(roleIds);
             }
-            userVO.setPassword(DigestUtils.md5DigestAsHex((null == userVO.getPassword() ? "123456" : userVO.getPassword()).getBytes(Charsets.UTF_8)));
+            userVO.setPassword(null == userVO.getPassword() ? "123456" : userVO.getPassword());
             commonService.saveUserAndUserRoleByUserVO(userVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
@@ -131,9 +131,6 @@ public class AppAdminUserRestController extends BaseRestController {
     @PutMapping(value = "/{id}")
     public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]",required = false) String[] roleIdsStr,BindingResult result) {
         if (!result.hasErrors()) {
-            if (null != userVO.getPassword()) {
-                userVO.setPassword(DigestUtils.md5DigestAsHex(userVO.getPassword().getBytes(Charsets.UTF_8)));
-            }
             if(null != roleIdsStr && roleIdsStr.length>0){
                 Long[] roleIds = new Long[roleIdsStr.length];
                 for (int i = 0; i < roleIdsStr.length; i++) {

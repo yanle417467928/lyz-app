@@ -29,17 +29,21 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                    <@shiro.hasPermission name="/views/admin/resource/add">
-                        <button id="btn_add" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                        </button>
-                    </@shiro.hasPermission>
+                <@shiro.hasPermission name="/views/admin/resource/add">
+                    <button id="btn_add" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                    </button>
+                </@shiro.hasPermission>
+                <@shiro.hasPermission name="/views/admin/resource/edit">
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
+                </@shiro.hasPermission>
+                <@shiro.hasPermission name="/views/admin/resource/delete">
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
+                </@shiro.hasPermission>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -94,10 +98,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/resource/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/resource/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -113,37 +117,37 @@
             title: '资源名称',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'parentResourceId',
             title: '父级资源序号',
             align: 'center'
-        },{
+        }, {
             field: 'parentResourceName',
             title: '父级资源名称',
             align: 'center'
-        },{
+        }, {
             field: 'url',
             align: 'center',
             title: '资源路径'
-        },{
+        }, {
             field: 'seq',
             align: 'center',
             title: '排序'
-        },{
+        }, {
             field: 'icon',
             align: 'center',
             title: '图标'
-        },{
+        }, {
             field: 'resourceType',
             title: '资源类型',
-            formatter: function(value) {
+            formatter: function (value) {
                 if (0 === value) {
                     return '<i class="fa fa-list text-primary">&nbsp &nbsp<span class="label label-primary">菜单</span>'
                 } else {
@@ -155,12 +159,12 @@
             field: 'status',
             align: 'center',
             title: '状态',
-            formatter: function(value) {
+            formatter: function (value) {
                 if (true === value) {
                     return '<span class="label label-primary">正常</span>'
-                } else if(false===value) {
+                } else if (false === value) {
                     return '<span class="label label-danger">停用</span>'
-                }else{
+                } else {
                     return '<span class="label label-danger">-</span>'
                 }
             }
@@ -170,18 +174,18 @@
             $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/resource/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/resource', 'delete');
         });
     });
 
     var $page = {
         information: {
-            show: function(id) {
+            show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -221,11 +225,11 @@
                                 }
                                 $('#icon').html('<i class="' + data.icon + '"></i>');
 
-                                if (data.resourceType===0) {
+                                if (data.resourceType === 0) {
                                     $('#resourceType').html("菜单");
-                                }else if(data.resourceType===1){
+                                } else if (data.resourceType === 1) {
                                     $('#resourceType').html("资源");
-                                }else{
+                                } else {
                                     $('#resourceType').html("-");
                                 }
                                 if (true === data.status) {
@@ -243,7 +247,7 @@
                     })
                 }
             },
-            close: function() {
+            close: function () {
                 $('#information').modal('hide');
             }
         }

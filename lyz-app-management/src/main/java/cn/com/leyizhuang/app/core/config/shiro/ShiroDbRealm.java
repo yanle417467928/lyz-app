@@ -12,6 +12,7 @@ import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class ShiroDbRealm extends AuthorizingRealm {
         Set<String> roles = resourceMap.get("roles");
         ShiroUser shiroUser = new ShiroUser(user.getId(),user.getLoginName(),user.getName(),urls);
         shiroUser.setRoles(roles);
-        return new SimpleAuthenticationInfo(shiroUser,user.getPassword().toCharArray(),getName());
+        return new SimpleAuthenticationInfo(shiroUser,user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()),getName());
     }
 
 

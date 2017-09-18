@@ -66,8 +66,8 @@
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO user( LOGIN_NAME,NAME,PASSWORD,SEX,AGE,PHONE,USER_TYPE,STATUS,CREATE_TIME)
-        VALUES (#{loginName}, #{name}, #{password}, #{sex}, #{age}, #{phone}, #{userType}, #{status}, #{createTime})
+        INSERT INTO user( LOGIN_NAME,NAME,PASSWORD,SEX,AGE,PHONE,USER_TYPE,STATUS,CREATE_TIME,SALT)
+        VALUES (#{loginName}, #{name}, #{password}, #{sex}, #{age}, #{phone}, #{userType}, #{status}, #{createTime},#{salt})
     </insert>
 
     <delete id="delete" parameterType="java.lang.Long">
@@ -97,6 +97,9 @@
             </if>
             <if test="null != age">
                 age = #{age},
+            </if>
+            <if test="null != salt">
+                salt = #{salt},
             </if>
         </set>
         WHERE ID = #{id}

@@ -70,4 +70,18 @@ public class UserVO implements Serializable {
         }
         return id.equals(userId);
     }
+
+    public User convert2User(){
+        User user = new User();
+        user.setPassword(password);
+        user.setLoginName(loginName);
+        user.setName(name);
+        user.setId(id);
+        user.setUserType(userType);
+        user.setStatus(status);
+        user.setAge(age);
+        user.setPhone(phone);
+        user.setCreateTime(createTime);
+        return user;
+    }
 }
