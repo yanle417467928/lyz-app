@@ -31,7 +31,7 @@ public class HelloController {
     }
 
     @PostMapping(value = "/user/{name}")
-    public User addUser(@RequestParam(value = "name") String name){
+    public User addUser(@PathVariable(value = "name") String name){
         User user = new User();
         user.setLoginName(name);
         user.setLoginName(name);
