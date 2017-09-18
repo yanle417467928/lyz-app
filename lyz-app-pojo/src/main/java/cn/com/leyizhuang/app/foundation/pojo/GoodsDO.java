@@ -92,5 +92,8 @@ public class GoodsDO extends BaseDO {
     private String itemBarcode;
     //单位名称
     private String unitName;
-
+    //商品颜色
+    private  String goodsColor;
+    //商品规格
+    private  String goodsSpecification;
 }
