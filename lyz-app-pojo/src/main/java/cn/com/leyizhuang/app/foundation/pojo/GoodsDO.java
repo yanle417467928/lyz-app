@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 public class GoodsDO extends BaseDO {
 
+    private static final long serialVersionUID = -1027720204337110362L;
     //商品名称
     private String goodsName;
     //商品编码
@@ -96,4 +97,6 @@ public class GoodsDO extends BaseDO {
     private  String goodsColor;
     //商品规格
     private  String goodsSpecification;
+    //工序ID
+    private long processID;
 }
