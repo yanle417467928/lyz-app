@@ -1,11 +1,18 @@
 package cn.com.leyizhuang.app.foundation.pojo.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
 /**
  * @author GenerationRoad
  * @date 2017/9/19
  */
+@Setter
+@Getter
+@ToString
 public class DecorationCompanyDTO implements Serializable{
 
     // 自增主键

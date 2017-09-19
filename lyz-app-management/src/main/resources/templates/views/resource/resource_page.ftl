@@ -29,16 +29,16 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                <@shiro.hasPermission name="/views/admin/resource/add">
+                <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
-                </@shiro.hasPermission>
-                <@shiro.hasPermission name="/views/admin/resource/edit">
+                <#--</@shiro.hasPermission>-->
+                <#--<@shiro.hasPermission name="/views/admin/resource/edit">-->
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                </@shiro.hasPermission>
+                <#--</@shiro.hasPermission>-->
                 <@shiro.hasPermission name="/views/admin/resource/delete">
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除

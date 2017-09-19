@@ -29,9 +29,9 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                    <#--<button id="btn_add" type="button" class="btn btn-default">-->
-                        <#--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增-->
-                    <#--</button>-->
+                    <button id="btn_add" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                    </button>
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
@@ -99,7 +99,7 @@
 </div>
 <script>
     $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/goods/page/grid', 'get', true, function(params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/company/page/grid', 'get', true, function(params) {
             return {
                 offset: params.offset ,
                 size: params.limit,
@@ -113,8 +113,8 @@
             title: '序号',
             align: 'center'
         }, {
-            field: 'goodsName',
-            title: '商品名称',
+            field: 'name',
+            title: '装饰公司名称',
             align: 'center',
             events: {
                 'click .scan': function(e, value, row) {
@@ -125,52 +125,39 @@
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         },{
-            field: 'goodsCode',
-            title: '商品编码',
+            field: 'code',
+            title: '装饰公司编码',
             align: 'center'
         },{
-            field: 'createTime',
-            title: '创建时间',
+            field: 'address',
+            title: '公司地址',
             align: 'center'
         },{
-            field: 'title',
+            field: 'phone',
             align: 'center',
-            title: '商品标题'
+            title: '公司电话'
         },{
-            field: 'onSaleTime',
-            title: '上架时间',
+            field: 'credit',
+            title: '信用金余额',
             align: 'center'
         },{
-            field: 'brandTitle',
+            field: 'promotionMoney',
             align: 'center',
-            title: '品牌'
+            title: '赞助金余额'
         },{
-            field: 'categoryTitle',
+            field: 'walletMoney',
             align: 'center',
-            title: '商品类型名称'
+            title: '钱包金额'
         }, {
-            field: 'isGift',
+            field: 'frozen',
             align: 'center',
-            title: '是否为小辅料',
+            title: '是否冻结',
             formatter: function (value) {
                 if (true === value) {
                     return '<span class="label label-primary">是</span>'
                 } else if (false === value) {
                     return '<span class="label label-danger">否</span>'
                 } else {
-                    return '<span class="label label-danger">-</span>'
-                }
-            }
-        },{
-            field: 'isOnSale',
-            align: 'center',
-            title: '是否上架',
-            formatter: function(value) {
-                if (true === value) {
-                    return '<span class="label label-primary">是</span>'
-                } else if(false===value) {
-                    return '<span class="label label-danger">否</span>'
-                }else{
                     return '<span class="label label-danger">-</span>'
                 }
             }
