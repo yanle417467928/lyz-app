@@ -1,13 +1,12 @@
-package cn.com.leyizhuang.app.web.controller.rest;
+package cn.com.leyizhuang.app.web.controller.remote;
 
+import cn.com.leyizhuang.app.foundation.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 服务提供方
@@ -29,5 +28,14 @@ public class HelloController {
         ServiceInstance instance = client.getLocalServiceInstance();
         logger.info("/hello,host:"+instance.getHost()+",service_id:"+instance.getServiceId() );
         return "hello world";
+    }
+
+    @PostMapping(value = "/user/{name}")
+    public User addUser(@PathVariable(value = "name") String name){
+        User user = new User();
+        user.setLoginName(name);
+        user.setLoginName(name);
+        user.setId(1L);
+        return user;
     }
 }

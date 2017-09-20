@@ -55,7 +55,7 @@ public class GoodsViewController extends BaseController{
      * @date 2017/9/9
      */
     @GetMapping(value = "/edit/{id}")
-    public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
+    public String goodsEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GoodsDO goodsDO = this.goodsServiceImpl.queryById(id);
             if (null == goodsDO) {

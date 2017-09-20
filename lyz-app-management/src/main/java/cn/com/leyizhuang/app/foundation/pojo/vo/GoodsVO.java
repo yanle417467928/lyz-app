@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class GoodsVO implements Serializable {
+public class GoodsVO {
     private static final Logger LOG = LoggerFactory.getLogger(GoodsVO.class);
 
     private Long id;
