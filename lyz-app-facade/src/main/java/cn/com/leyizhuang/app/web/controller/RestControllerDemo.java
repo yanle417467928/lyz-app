@@ -1,7 +1,9 @@
-package cn.com.leyizhuang.app.web;
+package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -21,5 +23,10 @@ public class RestControllerDemo {
     @GetMapping(value = "/maoku/failure")
     public ResultDTO<String> maokuInvokeMeFailure(){
         return new ResultDTO<String>(-1,"接口调用失败",null);
+    }
+
+    @PostMapping("/app/user")
+    public ResultDTO<String> maokuTokenTest(String name){
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,"成功",name);
     }
 }
