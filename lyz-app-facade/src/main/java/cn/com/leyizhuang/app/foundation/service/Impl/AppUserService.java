@@ -6,8 +6,6 @@ import cn.com.leyizhuang.app.foundation.service.IAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-
 /**
  * lyz-app-facade用户服务实现类
  *
