@@ -177,7 +177,7 @@
     var $page = {
         information: {
             show: function (id) {
-                var URL = '/rest/goods/' + id;
+                var URL = '/rest/company/' + id;
                 var success = function (result) {
                     if (0 === result.code) {
                         var data = result.content;

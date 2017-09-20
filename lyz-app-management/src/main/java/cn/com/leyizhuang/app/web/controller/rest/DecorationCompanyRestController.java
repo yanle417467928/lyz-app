@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.DecorationCompanyDO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.DecorationCompanyDTO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.DecorationCompanyVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.DecorationCompanyService;
@@ -10,11 +11,11 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -53,6 +54,32 @@ public class DecorationCompanyRestController extends BaseRestController {
         } else {
             DecorationCompanyVO decorationCompanyVO = DecorationCompanyVO.transform(decorationCompanyDO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null, decorationCompanyVO);
+        }
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResultDTO<String> modifyCompanyPut(@Valid DecorationCompanyDTO decorationCompanyDTO, BindingResult result){
+        if (!result.hasErrors()) {
+            this.decorationCompanyServiceImpl.managerModifyCompany(decorationCompanyDTO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        }else {
+            List<ObjectError> allErrors = result.getAllErrors();
+            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    errorMsgToHtml(allErrors), null);
+        }
+    }
+
+    @PostMapping
+    public ResultDTO<String> restCompanyPost(@Valid DecorationCompanyDTO decorationCompanyDTO, BindingResult result) {
+        if (!result.hasErrors()) {
+            this.decorationCompanyServiceImpl.managerSaveCompany(decorationCompanyDTO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        }else {
+            List<ObjectError> allErrors = result.getAllErrors();
+            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    errorMsgToHtml(allErrors), null);
         }
     }
 

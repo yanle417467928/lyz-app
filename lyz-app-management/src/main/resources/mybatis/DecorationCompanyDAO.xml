@@ -23,17 +23,17 @@
 
     <select id="queryList" resultMap="companyResult">
         SELECT *
-        FROM DECORATION_COMPANYDTO
+        FROM DECORATION_COMPANY
         ORDER BY CREATE_TIME DESC
     </select>
 
     <select id="queryById" parameterType="java.lang.Long" resultMap="companyResult">
         SELECT *
-        FROM DECORATION_COMPANYDTO WHERE ID = #{id}
+        FROM DECORATION_COMPANY WHERE ID = #{id}
     </select>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
-        UPDATE GOODS
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.DecorationCompanyDO">
+        UPDATE DECORATION_COMPANY
         <set>
             <if test="null != modifierId">
                 MODIFIER_ID = #{modifierId},
@@ -71,5 +71,15 @@
         </set>
         WHERE ID = #{id}
     </update>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.DecorationCompanyDO">
+      INSERT INTO DECORATION_COMPANY(
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        NAME, CODE, ADDRESS, PHONE, CREDIT, PROMOTION_MONEY, WALLET_MONEY, FROZEN
+      ) VALUES (
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{name}, #{code}, #{address}, #{phone}, #{credit}, #{promotionMoney}, #{walletMoney}, #{frozen}
+      )
+    </insert>
 
 </mapper>
