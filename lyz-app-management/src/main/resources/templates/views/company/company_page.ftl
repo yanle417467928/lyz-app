@@ -162,7 +162,7 @@
         ]);
 
         $('#btn_add').on('click', function () {
-            $grid.add('/view/company/add/0?parentMenuId=${(parentMenuId!'0')}');
+            $grid.add('/view/company/edit/0?parentMenuId=${(parentMenuId!'0')}');
         });
 
         $('#btn_edit').on('click', function() {

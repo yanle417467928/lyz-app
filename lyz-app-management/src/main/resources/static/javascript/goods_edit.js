@@ -128,7 +128,7 @@ $(function() {
                     },
                     regexp: {
                         regexp: /^[^\u4e00-\u9fa5]+$/,
-                        message: '职位信息不能输入汉字！'
+                        message: '商品编码(SKU)不能输入汉字！'
                     },
                     stringLength: {
                         min: 2,

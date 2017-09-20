@@ -46,6 +46,6 @@ public class DecorationCompanyViewController extends BaseController {
                 map.addAttribute("decorationCompanyVO",decorationCompanyVO);
             }
         }
-        return "/views/company/company_edit";
+        return "/views/company/dec_company_edit";
     }
 }
