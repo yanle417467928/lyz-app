@@ -12,7 +12,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class DecorationCompanyDO extends BaseDO {
+public class FitmentCompanyDO extends BaseDO {
 
     // 装饰公司名称
     private String name;

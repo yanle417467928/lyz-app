@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.DecorationCompanyDO;
+import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  * @date 2017/9/19
  */
 @Repository
-public interface DecorationCompanyDAO extends BaseDAO<DecorationCompanyDO>{
+public interface FitmentCompanyDAO extends BaseDAO<FitmentCompanyDO>{
 
 }

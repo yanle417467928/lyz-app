@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.foundation.pojo.DecorationCompanyDO;
-import cn.com.leyizhuang.app.foundation.pojo.dto.DecorationCompanyDTO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.DecorationCompanyVO;
+import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO;
+import cn.com.leyizhuang.app.foundation.pojo.dto.FitmentCompanyDTO;
+import cn.com.leyizhuang.app.foundation.pojo.vo.FitmentCompanyVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.service.DecorationCompanyService;
+import cn.com.leyizhuang.app.foundation.service.FitmentCompanyService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -23,44 +23,44 @@ import java.util.List;
  * @date 2017/9/19
  */
 @RestController
-@RequestMapping(value = DecorationCompanyRestController.PRE_URL,produces = "application/json;charset=utf-8")
-public class DecorationCompanyRestController extends BaseRestController {
+@RequestMapping(value = FitmentCompanyRestController.PRE_URL,produces = "application/json;charset=utf-8")
+public class FitmentCompanyRestController extends BaseRestController {
 
     protected final static String PRE_URL = "/rest/company";
 
-    private final Logger logger = LoggerFactory.getLogger(DecorationCompanyRestController.class);
+    private final Logger logger = LoggerFactory.getLogger(FitmentCompanyRestController.class);
 
     @Autowired
-    private DecorationCompanyService decorationCompanyServiceImpl;
+    private FitmentCompanyService fitmentCompanyServiceImpl;
 
     @GetMapping(value = "/page/grid")
-    public GridDataVO<DecorationCompanyVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
+    public GridDataVO<FitmentCompanyVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
         size = getSize(size);
         Integer page = getPage(offset, size);
 
-        PageInfo<DecorationCompanyDO> companyDOPage = this.decorationCompanyServiceImpl.queryPage(page,size);
-        List<DecorationCompanyDO> companyDOList = companyDOPage.getList();
-        List<DecorationCompanyVO> decorationCompanyVOList = DecorationCompanyVO.transform(companyDOList);
-        return new GridDataVO<DecorationCompanyVO>().transform(decorationCompanyVOList,companyDOPage.getTotal());
+        PageInfo<FitmentCompanyDO> companyDOPage = this.fitmentCompanyServiceImpl.queryPage(page,size);
+        List<FitmentCompanyDO> companyDOList = companyDOPage.getList();
+        List<FitmentCompanyVO> decorationCompanyVOList = FitmentCompanyVO.transform(companyDOList);
+        return new GridDataVO<FitmentCompanyVO>().transform(decorationCompanyVOList,companyDOPage.getTotal());
     }
 
     @GetMapping(value = "/{id}")
-    public ResultDTO<DecorationCompanyVO> restGoodsIdGet(@PathVariable(value = "id") Long id) {
-        DecorationCompanyDO decorationCompanyDO = this.decorationCompanyServiceImpl.queryById(id);
-        if (null == decorationCompanyDO) {
+    public ResultDTO<FitmentCompanyVO> restGoodsIdGet(@PathVariable(value = "id") Long id) {
+        FitmentCompanyDO fitmentCompanyDO = this.fitmentCompanyServiceImpl.queryById(id);
+        if (null == fitmentCompanyDO) {
             logger.warn("查找角色失败：Role(id = {}) == null", id);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            DecorationCompanyVO decorationCompanyVO = DecorationCompanyVO.transform(decorationCompanyDO);
+            FitmentCompanyVO decorationCompanyVO = FitmentCompanyVO.transform(fitmentCompanyDO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null, decorationCompanyVO);
         }
     }
 
     @PutMapping(value = "/{id}")
-    public ResultDTO<String> modifyCompanyPut(@Valid DecorationCompanyDTO decorationCompanyDTO, BindingResult result){
+    public ResultDTO<String> modifyCompanyPut(@Valid FitmentCompanyDTO fitmentCompanyDTO, BindingResult result){
         if (!result.hasErrors()) {
-            this.decorationCompanyServiceImpl.managerModifyCompany(decorationCompanyDTO);
+            this.fitmentCompanyServiceImpl.managerModifyCompany(fitmentCompanyDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }else {
             List<ObjectError> allErrors = result.getAllErrors();
@@ -71,9 +71,9 @@ public class DecorationCompanyRestController extends BaseRestController {
     }
 
     @PostMapping
-    public ResultDTO<String> restCompanyPost(@Valid DecorationCompanyDTO decorationCompanyDTO, BindingResult result) {
+    public ResultDTO<String> restCompanyPost(@Valid FitmentCompanyDTO fitmentCompanyDTO, BindingResult result) {
         if (!result.hasErrors()) {
-            this.decorationCompanyServiceImpl.managerSaveCompany(decorationCompanyDTO);
+            this.fitmentCompanyServiceImpl.managerSaveCompany(fitmentCompanyDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }else {
             List<ObjectError> allErrors = result.getAllErrors();

@@ -16,8 +16,9 @@ import java.io.Serializable;
 @Setter
 @Getter
 @ToString
-public class DecorationCompanyDTO implements Serializable{
+public class FitmentCompanyDTO implements Serializable{
 
+    private static final long serialVersionUID = 5186898817820557917L;
     // 自增主键
     private Long id;
 
