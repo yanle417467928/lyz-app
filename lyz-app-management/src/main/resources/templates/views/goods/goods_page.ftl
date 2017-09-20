@@ -54,13 +54,13 @@
             <div class="modal-body">
                 <div class="user-block">
                     <span class="username" style="margin-left: 0px;">
-                        <a id="menuTitle" href="#"></a>
+                        <a id="goodsTitle" href="#"></a>
                         <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
                             <i class="fa fa-times"></i>
                         </a>
 
                     </span>
-                    <ul id="resourceDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="goodsDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
                             <b>商品名称</b> <a class="pull-right" id="goodsName"></a>
                         </li>
@@ -197,7 +197,7 @@
                 var success = function (result) {
                     if (0 === result.code) {
                         var data = result.content;
-                        $('#menuTitle').html("商品详情");
+                        $('#goodsTitle').html("商品详情");
 
                         if (null === data.goodsName) {
                             data.goodsName = '-';

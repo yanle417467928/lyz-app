@@ -35,9 +35,9 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <button id="btn_delete" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
-                    </button>
+                    <#--<button id="btn_delete" type="button" class="btn btn-default">-->
+                        <#--<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除-->
+                    <#--</button>-->
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -54,7 +54,7 @@
             <div class="modal-body">
                 <div class="user-block">
                     <span class="username" style="margin-left: 0px;">
-                        <a id="menuTitle" href="#"></a>
+                        <a id="companyTitle" href="#"></a>
                         <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
                             <i class="fa fa-times"></i>
                         </a>
@@ -62,31 +62,28 @@
                     </span>
                     <ul id="resourceDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>商品名称</b> <a class="pull-right" id="goodsName"></a>
+                            <b>装饰公司名称</b> <a class="pull-right" id="name"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品编码</b> <a class="pull-right" id="goodsCode"></a>
+                            <b>装饰公司编码</b> <a class="pull-right" id="code"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品标题</b> <a class="pull-right" id="title"></a>
+                            <b>公司地址</b> <a class="pull-right" id="address"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>品牌</b> <a class="pull-right" id="brandTitle"></a>
+                            <b>公司电话</b> <a class="pull-right" id="phone"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品类型名称</b> <a class="pull-right" id="categoryTitle"></a>
+                            <b>信用金余额</b> <a class="pull-right" id="credit"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>是否为小辅料</b> <a class="pull-right" id="isGift"></a>
+                            <b>赞助金余额</b> <a class="pull-right" id="promotionMoney"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>是否上架</b> <a class="pull-right" id="isOnSale"></a>
+                            <b>钱包金额</b> <a class="pull-right" id="walletMoney"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>上架时间</b> <a class="pull-right" id="onSaleTime"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                            <b>是否冻结</b> <a class="pull-right" id="frozen"></a>
                         </li>
                     </ul>
                 </div>
@@ -165,15 +162,15 @@
         ]);
 
         $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
+            $grid.add('/view/company/add/0?parentMenuId=${(parentMenuId!'0')}');
         });
 
         $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/view/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+            $grid.modify($('#dataGrid'), '/view/company/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
         $('#btn_delete').on('click', function() {
-            $grid.remove($('#dataGrid'), '/rest/goods', 'delete');
+            $grid.remove($('#dataGrid'), '/rest/company', 'delete');
         });
     });
 
@@ -184,51 +181,44 @@
                 var success = function (result) {
                     if (0 === result.code) {
                         var data = result.content;
-                        $('#menuTitle').html("商品详情");
+                        $('#companyTitle').html("装饰公司详情");
 
-                        if (null === data.goodsName) {
-                            data.goodsName = '-';
+                        if (null === data.name) {
+                            data.name = '-';
                         }
-                        $('#goodsName').html(data.goodsName);
+                        $('#name').html(data.name);
 
-                        if (null === data.goodsCode) {
-                            data.goodsCode = '-';
+                        if (null === data.code) {
+                            data.code = '-';
                         }
-                        $('#goodsCode').html(data.goodsCode);
-                        if (null === data.createTime) {
-                            data.createTime = '-';
+                        $('#code').html(data.code);
+                        if (null === data.address) {
+                            data.address = '-';
                         }
-                        $('#createTime').html(data.createTime);
+                        $('#address').html(data.address);
 
-                        if (null === data.title) {
-                            data.title = '-';
+                        if (null === data.phone) {
+                            data.phone = '-';
                         }
-                        $('#title').html(data.title);
-                        if (null === data.onSaleTime) {
-                            data.onSaleTime = '-';
+                        $('#phone').html(data.phone);
+                        if (null === data.credit) {
+                            data.credit = '-';
                         }
-                        $('#onSaleTime').html(data.onSaleTime);
-                        if (null === data.brandTitle) {
-                            data.brandTitle = '-';
+                        $('#credit').html(data.credit);
+                        if (null === data.promotionMoney) {
+                            data.promotionMoney = '-';
                         }
-                        $('#brandTitle').html(data.brandTitle);
-                        if (null === data.categoryTitle) {
-                            data.categoryTitle = '-';
+                        $('#promotionMoney').html(data.promotionMoney);
+                        if (null === data.walletMoney) {
+                            data.walletMoney = '-';
                         }
-                        $('#categoryTitle').html(data.categoryTitle);
-                        if (true === data.isGift) {
-                            $('#isGift').html('<span class="label label-primary">是</span>');
-                        } else if (false === data.isGift) {
-                            $('#isGift').html('<span class="label label-danger">否</span>');
+                        $('#walletMoney').html(data.walletMoney);
+                        if (true === data.frozen) {
+                            $('#frozen').html('<span class="label label-primary">是</span>');
+                        } else if (false === data.frozen) {
+                            $('#frozen').html('<span class="label label-danger">否</span>');
                         } else {
-                            $('#isGift').html('-');
-                        }
-                        if (true === data.isOnSale) {
-                            $('#isOnSale').html('<span class="label label-primary">是</span>');
-                        } else if (false === data.isOnSale) {
-                            $('#isOnSale').html('<span class="label label-danger">否</span>');
-                        } else {
-                            $('#isOnSale').html('-');
+                            $('#frozen').html('-');
                         }
                         $('#information').modal();
                     } else {
