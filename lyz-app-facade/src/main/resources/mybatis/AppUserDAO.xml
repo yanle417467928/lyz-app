@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppUserDAO">
+
+    <resultMap id="appUser" type="cn.com.leyizhuang.app.foundation.pojo.AppUser">
+        <id column="id" property="id"/>
+        <result column="login_name" property="loginName"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="user_type" property="userType"
+                javaType="cn.com.leyizhuang.app.core.constant.AppUserType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    </resultMap>
+
+
+    <select id="findByLoginName" parameterType="java.lang.String" resultType="AppUser">
+          SELECT * FROM app_user WHERE login_name = #{loginName}
+    </select>
+</mapper>
