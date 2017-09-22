@@ -50,6 +50,14 @@ public class FitmentCompanyServiceImpl extends BaseServiceImpl<FitmentCompanyDO>
         return fitmentCompanyDO;
     }
 
+    @Override
+    public List<FitmentCompanyDO> queryListByFrozen(Boolean frozen) {
+        if (null == frozen ){
+            frozen = true;
+        }
+        return this.fitmentCompanyDAO.queryListByFrozen(frozen);
+    }
+
     private FitmentCompanyDO transform(FitmentCompanyDTO fitmentCompanyDTO){
         FitmentCompanyDO fitmentCompanyDO = null;
         if (null != fitmentCompanyDTO) {

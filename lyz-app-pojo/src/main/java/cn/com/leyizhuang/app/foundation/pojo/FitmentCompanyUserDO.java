@@ -16,13 +16,10 @@ import lombok.ToString;
 public class FitmentCompanyUserDO extends BaseDO {
 
     // 员工姓名
-    private String name;
+    private String userName;
 
     // 员工手机号码
-    private String phone;
-
-    // 员工密码
-    private String password;
+    private String mobile;
 
     // 是否是主账号
     private Boolean isMain = true;
@@ -30,11 +27,14 @@ public class FitmentCompanyUserDO extends BaseDO {
     // 装饰公司id
     private Long companyId;
 
+    //装饰公司名称
+    private String companyName;
+
     // 是否被冻结，默认未冻结
     private Boolean frozen = false;
 
     //性别
-    private SexType sex;
+    private Boolean sex;
 
     //年龄
     private Integer age;
