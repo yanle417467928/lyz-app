@@ -29,7 +29,7 @@ public class FitmentCompanyViewController extends BaseController {
     private FitmentCompanyService fitmentCompanyServiceImpl;
 
     @GetMapping(value = "/page")
-    public String storePage(HttpServletRequest request, ModelMap map) {
+    public String companyPage(HttpServletRequest request, ModelMap map) {
         return "/views/company/company_page";
     }
 
@@ -38,7 +38,7 @@ public class FitmentCompanyViewController extends BaseController {
         if (!id.equals(0L)) {
             FitmentCompanyDO fitmentCompanyDO = this.fitmentCompanyServiceImpl.queryById(id);
             if (null == fitmentCompanyDO) {
-                logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
+                logger.warn("跳转修改装饰公司页面失败，Resource(id = {}) == null", id);
                 error404();
                 return "/error/404";
             } else {

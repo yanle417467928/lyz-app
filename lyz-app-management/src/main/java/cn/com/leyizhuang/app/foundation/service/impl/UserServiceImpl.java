@@ -102,7 +102,13 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-
+    @Override
+    public User quereyByLoginName(UserVO userVO) {
+        if (null != userVO.getLoginName()) {
+            return userDAO.quereyByLoginName(userVO);
+        }
+        return null;
+    }
 
 
 }

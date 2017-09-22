@@ -27,6 +27,12 @@
         ORDER BY CREATE_TIME DESC
     </select>
 
+    <select id="queryListByFrozen" resultMap="companyResult">
+        SELECT ID, NAME
+        FROM FITMENT_COMPANY
+        WHERE FROZEN = #{frozen}
+    </select>
+
     <select id="queryById" parameterType="java.lang.Long" resultMap="companyResult">
         SELECT *
         FROM FITMENT_COMPANY WHERE ID = #{id}

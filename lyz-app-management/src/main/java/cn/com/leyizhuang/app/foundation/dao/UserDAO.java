@@ -32,4 +32,6 @@ public interface  UserDAO {
     Boolean existsByLoginName(@Param(value = "loginName") String loginName);
 
     void saveUserVO(UserVO userVO);
+
+    User quereyByLoginName(UserVO userVO);
 }

@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.dto.FitmentCompanyDTO;
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2017/9/19
@@ -16,4 +18,6 @@ public interface FitmentCompanyService extends BaseService<FitmentCompanyDO> {
     FitmentCompanyDO managerModifyCompany(FitmentCompanyDTO fitmentCompanyDTO);
 
     FitmentCompanyDO managerSaveCompany(FitmentCompanyDTO fitmentCompanyDTO);
+
+    List<FitmentCompanyDO> queryListByFrozen(Boolean frozen);
 }
