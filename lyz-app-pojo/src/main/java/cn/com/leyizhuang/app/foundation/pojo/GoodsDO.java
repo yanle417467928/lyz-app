@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 商品业务实体
@@ -97,6 +98,4 @@ public class GoodsDO extends BaseDO {
     private  String goodsColor;
     //商品规格
     private  String goodsSpecification;
-    //工序ID
-    private long processID;
 }
