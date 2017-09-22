@@ -98,6 +98,9 @@
             <if test="null != age">
                 age = #{age},
             </if>
+            <if test="null != sex">
+                sex = #{sex},
+            </if>
             <if test="null != salt">
                 salt = #{salt},
             </if>
@@ -107,5 +110,22 @@
 
     <select id="existsByLoginName" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 1 FROM user  WHERE LOGIN_NAME= #{loginName})
+    </select>
+
+    <select id="quereyByLoginName" parameterType="UserVO" resultType="User">
+        SELECT
+        ID ID,
+        LOGIN_NAME LOGIN_NAME,
+        NAME NAME,
+        PASSWORD PASSWORD,
+        SEX SEX,
+        AGE AGE,
+        USER_TYPE USER_TYPE,
+        STATUS STATUS,
+        CREATE_TIME CREATE_TIME,
+        PHONE PHONE
+        FROM
+        USER
+        WHERE LOGIN_NAME = #{loginName}
     </select>
 </mapper>

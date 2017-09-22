@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.FitmentCompanyUserDAO">
+
+    <resultMap id="companyUserResult" type="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="USERNAME" property="userName"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="ISMAIN" property="isMain"/>
+        <result column="COMPANYID" property="companyId"/>
+        <result column="SEX" property="sex"/>
+        <result column="AGE" property="age"/>
+        <result column="FROZEN" property="frozen"/>
+        <result column="NAME" property="companyName"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="companyUserResult">
+        SELECT u.*, c.NAME
+        FROM FITMENT_COMPANY_USER u LEFT JOIN FITMENT_COMPANY c ON u.COMPANYID = c.ID
+        ORDER BY u.CREATE_TIME DESC
+    </select>
+
+    <select id="queryById" parameterType="java.lang.Long" resultMap="companyUserResult">
+        SELECT u.*, c.NAME
+        FROM FITMENT_COMPANY_USER u LEFT JOIN FITMENT_COMPANY c ON u.COMPANYID = c.ID
+        WHERE u.ID = #{id}
+    </select>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO">
+        UPDATE FITMENT_COMPANY_USER
+        <set>
+            <if test="null != modifierId">
+                MODIFIER_ID = #{modifierId},
+            </if>
+            <if test="null != modifierType">
+                MODIFIER_TYPE = #{modifierType},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+            <if test="null != userName">
+                USERNAME = #{userName},
+            </if>
+            <if test="null != mobile">
+                MOBILE = #{mobile},
+            </if>
+            <if test="null != isMain">
+                ISMAIN = #{isMain},
+            </if>
+            <if test="null != companyId">
+                COMPANYID = #{companyId},
+            </if>
+            <if test="null != sex">
+                SEX = #{sex},
+            </if>
+            <if test="null != age">
+                AGE = #{age},
+            </if>
+            <if test="null != frozen">
+                FROZEN = #{frozen},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO">
+        INSERT INTO FITMENT_COMPANY_USER(
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        USERNAME, MOBILE, ISMAIN, COMPANYID, SEX, AGE, FROZEN
+        ) VALUES (
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{userName}, #{mobile}, #{isMain}, #{companyId}, #{sex}, #{age}, #{frozen}
+        )
+    </insert>
+
+
+</mapper>

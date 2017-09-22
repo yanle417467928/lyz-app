@@ -11,13 +11,13 @@
 
 <section class="content-header">
 <#if selectedMenu??>
-    <h1>${selectedMenu.title!'??'}</h1>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
     <ol class="breadcrumb">
         <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
         <#if selectedMenu.parent??>
-            <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
+            <li><a href="javascript:void(0);">${selectedMenu.parent.parentResourceName!'??'}</a></li>
         </#if>
-        <li class="active">${selectedMenu.title!'??'}</li>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
     <h1>加载中...</h1>
@@ -54,13 +54,13 @@
             <div class="modal-body">
                 <div class="user-block">
                     <span class="username" style="margin-left: 0px;">
-                        <a id="menuTitle" href="#"></a>
+                        <a id="goodsTitle" href="#"></a>
                         <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
                             <i class="fa fa-times"></i>
                         </a>
 
                     </span>
-                    <ul id="resourceDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="goodsDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
                             <b>商品名称</b> <a class="pull-right" id="goodsName"></a>
                         </li>
@@ -197,7 +197,7 @@
                 var success = function (result) {
                     if (0 === result.code) {
                         var data = result.content;
-                        $('#menuTitle').html("商品详情");
+                        $('#goodsTitle').html("商品详情");
 
                         if (null === data.goodsName) {
                             data.goodsName = '-';

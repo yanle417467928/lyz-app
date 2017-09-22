@@ -29,6 +29,6 @@ public interface UserService {
 
     Boolean existsByLoginName(String loginName);
 
-
+    User quereyByLoginName(UserVO userVO);
 
 }

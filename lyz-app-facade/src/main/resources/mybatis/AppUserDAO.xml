@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppUserDAO">
+
+    <resultMap id="appUser" type="cn.com.leyizhuang.app.foundation.pojo.AppUser">
+        <id column="id" property="id"/>
+        <result column="login_name" property="loginName"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="user_type" property="userType"
+                javaType="cn.com.leyizhuang.app.core.constant.AppUserType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    </resultMap>
+
+
+    <select id="findByLoginName" parameterType="java.lang.String" resultType="AppUser">
+        SELECT *
+        FROM app_user
+        WHERE login_name = #{loginName}
+    </select>
+    <select id="findByOpenId" parameterType="java.lang.String" resultType="AppUser">
+        SELECT *
+        FROM app_user
+        WHERE open_id = #{openId}
+    </select>
+    <select id="findByMobile" parameterType="java.lang.String" resultType="AppUser">
+        SELECT *
+        FROM app_user
+        WHERE mobile = #{mobile}
+    </select>
+    <update id="update" parameterType="AppUser">
+        UPDATE app_user
+        <set>
+            <if test="null != loginName">
+                login_name = #{loginName},
+            </if>
+            <if test="null != name">
+                name = #{name},
+            </if>
+            <if test="null != password">
+                password = #{password},
+            </if>
+            <if test="null != salt">
+                salt = #{salt},
+            </if>
+            <if test="null != userType">
+                user_type = #{userType,
+                    javaType=cn.com.leyizhuang.app.core.constant.AppUserType,
+                    typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != mobile">
+                mobile = #{mobile},
+            </if>
+            <if test="null != birthday">
+                birthday = #{birthday},
+            </if>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != sex">
+                sex = #{sex,
+                    javaType=cn.com.leyizhuang.app.core.constant.SexType,
+                    typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != openId">
+                open_id = #{openId},
+            </if>
+            <if test="null != picUrl">
+                pic_url = #{openId},
+            </if>
+            <if test="null != openId">
+                nick_name = #{nickName},
+            </if>
+            <if test="null != openId">
+                city_id = #{cityId},
+            </if>
+            <if test="null != guideId">
+                guide_id = #{guideId},
+            </if>
+            <if test="null != guideName">
+                guide_name = #{guideName},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+    <insert id="save" parameterType="AppUser" useGeneratedKeys="true"
+            keyColumn="ID" keyProperty="id">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            select LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO app_user (
+        login_name,
+        NAME,
+        PASSWORD,
+        salt,
+        user_type,
+        mobile,
+        birthday,
+        sex,
+        STATUS,
+        open_id,
+        pic_url,
+        nick_name,
+        city_id,
+        store_id,
+        store_name,
+        guide_id,
+        guide_name
+        )
+        VALUES
+        (
+        #{loginName}, #{name}, #{password}, #{salt},
+        #{userType,
+javaType = cn.com.leyizhuang.app.core.constant.AppUserType,
+typeHandler = org.apache.ibatis.type.EnumTypeHandler }, #{mobile}, #{birthday},
+        #{sex,
+javaType = cn.com.leyizhuang.app.core.constant.SexType,
+typeHandler = org.apache.ibatis.type.EnumTypeHandler }, #{status}, #{openId}, #{picUrl}, #{nickName}, #{cityId},
+        #{storeId},#{storeName},#{guideId},#{guideName}
+        )
+    </insert>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="AppUser">
+        SELECT *
+        FROM app_user
+        WHERE id = #{id}
+    </select>
+</mapper>
