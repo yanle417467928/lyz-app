@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +99,10 @@ public class GoodsVO {
     private String itemBarcode;
     //单位名称
     private String unitName;
+    //商品颜色
+    private String goodsColor;
+    //商品规格
+    private String goodsSpecification;
 
     public static final GoodsVO transform(GoodsDO goodsDO) {
         if (null != goodsDO) {
