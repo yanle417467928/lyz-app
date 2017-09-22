@@ -1,11 +1,15 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * lyz-app-facade用户抽象
@@ -32,5 +36,17 @@ public class AppUser implements Serializable {
     private String salt;
     //app用户身份类型
     private AppUserType userType;
+
+    private String mobile;
+
+    private Date birthday;
+
+    private Boolean status;
+
+    private SexType sex;
+
+    public String generateSalt(){
+        return DigestUtils.md5Hex(loginName + AppConstant.APP_USER_SALT);
+    }
 
 }

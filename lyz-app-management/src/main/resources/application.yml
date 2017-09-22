@@ -57,7 +57,6 @@ eureka:
     lease-expiration-duration-in-seconds: 30
     lease-renewal-interval-in-seconds: 10
 
-
 ---
 # 开发环境配置
 server:
