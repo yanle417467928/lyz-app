@@ -16,6 +16,7 @@
     <packaging>jar</packaging>
 
     <properties>
+        <lyz-app-api.version>${project.version}</lyz-app-api.version>
         <lyz-app-service.version>${project.version}</lyz-app-service.version>
         <druid-spring-boot-starter.version>1.0.0</druid-spring-boot-starter.version>
     </properties>
@@ -64,6 +65,12 @@
             <version>${lyz-app-service.version}</version>
         </dependency>
 
+        <!-- 依赖API模块 -->
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>
+            <artifactId>lyz-app-api</artifactId>
+            <version>${lyz-app-api.version}</version>
+        </dependency>
         <!-- 持久层：Spring Boot MyBatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

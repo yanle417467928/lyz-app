@@ -7,11 +7,12 @@ import cn.com.leyizhuang.app.foundation.pojo.AppUser;
 import cn.com.leyizhuang.app.foundation.service.impl.AppAdminAppUserService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
-import cn.com.leyizhuang.common.foundation.pojo.HqAppEmployeeDTO;
+import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppEmployeeDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,12 +67,17 @@ public class HqAppEmployeeController {
             try {
                 String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
                 appUser.setPassword(md5Password);
+                appUserService.save(appUser);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 logger.warn("员工{}密码生成失败，请重新同步！",employeeDTO.getNumber());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"员工密码生成失败！",null);
+            }catch (DuplicateKeyException ex){
+                ex.printStackTrace();
+                logger.warn("用户名已存在！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户名已存在",null);
             }
-            appUserService.save(appUser);
+
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
         }
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);

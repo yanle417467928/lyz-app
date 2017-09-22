@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppUser;
+import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,16 +12,6 @@ import org.springframework.stereotype.Repository;
  * Created on 2017-09-19 11:26
  **/
 @Repository
-public interface AppUserDAO {
-    AppUser findByLoginName(String loginName);
-
-    AppUser findByOpenId(@Param(value = "openId") String openId);
-
-    AppUser findByMobile(String mobile);
-
-    void update(AppUser newUser);
-
-    Long save(AppUser newUser);
-
-    AppUser findById(Long userId);
+public interface SmsAccountDAO {
+    SmsAccount findOne();
 }

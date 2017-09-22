@@ -30,7 +30,8 @@ public class ApplicationStarter {
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter();
         registrationBean.setFilter(jwtTokenFilter);
         registrationBean.addUrlPatterns("/*");
-        registrationBean.addInitParameter("excludedPages","/app/employee/login");
+        registrationBean.addInitParameter("excludedPages","/app/employee/login,/app/customer/login," +
+                "/app/customer/registry,/app/city/list,/app/employee/password/modify");
         return registrationBean;
     }
 }

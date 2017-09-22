@@ -11,4 +11,14 @@ import cn.com.leyizhuang.app.foundation.pojo.AppUser;
 public interface IAppUserService {
 
     AppUser findByLoginName(String loginName);
+
+    AppUser findByOpenId(String openId);
+
+    AppUser findByMobile(String mobile);
+
+    void update(AppUser newUser);
+
+    AppUser save(AppUser newUser);
+
+    AppUser findById(Long userId);
 }

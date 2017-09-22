@@ -17,4 +17,11 @@ public class LoginParam {
     private String name;
     private String password;
 
+    private String openId;
+    private String picUrl;
+    private String nickName;
+    private Boolean sex;
+    private String phone;
+    private Long cityId;
+
 }

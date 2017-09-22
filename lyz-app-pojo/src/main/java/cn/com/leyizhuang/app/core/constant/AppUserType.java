@@ -6,7 +6,8 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum AppUserType {
 
-    SELLER(0,"导购"), DELIVERY_CLERK(1,"配送员"),DECORATE_MANAGER(2,"装饰公司经理"),DECORATE_EMPLOYEE(3,"装饰公司员工");
+    SELLER(0,"导购"), DELIVERY_CLERK(1,"配送员"),DECORATE_MANAGER(2,"装饰公司经理"),DECORATE_EMPLOYEE(3,"装饰公司员工"),
+    MEMBER(4,"会员");
 
     private final int value;
     private final String description;
