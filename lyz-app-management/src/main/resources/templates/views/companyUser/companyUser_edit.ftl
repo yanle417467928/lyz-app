@@ -83,7 +83,7 @@
                                 </label>
                                 <select size="5" id="companyId" name="companyId" class="form-control select"
                                         data-live-search="true">
-                                    <option value='0' selected>
+                                    <option value='' selected>
                                         请选择装饰公司
                                     </option>
                                 <#list fitmentCompanyVOList as fitmentCompanyVO>
