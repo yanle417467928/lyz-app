@@ -2,10 +2,10 @@ package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppUser;
-import cn.com.leyizhuang.app.foundation.pojo.LoginParam;
-import cn.com.leyizhuang.app.foundation.pojo.rest.EmployeeLoginResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppUserService;
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
+import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 获取token的接口
+ * App 员工相关http接口
  *
  * @author Richard
  * Created on 2017-09-19 9:44
@@ -32,10 +32,16 @@ public class EmployeeController {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @Resource
-    private IAppUserService appUserService;
+    private IAppEmployeeService appEmployeeService;
 
+    /**
+     *  App 员工登录接口
+     * @param loginParam
+     * @param response
+     * @return
+     */
     @PostMapping(value = "/login",produces="application/json;charset=UTF-8")
-    public ResultDTO<EmployeeLoginResponse> employeeLogin(LoginParam loginParam, HttpServletResponse response) {
+    public ResultDTO<EmployeeLoginResponse> employeeLogin(EmployeeLoginParam loginParam, HttpServletResponse response) {
         ResultDTO<EmployeeLoginResponse> resultDTO;
         try {
             if (null == loginParam.getName() || "".equalsIgnoreCase(loginParam.getName())) {
@@ -46,23 +52,23 @@ public class EmployeeController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码不允许为空！", null);
                 return resultDTO;
             }
-            AppUser user = appUserService.findByLoginName(loginParam.getName());
-            if (user == null) {
+            AppEmployee employee = appEmployeeService.findByLoginName(loginParam.getName());
+            if (employee == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！", null);
                 return resultDTO;
             } else {
-                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(loginParam.getPassword()) + user.getSalt()).getBytes("UTF-8"));
-                if (md5Password.compareTo(user.getPassword()) != 0) {
+                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(loginParam.getPassword()) + employee.getSalt()).getBytes("UTF-8"));
+                if (md5Password.compareTo(employee.getPassword()) != 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码错误！", null);
                     return resultDTO;
                 }
             }
             //拼装accessToken
-            String accessToken = JwtUtils.createJWT(String.valueOf(user.getId()),String.valueOf(user.getLoginName()),
+            String accessToken = JwtUtils.createJWT(String.valueOf(employee.getId()),String.valueOf(employee.getLoginName()),
                      JwtConstant.EXPPIRES_SECOND *1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(user.getUserType().getValue()));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(employee.getEmployeeType().getValue()));
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,6 +78,11 @@ public class EmployeeController {
         }
     }
 
+    /** App 员工修改密码
+     * @param mobile
+     * @param password
+     * @return
+     */
     @PostMapping(value = "/password/modify",produces="application/json;charset=UTF-8")
     public ResultDTO<String> employeeModifyPassword(String mobile, String password) {
         ResultDTO<String> resultDTO;
@@ -84,26 +95,19 @@ public class EmployeeController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码不允许为空！", null);
                 return resultDTO;
             }
-            AppUser user = appUserService.findByMobile(mobile);
-            if (user == null) {
+            AppEmployee employee = appEmployeeService.findByMobile(mobile);
+            if (employee == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不存在！", null);
                 return resultDTO;
             } else {
-                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + user.getSalt()).getBytes("UTF-8"));
-                AppUser newUser = new AppUser();
-                newUser.setId(user.getId());
-                newUser.setPassword(md5Password);
-                appUserService.update(newUser);
+                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + employee.getSalt()).getBytes("UTF-8"));
+                AppEmployee newEmployee = new AppEmployee();
+                newEmployee.setId(employee.getId());
+                newEmployee.setPassword(md5Password);
+                appEmployeeService.update(newEmployee);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
                 return resultDTO;
             }
-            /*//拼装accessToken
-            String accessToken = JwtUtils.createJWT(String.valueOf(user.getId()),String.valueOf(user.getLoginName()),
-                    JwtConstant.EXPPIRES_SECOND *1000);
-            System.out.println(accessToken);
-            response.setHeader("token", accessToken);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(user.getUserType().getValue()));
-            return resultDTO;*/
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("修改密码出现未知异常");

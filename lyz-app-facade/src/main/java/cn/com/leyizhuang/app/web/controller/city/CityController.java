@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.city;
 
 import cn.com.leyizhuang.app.foundation.pojo.City;
-import cn.com.leyizhuang.app.foundation.pojo.rest.CityListResponse;
-import cn.com.leyizhuang.app.foundation.service.Impl.CityService;
+import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
+import cn.com.leyizhuang.app.foundation.service.impl.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.qrcode;
 
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
-import cn.com.leyizhuang.app.foundation.pojo.rest.QrCodeResponse;
-import cn.com.leyizhuang.app.foundation.service.Impl.SmsAccountService;
+import cn.com.leyizhuang.app.foundation.pojo.response.QrCodeResponse;
+import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;

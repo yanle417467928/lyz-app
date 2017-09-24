@@ -1,15 +1,18 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
-import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppUser;
-import cn.com.leyizhuang.app.foundation.pojo.LoginParam;
-import cn.com.leyizhuang.app.foundation.pojo.rest.CustomerBindingSellerResponse;
-import cn.com.leyizhuang.app.foundation.pojo.rest.CustomerLoginResponse;
-import cn.com.leyizhuang.app.foundation.pojo.rest.CustomerRegistResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppUserService;
+import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.request.CustomerLoginParam;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerBindingSellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerLoginResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRegistResponse;
+import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
+import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -33,8 +36,20 @@ public class CustomerController {
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @Resource
-    private IAppUserService appUserService;
+    private IAppCustomerService customerService;
 
+    @Resource
+    private IAppEmployeeService employeeService;
+
+    @Resource
+    private IAppStoreService storeService;
+
+    /**
+     *  App 顾客登录
+     * @param openId
+     * @param response
+     * @return
+     */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerLoginResponse> customerLogin(String openId, HttpServletResponse response) {
         ResultDTO<CustomerLoginResponse> resultDTO;
@@ -43,19 +58,19 @@ public class CustomerController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId为空！", null);
                 return resultDTO;
             }
-            AppUser user = appUserService.findByOpenId(openId);
-            if (user == null) {
+            AppCustomer customer = customerService.findByOpenId(openId);
+            if (customer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！",
                         new CustomerLoginResponse(Boolean.FALSE, null, null));
                 return resultDTO;
             }
             //拼装accessToken
-            String accessToken = JwtUtils.createJWT(String.valueOf(user.getId()), String.valueOf(user.getLoginName()),
+            String accessToken = JwtUtils.createJWT(String.valueOf(customer.getId()), String.valueOf(customer.getMobile()),
                     JwtConstant.EXPPIRES_SECOND * 1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerLoginResponse(Boolean.TRUE, user.getId(), user.getMobile()));
+                    new CustomerLoginResponse(Boolean.TRUE, customer.getId(), customer.getMobile()));
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,8 +80,14 @@ public class CustomerController {
         }
     }
 
+    /**
+     *  App 顾客注册
+     * @param loginParam
+     * @param response
+     * @return
+     */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerRegistResponse> customerRegist(LoginParam loginParam, HttpServletResponse response) {
+    public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerLoginParam loginParam, HttpServletResponse response) {
         ResultDTO<CustomerRegistResponse> resultDTO;
         try {
             if (null == loginParam.getOpenId() || "".equalsIgnoreCase(loginParam.getOpenId())) {
@@ -81,20 +102,19 @@ public class CustomerController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
                 return resultDTO;
             }
-            AppUser user = appUserService.findByOpenId(loginParam.getOpenId());
-            if (user != null) {
+            AppCustomer customer = customerService.findByOpenId(loginParam.getOpenId());
+            if (customer != null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId已存在！",
-                        new CustomerRegistResponse(Boolean.TRUE, user.getId()));
+                        new CustomerRegistResponse(Boolean.TRUE, customer.getId()));
                 return resultDTO;
             }
-            AppUser phoneUser = appUserService.findByMobile(loginParam.getPhone());
+            AppCustomer phoneUser = customerService.findByMobile(loginParam.getPhone());
             if (phoneUser != null) {
                 phoneUser.setOpenId(loginParam.getOpenId());
                 phoneUser.setNickName(loginParam.getNickName());
                 phoneUser.setPicUrl(loginParam.getPicUrl());
-                phoneUser.setLoginName(loginParam.getOpenId());
-                appUserService.update(phoneUser);
-                String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getId()), String.valueOf(phoneUser.getLoginName()),
+                customerService.update(phoneUser);
+                String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getId()), String.valueOf(phoneUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
                 System.out.println(accessToken);
                 response.setHeader("token", accessToken);
@@ -102,19 +122,17 @@ public class CustomerController {
                         new CustomerRegistResponse(Boolean.FALSE, phoneUser.getId()));
                 return resultDTO;
             } else {
-                AppUser newUser = new AppUser();
+                AppCustomer newUser = new AppCustomer();
                 newUser.setOpenId(loginParam.getOpenId());
                 newUser.setStatus(Boolean.TRUE);
-                newUser.setUserType(AppUserType.MEMBER);
                 newUser.setSex((null != loginParam.getSex() && !loginParam.getSex()) ? SexType.FEMALE : SexType.MALE);
                 newUser.setNickName(loginParam.getNickName());
                 newUser.setPicUrl(loginParam.getPicUrl());
                 newUser.setCityId(loginParam.getCityId());
                 newUser.setMobile(loginParam.getPhone());
-                newUser.setLoginName(loginParam.getOpenId());
-                AppUser returnUser = appUserService.save(newUser);
+                AppCustomer returnUser = customerService.save(newUser);
                 //拼装accessToken
-                String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getId()), String.valueOf(returnUser.getLoginName()),
+                String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
                 System.out.println(accessToken);
                 response.setHeader("token", accessToken);
@@ -130,8 +148,14 @@ public class CustomerController {
         }
     }
 
+    /**
+     *  App 顾客绑定导购
+     * @param userId
+     * @param guidePhone
+     * @return
+     */
     @PostMapping(value = "/binding/seller", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerBindingSellerResponse> custonerBindingSeller(Long userId, String guidePhone) {
+    public ResultDTO<CustomerBindingSellerResponse> customerBindingSeller(Long userId, String guidePhone) {
         ResultDTO<CustomerBindingSellerResponse> resultDTO;
         try {
             if (null == userId) {
@@ -142,23 +166,28 @@ public class CustomerController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不能为空！", new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
                 return resultDTO;
             }
-            AppUser user = appUserService.findById(userId);
+            AppCustomer user = customerService.findById(userId);
             if (user == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！",
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
                 return resultDTO;
             }
-            AppUser seller = appUserService.findByMobile(guidePhone);
+            AppEmployee seller = employeeService.findByMobile(guidePhone);
             if (seller == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购不存在！",
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
                 return resultDTO;
             }
-            user.setGuideId(seller.getId());
-            user.setGuideName(seller.getName());
-            appUserService.update(user);
+            AppStore store = storeService.findById(seller.getId());
+            if(store == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"该导购没有绑定有效的门店信息",
+                        null);
+                return resultDTO;
+            }
+            user.setSalesConsultId(seller.getId());
+            customerService.update(user);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), seller.getStoreName()));
+                    new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
