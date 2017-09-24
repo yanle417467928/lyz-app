@@ -1,11 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.advice;
 
-import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
-import cn.com.leyizhuang.app.foundation.service.AppAdminMenuService;
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;

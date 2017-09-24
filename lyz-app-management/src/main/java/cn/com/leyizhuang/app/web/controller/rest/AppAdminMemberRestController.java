@@ -1,13 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMemberDTO;
+import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
-import cn.com.leyizhuang.app.foundation.service.AppAdminStoreService;
+import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
@@ -58,10 +58,10 @@ public class AppAdminMemberRestController extends BaseRestController{
         this.salesConsultService = salesConsultService;
     }
 
-    private AppAdminStoreService storeService;
+    private IAppStoreService storeService;
 
     @Autowired
-    public void setStoreService(AppAdminStoreService storeService) {
+    public void setStoreService(IAppStoreService storeService) {
         this.storeService = storeService;
     }
 
@@ -200,14 +200,14 @@ public class AppAdminMemberRestController extends BaseRestController{
     @PostMapping(value = "/change/consult")
     public Map<String,Object> restMemberChangeSalesConsult(Long consultId) {
         Map<String, Object> map = new HashMap<String, Object>();
-        List<Store> allStoreList = new ArrayList<>();
+        List<AppStore> allAppStoreList = new ArrayList<>();
         if (null != consultId){
-            allStoreList = storeService.findAll();
+            allAppStoreList = storeService.findAll();
         }
         SalesConsult consult = salesConsultService.findByConsultId(consultId);
         Long storeId = consult.getAscriptionStoreId();
         map.put("code", 0);
-        map.put("all_store_list", allStoreList);
+        map.put("all_store_list", allAppStoreList);
         map.put("storeId",storeId);
         return map;
     }

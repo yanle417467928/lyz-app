@@ -1,12 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.resource;
 
-import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
-import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import com.github.pagehelper.PageInfo;
+import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 

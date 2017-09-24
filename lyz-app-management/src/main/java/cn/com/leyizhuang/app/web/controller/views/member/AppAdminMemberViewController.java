@@ -3,15 +3,13 @@ package cn.com.leyizhuang.app.web.controller.views.member;
 import cn.com.leyizhuang.app.core.constant.AccountStatus;
 import cn.com.leyizhuang.app.core.constant.IdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;
-import cn.com.leyizhuang.app.foundation.pojo.Member;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
-import cn.com.leyizhuang.app.foundation.pojo.Store;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
-import cn.com.leyizhuang.app.foundation.service.AppAdminStoreService;
+import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,9 +41,9 @@ public class AppAdminMemberViewController {
         this.memberService = memberService;
     }
 
-    private AppAdminStoreService storeService;
+    private IAppStoreService storeService;
     @Autowired
-    public void setStoreService(AppAdminStoreService storeService) {
+    public void setStoreService(IAppStoreService storeService) {
         this.storeService = storeService;
     }
 
@@ -75,11 +73,11 @@ public class AppAdminMemberViewController {
 
     @GetMapping(value = "/add")
     public String memberAddPage(Model model) {
-        List<Store> storeList;
-        storeList = storeService.findAll();
+        List<AppStore> appStoreList;
+        appStoreList = storeService.findAll();
         List<SalesConsult> consultList;
         consultList = salesConsultService.findAll();
-        model.addAttribute("store_list",storeList);
+        model.addAttribute("store_list", appStoreList);
         model.addAttribute("sales_consult_list",consultList);
         model.addAttribute("identityType_list", IdentityType.values());
         model.addAttribute("sex_list", SexType.values());
@@ -96,12 +94,12 @@ public class AppAdminMemberViewController {
     @RequestMapping(value = "/edit/{id}")
     public String selectUser(Model model, @PathVariable Long id){
         AppAdminMemberVO memberVO= memberService.queryMemberVOById(id);
-        List<Store> storeList = new ArrayList<>();
-        storeList = storeService.findAll();
+        List<AppStore> appStoreList = new ArrayList<>();
+        appStoreList = storeService.findAll();
         List<SalesConsult> salesConsultList = new ArrayList<>();
         salesConsultList = salesConsultService.findAll();
         model.addAttribute("sales_consult_list",salesConsultList);
-        model.addAttribute("store_list",storeList);
+        model.addAttribute("store_list", appStoreList);
         model.addAttribute("identityType_list", IdentityType.values());
         model.addAttribute("sex_list", SexType.values());
         model.addAttribute("account_status_list", AccountStatus.values());

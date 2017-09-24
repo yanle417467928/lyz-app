@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.role;
 
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
-import cn.com.leyizhuang.app.foundation.pojo.Role;
-import cn.com.leyizhuang.app.foundation.service.ResourceService;
-import cn.com.leyizhuang.app.foundation.service.RoleService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
+import cn.com.leyizhuang.app.foundation.pojo.Role;
+import cn.com.leyizhuang.app.foundation.service.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +12,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
 
 /**
  * 资源控制器

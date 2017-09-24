@@ -1,13 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.views.user;
 
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.User;
-import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
-import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 管理员控制器
