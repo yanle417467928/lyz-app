@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO">
+
+    <insert id="save" parameterType="AppCustomer" useGeneratedKeys="true"
+            keyColumn="ID" keyProperty="id">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            select LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO app_customer (name, mobile, birthday, status, sex, open_id,
+                                  pic_url, nick_name, city_id, sales_consult_id
+        ) VALUES (
+            #{name}, #{mobile}, #{birthday}, #{status},
+            #{sex,
+            javaType=cn.com.leyizhuang.app.core.constant.SexType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            #{open_id}, #{pic_url}, #{nick_name}, #{city_id}, #{sales_consult_id}
+        )
+    </insert>
+
+    <select id="findByMobile" parameterType="java.lang.String" resultType="AppCustomer">
+        SELECT *
+        FROM app_customer
+        WHERE mobile = #{mobile}
+    </select>
+
+    <update id="update" parameterType="AppCustomer">
+        UPDATE app_customer
+        <set>
+            <if test="null != name">
+                name = #{name},
+            </if>
+            <if test="null != mobile">
+                mobile = #{mobile},
+            </if>
+            <if test="null != birthday">
+                birthday = #{birthday},
+            </if>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != sex">
+                sex = #{sex,
+                    javaType=cn.com.leyizhuang.app.core.constant.SexType,
+                    typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != openId">
+                open_id = #{openId},
+            </if>
+            <if test="null != picUrl">
+                pic_url = #{picUrl},
+            </if>
+            <if test="null != nickName">
+                nick_name = #{nickName},
+            </if>
+            <if test="null != cityId">
+                city_id = #{cityId},
+            </if>
+            <if test="null != salesConsultId">
+                sales_consult_id = #{salesConsultId},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="AppCustomer">
+        SELECT *
+        FROM app_customer
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByOpenId" parameterType="java.lang.String" resultType="AppCustomer">
+        SELECT *
+        FROM app_customer where open_id = #{openId}
+    </select>
+    
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.FitmentCompanyDAO">
+
+    <resultMap id="companyResult" type="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="NAME" property="name"/>
+        <result column="CODE" property="code"/>
+        <result column="ADDRESS" property="address"/>
+        <result column="PHONE" property="phone"/>
+        <result column="SORT_ID" property="sortId"/>
+        <result column="CREDIT" property="credit"/>
+        <result column="PROMOTION_MONEY" property="promotionMoney"/>
+        <result column="WALLET_MONEY" property="walletMoney"/>
+        <result column="FROZEN" property="frozen"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="companyResult">
+        SELECT *
+        FROM FITMENT_COMPANY
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="queryListByFrozen" resultMap="companyResult">
+        SELECT ID, NAME
+        FROM FITMENT_COMPANY
+        WHERE FROZEN = #{frozen}
+    </select>
+
+    <select id="queryById" parameterType="java.lang.Long" resultMap="companyResult">
+        SELECT *
+        FROM FITMENT_COMPANY WHERE ID = #{id}
+    </select>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO">
+        UPDATE FITMENT_COMPANY
+        <set>
+            <if test="null != modifierId">
+                MODIFIER_ID = #{modifierId},
+            </if>
+            <if test="null != modifierType">
+                MODIFIER_TYPE = #{modifierType},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+            <if test="null != name">
+                NAME = #{name},
+            </if>
+            <if test="null != code">
+                CODE = #{code},
+            </if>
+            <if test="null != address">
+                ADDRESS = #{address},
+            </if>
+            <if test="null != phone">
+                PHONE = #{phone},
+            </if>
+            <if test="null != credit">
+                CREDIT = #{credit},
+            </if>
+            <if test="null != promotionMoney">
+                PROMOTION_MONEY = #{promotionMoney},
+            </if>
+            <if test="null != walletMoney">
+                WALLET_MONEY = #{walletMoney},
+            </if>
+            <if test="null != frozen">
+                FROZEN = #{frozen},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO">
+      INSERT INTO FITMENT_COMPANY(
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        NAME, CODE, ADDRESS, PHONE, CREDIT, PROMOTION_MONEY, WALLET_MONEY, FROZEN
+      ) VALUES (
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{name}, #{code}, #{address}, #{phone}, #{credit}, #{promotionMoney}, #{walletMoney}, #{frozen}
+      )
+    </insert>
+
+</mapper>

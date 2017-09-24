@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ResourceDAO">
+
+    <sql id="resourceAllFields">
+        NAME, URL, DESCRIPTION, ICON, STATUS, RESOURCE_TYPE, CREATE_TIME, SEQ, PID
+    </sql>
+    <select id="queryList" resultType="Resource">
+        SELECT *
+        FROM resource
+        ORDER BY SEQ
+    </select>
+    <select id="queryByPid" resultType="Resource">
+        SELECT *
+        FROM resource
+        WHERE PID = #{pid}
+        ORDER BY SEQ
+    </select>
+    <insert id="save" parameterType="Resource">
+        INSERT INTO resource (NAME, URL, DESCRIPTION, ICON, STATUS, RESOURCE_TYPE, CREATE_TIME, SEQ, PID)
+        VALUES (#{name}, #{url}, #{description}, #{icon}, #{status}, #{resourceType}, #{createTime}, #{seq}, #{pid})
+    </insert>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="Resource">
+        SELECT *
+        FROM resource
+        WHERE ID = #{id};
+    </select>
+
+    <select id="queryListVO" resultType="ResourceVO">
+        SELECT
+            r.ID            id,
+            r.NAME          resource_name,
+            r.DESCRIPTION   resource_description,
+            pr.id           parent_resource_id,
+            pr.NAME         parent_resource_name,
+            pr.DESCRIPTION  parent_resource_description,
+            r.URL           url,
+            r.seq           seq,
+            r.ICON          icon,
+            r.STATUS        status,
+            r.RESOURCE_TYPE resource_type
+        FROM resource r LEFT JOIN resource pr ON r.PID = pr.ID
+    </select>
+
+    <update id="updateVO" parameterType="ResourceVO">
+        UPDATE resource
+        <set>
+            <if test="null != resourceName">
+                NAME = #{resourceName},
+            </if>
+            <if test="null != resourceDescription">
+                DESCRIPTION = #{resourceDescription},
+            </if>
+            <if test="null != parentResourceId">
+                PID = #{parentResourceId},
+            </if>
+            <if test="null != url">
+                URL = #{url},
+            </if>
+            <if test="null != seq">
+                SEQ = #{seq},
+            </if>
+            <if test="null != icon">
+                ICON = #{icon},
+            </if>
+            <if test="null != status">
+                STATUS = #{status},
+            </if>
+            <if test="null != resourceType">
+                RESOURCE_TYPE = #{resourceType}
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="update" parameterType="Resource">
+        UPDATE resource
+        <set>
+            <if test="null != name">
+                NAME = #{name},
+            </if>
+            <if test="null != description">
+                DESCRIPTION = #{description},
+            </if>
+            <if test="null != pid">
+                PID = #{pid},
+            </if>
+            <if test="null != url">
+                URL = #{url},
+            </if>
+            <if test="null != seq">
+                SEQ = #{seq},
+            </if>
+            <if test="null != icon">
+                ICON = #{icon},
+            </if>
+            <if test="null != status">
+                STATUS = #{status},
+            </if>
+            <if test="null != resourceType">
+                RESOURCE_TYPE = #{resourceType}
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+    <select id="countByPId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select count(*) from resource where PID = #{id}
+    </select>
+
+    <delete id="batchRemove" parameterType="java.util.List">
+        DELETE FROM resource WHERE ID IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByType" parameterType="java.lang.Integer" resultType="Resource">
+        SELECT * FROM resource WHERE RESOURCE_TYPE = #{type}
+    </select>
+    <select id="queryVOById" parameterType="java.lang.Long" resultType="ResourceVO">
+        SELECT
+            r.ID id,
+            r.`NAME` resource_name,
+            r.DESCRIPTION resource_description,
+            r.PID parent_resource_id,
+            r1.`NAME` parent_resource_name,
+            r1.DESCRIPTION parent_resource_description,
+            r.URL url,
+            r.SEQ seq,
+            r.ICON icon,
+            r.`STATUS` STATUS,
+            r.RESOURCE_TYPE resource_type
+        FROM
+            resource r
+            LEFT JOIN resource r1 ON r.PID = r1.ID
+        WHERE r.ID = #{id}
+    </select>
+
+    <select id="queryParentIdsByIds" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT
+            DISTINCT  PID
+        FROM
+            resource
+        WHERE
+            ID IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

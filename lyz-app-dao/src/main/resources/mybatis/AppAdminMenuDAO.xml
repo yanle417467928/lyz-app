@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppAdminMenuDAO">
+
+    <sql id="ALL_FIELDS">
+        ID, CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        TITLE, ICON_STYLE, PARENT_ID,PARENT_TITLE, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+    </sql>
+
+    <resultMap id="menuResult" type="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
+        <id column="ID" property="id"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="TITLE" property="title"/>
+        <result column="ICON_STYLE" property="iconStyle"/>
+        <result column="PARENT_ID" property="parentId"/>
+        <result column="PARENT_TITLE" property="parentTitle"/>
+        <result column="LINK_URI" property="linkUri"/>
+        <result column="SORT_ID" property="sortId"/>
+        <result column="TYPE" property="type"
+                javaType="cn.com.leyizhuang.app.core.constant.AppAdminMenuType"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="REFERENCE_TABLE" property="referenceTable"/>
+    </resultMap>
+
+    <!--<resultMap id="parentNodeResult" type="cn.com.leyizhuang.app.facadendation.pojo.AppAdminMenuDO$ParentNode">
+        <result column="PARENT_ID" property="id"/>
+        <result column="PARENT_TITLE" property="title"/>
+    </resultMap>-->
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO admin_menu (
+            CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+            TITLE, ICON_STYLE, PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+        ) VALUES(
+            #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+            #{title}, #{iconStyle}, #{parentId}, #{linkUri},#{sortId},
+            #{type,
+                javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler
+            }, #{referenceTable}
+        )
+    </insert>
+
+    <delete id="remove" parameterType="java.lang.Long">
+        DELETE FROM admin_menu WHERE ID = #{id}
+    </delete>
+    <delete id="batchRemove">
+        DELETE FROM admin_menu WHERE ID IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
+        UPDATE admin_menu
+        <set>
+            <if test="null != title">
+                TITLE = #{title},
+            </if>
+            <if test="null != iconStyle">
+                ICON_STYLE = #{iconStyle},
+            </if>
+            <if test="null != parentId">
+                PARENT_ID = #{parentId},
+            </if>
+            <if test="null != parentTitle">
+                PARENT_TITLE = #{parentTitle},
+            </if>
+            <if test="null != linkUri">
+                LINK_URI = #{linkUri},
+            </if>
+            <if test="null != sortId">
+                SORT_ID = #{sortId},
+            </if>
+            <if test="null != type">
+                TYPE = #{type,
+                            javaType=cn.com.leyizhuang.hq.core.constant.AppAdminMenuType,
+                            typeHandler=org.apache.ibatis.type.EnumTypeHandler
+                        },
+            </if>
+            <if test="null != referenceTable">
+                REFERENCE_TABLE = #{referenceTable},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO">
+        UPDATE admin_menu
+        <set>
+            <if test="null != title">
+                TITLE = #{title},
+            </if>
+            <if test="null != iconStyle">
+                ICON_STYLE = #{iconStyle},
+            </if>
+            <if test="null != parentId">
+                PARENT_ID = #{parentId},
+            </if>
+            <if test="null != parentTitle">
+                PARENT_ID = #{parentTitle},
+            </if>
+            <if test="null != linkUri">
+                LINK_URI = #{linkUri},
+            </if>
+            <if test="null != sortId">
+                SORT_ID = #{sortId},
+            </if>
+            <if test="null != type">
+                TYPE = #{type,
+                            javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
+                            typeHandler=org.apache.ibatis.type.EnumTypeHandler
+                        },
+            </if>
+            <if test="null != referenceTable">
+                REFERENCE_TABLE = #{referenceTable},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultMap="menuResult">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM admin_menu WHERE ID = #{id}
+    </select>
+
+    <select id="queryMenuById" parameterType="java.lang.Long" resultMap="menuResult">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM admin_menu WHERE ID = #{id}
+    </select>
+    
+    <select id="queryList" resultMap="menuResult">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM admin_menu
+    </select>
+
+    <select id="queryByParentId" resultMap="menuResult">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM admin_menu WHERE PARENT_ID = #{parentId}
+    </select>
+    <select id="existsByTitleAndIdNot" resultType="java.lang.Boolean">
+        SELECT
+            EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        admin_menu
+                    WHERE
+                        TITLE = #{title}
+                            <if test="null != id">
+                                AND id != #{id});
+                            </if>
+
+    </select>
+
+    <select id="countByParentId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM admin_menu WHERE PARENT_ID = #{parentId}
+    </select>
+
+</mapper>
