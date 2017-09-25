@@ -18,4 +18,8 @@ public interface IAppEmployeeService {
     AppEmployee findByMobile(String mobile);
 
     void update(AppEmployee newEmployee);
+
+    AppEmployee findByUserId(Long userId);
+
+    AppEmployee findById(Long userId);
 }

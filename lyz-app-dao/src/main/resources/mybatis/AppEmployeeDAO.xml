@@ -68,4 +68,16 @@
         </set>
         WHERE ID = #{id}
     </update>
+    <select id="findByUserId" parameterType="java.lang.Long" resultType="AppEmployee">
+        SELECT *
+        FROM app_employee
+        WHERE id = (SELECT c.sales_consult_id
+                    FROM app_customer c
+                    WHERE c.id = #{userId})
+    </select>
+    <select id="findById" parameterType="java.lang.Long" resultType="AppEmployee">
+        SELECT *
+        FROM app_employee
+        WHERE id = #{userId}
+    </select>
 </mapper>

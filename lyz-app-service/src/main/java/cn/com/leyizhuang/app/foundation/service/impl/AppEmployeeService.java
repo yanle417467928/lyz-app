@@ -50,4 +50,20 @@ public class AppEmployeeService implements IAppEmployeeService {
             employeeDAO.update(newEmployee);
         }
     }
+
+    @Override
+    public AppEmployee findByUserId(Long userId) {
+        if (null != userId){
+            return employeeDAO.findByUserId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public AppEmployee findById(Long userId) {
+        if (null != userId){
+            return employeeDAO.findById(userId);
+        }
+        return null;
+    }
 }
