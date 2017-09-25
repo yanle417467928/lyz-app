@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,7 @@ public class ProcessController {
         processService.update(processDO);
         return "修改工序包信息成功";
     }
+
 
     @RequestMapping(value = "/delete")
     public String delete() {
