@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ProcessDAO">
+
+    <resultMap id="ProcessMap" type="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        <id column="ID" property="id"/>
+        <result column="CREATOR_ID" property="creatorId"/>
+        <result column="CREATOR_TYPE" property="creatorType"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFIER_ID" property="modifierId"/>
+        <result column="MODIFIER_TYPE" property="modifierType"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="PROCESS_NAME" property="processName"/>
+    </resultMap>
+
+
+    <select id="selectByProcessName" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        SELECT * FROM process where PROCESS_NAME = #{processName};
+    </select>
+    <select id="selectById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        SELECT * FROM process where ID = #{id};
+    </select>
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        SELECT *
+        FROM process
+    </select>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        INSERT INTO process
+        (
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        PROCESS_NAME
+        )VALUES (
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{processName}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM  process WHERE ID = #{id};
+    </delete>
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        UPDATE process
+        <set>
+            <if test="null != processName">
+                PROCESS_NAME = #{processName},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <select id="findAllProcessAndGoods" resultMap="ProcessMap">
+        SELECT
+        p.ID,p.PROCESS_NAME,
+
+        g.ID as g_id,g.GOODS_NAME as g_goodsName,g.GOODS_CODE as g_goodsCode
+        FROM
+        process p LEFT JOIN process_goods pg
+        ON p.id=pg.p_id
+        LEFT JOIN goods g
+        ON g.id=pg.g_id
+        WHERE p.id=pg.p_id
+    </select>
+
+    <select id="findProcessAndGoodsByName" >
+        SELECT
+        p.ID,p.PROCESS_NAME,
+
+        g.ID as g_id,g.GOODS_NAME as g_goodsName,g.GOODS_CODE as g_goodsCode
+        FROM
+        process p LEFT JOIN process_goods pg
+        ON p.id=pg.p_id
+        LEFT JOIN goods g
+        ON g.id=pg.g_id
+        WHERE p.PROCESS_NAME = #{processName}
+    </select>
+
+
+
+    <insert id="saveProcessAndGoods">
+        INSERT INTO process_goods
+        (
+        g_ID, p_ID
+        )VALUES (
+        #{gid},#{pid}
+        )
+    </insert>
+
+    <delete id="deleteProcessAndGoodsByGID">
+        DELETE FROM process_goods WHERE g_ID=#{gid}
+    </delete>
+
+</mapper>

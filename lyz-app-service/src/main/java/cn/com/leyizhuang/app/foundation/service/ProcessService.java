@@ -29,5 +29,5 @@ public interface ProcessService {
 
     List<ProcessDO> findAllProcessAndGoods();
 
-    void saveProcessAndGoods(Long pID,Long gID);
+    void saveProcessAndGoods(Long pID, Long gID);
 }

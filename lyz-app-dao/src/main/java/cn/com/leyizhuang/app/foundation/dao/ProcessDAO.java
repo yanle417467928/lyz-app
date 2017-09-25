@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public interface ProcessDAO {
     List<ProcessDO> findAllProcessAndGoods();
 
     //保存Goods（商品）与Process（工序包）对应关系
-    void saveProcessAndGoods(@Param("gid") Long gID,@Param("pid") Long pID);
+    void saveProcessAndGoods(@Param("gid") Long gID, @Param("pid") Long pID);
 
     //根据工序包名称查询对应的商品（暂时没有返回数据）
     void findProcessAndGoodsByName(@Param("processName") String processName);
