@@ -42,24 +42,29 @@ public class EmployeeController {
      */
     @PostMapping(value = "/login",produces="application/json;charset=UTF-8")
     public ResultDTO<EmployeeLoginResponse> employeeLogin(EmployeeLoginParam loginParam, HttpServletResponse response) {
+        logger.info("employeeLogin CALLED,员工登录，入参 loginParam:{}",loginParam.toString());
         ResultDTO<EmployeeLoginResponse> resultDTO;
         try {
             if (null == loginParam.getName() || "".equalsIgnoreCase(loginParam.getName())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户名不允许为空！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}",resultDTO);
                 return resultDTO;
             }
             if (null == loginParam.getPassword() || "".equalsIgnoreCase(loginParam.getPassword())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码不允许为空！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}",resultDTO);
                 return resultDTO;
             }
             AppEmployee employee = appEmployeeService.findByLoginName(loginParam.getName());
             if (employee == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}",resultDTO);
                 return resultDTO;
             } else {
                 String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(loginParam.getPassword()) + employee.getSalt()).getBytes("UTF-8"));
                 if (md5Password.compareTo(employee.getPassword()) != 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码错误！", null);
+                    logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}",resultDTO);
                     return resultDTO;
                 }
             }
@@ -69,11 +74,12 @@ public class EmployeeController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(employee.getEmployeeType().getValue()));
+            logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("登录出现异常");
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常", null);
+            logger.warn("employeeLogin EXCEPTION,员工登录出现异常,出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
     }
@@ -85,19 +91,23 @@ public class EmployeeController {
      */
     @PostMapping(value = "/password/modify",produces="application/json;charset=UTF-8")
     public ResultDTO<String> employeeModifyPassword(String mobile, String password) {
+        logger.info("employeeModifyPassword CALLED,员工修改密码，参数: mobile{},password{}",mobile,password);
         ResultDTO<String> resultDTO;
         try {
             if (null == mobile || "".equalsIgnoreCase(mobile)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不允许为空！", null);
+                logger.info("employeeModifyPassword OUT,员工修改密码失败，返回值resultDTO:{}",resultDTO);
                 return resultDTO;
             }
             if (null == password || "".equalsIgnoreCase(password)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码不允许为空！", null);
+                logger.info("employeeModifyPassword OUT,员工修改密码失败，返回值resultDTO:{}",resultDTO);
                 return resultDTO;
             }
             AppEmployee employee = appEmployeeService.findByMobile(mobile);
             if (employee == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不存在！", null);
+                logger.info("employeeModifyPassword OUT,员工修改密码失败，返回值resultDTO:{}",resultDTO);
                 return resultDTO;
             } else {
                 String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + employee.getSalt()).getBytes("UTF-8"));
@@ -106,12 +116,13 @@ public class EmployeeController {
                 newEmployee.setPassword(md5Password);
                 appEmployeeService.update(newEmployee);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+                logger.info("employeeModifyPassword OUT,员工修改密码失败，返回值resultDTO:{}",resultDTO);
                 return resultDTO;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("修改密码出现未知异常");
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，密码修改失败", null);
+            logger.warn("employeeModifyPassword EXCEPTION,员工修改密码出现未知异常,返回值resultDTO:{}",resultDTO);
             return resultDTO;
         }
     }

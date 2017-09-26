@@ -59,6 +59,9 @@
             <if test="null != salesConsultId">
                 sales_consult_id = #{salesConsultId},
             </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
         </set>
         WHERE ID = #{id}
     </update>

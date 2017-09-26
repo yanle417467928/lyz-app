@@ -2,8 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppProductCategoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ProductCategory;
-import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.IAppProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;

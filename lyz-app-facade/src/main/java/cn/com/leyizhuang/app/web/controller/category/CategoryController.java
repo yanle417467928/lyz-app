@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.category;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.SecondCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
 import cn.com.leyizhuang.app.foundation.service.IAppProductCategoryService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;

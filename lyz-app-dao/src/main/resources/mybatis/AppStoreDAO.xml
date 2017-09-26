@@ -9,5 +9,9 @@
    <select id="findById" parameterType="java.lang.Long" resultType="AppStore">
       SELECT * FROM app_store where ID = #{id}
    </select>
+   
+   <select id="findDefaultStoreByCityId" parameterType="java.lang.Long" resultType="AppStore">
+       SELECT * FROM app_store where IS_DEFAULT IS TRUE AND city_id = #{cityId}
+   </select>
 
 </mapper>

@@ -22,14 +22,20 @@ public class AppStore extends BaseDO{
         super();
     }
 
-    public AppStore(String storeName, String storeCode) {
-        super();
 
-        this.storeName = storeName;
-        this.storeCode = storeCode;
-    }
-
+    //门店名称
     private String storeName;
+
+    //门店编码
     private String storeCode;
+
+    //是否默认门店
+    private Boolean isDefault;
+
+    //城市id
+    private Long cityId;
+
+
+
 
 }

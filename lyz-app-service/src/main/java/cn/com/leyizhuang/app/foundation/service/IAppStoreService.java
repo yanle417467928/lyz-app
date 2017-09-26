@@ -16,4 +16,6 @@ public interface IAppStoreService extends BaseService<AppStore> {
     List<AppStore> findAll();
 
     AppStore findById(Long id);
+
+    AppStore findDefaultStoreByCityId(Long cityId);
 }

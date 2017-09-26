@@ -13,7 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CustomerLoginParam {
+public class CustomerRegistryParam {
 
     private String openId;
     private String picUrl;

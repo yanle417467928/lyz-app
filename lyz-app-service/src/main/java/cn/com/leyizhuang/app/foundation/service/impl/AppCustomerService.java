@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * lyz-app-facade用户服务实现类
@@ -42,6 +43,7 @@ public class AppCustomerService implements IAppCustomerService {
     }
 
     @Override
+    @Transactional
     public void update(AppCustomer phoneUser) {
         if (null != phoneUser){
             customerDAO.update(phoneUser);

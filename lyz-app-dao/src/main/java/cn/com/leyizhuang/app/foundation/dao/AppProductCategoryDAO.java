@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.vo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

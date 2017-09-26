@@ -18,4 +18,6 @@ public interface AppStoreDAO extends BaseDAO<AppStore> {
     List<AppStore> findAll();
 
     AppStore findById(Long id);
+
+    AppStore findDefaultStoreByCityId(Long cityId);
 }

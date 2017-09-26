@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.vo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
 
 import java.util.List;
 

@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
 import cn.com.leyizhuang.app.foundation.service.impl.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,12 +25,20 @@ import java.util.List;
 @RequestMapping(value = "/app/city")
 public class CityController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CityController.class);
+
     @Autowired
     private CityService cityService;
 
 
+    /**
+     * @return resultDTO
+     */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getCityList() {
+    public ResultDTO getCityList() {
+        logger.info("customerLogin CALLED,获取城市列表，入参:");
+
+        ResultDTO resultDTO;
         List<City> cityList = cityService.findAll();
         List<CityListResponse> responseList = new ArrayList<>();
         for (City c : cityList) {
@@ -38,9 +48,13 @@ public class CityController {
             responseList.add(response);
         }
         if (responseList.size() > 0) {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseList);
+            resultDTO =  new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseList);
+            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
         }
 
     }

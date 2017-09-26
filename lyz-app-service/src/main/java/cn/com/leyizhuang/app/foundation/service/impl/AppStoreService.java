@@ -40,4 +40,12 @@ public class AppStoreService extends BaseServiceImpl<AppStore> implements IAppSt
         }
         return null;
     }
+
+    @Override
+    public AppStore findDefaultStoreByCityId(Long cityId) {
+        if (null != cityId){
+            return storeDAO.findDefaultStoreByCityId(cityId);
+        }
+        return null;
+    }
 }
