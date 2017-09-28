@@ -10,4 +10,7 @@
         SELECT * FROM city where number = #{cityNumber}
     </select>
 
+    <select id="findById" parameterType="java.lang.Long" resultMap="City">
+         SELECT * FROM city where id = #{cityId}
+    </select>
 </mapper>

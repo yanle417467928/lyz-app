@@ -15,4 +15,6 @@ public interface ICityService {
     List<City> findAll();
 
     City findByCityNumber(String cityNumber);
+
+    City findById(Long cityId);
 }

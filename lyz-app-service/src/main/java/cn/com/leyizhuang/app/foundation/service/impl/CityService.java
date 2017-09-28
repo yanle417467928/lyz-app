@@ -32,4 +32,12 @@ public class CityService implements ICityService{
         }
         return null;
     }
+
+    @Override
+    public City findById(Long cityId) {
+        if (cityId!=null){
+            return cityDAO.findById(cityId);
+        }
+        return null;
+    }
 }

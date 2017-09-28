@@ -1,0 +1,139 @@
+package cn.com.leyizhuang.app.web.controller.user;
+
+import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.City;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
+import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
+import cn.com.leyizhuang.app.foundation.service.ICityService;
+import cn.com.leyizhuang.app.web.controller.employee.EmployeeController;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+/**
+ * Created with IntelliJ IDEA.
+ * Created by Jerry.Ren
+ * Date: 2017/9/28.
+ * Time: 11:57.
+ */
+@RestController
+@RequestMapping(value = "/app/user/setting")
+public class UserSettingController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+
+    @Resource
+    private IAppCustomerService customerService;
+
+    @Resource
+    private IAppEmployeeService employeeService;
+
+    @Resource
+    private IAppStoreService storeService;
+
+    @Resource
+    private ICityService cityService;
+
+    /**
+     * 获取个人信息
+     * @param userId 用户Id
+     * @param type 用户类型(0导购，1配送员，2经理，3工人，4顾客)
+     * @return
+     */
+    @PostMapping(value = "/get/information",produces="application/json;charset=UTF-8")
+    public ResultDTO<UserInformationResponse> personalInformationGet(Long userId, int type){
+
+        logger.info("personalInformationGet CALLED,获取个人信息，入参 userId {},type{}", userId, type);
+
+        ResultDTO<UserInformationResponse> resultDTO;
+        if (userId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+
+        int [] types = {0,1,2,3};
+
+        if (ArrayUtils.contains(types,type)){
+            AppEmployee appEmployee =  employeeService.findById(userId);
+            if (appEmployee==null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+                logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+            UserInformationResponse informationResponse = transform(appEmployee);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
+            logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+
+        }else if(type == 4){
+            AppCustomer appCustomer =  customerService.findById(userId);
+            if (appCustomer==null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+                logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+            UserInformationResponse informationResponse = transform(appCustomer);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
+            logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                null);
+        logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+        return resultDTO;
+    }
+
+    private UserInformationResponse transform(AppEmployee appEmployee){
+        UserInformationResponse informationResponse = new UserInformationResponse();
+        informationResponse.setPicUrl(appEmployee.getPicUrl());
+        informationResponse.setName(appEmployee.getName());
+        informationResponse.setSex(appEmployee.getSex().getValue());
+        informationResponse.setMobile(appEmployee.getMobile());
+        informationResponse.setBirthday(appEmployee.getBirthday());
+
+        City city = cityService.findById(appEmployee.getCityId());
+        if(city!=null){
+            informationResponse.setCityName(city.getTitle());
+        }
+        AppStore appStore = storeService.findById(appEmployee.getStoreId());
+        if (appStore != null) {
+            informationResponse.setStoreName(appStore.getStoreName());
+        }
+        return informationResponse;
+    }
+
+    private UserInformationResponse transform(AppCustomer appCustomer){
+        UserInformationResponse informationResponse = new UserInformationResponse();
+        informationResponse.setPicUrl(appCustomer.getPicUrl());
+        informationResponse.setName(appCustomer.getNickName());
+        informationResponse.setSex(appCustomer.getSex().getValue());
+        informationResponse.setMobile(appCustomer.getMobile());
+        informationResponse.setBirthday(appCustomer.getBirthday());
+
+        City city = cityService.findById(appCustomer.getCityId());
+        if(city != null){
+            informationResponse.setCityName(city.getTitle());
+        }
+        AppStore appStore = storeService.findById(appCustomer.getStoreId());
+        if (appStore != null) {
+            informationResponse.setStoreName(appStore.getStoreName());
+        }
+        AppEmployee guide = employeeService.findByUserId(appCustomer.getId());
+        if (guide != null) {
+            informationResponse.setGuideName(guide.getName());
+        }
+        return informationResponse;
+    }
+}
