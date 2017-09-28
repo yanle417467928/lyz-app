@@ -2,6 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
+
+import java.util.List;
 
 /**
  * lyz-app-facade用户服务接口
@@ -20,4 +23,6 @@ public interface IAppCustomerService {
     void update(AppCustomer phoneUser);
 
     AppCustomer findById(Long userId);
+
+    List<CashCoupon> findCashCouponByCustomerId(Long userId);
 }

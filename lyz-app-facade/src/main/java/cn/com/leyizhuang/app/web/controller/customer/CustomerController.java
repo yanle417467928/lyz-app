@@ -6,7 +6,9 @@ import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
+import cn.com.leyizhuang.app.foundation.pojo.response.CashCounponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerBindingSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerLoginResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRegistResponse;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Richard
@@ -225,5 +228,32 @@ public class CustomerController {
         }
     }
 
+
+    @PostMapping(value = "/cashCoupon/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerCashCoupon(Long userId, String identityType) {
+        logger.info("customerCashCoupon CALLED,获取顾客可用产品现金券，入参 userId {},identityType{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerCashCoupon OUT,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            List<CashCoupon> cashCouponList = customerService.findCashCouponByCustomerId(userId);
+            if (null != cashCouponList && cashCouponList.size()>0){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,cashCouponList);
+
+            }else{
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+            }
+            logger.info("customerCashCoupon OUT,获取顾客可用产品现金券成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
+            logger.warn("customerCashCoupon EXCEPTION,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+    }
 }
 

@@ -2,10 +2,13 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * lyz-app-facade用户服务实现类
@@ -54,6 +57,14 @@ public class AppCustomerService implements IAppCustomerService {
     public AppCustomer findById(Long userId) {
         if (null != userId){
             return customerDAO.findById(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<CashCoupon> findCashCouponByCustomerId(Long userId) {
+        if(null != userId){
+            return customerDAO.findCashCouponByCustomerId(userId);
         }
         return null;
     }

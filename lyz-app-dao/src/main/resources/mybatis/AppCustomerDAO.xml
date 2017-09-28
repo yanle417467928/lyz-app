@@ -8,13 +8,13 @@
             select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO app_customer (name, mobile, birthday, status, sex, open_id,
-                                  pic_url, nick_name, city_id, sales_consult_id
+        pic_url, nick_name, city_id, sales_consult_id
         ) VALUES (
-            #{name}, #{mobile}, #{birthday}, #{status},
-            #{sex,
-            javaType=cn.com.leyizhuang.app.core.constant.SexType,
-            typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-            #{open_id}, #{pic_url}, #{nick_name}, #{city_id}, #{sales_consult_id}
+        #{name}, #{mobile}, #{birthday}, #{status},
+        #{sex,
+        javaType=cn.com.leyizhuang.app.core.constant.SexType,
+        typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{open_id}, #{pic_url}, #{nick_name}, #{city_id}, #{sales_consult_id}
         )
     </insert>
 
@@ -74,8 +74,25 @@
 
     <select id="findByOpenId" parameterType="java.lang.String" resultType="AppCustomer">
         SELECT *
-        FROM app_customer where open_id = #{openId}
+        FROM app_customer
+        WHERE open_id = #{openId}
     </select>
-    
+
+    <select id="findCashCouponByCustomerId" parameterType="java.lang.Long" resultType="CashCounponResponse">
+        SELECT
+            c.denomination,
+            c.effective_start_time,
+            c.effective_end_time,
+            c.description
+        FROM
+            customer_cash_coupon cc
+            INNER JOIN cash_coupon c ON cc.cash_coupon_id = c.id
+        WHERE
+            cc.customer_id = 49
+            AND cc.is_used IS FALSE
+            AND cc.`status` IS TRUE
+            AND c.effective_start_time &lt; now()
+            AND c.effective_end_time &gt; now()
+    </select>
 
 </mapper>

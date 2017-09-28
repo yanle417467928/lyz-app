@@ -103,6 +103,7 @@ public class GoodsController {
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("{}",e);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品分类列表获取失败", null);
             logger.warn("getGoodsCategoryListByUserIdAndIdentityType EXCEPTION,获取商品分类列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;

@@ -1,8 +1,11 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * lyz-app-facade用户数据仓库
@@ -25,4 +28,5 @@ public interface AppCustomerDAO {
     AppCustomer findById(Long userId);
 
 
+    List<CashCoupon> findCashCouponByCustomerId(Long userId);
 }
