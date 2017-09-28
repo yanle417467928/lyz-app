@@ -17,6 +17,7 @@ import java.io.Serializable;
 @ToString
 public class GoodsCategoryResponse implements Serializable{
 
+    private static final long serialVersionUID = -3385163050087944894L;
     private Long categoryId;
 
     private String categoryName;

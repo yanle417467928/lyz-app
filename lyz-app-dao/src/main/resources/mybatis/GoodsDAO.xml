@@ -137,11 +137,8 @@
             p.member_price,
             p.retail_price,
             g.category_id,
-            g.category_name,
             g.brand_id,
-            g.brand_name,
-            g.type_id,
-            g.type_name
+            g.type_id
         FROM
             app_customer c
             INNER JOIN goods_price p ON c.store_id = p.store_id
@@ -163,11 +160,8 @@
             p.member_price,
             p.retail_price,
             g.category_id,
-            g.category_name,
             g.brand_id,
-            g.brand_name,
-            g.type_id,
-            g.type_name
+            g.type_id
         FROM
             app_employee e
             INNER JOIN goods_price p ON e.store_id = p.store_id

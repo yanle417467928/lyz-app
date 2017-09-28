@@ -47,21 +47,17 @@ public class GoodsVO {
     //产品分类id
     private Long categoryId;
 
-    //产品分类名称
-    private String categoryName;
-
     //品牌id
     private Long brandId;
-
-    //品牌名称
-    private String brandName;
 
     //类型id
     private Long typeId;
 
-    //类型名称
-    private String typeName;
+    //会员价
+    private Double memberPrice;
 
+    //零售价
+    private Double retailPrice;
 
 
     public static final GoodsVO transform(GoodsDO goodsDO) {
