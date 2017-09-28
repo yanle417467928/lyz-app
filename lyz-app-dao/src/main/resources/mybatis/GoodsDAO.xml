@@ -185,7 +185,7 @@
         WHERE
             c.id = #{userId}
             AND gc.parent_code = #{categoryCode}
-        ORDER BY GC.sort_id
+        ORDER BY gc.sort_id
     </select>
 
     <select id="findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType"
