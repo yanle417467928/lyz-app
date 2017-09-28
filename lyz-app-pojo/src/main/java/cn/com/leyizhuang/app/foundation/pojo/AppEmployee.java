@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
-import cn.com.leyizhuang.app.core.constant.AppEmployeeType;
+import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +36,7 @@ public class AppEmployee {
     private String salt;
 
     //app员工身份类型
-    private AppEmployeeType employeeType;
+    private AppUserType employeeType;
 
     //员工手机号
     private String mobile;

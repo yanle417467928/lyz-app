@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.category;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.SecondCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.service.IAppProductCategoryService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -38,11 +38,11 @@ public class CategoryController {
         if (StringUtils.isBlank(identityType)){
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"身份类型{categoryCode}不能为空",null);
         }
-        List<ProductCategory> categoryList = productCategoryService.findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(categoryCode,userId,identityType);
+        List<GoodsCategory> categoryList = productCategoryService.findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(categoryCode,userId,identityType);
         List<SecondCategoryResponse> responseList = new ArrayList<>();
         if (null != categoryList && categoryList.size()>0){
             SecondCategoryResponse secondCategoryResponse = null;
-            for (ProductCategory category:categoryList){
+            for (GoodsCategory category:categoryList){
                 secondCategoryResponse = new SecondCategoryResponse();
                 secondCategoryResponse.setCategoryId(category.getId());
                 secondCategoryResponse.setCategoryName(category.getCategoryName());

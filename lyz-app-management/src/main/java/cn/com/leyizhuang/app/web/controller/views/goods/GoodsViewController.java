@@ -1,9 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class GoodsViewController extends BaseController{
     private final Logger logger = LoggerFactory.getLogger(GoodsViewController.class);
 
     @Autowired
-    private GoodsService goodsServiceImpl;
+    private IGoodsService goodsService;
 
     /**
      * @title 去商品信息列表页面
@@ -57,7 +56,7 @@ public class GoodsViewController extends BaseController{
     @GetMapping(value = "/edit/{id}")
     public String goodsEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
-            GoodsDO goodsDO = this.goodsServiceImpl.queryById(id);
+            GoodsDO goodsDO = this.goodsService.queryById(id);
             if (null == goodsDO) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
                 error404();

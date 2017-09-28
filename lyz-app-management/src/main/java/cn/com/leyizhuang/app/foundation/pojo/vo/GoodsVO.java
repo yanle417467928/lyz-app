@@ -111,50 +111,6 @@ public class GoodsVO {
             goodsVO.setGoodsName(goodsDO.getGoodsName());
             goodsVO.setGoodsCode(goodsDO.getGoodsCode());
             goodsVO.setBrandId(goodsDO.getBrandId());
-            goodsVO.setBrandTitle(goodsDO.getBrandTitle());
-            goodsVO.setCategoryId(goodsDO.getCategoryId());
-            goodsVO.setCategoryIdTree(goodsDO.getCategoryIdTree());
-            goodsVO.setCategoryTitle(goodsDO.getCategoryTitle());
-            goodsVO.setColorPackageSku(goodsDO.getColorPackageSku());
-            goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
-            if (null != goodsDO.getCreateTime()) {
-                String createTime = goodsDO.getCreateTime()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                goodsVO.setCreateTime(createTime);
-            }
-            goodsVO.setDetail(goodsDO.getDetail());
-            goodsVO.setInvCategoryId(goodsDO.getInvCategoryId());
-            goodsVO.setInventoryItemId(goodsDO.getInventoryItemId());
-            goodsVO.setInventoryItemStatus(goodsDO.getInventoryItemStatus());
-            goodsVO.setIsColorful(goodsDO.getIsColorful());
-            goodsVO.setIsColorPackage(goodsDO.getIsColorPackage());
-            goodsVO.setIsGift(goodsDO.getIsGift());
-            goodsVO.setIsHot(goodsDO.getIsHot());
-            goodsVO.setIsNew(goodsDO.getIsNew());
-            goodsVO.setIsOnSale(goodsDO.getIsOnSale());
-            goodsVO.setIsRecommendIndex(goodsDO.getIsRecommendIndex());
-            goodsVO.setIsRecommendType(goodsDO.getIsRecommendType());
-            goodsVO.setIsSpecialPrice(goodsDO.getIsSpecialPrice());
-            goodsVO.setItemBarcode(goodsDO.getItemBarcode());
-            goodsVO.setItemBarcode(goodsDO.getItemBarcode());
-            goodsVO.setItemTypeCode(goodsDO.getItemTypeCode());
-            goodsVO.setItemTypeName(goodsDO.getItemTypeName());
-            goodsVO.setLeftNumber(goodsDO.getLeftNumber() + "");
-            goodsVO.setMarketPrice(goodsDO.getMarketPrice());
-            if (null != goodsDO.getOnSaleTime()) {
-                String onSaleTime = goodsDO.getOnSaleTime()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                goodsVO.setOnSaleTime(onSaleTime);
-            }
-            goodsVO.setPriceUnit(goodsDO.getPriceUnit());
-            goodsVO.setProductFlag(goodsDO.getProductFlag());
-            goodsVO.setReturnPrice(goodsDO.getReturnPrice());
-            goodsVO.setSalePrice(goodsDO.getSalePrice());
-            goodsVO.setShowPictures(goodsDO.getShowPictures());
-            goodsVO.setSortId(goodsDO.getSortId());
-            goodsVO.setSubTitle(goodsDO.getSubTitle());
-            goodsVO.setTitle(goodsDO.getTitle());
-            goodsVO.setUnitName(goodsDO.getUnitName());
             return goodsVO;
         } else {
             return null;

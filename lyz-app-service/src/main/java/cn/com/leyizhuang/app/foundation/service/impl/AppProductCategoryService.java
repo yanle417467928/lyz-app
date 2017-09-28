@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppProductCategoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.IAppProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class AppProductCategoryService  implements IAppProductCategoryService {
     private IAppEmployeeService employeeService;
 
     @Override
-    public List<ProductCategory> findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, String identityType) {
+    public List<GoodsCategory> findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, String identityType) {
         if(null != categoryCode && null != userId && null != identityType){
             if (identityType.equalsIgnoreCase("CUSTOMER")){
                 AppEmployee employee = employeeService.findByUserId(userId);

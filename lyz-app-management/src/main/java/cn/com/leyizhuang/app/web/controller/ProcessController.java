@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class ProcessController {
     @Autowired
     private ProcessService processService;
     @Autowired
-    private GoodsService goodsServiceImpl;
+    private IGoodsService goodsService;
 
     @RequestMapping(value = "/save")
     public String save() {

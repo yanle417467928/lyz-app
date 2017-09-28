@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import java.util.List;
 public interface IAppProductCategoryService{
 
 
-    List<ProductCategory> findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, String identityType);
+    List<GoodsCategory> findSecondCategoryByFirstCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, String identityType);
 }

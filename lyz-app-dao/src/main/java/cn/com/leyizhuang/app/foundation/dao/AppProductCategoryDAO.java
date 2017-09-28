@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.ProductCategory;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +15,8 @@ import java.util.List;
 @Repository
 public interface AppProductCategoryDAO{
 
-    List<ProductCategory> findSecondCategoryByFirstCategoryCode(String categoryCode);
+    List<GoodsCategory> findSecondCategoryByFirstCategoryCode(String categoryCode);
 
-    List<ProductCategory> findSecondCategoryByFirstCategoryCodeAndStoreId(@Param(value = "categoryCode") String categoryCode,
-                                                                          @Param(value = "storeId") Long storeId);
+    List<GoodsCategory> findSecondCategoryByFirstCategoryCodeAndStoreId(@Param(value = "categoryCode") String categoryCode,
+                                                                        @Param(value = "storeId") Long storeId);
 }

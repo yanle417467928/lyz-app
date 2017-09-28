@@ -13,7 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ProductCategory {
+public class GoodsCategory {
 
     private Long id;
 
@@ -23,16 +23,20 @@ public class ProductCategory {
     //父分类ID
     private Long parentId;
 
-    //分类编码
+    //父分类code
+
+    private String parentCode;
+
+    //分类编码 目前只有一级分类（水电木瓦油）有分类编码
     private String categoryCode;
 
     //排序id
     private Long sortId;
 
-    public ProductCategory() {
+    public GoodsCategory() {
     }
 
-    public ProductCategory(Long id, String categoryName, Long parentId, String categoryCode, Long sortId) {
+    public GoodsCategory(Long id, String categoryName, Long parentId, String categoryCode, Long sortId) {
         this.id = id;
         this.categoryName = categoryName;
         this.parentId = parentId;

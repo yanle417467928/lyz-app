@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppProductCategoryDAO">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsDAO">
 
-    <select id="findSecondCategoryByFirstCategoryCode" parameterType="java.lang.String" resultType="ProductCategory">
+    <select id="findSecondCategoryByFirstCategoryCode" parameterType="java.lang.String" resultType="GoodsCategory">
         SELECT *
         FROM product_category
         WHERE parent_id = (SELECT pc.id
@@ -10,7 +10,7 @@
                            WHERE pc.category_code = #{categoryCode})
     </select>
 
-    <select id="findSecondCategoryByFirstCategoryCodeAndStoreId" resultType="ProductCategory">
+    <select id="findSecondCategoryByFirstCategoryCodeAndStoreId" resultType="GoodsCategory">
         SELECT p.*
         FROM product_category p INNER JOIN store_category_relations s ON p.id = s.category_id
         WHERE

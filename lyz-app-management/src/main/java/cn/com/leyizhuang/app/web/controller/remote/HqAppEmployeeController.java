@@ -1,20 +1,18 @@
 package cn.com.leyizhuang.app.web.controller.remote;
 
-import cn.com.leyizhuang.app.core.constant.AppEmployeeType;
+import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.City;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.ICityService;
-import cn.com.leyizhuang.app.foundation.service.impl.AppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppEmployeeDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,17 +77,17 @@ public class HqAppEmployeeController {
             employee.setStatus(employeeDTO.getStatus() != 0);
             switch (employeeDTO.getPositionType()) {
                 case "DG":
-                    employee.setEmployeeType(AppEmployeeType.SELLER);
+                    employee.setEmployeeType(AppUserType.SELLER);
                     break;
                 case "DZ":
-                    employee.setEmployeeType(AppEmployeeType.SUPERVISOR);
+                    employee.setEmployeeType(AppUserType.SUPERVISOR);
                     break;
                 case "DJL":
-                    employee.setEmployeeType(AppEmployeeType.MANAGER);
+                    employee.setEmployeeType(AppUserType.MANAGER);
                 default:
                     break;
             }
-            employee.setEmployeeType(AppEmployeeType.SELLER);
+            employee.setEmployeeType(AppUserType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             employee.setCityId(city.getId());
             String salt = employee.generateSalt();

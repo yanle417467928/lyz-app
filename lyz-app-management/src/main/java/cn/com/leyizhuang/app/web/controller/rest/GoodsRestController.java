@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -31,7 +31,7 @@ public class GoodsRestController extends BaseRestController {
     private final Logger logger = LoggerFactory.getLogger(GoodsRestController.class);
 
     @Autowired
-    private GoodsService goodsServiceImpl;
+    private IGoodsService goodsService;
 
     /**
      * @title 商品信息分页查询
@@ -47,7 +47,7 @@ public class GoodsRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
 
-        PageInfo<GoodsDO> goodsDOPage = this.goodsServiceImpl.queryPage(page,size);
+        PageInfo<GoodsDO> goodsDOPage = this.goodsService.queryPage(page,size);
         List<GoodsDO> goodsDOList = goodsDOPage.getList();
         List<GoodsVO> goodsVOList = GoodsVO.transform(goodsDOList);
         return new GridDataVO<GoodsVO>().transform(goodsVOList,goodsDOPage.getTotal());
@@ -64,7 +64,7 @@ public class GoodsRestController extends BaseRestController {
      */
     @GetMapping(value = "/{id}")
     public ResultDTO<GoodsVO> restGoodsIdGet(@PathVariable(value = "id") Long id) {
-        GoodsDO goodsDO = this.goodsServiceImpl.queryById(id);
+        GoodsDO goodsDO = this.goodsService.queryById(id);
         if (null == goodsDO) {
             logger.warn("查找角色失败：Role(id = {}) == null", id);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -86,7 +86,7 @@ public class GoodsRestController extends BaseRestController {
      */
     @DeleteMapping
     public ResultDTO<?> restMenuDelete(Long[] ids) {
-        this.goodsServiceImpl.batchRemove(Arrays.asList(ids));
+        this.goodsService.batchRemove(Arrays.asList(ids));
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "资源已成功删除", null);
     }
 
@@ -102,7 +102,7 @@ public class GoodsRestController extends BaseRestController {
     @PutMapping(value = "/{id}")
     public ResultDTO<String> restEmployeeIdPost(@Valid GoodsDTO goodsDTO, BindingResult result) {
         if (!result.hasErrors()) {
-            this.goodsServiceImpl.managerSaveGoods(goodsDTO);
+            this.goodsService.managerSaveGoods(goodsDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
             List<ObjectError> allErrors = result.getAllErrors();
