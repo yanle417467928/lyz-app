@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +13,6 @@ import java.util.List;
 @Repository
 public interface DeliveryAddressDAO {
 
-    List<DeliveryAddressDO> queryList(Long customerId);
+    List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTure(Long customerId);
 
 }

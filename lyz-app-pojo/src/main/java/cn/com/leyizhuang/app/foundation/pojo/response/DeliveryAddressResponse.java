@@ -34,32 +34,4 @@ public class DeliveryAddressResponse {
     //小区名
     private String villageName;
 
-    public static final DeliveryAddressResponse transform(DeliveryAddressDO deliveryAddressDO) {
-        if (null != deliveryAddressDO) {
-            DeliveryAddressResponse deliveryAddressResponse = new DeliveryAddressResponse();
-//            deliveryAddressResponse.setId(deliveryAddressDO.getId());
-            deliveryAddressResponse.setDeliveryName(deliveryAddressDO.getDeliveryName());
-            deliveryAddressResponse.setDeliveryPhone(deliveryAddressDO.getDeliveryPhone());
-            deliveryAddressResponse.setDeliveryCity(deliveryAddressDO.getDeliveryCity());
-            deliveryAddressResponse.setDeliveryCounty(deliveryAddressDO.getDeliveryCounty());
-            deliveryAddressResponse.setDELIVERYSTREET(deliveryAddressDO.getDELIVERYSTREET());
-            deliveryAddressResponse.setDetailedAddress(deliveryAddressDO.getDetailedAddress());
-            deliveryAddressResponse.setVillageName(deliveryAddressDO.getVillageName());
-            return deliveryAddressResponse;
-        } else {
-            return null;
-        }
-    }
-
-    public static final List<DeliveryAddressResponse> transform(List<DeliveryAddressDO> deliveryAddressDOList) {
-        List<DeliveryAddressResponse> deliveryAddressResponseList;
-        if (null != deliveryAddressDOList && deliveryAddressDOList.size() > 0) {
-            deliveryAddressResponseList = new ArrayList<>(deliveryAddressDOList.size());
-            deliveryAddressDOList.forEach(DeliveryAddressDO -> deliveryAddressResponseList.add(transform(DeliveryAddressDO)));
-        } else {
-            deliveryAddressResponseList = new ArrayList<>(0);
-        }
-        return deliveryAddressResponseList;
-    }
-
 }

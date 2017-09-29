@@ -95,9 +95,18 @@ public class UserSettingController {
         return resultDTO;
     }
 
+    /**
+     * @title   获取收货地址
+     * @descripe
+     * @param userId
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/29
+     */
     @PostMapping(value = "/get/deliveryAddress",produces="application/json;charset=UTF-8")
     public ResultDTO<List> getDeliveryAddress(Long userId){
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},type{}", userId);
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {}", userId);
 
         ResultDTO<List> resultDTO;
         if (userId == null){
@@ -105,8 +114,7 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        List<DeliveryAddressDO> deliveryAddressDOList = this.deliveryAddressServiceImpl.queryList(userId);
-        List<DeliveryAddressResponse> deliveryAddressResponseList = DeliveryAddressResponse.transform(deliveryAddressDOList);
+        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTure(userId);
 
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址，出参 resultDTO:{}",resultDTO);

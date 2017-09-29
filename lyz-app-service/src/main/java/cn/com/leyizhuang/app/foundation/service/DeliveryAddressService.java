@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ import java.util.List;
  */
 public interface DeliveryAddressService {
 
-    List<DeliveryAddressDO> queryList(Long customerId);
+    List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTure(Long customerId);
 }

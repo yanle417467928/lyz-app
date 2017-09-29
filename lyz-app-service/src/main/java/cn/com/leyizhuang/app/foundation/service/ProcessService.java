@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 
 import java.util.List;
 
@@ -30,4 +31,7 @@ public interface ProcessService {
     List<ProcessDO> findAllProcessAndGoods();
 
     void saveProcessAndGoods(Long pID, Long gID);
+
+    //查询所有工序目录
+    List<ProcessResponse> queryAllList();
 }

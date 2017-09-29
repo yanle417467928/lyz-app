@@ -36,4 +36,5 @@ public interface IGoodsService {
 
     List<UserCollectGoodsResponse> findGoodsListByUserIdAndIdentityType(Long userId,Integer identityType);
 
+    GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
 }
