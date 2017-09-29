@@ -76,7 +76,7 @@ public class UserHomePageController {
                 userHomePageResponse.setGuideName(guide.getName());
                 userHomePageResponse.setGuideMobile(guide.getMobile());
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "获取个人主页信息成功！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人主页信息成功！", null);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
@@ -92,7 +92,7 @@ public class UserHomePageController {
         userHomePageResponse.setName(appEmployee.getName());
         userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
         userHomePageResponse.setNumber(appEmployee.getLoginName());
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "获取个人主页信息成功！", null);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人主页信息成功！", null);
         logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }
