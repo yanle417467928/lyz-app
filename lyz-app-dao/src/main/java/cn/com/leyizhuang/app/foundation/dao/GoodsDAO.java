@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -46,4 +47,9 @@ public interface GoodsDAO {
 
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+
+
+    List<UserCollectGoodsResponse> findGoodsListByCustomerIdAndIdentityType(Long userId);
+
+    List<UserCollectGoodsResponse> findGoodsListByEmployeeIdAndIdentityType(Long userId);
 }

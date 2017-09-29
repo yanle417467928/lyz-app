@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
@@ -32,4 +33,7 @@ public interface IGoodsService {
     List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType);
 
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType);
+
+    List<UserCollectGoodsResponse> findGoodsListByUserIdAndIdentityType(Long userId,Integer identityType);
+
 }
