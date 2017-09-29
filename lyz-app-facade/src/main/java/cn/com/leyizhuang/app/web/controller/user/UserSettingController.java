@@ -104,7 +104,7 @@ public class UserSettingController {
      * @author GenerationRoad
      * @date 2017/9/29
      */
-    @PostMapping(value = "/get/deliveryAddress",produces="application/json;charset=UTF-8")
+    @PostMapping(value = "/deliveryAddress/list",produces="application/json;charset=UTF-8")
     public ResultDTO<List> getDeliveryAddress(Long userId){
         logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {}", userId);
 

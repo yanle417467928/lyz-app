@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class ProcessGoodsResponse {
     //商品ID
-    private Long goodsId;
+    private Long id;
     //商品名称
     private String goodsName;
     //封面图片
