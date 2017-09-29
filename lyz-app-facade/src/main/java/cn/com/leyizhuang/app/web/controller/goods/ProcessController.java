@@ -43,7 +43,7 @@ public class ProcessController {
 
         ResultDTO<List> resultDTO;
         List<ProcessResponse> processResponseList = this.processServiceImpl.queryAllList();
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", processResponseList);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, processResponseList);
         logger.info("getProcess OUT,获取工序包列表，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }

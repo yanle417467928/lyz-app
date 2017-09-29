@@ -279,7 +279,7 @@ public class GoodsController {
         }
         GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
         GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", goodsImageUriResponse);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsImageUriResponse);
         logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
