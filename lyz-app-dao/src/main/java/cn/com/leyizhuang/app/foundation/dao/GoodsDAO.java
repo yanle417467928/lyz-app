@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -48,8 +48,17 @@ public interface GoodsDAO {
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
 
+    List<UserGoodsResponse> findGoodsCollectListByCustomerIdAndIdentityType(Long userId);
 
-    List<UserCollectGoodsResponse> findGoodsListByCustomerIdAndIdentityType(Long userId);
+    List<UserGoodsResponse> findGoodsCollectListByEmployeeIdAndIdentityType(Long userId);
 
-    List<UserCollectGoodsResponse> findGoodsListByEmployeeIdAndIdentityType(Long userId);
+    GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
+
+    List<UserGoodsResponse> findGoodsListByIsHotAndCustomerIdAndIdentityType(Long userId);
+
+    List<UserGoodsResponse> findGoodsListByIsHotAndEmployeeIdAndIdentityType(Long userId);
+
+    List<UserGoodsResponse> findGoodsOftenListByCustomerIdAndIdentityType(Long userId);
+
+    List<UserGoodsResponse> findGoodsOftenListByEmployeeIdAndIdentityType(Long userId);
 }

@@ -440,4 +440,6 @@
         WHERE
           goods_code = #{goodsCode}
     </select>
+
+
 </mapper>
