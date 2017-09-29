@@ -1,15 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
  * Date: 2017/9/28.
  * Time: 13:40.
  */
-@Controller
+@RestController
 @RequestMapping(value = "/app/user/collect")
 public class UserCollectController {
 
@@ -33,7 +33,7 @@ public class UserCollectController {
     /**
      * 获取收藏商品列表
      * @param userId 用户ID
-     * @param identityType 用户类型(0导购，1配送员，2经理，3工人，6顾客)
+     * @param identityType 用户类型
      * @return
      */
     @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
@@ -48,19 +48,23 @@ public class UserCollectController {
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-
-        int [] types = {0,1,2,3,6};
-
-        if (ArrayUtils.contains(types,identityType)){
-            List<UserCollectGoodsResponse> collectGoodsResponseList = goodsService.findGoodsListByUserIdAndIdentityType(userId,identityType);
+        if (null != identityType){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsCollectListByUserIdAndIdentityType(userId, identityType);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收藏商品列表成功", collectGoodsResponseList);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取收藏商品列表失败", null);
+            logger.warn("getPersonalCollectGoodsList EXCEPTION,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
         }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
-                null);
-        logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
     }
 }

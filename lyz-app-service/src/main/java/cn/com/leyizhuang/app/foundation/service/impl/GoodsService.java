@@ -6,7 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import com.github.pagehelper.PageHelper;
@@ -126,11 +126,29 @@ public class GoodsService implements IGoodsService {
     }
 
     @Override
-    public List<UserCollectGoodsResponse> findGoodsListByUserIdAndIdentityType(Long userId,Integer identityType) {
+    public List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (identityType == 6){
-            return goodsDAO.findGoodsListByCustomerIdAndIdentityType(userId);
+            return goodsDAO.findGoodsCollectListByCustomerIdAndIdentityType(userId);
         }else{
-            return goodsDAO.findGoodsListByEmployeeIdAndIdentityType(userId);
+            return goodsDAO.findGoodsCollectListByEmployeeIdAndIdentityType(userId);
+        }
+    }
+
+    @Override
+    public List<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (identityType == 6){
+            return goodsDAO.findGoodsListByIsHotAndCustomerIdAndIdentityType(userId);
+        }else{
+            return goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+        }
+    }
+
+    @Override
+    public List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (identityType == 6){
+            return goodsDAO.findGoodsOftenListByCustomerIdAndIdentityType(userId);
+        }else{
+            return goodsDAO.findGoodsOftenListByEmployeeIdAndIdentityType(userId);
         }
     }
 
