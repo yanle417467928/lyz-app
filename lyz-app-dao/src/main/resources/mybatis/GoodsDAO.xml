@@ -277,4 +277,53 @@
         ORDER BY t.sort_id
     </select>
 
+    <select id="findGoodsListByCustomerIdAndIdentityType" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse">
+        SELECT
+            g.cover_image_uri,
+            g.goods_name,
+            g.id,
+            g.goods_specification,
+            g.goods_unit,
+            p.member_price,
+            p.retail_price,
+            gc.category_code,
+            b.brand_code,
+            t.type_code
+        FROM
+            app_customer c
+            INNER JOIN app_customer_collect acc ON acc.CUSTOMER_ID = c.id
+            INNER JOIN goods g ON g.id = acc.GOODS_ID
+            INNER JOIN goods_price p ON p.goods_id = g.id
+            INNER JOIN goods_category gc ON g.category_id = gc.id
+            INNER JOIN goods_brand b on b.id = g.brand_id
+            INNER JOIN goods_type t on t.id = g.type_id
+        WHERE
+            c.id = #{userId}
+    </select>
+
+    <select id="findGoodsListByEmployeeIdAndIdentityType" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserCollectGoodsResponse">
+        SELECT
+        g.cover_image_uri,
+        g.goods_name,
+        g.id,
+        g.goods_specification,
+        g.goods_unit,
+        p.member_price,
+        p.retail_price,
+        gc.category_code,
+        b.brand_code,
+        t.type_code
+        FROM
+        app_employee e
+        INNER JOIN app_employee_collect aec ON aec.EMPLOYEE_ID = e.id
+        INNER JOIN goods g ON g.id = aec.GOODS_ID
+        INNER JOIN goods_price p ON p.goods_id = g.id
+        INNER JOIN goods_category gc ON g.category_id = gc.id
+        INNER JOIN goods_brand b on b.id = g.brand_id
+        INNER JOIN goods_type t on t.id = g.type_id
+        WHERE
+        c.id = #{userId}
+    </select>
 </mapper>
