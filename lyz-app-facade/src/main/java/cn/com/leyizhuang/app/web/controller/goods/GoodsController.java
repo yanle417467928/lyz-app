@@ -257,21 +257,29 @@ public class GoodsController {
     }
 
 
-
+    /**
+     * @title 获取商品详情图片和轮播图片
+     * @descripe
+     * @param goodsCode
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/29
+    */
     @PostMapping(value = "/get/goodsImageUri",produces="application/json;charset=UTF-8")
     public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode){
-        logger.info("getGoodsImageUri CALLED,获取收货地址，入参 goodsCode {},type{}", goodsCode);
+        logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 goodsCode {},type{}", goodsCode);
 
         ResultDTO<GoodsImageUriResponse> resultDTO;
         if (goodsCode == null){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
-            logger.info("getGoodsImageUri OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
+            logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
         GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
         GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", goodsImageUriResponse);
-        logger.info("getGoodsImageUri OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
+        logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }
 }
