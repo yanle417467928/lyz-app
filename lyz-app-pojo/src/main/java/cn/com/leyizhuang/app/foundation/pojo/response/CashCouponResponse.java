@@ -18,6 +18,8 @@ import java.util.Date;
 @ToString
 public class CashCouponResponse implements Serializable{
 
+    private static final long serialVersionUID = -6163637571463895287L;
+
     private Double denomination;
 
     private Date effectiveStartTime;

@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerBindingSellerResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerLoginResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRegistResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
@@ -91,7 +88,7 @@ public class CustomerController {
      * App 顾客注册
      *
      * @param registryParam 注册参数
-     * @param response   请求响应
+     * @param response      请求响应
      * @return resultDTO
      */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
@@ -165,7 +162,7 @@ public class CustomerController {
 
 
     /**
-     * @param userId 顾客id
+     * @param userId     顾客id
      * @param guidePhone 导购电话
      * @return resultDTO
      */
@@ -239,11 +236,11 @@ public class CustomerController {
                 return resultDTO;
             }
             List<CashCouponResponse> cashCouponList = customerService.findCashCouponByCustomerId(userId);
-            if (null != cashCouponList && cashCouponList.size()>0){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,cashCouponList);
+            if (null != cashCouponList && cashCouponList.size() > 0) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cashCouponList);
 
-            }else{
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             }
             logger.info("customerCashCoupon OUT,获取顾客可用产品现金券成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -251,6 +248,34 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
             logger.warn("customerCashCoupon EXCEPTION,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+    }
+
+    @PostMapping(value = "/productCoupon/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerProductCoupon(Long userId, String identityType) {
+        logger.info("customerProductCoupon CALLED,获取顾客可用产品券，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
+            if (null != productCouponList && productCouponList.size() > 0) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
+
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            }
+            logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
+            logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }

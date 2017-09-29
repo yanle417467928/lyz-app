@@ -95,4 +95,24 @@
             AND c.effective_end_time &gt; now()
     </select>
 
+    <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
+        SELECT
+            g.goods_name,
+            g.goods_code,
+            g.goods_specification,
+            g.goods_unit,
+            sum(c.quantity) left_number,
+            g.cover_image_uri
+        FROM
+            product_coupon c
+            INNER JOIN goods g ON c.goods_id = g.id
+        WHERE
+            c.customer_id = #{userId}
+            AND c.is_used IS FALSE
+            AND c.effective_start_time &lt; NOW()
+            AND c.effective_end_time &gt; NOW()
+        GROUP BY
+            g.goods_code
+    </select>
+
 </mapper>

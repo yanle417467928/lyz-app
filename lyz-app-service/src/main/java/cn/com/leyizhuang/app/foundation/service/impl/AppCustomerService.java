@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,14 @@ public class AppCustomerService implements IAppCustomerService {
     public List<CashCouponResponse> findCashCouponByCustomerId(Long userId) {
         if(null != userId){
             return customerDAO.findCashCouponByCustomerId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ProductCouponResponse> findProductCouponByCustomerId(Long userId) {
+        if(null != userId){
+            return customerDAO.findProductCouponByCustomerId(userId);
         }
         return null;
     }
