@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.ProcessDAO;
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,11 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public void saveProcessAndGoods(Long pID, Long gID) {
         processDAO.saveProcessAndGoods(pID,gID);
+    }
+
+    @Override
+    public List<ProcessResponse> queryAllList() {
+        return this.processDAO.queryAllList();
     }
 
 }

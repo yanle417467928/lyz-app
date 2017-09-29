@@ -1,15 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import java.util.List;
  * Created on 2017-09-25 10:17
  **/
 @RestController
-@RequestMapping(value = "/app/goods/",produces="application/json;charset=UTF-8")
+@RequestMapping(value = "/app/goods/")
 public class GoodsController {
 
     private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
@@ -183,76 +182,6 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品分类列表获取失败", null);
             logger.warn("getGoodsTypeListByUserIdAndIdentityType EXCEPTION,获取商品类型列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-    }
-
-    /**
-     * 获取热门商品信息
-     * @param userId 用户id
-     * @param identityType 用户身份类型
-     * @return
-     */
-    @RequestMapping(value = "/hot/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType( Long userId, Integer identityType){
-        ResultDTO<Object> resultDTO;
-        logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 categoryCode:{},userId:{},identityType:{}", userId, identityType);
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
-            logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        try{
-            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId,identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取热门商品列表成功", collectGoodsResponseList);
-            logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-
-        }catch (Exception e){
-            e.getStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取热门商品列表失败", null);
-            logger.warn("getGoodsHotListByUserIdAndIdentityType EXCEPTION,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-    }
-
-    /**
-     * 获取常购商品列表
-     * @param userId 用户ID
-     * @param identityType 用户类型
-     * @return
-     */
-    @RequestMapping(value = "/often/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsOftenBuyListByUserIdAndIdentityType( Long userId, Integer identityType){
-
-        logger.info("getGoodsOftenBuyListByUserIdAndIdentityType CALLED,获取收藏商品列表，入参 userId {},type{}", userId, identityType);
-
-        ResultDTO<Object> resultDTO;
-
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
-            logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        try {
-            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsOftenListByUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取常购商品列表成功", null);
-            logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }catch (Exception e){
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取常购商品列表失败", null);
-            logger.warn("getGoodsOftenBuyListByUserIdAndIdentityType EXCEPTION,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
     }

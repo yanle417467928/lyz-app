@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -38,5 +39,6 @@ public interface ProcessDAO {
     //根据工序包名称查询对应的商品（暂时没有返回数据）
     void findProcessAndGoodsByName(@Param("processName") String processName);
 
-
+    //查询所有工序目录/
+    List<ProcessResponse> queryAllList();
 }

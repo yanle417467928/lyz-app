@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO;
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
-    public List<DeliveryAddressDO> queryList(Long customerId) {
-        return this.deliveryAddressDAO.queryList(customerId);
+    public List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTure(Long customerId) {
+        return this.deliveryAddressDAO.queryListByUserIdAndStatusIsTure(customerId);
     }
 }

@@ -153,6 +153,21 @@ public class GoodsService implements IGoodsService {
     }
 
     /**
+     * @title  根据商品编码获取商品图片
+     * @descripe
+     * @param goodsCode
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/9/29
+     */
+    @Override
+    public GoodsDO findGoodsImageUriByGoodsCode(String goodsCode) {
+        return this.goodsDAO.findGoodsImageUriByGoodsCode(goodsCode);
+    }
+
+
+    /**
      * @title   GoodsDTO转GoodsDO
      * @descripe
      * @param goodsDTO

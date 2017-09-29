@@ -15,7 +15,7 @@
         <result column="TITLE" property="title"/>
         <result column="SUB_TITLE" property="subTitle"/>
         <result column="COVER_IMAGE_URI" property="coverImageUri"/>
-        <result column="SHOW_PICTURES" property="showPictures"/>
+        <result column="ROTATION_IMAGE_URI" property="rotationImageUri"/>
         <result column="DETAIL" property="detail"/>
         <result column="IS_ON_SALE" property="isOnSale"/>
         <result column="IS_RECOMMEND_INDEX" property="isRecommendIndex"/>
@@ -428,5 +428,16 @@
             INNER JOIN goods_type t on t.id = g.type_id
         WHERE
             e.id = #{userId}
+    </select>
+
+
+    <select id="findGoodsImageUriByGoodsCode" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+        SELECT
+          COVER_IMAGE_URI,
+          ROTATION_IMAGE_URI
+        FROM
+          GOODS
+        WHERE
+          goods_code = #{goodsCode}
     </select>
 </mapper>

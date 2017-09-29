@@ -20,11 +20,13 @@
         <result column="STATUS" property="STATUS"/>
     </resultMap>
 
-    <select id="queryList" resultMap="DeliveryAddressResult">
+    <select id="queryListByUserIdAndStatusIsTure" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS
           VILLAGE_NAME, STATUS
         FROM DELIVERY_ADDRESS
-        WHERE STATUS = TRUE
+        WHERE
+          USERID = #{userId}
+        AND STATUS = TRUE
         ORDER BY CREATE_TIME DESC
     </select>
 

@@ -91,4 +91,10 @@
         DELETE FROM process_goods WHERE g_ID=#{gid}
     </delete>
 
+    <select id="queryAllList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse">
+        SELECT ID, PROCESS_NAME
+        FROM process
+    </select>
+
+
 </mapper>
