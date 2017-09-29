@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface ProcessService {
 
     //查询所有工序目录
     List<ProcessResponse> queryAllList();
+
+    List<ProcessGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType);
 }

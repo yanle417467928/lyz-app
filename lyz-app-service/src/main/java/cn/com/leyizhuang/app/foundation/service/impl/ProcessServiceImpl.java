@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.ProcessDAO;
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,4 +75,12 @@ public class ProcessServiceImpl implements ProcessService {
         return this.processDAO.queryAllList();
     }
 
+    @Override
+    public List<ProcessGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType) {
+        if (identityType == 6) {
+            return processDAO.queryByProcessIdAndEmployeeId(userId, processId);
+        } else {
+            return processDAO.queryByProcessIdAndCustomerId(userId, processId);
+        }
+    }
 }
