@@ -27,10 +27,10 @@ public class ProcessGoodsResponse {
     //零售价
     private Double retailPrice;
     //二级分类编码
-    private String secondCategoryCode;
+    private String categoryCode;
     //商品品牌分类编码
-    private String goodsBrandCode;
+    private String brandCode;
     //商品类型分类编码
-    private String goodsTypeCode;
+    private String typeCode;
 
 }

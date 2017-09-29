@@ -43,7 +43,7 @@ public interface ProcessDAO {
     //查询所有工序目录/
     List<ProcessResponse> queryAllList();
 
-    List<ProcessGoodsResponse> queryByProcessIdAndEmployeeId(Long userId, Long processId);
+    List<ProcessGoodsResponse> queryByProcessIdAndEmployeeId(@Param("userId")Long userId, @Param("processId")Long processId);
 
-    List<ProcessGoodsResponse> queryByProcessIdAndCustomerId(Long userId, Long processId);
+    List<ProcessGoodsResponse> queryByProcessIdAndCustomerId(@Param("userId")Long userId, @Param("processId")Long processId);
 }

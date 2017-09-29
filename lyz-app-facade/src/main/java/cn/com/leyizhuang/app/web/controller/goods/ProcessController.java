@@ -37,7 +37,7 @@ public class ProcessController {
      * @author GenerationRoad
      * @date 2017/9/29
      */
-    @PostMapping(value = "/get/Process",produces="application/json;charset=UTF-8")
+    @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
     public ResultDTO<List> getProcess(Long userId){
         logger.info("getProcess CALLED,获取工序包列表，入参 goodsCode {},type{}");
 
