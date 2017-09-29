@@ -78,7 +78,7 @@
         WHERE open_id = #{openId}
     </select>
 
-    <select id="findCashCouponByCustomerId" parameterType="java.lang.Long" resultType="CashCounponResponse">
+    <select id="findCashCouponByCustomerId" parameterType="java.lang.Long" resultType="CashCouponResponse">
         SELECT
             c.denomination,
             c.effective_start_time,

@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class CashCounponResponse implements Serializable{
+public class CashCouponResponse implements Serializable{
 
     private Double denomination;
 

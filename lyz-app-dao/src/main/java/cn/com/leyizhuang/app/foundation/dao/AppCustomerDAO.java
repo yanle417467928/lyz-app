@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -28,5 +28,5 @@ public interface AppCustomerDAO {
     AppCustomer findById(Long userId);
 
 
-    List<CashCoupon> findCashCouponByCustomerId(Long userId);
+    List<CashCouponResponse> findCashCouponByCustomerId(Long userId);
 }
