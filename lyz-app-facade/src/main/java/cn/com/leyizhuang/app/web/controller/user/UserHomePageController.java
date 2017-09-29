@@ -29,7 +29,7 @@ import javax.annotation.Resource;
 @RequestMapping(value = "/app/user")
 public class UserHomePageController {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserHomePageController.class);
 
     @Resource
     private IAppCustomerService customerService;
@@ -40,7 +40,7 @@ public class UserHomePageController {
     /**
      * 个人主页的信息
      * @param userId 用户Id
-     * @param type 用户类型(0导购，1配送员，2经理，3工人，4顾客)
+     * @param type 用户类型(0导购，1配送员，2经理，3工人，6顾客)
      * @return
      */
     @PostMapping(value = "/homepage",produces="application/json;charset=UTF-8")
@@ -72,7 +72,7 @@ public class UserHomePageController {
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
 
-        }else if(type == 4){
+        }else if(type == 6){
             AppCustomer appCustomer =  customerService.findById(userId);
             if (appCustomer==null){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
