@@ -41,4 +41,6 @@ public interface IGoodsService {
     List<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType);
 
     List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    List<UserGoodsResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords,Integer identityType);
 }

@@ -19,6 +19,8 @@ import java.io.Serializable;
 @ToString
 public class UserGoodsResponse implements Serializable {
 
+    private static final long serialVersionUID = -648160133580382322L;
+
     //商品ID
     private Long id;
 

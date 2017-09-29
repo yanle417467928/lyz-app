@@ -61,4 +61,8 @@ public interface GoodsDAO {
     List<UserGoodsResponse> findGoodsOftenListByCustomerIdAndIdentityType(Long userId);
 
     List<UserGoodsResponse> findGoodsOftenListByEmployeeIdAndIdentityType(Long userId);
+
+    List<UserGoodsResponse> searchByCustomerIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
+
+    List<UserGoodsResponse> searchByEmployeeIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
 }

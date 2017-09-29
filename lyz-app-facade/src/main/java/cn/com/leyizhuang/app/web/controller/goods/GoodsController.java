@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
@@ -35,7 +34,7 @@ public class GoodsController {
 
     /**
      * @param categoryCode 一级分类id
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return resultDTO
      */
@@ -59,7 +58,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<GoodsVO> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode,userId, identityType);
+            List<GoodsVO> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsVOList);
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -73,7 +72,7 @@ public class GoodsController {
 
     /**
      * @param categoryCode 一级分类id
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return resultDTO
      */
@@ -97,13 +96,13 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<GoodsCategoryResponse> categoryList = goodsService.findGoodsCategoryListByCategoryCodeAndUserIdAndIdentityType(categoryCode,userId, identityType);
+            List<GoodsCategoryResponse> categoryList = goodsService.findGoodsCategoryListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, categoryList);
             logger.info("getGoodsCategoryListByUserIdAndIdentityType OUT,获取商品分类列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品分类列表获取失败", null);
             logger.warn("getGoodsCategoryListByUserIdAndIdentityType EXCEPTION,获取商品分类列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -112,7 +111,7 @@ public class GoodsController {
 
     /**
      * @param categoryCode 一级分类id
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return resultDTO
      */
@@ -136,7 +135,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<GoodsBrandResponse> brandList = goodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode,userId, identityType);
+            List<GoodsBrandResponse> brandList = goodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, brandList);
             logger.info("getGoodsBrandListByUserIdAndIdentityType OUT,获取商品品牌列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -150,7 +149,7 @@ public class GoodsController {
 
     /**
      * @param categoryCode 一级分类id
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return resultDTO
      */
@@ -174,7 +173,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<GoodsTypeResponse> brandList = goodsService.findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(categoryCode,userId, identityType);
+            List<GoodsTypeResponse> brandList = goodsService.findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, brandList);
             logger.info("getGoodsTypeListByUserIdAndIdentityType OUT,获取商品类型列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -188,12 +187,13 @@ public class GoodsController {
 
     /**
      * 获取热门商品信息
-     * @param userId 用户id
+     *
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return
      */
     @RequestMapping(value = "/hot/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType( Long userId, Integer identityType){
+    public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType(Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
         logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 categoryCode:{},userId:{},identityType:{}", userId, identityType);
         if (null == userId) {
@@ -206,13 +206,13 @@ public class GoodsController {
             logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        try{
-            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId,identityType);
+        try {
+            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取热门商品列表成功", collectGoodsResponseList);
             logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取热门商品列表失败", null);
             logger.warn("getGoodsHotListByUserIdAndIdentityType EXCEPTION,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -222,12 +222,13 @@ public class GoodsController {
 
     /**
      * 获取常购商品列表
-     * @param userId 用户ID
+     *
+     * @param userId       用户ID
      * @param identityType 用户类型
      * @return
      */
     @RequestMapping(value = "/often/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsOftenBuyListByUserIdAndIdentityType( Long userId, Integer identityType){
+    public ResultDTO<Object> getGoodsOftenBuyListByUserIdAndIdentityType(Long userId, Integer identityType) {
 
         logger.info("getGoodsOftenBuyListByUserIdAndIdentityType CALLED,获取收藏商品列表，入参 userId {},type{}", userId, identityType);
 
@@ -248,7 +249,7 @@ public class GoodsController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取常购商品列表成功", null);
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取常购商品列表失败", null);
             logger.warn("getGoodsOftenBuyListByUserIdAndIdentityType EXCEPTION,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -258,28 +259,57 @@ public class GoodsController {
 
 
     /**
-     * @title 获取商品详情图片和轮播图片
-     * @descripe
      * @param goodsCode
      * @return
      * @throws
+     * @title 获取商品详情图片和轮播图片
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
-    */
-    @PostMapping(value = "/get/goodsImageUri",produces="application/json;charset=UTF-8")
-    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode){
+     */
+    @PostMapping(value = "/get/goodsImageUri", produces = "application/json;charset=UTF-8")
+    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode) {
         logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 goodsCode {},type{}", goodsCode);
 
         ResultDTO<GoodsImageUriResponse> resultDTO;
-        if (goodsCode == null){
+        if (goodsCode == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
-            logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}",resultDTO);
+            logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
         GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", goodsImageUriResponse);
-        logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}",resultDTO);
+        logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
         return resultDTO;
+    }
+
+    @PostMapping(value = "/search", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> searchGoodsList(String keywords, Long userId, Integer identityType) {
+        logger.info("searchGoodsList CALLED,搜索商品，入参 keywords {},userId{}", keywords, userId);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (StringUtils.isBlank(keywords)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码{goodsCode}不能为空！", null);
+                logger.info("searchGoodsList OUT,搜索商品失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id{userId}不能为空！", null);
+                logger.info("searchGoodsList OUT,搜索商品失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            List<UserGoodsResponse> goodsResponseList = goodsService.searchByUserIdAndKeywordsAndIdentityType(userId, keywords, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (goodsResponseList != null && goodsResponseList.size() > 0) ? goodsResponseList : null);
+            logger.info("searchGoodsList OUT,搜索商品成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            logger.warn("{}", e);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索商品失败", null);
+            logger.warn("searchGoodsList EXCEPTION,搜索商品失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
     }
 }
