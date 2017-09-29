@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 
 import java.util.List;
 
@@ -24,5 +24,5 @@ public interface IAppCustomerService {
 
     AppCustomer findById(Long userId);
 
-    List<CashCoupon> findCashCouponByCustomerId(Long userId);
+    List<CashCouponResponse> findCashCouponByCustomerId(Long userId);
 }

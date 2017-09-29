@@ -52,6 +52,4 @@ public interface GoodsDAO {
     List<UserCollectGoodsResponse> findGoodsListByCustomerIdAndIdentityType(Long userId);
 
     List<UserCollectGoodsResponse> findGoodsListByEmployeeIdAndIdentityType(Long userId);
-
-    GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
 }

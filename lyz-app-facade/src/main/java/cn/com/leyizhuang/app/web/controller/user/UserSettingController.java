@@ -48,11 +48,11 @@ public class UserSettingController {
     /**
      * 获取个人信息
      * @param userId 用户Id
-     * @param type 用户类型(0导购，1配送员，2经理，3工人，6顾客)
+     * @param type 用户类型
      * @return
      */
     @PostMapping(value = "/get/information",produces="application/json;charset=UTF-8")
-    public ResultDTO<UserInformationResponse> personalInformationGet(Long userId, int type){
+    public ResultDTO<UserInformationResponse> personalInformationGet(Long userId, Integer type){
 
         logger.info("personalInformationGet CALLED,获取个人信息，入参 userId {},type{}", userId, type);
 
@@ -63,21 +63,13 @@ public class UserSettingController {
             return resultDTO;
         }
 
-        int [] types = {0,1,2,3};
-
-        if (ArrayUtils.contains(types,type)){
-            AppEmployee appEmployee =  employeeService.findById(userId);
-            if (appEmployee==null){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-                logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
-                return resultDTO;
-            }
-            UserInformationResponse informationResponse = transform(appEmployee);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
-            logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
+        if (null == type){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
-
-        }else if(type == 6){
+        }
+        if(type == 6){
             AppCustomer appCustomer =  customerService.findById(userId);
             if (appCustomer==null){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
@@ -89,10 +81,18 @@ public class UserSettingController {
             logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
-                null);
-        logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+
+        AppEmployee appEmployee =  employeeService.findById(userId);
+        if (appEmployee==null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+            logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        UserInformationResponse informationResponse = transform(appEmployee);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
+        logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
+
     }
 
     /**

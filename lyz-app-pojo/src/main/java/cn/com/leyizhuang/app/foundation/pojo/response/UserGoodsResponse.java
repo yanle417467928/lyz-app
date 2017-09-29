@@ -7,7 +7,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * 获取个人商品收藏列表接口实体
+ * 获取通用个人商品接口实体
  * Created with IntelliJ IDEA.
  * Created by Jerry.Ren
  * Date: 2017/9/28.
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class UserCollectGoodsResponse implements Serializable {
+public class UserGoodsResponse implements Serializable {
 
     //商品ID
     private Long id;

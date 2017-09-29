@@ -2,10 +2,8 @@ package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsCategory;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsImageUriResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
@@ -14,7 +12,6 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -187,23 +184,5 @@ public class GoodsController {
             logger.warn("getGoodsTypeListByUserIdAndIdentityType EXCEPTION,获取商品类型列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-    }
-
-
-    @PostMapping(value = "/get/deliveryAddress",produces="application/json;charset=UTF-8")
-    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode){
-        logger.info("getGoodsImageUri CALLED,获取收货地址，入参 goodsCode {},type{}", goodsCode);
-
-        ResultDTO<GoodsImageUriResponse> resultDTO;
-        if (goodsCode == null){
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
-            logger.info("getGoodsImageUri OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
-            return resultDTO;
-        }
-        GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
-        GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", goodsImageUriResponse);
-        logger.info("getGoodsImageUri OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
-        return resultDTO;
     }
 }

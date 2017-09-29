@@ -6,9 +6,8 @@ import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCounponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerBindingSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerLoginResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRegistResponse;
@@ -239,7 +238,7 @@ public class CustomerController {
                 logger.info("customerCashCoupon OUT,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            List<CashCoupon> cashCouponList = customerService.findCashCouponByCustomerId(userId);
+            List<CashCouponResponse> cashCouponList = customerService.findCashCouponByCustomerId(userId);
             if (null != cashCouponList && cashCouponList.size()>0){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,cashCouponList);
 
