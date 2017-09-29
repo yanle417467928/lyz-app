@@ -28,7 +28,7 @@ public class DeliveryAddressResponse {
     //收货县
     private String deliveryCounty;
     //收货街道
-    private String DELIVERYSTREET;
+    private String deliveryStreet;
     //收货详细地址
     private String detailedAddress;
     //小区名

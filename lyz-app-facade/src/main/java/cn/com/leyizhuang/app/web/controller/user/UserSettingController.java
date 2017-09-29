@@ -116,7 +116,7 @@ public class UserSettingController {
         }
         List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTure(userId);
 
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收货地址！", deliveryAddressResponseList);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }

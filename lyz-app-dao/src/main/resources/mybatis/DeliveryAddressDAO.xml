@@ -21,11 +21,11 @@
     </resultMap>
 
     <select id="queryListByUserIdAndStatusIsTure" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
-        SELECT DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS
+        SELECT DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS,
           VILLAGE_NAME, STATUS
         FROM DELIVERY_ADDRESS
         WHERE
-          USERID = #{userId}
+          CUSTOMER_ID = #{customerId}
         AND STATUS = TRUE
         ORDER BY CREATE_TIME DESC
     </select>

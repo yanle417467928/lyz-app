@@ -78,7 +78,7 @@ public class ProcessController {
         }
         try {
             List<ProcessGoodsResponse> processGoodsResponseList = this.processServiceImpl.queryByProcessIdAndUserId(userId, processId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取工序包商品列表成功", processGoodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, processGoodsResponseList);
             logger.info("getProcessGoods OUT,获取工序包商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e){
