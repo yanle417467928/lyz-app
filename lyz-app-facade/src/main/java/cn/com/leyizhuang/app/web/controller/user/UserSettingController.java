@@ -48,13 +48,13 @@ public class UserSettingController {
     /**
      * 获取个人信息
      * @param userId 用户Id
-     * @param type 用户类型
+     * @param identityType 用户类型
      * @return
      */
     @PostMapping(value = "/get/information",produces="application/json;charset=UTF-8")
-    public ResultDTO<UserInformationResponse> personalInformationGet(Long userId, Integer type){
+    public ResultDTO<UserInformationResponse> personalInformationGet(Long userId, Integer identityType){
 
-        logger.info("personalInformationGet CALLED,获取个人信息，入参 userId {},type{}", userId, type);
+        logger.info("personalInformationGet CALLED,获取个人信息，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<UserInformationResponse> resultDTO;
         if (userId == null){
@@ -63,13 +63,13 @@ public class UserSettingController {
             return resultDTO;
         }
 
-        if (null == type){
+        if (null == identityType){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        if(type == 6){
+        if(identityType == 6){
             AppCustomer appCustomer =  customerService.findById(userId);
             if (appCustomer==null){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
@@ -77,7 +77,7 @@ public class UserSettingController {
                 return resultDTO;
             }
             UserInformationResponse informationResponse = transform(appCustomer);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, informationResponse);
             logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
@@ -89,7 +89,7 @@ public class UserSettingController {
             return resultDTO;
         }
         UserInformationResponse informationResponse = transform(appEmployee);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人信息成功！", informationResponse);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, informationResponse);
         logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
 

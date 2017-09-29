@@ -39,7 +39,7 @@ public class UserCollectController {
     @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
     public ResultDTO<Object> getPersonalCollectGoodsList(Long userId, Integer identityType){
 
-        logger.info("getPersonalCollectGoodsList CALLED,获取收藏商品列表，入参 userId {},type{}", userId, identityType);
+        logger.info("getPersonalCollectGoodsList CALLED,获取收藏商品列表，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
 
@@ -48,7 +48,7 @@ public class UserCollectController {
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null != identityType){
+        if (null == identityType){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -57,7 +57,7 @@ public class UserCollectController {
         try {
             List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsCollectListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取收藏商品列表成功", collectGoodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, collectGoodsResponseList);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e){

@@ -24,7 +24,7 @@ import java.util.List;
  * Created on 2017-09-25 10:17
  **/
 @RestController
-@RequestMapping(value = "/app/goods/")
+@RequestMapping(value = "/app/goods")
 public class GoodsController {
 
     private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
@@ -195,7 +195,7 @@ public class GoodsController {
     @RequestMapping(value = "/hot/list", method = RequestMethod.POST)
     public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType(Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 categoryCode:{},userId:{},identityType:{}", userId, identityType);
+        logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 userId:{},identityType:{}", userId, identityType);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -207,8 +207,8 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取热门商品列表成功", collectGoodsResponseList);
+            List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userGoodsResponseList);
             logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
 
@@ -230,7 +230,7 @@ public class GoodsController {
     @RequestMapping(value = "/often/list", method = RequestMethod.POST)
     public ResultDTO<Object> getGoodsOftenBuyListByUserIdAndIdentityType(Long userId, Integer identityType) {
 
-        logger.info("getGoodsOftenBuyListByUserIdAndIdentityType CALLED,获取收藏商品列表，入参 userId {},type{}", userId, identityType);
+        logger.info("getGoodsOftenBuyListByUserIdAndIdentityType CALLED,获取收藏商品列表，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
 
@@ -245,8 +245,8 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsOftenListByUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取常购商品列表成功", null);
+            List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsOftenListByUserIdAndIdentityType(userId, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userGoodsResponseList);
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

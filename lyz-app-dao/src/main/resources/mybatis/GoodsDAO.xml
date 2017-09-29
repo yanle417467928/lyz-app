@@ -374,7 +374,7 @@
             INNER JOIN goods_brand b ON b.id = g.brand_id
             INNER JOIN goods_type t ON t.id = g.type_id
         WHERE
-            c.id = #{userId}
+            e.id = #{userId}
     </select>
 
     <select id="findGoodsOftenListByCustomerIdAndIdentityType" parameterType="java.lang.Long"

@@ -40,13 +40,13 @@ public class UserHomePageController {
     /**
      * 个人主页的信息
      * @param userId 用户Id
-     * @param type 用户类型
+     * @param identityType 用户类型
      * @return
      */
     @PostMapping(value = "/homepage",produces="application/json;charset=UTF-8")
-    public ResultDTO personalHomepage(Long userId,Integer type){
+    public ResultDTO personalHomepage(Long userId,Integer identityType){
 
-        logger.info("personalHomepage CALLED,获取个人主页，入参 userId {},type{}", userId, type);
+        logger.info("personalHomepage CALLED,获取个人主页，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<UserHomePageResponse> resultDTO;
         if (userId == null){
@@ -55,13 +55,13 @@ public class UserHomePageController {
             return resultDTO;
         }
 
-        if (null == type){
+        if (null == identityType){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        if(type == 6){
+        if(identityType == 6){
             AppCustomer appCustomer =  customerService.findById(userId);
             if (appCustomer==null){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
@@ -76,7 +76,7 @@ public class UserHomePageController {
                 userHomePageResponse.setGuideName(guide.getName());
                 userHomePageResponse.setGuideMobile(guide.getMobile());
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人主页信息成功！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
@@ -92,7 +92,7 @@ public class UserHomePageController {
         userHomePageResponse.setName(appEmployee.getName());
         userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
         userHomePageResponse.setNumber(appEmployee.getLoginName());
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取个人主页信息成功！", null);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
         logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }
