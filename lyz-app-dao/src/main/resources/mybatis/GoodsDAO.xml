@@ -434,7 +434,7 @@
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI
         FROM
-            GOODS
+            goods
         WHERE
             goods_code = #{goodsCode}
     </select>

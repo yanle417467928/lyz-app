@@ -98,17 +98,17 @@
 
     <select id="queryByProcessIdAndEmployeeId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-          g.ID, g.GOODS_NAME, g.cover_image_uri, g.goods_unit, g.goods_specification,
-          gp.member_price, gp.retail_price, gb.brand_code, gc.category_code, gt.type_code
-        FROM PROCESS p
-        LEFT JOIN PROCESS_GOODS pg ON pg.p_ID = p.ID
-        LEFT JOIN GOODS g ON g.ID = pg.g_ID
-        LEFT JOIN GOODS_BRAND gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN GOODS_CATEGORY gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN GOODS_TYPE gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN GOODS_PRICE gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN APP_STORE s ON s.ID = gp.STORE_ID
-        LEFT JOIN APP_EMPLOYEE e ON e.STORE_ID = s.ID
+          g.ID, g.GOODS_NAME, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
+          gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
+        FROM process p
+        LEFT JOIN process_goods pg ON pg.p_ID = p.ID
+        LEFT JOIN goods g ON g.ID = pg.g_ID
+        LEFT JOIN goods_brand gb ON gb.ID = g.TYPE_ID
+        LEFT JOIN goods_category gc ON gc.ID = g.CATEGORY_ID
+        LEFT JOIN goods_type gt ON gt.ID = g.TYPE_ID
+        LEFT JOIN goods_price gp ON gp.GOODS_ID = g.ID
+        LEFT JOIN app_store s ON s.ID = gp.STORE_ID
+        LEFT JOIN app_employee e ON e.STORE_ID = s.ID
         WHERE e.ID = #{userId}
         AND p.ID = #{processId}
 
@@ -116,16 +116,16 @@
 
     <select id="queryByProcessIdAndCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-        g.ID, g.GOODS_NAME, g.cover_image_uri, g.goods_unit, g.goods_specification,
-        gp.member_price, gp.retail_price, gb.brand_code, gc.category_code, gt.type_code
-        FROM PROCESS p
-        LEFT JOIN PROCESS_GOODS pg ON pg.p_ID = p.ID
-        LEFT JOIN GOODS g ON g.ID = pg.g_ID
-        LEFT JOIN GOODS_BRAND gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN GOODS_CATEGORY gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN GOODS_TYPE gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN GOODS_PRICE gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN APP_STORE s ON s.ID = gp.STORE_ID
+        g.ID, g.GOODS_NAME, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
+        gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
+        FROM process p
+        LEFT JOIN process_goods pg ON pg.p_ID = p.ID
+        LEFT JOIN goods g ON g.ID = pg.g_ID
+        LEFT JOIN goods_brand gb ON gb.ID = g.TYPE_ID
+        LEFT JOIN goods_category gc ON gc.ID = g.CATEGORY_ID
+        LEFT JOIN goods_type gt ON gt.ID = g.TYPE_ID
+        LEFT JOIN goods_price gp ON gp.GOODS_ID = g.ID
+        LEFT JOIN app_store s ON s.ID = gp.STORE_ID
         LEFT JOIN app_customer c ON c.STORE_ID = s.ID
         WHERE e.ID = #{userId}
         AND p.ID = #{processId}

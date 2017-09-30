@@ -40,7 +40,7 @@ public class ProcessController {
      */
     @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
     public ResultDTO<List> getProcess(Long userId){
-        logger.info("getProcess CALLED,获取工序包列表，入参 goodsCode {},type{}");
+        logger.info("getProcess CALLED,获取工序包列表，入参 null");
 
         ResultDTO<List> resultDTO;
         List<ProcessResponse> processResponseList = this.processServiceImpl.queryAllList();

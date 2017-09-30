@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO">
 
     <resultMap id="DeliveryAddressResult" type="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
-        <id column="id" property="id" jdbcType="BIGINT"/>
+        <id column="ID" property="id" jdbcType="BIGINT"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
         <result column="CREATE_TIME" property="createTime"/>
@@ -23,7 +23,7 @@
     <select id="queryListByUserIdAndStatusIsTure" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS,
           VILLAGE_NAME, STATUS
-        FROM DELIVERY_ADDRESS
+        FROM delivery_address
         WHERE
           CUSTOMER_ID = #{customerId}
         AND STATUS = TRUE
