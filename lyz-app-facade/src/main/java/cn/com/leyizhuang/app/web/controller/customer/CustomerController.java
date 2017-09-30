@@ -80,6 +80,7 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常", null);
             logger.warn("customerLogin EXCEPTION,顾客登录出现异常，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
@@ -156,6 +157,7 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", new CustomerRegistResponse(Boolean.FALSE, null));
             logger.warn("customerRegistry EXCEPTION,顾客注册失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
@@ -220,11 +222,18 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
             logger.warn("customerBindingSeller EXCEPTION,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
 
 
+    /**
+     *  顾客现金优惠券列表
+     * @param userId 顾客id
+     * @param identityType 身份类型
+     * @return ResultDTO
+     */
     @PostMapping(value = "/cashCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerCashCoupon(Long userId, String identityType) {
         logger.info("customerCashCoupon CALLED,获取顾客可用产品现金券，入参 userId {},identityType{}", userId, identityType);
@@ -248,10 +257,17 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
             logger.warn("customerCashCoupon EXCEPTION,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
 
+    /**
+     *  顾客产品券列表
+     * @param userId 顾客id
+     * @param identityType 身份类型
+     * @return ResultDTO
+     */
     @PostMapping(value = "/productCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerProductCoupon(Long userId, String identityType) {
         logger.info("customerProductCoupon CALLED,获取顾客可用产品券，入参 userId {},identityType{}", userId, identityType);

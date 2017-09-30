@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class ProcessController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessController.class);
 
-    @Autowired
+    @Resource
     private ProcessService processServiceImpl;
 
     /**
@@ -85,6 +86,7 @@ public class ProcessController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取常购商品列表失败", null);
             logger.warn("getProcessGoods EXCEPTION,获取工序包商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }

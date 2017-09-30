@@ -7,11 +7,11 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +27,13 @@ public class CityController {
 
     private static final Logger logger = LoggerFactory.getLogger(CityController.class);
 
-    @Autowired
+    @Resource
     private CityService cityService;
 
 
     /**
-     * @return resultDTO
+     * 获取城市列表
+     * @return ResultDTO
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public ResultDTO getCityList() {

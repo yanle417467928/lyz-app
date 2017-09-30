@@ -64,6 +64,7 @@ public class UserCollectController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取收藏商品列表失败", null);
             logger.warn("getPersonalCollectGoodsList EXCEPTION,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }

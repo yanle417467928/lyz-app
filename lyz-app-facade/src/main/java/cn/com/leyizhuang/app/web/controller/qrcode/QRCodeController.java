@@ -8,11 +8,11 @@ import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Random;
@@ -29,7 +29,7 @@ public class QRCodeController {
 
     private static final Logger logger = LoggerFactory.getLogger(QRCodeController.class);
 
-    @Autowired
+    @Resource
     private SmsAccountService smsAccountService;
 
     @RequestMapping(value = "/send",method = RequestMethod.POST)
@@ -60,9 +60,9 @@ public class QRCodeController {
         try {
             returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
         } catch (IOException e) {
-            e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，短信验证码发送失败！", new QrCodeResponse(null));
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}",resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
         if (returnCode.equalsIgnoreCase("00")) {

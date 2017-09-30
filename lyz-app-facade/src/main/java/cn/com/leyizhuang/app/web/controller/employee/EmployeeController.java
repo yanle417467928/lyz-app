@@ -36,9 +36,9 @@ public class EmployeeController {
 
     /**
      *  App 员工登录接口
-     * @param loginParam
-     * @param response
-     * @return
+     * @param loginParam 登录参数
+     * @param response 响应对象
+     * @return ResultDTO
      */
     @PostMapping(value = "/login",produces="application/json;charset=UTF-8")
     public ResultDTO<EmployeeLoginResponse> employeeLogin(EmployeeLoginParam loginParam, HttpServletResponse response) {
@@ -80,14 +80,15 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常", null);
             logger.warn("employeeLogin EXCEPTION,员工登录出现异常,出参 resultDTO:{}",resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
 
     /** App 员工修改密码
-     * @param mobile
-     * @param password
-     * @return
+     * @param mobile 员工手机号码
+     * @param password 密码
+     * @return ResultDTO
      */
     @PostMapping(value = "/password/modify",produces="application/json;charset=UTF-8")
     public ResultDTO<String> employeeModifyPassword(String mobile, String password) {
@@ -123,6 +124,7 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，密码修改失败", null);
             logger.warn("employeeModifyPassword EXCEPTION,员工修改密码出现未知异常,返回值resultDTO:{}",resultDTO);
+            logger.warn("{}",e);
             return resultDTO;
         }
     }
