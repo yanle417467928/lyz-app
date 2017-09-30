@@ -14,7 +14,7 @@
         #{sex,
         javaType=cn.com.leyizhuang.app.core.constant.SexType,
         typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{open_id}, #{pic_url}, #{nick_name}, #{city_id}, #{sales_consult_id}
+        #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId}
         )
     </insert>
 
