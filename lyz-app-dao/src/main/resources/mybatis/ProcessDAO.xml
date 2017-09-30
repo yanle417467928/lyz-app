@@ -93,7 +93,7 @@
 
     <select id="queryAllList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse">
         SELECT ID, PROCESS_NAME
-        FROM PROCESS
+        FROM process
     </select>
 
     <select id="queryByProcessIdAndEmployeeId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
