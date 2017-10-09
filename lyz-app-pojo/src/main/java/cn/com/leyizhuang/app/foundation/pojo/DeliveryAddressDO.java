@@ -23,7 +23,7 @@ public class DeliveryAddressDO extends BaseDO {
     //收货县
     private String deliveryCounty;
     //收货街道
-    private String DELIVERYSTREET;
+    private String deliveryStreet;
     //收货详细地址
     private String detailedAddress;
     //小区名
@@ -31,7 +31,7 @@ public class DeliveryAddressDO extends BaseDO {
     //会员ID
     private Long customerId;
     //状态
-    private Boolean STATUS;
+    private Boolean status;
 
 
 }

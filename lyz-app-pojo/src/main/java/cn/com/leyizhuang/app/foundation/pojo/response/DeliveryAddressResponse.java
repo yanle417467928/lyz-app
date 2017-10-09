@@ -18,7 +18,7 @@ import java.util.List;
 public class DeliveryAddressResponse {
 
     //自增主键
-//    private Long id;
+    private Long id;
     //收货人姓名
     private String deliveryName;
     //收货人号码

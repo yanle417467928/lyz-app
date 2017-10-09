@@ -21,7 +21,7 @@
     </resultMap>
 
     <select id="queryListByUserIdAndStatusIsTure" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
-        SELECT DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS,
+        SELECT ID, DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, DETAILED_ADDRESS,
           VILLAGE_NAME, STATUS
         FROM delivery_address
         WHERE
@@ -29,6 +29,57 @@
         AND STATUS = TRUE
         ORDER BY CREATE_TIME DESC
     </select>
+
+    <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
+        INSERT INTO delivery_address
+        (CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET,
+        DETAILED_ADDRESS, VILLAGE_NAME, CUSTOMER_ID, STATUS)
+        VALUES
+        (#{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{deliveryName}, #{deliveryPhone}, #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet},
+        #{detailedAddress}, #{villageName}, #{customerId}, #{status})
+    </insert>
+
+    <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
+        UPDATE delivery_address
+        <set>
+            <if test="null != modifierId">
+                MODIFIER_ID = #{modifierId},
+            </if>
+            <if test="null != modifierType">
+                MODIFIER_TYPE = #{modifierType},
+            </if>
+            <if test="null != modifyTime">
+                MODIFY_TIME = #{modifyTime},
+            </if>
+            <if test="null != deliveryName">
+                DELIVERY_NAME = #{deliveryName},
+            </if>
+            <if test="null != deliveryPhone">
+                DELIVERY_PHONE = #{deliveryPhone},
+            </if>
+            <if test="null != deliveryCity">
+                DELIVERY_CITY = #{deliveryCity},
+            </if>
+            <if test="null != deliveryCounty">
+                DELIVERY_COUNTY = #{deliveryCounty},
+            </if>
+            <if test="null != deliveryStreet">
+                DELIVERY_STREET = #{deliveryStreet},
+            </if>
+            <if test="null != detailedAddress">
+                DETAILED_ADDRESS = #{detailedAddress},
+            </if>
+            <if test="null != villageName">
+                VILLAGE_NAME = #{villageName},
+            </if>
+            <if test="null != status">
+                STATUS = #{status},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
 
 
 </mapper>

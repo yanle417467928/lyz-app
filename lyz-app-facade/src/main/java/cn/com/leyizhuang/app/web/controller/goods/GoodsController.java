@@ -282,7 +282,7 @@ public class GoodsController {
         logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 goodsCode {},type{}", goodsCode);
 
         ResultDTO<GoodsImageUriResponse> resultDTO;
-        if (goodsCode == null) {
+        if (null == goodsCode) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
             logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
             return resultDTO;
