@@ -278,10 +278,10 @@ public class UserSettingController {
     }
 
     @PostMapping(value = "/deliveryAddress/delete",produces="application/json;charset=UTF-8")
-    public ResultDTO<List> deleteDeliveryAddress(Long userId, Integer identityType, Long deliveryAddressId){
+    public ResultDTO<Object> deleteDeliveryAddress(Long userId, Integer identityType, Long deliveryAddressId){
         logger.info("deleteDeliveryAddress CALLED,顾客删除收货地址，入参 userId:{} identityType:{} deliveryAddressId:{}", userId, identityType, deliveryAddressId);
 
-        ResultDTO<List> resultDTO;
+        ResultDTO<Object> resultDTO;
         if (null == userId){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
             logger.info("deleteDeliveryAddress OUT,顾客删除收货地址失败，出参 resultDTO:{}",resultDTO);
@@ -292,10 +292,8 @@ public class UserSettingController {
             logger.info("deleteDeliveryAddress OUT,顾客删除收货地址失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-
-        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTure(userId);
-
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
+        this.deliveryAddressServiceImpl.deleteDeliveryAddress(deliveryAddressId);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         logger.info("deleteDeliveryAddress OUT,顾客删除收货地址成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }
