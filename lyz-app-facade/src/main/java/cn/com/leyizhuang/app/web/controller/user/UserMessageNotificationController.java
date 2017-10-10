@@ -7,6 +7,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +35,7 @@ public class UserMessageNotificationController {
      * @author GenerationRoad
      * @date 2017/10/10
      */
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<List> getMessageNotificationList(Long userId, Integer identityType){
         logger.info("getMessageNotificationList CALLED, 获取消息通知列表，入参 userId {},identityType{}", userId, identityType);
 

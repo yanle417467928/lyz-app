@@ -1,10 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
+import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.City;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
@@ -16,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -47,6 +48,9 @@ public class UserSettingController {
 
     @Autowired
     private DeliveryAddressService deliveryAddressServiceImpl;
+
+    @Autowired
+    private FunctionalFeedbackService functionalFeedbackServiceImpl;
 
     /**
      * 获取个人信息
@@ -342,6 +346,72 @@ public class UserSettingController {
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
+    }
+
+    /**  
+     * @title   功能反馈
+     * @descripe
+     * @param userId
+     * @return resultDTO
+     * @throws Exception
+     * @author GenerationRoad
+     * @date 2017/10/10
+     */
+    @PostMapping(value = "/functionalFeedback/add", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam("myfiles") MultipartFile[] files, 
+                                                   String type, String content, String phone) {
+        logger.info("addFunctionalFeedback CALLED,功能反馈，入参 userId:{} identityType:{} files:{}," +
+                "type:{}, content:{}, phone:{}", userId, identityType, files, type, content, phone);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                        null);
+                logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == type) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "反馈类型不能为空！", null);
+                logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == content) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "反馈内容不能为空！", null);
+                logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == phone) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "联系电话不能为空！", null);
+                logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            //上传图片
+
+            FunctionalFeedbackDO functionalFeedbackDO = new FunctionalFeedbackDO();
+            functionalFeedbackDO.setType(type);
+            functionalFeedbackDO.setContent(content);
+            functionalFeedbackDO.setPhone(phone);
+            functionalFeedbackDO.setPictureUrl("");
+            functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
+            functionalFeedbackDO.setUserId(userId);
+            functionalFeedbackDO.setUserType(AppUserType.getAppUserTypeByValue(identityType));
+            this.functionalFeedbackServiceImpl.save(functionalFeedbackDO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("addFunctionalFeedback OUT,功能反馈成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", null);
+            logger.warn("addFunctionalFeedback EXCEPTION,功能反馈失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 
     private UserInformationResponse transform(AppEmployee appEmployee) {

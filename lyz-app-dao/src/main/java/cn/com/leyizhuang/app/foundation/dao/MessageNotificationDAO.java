@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,6 @@ import java.util.List;
 @Repository
 public interface MessageNotificationDAO {
 
-    List<MessageNotificationListResponse> queryListByUserIdAndUserType(@Param("userId") Long userId, @Param("userType") Integer userType);
+    List<MessageNotificationListResponse> queryListByUserIdAndUserType(@Param("userId") Long userId, @Param("userType") AppUserType userType);
 
 }

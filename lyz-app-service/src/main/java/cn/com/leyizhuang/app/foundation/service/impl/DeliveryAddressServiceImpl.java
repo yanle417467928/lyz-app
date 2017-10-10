@@ -30,7 +30,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     @Override
     public DeliveryAddressRequest addDeliveryAddress(Long userId, DeliveryAddressRequest deliveryAddress) {
         DeliveryAddressDO deliveryAddressDO = transform(userId, deliveryAddress);
-        deliveryAddressDO.setCreatorInfoByManager(0L);
+        deliveryAddressDO.setCreatorInfoByBusiness("DeliveryAddressServiceImpl", "addDeliveryAddress");
         this.deliveryAddressDAO.addDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
@@ -38,7 +38,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     @Override
     public DeliveryAddressRequest modifyDeliveryAddress(Long userId, DeliveryAddressRequest deliveryAddress) {
         DeliveryAddressDO deliveryAddressDO = transform(userId, deliveryAddress);
-        deliveryAddressDO.setModifierInfoByManager(0L);
+        deliveryAddressDO.setModifierInfoByBusiness("DeliveryAddressServiceImpl", "modifyDeliveryAddress");
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
@@ -48,7 +48,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
         DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
         deliveryAddressDO.setId(deliveryAddressId);
         deliveryAddressDO.setStatus(false);
-        deliveryAddressDO.setModifierInfoByManager(0L);
+        deliveryAddressDO.setModifierInfoByBusiness("DeliveryAddressServiceImpl", "deleteDeliveryAddress");
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
     }
 

@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
@@ -23,5 +25,15 @@ public enum AppUserType {
     public String getDescription(){
         return description;
     }
+
+    public static AppUserType getAppUserTypeByValue(Integer value){
+        for(AppUserType appUserType : AppUserType.values()){
+            if(value == appUserType.getValue()){
+                return appUserType;
+            }
+        }
+        return null;
+    }
+
 
 }
