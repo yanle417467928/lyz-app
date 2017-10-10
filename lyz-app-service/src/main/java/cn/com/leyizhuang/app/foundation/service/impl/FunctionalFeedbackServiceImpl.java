@@ -21,6 +21,7 @@ public class FunctionalFeedbackServiceImpl implements FunctionalFeedbackService 
     @Override
     public FunctionalFeedbackDO save(FunctionalFeedbackDO functionalFeedbackDO) {
         functionalFeedbackDO.setCreatorInfoByBusiness("FunctionalFeedbackServiceImpl", "save");
-        return this.functionalFeedbackDAO.save(functionalFeedbackDO);
+        this.functionalFeedbackDAO.save(functionalFeedbackDO);
+        return functionalFeedbackDO;
     }
 }

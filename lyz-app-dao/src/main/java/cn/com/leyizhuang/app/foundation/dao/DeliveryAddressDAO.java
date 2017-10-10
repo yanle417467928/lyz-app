@@ -17,7 +17,7 @@ public interface DeliveryAddressDAO {
 
     List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTure(Long customerId);
 
-    DeliveryAddressDO addDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
+    void addDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
 
-    DeliveryAddressDO modifyDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
+    void modifyDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
 }

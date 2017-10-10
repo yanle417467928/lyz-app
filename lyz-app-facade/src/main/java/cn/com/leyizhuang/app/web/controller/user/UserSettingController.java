@@ -271,7 +271,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.addDeliveryAddress(userId, deliveryAddress);
+            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId, deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

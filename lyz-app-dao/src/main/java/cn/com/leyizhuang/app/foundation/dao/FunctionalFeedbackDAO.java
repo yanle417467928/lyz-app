@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FunctionalFeedbackDAO {
 
-    FunctionalFeedbackDO save(FunctionalFeedbackDO functionalFeedbackDO);
+    void save(FunctionalFeedbackDO functionalFeedbackDO);
 }
