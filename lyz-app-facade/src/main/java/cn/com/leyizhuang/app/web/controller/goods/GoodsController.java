@@ -3,8 +3,8 @@ package cn.com.leyizhuang.app.web.controller.goods;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import java.util.List;
  * 商品接口
  *
  * @author Richard
- * Created on 2017-09-25 10:17
+ *         Created on 2017-09-25 10:17
  **/
 @RestController
 @RequestMapping(value = "/app/goods")
@@ -34,6 +34,7 @@ public class GoodsController {
 
     /**
      * 获取商品列表
+     *
      * @param categoryCode 一级分类id
      * @param userId       用户id
      * @param identityType 用户身份类型
@@ -67,13 +68,14 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品列表获取失败", null);
             logger.warn("getGoodsListByUserIdAndIdentityType EXCEPTION,获取商品列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 获取商品分类列表
+     *
      * @param categoryCode 一级分类id
      * @param userId       用户id
      * @param identityType 用户身份类型
@@ -108,13 +110,14 @@ public class GoodsController {
             logger.warn("{}", e);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品分类列表获取失败", null);
             logger.warn("getGoodsCategoryListByUserIdAndIdentityType EXCEPTION,获取商品分类列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 获取商品品牌列表
+     *
      * @param categoryCode 一级分类id
      * @param userId       用户id
      * @param identityType 用户身份类型
@@ -148,13 +151,14 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品品牌列表获取失败", null);
             logger.warn("getGoodsBrandListByUserIdAndIdentityType EXCEPTION,获取商品品牌列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 获取商品类型列表
+     *
      * @param categoryCode 一级分类id
      * @param userId       用户id
      * @param identityType 用户身份类型
@@ -188,7 +192,7 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，商品分类列表获取失败", null);
             logger.warn("getGoodsTypeListByUserIdAndIdentityType EXCEPTION,获取商品类型列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
@@ -224,7 +228,7 @@ public class GoodsController {
             e.getStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取热门商品列表失败", null);
             logger.warn("getGoodsHotListByUserIdAndIdentityType EXCEPTION,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
@@ -262,7 +266,7 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取常购商品列表失败", null);
             logger.warn("getGoodsOftenBuyListByUserIdAndIdentityType EXCEPTION,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }

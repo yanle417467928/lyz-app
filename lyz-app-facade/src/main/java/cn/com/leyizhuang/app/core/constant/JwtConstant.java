@@ -4,7 +4,7 @@ package cn.com.leyizhuang.app.core.constant;
  * Jwt常量
  *
  * @author Richard
- * Created on 2017-09-19 10:34
+ *         Created on 2017-09-19 10:34
  **/
 public class JwtConstant {
 

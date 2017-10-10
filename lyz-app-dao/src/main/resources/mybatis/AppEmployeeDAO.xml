@@ -87,9 +87,9 @@
     <select id="findDecorateEmployeeListByParentId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT
-        e.name
-        e.mobile
-        e.pic_url
+        e.name,
+        e.mobile,
+        e.pic_url,
         e.create_time
         FROM app_employee e
         WHERE e.employee_type = 'DECORATE_EMPLOYEE'

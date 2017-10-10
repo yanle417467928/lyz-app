@@ -28,38 +28,38 @@ public class ProcessController {
     private ProcessService processServiceImpl;
 
     /**
-     * @title 获取工序包列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取工序包列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
      */
-    @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
-    public ResultDTO<List> getProcess(Long userId){
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<List> getProcess(Long userId) {
         logger.info("getProcess CALLED,获取工序包列表，入参 null");
 
         ResultDTO<List> resultDTO;
         List<ProcessResponse> processResponseList = this.processServiceImpl.queryAllList();
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, processResponseList);
-        logger.info("getProcess OUT,获取工序包列表，出参 resultDTO:{}",resultDTO);
+        logger.info("getProcess OUT,获取工序包列表，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 
     /**
-     * @title   获取工序包商品列表
-     * @descripe
      * @param userId
      * @param identityType
      * @param processId
      * @return
      * @throws
+     * @title 获取工序包商品列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
      */
-    @PostMapping(value = "/processGoods/list",produces="application/json;charset=UTF-8")
-    public ResultDTO<Object> getProcessGoods( Long userId, Integer identityType, Long processId){
+    @PostMapping(value = "/processGoods/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getProcessGoods(Long userId, Integer identityType, Long processId) {
 
         logger.info("getProcessGoods CALLED,获取工序包商品列表，入参 userId {},identityType{},processId{}", userId, identityType, processId);
 
@@ -80,11 +80,11 @@ public class ProcessController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, processGoodsResponseList);
             logger.info("getProcessGoods OUT,获取工序包商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取常购商品列表失败", null);
             logger.warn("getProcessGoods EXCEPTION,获取工序包商品列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }

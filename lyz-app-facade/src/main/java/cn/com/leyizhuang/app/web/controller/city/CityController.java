@@ -19,7 +19,7 @@ import java.util.List;
  * 城市控制器
  *
  * @author Richard
- * Created on 2017-09-21 14:22
+ *         Created on 2017-09-21 14:22
  **/
 @RestController
 @RequestMapping(value = "/app/city")
@@ -33,6 +33,7 @@ public class CityController {
 
     /**
      * 获取城市列表
+     *
      * @return ResultDTO
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
@@ -49,12 +50,12 @@ public class CityController {
             responseList.add(response);
         }
         if (responseList.size() > 0) {
-            resultDTO =  new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseList);
-            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}",resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseList);
+            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } else {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}",resultDTO);
+            logger.info("customerLogin OUT,城市列表获取成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 

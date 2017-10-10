@@ -21,7 +21,7 @@ import java.util.Random;
  * 短信发送
  *
  * @author Richard
- * Created on 2017-09-21 15:50
+ *         Created on 2017-09-21 15:50
  **/
 @RestController
 @RequestMapping(value = "/app/qrcode")
@@ -32,13 +32,13 @@ public class QRCodeController {
     @Resource
     private SmsAccountService smsAccountService;
 
-    @RequestMapping(value = "/send",method = RequestMethod.POST)
+    @RequestMapping(value = "/send", method = RequestMethod.POST)
     public ResultDTO<QrCodeResponse> getQrCode(String mobile) {
         ResultDTO<QrCodeResponse> resultDTO;
-        logger.info("getQrCode CALLED,发送验证码，入参 mobile:{}",mobile);
+        logger.info("getQrCode CALLED,发送验证码，入参 mobile:{}", mobile);
         if (null == mobile || mobile.equalsIgnoreCase("") || mobile.trim().length() != 11) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不合法！", new QrCodeResponse(null));
-            logger.info("getQrCode OUT,验证码发送失败，出参 ResultDTO:{}",resultDTO);
+            logger.info("getQrCode OUT,验证码发送失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
         Random random = new Random();
@@ -52,7 +52,7 @@ public class QRCodeController {
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码生成失败！", new QrCodeResponse(null));
-            logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}",resultDTO);
+            logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
         SmsAccount account = smsAccountService.findOne();
@@ -61,17 +61,17 @@ public class QRCodeController {
             returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
         } catch (IOException e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，短信验证码发送失败！", new QrCodeResponse(null));
-            logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}",resultDTO);
-            logger.warn("{}",e);
+            logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
+            logger.warn("{}", e);
             return resultDTO;
         }
         if (returnCode.equalsIgnoreCase("00")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new QrCodeResponse(smsCode));
-            logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}",resultDTO);
+            logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         } else {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "短信平台故障，验证码发送失败！", new QrCodeResponse(null));
-            logger.info("getQrCode OUT，验证码发送失败，出参 ResultDTO:{}",resultDTO);
+            logger.info("getQrCode OUT，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
     }

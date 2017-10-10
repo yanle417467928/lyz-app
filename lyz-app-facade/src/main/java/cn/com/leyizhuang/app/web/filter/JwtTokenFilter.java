@@ -15,7 +15,7 @@ import java.io.IOException;
  * token拦截器
  *
  * @author Richard
- * Created on 2017-09-19 17:07
+ *         Created on 2017-09-19 17:07
  **/
 public class JwtTokenFilter implements Filter {
 
@@ -39,14 +39,14 @@ public class JwtTokenFilter implements Filter {
 
         boolean isExcludedPage = false;
         for (String page : excludedPageArray) {//判断是否在过滤url之外
-            if(((HttpServletRequest) request).getServletPath().equals(page)){
+            if (((HttpServletRequest) request).getServletPath().equals(page)) {
                 isExcludedPage = true;
                 break;
             }
         }
-        if(isExcludedPage){
-            chain.doFilter(request,response);
-        }else{
+        if (isExcludedPage) {
+            chain.doFilter(request, response);
+        } else {
             ResultDTO<String> resultDTO;
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             String auth = httpRequest.getHeader("Authorization");

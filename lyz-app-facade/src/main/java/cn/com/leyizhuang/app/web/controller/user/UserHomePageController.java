@@ -41,33 +41,34 @@ public class UserHomePageController {
 
     /**
      * 个人主页的信息
-     * @param userId 用户Id
+     *
+     * @param userId       用户Id
      * @param identityType 用户类型
      * @return
      */
-    @PostMapping(value = "/homepage",produces="application/json;charset=UTF-8")
-    public ResultDTO personalHomepage(Long userId,Integer identityType){
+    @PostMapping(value = "/homepage", produces = "application/json;charset=UTF-8")
+    public ResultDTO personalHomepage(Long userId, Integer identityType) {
 
         logger.info("personalHomepage CALLED,获取个人主页，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<UserHomePageResponse> resultDTO;
-        if (userId == null){
+        if (userId == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}",resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}",resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if(identityType == 6){
-            AppCustomer appCustomer =  customerService.findById(userId);
-            if (appCustomer==null){
+        if (identityType == 6) {
+            AppCustomer appCustomer = customerService.findById(userId);
+            if (appCustomer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-                logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}",resultDTO);
+                logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
@@ -79,15 +80,15 @@ public class UserHomePageController {
                 userHomePageResponse.setGuideMobile(guide.getMobile());
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
-            logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
-        AppEmployee appEmployee =  employeeService.findById(userId);
+        AppEmployee appEmployee = employeeService.findById(userId);
 
-        if (appEmployee==null){
+        if (appEmployee == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}",resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
@@ -95,25 +96,26 @@ public class UserHomePageController {
         userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
         userHomePageResponse.setNumber(appEmployee.getLoginName());
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
-        logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}",resultDTO);
+        logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 
     /**
      * 导购获取我的顾客列表接口
+     *
      * @param userId
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/customer/list",produces="application/json;charset=UTF-8")
-    public ResultDTO getCustomersList(Long userId, Integer identityType){
+    @PostMapping(value = "/customer/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomersList(Long userId, Integer identityType) {
 
         logger.info("getCustomersList CALLED,获取我的顾客列表，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
-        if (userId == null){
+        if (userId == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("getCustomersList OUT,获取我的顾客列表失败，出参 resultDTO:{}",resultDTO);
+            logger.info("getCustomersList OUT,获取我的顾客列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
@@ -127,26 +129,27 @@ public class UserHomePageController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomerList);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取我的顾客列表失败", null);
             logger.warn("getCustomersList EXCEPTION,获取我的顾客列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 导购搜索我的顾客
+     *
      * @param keywords
      * @param userId
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/search/customer",produces="application/json;charset=UTF-8")
-    public ResultDTO searchCustomerList(String keywords, Long userId, Integer identityType){
+    @PostMapping(value = "/search/customer", produces = "application/json;charset=UTF-8")
+    public ResultDTO searchCustomerList(String keywords, Long userId, Integer identityType) {
 
-        logger.info("searchCustomerList CALLED,搜索我的顾客，入参 keywords {},userId{},identityType{}", keywords, userId,identityType);
+        logger.info("searchCustomerList CALLED,搜索我的顾客，入参 keywords {},userId{},identityType{}", keywords, userId, identityType);
         ResultDTO<Object> resultDTO;
         if (StringUtils.isBlank(keywords)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "搜索关键词不能为空！", null);
@@ -169,7 +172,7 @@ public class UserHomePageController {
                     (appCustomerList != null && appCustomerList.size() > 0) ? appCustomerList : null);
             logger.info("searchCustomerList OUT,搜索我的顾客成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索我的顾客失败", null);
             logger.warn("searchCustomerList EXCEPTION,搜索我的顾客失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
@@ -179,18 +182,19 @@ public class UserHomePageController {
 
     /**
      * 装饰公司经理获取工人列表
+     *
      * @param userId
      * @return
      */
-    @PostMapping(value = "/decorateEmployee/list",produces="application/json;charset=UTF-8")
-    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType){
+    @PostMapping(value = "/decorateEmployee/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType) {
 
         logger.info("getDecorateEmployeeList CALLED,获取我的员工列表，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
-        if (null == userId){
+        if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("getDecorateEmployeeList OUT,获取我的员工列表失败，出参 resultDTO:{}",resultDTO);
+            logger.info("getDecorateEmployeeList OUT,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
@@ -204,11 +208,11 @@ public class UserHomePageController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appEmployeeList);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取我的员工列表失败", null);
             logger.warn("getDecorateEmployeeList EXCEPTION,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }

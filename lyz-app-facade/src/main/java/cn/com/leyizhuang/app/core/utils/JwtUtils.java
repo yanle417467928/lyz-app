@@ -1,4 +1,5 @@
 package cn.com.leyizhuang.app.core.utils;
+
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -14,7 +15,7 @@ import java.util.Date;
  * JWT工具类
  *
  * @author Richard
- * Created on 2017-09-19 9:37
+ *         Created on 2017-09-19 9:37
  **/
 public class JwtUtils {
 
@@ -22,10 +23,11 @@ public class JwtUtils {
 
     /**
      * 由字符串生成加密key
+     *
      * @return
      */
-    public static SecretKey generalKey(){
-        String stringKey = jianshu+JwtConstant.JWT_SECRET;
+    public static SecretKey generalKey() {
+        String stringKey = jianshu + JwtConstant.JWT_SECRET;
         byte[] encodedKey = Base64.decodeBase64(stringKey);
         SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
         return key;
@@ -33,7 +35,8 @@ public class JwtUtils {
 
 
     /**
-     *  创建 json web token
+     * 创建 json web token
+     *
      * @param id
      * @param subject
      * @param ttlMillis
@@ -60,11 +63,12 @@ public class JwtUtils {
 
     /**
      * 解密json web token
+     *
      * @param jwt
      * @return
      * @throws Exception
      */
-    public static Claims parseJWT(String jwt) throws Exception{
+    public static Claims parseJWT(String jwt) throws Exception {
         SecretKey key = generalKey();
         Claims claims = Jwts.parser()
                 .setSigningKey(key)

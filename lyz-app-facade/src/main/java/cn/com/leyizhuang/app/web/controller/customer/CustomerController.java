@@ -27,7 +27,7 @@ import java.util.List;
  * Richard
  *
  * @author 顾客控制器
- * Created on 2017-09-21 12:59
+ *         Created on 2017-09-21 12:59
  **/
 @RestController
 @RequestMapping(value = "/app/customer")
@@ -80,7 +80,7 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常", null);
             logger.warn("customerLogin EXCEPTION,顾客登录出现异常，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
@@ -157,7 +157,7 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", new CustomerRegistResponse(Boolean.FALSE, null));
             logger.warn("customerRegistry EXCEPTION,顾客注册失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
@@ -222,15 +222,16 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
             logger.warn("customerBindingSeller EXCEPTION,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
 
     /**
-     *  顾客现金优惠券列表
-     * @param userId 顾客id
+     * 顾客现金优惠券列表
+     *
+     * @param userId       顾客id
      * @param identityType 身份类型
      * @return ResultDTO
      */
@@ -257,14 +258,15 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
             logger.warn("customerCashCoupon EXCEPTION,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
-     *  顾客产品券列表
-     * @param userId 顾客id
+     * 顾客产品券列表
+     *
+     * @param userId       顾客id
      * @param identityType 身份类型
      * @return ResultDTO
      */
@@ -291,7 +293,7 @@ public class CustomerController {
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
             logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }

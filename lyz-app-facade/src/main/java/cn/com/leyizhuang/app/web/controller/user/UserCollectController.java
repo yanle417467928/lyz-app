@@ -31,12 +31,13 @@ public class UserCollectController {
 
     /**
      * 获取收藏商品列表
-     * @param userId 用户ID
+     *
+     * @param userId       用户ID
      * @param identityType 用户类型
      * @return
      */
-    @PostMapping(value = "/list",produces="application/json;charset=UTF-8")
-    public ResultDTO<Object> getPersonalCollectGoodsList(Long userId, Integer identityType){
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPersonalCollectGoodsList(Long userId, Integer identityType) {
 
         logger.info("getPersonalCollectGoodsList CALLED,获取收藏商品列表，入参 userId {},identityType{}", userId, identityType);
 
@@ -47,7 +48,7 @@ public class UserCollectController {
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -59,24 +60,25 @@ public class UserCollectController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, collectGoodsResponseList);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取收藏商品列表失败", null);
             logger.warn("getPersonalCollectGoodsList EXCEPTION,获取收藏商品列表失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 添加商品到我的收藏
+     *
      * @param userId
      * @param goodsId
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/add",produces="application/json;charset=UTF-8")
-    public ResultDTO addCollectGoods(Long userId, Long goodsId, Integer identityType){
+    @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
+    public ResultDTO addCollectGoods(Long userId, Long goodsId, Integer identityType) {
 
         logger.info("addCollectGoods CALLED,添加商品到我的收藏，入参 userId {},goodsId {},identityType{}", userId, goodsId, identityType);
 
@@ -86,12 +88,12 @@ public class UserCollectController {
             logger.info("addCollectGoods OUT,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == goodsId){
+        if (null == goodsId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空", null);
             logger.info("addCollectGoods OUT,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
             logger.info("addCollectGoods OUT,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -102,24 +104,25 @@ public class UserCollectController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCollectGoods OUT,添加商品到我的收藏成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，添加商品到我的收藏失败", null);
             logger.warn("addCollectGoods EXCEPTION,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     /**
      * 移除我的收藏商品
+     *
      * @param userId
      * @param goodsId
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/remove",produces="application/json;charset=UTF-8")
-    public ResultDTO removeCollectGoods(Long userId, Long goodsId, Integer identityType){
+    @PostMapping(value = "/remove", produces = "application/json;charset=UTF-8")
+    public ResultDTO removeCollectGoods(Long userId, Long goodsId, Integer identityType) {
 
         logger.info("removeCollectGoods CALLED,移除我的收藏商品，入参 userId {},goodsId {},identityType{}", userId, goodsId, identityType);
 
@@ -129,12 +132,12 @@ public class UserCollectController {
             logger.info("removeCollectGoods OUT,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == goodsId){
+        if (null == goodsId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空", null);
             logger.info("removeCollectGoods OUT,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
             logger.info("removeCollectGoods OUT,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -145,11 +148,11 @@ public class UserCollectController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("removeCollectGoods OUT,移除我的收藏商品成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，移除我的收藏商品失败", null);
             logger.warn("removeCollectGoods EXCEPTION,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
