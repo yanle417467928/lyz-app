@@ -130,29 +130,38 @@ public class GoodsService implements IGoodsService {
 
     @Override
     public List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (identityType == 6) {
-            return goodsDAO.findGoodsCollectListByCustomerIdAndIdentityType(userId);
-        } else {
-            return goodsDAO.findGoodsCollectListByEmployeeIdAndIdentityType(userId);
+        if (null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsCollectListByCustomerIdAndIdentityType(userId);
+            } else {
+                return goodsDAO.findGoodsCollectListByEmployeeIdAndIdentityType(userId);
+            }
         }
+        return null;
     }
 
     @Override
     public List<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (identityType == 6) {
-            return goodsDAO.findGoodsListByIsHotAndCustomerIdAndIdentityType(userId);
-        } else {
-            return goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+        if (null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsListByIsHotAndCustomerIdAndIdentityType(userId);
+            } else {
+                return goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+            }
         }
+        return null;
     }
 
     @Override
     public List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (identityType == 6) {
-            return goodsDAO.findGoodsOftenListByCustomerIdAndIdentityType(userId);
-        } else {
-            return goodsDAO.findGoodsOftenListByEmployeeIdAndIdentityType(userId);
+        if (null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsOftenListByCustomerIdAndIdentityType(userId);
+            } else {
+                return goodsDAO.findGoodsOftenListByEmployeeIdAndIdentityType(userId);
+            }
         }
+        return null;
     }
 
     @Override
@@ -169,6 +178,31 @@ public class GoodsService implements IGoodsService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
+        if (null != userId && null != identityType && null != goodsId) {
+            if (identityType == 6) {
+                goodsDAO.saveCollectGoodsByCustomerIdAndGoodsId(userId,goodsId);
+            }else {
+                goodsDAO.saveCollectGoodsByEmployeeIdAndGoodsId(userId,goodsId);
+            }
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
+        if (null != userId && null != identityType && null != goodsId) {
+            if (identityType == 6) {
+                goodsDAO.deleteCollectGoodsByCustomerIdAndGoodsId(userId,goodsId);
+            }else {
+                goodsDAO.deleteCollectGoodsByEmployeeIdAndGoodsId(userId,goodsId);
+            }
+        }
+    }
+
     /**
      * @param goodsCode
      * @return
@@ -182,7 +216,6 @@ public class GoodsService implements IGoodsService {
     public GoodsDO findGoodsImageUriByGoodsCode(String goodsCode) {
         return this.goodsDAO.findGoodsImageUriByGoodsCode(goodsCode);
     }
-
 
     /**
      * @param goodsDTO

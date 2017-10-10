@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -55,6 +57,12 @@ public class AppCustomer implements Serializable {
 
     //门店Id
     private Long storeId;
+
+    //顾客灯号
+    private AppUserLightStatus light;
+
+    //注测时间
+    private LocalDateTime createTime;
 
     public AppCustomer() {
     }

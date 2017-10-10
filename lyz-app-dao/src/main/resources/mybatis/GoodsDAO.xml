@@ -465,26 +465,63 @@
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
-        g.id,
-        g.goods_name,
-        g.cover_image_uri,
-        g.goods_specification,
-        g.goods_unit,
-        p.member_price,
-        p.retail_price,
-        g.category_id,
-        g.brand_id,
-        g.type_id
+            g.id,
+            g.goods_name,
+            g.cover_image_uri,
+            g.goods_specification,
+            g.goods_unit,
+            p.member_price,
+            p.retail_price,
+            g.category_id,
+            g.brand_id,
+            g.type_id
         FROM
-        app_employee e
+            app_employee e
         INNER JOIN goods_price p ON e.store_id = p.store_id
         INNER JOIN goods g ON p.goods_id = g.id
         WHERE
-        e.id = #{userId}
+            e.id = #{userId}
         AND (
-        g.goods_name LIKE concat('%',#{keywords},'%')
-        OR g.goods_code LIKE concat('%',#{keywords},'%')
+            g.goods_name LIKE concat('%',#{keywords},'%')
+            OR g.goods_code LIKE concat('%',#{keywords},'%')
         )
     </select>
 
+    <insert id="saveCollectGoodsByCustomerIdAndGoodsId" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO app_customer_collect(
+            CUSTOMER_ID, GOODS_ID)
+        SELECT #{userId},#{goodsId}
+        FROM dual
+        WHERE NOT EXISTS (
+          SELECT 'X'
+          FROM app_customer_collect acc
+          WHERE acc.CUSTOMER_ID = #{userId}
+          AND acc.GOODS_ID = #{goodsId}
+        )
+    </insert>
+
+    <insert id="saveCollectGoodsByEmployeeIdAndGoodsId" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO app_employee_collect(
+            EMPLOYEE_ID, GOODS_ID)
+        SELECT #{userId},#{goodsId}
+        FROM dual
+        WHERE NOT EXISTS (
+            SELECT 'X'
+            FROM app_employee_collect aec
+            WHERE aec.EMPLOYEE_ID = #{userId}
+            AND aec.GOODS_ID = #{goodsId}
+        )
+    </insert>
+
+    <delete id="deleteCollectGoodsByCustomerIdAndGoodsId">
+        DELETE FROM app_customer_collect
+        WHERE CUSTOMER_ID = #{userId}
+        AND GOODS_ID = #{goodsId}
+    </delete>
+
+    <delete id="deleteCollectGoodsByEmployeeIdAndGoodsId">
+        DELETE FROM app_employee_collect
+        WHERE EMPLOYEE_ID = #{userId}
+        AND GOODS_ID = #{goodsId}
+    </delete>
 </mapper>

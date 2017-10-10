@@ -65,4 +65,12 @@ public interface GoodsDAO {
     List<UserGoodsResponse> searchByCustomerIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
 
     List<UserGoodsResponse> searchByEmployeeIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
+
+    void saveCollectGoodsByCustomerIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+
+    void saveCollectGoodsByEmployeeIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+
+    void deleteCollectGoodsByCustomerIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+
+    void deleteCollectGoodsByEmployeeIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
 }

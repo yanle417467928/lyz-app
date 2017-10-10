@@ -1,7 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * lyz-app-facade 员工数据仓库
@@ -23,4 +28,8 @@ public interface AppEmployeeDAO {
     AppEmployee findByUserId(Long userId);
 
     AppEmployee findById(Long id);
+
+    List<AppEmployee> findDecorateEmployeeListByParentId(Long userId);
+
+    void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
 }

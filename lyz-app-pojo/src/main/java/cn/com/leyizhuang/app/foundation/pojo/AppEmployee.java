@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -58,6 +59,12 @@ public class AppEmployee {
 
     //员工所属门店id
     private Long storeId;
+
+    //父级Id
+    private Long parentId;
+
+    //注册时间
+    private LocalDateTime createTime;
 
     public AppEmployee() {
     }

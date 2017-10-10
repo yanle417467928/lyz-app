@@ -2,13 +2,16 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.City;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.app.web.controller.employee.EmployeeController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,6 +298,48 @@ public class UserSettingController {
         this.deliveryAddressServiceImpl.deleteDeliveryAddress(deliveryAddressId);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         logger.info("deleteDeliveryAddress OUT,顾客删除收货地址成功，出参 resultDTO:{}",resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * 用户修改手机号码
+     * @param userId
+     * @param identityType
+     * @param mobile
+     * @return
+     */
+    @PostMapping(value = "/set/information/mobile",produces="application/json;charset=UTF-8")
+    public ResultDTO setInformationOfMobile(Long userId, Integer identityType, String mobile){
+
+        logger.info("setInformationOfMobile CALLED,用户修改手机号码，入参 userId {},mobile {},identityType{}", userId, mobile, identityType);
+
+        ResultDTO resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(mobile)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户电话不能为空", null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if(identityType == 6){
+
+            customerService.modifyMobileByCustomerId(userId,mobile);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+
+        employeeService.modifyMobileByEmployeeId(userId,mobile);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}",resultDTO);
         return resultDTO;
     }
 

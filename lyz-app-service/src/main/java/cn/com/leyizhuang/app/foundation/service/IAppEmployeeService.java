@@ -2,6 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
+
+import java.util.List;
 
 /**
  * lyz-app-facade用户服务接口
@@ -22,4 +25,8 @@ public interface IAppEmployeeService {
     AppEmployee findByUserId(Long userId);
 
     AppEmployee findById(Long userId);
+
+    List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    void modifyMobileByEmployeeId(Long userId, String mobile);
 }

@@ -8,13 +8,16 @@
             select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO app_customer (name, mobile, birthday, status, sex, open_id,
-        pic_url, nick_name, city_id, sales_consult_id
+        pic_url, nick_name, city_id, sales_consult_id, create_time,light
         ) VALUES (
         #{name}, #{mobile}, #{birthday}, #{status},
         #{sex,
         javaType=cn.com.leyizhuang.app.core.constant.SexType,
         typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId}
+        #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId},
+        #{createTime},#{light,
+              javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
 
@@ -61,6 +64,12 @@
             </if>
             <if test="null != storeId">
                 store_id = #{storeId},
+            </if>
+            <if test="null != light">
+                light = #{light,
+                  javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+                   typeHandler=org.apache.ibatis.type.EnumTypeHandler
+                },
             </if>
         </set>
         WHERE ID = #{id}
@@ -115,4 +124,37 @@
             g.goods_code
     </select>
 
+    <select id="findListBySalesConsultId" parameterType="java.lang.Long"
+            resultType="AppCustomer">
+        SELECT
+        c.name
+        c.mobile
+        c.pic_url
+        c.light
+        c.create_time
+        FROM app_customer c
+        WHERE sales_consult_id = #{userId}
+    </select>
+
+    <select id="searchBySalesConsultIdAndKeywords" resultType="AppCustomer">
+
+        SELECT
+        c.name
+        c.mobile
+        c.pic_url
+        c.light
+        c.create_time
+        FROM app_customer c
+        WHERE c.sales_consult_id = #{userId}
+        AND (
+          c.name LIKE concat('%',#{keywords},'%')
+          OR c.mobile LIKE concat('%',#{keywords},'%')
+        )
+    </select>
+
+    <update id="modifyMobileById">
+        UPDATE app_customer
+        SET mobile = #{mobile}
+        WHERE id = #{id}
+    </update>
 </mapper>

@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,4 +79,31 @@ public class AppCustomerService implements IAppCustomerService {
         }
         return null;
     }
+
+    @Override
+    public List<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType == 0){
+           List<AppCustomer> appCustomerList = customerDAO.findListBySalesConsultId(userId);
+           return CustomerListResponse.transform(appCustomerList);
+        }
+        return null;
+    }
+
+    @Override
+    public List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType) {
+        if (StringUtils.isNotBlank(keywords) && null != userId && null != identityType && identityType == 0) {
+            List<AppCustomer> appCustomerList = customerDAO.searchBySalesConsultIdAndKeywords(userId,keywords);
+            return CustomerListResponse.transform(appCustomerList);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void modifyMobileByCustomerId(Long userId, String mobile) {
+        if (null != userId && StringUtils.isNotBlank(mobile)){
+            customerDAO.modifyMobileById(userId,mobile);
+        }
+    }
+
 }

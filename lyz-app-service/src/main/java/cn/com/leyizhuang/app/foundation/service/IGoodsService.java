@@ -42,4 +42,8 @@ public interface IGoodsService {
     List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType);
 
     List<UserGoodsResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords,Integer identityType);
+
+    void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType);
+
+    void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType);
 }

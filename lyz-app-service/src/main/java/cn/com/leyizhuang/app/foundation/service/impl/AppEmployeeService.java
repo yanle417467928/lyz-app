@@ -1,11 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * lyz-app-facade用户服务实现类
@@ -65,5 +70,22 @@ public class AppEmployeeService implements IAppEmployeeService {
             return employeeDAO.findById(userId);
         }
         return null;
+    }
+
+    @Override
+    public List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType == 2){
+            List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByParentId(userId);
+            return EmployeeListResponse.transform(appEmployeeList);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void modifyMobileByEmployeeId(Long userId, String mobile) {
+        if (null != userId && StringUtils.isNotBlank(mobile)){
+            employeeDAO.modifyMobileById(userId,mobile);
+        }
     }
 }

@@ -4,6 +4,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 
 import java.util.List;
 
@@ -28,4 +29,10 @@ public interface IAppCustomerService {
     List<CashCouponResponse> findCashCouponByCustomerId(Long userId);
 
     List<ProductCouponResponse> findProductCouponByCustomerId(Long userId);
+
+    List<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
+
+    void modifyMobileByCustomerId(Long userId, String mobile);
 }

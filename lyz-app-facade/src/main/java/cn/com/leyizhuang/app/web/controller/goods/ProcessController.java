@@ -7,10 +7,8 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -49,14 +47,14 @@ public class ProcessController {
         return resultDTO;
     }
 
-    /**  
+    /**
      * @title   获取工序包商品列表
      * @descripe
      * @param userId
      * @param identityType
      * @param processId
-     * @return 
-     * @throws 
+     * @return
+     * @throws
      * @author GenerationRoad
      * @date 2017/9/29
      */
