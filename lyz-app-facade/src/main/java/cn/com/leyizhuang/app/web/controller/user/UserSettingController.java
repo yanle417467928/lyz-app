@@ -349,8 +349,8 @@ public class UserSettingController {
     }
 
     /**  
-     * @title   功能反馈
-     * @descripe
+     * @title  功能反馈
+     * @descripe 功能反馈
      * @param userId
      * @return resultDTO
      * @throws Exception
