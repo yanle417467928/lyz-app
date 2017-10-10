@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.dto.AppAdminMenuDTO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
+import cn.com.leyizhuang.app.foundation.dto.AppAdminMenuDTO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.common.foundation.service.BaseService;
 import com.github.pagehelper.PageInfo;
 

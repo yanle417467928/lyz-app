@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.dto;
+package cn.com.leyizhuang.app.foundation.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * @author GenerationRoad

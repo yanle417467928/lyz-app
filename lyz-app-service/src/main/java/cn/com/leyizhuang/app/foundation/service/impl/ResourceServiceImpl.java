@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.ResourceDAO;
 import cn.com.leyizhuang.app.foundation.dao.RoleDAO;
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.Resource;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import com.github.pagehelper.PageHelper;

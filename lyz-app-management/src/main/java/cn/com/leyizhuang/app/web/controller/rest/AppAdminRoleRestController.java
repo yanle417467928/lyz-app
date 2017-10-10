@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleService;

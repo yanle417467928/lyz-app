@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminStoreInventoryVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;

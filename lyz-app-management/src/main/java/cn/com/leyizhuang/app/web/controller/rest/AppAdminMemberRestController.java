@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;

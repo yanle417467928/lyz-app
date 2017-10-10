@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.User;
-import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

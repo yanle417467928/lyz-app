@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.Member;
 import cn.com.leyizhuang.app.foundation.pojo.MemberAuth;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.dto;
+package cn.com.leyizhuang.app.foundation.dto;
 
 import cn.com.leyizhuang.app.core.constant.IdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;

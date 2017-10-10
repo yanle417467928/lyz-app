@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.StoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminStoreInventoryVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.springframework.stereotype.Repository;
 

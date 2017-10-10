@@ -5,7 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

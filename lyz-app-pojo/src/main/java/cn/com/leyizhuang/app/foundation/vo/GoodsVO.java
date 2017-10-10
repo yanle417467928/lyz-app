@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.vo;
+package cn.com.leyizhuang.app.foundation.vo;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 

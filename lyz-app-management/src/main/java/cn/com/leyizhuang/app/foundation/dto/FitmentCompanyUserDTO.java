@@ -1,6 +1,5 @@
-package cn.com.leyizhuang.app.foundation.pojo.dto;
+package cn.com.leyizhuang.app.foundation.dto;
 
-import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

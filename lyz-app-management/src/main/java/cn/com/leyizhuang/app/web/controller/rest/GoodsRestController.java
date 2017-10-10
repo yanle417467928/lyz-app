@@ -2,8 +2,8 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
+import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;

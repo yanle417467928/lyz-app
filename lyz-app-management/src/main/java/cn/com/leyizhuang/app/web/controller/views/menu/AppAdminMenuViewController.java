@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.web.controller.views.menu;
 import cn.com.leyizhuang.app.core.constant.AppAdminMenuType;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.pojo.AppAdminMenuDO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMenuVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMenuVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMenuService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import com.github.pagehelper.PageInfo;

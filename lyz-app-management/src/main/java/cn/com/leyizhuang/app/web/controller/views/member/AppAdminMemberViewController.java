@@ -5,7 +5,7 @@ import cn.com.leyizhuang.app.core.constant.IdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.vo.AppAdminMemberVO;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
 import cn.com.leyizhuang.app.foundation.service.IAppStoreService;

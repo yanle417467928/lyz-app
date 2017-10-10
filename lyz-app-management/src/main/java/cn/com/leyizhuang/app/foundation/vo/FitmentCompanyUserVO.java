@@ -1,6 +1,5 @@
-package cn.com.leyizhuang.app.foundation.pojo.vo;
+package cn.com.leyizhuang.app.foundation.vo;
 
-import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO;
 import lombok.Getter;
 import lombok.Setter;

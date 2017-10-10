@@ -1,13 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.dto.GoodsDTO;
+import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
-import cn.com.leyizhuang.common.foundation.service.BaseService;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

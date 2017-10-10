@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.core.config.shiro;
 
 import cn.com.leyizhuang.app.foundation.pojo.User;
-import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
 import org.apache.shiro.authc.*;

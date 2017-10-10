@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.User;
-import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

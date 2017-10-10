@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.vo.GoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author GenerationRoad

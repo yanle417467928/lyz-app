@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.FitmentCompanyDAO;
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO;
-import cn.com.leyizhuang.app.foundation.pojo.dto.FitmentCompanyDTO;
+import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyDTO;
 import cn.com.leyizhuang.app.foundation.service.FitmentCompanyService;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import com.github.pagehelper.PageHelper;

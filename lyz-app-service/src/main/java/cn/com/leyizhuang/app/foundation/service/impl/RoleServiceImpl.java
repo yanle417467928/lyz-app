@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.RoleDAO;
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.Role;
 import cn.com.leyizhuang.app.foundation.pojo.RoleResource;
-import cn.com.leyizhuang.app.foundation.pojo.vo.ResourceVO;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.app.foundation.service.RoleResourceService;

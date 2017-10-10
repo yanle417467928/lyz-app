@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.pojo.User;
 import cn.com.leyizhuang.app.foundation.pojo.UserRole;
-import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.service.CommonService;

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.SexType;
-import cn.com.leyizhuang.app.foundation.pojo.vo.UserVO;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
