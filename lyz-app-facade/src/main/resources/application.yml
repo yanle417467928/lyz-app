@@ -41,7 +41,7 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
-  type-aliases-package: cn.com.leyizhuang.app.foundation.pojo
+  type-aliases-package: cn.com.leyizhuang.app.foundation
   configuration:
     map-underscore-to-camel-case: true
 
