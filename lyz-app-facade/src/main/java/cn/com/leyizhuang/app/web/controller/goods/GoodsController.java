@@ -257,6 +257,11 @@ public class GoodsController {
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if(identityType == 1){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型没有此功能", null);
+            logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsOftenListByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userGoodsResponseList);

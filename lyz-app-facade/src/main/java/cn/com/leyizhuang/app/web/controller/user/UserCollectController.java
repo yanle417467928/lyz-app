@@ -98,6 +98,11 @@ public class UserCollectController {
             logger.info("addCollectGoods OUT,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if(identityType == 1){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型没有此功能", null);
+            logger.info("addCollectGoods OUT,添加商品到我的收藏失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             goodsService.addCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId, goodsId, identityType);
 
@@ -139,6 +144,11 @@ public class UserCollectController {
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("removeCollectGoods OUT,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if(identityType ==1){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型没有此功能", null);
             logger.info("removeCollectGoods OUT,移除我的收藏商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
