@@ -130,7 +130,7 @@
             resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -153,7 +153,7 @@
             resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -281,7 +281,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -306,7 +306,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -331,7 +331,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -356,7 +356,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -382,7 +382,7 @@
 
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -408,7 +408,7 @@
 
         SELECT
             g.cover_image_uri,
-            g.sku_name,
+            g.sku_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -436,13 +436,13 @@
         FROM
             goods
         WHERE
-            sku = #{sku}
+            sku = #{goodsCode}
     </select>
 
     <select id="searchByCustomerIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
             g.id,
-            g.sku_name,
+            g.sku_name goods_name,
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
@@ -466,7 +466,7 @@
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
             g.id,
-            g.sku_name,
+            g.sku_name goods_name,
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,

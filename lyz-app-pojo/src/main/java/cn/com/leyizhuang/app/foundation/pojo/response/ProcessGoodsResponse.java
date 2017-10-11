@@ -15,7 +15,7 @@ public class ProcessGoodsResponse {
     //商品ID
     private Long id;
     //商品名称
-    private String skuName;
+    private String goodsName;
     //封面图片
     private String coverImageUri;
     //商品规格

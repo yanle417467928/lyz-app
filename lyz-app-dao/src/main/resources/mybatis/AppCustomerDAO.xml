@@ -97,7 +97,7 @@
             customer_cash_coupon cc
             INNER JOIN cash_coupon c ON cc.cash_coupon_id = c.id
         WHERE
-            cc.customer_id = 49
+            cc.customer_id = #{userId}
             AND cc.is_used IS FALSE
             AND cc.`status` IS TRUE
             AND c.effective_start_time &lt; now()
@@ -106,10 +106,10 @@
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
         SELECT
-            g.sku_name,
-            g.sku,
+            g.sku_name goods_name,
+            g.sku goods_code,
             g.goods_specification,
-            g.goods_unit,
+            g.goods_unit goods_unit,
             sum(c.quantity) left_number,
             g.cover_image_uri
         FROM
