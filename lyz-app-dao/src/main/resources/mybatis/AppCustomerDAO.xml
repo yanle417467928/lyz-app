@@ -106,8 +106,8 @@
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
         SELECT
-            g.goods_name,
-            g.goods_code,
+            g.sku_name,
+            g.sku,
             g.goods_specification,
             g.goods_unit,
             sum(c.quantity) left_number,
@@ -121,7 +121,7 @@
             AND c.effective_start_time &lt; NOW()
             AND c.effective_end_time &gt; NOW()
         GROUP BY
-            g.goods_code
+            g.sku
     </select>
 
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"

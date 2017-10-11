@@ -106,8 +106,8 @@ public class GoodsVO {
         if (null != goodsDO) {
             GoodsVO goodsVO = new GoodsVO();
             goodsVO.setId(goodsDO.getId());
-            goodsVO.setGoodsName(goodsDO.getGoodsName());
-            goodsVO.setGoodsCode(goodsDO.getGoodsCode());
+            goodsVO.setGoodsName(goodsDO.getSkuName());
+            goodsVO.setGoodsCode(goodsDO.getSku());
             goodsVO.setBrandId(goodsDO.getBrandId());
             return goodsVO;
         } else {

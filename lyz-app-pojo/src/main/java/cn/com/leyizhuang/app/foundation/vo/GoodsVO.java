@@ -26,10 +26,10 @@ public class GoodsVO {
     private Long id;
 
     //商品名称
-    private String goodsName;
+    private String skuName;
 
     //商品编码
-    private String goodsCode;
+    private String sku;
 
     //封面图片
     private String coverImageUri;
@@ -62,8 +62,8 @@ public class GoodsVO {
     public static final GoodsVO transform(GoodsDO goodsDO) {
         if (null != goodsDO) {
             GoodsVO goodsVO = new GoodsVO();
-            goodsVO.setGoodsName(goodsDO.getGoodsName());
-            goodsVO.setGoodsCode(goodsDO.getGoodsCode());
+            goodsVO.setSkuName(goodsDO.getSkuName());
+            goodsVO.setSku(goodsDO.getSku());
             goodsVO.setBrandId(goodsDO.getBrandId());
             goodsVO.setCategoryId(goodsDO.getCategoryId());
             goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());

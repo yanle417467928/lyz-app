@@ -273,7 +273,7 @@ public class GoodsController {
 
 
     /**
-     * @param goodsCode 商品编码
+     * @param sku 商品编码
      * @return
      * @throws
      * @title 获取商品详情图片和轮播图片
@@ -282,16 +282,16 @@ public class GoodsController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/get/goodsImageUri", produces = "application/json;charset=UTF-8")
-    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode) {
-        logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 goodsCode {},type{}", goodsCode);
+    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String sku) {
+        logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 sku {},type{}", sku);
 
         ResultDTO<GoodsImageUriResponse> resultDTO;
-        if (null == goodsCode) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
+        if (null == sku) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "sku！", null);
             logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
+        GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(sku);
         GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsImageUriResponse);
         logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
@@ -304,7 +304,7 @@ public class GoodsController {
         ResultDTO<Object> resultDTO;
         try {
             if (StringUtils.isBlank(keywords)) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码{goodsCode}不能为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码{sku}不能为空！", null);
                 logger.info("searchGoodsList OUT,搜索商品失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }

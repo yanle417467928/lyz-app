@@ -54,7 +54,7 @@
         SELECT
         p.ID,p.PROCESS_NAME,
 
-        g.ID as g_id,g.GOODS_NAME as g_goodsName,g.GOODS_CODE as g_goodsCode
+        g.ID as g_id,g.sku_name as g_goodsName,g.sku as g_goodsCode
         FROM
         process p LEFT JOIN process_goods pg
         ON p.id=pg.p_id
@@ -67,7 +67,7 @@
         SELECT
         p.ID,p.PROCESS_NAME,
 
-        g.ID as g_id,g.GOODS_NAME as g_goodsName,g.GOODS_CODE as g_goodsCode
+        g.ID as g_id,g.sku_name as g_goodsName,g.sku as g_goodsCode
         FROM
         process p LEFT JOIN process_goods pg
         ON p.id=pg.p_id
@@ -98,7 +98,7 @@
 
     <select id="queryByProcessIdAndEmployeeId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-          g.ID, g.GOODS_NAME, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
+          g.ID, g.sku_name, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
           gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
         FROM process p
         LEFT JOIN process_goods pg ON pg.p_ID = p.ID
@@ -116,7 +116,7 @@
 
     <select id="queryByProcessIdAndCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-        g.ID, g.GOODS_NAME, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
+        g.ID, g.sku_name, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
         gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
         FROM process p
         LEFT JOIN process_goods pg ON pg.p_ID = p.ID

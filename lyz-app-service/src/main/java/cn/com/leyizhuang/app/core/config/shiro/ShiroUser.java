@@ -16,10 +16,9 @@ import java.util.Set;
  **/
 @Getter
 @Setter
-@ToString
 public class ShiroUser implements Serializable {
     private static final long serialVersionUID = -1373760761780840081L;
-    
+
     private Long id;
     private final String loginName;
     private String name;

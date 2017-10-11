@@ -228,8 +228,8 @@ public class GoodsService implements IGoodsService {
      */
     private GoodsDO transform(GoodsDTO goodsDTO) {
         GoodsDO goodsDO = this.goodsDAO.queryById(goodsDTO.getId());
-        goodsDO.setGoodsName(goodsDTO.getGoodsName());
-        goodsDO.setGoodsCode(goodsDTO.getGoodsCode());
+        goodsDO.setSkuName(goodsDTO.getGoodsName());
+        goodsDO.setSku(goodsDTO.getGoodsCode());
         goodsDO.setBrandId(goodsDTO.getBrandId());
         goodsDO.setCategoryId(goodsDTO.getCategoryId());
         goodsDO.setCoverImageUri(goodsDTO.getCoverImageUri());
