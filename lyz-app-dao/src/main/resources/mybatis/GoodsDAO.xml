@@ -9,8 +9,8 @@
         <result column="MODIFIER_ID" property="modifierId"/>
         <result column="MODIFIER_TYPE" property="modifierType"/>
         <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="SKU_NAME" property="skuName"/>
-        <result column="SKU" property="sku"/>
+        <result column="GOODS_NAME" property="goodsName"/>
+        <result column="GOODS_CODE" property="goodsCode"/>
         <result column="IS_GIFT" property="isGift"/>
         <result column="TITLE" property="title"/>
         <result column="SUB_TITLE" property="subTitle"/>
@@ -80,11 +80,11 @@
             <if test="null != modifyTime">
                 MODIFY_TIME = #{modifyTime},
             </if>
-            <if test="null != skuName">
-                SKU_NAME = #{skuName},
+            <if test="null != goodsName">
+                GOODS_NAME = #{goodsName},
             </if>
-            <if test="null != sku">
-                SKU = #{sku},
+            <if test="null != goodsCode">
+                GOODS_CODE = #{goodsCode},
             </if>
             <if test="null != title">
                 TITLE = #{title},
@@ -130,7 +130,7 @@
             resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -153,7 +153,7 @@
             resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -281,7 +281,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -306,7 +306,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -331,7 +331,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -356,7 +356,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -382,7 +382,7 @@
 
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -393,7 +393,7 @@
             t.type_code
         FROM
             app_customer c
-            INNER JOIN app_customer_often acg ON acg.CUSTOMER_ID = c.id
+            INNER JOIN app_customer_goods acg ON acg.CUSTOMER_ID = c.id
             INNER JOIN goods g ON g.id = acg.GOODS_ID
             INNER JOIN goods_price p ON p.goods_id = g.id
             INNER JOIN goods_category gc ON g.category_id = gc.id
@@ -408,7 +408,7 @@
 
         SELECT
             g.cover_image_uri,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.id,
             g.goods_specification,
             g.goods_unit,
@@ -419,7 +419,7 @@
             t.type_code
         FROM
             app_employee e
-            INNER JOIN app_employee_often aeg ON aeg.EMPLOYEE_ID = e.id
+            INNER JOIN app_employee_goods aeg ON aeg.EMPLOYEE_ID = e.id
             INNER JOIN goods g ON g.id = aeg.GOODS_ID
             INNER JOIN goods_price p ON p.goods_id = g.id
             INNER JOIN goods_category gc ON g.category_id = gc.id
@@ -436,13 +436,13 @@
         FROM
             goods
         WHERE
-            sku = #{goodsCode}
+            goods_code = #{goodsCode}
     </select>
 
     <select id="searchByCustomerIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
             g.id,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
@@ -458,15 +458,15 @@
         WHERE
             c.id = #{userId}
             AND (
-                g.sku_name LIKE concat('%',#{keywords},'%')
-                OR g.sku LIKE concat('%',#{keywords},'%')
+                g.goods_name LIKE concat('%',#{keywords},'%')
+                OR g.goods_code LIKE concat('%',#{keywords},'%')
             )
     </select>
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
             g.id,
-            g.sku_name goods_name,
+            g.goods_name goods_name,
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
@@ -482,8 +482,8 @@
         WHERE
             e.id = #{userId}
         AND (
-            g.sku_name LIKE concat('%',#{keywords},'%')
-            OR g.sku LIKE concat('%',#{keywords},'%')
+            g.goods_name LIKE concat('%',#{keywords},'%')
+            OR g.goods_code LIKE concat('%',#{keywords},'%')
         )
     </select>
 

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;

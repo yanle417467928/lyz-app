@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
-import cn.com.leyizhuang.app.foundation.pojo.UserRole;
+import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

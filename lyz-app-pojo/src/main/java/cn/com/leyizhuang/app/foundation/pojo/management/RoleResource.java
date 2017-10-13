@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo;
+package cn.com.leyizhuang.app.foundation.pojo.management;
 
 import lombok.Getter;
 import lombok.Setter;

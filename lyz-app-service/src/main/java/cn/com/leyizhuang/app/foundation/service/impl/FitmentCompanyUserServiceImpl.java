@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.FitmentCompanyUserDAO;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO;
-import cn.com.leyizhuang.app.foundation.pojo.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyUserDTO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.core.utils.TimeTransformUtils;

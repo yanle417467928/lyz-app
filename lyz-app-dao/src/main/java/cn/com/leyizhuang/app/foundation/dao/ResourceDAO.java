@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

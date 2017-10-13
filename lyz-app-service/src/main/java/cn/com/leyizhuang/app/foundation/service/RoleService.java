@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.Role;
+import cn.com.leyizhuang.app.foundation.pojo.management.Role;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import com.github.pagehelper.PageInfo;
 

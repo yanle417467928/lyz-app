@@ -19,10 +19,10 @@ public class GoodsDO{
     private Long id;
 
     //商品名称
-    private String skuName;
+    private String goodsName;
 
     //商品编码
-    private String sku;
+    private String goodsCode;
 
     //封面图片
     private String coverImageUri;

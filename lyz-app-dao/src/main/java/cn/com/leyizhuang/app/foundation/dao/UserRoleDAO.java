@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.UserRole;
+import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

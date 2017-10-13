@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.remote;
 
-import cn.com.leyizhuang.app.foundation.pojo.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.UserDAO;
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
-import cn.com.leyizhuang.app.foundation.pojo.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.resource;
 
 import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,14 @@ public class AppAdminResourceViewController extends BaseController{
         model.addAttribute("resourceList",resourceList);
         return "/views/resource/resource_add";
     }
+
+
+    /**
+     *  编辑资源页面
+     * @param map
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
@@ -59,11 +67,10 @@ public class AppAdminResourceViewController extends BaseController{
                 map.addAttribute("resource",resource);
             }
         }
-
         List<Resource> resourceList = resourceService.queryByPid(0L);
         resourceList = resourceList
                 .stream().
-                        filter(menuVO -> !id.equals(menuVO.getId()))
+                        filter(resource -> !id.equals(resource.getRsId()))
                 .collect(Collectors.toList());
 
         map.addAttribute("resourceList", resourceList);

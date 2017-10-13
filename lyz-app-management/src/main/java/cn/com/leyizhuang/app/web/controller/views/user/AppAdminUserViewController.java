@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.user;
 
 import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.app.foundation.pojo.Role;
-import cn.com.leyizhuang.app.foundation.pojo.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.Role;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;

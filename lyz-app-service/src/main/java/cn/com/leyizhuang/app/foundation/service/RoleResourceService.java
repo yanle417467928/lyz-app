@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.RoleResource;
+import cn.com.leyizhuang.app.foundation.pojo.management.RoleResource;
 
 import java.util.Set;
 

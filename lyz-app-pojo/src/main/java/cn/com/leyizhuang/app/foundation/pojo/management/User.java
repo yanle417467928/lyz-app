@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo;
+package cn.com.leyizhuang.app.foundation.pojo.management;
 
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;

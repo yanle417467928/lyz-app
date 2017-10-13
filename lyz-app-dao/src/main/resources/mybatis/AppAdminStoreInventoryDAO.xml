@@ -27,8 +27,8 @@
             inv.STORE_ID STORE_ID,
             s.STORE_NAME STORE_NAME,
             inv.GOODS_ID GOODS_ID,
-            g.sku_name GOODS_NAME,
-            g.sku GOODS_CODE,
+            g.GOODS_NAME GOODS_NAME,
+            g.GOODS_CODE GOODS_CODE,
             inv.REAL_INVENTORY REAL_INVENTORY,
             inv.SOLD_INVENTORY SOLD_INVENTORY
         FROM

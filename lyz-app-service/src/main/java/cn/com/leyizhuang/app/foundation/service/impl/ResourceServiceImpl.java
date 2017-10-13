@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.ResourceDAO;
 import cn.com.leyizhuang.app.foundation.dao.RoleDAO;
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
-import cn.com.leyizhuang.app.foundation.pojo.Resource;
+import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
@@ -141,12 +141,12 @@ public class ResourceServiceImpl implements ResourceService {
             List<ResourceVO> allMenuVOList = new ArrayList<>();
             for (Resource resource : resourceList) {
                 ResourceVO resourceVO = new ResourceVO();
-                resourceVO.setId(resource.getId());
+                resourceVO.setId(resource.getRsId());
                 resourceVO.setParentResourceId(resource.getPid());
                 resourceVO.setResourceName(resource.getName());
                 resourceVO.setIcon(resource.getIcon());
                 resourceVO.setUrl(resource.getUrl());
-                resourceVO.setSeq(resource.getSeq());
+                resourceVO.setSeq(resource.getSortId());
                 allMenuVOList.add(resourceVO);
             }
             // 先筛选出所有的顶层菜单

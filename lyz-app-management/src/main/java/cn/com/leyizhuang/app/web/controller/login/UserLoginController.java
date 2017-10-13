@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroDbRealm;
 import cn.com.leyizhuang.app.core.utils.LoggerUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.app.foundation.pojo.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
