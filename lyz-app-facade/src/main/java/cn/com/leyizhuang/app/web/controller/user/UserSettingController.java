@@ -424,7 +424,7 @@ public class UserSettingController {
 
         City city = cityService.findById(appEmployee.getCityId());
         if (city != null) {
-            informationResponse.setCityName(city.getTitle());
+            informationResponse.setCityName(city.getName());
         }
         AppStore appStore = storeService.findById(appEmployee.getStoreId());
         if (appStore != null) {
@@ -443,7 +443,7 @@ public class UserSettingController {
 
         City city = cityService.findById(appCustomer.getCityId());
         if (city != null) {
-            informationResponse.setCityName(city.getTitle());
+            informationResponse.setCityName(city.getName());
         }
         AppStore appStore = storeService.findById(appCustomer.getStoreId());
         if (appStore != null) {

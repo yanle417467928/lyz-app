@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -15,11 +13,16 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeLoginResponse implements Serializable{
-    //导购身份类型
+
+    private static final long serialVersionUID = 768360299867556490L;
+
+    //身份类型
     private int type;
 
-    public EmployeeLoginResponse(int type) {
-        this.type = type;
-    }
+    private Long userId;
+
+
 }

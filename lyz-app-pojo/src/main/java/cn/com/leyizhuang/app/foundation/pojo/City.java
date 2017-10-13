@@ -17,7 +17,7 @@ public class City {
 
     private Long id;
     // 城市名称（唯一）
-    private String title;
+    private String name;
     // 城市名称拼音
     private String spell;
     // 城市编码（唯一）

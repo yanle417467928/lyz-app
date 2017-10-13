@@ -1,7 +1,5 @@
 package cn.com.leyizhuang.app.core.constant;
 
-import org.apache.commons.codec.binary.StringUtils;
-
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
