@@ -238,12 +238,12 @@ public class CustomerController {
      */
     @PostMapping(value = "/cashCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerCashCoupon(Long userId, String identityType) {
-        logger.info("customerCashCoupon CALLED,获取顾客可用产品现金券，入参 userId {},identityType{}", userId, identityType);
+        logger.info("customerCashCoupon CALLED,获取顾客可用优惠券，入参 userId {},identityType{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-                logger.info("customerCashCoupon OUT,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+                logger.info("customerCashCoupon OUT,获取顾客可用优惠券失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             List<CashCouponResponse> cashCouponList = customerService.findCashCouponByCustomerId(userId);
@@ -253,12 +253,12 @@ public class CustomerController {
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             }
-            logger.info("customerCashCoupon OUT,获取顾客可用产品现金券成功，出参 resultDTO:{}", resultDTO);
+            logger.info("customerCashCoupon OUT,获取顾客可用优惠券成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
-            logger.warn("customerCashCoupon EXCEPTION,获取顾客可用产品现金券失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客可用优惠券失败", null);
+            logger.warn("customerCashCoupon EXCEPTION,获取顾客可用优惠券失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -292,7 +292,7 @@ public class CustomerController {
             logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客可用产品券失败", null);
             logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;

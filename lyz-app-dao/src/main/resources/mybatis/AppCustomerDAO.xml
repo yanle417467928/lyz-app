@@ -94,10 +94,10 @@
             c.effective_end_time,
             c.description
         FROM
-            customer_cash_coupon cc
-            INNER JOIN cash_coupon c ON cc.cash_coupon_id = c.id
+            cus_customer_cash_coupon cc
+            INNER JOIN cp_cash_coupon c ON cc.ccid = c.ccid
         WHERE
-            cc.customer_id = #{userId}
+            cc.cus_id = #{userId}
             AND cc.is_used IS FALSE
             AND cc.`status` IS TRUE
             AND c.effective_start_time &lt; now()
@@ -106,22 +106,22 @@
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
         SELECT
-            g.goods_name goods_name,
-            g.goods_code goods_code,
+            g.sku_name goods_name,
+            g.sku goods_code,
             g.goods_specification,
             g.goods_unit goods_unit,
             sum(c.quantity) left_number,
             g.cover_image_uri
         FROM
-            product_coupon c
-            INNER JOIN goods g ON c.goods_id = g.id
+            cus_customer_product_coupon c
+            INNER JOIN gds_goods g ON c.gid = g.gid
         WHERE
-            c.customer_id = #{userId}
+            c.cus_id = #{userId}
             AND c.is_used IS FALSE
             AND c.effective_start_time &lt; NOW()
             AND c.effective_end_time &gt; NOW()
         GROUP BY
-            g.goods_code
+            g.sku
     </select>
 
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"
