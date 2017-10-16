@@ -2,11 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -33,7 +29,7 @@ public interface IGoodsService {
 
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType);
 
-    GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
+    GoodsDetailResponse findGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType);
 
     List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType);
 

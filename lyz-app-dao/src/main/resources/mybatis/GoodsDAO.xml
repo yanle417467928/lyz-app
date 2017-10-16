@@ -373,14 +373,14 @@
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
-    <select id="findGoodsImageUriByGoodsCode" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI
         FROM
-            goods
+            gds_goods
         WHERE
-            goods_code = #{goodsCode}
+            gid = #{goodsId}
     </select>
 
     <select id="searchByCustomerIdAndKeywords" resultType="UserGoodsResponse">
@@ -457,5 +457,31 @@
             javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </delete>
+
+    <select id="findGoodsDetailByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsDetailResponse">
+        <if test="null != type and type = 'CUSTOMER'">
+            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE)　isCollect, p.retail_price　price FROM
+                (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
+                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identityType = #{type,
+                    javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+                    typeHandler=org.apache.ibatis.type.EnumTypeHandler}) gc on gc.user_id = c.cus_id and gc.identityType = c.identity_type
+                LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId},
+                (SELECT gid id, sku_name　skuName, goods_specification　GoodsSpecification, goods_unit　goodsUnit FROM gds_goods WHERE gid = #{goodsId}) g
+            WHERE
+            g.id = p.gid;
+        </if>
+        <if test="null != type and type != 'CUSTOMER'">
+            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE)　isCollect, p.retail_price　price FROM
+                (SELECT emp_id, identity_type, store_id FROM emp_employee WHERE emp_id = #{userId}) e
+                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identityType = #{type,
+                    javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+                    typeHandler=org.apache.ibatis.type.EnumTypeHandler}) gc on gc.user_id = e.emp_id and gc.identityType = e.identity_type
+                LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId},
+                (SELECT gid id, sku_name　skuName, goods_specification　GoodsSpecification, goods_unit　goodsUnit FROM gds_goods WHERE gid = #{goodsId}) g
+            WHERE
+            g.id = p.gid;
+        </if>
+    </select>
+
 
 </mapper>

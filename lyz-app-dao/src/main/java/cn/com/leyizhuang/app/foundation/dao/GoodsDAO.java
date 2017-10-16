@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -48,7 +45,7 @@ public interface GoodsDAO {
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
 
-    GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
+    GoodsDO findGoodsImageUriByGoodsId(Long goodsId);
 
     List<UserGoodsResponse> findGoodsListByIsHotAndCustomerIdAndIdentityType(Long userId);
 
@@ -71,4 +68,7 @@ public interface GoodsDAO {
 
     void deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(
             @Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
+
+    GoodsDetailResponse findGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
+
 }

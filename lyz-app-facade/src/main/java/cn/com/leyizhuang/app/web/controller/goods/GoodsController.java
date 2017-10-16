@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -278,28 +277,37 @@ public class GoodsController {
 
 
     /**
-     * @param goodsCode 商品编码
+     * @param
      * @return
      * @throws
-     * @title 获取商品详情图片和轮播图片
+     * @title 获取商品详情
      * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
      */
-    @PostMapping(value = "/get/goodsImageUri", produces = "application/json;charset=UTF-8")
-    public ResultDTO<GoodsImageUriResponse> getGoodsImageUri(String goodsCode) {
-        logger.info("getGoodsImageUri CALLED,获取商品详情图片和轮播图片，入参 goodsCode {},type{}", goodsCode);
+    @PostMapping(value = "/get/goodsDetail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<GoodsDetailResponse> getGoodsDetail(Long userId, Integer identityType, Long goodsId) {
+        logger.info("getGoodsDetail CALLED,获取商品详情，入参 userId{}, goodsId {},identityType{}", userId, goodsId, identityType);
 
-        ResultDTO<GoodsImageUriResponse> resultDTO;
-        if (null == goodsCode) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsCode！", null);
-            logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
+        ResultDTO<GoodsDetailResponse> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getGoodsDetail OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        GoodsDO goodsDO = this.goodsService.findGoodsImageUriByGoodsCode(goodsCode);
-        GoodsImageUriResponse goodsImageUriResponse = GoodsImageUriResponse.transform(goodsDO);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsImageUriResponse);
-        logger.info("getGoodsImageUri OUT,获取商品详情图片和轮播图片，出参 resultDTO:{}", resultDTO);
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("getGoodsDetail OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == goodsId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsId不能为null！", null);
+            logger.info("getGoodsDetail OUT,获取商品详情，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        GoodsDetailResponse goodsDetailResponse = this.goodsService.findGoodsDetailByGoodsId(userId, goodsId, identityType);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsDetailResponse);
+        logger.info("getGoodsDetail OUT,获取商品详情，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 

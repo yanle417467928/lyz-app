@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -193,17 +190,23 @@ public class GoodsService implements IGoodsService {
     }
 
     /**
-     * @param goodsCode
+     * @title 获取商品详情
+     * @descripe
+     * @param
      * @return
      * @throws
-     * @title 根据商品编码获取商品图片
-     * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
      */
     @Override
-    public GoodsDO findGoodsImageUriByGoodsCode(String goodsCode) {
-        return this.goodsDAO.findGoodsImageUriByGoodsCode(goodsCode);
+    public GoodsDetailResponse findGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType) {
+        AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+        GoodsDetailResponse goodsDetailResponse = this.goodsDAO.findGoodsDetailByGoodsId(userId, goodsId, appIdentityType);
+        if (null != goodsDetailResponse) {
+            GoodsDO goodsDO = this.goodsDAO.findGoodsImageUriByGoodsId(goodsId);
+            goodsDetailResponse = GoodsDetailResponse.transform(goodsDetailResponse, goodsDO);
+        }
+        return goodsDetailResponse;
     }
 
     /**
