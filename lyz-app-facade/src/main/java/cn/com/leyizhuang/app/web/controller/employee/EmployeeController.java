@@ -70,11 +70,11 @@ public class EmployeeController {
                 }
             }
             //拼装accessToken
-            String accessToken = JwtUtils.createJWT(String.valueOf(employee.getId()), String.valueOf(employee.getLoginName()),
+            String accessToken = JwtUtils.createJWT(String.valueOf(employee.getEmpId()), String.valueOf(employee.getLoginName()),
                     JwtConstant.EXPPIRES_SECOND * 1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(employee.getEmployeeType().getValue(),employee.getId()));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(employee.getIdentityType().getValue(),employee.getEmpId()));
             logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class EmployeeController {
             } else {
                 String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + employee.getSalt()).getBytes("UTF-8"));
                 AppEmployee newEmployee = new AppEmployee();
-                newEmployee.setId(employee.getId());
+                newEmployee.setEmpId(employee.getEmpId());
                 newEmployee.setPassword(md5Password);
                 appEmployeeService.update(newEmployee);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

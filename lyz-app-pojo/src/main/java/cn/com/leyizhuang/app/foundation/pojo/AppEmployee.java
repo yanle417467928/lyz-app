@@ -22,9 +22,9 @@ import java.util.Date;
 @ToString
 public class AppEmployee {
 
-    private Long id;
+    private Long empId;
 
-    //登录名 userType 为4（顾客）的用户 loginName = openId
+    //员工登录名
     private String loginName;
 
     //真实姓名
@@ -37,7 +37,7 @@ public class AppEmployee {
     private String salt;
 
     //app员工身份类型
-    private AppUserType employeeType;
+    private AppUserType identityType;
 
     //员工手机号
     private String mobile;
@@ -54,14 +54,14 @@ public class AppEmployee {
     //头像路径
     private String picUrl;
 
+    //归属经理id
+    private Long managerId;
+
     //员工所在城市id
     private Long cityId;
 
     //员工所属门店id
     private Long storeId;
-
-    //父级Id
-    private Long parentId;
 
     //注册时间
     private LocalDateTime createTime;

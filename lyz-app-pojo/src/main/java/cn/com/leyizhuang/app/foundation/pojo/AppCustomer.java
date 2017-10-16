@@ -23,7 +23,7 @@ public class AppCustomer implements Serializable {
 
     private static final long serialVersionUID = -5749739135096612483L;
 
-    private Long id;
+    private Long cusId;
 
     //真实姓名
     private String name;

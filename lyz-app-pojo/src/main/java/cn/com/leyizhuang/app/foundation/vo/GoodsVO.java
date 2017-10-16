@@ -23,13 +23,13 @@ public class GoodsVO {
     private static final Logger LOG = LoggerFactory.getLogger(GoodsVO.class);
 
     //商品ID
-    private Long id;
+    private Long gid;
 
     //商品名称
-    private String goodsName;
+    private String skuName;
 
     //商品编码
-    private String goodsCode;
+    private String sku;
 
     //封面图片
     private String coverImageUri;
@@ -44,16 +44,16 @@ public class GoodsVO {
     private String goodsUnit;
 
     //产品分类id
-    private Long categoryId;
+    private Long cId;
 
     //品牌id
-    private Long brandId;
+    private Long brdId;
 
     //类型id
-    private Long typeId;
+    private Long gtid;
 
     //会员价
-    private Double memberPrice;
+    private Double VIPPrice;
 
     //零售价
     private Double retailPrice;
@@ -62,10 +62,10 @@ public class GoodsVO {
     public static final GoodsVO transform(GoodsDO goodsDO) {
         if (null != goodsDO) {
             GoodsVO goodsVO = new GoodsVO();
-            goodsVO.setGoodsName(goodsDO.getGoodsName());
-            goodsVO.setGoodsCode(goodsDO.getGoodsCode());
-            goodsVO.setBrandId(goodsDO.getBrandId());
-            goodsVO.setCategoryId(goodsDO.getCategoryId());
+            goodsVO.setSkuName(goodsDO.getSkuName());
+            goodsVO.setSku(goodsDO.getSku());
+            goodsVO.setBrdId(goodsDO.getBrdId());
+            goodsVO.setCId(goodsDO.getCId());
             goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
             return goodsVO;
         } else {

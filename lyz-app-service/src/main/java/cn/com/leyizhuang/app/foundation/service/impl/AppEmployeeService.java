@@ -51,7 +51,7 @@ public class AppEmployeeService implements IAppEmployeeService {
     @Override
     @Transactional
     public void update(AppEmployee newEmployee) {
-        if(null != newEmployee && null != newEmployee.getId()){
+        if(null != newEmployee && null != newEmployee.getEmpId()){
             employeeDAO.update(newEmployee);
         }
     }

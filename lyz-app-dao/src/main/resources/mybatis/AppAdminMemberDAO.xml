@@ -75,7 +75,7 @@
             ma.MOBILE       MOBILE,
             m.SEX           SEX,
             ma.STATUS       STATUS
-        FROM member m LEFT JOIN app_store s ON m.STORE_ID = s.ID
+        FROM member m LEFT JOIN st_store s ON m.STORE_ID = s.ID
             LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
             LEFT JOIN member_auth ma ON m.id = ma.member_ID
     </select>
@@ -93,7 +93,7 @@
             ma.MOBILE       MOBILE,
             m.SEX           SEX,
             ma.STATUS       STATUS
-        FROM member m LEFT JOIN app_store s ON m.STORE_ID = s.ID
+        FROM member m LEFT JOIN st_store s ON m.STORE_ID = s.ID
             LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
             LEFT JOIN member_auth ma ON m.id = ma.member_ID
         WHERE m.ID = #{id};

@@ -3,11 +3,11 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO">
 
     <insert id="save" parameterType="AppCustomer" useGeneratedKeys="true"
-            keyColumn="ID" keyProperty="id">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            keyColumn="cus_id" keyProperty="cusId">
+        <selectKey keyProperty="cusId" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO app_customer (name, mobile, birthday, status, sex, open_id,
+        INSERT INTO cus_customer (name, mobile, birthday, status, sex, open_id,
         pic_url, nick_name, city_id, sales_consult_id, create_time,light
         ) VALUES (
         #{name}, #{mobile}, #{birthday}, #{status},
@@ -23,12 +23,12 @@
 
     <select id="findByMobile" parameterType="java.lang.String" resultType="AppCustomer">
         SELECT *
-        FROM app_customer
+        FROM cus_customer
         WHERE mobile = #{mobile}
     </select>
 
     <update id="update" parameterType="AppCustomer">
-        UPDATE app_customer
+        UPDATE cus_customer
         <set>
             <if test="null != name">
                 name = #{name},
@@ -72,18 +72,18 @@
                 },
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE cus_id = #{cusId}
     </update>
 
     <select id="findById" parameterType="java.lang.Long" resultType="AppCustomer">
         SELECT *
-        FROM app_customer
-        WHERE id = #{id}
+        FROM cus_customer
+        WHERE cus_id = #{cusId}
     </select>
 
     <select id="findByOpenId" parameterType="java.lang.String" resultType="AppCustomer">
         SELECT *
-        FROM app_customer
+        FROM cus_customer
         WHERE open_id = #{openId}
     </select>
 
@@ -132,7 +132,7 @@
         c.pic_url,
         c.light,
         c.create_time
-        FROM app_customer c
+        FROM cus_customer c
         WHERE sales_consult_id = #{userId}
     </select>
 
@@ -144,7 +144,7 @@
         c.pic_url,
         c.light,
         c.create_time
-        FROM app_customer c
+        FROM cus_customer c
         WHERE c.sales_consult_id = #{userId}
         AND (
           c.name LIKE concat('%',#{keywords},'%')
@@ -153,8 +153,7 @@
     </select>
 
     <update id="modifyMobileById">
-        UPDATE app_customer
+        UPDATE cus_customer
         SET mobile = #{mobile}
-        WHERE id = #{id}
     </update>
 </mapper>

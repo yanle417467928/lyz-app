@@ -17,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class GoodsBrand {
 
-    private Long id;
+    private Long brdId;
 
     //品牌名称
     private String brandName;

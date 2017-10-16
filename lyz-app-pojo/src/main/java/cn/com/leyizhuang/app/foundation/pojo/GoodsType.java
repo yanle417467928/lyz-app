@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 商品类型
@@ -14,10 +11,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class GoodsType {
 
-    private Long id;
+    private Long gtid;
 
     //类型名称
     private String typeName;
@@ -27,9 +25,5 @@ public class GoodsType {
 
     //排序id
     private Long sortId;
-
-    public GoodsType() {
-    }
-
 
 }

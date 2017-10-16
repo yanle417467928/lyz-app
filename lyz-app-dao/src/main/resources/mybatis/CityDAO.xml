@@ -7,10 +7,10 @@
     </select>
 
     <select id="findByCityNumber" parameterType="java.lang.String" resultType="City">
-        SELECT * FROM city where number = #{cityNumber}
+        SELECT * FROM city where code = #{cityNumber}
     </select>
 
     <select id="findById" parameterType="java.lang.Long" resultType="City">
-         SELECT * FROM city where id = #{cityId}
+         SELECT * FROM city where city_id = #{cityId}
     </select>
 </mapper>

@@ -77,17 +77,17 @@ public class HqAppEmployeeController {
             employee.setStatus(employeeDTO.getStatus() != 0);
             switch (employeeDTO.getPositionType()) {
                 case "DG":
-                    employee.setEmployeeType(AppUserType.SELLER);
+                    employee.setIdentityType(AppUserType.SELLER);
                     break;
                 case "DZ":
-                    employee.setEmployeeType(AppUserType.SUPERVISOR);
+                    employee.setIdentityType(AppUserType.SUPERVISOR);
                     break;
                 case "DJL":
-                    employee.setEmployeeType(AppUserType.MANAGER);
+                    employee.setIdentityType(AppUserType.MANAGER);
                 default:
                     break;
             }
-            employee.setEmployeeType(AppUserType.SELLER);
+            employee.setIdentityType(AppUserType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             employee.setCityId(city.getId());
             String salt = employee.generateSalt();

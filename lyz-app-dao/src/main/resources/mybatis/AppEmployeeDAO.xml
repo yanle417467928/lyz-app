@@ -3,8 +3,8 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO">
 
     <insert id="save" parameterType="AppEmployee">
-        INSERT INTO app_employee (login_name, name, password, salt, employee_type, mobile, birthday,
-                                  status, sex, pic_url, city_id, store_id, parent_id, create_time
+        INSERT INTO emp_employee (login_name, name, password, salt, identity_type, mobile, birthday,
+                                  status, sex, pic_url, city_id, store_id, manager_id, create_time
         ) VALUES (
             #{loginName}, #{name}, #{password}, #{salt},
                           #{employeeType,
@@ -14,21 +14,21 @@
                           #{sex,
             javaType=cn.com.leyizhuang.app.core.constant.SexType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                          #{picUrl}, #{cityId}, #{storeId},#{parentId},#{createTime}
+                          #{picUrl}, #{cityId}, #{storeId},#{managerId},#{createTime}
         )
     </insert>
     <select id="findByLoginName" parameterType="java.lang.String" resultType="AppEmployee">
         SELECT *
-        FROM app_employee
+        FROM emp_employee
         WHERE login_name = #{loginName}
     </select>
     <select id="findByMobile" parameterType="java.lang.String" resultType="AppEmployee">
         SELECT *
-        FROM app_employee
+        FROM emp_employee
         WHERE mobile = #{mobile}
     </select>
     <update id="update" parameterType="AppEmployee">
-        UPDATE app_employee
+        UPDATE emp_employee
         <set>
             <if test="null != name">
                 name = #{name},
@@ -39,8 +39,8 @@
             <if test="null != salt">
                 salt = #{salt},
             </if>
-            <if test="null != employeeType">
-                employee_type = #{employeeType},
+            <if test="null != identityType">
+                identity_type = #{identityType},
             </if>
             <if test="null != mobile">
                 mobile = #{mobile},
@@ -52,7 +52,7 @@
                 status = #{status},
             </if>
             <if test="null != sex">
-                SEX = #{sex,
+                sex = #{sex,
                 javaType=cn.com.leyizhuang.app.core.constant.SexType,
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
@@ -65,41 +65,40 @@
             <if test="null != storeId">
                 store_id = #{storeId},
             </if>
-            <if test="null != parentId">
-                parent_id = #{parentId},
+            <if test="null != managerId">
+                manager_id = #{managerId},
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE emp_id = #{empId}
     </update>
     <select id="findByUserId" parameterType="java.lang.Long" resultType="AppEmployee">
         SELECT *
-        FROM app_employee
-        WHERE id = (SELECT c.sales_consult_id
-                    FROM app_customer c
-                    WHERE c.id = #{userId})
+        FROM emp_employee
+        WHERE emp_id = (SELECT c.sales_consult_id
+                    FROM cus_customer c
+                    WHERE c.cus_id = #{userId})
     </select>
     <select id="findById" parameterType="java.lang.Long" resultType="AppEmployee">
         SELECT *
-        FROM app_employee
-        WHERE id = #{userId}
+        FROM emp_employee
+        WHERE emp_id = #{userId}
     </select>
 
-    <select id="findDecorateEmployeeListByParentId" parameterType="java.lang.Long"
+    <select id="findDecorateEmployeeListByManagerId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT
         e.name,
         e.mobile,
         e.pic_url,
         e.create_time
-        FROM app_employee e
-        WHERE e.employee_type = 'DECORATE_EMPLOYEE'
-        AND e.parent_id = #{userId}
+        FROM emp_employee e
+        WHERE e.identity_type = 'DECORATE_EMPLOYEE'
+        AND e.manager_id = #{userId}
     </select>
 
     <update id="modifyMobileById">
-        UPDATE app_employee
+        UPDATE emp_employee
         SET mobile = #{mobile}
-        WHERE id = #{id}
-
+        WHERE emp_id = #{id}
     </update>
 </mapper>

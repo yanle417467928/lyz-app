@@ -103,12 +103,12 @@
         FROM process p
         LEFT JOIN process_goods pg ON pg.p_ID = p.ID
         LEFT JOIN goods g ON g.ID = pg.g_ID
-        LEFT JOIN goods_brand gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN goods_category gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN goods_type gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN goods_price gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN app_store s ON s.ID = gp.STORE_ID
-        LEFT JOIN app_employee e ON e.STORE_ID = s.ID
+        LEFT JOIN gds_goods_brand gb ON gb.ID = g.TYPE_ID
+        LEFT JOIN gds_goods_category gc ON gc.ID = g.CATEGORY_ID
+        LEFT JOIN gds_goods_type gt ON gt.ID = g.TYPE_ID
+        LEFT JOIN gds_goods_price gp ON gp.GOODS_ID = g.ID
+        LEFT JOIN st_store s ON s.ID = gp.STORE_ID
+        LEFT JOIN emp_employee e ON e.STORE_ID = s.ID
         WHERE e.ID = #{userId}
         AND p.ID = #{processId}
 
@@ -121,12 +121,12 @@
         FROM process p
         LEFT JOIN process_goods pg ON pg.p_ID = p.ID
         LEFT JOIN goods g ON g.ID = pg.g_ID
-        LEFT JOIN goods_brand gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN goods_category gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN goods_type gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN goods_price gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN app_store s ON s.ID = gp.STORE_ID
-        LEFT JOIN app_customer c ON c.STORE_ID = s.ID
+        LEFT JOIN gds_goods_brand gb ON gb.ID = g.TYPE_ID
+        LEFT JOIN gds_goods_category gc ON gc.ID = g.CATEGORY_ID
+        LEFT JOIN gds_goods_type gt ON gt.ID = g.TYPE_ID
+        LEFT JOIN gds_goods_price gp ON gp.GOODS_ID = g.ID
+        LEFT JOIN st_store s ON s.ID = gp.STORE_ID
+        LEFT JOIN cus_customer c ON c.STORE_ID = s.ID
         WHERE e.ID = #{userId}
         AND p.ID = #{processId}
 

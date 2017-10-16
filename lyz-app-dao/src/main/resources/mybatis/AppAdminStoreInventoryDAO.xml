@@ -33,7 +33,7 @@
             inv.SOLD_INVENTORY SOLD_INVENTORY
         FROM
             store_inventory inv
-            LEFT JOIN app_store s ON inv.STORE_ID = s.ID
+            LEFT JOIN st_store s ON inv.STORE_ID = s.ID
             LEFT JOIN goods g ON inv.GOODS_ID = g.ID
     </select>
 

@@ -24,7 +24,7 @@ public interface IAppCustomerService {
 
     void update(AppCustomer phoneUser);
 
-    AppCustomer findById(Long userId);
+    AppCustomer findById(Long cusId);
 
     List<CashCouponResponse> findCashCouponByCustomerId(Long userId);
 

@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -25,9 +24,9 @@ public interface AppCustomerDAO {
 
     void update(AppCustomer newUser);
 
-    AppCustomer save(AppCustomer newUser);
+    Long save(AppCustomer newUser);
 
-    AppCustomer findById(Long userId);
+    AppCustomer findById(@Param(value = "cusId") Long cusId);
 
 
     List<CashCouponResponse> findCashCouponByCustomerId(Long userId);

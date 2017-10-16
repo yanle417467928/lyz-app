@@ -68,12 +68,12 @@ public class CustomerController {
                 return resultDTO;
             }
             //拼装accessToken
-            String accessToken = JwtUtils.createJWT(String.valueOf(customer.getId()), String.valueOf(customer.getMobile()),
+            String accessToken = JwtUtils.createJWT(String.valueOf(customer.getCusId()), String.valueOf(customer.getMobile()),
                     JwtConstant.EXPPIRES_SECOND * 1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerLoginResponse(Boolean.TRUE, customer.getId(), customer.getMobile()));
+                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile()));
             logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class CustomerController {
             AppCustomer customer = customerService.findByOpenId(registryParam.getOpenId());
             if (customer != null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId已存在！",
-                        new CustomerRegistResponse(Boolean.TRUE, customer.getId()));
+                        new CustomerRegistResponse(Boolean.TRUE, customer.getCusId()));
                 logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -125,12 +125,12 @@ public class CustomerController {
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
                 customerService.update(phoneUser);
-                String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getId()), String.valueOf(phoneUser.getMobile()),
+                String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
                 System.out.println(accessToken);
                 response.setHeader("token", accessToken);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CustomerRegistResponse(Boolean.FALSE, phoneUser.getId()));
+                        new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
                 logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
@@ -144,12 +144,12 @@ public class CustomerController {
                 newUser.setMobile(registryParam.getPhone());
                 AppCustomer returnUser = customerService.save(newUser);
                 //拼装accessToken
-                String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getId()), String.valueOf(returnUser.getMobile()),
+                String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
                 System.out.println(accessToken);
                 response.setHeader("token", accessToken);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CustomerRegistResponse(Boolean.FALSE, returnUser.getId()));
+                        new CustomerRegistResponse(Boolean.FALSE, returnUser.getCusId()));
                 logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -164,6 +164,7 @@ public class CustomerController {
 
 
     /**
+     * 顾客注册 - 绑定导购
      * @param userId     顾客id
      * @param guidePhone 导购电话
      * @return resultDTO
@@ -194,14 +195,14 @@ public class CustomerController {
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                AppStore store = storeService.findById(seller.getId());
+                AppStore store = storeService.findById(seller.getEmpId());
                 if (store == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购没有绑定有效的门店信息",
                             null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                customer.setSalesConsultId(seller.getId());
+                customer.setSalesConsultId(seller.getEmpId());
                 customer.setStoreId(store.getId());
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

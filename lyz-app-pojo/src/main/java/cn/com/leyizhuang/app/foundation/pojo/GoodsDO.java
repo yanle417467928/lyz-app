@@ -1,9 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.Date;
 
 /**
  * 商品业务实体
@@ -14,15 +13,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class GoodsDO{
 
-    private Long id;
+    private Long gid;
 
     //商品名称
-    private String goodsName;
+    private String skuName;
 
     //商品编码
-    private String goodsCode;
+    private String sku;
 
     //封面图片
     private String coverImageUri;
@@ -37,19 +38,19 @@ public class GoodsDO{
     private String goodsUnit;
 
     //产品分类id
-    private Long categoryId;
+    private Long cId;
 
     //产品分类名称
     private String categoryName;
 
     //品牌id
-    private Long brandId;
+    private Long brdId;
 
     //品牌名称
-    private Long brandName;
+    private Long brdName;
 
     //类型id
-    private Long typeId;
+    private Long gtid;
 
     //类型名称
     private Long typeName;
@@ -68,5 +69,8 @@ public class GoodsDO{
 
     //是否调色产品
     private Boolean isColorMixing;
+
+    //创建时间
+    private Date createTime;
 
 }

@@ -449,7 +449,7 @@ public class UserSettingController {
         if (appStore != null) {
             informationResponse.setStoreName(appStore.getStoreName());
         }
-        AppEmployee guide = employeeService.findByUserId(appCustomer.getId());
+        AppEmployee guide = employeeService.findByUserId(appCustomer.getCusId());
         if (guide != null) {
             informationResponse.setGuideName(guide.getName());
         }

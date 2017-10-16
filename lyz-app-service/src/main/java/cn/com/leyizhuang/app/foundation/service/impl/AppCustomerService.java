@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,13 +23,15 @@ import java.util.List;
 @Service
 public class AppCustomerService implements IAppCustomerService {
 
-    @Autowired
+    @Resource
     private AppCustomerDAO customerDAO;
 
     @Override
+    @Transactional
     public AppCustomer save(AppCustomer appCustomer) {
         if(null != appCustomer){
-            return customerDAO.save(appCustomer);
+            customerDAO.save(appCustomer);
+            return appCustomer;
         }
         return null;
     }
@@ -57,9 +60,9 @@ public class AppCustomerService implements IAppCustomerService {
     }
 
     @Override
-    public AppCustomer findById(Long userId) {
-        if (null != userId){
-            return customerDAO.findById(userId);
+    public AppCustomer findById(Long cusId) {
+        if (null != cusId){
+            return customerDAO.findById(cusId);
         }
         return null;
     }

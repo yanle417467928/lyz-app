@@ -64,6 +64,11 @@ public class QRCodeController {
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", new QrCodeResponse(null));
+            logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
         }
         if (returnCode.equalsIgnoreCase("00")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new QrCodeResponse(smsCode));
