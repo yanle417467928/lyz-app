@@ -160,7 +160,7 @@
             g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.vip_prcie,
+            p.vip_price,
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
@@ -288,18 +288,15 @@
             g.gid ,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_price,
             p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
             INNER JOIN gds_goods g ON p.gid = g.gid
-            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-            INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-            INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
             c.cus_id = #{userId}
             AND g.is_hot = 1
@@ -313,18 +310,15 @@
             g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_price,
             p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
             INNER JOIN gds_goods g ON p.gid = g.gid
-            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-            INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-            INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
             e.emp_id = #{userId}
             AND g.is_hot = 1
@@ -338,7 +332,7 @@
             g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.vip_prcie,
+            p.vip_price,
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
@@ -349,9 +343,9 @@
             INNER JOIN gds_goods_price p ON p.gid = g.gid
         WHERE
             acc.user_id = #{userId}
-            AND acc.identity_type = #{type,
-                javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        AND acc.identity_type = #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
     <select id="findGoodsOftenListByUserIdAndIdentityType" parameterType="java.lang.Long"
@@ -396,7 +390,7 @@
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_price,
             p.retail_price,
             g.cid second_category_code,
             g.brd_id goods_brand_code,
@@ -420,7 +414,7 @@
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_price,
             p.retail_price,
             g.cid second_category_code,
             g.brd_id goods_brand_code,
@@ -437,41 +431,31 @@
         )
     </select>
 
-    <insert id="saveCollectGoodsByCustomerIdAndGoodsId">
-        INSERT INTO cus_customer_collect(
-            CUSTOMER_ID, GOODS_ID)
-        SELECT #{userId},#{goodsId}
+    <insert id="saveCollectGoodsByUserIdAndGoodsIdAndIdentityType">
+        INSERT INTO gds_goods_collect(
+            user_id, gid,identity_type)
+        SELECT #{userId},#{goodsId},#{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         FROM dual
         WHERE NOT EXISTS (
           SELECT 'X'
-          FROM cus_customer_collect acc
-          WHERE acc.CUSTOMER_ID = #{userId}
-          AND acc.GOODS_ID = #{goodsId}
+          FROM gds_goods_collect acc
+          WHERE acc.user_id = #{userId}
+          AND acc.gid = #{goodsId}
+          AND acc.identity_type = #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
 
-    <insert id="saveCollectGoodsByEmployeeIdAndGoodsId">
-        INSERT INTO emp_employee_collect(
-            EMPLOYEE_ID, GOODS_ID)
-        SELECT #{userId},#{goodsId}
-        FROM dual
-        WHERE NOT EXISTS (
-            SELECT 'X'
-            FROM emp_employee_collect aec
-            WHERE aec.EMPLOYEE_ID = #{userId}
-            AND aec.GOODS_ID = #{goodsId}
-        )
-    </insert>
-
-    <delete id="deleteCollectGoodsByCustomerIdAndGoodsId">
-        DELETE FROM cus_customer_collect
-        WHERE CUSTOMER_ID = #{userId}
-        AND GOODS_ID = #{goodsId}
+    <delete id="deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType">
+        DELETE FROM gds_goods_collect
+        WHERE user_id = #{userId}
+        AND gid = #{goodsId}
+        AND identity_type = #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </delete>
 
-    <delete id="deleteCollectGoodsByEmployeeIdAndGoodsId">
-        DELETE FROM emp_employee_collect
-        WHERE EMPLOYEE_ID = #{userId}
-        AND GOODS_ID = #{goodsId}
-    </delete>
 </mapper>

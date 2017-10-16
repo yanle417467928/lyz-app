@@ -176,7 +176,7 @@ public class GoodsService implements IGoodsService {
     public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
-            goodsDAO.saveCollectGoodsByUserIdAndGoodsId(userId,goodsId,appIdentityType);
+            goodsDAO.saveCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
 
         }
 
@@ -187,7 +187,7 @@ public class GoodsService implements IGoodsService {
     public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
-            goodsDAO.deleteCollectGoodsByUserIdAndGoodsId(userId,goodsId,appIdentityType);
+            goodsDAO.deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
 
         }
     }

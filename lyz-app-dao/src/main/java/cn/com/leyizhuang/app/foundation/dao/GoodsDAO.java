@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,13 +20,13 @@ public interface GoodsDAO {
 
     List<GoodsDO> queryList();
 
-    List<UserGoodsResponse> findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
-                                                                          @Param(value = "userId") Long userId);
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
 
     GoodsDO queryById(Long id);
 
-    List<UserGoodsResponse> findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
-                                                                          @Param(value = "userId") Long userId);
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
 
     void batchRemove(List<Long> longs);
 
@@ -49,35 +48,27 @@ public interface GoodsDAO {
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
 
-    List<UserGoodsResponse> findGoodsCollectListByCustomerIdAndIdentityType(Long userId);
-
-    List<UserGoodsResponse> findGoodsCollectListByEmployeeIdAndIdentityType(Long userId);
-
     GoodsDO findGoodsImageUriByGoodsCode(String goodsCode);
 
     List<UserGoodsResponse> findGoodsListByIsHotAndCustomerIdAndIdentityType(Long userId);
 
     List<UserGoodsResponse> findGoodsListByIsHotAndEmployeeIdAndIdentityType(Long userId);
 
-    List<UserGoodsResponse> searchByCustomerIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
+    List<UserGoodsResponse> searchByCustomerIdAndKeywords(
+            @Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
 
-    List<UserGoodsResponse> searchByEmployeeIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
+    List<UserGoodsResponse> searchByEmployeeIdAndKeywords(
+            @Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
 
-    void saveCollectGoodsByCustomerIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+    List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(
+            @Param("userId") Long userId, @Param("type") AppIdentityType identityType);
 
-    void saveCollectGoodsByEmployeeIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+    List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(
+            @Param("userId") Long userId, @Param("type") AppIdentityType appIdentityType);
 
-    void deleteCollectGoodsByCustomerIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+    void saveCollectGoodsByUserIdAndGoodsIdAndIdentityType(
+            @Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
 
-    void deleteCollectGoodsByEmployeeIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
-
-    List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(@Param("userId") Long userId,
-                                                                        @Param("type") AppIdentityType identityType);
-
-    List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(@Param("userId") Long userId,
-                                                                      @Param("type") AppIdentityType appIdentityType);
-
-    void saveCollectGoodsByUserIdAndGoodsId(@Param("userId") Long userId,@Param("goodsId") Long goodsId,@Param("type") AppIdentityType appIdentityType);
-
-    void deleteCollectGoodsByUserIdAndGoodsId(@Param("userId") Long userId,@Param("goodsId") Long goodsId,@Param("type") AppIdentityType appIdentityType);
+    void deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(
+            @Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
 }
