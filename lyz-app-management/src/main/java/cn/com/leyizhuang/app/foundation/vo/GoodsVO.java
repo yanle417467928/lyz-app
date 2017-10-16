@@ -105,10 +105,10 @@ public class GoodsVO {
     public static final GoodsVO transform(GoodsDO goodsDO) {
         if (null != goodsDO) {
             GoodsVO goodsVO = new GoodsVO();
-            goodsVO.setId(goodsDO.getId());
-            goodsVO.setGoodsName(goodsDO.getGoodsName());
-            goodsVO.setGoodsCode(goodsDO.getGoodsCode());
-            goodsVO.setBrandId(goodsDO.getBrandId());
+            goodsVO.setId(goodsDO.getGid());
+            goodsVO.setGoodsName(goodsDO.getSkuName());
+            goodsVO.setGoodsCode(goodsDO.getSku());
+            goodsVO.setBrandId(goodsDO.getBrdId());
             return goodsVO;
         } else {
             return null;

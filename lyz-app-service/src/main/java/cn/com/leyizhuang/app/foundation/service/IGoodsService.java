@@ -21,7 +21,7 @@ public interface IGoodsService {
 
     GoodsDO managerSaveGoods(GoodsDTO goodsDTO);
 
-    List<GoodsVO> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode,Long userId, Integer identityType);
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode,Long userId, Integer identityType);
 
     GoodsDO queryById(Long id);
 

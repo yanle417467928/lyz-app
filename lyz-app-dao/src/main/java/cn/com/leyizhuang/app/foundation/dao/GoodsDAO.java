@@ -20,12 +20,12 @@ public interface GoodsDAO {
 
     List<GoodsDO> queryList();
 
-    List<GoodsVO> findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
                                                                           @Param(value = "userId") Long userId);
 
     GoodsDO queryById(Long id);
 
-    List<GoodsVO> findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(@Param(value = "categoryCode") String categoryCode,
                                                                           @Param(value = "userId") Long userId);
 
     void batchRemove(List<Long> longs);

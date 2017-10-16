@@ -44,16 +44,16 @@ public class GoodsVO {
     private String goodsUnit;
 
     //产品分类id
-    private Long cId;
+    private Long categoryId;
 
     //品牌id
-    private Long brdId;
+    private Long brandId;
 
     //类型id
-    private Long gtid;
+    private Long typeId;
 
     //会员价
-    private Double VIPPrice;
+    private Double vipPrice;
 
     //零售价
     private Double retailPrice;
@@ -64,8 +64,8 @@ public class GoodsVO {
             GoodsVO goodsVO = new GoodsVO();
             goodsVO.setSkuName(goodsDO.getSkuName());
             goodsVO.setSku(goodsDO.getSku());
-            goodsVO.setBrdId(goodsDO.getBrdId());
-            goodsVO.setCId(goodsDO.getCId());
+            goodsVO.setBrandId(goodsDO.getBrdId());
+            goodsVO.setCategoryId(goodsDO.getCId());
             goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
             return goodsVO;
         } else {

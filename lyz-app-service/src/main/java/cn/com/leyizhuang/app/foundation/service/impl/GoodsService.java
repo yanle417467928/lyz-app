@@ -66,7 +66,7 @@ public class GoodsService implements IGoodsService {
     }
 
     @Override
-    public List<GoodsVO> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
                 return goodsDAO.findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);

@@ -129,19 +129,19 @@
         WHERE ID = #{id}
     </update>
 
-    <select id="gds_goods_type"
-            resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
+    <select id="findGoodsListByCategoryCodeAndCustomerIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name sku_name,
-            g.gid,
+            g.sku_name goods_name,
+            g.gid id,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_price,
             p.retail_price,
-            g.cid second_category_code,
-            g.brd_id goods_brand_code,
-            g.gtid goods_type_code
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -153,18 +153,18 @@
     </select>
 
     <select id="findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType"
-            resultType="cn.com.leyizhuang.app.foundation.vo.GoodsVO">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
-            g.sku_name sku_name,
+            g.sku_name goods_name,
             g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_prcie,
             p.retail_price,
-            g.cid second_category_code,
-            g.brd_id goods_brand_code,
-            g.gtid goods_type_code
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -385,51 +385,50 @@
 
         SELECT
             g.cover_image_uri,
-            g.goods_name goods_name,
-            g.id,
+            g.sku_name goods_name,
+            g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.member_price,
+            p.vip_price,
             p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
+            gc.cid secondCategoryId,
+            b.brd_id goodsBrandId,
+            t.gtid goodsTypeId
         FROM
             cus_customer c
-            INNER JOIN cus_customer_goods acg ON acg.CUSTOMER_ID = c.id
-            INNER JOIN goods g ON g.id = acg.GOODS_ID
-            INNER JOIN gds_goods_price p ON p.goods_id = g.id
-            INNER JOIN gds_goods_category gc ON g.category_id = gc.id
-            INNER JOIN gds_goods_brand b ON b.id = g.brand_id
-            INNER JOIN gds_goods_type t ON t.id = g.type_id
+            INNER JOIN gds_goods_often_buy acg ON acg.user_id = c.cus_id
+            INNER JOIN gds_goods g ON g.gid = acg.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_brand b ON b.brd_id = g.brd_id
+            INNER JOIN gds_goods_type t ON t.gtid = g.gtid
         WHERE
-            c.id = #{userId}
+            c.cus_id = #{userId}
     </select>
 
     <select id="findGoodsOftenListByEmployeeIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
-
         SELECT
             g.cover_image_uri,
-            g.goods_name goods_name,
-            g.id,
+            g.sku_name goods_name,
+            g.gid id,
             g.goods_specification,
             g.goods_unit,
-            p.member_price,
+            p.vip_price,
             p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
+            gc.cid category_id,
+            b.brd_id brand_id,
+            t.gtid type_id
         FROM
             emp_employee e
-            INNER JOIN emp_employee_goods aeg ON aeg.EMPLOYEE_ID = e.id
-            INNER JOIN goods g ON g.id = aeg.GOODS_ID
-            INNER JOIN gds_goods_price p ON p.goods_id = g.id
-            INNER JOIN gds_goods_category gc ON g.category_id = gc.id
-            INNER JOIN gds_goods_brand b ON b.id = g.brand_id
-            INNER JOIN gds_goods_type t ON t.id = g.type_id
+            INNER JOIN gds_goods_often_buy aeg ON aeg.user_id = e.emp_id
+            INNER JOIN gds_goods g ON g.gid = aeg.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_brand b ON b.brd_id = g.brd_id
+            INNER JOIN gds_goods_type t ON t.gtid = g.gtid
         WHERE
-            e.id = #{userId}
+            e.emp_id = #{userId}
     </select>
 
     <select id="findGoodsImageUriByGoodsCode" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">

@@ -60,7 +60,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            List<GoodsVO> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
+            List<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsVOList);
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

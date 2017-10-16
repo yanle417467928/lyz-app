@@ -22,7 +22,7 @@ public class UserGoodsResponse implements Serializable {
     private static final long serialVersionUID = -648160133580382322L;
 
     //商品ID
-    private Long gid;
+    private Long id;
 
     //商品名称
     private String goodsName;
@@ -37,17 +37,17 @@ public class UserGoodsResponse implements Serializable {
     private String goodsUnit;
 
     //会员价
-    private Double VIPPrice;
+    private Double vipPrice;
 
     //零售价
     private Double retailPrice;
 
     //二级分类编码id
-    private String secondCategoryCode;
+    private Long categoryId;
 
     //商品品牌分类编码id
-    private String goodsBrandCode;
+    private Long brandId;
 
     //商品类型分类编码 id
-    private String goodsTypeCode;
+    private Long typeId;
 }
