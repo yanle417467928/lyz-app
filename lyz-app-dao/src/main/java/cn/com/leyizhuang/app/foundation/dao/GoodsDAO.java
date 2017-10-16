@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
@@ -58,10 +59,6 @@ public interface GoodsDAO {
 
     List<UserGoodsResponse> findGoodsListByIsHotAndEmployeeIdAndIdentityType(Long userId);
 
-    List<UserGoodsResponse> findGoodsOftenListByCustomerIdAndIdentityType(Long userId);
-
-    List<UserGoodsResponse> findGoodsOftenListByEmployeeIdAndIdentityType(Long userId);
-
     List<UserGoodsResponse> searchByCustomerIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
 
     List<UserGoodsResponse> searchByEmployeeIdAndKeywords(@Param(value = "userId") Long userId, @Param(value = "keywords") String keywords);
@@ -73,4 +70,14 @@ public interface GoodsDAO {
     void deleteCollectGoodsByCustomerIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
 
     void deleteCollectGoodsByEmployeeIdAndGoodsId(@Param(value = "userId") Long userId,@Param(value = "goodsId") Long goodsId);
+
+    List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                                        @Param("type") AppIdentityType identityType);
+
+    List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                                      @Param("type") AppIdentityType appIdentityType);
+
+    void saveCollectGoodsByUserIdAndGoodsId(@Param("userId") Long userId,@Param("goodsId") Long goodsId,@Param("type") AppIdentityType appIdentityType);
+
+    void deleteCollectGoodsByUserIdAndGoodsId(@Param("userId") Long userId,@Param("goodsId") Long goodsId,@Param("type") AppIdentityType appIdentityType);
 }

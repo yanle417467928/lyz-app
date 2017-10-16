@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.remote;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
@@ -77,17 +77,17 @@ public class HqAppEmployeeController {
             employee.setStatus(employeeDTO.getStatus() != 0);
             switch (employeeDTO.getPositionType()) {
                 case "DG":
-                    employee.setIdentityType(AppUserType.SELLER);
+                    employee.setIdentityType(AppIdentityType.SELLER);
                     break;
                 case "DZ":
-                    employee.setIdentityType(AppUserType.SUPERVISOR);
+                    employee.setIdentityType(AppIdentityType.SUPERVISOR);
                     break;
                 case "DJL":
-                    employee.setIdentityType(AppUserType.MANAGER);
+                    employee.setIdentityType(AppIdentityType.MANAGER);
                 default:
                     break;
             }
-            employee.setIdentityType(AppUserType.SELLER);
+            employee.setIdentityType(AppIdentityType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             employee.setCityId(city.getId());
             String salt = employee.generateSalt();

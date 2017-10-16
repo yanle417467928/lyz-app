@@ -54,21 +54,21 @@ public class UserHomePageController {
         ResultDTO<UserHomePageResponse> resultDTO;
         if (userId == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (identityType == 6) {
             AppCustomer appCustomer = customerService.findById(userId);
             if (appCustomer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-                logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
+                logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
@@ -88,7 +88,7 @@ public class UserHomePageController {
 
         if (appEmployee == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-            logger.info("personalHomepage OUT,获取个人主页，出参 resultDTO:{}", resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         UserHomePageResponse userHomePageResponse = new UserHomePageResponse();

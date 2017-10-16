@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
@@ -28,6 +28,6 @@ public class FunctionalFeedbackDO extends BaseDO {
     //用户id
     private Long userId;
     //用户类型
-    private AppUserType userType;
+    private AppIdentityType userType;
 
 }

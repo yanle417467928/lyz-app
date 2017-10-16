@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

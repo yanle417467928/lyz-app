@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
@@ -9,7 +9,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -131,11 +130,8 @@ public class GoodsService implements IGoodsService {
     @Override
     public List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
-            if (identityType == 6) {
-                return goodsDAO.findGoodsCollectListByCustomerIdAndIdentityType(userId);
-            } else {
-                return goodsDAO.findGoodsCollectListByEmployeeIdAndIdentityType(userId);
-            }
+            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            return goodsDAO.findGoodsCollectListByUserIdAndIdentityType(userId,appIdentityType);
         }
         return null;
     }
@@ -155,11 +151,8 @@ public class GoodsService implements IGoodsService {
     @Override
     public List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
-            if (identityType == 6) {
-                return goodsDAO.findGoodsOftenListByCustomerIdAndIdentityType(userId);
-            } else {
-                return goodsDAO.findGoodsOftenListByEmployeeIdAndIdentityType(userId);
-            }
+            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            return goodsDAO.findGoodsOftenListByUserIdAndIdentityType(userId,appIdentityType);
         }
         return null;
     }
@@ -168,7 +161,7 @@ public class GoodsService implements IGoodsService {
     public List<UserGoodsResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType) {
         List<UserGoodsResponse> goodsResponseList;
         if (StringUtils.isNotBlank(keywords) && null != userId && null != identityType) {
-            if (identityType == AppUserType.CUSTOMER.getValue()) {
+            if (identityType == AppIdentityType.CUSTOMER.getValue()) {
                 goodsResponseList = goodsDAO.searchByCustomerIdAndKeywords(userId, keywords);
             } else {
                 goodsResponseList = goodsDAO.searchByEmployeeIdAndKeywords(userId, keywords);
@@ -182,11 +175,9 @@ public class GoodsService implements IGoodsService {
     @Transactional
     public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
-            if (identityType == 6) {
-                goodsDAO.saveCollectGoodsByCustomerIdAndGoodsId(userId,goodsId);
-            }else {
-                goodsDAO.saveCollectGoodsByEmployeeIdAndGoodsId(userId,goodsId);
-            }
+            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            goodsDAO.saveCollectGoodsByUserIdAndGoodsId(userId,goodsId,appIdentityType);
+
         }
 
     }
@@ -195,11 +186,9 @@ public class GoodsService implements IGoodsService {
     @Transactional
     public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
-            if (identityType == 6) {
-                goodsDAO.deleteCollectGoodsByCustomerIdAndGoodsId(userId,goodsId);
-            }else {
-                goodsDAO.deleteCollectGoodsByEmployeeIdAndGoodsId(userId,goodsId);
-            }
+            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            goodsDAO.deleteCollectGoodsByUserIdAndGoodsId(userId,goodsId,appIdentityType);
+
         }
     }
 

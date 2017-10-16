@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;

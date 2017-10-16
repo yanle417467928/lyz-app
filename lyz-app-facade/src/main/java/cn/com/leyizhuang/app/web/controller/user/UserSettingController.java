@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -348,7 +348,7 @@ public class UserSettingController {
         return resultDTO;
     }
 
-    /**  
+    /**
      * @title  功能反馈
      * @descripe 功能反馈
      * @param userId
@@ -358,7 +358,7 @@ public class UserSettingController {
      * @date 2017/10/10
      */
     @PostMapping(value = "/functionalFeedback/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam("myfiles") MultipartFile[] files, 
+    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam("myfiles") MultipartFile[] files,
                                                    String type, String content, String phone) {
         logger.info("addFunctionalFeedback CALLED,功能反馈，入参 userId:{} identityType:{} files:{}," +
                 "type:{}, content:{}, phone:{}", userId, identityType, files, type, content, phone);
@@ -400,7 +400,7 @@ public class UserSettingController {
             functionalFeedbackDO.setPictureUrl("");
             functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
             functionalFeedbackDO.setUserId(userId);
-            functionalFeedbackDO.setUserType(AppUserType.getAppUserTypeByValue(identityType));
+            functionalFeedbackDO.setUserType(AppIdentityType.getAppUserTypeByValue(identityType));
             this.functionalFeedbackServiceImpl.save(functionalFeedbackDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addFunctionalFeedback OUT,功能反馈成功，出参 resultDTO:{}", resultDTO);

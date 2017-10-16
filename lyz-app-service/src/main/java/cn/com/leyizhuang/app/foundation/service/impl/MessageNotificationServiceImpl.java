@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppUserType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MessageNotificationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse;
 import cn.com.leyizhuang.app.foundation.service.MessageNotificationService;
@@ -23,6 +23,6 @@ public class MessageNotificationServiceImpl implements MessageNotificationServic
 
     @Override
     public List<MessageNotificationListResponse> queryListByUserIdAndUserType(Long userId, Integer userType) {
-        return this.messageNotificationDAO.queryListByUserIdAndUserType(userId, AppUserType.getAppUserTypeByValue(userType));
+        return this.messageNotificationDAO.queryListByUserIdAndUserType(userId, AppIdentityType.getAppUserTypeByValue(userType));
     }
 }

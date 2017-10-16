@@ -330,7 +330,7 @@
             AND g.is_hot = 1
     </select>
 
-    <select id="findGoodsCollectListByCustomerIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -338,49 +338,23 @@
             g.gid,
             g.goods_specification,
             g.goods_unit,
-            p.VIP_prcie,
+            p.vip_prcie,
             p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
-            cus_customer c
-            INNER JOIN cus_customer_collect acc ON acc.CUSTOMER_ID = c.id
-            INNER JOIN gds_goods g ON g.id = acc.GOODS_ID
-            INNER JOIN gds_goods_price p ON p.goods_id = g.id
-            INNER JOIN gds_goods_category gc ON g.category_id = gc.id
-            INNER JOIN gds_goods_brand b ON b.id = g.brand_id
-            INNER JOIN gds_goods_type t ON t.id = g.type_id
+            gds_goods_collect acc
+            INNER JOIN gds_goods g ON g.gid = acc.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid
         WHERE
-            c.id = #{userId}
+            acc.user_id = #{userId}
+            AND acc.identity_type = #{type,
+                javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
-    <select id="findGoodsCollectListByEmployeeIdAndIdentityType" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
-        SELECT
-            g.cover_image_uri,
-            g.goods_name goods_name,
-            g.id,
-            g.goods_specification,
-            g.goods_unit,
-            p.member_price,
-            p.retail_price,
-            gc.category_code,
-            b.brand_code,
-            t.type_code
-        FROM
-            emp_employee e
-            INNER JOIN emp_employee_collect aec ON aec.EMPLOYEE_ID = e.id
-            INNER JOIN goods g ON g.id = aec.GOODS_ID
-            INNER JOIN gds_goods_price p ON p.goods_id = g.id
-            INNER JOIN gds_goods_category gc ON g.category_id = gc.id
-            INNER JOIN gds_goods_brand b ON b.id = g.brand_id
-            INNER JOIN gds_goods_type t ON t.id = g.type_id
-        WHERE
-            e.id = #{userId}
-    </select>
-
-    <select id="findGoodsOftenListByCustomerIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsOftenListByUserIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         SELECT
@@ -391,44 +365,18 @@
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            gc.cid secondCategoryId,
-            b.brd_id goodsBrandId,
-            t.gtid goodsTypeId
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
         FROM
-            cus_customer c
-            INNER JOIN gds_goods_often_buy acg ON acg.user_id = c.cus_id
+            gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
-            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-            INNER JOIN gds_goods_brand b ON b.brd_id = g.brd_id
-            INNER JOIN gds_goods_type t ON t.gtid = g.gtid
         WHERE
-            c.cus_id = #{userId}
-    </select>
-
-    <select id="findGoodsOftenListByEmployeeIdAndIdentityType" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
-        SELECT
-            g.cover_image_uri,
-            g.sku_name goods_name,
-            g.gid id,
-            g.goods_specification,
-            g.goods_unit,
-            p.vip_price,
-            p.retail_price,
-            gc.cid category_id,
-            b.brd_id brand_id,
-            t.gtid type_id
-        FROM
-            emp_employee e
-            INNER JOIN gds_goods_often_buy aeg ON aeg.user_id = e.emp_id
-            INNER JOIN gds_goods g ON g.gid = aeg.gid
-            INNER JOIN gds_goods_price p ON p.gid = g.gid
-            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-            INNER JOIN gds_goods_brand b ON b.brd_id = g.brd_id
-            INNER JOIN gds_goods_type t ON t.gtid = g.gtid
-        WHERE
-            e.emp_id = #{userId}
+            acg.user_id = #{userId}
+        AND acg.identityType = #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
     <select id="findGoodsImageUriByGoodsCode" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
