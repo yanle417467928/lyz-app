@@ -15,9 +15,9 @@ import lombok.ToString;
 public class DeliveryAddressDO extends BaseDO {
 
     //收货人姓名
-    private String deliveryName;
+    private String receiver;
     //收货人号码
-    private String deliveryPhone;
+    private String receiverPhone;
     //收货城市
     private String deliveryCity;
     //收货县
@@ -27,9 +27,11 @@ public class DeliveryAddressDO extends BaseDO {
     //收货详细地址
     private String detailedAddress;
     //小区名
-    private String villageName;
+    private String residenceName;
     //会员ID
-    private Long customerId;
+    private Long userId;
+    //身份类型
+    private String identityType;
     //状态
     private Boolean status;
 

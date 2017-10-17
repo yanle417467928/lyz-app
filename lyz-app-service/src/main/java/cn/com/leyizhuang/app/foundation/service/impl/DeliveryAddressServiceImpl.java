@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO;
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +19,22 @@ import java.util.List;
 @Service
 @Transactional
 public class DeliveryAddressServiceImpl implements DeliveryAddressService {
+
+    @Autowired
     private DeliveryAddressDAO deliveryAddressDAO;
+
     public DeliveryAddressServiceImpl(DeliveryAddressDAO deliveryAddressDAO) {
         this.deliveryAddressDAO = deliveryAddressDAO;
     }
 
     @Override
-    public List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTure(Long customerId) {
-        return this.deliveryAddressDAO.queryListByUserIdAndStatusIsTure(customerId);
+    public List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType) {
+        if (identityType.getValue() == 6 ){
+            return this.deliveryAddressDAO.queryListByCustomerIdAndStatusIsTrue(userId);
+        }else{
+            return this.deliveryAddressDAO.queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(userId,identityType);
+        }
+
     }
 
     @Override
@@ -58,16 +68,16 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
             if (null != deliveryAddress.getId()) {
                 deliveryAddressDO.setId(deliveryAddress.getId());
             }
-            deliveryAddressDO.setDeliveryName(deliveryAddress.getDeliveryName());
-            deliveryAddressDO.setDeliveryPhone(deliveryAddress.getDeliveryPhone());
+            deliveryAddressDO.setReceiver(deliveryAddress.getDeliveryName());
+            deliveryAddressDO.setReceiverPhone(deliveryAddress.getDeliveryPhone());
             deliveryAddressDO.setDeliveryCity(deliveryAddress.getDeliveryCity());
             deliveryAddressDO.setDeliveryCounty(deliveryAddress.getDeliveryCounty());
             deliveryAddressDO.setDeliveryStreet(deliveryAddress.getDeliveryStreet());
             deliveryAddressDO.setDetailedAddress(deliveryAddress.getDetailedAddress());
             if (null != deliveryAddress.getVillageName()) {
-                deliveryAddressDO.setVillageName(deliveryAddress.getVillageName());
+                deliveryAddressDO.setResidenceName(deliveryAddress.getVillageName());
             }
-            deliveryAddressDO.setCustomerId(userId);
+            deliveryAddressDO.setUserId(userId);
             deliveryAddressDO.setStatus(true);
             return deliveryAddressDO;
         } else {

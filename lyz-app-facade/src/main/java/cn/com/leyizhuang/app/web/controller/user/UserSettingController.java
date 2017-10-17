@@ -46,7 +46,7 @@ public class UserSettingController {
     @Resource
     private ICityService cityService;
 
-    @Autowired
+    @Resource
     private DeliveryAddressService deliveryAddressServiceImpl;
 
     @Autowired
@@ -113,8 +113,8 @@ public class UserSettingController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/deliveryAddress/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<List> getDeliveryAddress(Long userId) {
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {}", userId);
+    public ResultDTO<List> getDeliveryAddress(Long userId,Integer identityType) {
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType", userId,identityType);
 
         ResultDTO<List> resultDTO;
         if (null == userId) {
@@ -122,7 +122,12 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTure(userId);
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityType不能为空！", null);
+            logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId,AppIdentityType.getAppUserTypeByValue(identityType));
 
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址成功，出参 resultDTO:{}", resultDTO);

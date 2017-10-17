@@ -344,7 +344,7 @@
         WHERE
             acc.user_id = #{userId}
         AND acc.identity_type = #{type,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
@@ -369,7 +369,7 @@
         WHERE
             acg.user_id = #{userId}
         AND acg.identityType = #{type,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
@@ -435,7 +435,7 @@
         INSERT INTO gds_goods_collect(
             user_id, gid,identity_type)
         SELECT #{userId},#{goodsId},#{type,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         FROM dual
         WHERE NOT EXISTS (
@@ -444,7 +444,7 @@
           WHERE acc.user_id = #{userId}
           AND acc.gid = #{goodsId}
           AND acc.identity_type = #{type,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
@@ -454,7 +454,7 @@
         WHERE user_id = #{userId}
         AND gid = #{goodsId}
         AND identity_type = #{type,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </delete>
 

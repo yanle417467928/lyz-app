@@ -8,7 +8,7 @@
         ) VALUES (
             #{loginName}, #{name}, #{password}, #{salt},
                           #{employeeType,
-            javaType=cn.com.leyizhuang.app.core.constant.AppidentityType,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                           #{mobile}, #{birthday}, #{status},
                           #{sex,

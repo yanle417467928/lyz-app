@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
@@ -20,4 +21,9 @@ public interface DeliveryAddressDAO {
     void addDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
 
     void modifyDeliveryAddress(DeliveryAddressDO deliveryAddressDO);
+
+    List<DeliveryAddressResponse> queryListByCustomerIdAndStatusIsTrue(@Param(value = "userId") Long userId);
+
+    List<DeliveryAddressResponse> queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(@Param(value = "userId") Long userId,
+                                                                                      @Param(value = "identityType") AppIdentityType identityType);
 }
