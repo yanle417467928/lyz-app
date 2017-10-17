@@ -25,7 +25,7 @@ public class GoodsDetailResponse {
     //商品名称
     private String skuName;
     //商品单位
-    private String GoodsSpecification;
+    private String goodsSpecification;
     //商品单位
     private String goodsUnit;
     //商品单价
