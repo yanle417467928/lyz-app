@@ -129,7 +129,7 @@
         WHERE ID = #{id}
     </update>
 
-    <select id="findGoodsListByCategoryCodeAndCustomerIdAndIdentityType"
+    <select id="findGoodsListByCategoryCodeAndCustomerIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -152,7 +152,7 @@
             AND gc.p_category_code = #{categoryCode}
     </select>
 
-    <select id="findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType"
+    <select id="findGoodsListByCategoryCodeAndEmployeeIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -174,7 +174,7 @@
               AND gc.p_category_code = #{categoryCode}
     </select>
 
-    <select id="findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType"
+    <select id="findGoodsCategoryListByCategoryCodeAndCustomerIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
             DISTINCT
@@ -191,7 +191,7 @@
         ORDER BY gc.sort_id
     </select>
 
-    <select id="findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType"
+    <select id="findGoodsCategoryListByCategoryCodeAndEmployeeIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
             DISTINCT
@@ -208,7 +208,7 @@
         ORDER BY gc.sort_id
     </select>
 
-    <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType"
+    <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
             DISTINCT
@@ -226,7 +226,7 @@
         ORDER BY b.sort_id
     </select>
 
-    <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType"
+    <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
             DISTINCT
@@ -244,7 +244,7 @@
         ORDER BY b.sort_id
     </select>
 
-    <select id="findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType"
+    <select id="findGoodsTypeListByCategoryCodeAndCustomerIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
         SELECT
             DISTINCT
@@ -262,7 +262,7 @@
         ORDER BY t.sort_id
     </select>
 
-    <select id="findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType"
+    <select id="findGoodsTypeListByCategoryCodeAndEmployeeIdAndidentity_type"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
             DISTINCT
@@ -280,7 +280,7 @@
         ORDER BY t.sort_id
     </select>
 
-    <select id="findGoodsListByIsHotAndCustomerIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsListByIsHotAndCustomerIdAndidentity_type" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -302,7 +302,7 @@
             AND g.is_hot = 1
     </select>
 
-    <select id="findGoodsListByIsHotAndEmployeeIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsListByIsHotAndEmployeeIdAndidentity_type" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -324,7 +324,7 @@
             AND g.is_hot = 1
     </select>
 
-    <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsCollectListByUserIdAndidentity_type" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
             g.cover_image_uri,
@@ -348,7 +348,7 @@
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
-    <select id="findGoodsOftenListByUserIdAndIdentityType" parameterType="java.lang.Long"
+    <select id="findGoodsOftenListByUserIdAndidentity_type" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         SELECT
@@ -368,7 +368,7 @@
             INNER JOIN gds_goods_price p ON p.gid = g.gid
         WHERE
             acg.user_id = #{userId}
-        AND acg.identityType = #{type,
+        AND acg.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
@@ -431,7 +431,7 @@
         )
     </select>
 
-    <insert id="saveCollectGoodsByUserIdAndGoodsIdAndIdentityType">
+    <insert id="saveCollectGoodsByUserIdAndGoodsIdAndidentity_type">
         INSERT INTO gds_goods_collect(
             user_id, gid,identity_type)
         SELECT #{userId},#{goodsId},#{type,
@@ -449,7 +449,7 @@
         )
     </insert>
 
-    <delete id="deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType">
+    <delete id="deleteCollectGoodsByUserIdAndGoodsIdAndidentity_type">
         DELETE FROM gds_goods_collect
         WHERE user_id = #{userId}
         AND gid = #{goodsId}
@@ -462,7 +462,7 @@
         <if test="null != type and type = 'CUSTOMER'">
             SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
                 (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
-                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identityType = #{type}) gc on gc.user_id = c.cus_id and gc.identityType = c.identity_type
+                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type = #{type}) gc on gc.user_id = c.cus_id and gc.identity_type = c.identity_type
                 LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId},
                 (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM gds_goods WHERE gid = #{goodsId}) g
             WHERE
@@ -471,7 +471,7 @@
         <if test="null != type and type != 'CUSTOMER'">
             SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
                 (SELECT emp_id, identity_type, store_id FROM emp_employee WHERE emp_id = #{userId}) e
-                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identityType = #{type}) gc on gc.user_id = e.emp_id and gc.identityType = e.identity_type
+                LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type = #{type}) gc on gc.user_id = e.emp_id and gc.identity_type = e.identity_type
                 LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId},
                 (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM gds_goods WHERE gid = #{goodsId}) g
             WHERE
