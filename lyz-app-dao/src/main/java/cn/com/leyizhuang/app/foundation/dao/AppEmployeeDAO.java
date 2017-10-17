@@ -27,7 +27,7 @@ public interface AppEmployeeDAO {
 
     AppEmployee findById(Long id);
 
-    List<AppEmployee> findDecorateEmployeeListByParentId(Long userId);
+    List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
     void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
 }

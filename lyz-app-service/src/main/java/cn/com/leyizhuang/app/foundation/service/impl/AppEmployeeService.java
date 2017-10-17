@@ -74,7 +74,7 @@ public class AppEmployeeService implements IAppEmployeeService {
     @Override
     public List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType && identityType == 2){
-            List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByParentId(userId);
+            List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);
             return EmployeeListResponse.transform(appEmployeeList);
         }
         return null;

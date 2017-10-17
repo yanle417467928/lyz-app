@@ -72,7 +72,7 @@ public class UserHomePageController {
                 return resultDTO;
             }
             UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
-            userHomePageResponse.setNumber(appCustomer.getNickName());
+            userHomePageResponse.setName(appCustomer.getNickName());
             userHomePageResponse.setPicUrl(appCustomer.getPicUrl());
             AppEmployee guide = employeeService.findByUserId(userId);
             if (guide != null) {

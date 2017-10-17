@@ -354,7 +354,7 @@
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid,
+            g.gid id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
