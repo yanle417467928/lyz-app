@@ -9,9 +9,29 @@
    <select id="findById" parameterType="java.lang.Long" resultType="AppStore">
       SELECT * FROM st_store where store_id = #{id}
    </select>
-   
+
    <select id="findDefaultStoreByCityId" parameterType="java.lang.Long" resultType="AppStore">
        SELECT * FROM st_store where IS_DEFAULT IS TRUE AND city_id = #{cityId}
    </select>
 
+   <select id="findSubventionBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+      SELECT
+      balance
+      FROM st_subvention
+      WHERE store_id = #{storeId}
+   </select>
+
+   <select id="findCreditMoneyBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+      SELECT
+      balance
+      FROM st_credit_money
+      WHERE store_id = #{storeId}
+   </select>
+
+   <select id="findPreDepositBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+      SELECT
+      balance
+      FROM st_pre_deposit
+      WHERE store_id = #{storeId}
+   </select>
 </mapper>

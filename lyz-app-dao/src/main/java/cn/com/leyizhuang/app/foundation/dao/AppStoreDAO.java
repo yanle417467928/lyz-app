@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,4 +21,10 @@ public interface AppStoreDAO extends BaseDAO<AppStore> {
     AppStore findById(Long id);
 
     AppStore findDefaultStoreByCityId(Long cityId);
+
+    Double findSubventionBalanceByStoreId(Long storeId);
+
+    Double findCreditMoneyBalanceByStoreId(Long storeId);
+
+    Double findPreDepositBalanceByStoreId(Long storeId);
 }

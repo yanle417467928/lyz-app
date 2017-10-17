@@ -29,4 +29,6 @@ public interface IAppEmployeeService {
     List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyMobileByEmployeeId(Long userId, String mobile);
+
+    Double findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
 }

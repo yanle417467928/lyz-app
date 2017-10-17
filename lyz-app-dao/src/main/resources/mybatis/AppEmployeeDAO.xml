@@ -101,4 +101,11 @@
         SET mobile = #{mobile}
         WHERE emp_id = #{id}
     </update>
+
+    <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
+        SELECT
+        balance
+        FROM emp_credit_money
+        WHERE guide_id = #{userId}
+    </select>
 </mapper>

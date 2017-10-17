@@ -18,4 +18,10 @@ public interface IAppStoreService extends BaseService<AppStore> {
     AppStore findById(Long id);
 
     AppStore findDefaultStoreByCityId(Long cityId);
+
+    Double findSubventionBalanceByStoreId(Long storeId);
+
+    Double findCreditMoneyBalanceByStoreId(Long storeId);
+
+    Double findPreDepositBalanceByStoreId(Long storeId);
 }

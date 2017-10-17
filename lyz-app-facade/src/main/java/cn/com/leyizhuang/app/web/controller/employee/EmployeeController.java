@@ -132,4 +132,40 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * 获取导购信用金余额
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/creditMoney", produces = "application/json;charset=UTF-8")
+    public ResultDTO getGuideCreditMoneyBalance(Long userId, Integer identityType){
+
+        logger.info("getGuideCreditMoneyBalance CALLED,获取导购信用金余额，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            Double balance = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId,identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+            logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店信用金失败", null);
+            logger.warn("getGuideCreditMoneyBalance EXCEPTION,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }

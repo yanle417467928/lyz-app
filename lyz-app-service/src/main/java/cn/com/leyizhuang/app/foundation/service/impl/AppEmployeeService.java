@@ -87,4 +87,12 @@ public class AppEmployeeService implements IAppEmployeeService {
             employeeDAO.modifyMobileById(userId,mobile);
         }
     }
+
+    @Override
+    public Double findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType == 0){
+            return employeeDAO.findCreditMoneyBalanceByUserId(userId);
+        }
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -45,6 +46,30 @@ public class AppStoreService extends BaseServiceImpl<AppStore> implements IAppSt
     public AppStore findDefaultStoreByCityId(Long cityId) {
         if (null != cityId){
             return storeDAO.findDefaultStoreByCityId(cityId);
+        }
+        return null;
+    }
+
+    @Override
+    public Double findSubventionBalanceByStoreId(Long storeId) {
+        if(null != storeId){
+            return storeDAO.findSubventionBalanceByStoreId(storeId);
+        }
+        return null;
+    }
+
+    @Override
+    public Double findCreditMoneyBalanceByStoreId(Long storeId) {
+        if(null != storeId){
+            return storeDAO.findCreditMoneyBalanceByStoreId(storeId);
+        }
+        return null;
+    }
+
+    @Override
+    public Double findPreDepositBalanceByStoreId(Long storeId) {
+        if(null != storeId){
+            return storeDAO.findPreDepositBalanceByStoreId(storeId);
         }
         return null;
     }
