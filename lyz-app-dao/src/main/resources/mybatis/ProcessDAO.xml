@@ -74,9 +74,9 @@
             p.prc_id,
             p.process_name,
 
-            g.gid         AS g_id,
+            g.gid      AS g_id,
             g.sku_name AS g_goodsName,
-            g.sku AS g_goodsCode
+            g.sku      AS g_goodsCode
         FROM
             gds_process p LEFT JOIN gds_process_goods pg
                 ON p.prc_id = pg.prc_id
@@ -108,56 +108,44 @@
     </select>
 
     <select id="queryByProcessIdAndEmployeeId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-            g.gid id,
+            g.gid      id,
             g.sku_name goods_name,
             g.COVER_IMAGE_URI,
             g.GOODS_UNIT,
             g.GOODS_SPECIFICATION,
             gp.vip_price,
             gp.RETAIL_PRICE,
-            gb.BRAND_CODE,
-            gc.CATEGORY_CODE,
-            gt.TYPE_CODE
-        FROM gds_process p
-            LEFT JOIN gds_process_goods pg ON pg.prc_id = p.prc_id
-            LEFT JOIN gds_goods g ON g.gid = pg.gid
-            LEFT JOIN gds_goods_brand gb ON gb.brd_id = g.brd_id
-            LEFT JOIN gds_goods_category gc ON gc.cid = g.cid
-            LEFT JOIN gds_goods_type gt ON gt.gtid = g.gtid
-            LEFT JOIN gds_goods_price gp ON gp.gid = g.gid
-            LEFT JOIN st_store s ON s.store_id = gp.store_id
-            LEFT JOIN emp_employee e ON e.store_id = s.store_id
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
+        FROM
+            emp_employee e INNER JOIN gds_goods_price gp ON gp.store_id = e.store_id
+            INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
+            INNER JOIN gds_goods g ON g.gid = pg.gid
         WHERE e.emp_id = #{userId}
-              AND p.prc_id = #{processId}
-
+              AND pg.prc_id = #{processId}
     </select>
 
     <select id="queryByProcessIdAndCustomerId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-            g.gid id,
+            g.gid      id,
             g.sku_name goods_name,
             g.COVER_IMAGE_URI,
             g.GOODS_UNIT,
             g.GOODS_SPECIFICATION,
             gp.vip_price,
             gp.RETAIL_PRICE,
-            gb.BRAND_CODE,
-            gc.CATEGORY_CODE,
-            gt.TYPE_CODE
-        FROM gds_process p
-            LEFT JOIN gds_process_goods pg ON pg.prc_id = p.prc_id
-            LEFT JOIN gds_goods g ON g.gid = pg.gid
-            LEFT JOIN gds_goods_brand gb ON gb.brd_id = g.brd_id
-            LEFT JOIN gds_goods_category gc ON gc.cid = g.cid
-            LEFT JOIN gds_goods_type gt ON gt.gtid = g.gtid
-            LEFT JOIN gds_goods_price gp ON gp.gid = g.gid
-            LEFT JOIN st_store s ON s.store_id = gp.store_id
-            LEFT JOIN cus_customer c ON c.store_id = s.store_id
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
+        FROM cus_customer c INNER JOIN gds_goods_price gp ON gp.store_id = c.store_id
+            INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
+            INNER JOIN gds_goods g ON g.gid = pg.gid
         WHERE c.cus_id = #{userId}
-              AND p.prc_id = #{processId}
+              AND pg.prc_id = #{processId}
 
     </select>
 

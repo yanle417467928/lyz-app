@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.ProcessDAO;
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public List<ProcessGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType) {
+    public List<UserGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType) {
         if (identityType == 6) {
             return processDAO.queryByProcessIdAndEmployeeId(userId, processId);
         } else {

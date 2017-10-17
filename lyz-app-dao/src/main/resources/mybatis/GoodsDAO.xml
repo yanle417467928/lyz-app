@@ -391,9 +391,9 @@
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            g.cid      second_category_code,
-            g.brd_id   goods_brand_code,
-            g.gtid     goods_type_code
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -415,9 +415,9 @@
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            g.cid      second_category_code,
-            g.brd_id   goods_brand_code,
-            g.gtid     goods_type_code
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id

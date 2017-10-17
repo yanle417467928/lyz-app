@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -76,7 +77,7 @@ public class ProcessController {
             return resultDTO;
         }
         try {
-            List<ProcessGoodsResponse> processGoodsResponseList = this.processServiceImpl.queryByProcessIdAndUserId(userId, processId, identityType);
+            List<UserGoodsResponse> processGoodsResponseList = this.processServiceImpl.queryByProcessIdAndUserId(userId, processId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, processGoodsResponseList);
             logger.info("getProcessGoods OUT,获取工序包商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
