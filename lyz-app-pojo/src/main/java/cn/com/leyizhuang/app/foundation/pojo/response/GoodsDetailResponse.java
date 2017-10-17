@@ -15,16 +15,29 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class GoodsImageUriResponse {
+public class GoodsDetailResponse {
     //产品封面图路径
     private List<String> coverImageUriList;
     //商品轮播图路径
     private List<String> rotationImageUriList;
 
+    private Long id;
+    //商品名称
+    private String skuName;
+    //商品单位
+    private String GoodsSpecification;
+    //商品单位
+    private String goodsUnit;
+    //商品单价
+    private Double price;
+    //是否收藏商品
+    private Boolean isCollect;
 
-    public static final GoodsImageUriResponse transform(GoodsDO goodsDO) {
+    public static final GoodsDetailResponse transform(GoodsDetailResponse goodsDetailResponse, GoodsDO goodsDO) {
         if (null != goodsDO) {
-            GoodsImageUriResponse goodsImageUriResponse = new GoodsImageUriResponse();
+            if (null == goodsDetailResponse){
+                goodsDetailResponse = new GoodsDetailResponse();
+            }
             String coverImageUri = goodsDO.getCoverImageUri();
             String rotationImageUri = goodsDO.getRotationImageUri();
             if (null != coverImageUri) {
@@ -33,7 +46,7 @@ public class GoodsImageUriResponse {
                 for (int i = 0; i < uri.length; i++) {
                     list.add(uri[i]);
                 }
-                goodsImageUriResponse.setCoverImageUriList(list);
+                goodsDetailResponse.setCoverImageUriList(list);
             }
             if (null != rotationImageUri) {
                 List<String> list = new ArrayList<>();
@@ -41,9 +54,9 @@ public class GoodsImageUriResponse {
                 for (int i = 0; i < uri.length; i++) {
                     list.add(uri[i]);
                 }
-                goodsImageUriResponse.setRotationImageUriList(list);
+                goodsDetailResponse.setRotationImageUriList(list);
             }
-            return goodsImageUriResponse;
+            return goodsDetailResponse;
         } else {
             return null;
         }
