@@ -12,41 +12,47 @@
         <result column="MODIFY_TIME" property="modifyTime"/>
         <result column="DELIVERY_NAME" property="deliveryName"/>
         <result column="DELIVERY_PHONE" property="deliveryPhone"/>
+        <result column="DELIVERY_PROVINCE" property="deliveryCity"/>
         <result column="DELIVERY_CITY" property="deliveryCity"/>
         <result column="DELIVERY_COUNTY" property="deliveryCounty"/>
         <result column="DELIVERY_STREET" property="DELIVERYSTREET"/>
         <result column="DETAILED_ADDRESS" property="detailedAddress"/>
         <result column="VILLAGE_NAME" property="villageName"/>
         <result column="STATUS" property="STATUS"/>
+        <result column="is_default" property="isDefault"/>
     </resultMap>
 
     <select id="queryListByCustomerIdAndStatusIsTrue"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
             id,
-            receiver delivery_name,
-            receiver_phone delivery_phone,
-            delivery_city delivery_city,
-            delivery_county delivery_county,
-            delivery_street delivery_street,
-            residence_name village_name,
-            detailed_address detailed_address
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_province,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
         WHERE user_id = #{userId}
-            AND identity_type = 'CUSTOMER'
-            AND status IS TRUE
+              AND identity_type = 'CUSTOMER'
+              AND status IS TRUE
     </select>
     <select id="queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
             id,
-            receiver delivery_name,
-            receiver_phone delivery_phone,
-            delivery_city delivery_city,
-            delivery_county delivery_county,
-            delivery_street delivery_street,
-            residence_name village_name,
-            detailed_address detailed_address
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_province,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
         WHERE user_id = #{userId}
               AND identity_type = #{identityType}
@@ -54,32 +60,27 @@
     </select>
     <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
         INSERT INTO delivery_address
-        (CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-         DELIVERY_NAME, DELIVERY_PHONE, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET,
-         DETAILED_ADDRESS, VILLAGE_NAME, CUSTOMER_ID, STATUS)
+        (
+            user_id, identity_type, receiver, receiver_phone, delivery_province, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
+            DETAILED_ADDRESS, residence_name, STATUS, is_default)
         VALUES
-            (#{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-                           #{deliveryName}, #{deliveryPhone}, #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet},
-             #{detailedAddress}, #{villageName}, #{customerId}, #{status})
+            (#{userId}, #{identityType}, #{receiver}, #{receiverPhone}, #{deliveryProvince},
+                        #{deliveryCity}, #{deliveryCounty},
+                        #{deliveryStreet},
+                        #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
     </insert>
 
     <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
         UPDATE delivery_address
         <set>
-            <if test="null != modifierId">
-                MODIFIER_ID = #{modifierId},
+            <if test="null != receiver">
+                receiver = #{receiver},
             </if>
-            <if test="null != modifierType">
-                MODIFIER_TYPE = #{modifierType},
+            <if test="null != receiverPhone">
+                receiver_phone = #{receiverPhone},
             </if>
-            <if test="null != modifyTime">
-                MODIFY_TIME = #{modifyTime},
-            </if>
-            <if test="null != deliveryName">
-                DELIVERY_NAME = #{deliveryName},
-            </if>
-            <if test="null != deliveryPhone">
-                DELIVERY_PHONE = #{deliveryPhone},
+            <if test="null != deliveryProvince">
+                delivery_province = #{deliveryProvince},
             </if>
             <if test="null != deliveryCity">
                 DELIVERY_CITY = #{deliveryCity},
@@ -93,8 +94,14 @@
             <if test="null != detailedAddress">
                 DETAILED_ADDRESS = #{detailedAddress},
             </if>
-            <if test="null != villageName">
-                VILLAGE_NAME = #{villageName},
+            <if test="null != residenceName">
+                residence_name = #{residenceName},
+            </if>
+            <if test="null != userId">
+                user_id = #{userId},
+            </if>
+            <if test="null != isDefault">
+                is_default = #{isDefault},
             </if>
             <if test="null != status">
                 STATUS = #{status},

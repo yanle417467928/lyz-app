@@ -196,7 +196,7 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.addDeliveryAddress(userId, deliveryAddress);
+            this.deliveryAddressServiceImpl.addDeliveryAddress(userId,AppIdentityType.getAppUserTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addDeliveryAddress OUT,顾客新增收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -276,7 +276,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId, deliveryAddress);
+            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId,AppIdentityType.getAppUserTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -289,6 +289,14 @@ public class UserSettingController {
         }
     }
 
+
+    /**
+     * 删除收货地址
+     * @param userId
+     * @param identityType
+     * @param deliveryAddressId
+     * @return
+     */
     @PostMapping(value = "/deliveryAddress/delete", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> deleteDeliveryAddress(Long userId, Integer identityType, Long deliveryAddressId) {
         logger.info("deleteDeliveryAddress CALLED,顾客删除收货地址，入参 userId:{} identityType:{} deliveryAddressId:{}", userId, identityType, deliveryAddressId);
@@ -405,7 +413,7 @@ public class UserSettingController {
             functionalFeedbackDO.setPictureUrl("");
             functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
             functionalFeedbackDO.setUserId(userId);
-            functionalFeedbackDO.setUserType(AppIdentityType.getAppUserTypeByValue(identityType));
+            functionalFeedbackDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
             this.functionalFeedbackServiceImpl.save(functionalFeedbackDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addFunctionalFeedback OUT,功能反馈成功，出参 resultDTO:{}", resultDTO);

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.IdentityType;
 import cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO;
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
@@ -38,17 +39,16 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
-    public DeliveryAddressRequest addDeliveryAddress(Long userId, DeliveryAddressRequest deliveryAddress) {
-        DeliveryAddressDO deliveryAddressDO = transform(userId, deliveryAddress);
+    public DeliveryAddressRequest addDeliveryAddress(Long userId, AppIdentityType identityType,DeliveryAddressRequest deliveryAddress) {
+        DeliveryAddressDO deliveryAddressDO = transform(userId,identityType, deliveryAddress);
         deliveryAddressDO.setCreatorInfoByBusiness("DeliveryAddressServiceImpl", "addDeliveryAddress");
         this.deliveryAddressDAO.addDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
 
     @Override
-    public DeliveryAddressRequest modifyDeliveryAddress(Long userId, DeliveryAddressRequest deliveryAddress) {
-        DeliveryAddressDO deliveryAddressDO = transform(userId, deliveryAddress);
-        deliveryAddressDO.setModifierInfoByBusiness("DeliveryAddressServiceImpl", "modifyDeliveryAddress");
+    public DeliveryAddressRequest modifyDeliveryAddress(Long userId, AppIdentityType identityType,DeliveryAddressRequest deliveryAddress) {
+        DeliveryAddressDO deliveryAddressDO = transform(userId,identityType, deliveryAddress);
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
@@ -62,14 +62,16 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
     }
 
-    private DeliveryAddressDO transform(Long userId, DeliveryAddressRequest deliveryAddress){
-        if (null != userId && null != deliveryAddress) {
+    private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress){
+        if (null != userId && null != deliveryAddress && null != identityType) {
             DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
             if (null != deliveryAddress.getId()) {
                 deliveryAddressDO.setId(deliveryAddress.getId());
             }
+            deliveryAddressDO.setIdentityType(identityType);
             deliveryAddressDO.setReceiver(deliveryAddress.getDeliveryName());
             deliveryAddressDO.setReceiverPhone(deliveryAddress.getDeliveryPhone());
+            deliveryAddressDO.setDeliveryProvince(deliveryAddress.getDeliveryProvince());
             deliveryAddressDO.setDeliveryCity(deliveryAddress.getDeliveryCity());
             deliveryAddressDO.setDeliveryCounty(deliveryAddress.getDeliveryCounty());
             deliveryAddressDO.setDeliveryStreet(deliveryAddress.getDeliveryStreet());
@@ -78,6 +80,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
                 deliveryAddressDO.setResidenceName(deliveryAddress.getVillageName());
             }
             deliveryAddressDO.setUserId(userId);
+            deliveryAddressDO.setIsDefault(deliveryAddress.getIsDefault());
             deliveryAddressDO.setStatus(true);
             return deliveryAddressDO;
         } else {

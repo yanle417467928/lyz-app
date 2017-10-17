@@ -14,34 +14,38 @@
     </resultMap>
 
 
-    <select id="selectByProcessName" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
-        SELECT * FROM process where PROCESS_NAME = #{processName};
+    <select id="selectByProcessName" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
+        SELECT *
+        FROM gds_process
+        WHERE PROCESS_NAME = #{processName};
     </select>
     <select id="selectById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
-        SELECT * FROM process where ID = #{id};
+        SELECT *
+        FROM gds_process
+        WHERE prc_id = #{id};
     </select>
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
         SELECT *
-        FROM process
+        FROM gds_process
     </select>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
-        INSERT INTO process
+        INSERT INTO gds_process
         (
-        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        PROCESS_NAME
-        )VALUES (
-        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-        #{processName}
+            PROCESS_NAME
+        ) VALUES (
+            #{processName}
         )
     </insert>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM  process WHERE ID = #{id};
+        DELETE FROM gds_process
+        WHERE prc_id = #{id};
     </delete>
 
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProcessDO">
-        UPDATE process
+        UPDATE gds_process
         <set>
             <if test="null != processName">
                 PROCESS_NAME = #{processName},
@@ -52,83 +56,108 @@
 
     <select id="findAllProcessAndGoods" resultMap="ProcessMap">
         SELECT
-        p.ID,p.PROCESS_NAME,
-
-        g.ID as g_id,g.goods_name as g_goodsName,g.goods_code as g_goodsCode
+            p.prc_id,
+            p.PROCESS_NAME,
+            g.gid      AS g_id,
+            g.sku_name AS g_goodsName,
+            g.sku      AS g_goodsCode
         FROM
-        process p LEFT JOIN process_goods pg
-        ON p.id=pg.p_id
-        LEFT JOIN goods g
-        ON g.id=pg.g_id
-        WHERE p.id=pg.p_id
+            gds_process p LEFT JOIN gds_process_goods pg
+                ON p.prc_id = pg.prc_id
+            LEFT JOIN gds_goods g
+                ON g.gid = pg.gid
+        WHERE p.prc_id = pg.prc_id
     </select>
 
-    <select id="findProcessAndGoodsByName" >
+    <select id="findProcessAndGoodsByName">
         SELECT
-        p.ID,p.PROCESS_NAME,
+            p.prc_id,
+            p.process_name,
 
-        g.ID as g_id,g.goods_name as g_goodsName,g.goods_code as g_goodsCode
+            g.gid         AS g_id,
+            g.sku_name AS g_goodsName,
+            g.sku AS g_goodsCode
         FROM
-        process p LEFT JOIN process_goods pg
-        ON p.id=pg.p_id
-        LEFT JOIN goods g
-        ON g.id=pg.g_id
-        WHERE p.PROCESS_NAME = #{processName}
+            gds_process p LEFT JOIN gds_process_goods pg
+                ON p.prc_id = pg.prc_id
+            LEFT JOIN gds_goods g
+                ON g.gid = pg.gid
+        WHERE p.process_name = #{processName}
     </select>
-
 
 
     <insert id="saveProcessAndGoods">
-        INSERT INTO process_goods
+        INSERT INTO gds_process_goods
         (
-        g_ID, p_ID
-        )VALUES (
-        #{gid},#{pid}
+            gid, prc_id
+        ) VALUES (
+            #{gid}, #{pid}
         )
     </insert>
 
     <delete id="deleteProcessAndGoodsByGID">
-        DELETE FROM process_goods WHERE g_ID=#{gid}
+        DELETE FROM gds_process_goods
+        WHERE gid = #{gid}
     </delete>
 
     <select id="queryAllList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse">
-        SELECT ID, PROCESS_NAME
-        FROM process
+        SELECT
+            prc_id id,
+            process_name
+        FROM gds_process
     </select>
 
-    <select id="queryByProcessIdAndEmployeeId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
+    <select id="queryByProcessIdAndEmployeeId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-          g.ID, g.goods_name goods_name, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
-          gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
-        FROM process p
-        LEFT JOIN process_goods pg ON pg.p_ID = p.ID
-        LEFT JOIN goods g ON g.ID = pg.g_ID
-        LEFT JOIN gds_goods_brand gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN gds_goods_category gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN gds_goods_type gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN gds_goods_price gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN st_store s ON s.ID = gp.STORE_ID
-        LEFT JOIN emp_employee e ON e.STORE_ID = s.ID
-        WHERE e.ID = #{userId}
-        AND p.ID = #{processId}
+            g.gid id,
+            g.sku_name goods_name,
+            g.COVER_IMAGE_URI,
+            g.GOODS_UNIT,
+            g.GOODS_SPECIFICATION,
+            gp.vip_price,
+            gp.RETAIL_PRICE,
+            gb.BRAND_CODE,
+            gc.CATEGORY_CODE,
+            gt.TYPE_CODE
+        FROM gds_process p
+            LEFT JOIN gds_process_goods pg ON pg.prc_id = p.prc_id
+            LEFT JOIN gds_goods g ON g.gid = pg.gid
+            LEFT JOIN gds_goods_brand gb ON gb.brd_id = g.brd_id
+            LEFT JOIN gds_goods_category gc ON gc.cid = g.cid
+            LEFT JOIN gds_goods_type gt ON gt.gtid = g.gtid
+            LEFT JOIN gds_goods_price gp ON gp.gid = g.gid
+            LEFT JOIN st_store s ON s.store_id = gp.store_id
+            LEFT JOIN emp_employee e ON e.store_id = s.store_id
+        WHERE e.emp_id = #{userId}
+              AND p.prc_id = #{processId}
 
-  </select>
+    </select>
 
-    <select id="queryByProcessIdAndCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
+    <select id="queryByProcessIdAndCustomerId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse">
         SELECT
-        g.ID, g.goods_name goods_name, g.COVER_IMAGE_URI, g.GOODS_UNIT, g.GOODS_SPECIFICATION,
-        gp.MEMBER_PRICE, gp.RETAIL_PRICE, gb.BRAND_CODE, gc.CATEGORY_CODE, gt.TYPE_CODE
-        FROM process p
-        LEFT JOIN process_goods pg ON pg.p_ID = p.ID
-        LEFT JOIN goods g ON g.ID = pg.g_ID
-        LEFT JOIN gds_goods_brand gb ON gb.ID = g.TYPE_ID
-        LEFT JOIN gds_goods_category gc ON gc.ID = g.CATEGORY_ID
-        LEFT JOIN gds_goods_type gt ON gt.ID = g.TYPE_ID
-        LEFT JOIN gds_goods_price gp ON gp.GOODS_ID = g.ID
-        LEFT JOIN st_store s ON s.ID = gp.STORE_ID
-        LEFT JOIN cus_customer c ON c.STORE_ID = s.ID
-        WHERE e.ID = #{userId}
-        AND p.ID = #{processId}
+            g.gid id,
+            g.sku_name goods_name,
+            g.COVER_IMAGE_URI,
+            g.GOODS_UNIT,
+            g.GOODS_SPECIFICATION,
+            gp.vip_price,
+            gp.RETAIL_PRICE,
+            gb.BRAND_CODE,
+            gc.CATEGORY_CODE,
+            gt.TYPE_CODE
+        FROM gds_process p
+            LEFT JOIN gds_process_goods pg ON pg.prc_id = p.prc_id
+            LEFT JOIN gds_goods g ON g.gid = pg.gid
+            LEFT JOIN gds_goods_brand gb ON gb.brd_id = g.brd_id
+            LEFT JOIN gds_goods_category gc ON gc.cid = g.cid
+            LEFT JOIN gds_goods_type gt ON gt.gtid = g.gtid
+            LEFT JOIN gds_goods_price gp ON gp.gid = g.gid
+            LEFT JOIN st_store s ON s.store_id = gp.store_id
+            LEFT JOIN cus_customer c ON c.store_id = s.store_id
+        WHERE c.cus_id = #{userId}
+              AND p.prc_id = #{processId}
 
     </select>
 

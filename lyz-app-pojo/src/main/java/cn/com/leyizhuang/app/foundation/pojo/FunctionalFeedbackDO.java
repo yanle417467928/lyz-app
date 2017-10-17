@@ -28,6 +28,6 @@ public class FunctionalFeedbackDO extends BaseDO {
     //用户id
     private Long userId;
     //用户类型
-    private AppIdentityType userType;
+    private AppIdentityType identityType;
 
 }

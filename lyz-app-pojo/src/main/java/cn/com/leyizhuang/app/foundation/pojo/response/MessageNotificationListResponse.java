@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author GenerationRoad
@@ -18,5 +19,5 @@ public class MessageNotificationListResponse {
     //消息标题
     private String title;
     //消息创建时间
-    private LocalDateTime createTime;
+    private Date createTime;
 }

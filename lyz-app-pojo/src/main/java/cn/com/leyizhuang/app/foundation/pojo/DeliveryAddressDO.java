@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class DeliveryAddressDO extends BaseDO {
     private String receiver;
     //收货人号码
     private String receiverPhone;
+    private String deliveryProvince;
     //收货城市
     private String deliveryCity;
     //收货县
@@ -31,9 +33,11 @@ public class DeliveryAddressDO extends BaseDO {
     //会员ID
     private Long userId;
     //身份类型
-    private String identityType;
+    private AppIdentityType identityType;
     //状态
     private Boolean status;
+    //是否默认收货地址
+    private Boolean isDefault;
 
 
 }

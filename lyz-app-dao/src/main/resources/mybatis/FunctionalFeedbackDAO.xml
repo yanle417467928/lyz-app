@@ -4,10 +4,9 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.FunctionalFeedbackDO">
         INSERT INTO functional_feedback
-        (CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-        TYPE, CONTENT, PICTURE_URL, PHONE, STATUS, USER_TYPE, USER_ID)
+        (TYPE, CONTENT, PICTURE_URL, PHONE, STATUS, identity_type, USER_ID)
         VALUES
-        (#{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-        #{type}, #{content}, #{pictureUrl}, #{phone}, #{status}, #{userType}, #{userId})
+            (
+                #{type}, #{content}, #{pictureUrl}, #{phone}, #{status}, #{identityType}, #{userId})
     </insert>
 </mapper>

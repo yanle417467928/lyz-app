@@ -23,6 +23,8 @@ public class DeliveryAddressResponse {
     private String deliveryName;
     //收货人号码
     private String deliveryPhone;
+    //收货省份
+    private String deliveryProvince;
     //收货城市
     private String deliveryCity;
     //收货县
@@ -33,5 +35,7 @@ public class DeliveryAddressResponse {
     private String detailedAddress;
     //小区名
     private String villageName;
+    //是否默认收货地址
+    private Boolean isDefault;
 
 }

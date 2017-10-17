@@ -14,6 +14,6 @@ import java.util.List;
 @Repository
 public interface MessageNotificationDAO {
 
-    List<MessageNotificationListResponse> queryListByUserIdAndUserType(@Param("userId") Long userId, @Param("userType") AppIdentityType userType);
+    List<MessageNotificationListResponse> queryListByUserIdAndUserType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
 }

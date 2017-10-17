@@ -6,7 +6,7 @@
     <select id="queryListByUserIdAndUserType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
         SELECT ID, TITLE, CREATE_TIME
         FROM message_notification
-        WHERE USER_ID = #{userId} AND USER_TYPE = #{userType}
+        WHERE USER_ID = #{userId} AND identity_type = #{identityType}
         ORDER BY CREATE_TIME DESC
     </select>
 
