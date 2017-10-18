@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
+import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
@@ -68,15 +69,22 @@ public class UserHomePageController {
             UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
             if (identityType == 6) {
                 userHomePageResponse = customerService.findCustomerInfoByUserId(userId);
-            }else {
+                String parseLight = AppUserLightStatus.valueOf(userHomePageResponse.getLight()).getValue();
+                userHomePageResponse.setLight(parseLight);
+            }else if (identityType == 2){
                 userHomePageResponse = employeeService.findEmployeeInfoByUserId(userId);
+            }else {
+                AppEmployee appEmployee = employeeService.findById(userId);
+                userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
+                userHomePageResponse.setName(appEmployee.getName());
+                userHomePageResponse.setNumber(appEmployee.getLoginName());
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发生未知异常，获取个人主页失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

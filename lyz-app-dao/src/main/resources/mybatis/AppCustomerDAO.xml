@@ -157,9 +157,8 @@
         SET mobile = #{mobile}
     </update>
 
-    <select id="findEmployeeInfoByUserId" parameterType="java.lang.Long"
+    <select id="findCustomerInfoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
-
         SELECT
           c.pic_url,
           c.name,

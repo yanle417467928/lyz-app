@@ -114,9 +114,12 @@
         SELECT
             e.pic_url,
             e.name,
-            e.login_name number
+            e.login_name number,
+            pd.balance balance
         FROM
             emp_employee e
+        INNER JOIN st_store st on e.store_id = st.store_id
+        INNER JOIN st_pre_deposit pd ON pd.store_id = st.store_id
         WHERE
             e.emp_id = #{userId}
     </select>
