@@ -384,7 +384,7 @@
 
     <select id="searchByCustomerIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
-            g.gid,
+            g.gid      id,
             g.sku_name goods_name,
             g.cover_image_uri,
             g.goods_specification,
@@ -408,7 +408,7 @@
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
-            g.gid,
+            g.gid      id,
             g.sku_name goods_name,
             g.cover_image_uri,
             g.goods_specification,

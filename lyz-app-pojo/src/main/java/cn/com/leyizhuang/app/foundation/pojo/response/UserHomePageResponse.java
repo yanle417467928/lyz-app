@@ -29,5 +29,10 @@ public class UserHomePageResponse implements Serializable {
     private String guideName;
     //所属导购ID
     private String  guideMobile;
-
+    //灯号
+    private String light;
+    //乐币数量
+    private Integer lb;
+    //账户余额
+    private Double balance;
 }

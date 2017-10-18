@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,4 +110,11 @@ public class AppCustomerService implements IAppCustomerService {
         }
     }
 
+    @Override
+    public UserHomePageResponse findCustomerInfoByUserId(Long userId) {
+        if (null != userId){
+            return customerDAO.findCustomerInfoByUserId(userId);
+        }
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,14 @@ public class AppEmployeeService implements IAppEmployeeService {
     public Double findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType && identityType == 0){
             return employeeDAO.findCreditMoneyBalanceByUserId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public UserHomePageResponse findEmployeeInfoByUserId(Long userId) {
+        if (null != userId){
+            return employeeDAO.findEmployeeInfoByUserId(userId);
         }
         return null;
     }

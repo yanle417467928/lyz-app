@@ -108,4 +108,16 @@
         FROM emp_credit_money
         WHERE guide_id = #{userId}
     </select>
+
+    <select id="findEmployeeInfoByUserId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
+        SELECT
+            e.pic_url,
+            e.name,
+            e.login_name number
+        FROM
+            emp_employee e
+        WHERE
+            e.emp_id = #{userId}
+    </select>
 </mapper>

@@ -156,4 +156,23 @@
         UPDATE cus_customer
         SET mobile = #{mobile}
     </update>
+
+    <select id="findEmployeeInfoByUserId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
+
+        SELECT
+          c.pic_url,
+          c.name,
+          c.light,
+          e.name        guideName,
+          e.mobile      guideMobile,
+          pd.balance,
+          lb.quantity   lb
+        FROM cus_customer c
+        INNER JOIN emp_employee e ON e.emp_id = c.sales_consult_id
+        INNER JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
+        INNER JOIN cus_lb lb ON lb.cus_id = c.cus_id
+        WHERE
+          c.cus_id = #{userId}
+    </select>
 </mapper>
