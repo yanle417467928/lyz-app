@@ -42,4 +42,6 @@ public interface IGoodsService {
     void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType);
 
     void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType);
+
+    GoodsDO findGoodsById(Long id);
 }
