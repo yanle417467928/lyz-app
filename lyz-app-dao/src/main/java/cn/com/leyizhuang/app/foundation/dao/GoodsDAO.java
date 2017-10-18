@@ -71,4 +71,6 @@ public interface GoodsDAO {
 
     GoodsDetailResponse findGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
 
+    GoodsDO findGoodsById(Long id);
+
 }

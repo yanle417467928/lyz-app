@@ -189,6 +189,14 @@ public class GoodsService implements IGoodsService {
         }
     }
 
+    @Override
+    public GoodsDO findGoodsById(Long id) {
+        if (null != id) {
+            return goodsDAO.findGoodsById(id);
+        }
+        return null;
+    }
+
     /**
      * @title 获取商品详情
      * @descripe

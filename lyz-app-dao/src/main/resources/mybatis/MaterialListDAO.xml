@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaterialListDAO">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+      INSERT INTO material_list
+      (user_id, identity_type, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
+      VALUES
+      (#{userId}, #{identityType}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri}, #{goodsUnit}, #{qty});
+    </insert>
+
+    <insert id="batchSave" parameterType="java.util.List">
+      INSERT INTO material_list
+      (user_id, identity_type, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
+      VALUES
+      <foreach collection="list" item="materialListDO" separator=",">
+          (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.sku}, #{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri}, #{materialListDO.goodsUnit}, #{materialListDO.qty})
+      </foreach>
+    </insert>
+
+    <update id="modifyQty">
+        UPDATE material_list
+        SET qty = #{qty}
+        WHERE id = #{id};
+    </update>
+
+    <delete id="batchDelete" parameterType="java.util.List">
+        DELETE FROM material_list WHERE id IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
