@@ -7,17 +7,15 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * 个人主页(我的)页面信息响应实体
  * Created with IntelliJ IDEA.
  * Created by Jerry.Ren
- * Date: 2017/9/28.
- * Time: 10:29.
+ * Date: 2017/10/19.
+ * Time: 15:44.
  */
-
-@Getter
 @Setter
+@Getter
 @ToString
-public class UserHomePageResponse implements Serializable {
+public class EmployeeHomePageResponse implements Serializable {
 
     //头像地址
     private String picUrl;
@@ -25,14 +23,6 @@ public class UserHomePageResponse implements Serializable {
     private String name;
     //员工编码
     private String number;
-    //所属导购
-    private String guideName;
-    //所属导购ID
-    private String  guideMobile;
-    //灯号
-    private String light;
-    //乐币数量
-    private Integer lb;
     //账户余额
     private Double balance;
     //配送数量（配送员字段）

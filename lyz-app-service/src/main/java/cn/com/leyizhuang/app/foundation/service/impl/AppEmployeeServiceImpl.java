@@ -4,12 +4,15 @@ import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -82,6 +85,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void modifyEmployeeInformation(UserSetInformationReq userInformation) {
         if (null != userInformation){
             employeeDAO.update(transform(userInformation));
@@ -97,9 +101,9 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public UserHomePageResponse findEmployeeInfoByUserId(Long userId) {
-        if (null != userId){
-            return employeeDAO.findEmployeeInfoByUserId(userId);
+    public EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType){
+            return employeeDAO.findEmployeeInfoByUserIdAndIdentityType(userId,identityType);
         }
         return null;
     }
@@ -107,7 +111,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public AppEmployee transform(UserSetInformationReq userInformation){
         AppEmployee appEmployee = new AppEmployee();
         appEmployee.setEmpId(userInformation.getUserId());
-        appEmployee.setBirthday(userInformation.getBirthday());
+        try {
+            appEmployee.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userInformation.getBirthday()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
         appEmployee.setMobile(userInformation.getMobile());
         appEmployee.setPicUrl(userInformation.getPicUrl());
         appEmployee.setName(userInformation.getName());

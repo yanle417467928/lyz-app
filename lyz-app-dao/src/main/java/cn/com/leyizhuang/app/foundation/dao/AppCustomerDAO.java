@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -37,10 +37,16 @@ public interface AppCustomerDAO {
 
     List<AppCustomer> findListBySalesConsultId(Long userId);
 
-    List<AppCustomer> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,
-                                                                 @Param("keywords") String keywords);
+    List<AppCustomer> searchBySalesConsultIdAndKeywords(
+            @Param("userId") Long userId, @Param("keywords") String keywords);
 
-    UserHomePageResponse findCustomerInfoByUserId(Long userId);
+    CustomerHomePageResponse findCustomerInfoByUserId(Long userId);
+
+    Double findPreDepositBalanceByUserId(Long userId);
+
+    Integer findLeBiQuantityByUserId(Long userId);
+
+    void updateLeBiQuantityByUserId(Long userId);
 
     Boolean existsByCustomerId(Long userId);
 }

@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -32,5 +33,6 @@ public interface AppEmployeeDAO {
 
     Double findCreditMoneyBalanceByUserId(Long userId);
 
-    UserHomePageResponse findEmployeeInfoByUserId(Long userId);
+    EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
+            @Param("userId") Long userId,@Param("type") Integer identityType);
 }

@@ -6,7 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 
 import java.util.List;
 
@@ -36,9 +36,15 @@ public interface AppCustomerService {
 
     List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
 
-    UserHomePageResponse findCustomerInfoByUserId(Long userId);
+    CustomerHomePageResponse findCustomerInfoByUserId(Long userId);
 
     void modifyCustomerInformation(UserSetInformationReq userInformation);
 
     Boolean existsByCustomerId(Long userId);
+
+    Double findPreDepositBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 }

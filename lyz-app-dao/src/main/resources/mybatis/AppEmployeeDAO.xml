@@ -103,17 +103,29 @@
         WHERE guide_id = #{userId}
     </select>
 
-    <select id="findEmployeeInfoByUserId" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
+    <select id="findEmployeeInfoByUserIdAndIdentityType" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse">
         SELECT
             e.pic_url,
-            e.name,
             e.login_name number,
-            pd.balance balance
+        <if test="type == 0">
+            ecm.balance,
+        </if>
+        <if test="type == 2">
+            pd.balance,
+        </if>
+            e.name
         FROM
             emp_employee e
-        INNER JOIN st_store st on e.store_id = st.store_id
-        INNER JOIN st_pre_deposit pd ON pd.store_id = st.store_id
+        <choose>
+            <when test="type == 0">
+                INNER JOIN emp_credit_money ecm ON ecm.guide_id = e.emp_id
+            </when>
+            <when test="type == 2">
+                INNER JOIN st_store st on e.store_id = st.store_id
+                INNER JOIN st_pre_deposit pd ON pd.store_id = st.store_id
+            </when>
+        </choose>
         WHERE
             e.emp_id = #{userId}
     </select>
