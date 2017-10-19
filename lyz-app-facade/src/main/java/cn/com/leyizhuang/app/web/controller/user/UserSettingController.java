@@ -109,33 +109,40 @@ public class UserSettingController {
      * @return
      */
     @PostMapping(value = "/set/information", produces = "application/json;charset=UTF-8")
-    public ResultDTO setInformationOfMobile(UserSetInformationReq userInformation) {
+    public ResultDTO personalInformationSet(UserSetInformationReq userInformation) {
 
-        logger.info("setInformationOfMobile CALLED,用户修改手机号码，入参 userInformation {}", userInformation);
+        logger.info("personalInformationSet CALLED,用户修改个人信息，入参 userInformation {}", userInformation);
 
         ResultDTO resultDTO;
         if (null == userInformation.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不能为空", null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            logger.info("personalInformationSet OUT,用户修改个人信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == userInformation.getIdentityType()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            logger.info("personalInformationSet OUT,用户修改个人信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (userInformation.getIdentityType() == 6) {
+        try {
+            if (userInformation.getIdentityType() == 6) {
 
-            customerService.modifyCustomerInformation(userInformation);
+                customerService.modifyCustomerInformation(userInformation);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            employeeService.modifyEmployeeInformation(userInformation);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
+            logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,用户修改个人信息失败!", null);
+            logger.warn("personalInformationSet EXCEPTION,用户修改个人信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
             return resultDTO;
         }
-
-        employeeService.modifyEmployeeInformation(userInformation);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
     }
 
     /**

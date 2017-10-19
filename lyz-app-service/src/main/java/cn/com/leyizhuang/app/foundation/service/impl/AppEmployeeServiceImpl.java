@@ -106,6 +106,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     public AppEmployee transform(UserSetInformationReq userInformation){
         AppEmployee appEmployee = new AppEmployee();
+        appEmployee.setEmpId(userInformation.getUserId());
         appEmployee.setBirthday(userInformation.getBirthday());
         appEmployee.setMobile(userInformation.getMobile());
         appEmployee.setPicUrl(userInformation.getPicUrl());

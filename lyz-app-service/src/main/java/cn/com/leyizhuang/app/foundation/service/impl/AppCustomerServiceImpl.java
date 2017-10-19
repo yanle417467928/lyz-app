@@ -119,6 +119,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     public AppCustomer transform(UserSetInformationReq userInformation){
         AppCustomer appCustomer = new AppCustomer();
+        appCustomer.setCusId(userInformation.getUserId());
         appCustomer.setPicUrl(userInformation.getPicUrl());
         appCustomer.setBirthday(userInformation.getBirthday());
         appCustomer.setMobile(userInformation.getMobile());
