@@ -170,4 +170,8 @@
         WHERE
             c.cus_id = #{userId}
     </select>
+
+    <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
+        SELECT is_cash_on_delivery FROM cus_customer WHERE cus_id = #{userId}
+    </select>
 </mapper>
