@@ -2,13 +2,11 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -18,8 +16,8 @@ import java.util.List;
  * Created on 2017-07-20 10:42
  **/
 @Service
-public class AppStoreService extends BaseServiceImpl<AppStore> implements IAppStoreService {
-    public AppStoreService(BaseDAO<AppStore> baseDAO) {
+public class AppStoreServiceImpl extends BaseServiceImpl<AppStore> implements cn.com.leyizhuang.app.foundation.service.AppStoreService {
+    public AppStoreServiceImpl(BaseDAO<AppStore> baseDAO) {
         super(baseDAO);
     }
 

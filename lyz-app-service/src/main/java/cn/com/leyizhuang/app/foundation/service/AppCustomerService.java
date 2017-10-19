@@ -16,7 +16,7 @@ import java.util.List;
  * @author Richard
  * Created on 2017-09-19 11:18
  **/
-public interface IAppCustomerService {
+public interface AppCustomerService {
 
     AppCustomer save(AppCustomer appUser);
 

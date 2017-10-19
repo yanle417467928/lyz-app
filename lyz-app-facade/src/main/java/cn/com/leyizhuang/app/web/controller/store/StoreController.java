@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.store;
 
-import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.web.controller.user.UserHomePageController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -25,7 +25,7 @@ public class StoreController {
     private static final Logger logger = LoggerFactory.getLogger(UserHomePageController.class);
 
     @Resource
-    private IAppStoreService appStoreService;
+    private AppStoreService appStoreService;
 
     /**
      * 获取门店赞助金余额

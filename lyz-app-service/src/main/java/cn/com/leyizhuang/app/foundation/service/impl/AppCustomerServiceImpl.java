@@ -9,7 +9,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,7 @@ import java.util.List;
  * Created on 2017-09-19 11:23
  **/
 @Service
-public class AppCustomerService implements IAppCustomerService {
+public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.service.AppCustomerService {
 
     @Resource
     private AppCustomerDAO customerDAO;

@@ -9,7 +9,7 @@ import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
  * @author Richard
  * Created on 2017-09-21 14:25
  **/
-public interface ISmsAccountService {
+public interface SmsAccountService {
 
     SmsAccount findOne();
 }

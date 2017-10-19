@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ import java.util.List;
  * Created on 2017-09-19 11:23
  **/
 @Service
-public class AppEmployeeService implements IAppEmployeeService {
+public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.service.AppEmployeeService {
 
     @Autowired
     private AppEmployeeDAO employeeDAO;

@@ -5,7 +5,7 @@ import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -32,7 +32,7 @@ public class EmployeeController {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @Resource
-    private IAppEmployeeService appEmployeeService;
+    private AppEmployeeService appEmployeeService;
 
     /**
      * App 员工登录接口

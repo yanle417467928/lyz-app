@@ -14,7 +14,7 @@ import java.util.List;
  * @author Richard
  * Created on 2017-09-19 11:18
  **/
-public interface IAppEmployeeService {
+public interface AppEmployeeService {
 
     void save(AppEmployee appEmployee);
 

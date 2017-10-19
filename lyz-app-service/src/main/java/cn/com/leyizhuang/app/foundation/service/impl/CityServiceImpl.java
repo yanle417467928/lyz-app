@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.City;
-import cn.com.leyizhuang.app.foundation.service.ICityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ import java.util.List;
  * Created on 2017-09-21 14:25
  **/
 @Service
-public class CityService implements ICityService{
+public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
 
     @Autowired
     private CityDAO cityDAO;

@@ -2,13 +2,12 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
-import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -35,10 +34,10 @@ public class UserHomePageController {
     private static final Logger logger = LoggerFactory.getLogger(UserHomePageController.class);
 
     @Resource
-    private IAppCustomerService customerService;
+    private AppCustomerService customerService;
 
     @Resource
-    private IAppEmployeeService employeeService;
+    private AppEmployeeService employeeService;
 
     /**
      * 个人主页的信息

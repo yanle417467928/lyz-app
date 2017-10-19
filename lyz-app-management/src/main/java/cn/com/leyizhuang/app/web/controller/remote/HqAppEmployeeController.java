@@ -5,8 +5,8 @@ import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.City;
-import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.ICityService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppEmployeeDTO;
@@ -35,10 +35,10 @@ public class HqAppEmployeeController {
     private static final Logger logger = LoggerFactory.getLogger(HqAppEmployeeController.class);
 
     @Resource
-    private IAppEmployeeService employeeService;
+    private AppEmployeeService employeeService;
 
     @Resource
-    private ICityService cityService;
+    private CityService cityService;
 
 
     @PostMapping(value = "sync")

@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class GoodsViewController extends BaseController{
     private final Logger logger = LoggerFactory.getLogger(GoodsViewController.class);
 
     @Autowired
-    private IGoodsService goodsService;
+    private GoodsService goodsService;
 
     /**
      * @title 去商品信息列表页面

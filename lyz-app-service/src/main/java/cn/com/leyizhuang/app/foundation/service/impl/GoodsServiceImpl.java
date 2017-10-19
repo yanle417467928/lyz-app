@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,11 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class GoodsService implements IGoodsService {
+public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.service.GoodsService {
 
     private GoodsDAO goodsDAO;
 
-    public GoodsService(GoodsDAO goodsDAO) {
+    public GoodsServiceImpl(GoodsDAO goodsDAO) {
         this.goodsDAO = goodsDAO;
     }
 

@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
@@ -36,16 +35,16 @@ public class UserSettingController {
     private static final Logger logger = LoggerFactory.getLogger(UserSettingController.class);
 
     @Resource
-    private IAppCustomerService customerService;
+    private AppCustomerService customerService;
 
     @Resource
-    private IAppEmployeeService employeeService;
+    private AppEmployeeService employeeService;
 
     @Resource
-    private IAppStoreService storeService;
+    private AppStoreService storeService;
 
     @Resource
-    private ICityService cityService;
+    private CityService cityService;
 
     @Resource
     private DeliveryAddressService deliveryAddressServiceImpl;

@@ -1,9 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class GoodsController {
     private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
 
     @Resource
-    private IGoodsService goodsService;
+    private GoodsService goodsService;
 
     /**
      * 获取商品列表

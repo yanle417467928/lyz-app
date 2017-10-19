@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.city;
 
 import cn.com.leyizhuang.app.foundation.pojo.City;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
-import cn.com.leyizhuang.app.foundation.service.impl.CityService;
+import cn.com.leyizhuang.app.foundation.service.impl.CityServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class CityController {
     private static final Logger logger = LoggerFactory.getLogger(CityController.class);
 
     @Resource
-    private CityService cityService;
+    private CityServiceImpl cityService;
 
 
     /**

@@ -10,7 +10,7 @@ import java.util.List;
  * @author Richard
  * Created on 2017-09-21 14:25
  **/
-public interface ICityService {
+public interface CityService {
 
     List<City> findAll();
 

@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.qrcode;
 
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.QrCodeResponse;
-import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountService;
+import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -30,7 +30,7 @@ public class QRCodeController {
     private static final Logger logger = LoggerFactory.getLogger(QRCodeController.class);
 
     @Resource
-    private SmsAccountService smsAccountService;
+    private SmsAccountServiceImpl smsAccountService;
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     public ResultDTO<QrCodeResponse> getQrCode(String mobile) {

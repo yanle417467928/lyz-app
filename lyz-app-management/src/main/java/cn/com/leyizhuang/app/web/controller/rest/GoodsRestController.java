@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -31,7 +31,7 @@ public class GoodsRestController extends BaseRestController {
     private final Logger logger = LoggerFactory.getLogger(GoodsRestController.class);
 
     @Autowired
-    private IGoodsService goodsService;
+    private GoodsService goodsService;
 
     /**
      * @title 商品信息分页查询

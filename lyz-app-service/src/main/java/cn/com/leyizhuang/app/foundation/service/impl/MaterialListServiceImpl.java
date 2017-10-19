@@ -3,7 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MaterialListServiceImpl implements MaterialListService {
 
     @Autowired
-    private IGoodsService goodsService;
+    private GoodsService goodsService;
 
     private MaterialListDAO materialListDAO;
 

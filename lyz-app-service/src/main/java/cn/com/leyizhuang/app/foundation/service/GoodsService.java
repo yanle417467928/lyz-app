@@ -11,7 +11,7 @@ import java.util.List;
  * @author GenerationRoad
  * @date 2017/9/6
  */
-public interface IGoodsService {
+public interface GoodsService {
 
     PageInfo<GoodsDO> queryPage(Integer page, Integer size);
 

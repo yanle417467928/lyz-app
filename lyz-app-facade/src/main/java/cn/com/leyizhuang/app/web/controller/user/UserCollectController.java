@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
-import cn.com.leyizhuang.app.foundation.service.IGoodsService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class UserCollectController {
     private static final Logger logger = LoggerFactory.getLogger(UserCollectController.class);
 
     @Resource
-    private IGoodsService goodsService;
+    private GoodsService goodsService;
 
     /**
      * 获取收藏商品列表

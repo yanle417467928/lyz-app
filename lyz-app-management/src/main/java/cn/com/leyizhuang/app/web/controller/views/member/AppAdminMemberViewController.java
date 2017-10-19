@@ -8,7 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
-import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,9 +41,9 @@ public class AppAdminMemberViewController {
         this.memberService = memberService;
     }
 
-    private IAppStoreService storeService;
+    private AppStoreService storeService;
     @Autowired
-    public void setStoreService(IAppStoreService storeService) {
+    public void setStoreService(AppStoreService storeService) {
         this.storeService = storeService;
     }
 

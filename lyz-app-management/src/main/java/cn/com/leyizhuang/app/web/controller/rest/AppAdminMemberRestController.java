@@ -7,7 +7,7 @@ import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminSalesConsultService;
-import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
@@ -58,10 +58,10 @@ public class AppAdminMemberRestController extends BaseRestController{
         this.salesConsultService = salesConsultService;
     }
 
-    private IAppStoreService storeService;
+    private AppStoreService storeService;
 
     @Autowired
-    public void setStoreService(IAppStoreService storeService) {
+    public void setStoreService(AppStoreService storeService) {
         this.storeService = storeService;
     }
 

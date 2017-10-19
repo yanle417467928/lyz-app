@@ -8,9 +8,9 @@ import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.IAppStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -35,13 +35,13 @@ public class CustomerController {
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @Resource
-    private IAppCustomerService customerService;
+    private AppCustomerService customerService;
 
     @Resource
-    private IAppEmployeeService employeeService;
+    private AppEmployeeService employeeService;
 
     @Resource
-    private IAppStoreService storeService;
+    private AppStoreService storeService;
 
     /**
      * App 顾客登录
