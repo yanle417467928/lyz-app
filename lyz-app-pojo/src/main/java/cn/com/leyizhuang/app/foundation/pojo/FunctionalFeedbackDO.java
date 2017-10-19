@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 /**
  * @author GenerationRoad
  * @date 2017/10/10
@@ -29,5 +31,6 @@ public class FunctionalFeedbackDO extends BaseDO {
     private Long userId;
     //用户类型
     private AppIdentityType identityType;
-
+    //创建时间
+    private LocalDateTime createTime;
 }

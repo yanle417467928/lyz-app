@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -413,6 +414,7 @@ public class UserSettingController {
             functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
             functionalFeedbackDO.setUserId(userId);
             functionalFeedbackDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
+            functionalFeedbackDO.setCreateTime(LocalDateTime.now());
             this.functionalFeedbackServiceImpl.save(functionalFeedbackDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addFunctionalFeedback OUT,功能反馈成功，出参 resultDTO:{}", resultDTO);
