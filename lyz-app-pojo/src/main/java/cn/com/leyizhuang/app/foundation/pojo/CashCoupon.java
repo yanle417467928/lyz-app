@@ -45,4 +45,7 @@ public class CashCoupon implements Serializable {
     //剩余数量
     private Integer remainingQuantity;
 
+    //优惠券标题
+    private String title;
+
 }

@@ -27,4 +27,6 @@ public class CashCouponResponse implements Serializable{
     private Date effectiveEndTime;
 
     private String description;
+
+    private String title;
 }

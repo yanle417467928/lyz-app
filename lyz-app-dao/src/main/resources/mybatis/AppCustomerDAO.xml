@@ -92,7 +92,8 @@
             c.denomination,
             c.effective_start_time,
             c.effective_end_time,
-            c.description
+            c.description,
+            c.title
         FROM
             cus_customer_cash_coupon cc
             INNER JOIN cp_cash_coupon c ON cc.ccid = c.ccid
@@ -106,10 +107,10 @@
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
         SELECT
-            g.sku_name goods_name,
-            g.sku goods_code,
+            g.sku_name      goods_name,
+            g.sku           goods_code,
             g.goods_specification,
-            g.goods_unit goods_unit,
+            g.goods_unit    goods_unit,
             sum(c.quantity) left_number,
             g.cover_image_uri
         FROM
@@ -127,11 +128,11 @@
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"
             resultType="AppCustomer">
         SELECT
-        c.name,
-        c.mobile,
-        c.pic_url,
-        c.light,
-        c.create_time
+            c.name,
+            c.mobile,
+            c.pic_url,
+            c.light,
+            c.create_time
         FROM cus_customer c
         WHERE sales_consult_id = #{userId}
     </select>
@@ -139,34 +140,34 @@
     <select id="searchBySalesConsultIdAndKeywords" resultType="AppCustomer">
 
         SELECT
-        c.name,
-        c.mobile,
-        c.pic_url,
-        c.light,
-        c.create_time
+            c.name,
+            c.mobile,
+            c.pic_url,
+            c.light,
+            c.create_time
         FROM cus_customer c
         WHERE c.sales_consult_id = #{userId}
-        AND (
-          c.name LIKE concat('%',#{keywords},'%')
-          OR c.mobile LIKE concat('%',#{keywords},'%')
-        )
+              AND (
+                  c.name LIKE concat('%', #{keywords}, '%')
+                  OR c.mobile LIKE concat('%', #{keywords}, '%')
+              )
     </select>
 
     <select id="findCustomerInfoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
         SELECT
-          c.pic_url,
-          c.name,
-          c.light,
-          e.name        guideName,
-          e.mobile      guideMobile,
-          pd.balance,
-          lb.quantity   lb
+            c.pic_url,
+            c.name,
+            c.light,
+            e.name      guideName,
+            e.mobile    guideMobile,
+            pd.balance,
+            lb.quantity lb
         FROM cus_customer c
-        INNER JOIN emp_employee e ON e.emp_id = c.sales_consult_id
-        INNER JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
-        INNER JOIN cus_lb lb ON lb.cus_id = c.cus_id
+            INNER JOIN emp_employee e ON e.emp_id = c.sales_consult_id
+            INNER JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
+            INNER JOIN cus_lb lb ON lb.cus_id = c.cus_id
         WHERE
-          c.cus_id = #{userId}
+            c.cus_id = #{userId}
     </select>
 </mapper>
