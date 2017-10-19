@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
+import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -101,6 +102,41 @@ public class UserSettingController {
         logger.info("personalInformationGet OUT,获取个人信息成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
 
+    }
+
+    /**
+     * 用户修改个人信息
+     * @param userInformation 修改用户传输对象
+     * @return
+     */
+    @PostMapping(value = "/set/information", produces = "application/json;charset=UTF-8")
+    public ResultDTO setInformationOfMobile(UserSetInformationReq userInformation) {
+
+        logger.info("setInformationOfMobile CALLED,用户修改手机号码，入参 userInformation {}", userInformation);
+
+        ResultDTO resultDTO;
+        if (null == userInformation.getUserId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不能为空", null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == userInformation.getIdentityType()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (userInformation.getIdentityType() == 6) {
+
+            customerService.modifyCustomerInformation(userInformation);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        employeeService.modifyEmployeeInformation(userInformation);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
     }
 
     /**
@@ -202,7 +238,7 @@ public class UserSettingController {
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客新增收货地址失败!", null);
             logger.warn("addDeliveryAddress EXCEPTION,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
@@ -282,7 +318,7 @@ public class UserSettingController {
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客编辑收货地址失败!", null);
             logger.warn("modifyDeliveryAddress EXCEPTION,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
@@ -319,49 +355,6 @@ public class UserSettingController {
     }
 
     /**
-     * 用户修改手机号码
-     *
-     * @param userId
-     * @param identityType
-     * @param mobile
-     * @return
-     */
-    @PostMapping(value = "/set/information/mobile", produces = "application/json;charset=UTF-8")
-    public ResultDTO setInformationOfMobile(Long userId, Integer identityType, String mobile) {
-
-        logger.info("setInformationOfMobile CALLED,用户修改手机号码，入参 userId {},mobile {},identityType{}", userId, mobile, identityType);
-
-        ResultDTO resultDTO;
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(mobile)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户电话不能为空", null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (identityType == 6) {
-
-            customerService.modifyMobileByCustomerId(userId, mobile);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-
-        employeeService.modifyMobileByEmployeeId(userId, mobile);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        logger.info("setInformationOfMobile OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
-    }
-
-    /**
      * @title  功能反馈
      * @descripe 功能反馈
      * @param userId
@@ -370,7 +363,7 @@ public class UserSettingController {
      * @author GenerationRoad
      * @date 2017/10/10
      */
-    @PostMapping(value = "/functionalFeedback/add", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/feedback/add", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam("myfiles") MultipartFile[] files,
                                                    String type, String content, String phone) {
         logger.info("addFunctionalFeedback CALLED,功能反馈，入参 userId:{} identityType:{} files:{}," +
@@ -420,7 +413,7 @@ public class UserSettingController {
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,功能反馈失败!", null);
             logger.warn("addFunctionalFeedback EXCEPTION,功能反馈失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;

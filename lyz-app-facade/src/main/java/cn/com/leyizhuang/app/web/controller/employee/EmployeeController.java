@@ -162,7 +162,7 @@ public class EmployeeController {
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店信用金失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取导购信用金余额失败", null);
             logger.warn("getGuideCreditMoneyBalance EXCEPTION,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
+import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
@@ -47,7 +48,7 @@ public class UserHomePageController {
      * @return
      */
     @PostMapping(value = "/homepage", produces = "application/json;charset=UTF-8")
-    public ResultDTO personalHomepage(Long userId, Integer identityType) {
+    public ResultDTO getPersonalHomepage(Long userId, Integer identityType) {
 
         logger.info("personalHomepage CALLED,获取个人主页，入参 userId {},identityType{}", userId, identityType);
 
@@ -64,40 +65,30 @@ public class UserHomePageController {
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType == 6) {
-            AppCustomer appCustomer = customerService.findById(userId);
-            if (appCustomer == null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-                logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+        try{
             UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
-            userHomePageResponse.setName(appCustomer.getNickName());
-            userHomePageResponse.setPicUrl(appCustomer.getPicUrl());
-            AppEmployee guide = employeeService.findByUserId(userId);
-            if (guide != null) {
-                userHomePageResponse.setGuideName(guide.getName());
-                userHomePageResponse.setGuideMobile(guide.getMobile());
+            if (identityType == 6) {
+                userHomePageResponse = customerService.findCustomerInfoByUserId(userId);
+                String parseLight = AppUserLightStatus.valueOf(userHomePageResponse.getLight()).getValue();
+                userHomePageResponse.setLight(parseLight);
+            }else if (identityType == 2){
+                userHomePageResponse = employeeService.findEmployeeInfoByUserId(userId);
+            }else {
+                AppEmployee appEmployee = employeeService.findById(userId);
+                userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
+                userHomePageResponse.setName(appEmployee.getName());
+                userHomePageResponse.setNumber(appEmployee.getLoginName());
+                // TODO 配送员还需要查询配送订单数量
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }
-
-        AppEmployee appEmployee = employeeService.findById(userId);
-
-        if (appEmployee == null) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
-            logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);
+            logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
-        userHomePageResponse.setName(appEmployee.getName());
-        userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
-        userHomePageResponse.setNumber(appEmployee.getLoginName());
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
-        logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
     }
 
     /**

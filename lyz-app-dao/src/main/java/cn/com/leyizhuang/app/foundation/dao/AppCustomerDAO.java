@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -39,5 +40,5 @@ public interface AppCustomerDAO {
     List<AppCustomer> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,
                                                                  @Param("keywords") String keywords);
 
-    void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
+    UserHomePageResponse findCustomerInfoByUserId(Long userId);
 }

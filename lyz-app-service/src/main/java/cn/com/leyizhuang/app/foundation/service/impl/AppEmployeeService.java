@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,10 +83,9 @@ public class AppEmployeeService implements IAppEmployeeService {
     }
 
     @Override
-    @Transactional
-    public void modifyMobileByEmployeeId(Long userId, String mobile) {
-        if (null != userId && StringUtils.isNotBlank(mobile)){
-            employeeDAO.modifyMobileById(userId,mobile);
+    public void modifyEmployeeInformation(UserSetInformationReq userInformation) {
+        if (null != userInformation){
+            employeeDAO.update(transform(userInformation));
         }
     }
 
@@ -94,5 +95,23 @@ public class AppEmployeeService implements IAppEmployeeService {
             return employeeDAO.findCreditMoneyBalanceByUserId(userId);
         }
         return null;
+    }
+
+    @Override
+    public UserHomePageResponse findEmployeeInfoByUserId(Long userId) {
+        if (null != userId){
+            return employeeDAO.findEmployeeInfoByUserId(userId);
+        }
+        return null;
+    }
+
+    public AppEmployee transform(UserSetInformationReq userInformation){
+        AppEmployee appEmployee = new AppEmployee();
+        appEmployee.setBirthday(userInformation.getBirthday());
+        appEmployee.setMobile(userInformation.getMobile());
+        appEmployee.setPicUrl(userInformation.getPicUrl());
+        appEmployee.setName(userInformation.getName());
+        appEmployee.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        return appEmployee;
     }
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +30,7 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
-    void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
-
     Double findCreditMoneyBalanceByUserId(Long userId);
+
+    UserHomePageResponse findEmployeeInfoByUserId(Long userId);
 }

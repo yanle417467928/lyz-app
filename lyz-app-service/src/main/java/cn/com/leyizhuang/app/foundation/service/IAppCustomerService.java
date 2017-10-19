@@ -2,9 +2,11 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 
 import java.util.List;
 
@@ -34,5 +36,7 @@ public interface IAppCustomerService {
 
     List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
 
-    void modifyMobileByCustomerId(Long userId, String mobile);
+    UserHomePageResponse findCustomerInfoByUserId(Long userId);
+
+    void modifyCustomerInformation(UserSetInformationReq userInformation);
 }
