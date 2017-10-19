@@ -152,11 +152,6 @@
         )
     </select>
 
-    <update id="modifyMobileById">
-        UPDATE cus_customer
-        SET mobile = #{mobile}
-    </update>
-
     <select id="findCustomerInfoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse">
         SELECT

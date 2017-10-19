@@ -30,8 +30,6 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
-    void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
-
     Double findCreditMoneyBalanceByUserId(Long userId);
 
     UserHomePageResponse findEmployeeInfoByUserId(Long userId);

@@ -40,7 +40,5 @@ public interface AppCustomerDAO {
     List<AppCustomer> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,
                                                                  @Param("keywords") String keywords);
 
-    void modifyMobileById(@Param("id") Long userId,@Param("mobile") String mobile);
-
     UserHomePageResponse findCustomerInfoByUserId(Long userId);
 }

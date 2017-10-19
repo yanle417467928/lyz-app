@@ -96,12 +96,6 @@
         AND e.manager_id = #{userId}
     </select>
 
-    <update id="modifyMobileById">
-        UPDATE emp_employee
-        SET mobile = #{mobile}
-        WHERE emp_id = #{id}
-    </update>
-
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
         SELECT
         balance

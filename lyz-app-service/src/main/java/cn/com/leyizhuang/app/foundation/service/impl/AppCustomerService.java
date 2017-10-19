@@ -1,14 +1,15 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.IAppCustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,10 +104,9 @@ public class AppCustomerService implements IAppCustomerService {
     }
 
     @Override
-    @Transactional
-    public void modifyMobileByCustomerId(Long userId, String mobile) {
-        if (null != userId && StringUtils.isNotBlank(mobile)){
-            customerDAO.modifyMobileById(userId,mobile);
+    public void modifyCustomerInformation(UserSetInformationReq userInformation) {
+        if (null != userInformation){
+            customerDAO.update(transform(userInformation));
         }
     }
 
@@ -116,5 +116,15 @@ public class AppCustomerService implements IAppCustomerService {
             return customerDAO.findCustomerInfoByUserId(userId);
         }
         return null;
+    }
+
+    public AppCustomer transform(UserSetInformationReq userInformation){
+        AppCustomer appCustomer = new AppCustomer();
+        appCustomer.setPicUrl(userInformation.getPicUrl());
+        appCustomer.setBirthday(userInformation.getBirthday());
+        appCustomer.setMobile(userInformation.getMobile());
+        appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        appCustomer.setName(userInformation.getName());
+        return appCustomer;
     }
 }

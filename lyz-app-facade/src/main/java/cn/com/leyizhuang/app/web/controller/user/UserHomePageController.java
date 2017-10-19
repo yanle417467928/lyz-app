@@ -78,6 +78,7 @@ public class UserHomePageController {
                 userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
                 userHomePageResponse.setName(appEmployee.getName());
                 userHomePageResponse.setNumber(appEmployee.getLoginName());
+                // TODO 配送员还需要查询配送订单数量
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
             logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);

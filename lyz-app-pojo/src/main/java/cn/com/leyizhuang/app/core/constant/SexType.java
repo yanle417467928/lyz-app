@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * @author CrazyApeDX
  *         Created on 2017/3/24.
@@ -16,5 +18,13 @@ public enum SexType {
         return value;
     }
 
-
+    public static SexType getSexTypeByValue(String value){
+        for (SexType type:
+             SexType.values()) {
+            if (Objects.equals(value, type.getValue())){
+                return type;
+            }
+        }
+        return null;
+    }
 }

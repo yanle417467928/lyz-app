@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
 
@@ -29,9 +30,9 @@ public interface IAppEmployeeService {
 
     List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
 
-    void modifyMobileByEmployeeId(Long userId, String mobile);
-
     Double findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
 
     UserHomePageResponse findEmployeeInfoByUserId(Long userId);
+
+    void modifyEmployeeInformation(UserSetInformationReq userInformation);
 }

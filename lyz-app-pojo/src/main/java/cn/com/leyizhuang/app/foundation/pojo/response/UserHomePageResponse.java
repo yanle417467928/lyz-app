@@ -35,4 +35,6 @@ public class UserHomePageResponse implements Serializable {
     private Integer lb;
     //账户余额
     private Double balance;
+    //配送数量（配送员字段）
+    private Integer sendQty;
 }
