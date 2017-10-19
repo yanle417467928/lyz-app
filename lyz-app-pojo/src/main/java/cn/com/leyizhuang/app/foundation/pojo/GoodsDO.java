@@ -47,13 +47,13 @@ public class GoodsDO{
     private Long brdId;
 
     //品牌名称
-    private Long brdName;
+    private String brdName;
 
     //类型id
     private Long gtid;
 
     //类型名称
-    private Long typeName;
+    private String typeName;
 
     //是否首页推荐
     private Boolean isRecommendIndex;

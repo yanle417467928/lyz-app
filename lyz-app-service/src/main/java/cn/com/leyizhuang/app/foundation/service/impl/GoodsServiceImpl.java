@@ -230,7 +230,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         goodsDO.setSkuName(goodsDTO.getGoodsName());
         goodsDO.setSku(goodsDTO.getGoodsCode());
         goodsDO.setBrdId(goodsDTO.getBrandId());
-        goodsDO.setBrdName(goodsDTO.getCategoryId());
+        goodsDO.setBrdName(goodsDTO.getBrandTitle());
         goodsDO.setCoverImageUri(goodsDTO.getCoverImageUri());
         String onSaleTime = goodsDTO.getOnSaleTime();
         return goodsDO;
