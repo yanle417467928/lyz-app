@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO">
+
+    <select id="findProductCouponByCustomerIdAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
+        SELECT
+            g.sku_name,
+            g.goods_specification,
+            g.goods_unit goods_unit,
+            c.quantity left_number,
+            g.cover_image_uri
+        FROM
+            cus_customer_product_coupon c
+            INNER JOIN gds_goods g ON c.gid = g.gid
+        WHERE
+            c.cus_id = #{userId}
+            AND c.is_used IS FALSE
+            AND c.effective_start_time &lt; NOW()
+            AND c.effective_end_time &gt; NOW()
+            AND c.gid IN
+            <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+                #{goodsId}
+            </foreach>
+        GROUP BY
+            g.sku
+    </select>
+
+
+</mapper>
