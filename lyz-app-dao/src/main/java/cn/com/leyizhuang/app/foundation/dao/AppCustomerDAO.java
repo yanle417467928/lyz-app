@@ -41,4 +41,6 @@ public interface AppCustomerDAO {
                                                                  @Param("keywords") String keywords);
 
     UserHomePageResponse findCustomerInfoByUserId(Long userId);
+
+    Boolean existsByCustomerId(Long userId);
 }

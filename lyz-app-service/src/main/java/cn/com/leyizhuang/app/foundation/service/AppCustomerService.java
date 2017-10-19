@@ -39,4 +39,6 @@ public interface AppCustomerService {
     UserHomePageResponse findCustomerInfoByUserId(Long userId);
 
     void modifyCustomerInformation(UserSetInformationReq userInformation);
+
+    Boolean existsByCustomerId(Long userId);
 }

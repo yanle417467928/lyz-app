@@ -110,6 +110,11 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    public Boolean existsByCustomerId(Long userId) {
+        return this.customerDAO.existsByCustomerId(userId);
+    }
+
+    @Override
     public UserHomePageResponse findCustomerInfoByUserId(Long userId) {
         if (null != userId){
             return customerDAO.findCustomerInfoByUserId(userId);
