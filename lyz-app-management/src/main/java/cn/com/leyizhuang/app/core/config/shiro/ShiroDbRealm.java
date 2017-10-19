@@ -66,10 +66,10 @@ public class ShiroDbRealm extends AuthorizingRealm {
             throw new DisabledAccountException("账号未启用");
         }
         //读取用户的角色和url
-        Map<String,Set<String>> resourceMap = roleService.selectResourceMapByUserId(user.getId());
+        Map<String,Set<String>> resourceMap = roleService.selectResourceMapByUserId(user.getUid());
         Set<String> urls = resourceMap.get("urls");
         Set<String> roles = resourceMap.get("roles");
-        ShiroUser shiroUser = new ShiroUser(user.getId(),user.getLoginName(),user.getName(),urls);
+        ShiroUser shiroUser = new ShiroUser(user.getUid(),user.getLoginName(),user.getName(),urls);
         shiroUser.setRoles(roles);
         return new SimpleAuthenticationInfo(shiroUser,user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()),getName());
     }

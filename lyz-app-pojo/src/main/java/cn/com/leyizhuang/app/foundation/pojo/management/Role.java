@@ -24,7 +24,7 @@ public class Role implements Serializable {
     // 角色名
     private String name;
     //排序号
-    private Integer seq;
+    private Integer sortId;
     //简介
     private String description;
     //状态

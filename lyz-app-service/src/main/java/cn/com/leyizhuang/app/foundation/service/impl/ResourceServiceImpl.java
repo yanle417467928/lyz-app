@@ -1,12 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.dao.ResourceDAO;
 import cn.com.leyizhuang.app.foundation.dao.RoleDAO;
 import cn.com.leyizhuang.app.foundation.dao.UserRoleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
-import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
-import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 @Service
 public class ResourceServiceImpl implements ResourceService {
 
-    private static final int RESOURCE_MENU = 0; // 菜单
-    private static final int RESOURCE_BUTTON = 1; // 菜单
 
     @Autowired
     private ResourceDAO resourceDAO;
@@ -119,13 +117,13 @@ public class ResourceServiceImpl implements ResourceService {
         Set<String> roles = shiroUser.getRoles();
         if (roles != null && roles.size() > 0) {
             // 如果有超级管理员权限
-            if (roles.contains("超级管理员")||roles.contains("admin")) {
-                resourceList = this.selectByType(RESOURCE_MENU);
+            if (roles.contains("超级管理员") || roles.contains("admin")) {
+                resourceList = this.selectByType("MENU");
             } else {
                 // 普通用户
                 List<Long> roleIdList = userRoleDAO.selectRoleIdListByUserId(shiroUser.getId());
                 if (roleIdList != null && roleIdList.size() > 0) {
-                    resourceList = roleDAO.selectResourceListByRoleIdList(roleIdList);
+                    resourceList = roleDAO.selectResourceListByRoleIdListAndResourceType(roleIdList, "MENU");
                 }
             }
             appAdminMenuListVO = parseResourceList2ResourceVOList(resourceList);
@@ -146,7 +144,7 @@ public class ResourceServiceImpl implements ResourceService {
                 resourceVO.setResourceName(resource.getName());
                 resourceVO.setIcon(resource.getIcon());
                 resourceVO.setUrl(resource.getUrl());
-                resourceVO.setSeq(resource.getSortId());
+                resourceVO.setSortId(resource.getSortId());
                 allMenuVOList.add(resourceVO);
             }
             // 先筛选出所有的顶层菜单
@@ -155,24 +153,24 @@ public class ResourceServiceImpl implements ResourceService {
             // 再通过Stream的过滤器获取顶层菜单的子菜单
             resourceVOList.forEach(topMenuVO -> {
                 List<ResourceVO> children = allMenuVOList.stream()
-                        .filter(menuVO -> topMenuVO.getId().equals(menuVO.getParentResourceId()) )
+                        .filter(menuVO -> topMenuVO.getId().equals(menuVO.getParentResourceId()))
                         .collect(Collectors.toList());
                 topMenuVO.setChildren(children);
             });
             // 最后按照sortId进行排序
-            resourceVOList.sort(Comparator.comparing(ResourceVO::getSeq));
+            resourceVOList.sort(Comparator.comparing(ResourceVO::getSortId));
             return resourceVOList;
         }
     }
 
     @Override
-    public List<Resource> selectByType(int type) {
+    public List<Resource> selectByType(String type) {
         return resourceDAO.selectByType(type);
     }
 
     @Override
     public ResourceVO queryVOById(Long id) {
-        if (null != id){
+        if (null != id) {
             return resourceDAO.queryVOById(id);
         }
         return null;
@@ -180,7 +178,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Long> queryParentIdsByIds(String[] resourceIds) {
-        if(null != resourceIds && resourceIds.length>0){
+        if (null != resourceIds && resourceIds.length > 0) {
             return resourceDAO.queryParentIdsByIds(resourceIds);
         }
         return null;

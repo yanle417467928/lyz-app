@@ -20,10 +20,11 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class User implements Serializable {
+public class
+User implements Serializable {
     private static final long serialVersionUID = -3170398616740331337L;
 
-    private Long id;
+    private Long uid;
 
     @NotNull(message = "登录名不允许为空")
     @Length(max = 20,min = 2,message = "登录名长度必须在2-20之间")
@@ -41,7 +42,7 @@ public class User implements Serializable {
 
     private Integer age;
 
-    private String phone;
+    private String mobile;
     //1：超级管理员 2：普通用户
     private Integer userType;
 
@@ -57,8 +58,8 @@ public class User implements Serializable {
         UserVO userVO = new UserVO();
         userVO.setLoginName(loginName);
         userVO.setName(name);
-        userVO.setId(id);
-        userVO.setPhone(phone);
+        userVO.setId(uid);
+        userVO.setPhone(mobile);
         userVO.setAge(age);
         userVO.setSex(sex);
         userVO.setStatus(status);

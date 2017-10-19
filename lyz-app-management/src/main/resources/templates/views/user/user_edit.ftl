@@ -187,7 +187,7 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="user_add">
-                    <input type="hidden" id="id" name="id" value="${user.id}"/>
+                    <input type="hidden" id="id" name="id" value="${user.uid}"/>
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">

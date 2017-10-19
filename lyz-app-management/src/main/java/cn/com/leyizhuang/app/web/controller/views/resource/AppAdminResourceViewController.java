@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.resource;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
@@ -45,6 +46,7 @@ public class AppAdminResourceViewController extends BaseController{
         logger.info("新增资源");
         List<Resource> resourceList = resourceService.queryByPid(0L);
         model.addAttribute("resourceList",resourceList);
+        model.addAttribute("resourceTypeList",AppAdminResourceType.values());
         return "/views/resource/resource_add";
     }
 
@@ -72,7 +74,7 @@ public class AppAdminResourceViewController extends BaseController{
                 .stream().
                         filter(resource -> !id.equals(resource.getRsId()))
                 .collect(Collectors.toList());
-
+        map.addAttribute("resourceTypeList", AppAdminResourceType.values());
         map.addAttribute("resourceList", resourceList);
         return "/views/resource/resource_edit";
     }

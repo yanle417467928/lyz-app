@@ -97,9 +97,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User quereyByLoginName(UserVO userVO) {
+    public User queryByLoginName(UserVO userVO) {
         if (null != userVO.getLoginName()) {
-            return userDAO.quereyByLoginName(userVO);
+            return userDAO.queryByLoginName(userVO);
         }
         return null;
     }

@@ -2,49 +2,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ResourceDAO">
 
-    <sql id="resourceAllFields">
-        NAME, URL, DESCRIPTION, ICON, STATUS, RESOURCE_TYPE, CREATE_TIME, SEQ, PID
-    </sql>
-    <select id="queryList" resultType="Resource">
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
         SELECT *
-        FROM resource
-        ORDER BY SEQ
+        FROM admin_resource
+        ORDER BY sort_id
     </select>
-    <select id="queryByPid" resultType="Resource">
+    <select id="queryByPid" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
         SELECT *
-        FROM resource
+        FROM admin_resource
         WHERE PID = #{pid}
-        ORDER BY SEQ
+        ORDER BY sort_id
     </select>
     <insert id="save" parameterType="Resource">
-        INSERT INTO resource (NAME, URL, DESCRIPTION, ICON, STATUS, RESOURCE_TYPE, CREATE_TIME, SEQ, PID)
-        VALUES (#{name}, #{url}, #{description}, #{icon}, #{status}, #{resourceType}, #{createTime}, #{seq}, #{pid})
+        INSERT INTO admin_resource (NAME, URL, DESCRIPTION, ICON, STATUS, RESOURCE_TYPE, CREATE_TIME, sort_id, PID)
+        VALUES (#{name}, #{url}, #{description}, #{icon}, #{status}, #{resourceType}, #{createTime}, #{sortId}, #{pid})
     </insert>
 
-    <select id="queryById" parameterType="java.lang.Long" resultType="Resource">
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
         SELECT *
-        FROM resource
-        WHERE ID = #{id};
+        FROM admin_resource
+        WHERE rs_id = #{id};
     </select>
-
-    <select id="queryListVO" resultType="ResourceVO">
+    <select id="queryListVO" resultType="cn.com.leyizhuang.app.foundation.vo.ResourceVO">
         SELECT
-            r.ID            id,
+            r.rs_id         id,
             r.NAME          resource_name,
             r.DESCRIPTION   resource_description,
-            pr.id           parent_resource_id,
+            pr.rs_id        parent_resource_id,
             pr.NAME         parent_resource_name,
             pr.DESCRIPTION  parent_resource_description,
             r.URL           url,
-            r.seq           seq,
+            r.sort_id       sort_id,
             r.ICON          icon,
             r.STATUS        status,
             r.RESOURCE_TYPE resource_type
-        FROM resource r LEFT JOIN resource pr ON r.PID = pr.ID
+        FROM admin_resource r LEFT JOIN admin_resource pr ON r.pid = pr.rs_id
     </select>
 
     <update id="updateVO" parameterType="ResourceVO">
-        UPDATE resource
+        UPDATE admin_resource
         <set>
             <if test="null != resourceName">
                 NAME = #{resourceName},
@@ -58,8 +54,8 @@
             <if test="null != url">
                 URL = #{url},
             </if>
-            <if test="null != seq">
-                SEQ = #{seq},
+            <if test="null != sortId">
+                sort_id = #{sortId},
             </if>
             <if test="null != icon">
                 ICON = #{icon},
@@ -75,7 +71,7 @@
     </update>
 
     <update id="update" parameterType="Resource">
-        UPDATE resource
+        UPDATE admin_resource
         <set>
             <if test="null != name">
                 NAME = #{name},
@@ -89,8 +85,8 @@
             <if test="null != url">
                 URL = #{url},
             </if>
-            <if test="null != seq">
-                SEQ = #{seq},
+            <if test="null != sortId">
+                sort_id = #{sortId},
             </if>
             <if test="null != icon">
                 ICON = #{icon},
@@ -105,45 +101,49 @@
         WHERE ID = #{id}
     </update>
     <select id="countByPId" parameterType="java.lang.Long" resultType="java.lang.Long">
-        select count(*) from resource where PID = #{id}
+        SELECT count(*)
+        FROM admin_resource
+        WHERE pid = #{id}
     </select>
 
     <delete id="batchRemove" parameterType="java.util.List">
-        DELETE FROM resource WHERE ID IN
+        DELETE FROM admin_resource WHERE rs_id IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
-    <select id="selectByType" parameterType="java.lang.Integer" resultType="Resource">
-        SELECT * FROM resource WHERE RESOURCE_TYPE = #{type}
+    <select id="selectByType" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
+        SELECT *
+        FROM admin_resource
+        WHERE resource_type = #{type}
     </select>
-    <select id="queryVOById" parameterType="java.lang.Long" resultType="ResourceVO">
+    <select id="queryVOById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.ResourceVO">
         SELECT
-            r.ID id,
-            r.`NAME` resource_name,
-            r.DESCRIPTION resource_description,
-            r.PID parent_resource_id,
-            r1.`NAME` parent_resource_name,
-            r1.DESCRIPTION parent_resource_description,
-            r.URL url,
-            r.SEQ seq,
-            r.ICON icon,
-            r.`STATUS` STATUS,
+            r.rs_id         id,
+            r.name          resource_name,
+            r.DESCRIPTION   resource_description,
+            r.PID           parent_resource_id,
+            r1.name         parent_resource_name,
+            r1.DESCRIPTION  parent_resource_description,
+            r.URL           url,
+            r.sort_id       seq,
+            r.ICON          icon,
+            r.status        STATUS,
             r.RESOURCE_TYPE resource_type
         FROM
-            resource r
-            LEFT JOIN resource r1 ON r.PID = r1.ID
-        WHERE r.ID = #{id}
+            admin_resource r
+            LEFT JOIN admin_resource r1 ON r.pid = r1.rs_id
+        WHERE r.rs_id = #{id}
     </select>
 
     <select id="queryParentIdsByIds" parameterType="java.lang.String" resultType="java.lang.Long">
         SELECT
-            DISTINCT  PID
+        DISTINCT pid
         FROM
-            resource
+        admin_resource
         WHERE
-            ID IN
+        admin_resource.rs_id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>

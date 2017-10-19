@@ -87,7 +87,7 @@
                             }
                         }
                     },
-                    seq: {
+                    sortId: {
                         message: '排序号校验失败',
                         validators: {
                             notEmpty: {
@@ -168,7 +168,7 @@
                            value="${resource.id?c}"
                     <#else>
                            value="0"
-                    </#if> />
+                    </#if>/>
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -209,8 +209,12 @@
                                 </label>
                                 <select id="resourceType" name="resourceType" class="form-control select"
                                         data-live-search="true">
-                                    <option value=0 <#if resource.resourceType==0>selected</#if>>菜单</option>
-                                    <option value=1 <#if resource.resourceType==1>selected</#if>>按钮</option>
+                                <#if resourceTypeList??>
+                                    <#list resourceTypeList as item>
+                                        <option value="${item}" <#if item.getValue() == resource.resourceType.getValue() >
+                                                selected</#if>>${item.getDescription()}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
@@ -262,15 +266,15 @@
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="seq">
+                                <label for="sortId">
                                     排序号
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="菜单的排序号，数字越小，排序越靠前，范围在1~999之间"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="seq" type="number" class="form-control" id="seq"
-                                           placeholder="排序号" value="${resource.seq}">
+                                    <input name="sortId" type="number" class="form-control" id="sortId"
+                                           placeholder="排序号" value="${resource.sortId}">
                                 </div>
                             </div>
                         </div>
@@ -288,8 +292,9 @@
                                     <option value="0">无父级资源</option>
                                 <#if resourceList?? && resourceList?size gt 0>
                                     <#list resourceList as item>
-                                        <option value="${(item.id!'0')?c}"
-                                                data-icon="${item.icon!'fa fa-circle-o'}" <#if item.id == resource.pid >selected</#if>>
+                                        <option value="${(item.rsId!'0')?c}"
+                                                data-icon="${item.icon!'fa fa-circle-o'}"
+                                                <#if item.rsId == resource.pid >selected</#if>>
                                         ${item.name!'加载失败...'}
                                         </option>
                                     </#list>

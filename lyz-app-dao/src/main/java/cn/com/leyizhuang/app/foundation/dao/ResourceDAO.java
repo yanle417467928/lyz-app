@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import org.apache.ibatis.annotations.Param;
@@ -35,7 +36,7 @@ public interface ResourceDAO {
 
     void batchRemove(List<Long> longs);
 
-    List<Resource> selectByType(@Param(value = "type") int type);
+    List<Resource> selectByType(@Param(value = "type") String type);
 
     ResourceVO queryVOById(@Param(value = "id") Long id);
 

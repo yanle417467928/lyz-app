@@ -123,11 +123,11 @@ public class FitmentCompanyUserServiceImpl extends BaseServiceImpl<FitmentCompan
                     userVO.setLoginName(fitmentCompanyUserDO1.getMobile());
                 }
             }
-            user = this.userServiceImpl.quereyByLoginName(userVO);
+            user = this.userServiceImpl.queryByLoginName(userVO);
             if (null != user) {
                 user.setAge(fitmentCompanyUserDO.getAge());
                 user.setName(fitmentCompanyUserDO.getUserName());
-                user.setPhone(fitmentCompanyUserDO.getMobile());
+                user.setMobile(fitmentCompanyUserDO.getMobile());
                 user.setLoginName(fitmentCompanyUserDO.getMobile());
                 if (fitmentCompanyUserDO.getSex()) {
                     user.setSex(SexType.MALE);

@@ -137,7 +137,7 @@
             align: 'center',
             title: '资源路径'
         }, {
-            field: 'seq',
+            field: 'sortId',
             align: 'center',
             title: '排序'
         }, {

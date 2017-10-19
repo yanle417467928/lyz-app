@@ -12,5 +12,9 @@ import cn.com.leyizhuang.app.foundation.vo.UserVO;
 public interface CommonService {
 
     void saveUserAndUserRoleByUserVO(UserVO userVO);
+
     void updateUserAndUserRoleByUserVO(UserVO userVO);
+
+    void deleteUserAndUserRoleByUserId(Long uid);
+
 }

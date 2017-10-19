@@ -16,5 +16,6 @@ public interface UserRoleService {
 
     List<Long> findRoleIdsByUserId(Long id);
 
+
     void deleteUserRoleByUserId(Long id);
 }

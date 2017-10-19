@@ -5,56 +5,72 @@
     <select id="selectResourceListByRoleId" resultType="java.util.HashMap" parameterType="java.lang.Long">
         SELECT
             rr.id  AS id,
-            rs.URL AS url
-        FROM role r LEFT JOIN role_resource rr ON r.ID = rr.ROLE_ID
-            LEFT JOIN resource rs ON rr.RESOURCE_ID = rs.ID
-        WHERE r.ID = #{id};
+            rs.url AS url
+        FROM admin_role r LEFT JOIN admin_role_resource rr ON r.rid = rr.rid
+            LEFT JOIN admin_resource rs ON rr.rs_id = rs.rs_id
+        WHERE r.rid = #{id};
     </select>
 
     <select id="selectById" parameterType="java.lang.Long" resultType="Role">
-        SELECT *
-        FROM role
-        WHERE id = #{roleId};
+        SELECT
+            rid id,
+            name,
+            description,
+            status,
+            sort_id
+        FROM admin_role
+        WHERE rid = #{roleId};
     </select>
 
     <select id="queryList" resultType="Role">
-        SELECT *
-        FROM role
+        SELECT
+            rid id,
+            name,
+            description,
+            status,
+            sort_id
+        FROM admin_role
     </select>
 
     <insert id="save" parameterType="Role">
-        INSERT INTO role (NAME, SEQ, DESCRIPTION, STATUS) VALUES (#{name}, #{seq}, #{description}, #{status})
+        INSERT INTO admin_role (NAME, sort_id, DESCRIPTION, STATUS)
+        VALUES (#{name}, #{sortId}, #{description}, #{status})
     </insert>
     <select id="findAllResource" resultType="ResourceVO">
         SELECT
-            r.ID           id,
-            r.`NAME`       resource_name,
+            r.rs_id        id,
+            r.name         resource_name,
             r.DESCRIPTION  resource_description,
-            pr.ID          parent_resource_id,
-            pr.`NAME`      parent_resource_name,
+            pr.rs_id       parent_resource_id,
+            pr.name        parent_resource_name,
             pr.DESCRIPTION parent_resource_description
         FROM
-            resource r
-            LEFT JOIN resource pr ON r.PID = pr.ID
+            admin_resource r
+            LEFT JOIN admin_resource pr ON r.PID = pr.rs_id
         WHERE
             r.PID != 0
     </select>
 
     <delete id="batchRemove" parameterType="java.util.List">
-        DELETE FROM role WHERE ID IN
+        DELETE FROM admin_role WHERE rid IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
 
     <select id="queryById" parameterType="java.lang.Long" resultType="Role">
-        SELECT *
-        FROM role
-        WHERE id = #{id}
+        SELECT
+            rid id,
+            name,
+            description,
+            status,
+            sort_id
+        FROM admin_role
+        WHERE rid = #{id}
     </select>
 
     <update id="update" parameterType="Role">
-        UPDATE role
+        UPDATE admin_role
         <set>
             <if test="null != name">
                 NAME = #{name},
@@ -62,43 +78,48 @@
             <if test="null != description">
                 DESCRIPTION = #{description},
             </if>
-            <if test="null != seq">
-                SEQ = #{seq},
+            <if test="null != sortId">
+                sort_id = #{sortId},
             </if>
             <if test="null != status">
                 STATUS = #{status},
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE rid = #{id}
     </update>
 
     <select id="findByStatus" parameterType="java.lang.Boolean" resultType="Role">
-        SELECT *
-        FROM role
+        SELECT
+            rid id,
+            name,
+            description,
+            status,
+            sort_id
+        FROM admin_role
         WHERE STATUS = #{status};
     </select>
 
-    <select id="selectResourceListByRoleIdList" resultType="Resource" parameterType="java.lang.Long">
+    <select id="selectResourceListByRoleIdListAndResourceType" resultType="Resource">
         SELECT
-        s.ID id,
+        s.rs_id,
         s.NAME name,
         s.URL url,
         s.DESCRIPTION description,
         s.ICON icon,
         s.PID pid,
-        s.SEQ seq,
+        s.sort_id,
         s.STATUS status,
         s.RESOURCE_TYPE resource_type,
         s.CREATE_TIME create_time
-        FROM role r
-        LEFT JOIN role_resource rs ON r.ID = rs.ROLE_ID
-        LEFT JOIN resource s ON rs.RESOURCE_ID = s.ID
-        WHERE r.ID IN
+        FROM admin_role r
+        LEFT JOIN admin_role_resource rs ON r.rid = rs.rid
+        LEFT JOIN admin_resource s ON rs.rs_id = s.rs_id
+        WHERE r.rid IN
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND s.resource_type = 0
-        ORDER BY seq
+        AND s.resource_type = #{resourceType}
+        ORDER BY s.sort_id
     </select>
 
 </mapper>

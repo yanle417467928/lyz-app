@@ -78,7 +78,7 @@
                             }
                         }
                     },
-                    seq: {
+                    sortId: {
                         message: '排序号校验失败',
                         validators: {
                             notEmpty: {
@@ -198,14 +198,14 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="seq">
+                                <label for="sortId">
                                     排序号
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="菜单的排序号，数字越小，排序越靠前，范围在1~999之间"></i>
+                                       data-content="角色的排序号，数字越小，排序越靠前，范围在1~999之间"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="seq" type="number" class="form-control" id="seq"
+                                    <input name="sortId" type="number" class="form-control" id="sortId"
                                            placeholder="排序号">
                                 </div>
                             </div>

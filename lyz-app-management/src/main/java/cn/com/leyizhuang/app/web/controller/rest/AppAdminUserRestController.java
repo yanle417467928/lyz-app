@@ -2,9 +2,10 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
-import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
+import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -12,11 +13,11 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
@@ -33,11 +34,14 @@ public class AppAdminUserRestController extends BaseRestController {
 
     private final Logger logger = LoggerFactory.getLogger(AppAdminUserRestController.class);
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private CommonService commonService;
+
+    @Resource
+    private UserRoleService userRoleService;
 
     /**
      * 管理员列表分页显示
@@ -76,10 +80,10 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PostMapping
-    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]",required = false) String[] roleIdsStr, BindingResult result) {
+    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr, BindingResult result) {
         if (!result.hasErrors()) {
             userVO.setCreateTime(new Date());
-            if(null != roleIdsStr && roleIdsStr.length>0){
+            if (null != roleIdsStr && roleIdsStr.length > 0) {
                 Long[] roleIds = new Long[roleIdsStr.length];
                 for (int i = 0; i < roleIdsStr.length; i++) {
                     roleIds[i] = Long.parseLong(roleIdsStr[i]);
@@ -109,6 +113,7 @@ public class AppAdminUserRestController extends BaseRestController {
                 if (user.getUserType() == 1) {
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户是超级管理员,不能删除！", null);
                 } else {
+                    userRoleService.deleteUserRoleByUserId(user.getUid());
                     this.userService.delete(id);
                 }
             }
@@ -127,9 +132,9 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]",required = false) String[] roleIdsStr,BindingResult result) {
+    public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr, BindingResult result) {
         if (!result.hasErrors()) {
-            if(null != roleIdsStr && roleIdsStr.length>0){
+            if (null != roleIdsStr && roleIdsStr.length > 0) {
                 Long[] roleIds = new Long[roleIdsStr.length];
                 for (int i = 0; i < roleIdsStr.length; i++) {
                     roleIds[i] = Long.parseLong(roleIdsStr[i]);

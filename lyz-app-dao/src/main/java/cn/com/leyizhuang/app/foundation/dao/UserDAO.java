@@ -33,5 +33,5 @@ public interface  UserDAO {
 
     void saveUserVO(UserVO userVO);
 
-    User quereyByLoginName(UserVO userVO);
+    User queryByLoginName(UserVO userVO);
 }

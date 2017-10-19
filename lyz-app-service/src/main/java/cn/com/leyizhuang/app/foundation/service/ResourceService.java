@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
@@ -34,7 +35,7 @@ public interface ResourceService {
 
     List<ResourceVO> loadAdminMenuTree(ShiroUser shiroUser);
 
-    List<Resource> selectByType(int type);
+    List<Resource> selectByType(String type);
 
     ResourceVO queryVOById(Long id);
 

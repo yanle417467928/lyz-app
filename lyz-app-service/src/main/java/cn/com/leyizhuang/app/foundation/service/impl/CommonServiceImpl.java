@@ -43,7 +43,7 @@ public class CommonServiceImpl implements CommonService {
         user.setSalt(paramMap.get("salt"));
         user.setPassword(paramMap.get("encodedPassword"));
         userService.save(user);
-        Long id = user.getId();
+        Long id = user.getUid();
         Long[] roles = userVO.getRoleIds();
         if (null != roles && roles.length > 0) {
             UserRole userRole = new UserRole();
@@ -76,6 +76,15 @@ public class CommonServiceImpl implements CommonService {
                     userRoleService.save(userRole);
                 }
             }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserAndUserRoleByUserId(Long uid) {
+        if (null != uid){
+            userRoleService.deleteUserRoleByUserId(uid);
+            this.userService.delete(uid);
         }
     }
 

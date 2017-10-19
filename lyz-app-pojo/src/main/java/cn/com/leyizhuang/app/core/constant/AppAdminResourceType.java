@@ -7,15 +7,32 @@ package cn.com.leyizhuang.app.core.constant;
  *         Created on 2017-05-08 10:31
  **/
 public enum AppAdminResourceType {
-    MENU("菜单"),BUTTON("按钮");
+    MENU("MENU","菜单"),BUTTON("BUTTON","按钮");
 
     private String value;
+    private String description;
 
-    AppAdminResourceType(String value) {
+    AppAdminResourceType(String value, String description) {
         this.value = value;
+        this.description = description;
     }
 
     public String getValue() {
         return value;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public static AppAdminResourceType getAppAdminResourceTypeByValue(String value){
+        for(AppAdminResourceType resourceType : AppAdminResourceType.values()){
+            if(value.equals(resourceType.getValue())){
+                return resourceType;
+            }
+        }
+        return null;
+    }
+
+
 }

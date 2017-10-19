@@ -35,7 +35,7 @@ public class HelloController {
         User user = new User();
         user.setLoginName(name);
         user.setLoginName(name);
-        user.setId(1L);
+        user.setUid(1L);
         return user;
     }
 }

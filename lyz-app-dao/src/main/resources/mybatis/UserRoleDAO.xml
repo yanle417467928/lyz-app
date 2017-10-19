@@ -3,17 +3,19 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.UserRoleDAO">
 
    <select id="selectRoleIdListByUserId" resultType="java.lang.Long">
-      SELECT ROLE_ID FROM  user_role where USER_ID = #{userId};
+      SELECT rid FROM  admin_user_role where uid = #{userId};
    </select>
    <insert id="save" parameterType="UserRole">
-           INSERT INTO user_role( USER_ID,ROLE_ID)
+           INSERT INTO admin_user_role( uid,rid)
            VALUES (#{userId}, #{roleId})
    </insert>
 
     <select id="findRoleIdsByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
-        SELECT ROLE_ID FROM user_role where USER_ID = #{id}
+        SELECT rid FROM admin_user_role where uid = #{id}
     </select>
+
     <delete id="deleteUserRoleByUserId" parameterType="java.lang.Long">
-        DELETE FROM user_role where USER_ID = #{id}
+        DELETE FROM admin_user_role where uid = #{id}
     </delete>
+
 </mapper>

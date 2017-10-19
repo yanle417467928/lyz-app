@@ -36,5 +36,6 @@ public interface RoleDAO {
 
     List<Role> findByStatus(@Param(value = "status") Boolean status);
 
-    List<Resource> selectResourceListByRoleIdList(List<Long> roleIdList);
+    List<Resource> selectResourceListByRoleIdListAndResourceType(@Param(value = "list") List<Long> roleIdList,
+                                                                 @Param(value = "resourceType") String resourceType);
 }

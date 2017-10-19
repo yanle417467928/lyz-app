@@ -3,13 +3,13 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.RoleResourceDAO">
 
     <delete id="deleteByRoleId">
-        DELETE FROM role_resource
-        WHERE ROLE_ID = #{id};
+        DELETE FROM admin_role_resource
+        WHERE rid = #{id};
     </delete>
     <insert id="save" parameterType="RoleResource">
-        INSERT INTO role_resource (ROLE_ID, RESOURCE_ID) VALUES (#{roleId}, #{resourceId})
+        INSERT INTO admin_role_resource (rid, rs_id) VALUES (#{roleId}, #{resourceId})
     </insert>
     <select id="findResouceIdSetByRoleId" resultType="java.lang.Long">
-        select RESOURCE_ID from role_resource where ROLE_ID = #{roleId}
+        select rs_id resource_id from admin_role_resource where rid = #{roleId}
     </select>
 </mapper>

@@ -64,7 +64,7 @@ public class UserVO implements Serializable {
         if (user == null) {
             return false;
         }
-        Long userId = user.getId();
+        Long userId = user.getUid();
         if (id == null || userId == null) {
             return false;
         }
@@ -76,11 +76,11 @@ public class UserVO implements Serializable {
         user.setPassword(password);
         user.setLoginName(loginName);
         user.setName(name);
-        user.setId(id);
+        user.setUid(id);
         user.setUserType(userType);
         user.setStatus(status);
         user.setAge(age);
-        user.setPhone(phone);
+        user.setMobile(phone);
         user.setCreateTime(createTime);
         return user;
     }

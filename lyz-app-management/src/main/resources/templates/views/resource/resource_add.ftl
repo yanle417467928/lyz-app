@@ -209,8 +209,11 @@
                                 </label>
                                 <select id="resourceType" name="resourceType" class="form-control select"
                                         data-live-search="true">
-                                    <option value=0>菜单</option>
-                                    <option value=1>按钮</option>
+                                <#if resourceTypeList??>
+                                    <#list resourceTypeList as item>
+                                        <option value="${item}">${item.getDescription()}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>
@@ -286,7 +289,7 @@
                                     <option value="0">无父级资源</option>
                                 <#if resourceList?? && resourceList?size gt 0>
                                     <#list resourceList as item>
-                                        <option value="${(item.id!'0')?c}"
+                                        <option value="${(item.rsId!'0')?c}"
                                                 data-icon="${item.icon!'fa fa-circle-o'}">
                                         ${item.name!'加载失败...'}
                                         </option>

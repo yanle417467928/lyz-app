@@ -224,7 +224,7 @@
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         }, {
-            field: 'seq',
+            field: 'sortId',
             align: 'center',
             valign: 'middle',
             title: '排序号'
@@ -300,7 +300,7 @@
             $grid.add('/views/admin/role/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function () {
+        $('#btn_edit').on('click', function (container) {
             $grid.modify($('#dataGrid'), '/views/admin/role/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 

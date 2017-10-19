@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo;
 
+import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,12 +30,12 @@ public class ResourceVO {
     //父级资源名称
     private String parentResourceName;
     //父级资源描述
-    private String parentResourceDesciption;
+    private String parentResourceDescription;
     //资源路径
     @NotNull(message = "资源路径不允许为空！")
     private String url;
     //资源排序号
-    private Integer seq;
+    private Integer sortId;
     //资源图标
     @NotNull(message = "资源图标不允许为空！")
     private String icon;
@@ -42,7 +43,7 @@ public class ResourceVO {
     private Boolean status;
     //资源类型
     @NotNull(message = "资源类型不允许为空！")
-    private Integer resourceType;//0 :菜单，1:按钮
+    private AppAdminResourceType resourceType;//0 :菜单，1:按钮
 
     private List<ResourceVO> children;
 
