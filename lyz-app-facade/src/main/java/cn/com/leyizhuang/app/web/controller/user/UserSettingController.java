@@ -364,7 +364,7 @@ public class UserSettingController {
      * @date 2017/10/10
      */
     @PostMapping(value = "/feedback/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam("myfiles") MultipartFile[] files,
+    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam(value = "myfiles",required = false) MultipartFile[] files,
                                                    String type, String content, String phone) {
         logger.info("addFunctionalFeedback CALLED,功能反馈，入参 userId:{} identityType:{} files:{}," +
                 "type:{}, content:{}, phone:{}", userId, identityType, files, type, content, phone);
