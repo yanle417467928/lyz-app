@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -72,5 +73,7 @@ public interface GoodsDAO {
     GoodsDetailResponse findGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("type") AppIdentityType appIdentityType);
 
     GoodsDO findGoodsById(Long id);
+
+    List<GoodsPrice> getGoodsPriceByCustomerAndGoodsId(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
 }
