@@ -15,7 +15,7 @@ import lombok.ToString;
 @Setter
 public class City {
 
-    private Long id;
+    private Long cityId;
     // 城市名称（唯一）
     private String name;
     // 城市名称拼音

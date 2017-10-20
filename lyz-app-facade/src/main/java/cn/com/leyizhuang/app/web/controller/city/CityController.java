@@ -45,7 +45,7 @@ public class CityController {
         List<CityListResponse> responseList = new ArrayList<>();
         for (City c : cityList) {
             CityListResponse response = new CityListResponse();
-            response.setCityId(c.getId());
+            response.setCityId(c.getCityId());
             response.setCityName(c.getName());
             responseList.add(response);
         }
