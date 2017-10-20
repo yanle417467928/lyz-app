@@ -492,7 +492,7 @@ public class UserSettingController {
         informationResponse.setNikeName(appEmployee.getLoginName());
         informationResponse.setSex(appEmployee.getSex().getValue());
         informationResponse.setMobile(appEmployee.getMobile());
-        informationResponse.setBirthday(appEmployee.getBirthday());
+        informationResponse.setBirthday(DateUtil.formatDate(appEmployee.getBirthday(),"yyyy-MM-dd"));
 
         City city = cityService.findById(appEmployee.getCityId());
         if (city != null) {
@@ -512,8 +512,9 @@ public class UserSettingController {
         informationResponse.setNikeName(appCustomer.getNickName());
         informationResponse.setSex(appCustomer.getSex().getValue());
         informationResponse.setMobile(appCustomer.getMobile());
-        informationResponse.setBirthday(appCustomer.getBirthday());
-
+        if (null != appCustomer.getBirthday()) {
+            informationResponse.setBirthday(DateUtil.formatDate(appCustomer.getBirthday(),"yyyy-MM-dd"));
+        }
         City city = cityService.findById(appCustomer.getCityId());
         if (city != null) {
             informationResponse.setCityName(city.getName());
@@ -534,11 +535,6 @@ public class UserSettingController {
         appCustomer.setCusId(userInformation.getUserId());
         appCustomer.setNickName(userInformation.getNikeName());
         appCustomer.setName(userInformation.getName());
-
-        if (null != userInformation.getHeadPic()) {
-            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
-            appCustomer.setPicUrl(picUrl);
-        }
         String birthday = userInformation.getBirthday();
         if (StringUtils.isNotBlank(birthday)) {
             appCustomer.setBirthday(DateUtil.parseDate(birthday));
@@ -546,6 +542,10 @@ public class UserSettingController {
         String sex = userInformation.getSex();
         if (StringUtils.isNotBlank(sex)) {
             appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        }
+        if (null != userInformation.getHeadPic()) {
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            appCustomer.setPicUrl(picUrl);
         }
         return appCustomer;
     }
@@ -558,13 +558,13 @@ public class UserSettingController {
         if (StringUtils.isNotBlank(birthday)) {
             appEmployee.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
         }
-        if (null != userInformation.getHeadPic()) {
-            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
-            appEmployee.setPicUrl(picUrl);
-        }
         String sex = userInformation.getSex();
         if (StringUtils.isNotBlank(sex)) {
             appEmployee.setSex(SexType.getSexTypeByValue(sex));
+        }
+        if (null != userInformation.getHeadPic()) {
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            appEmployee.setPicUrl(picUrl);
         }
         return appEmployee;
     }
