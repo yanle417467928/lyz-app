@@ -108,7 +108,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Transactional
     public void modifyCustomerInformation(UserSetInformationReq userInformation) {
         if (null != userInformation){
-            customerDAO.update(transform(userInformation));
+//            customerDAO.update(transform(userInformation));
         }
     }
 
@@ -142,6 +142,13 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    public void modifyCustomerMobileByUserId(Long userId, String mobile) {
+        if (null != userId){
+            customerDAO.updateCustomerMobileByUserId(userId,mobile);
+        }
+    }
+
+    @Override
     public CustomerHomePageResponse findCustomerInfoByUserId(Long userId) {
         if (null != userId){
             return customerDAO.findCustomerInfoByUserId(userId);
@@ -149,19 +156,5 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         return null;
     }
 
-    public AppCustomer transform(UserSetInformationReq userInformation){
-        AppCustomer appCustomer = new AppCustomer();
-        appCustomer.setCusId(userInformation.getUserId());
-        appCustomer.setPicUrl(userInformation.getPicUrl());
-        try {
-            appCustomer.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userInformation.getBirthday()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-        appCustomer.setMobile(userInformation.getMobile());
-        appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
-        appCustomer.setName(userInformation.getName());
-        return appCustomer;
-    }
+
 }

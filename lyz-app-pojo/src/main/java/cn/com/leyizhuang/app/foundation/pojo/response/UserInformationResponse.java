@@ -23,6 +23,8 @@ public class UserInformationResponse implements Serializable {
     private String picUrl;
     //姓名
     private String name;
+    //昵称
+    private String nikeName;
     //性别
     private String sex;
     //生日

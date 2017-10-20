@@ -2,6 +2,10 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
+import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -127,13 +133,14 @@ public class UserSettingController {
         }
         try {
             if (userInformation.getIdentityType() == 6) {
-
-                customerService.modifyCustomerInformation(userInformation);
+                AppCustomer appCustomer = transformAppCustomer(userInformation);
+                customerService.update(appCustomer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            employeeService.modifyEmployeeInformation(userInformation);
+            AppEmployee appEmployee = transformAppEmployee(userInformation);
+            employeeService.update(appEmployee);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -141,6 +148,56 @@ public class UserSettingController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,用户修改个人信息失败!", null);
             logger.warn("personalInformationSet EXCEPTION,用户修改个人信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 用户修改手机号码
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/set/mobile", produces = "application/json;charset=UTF-8")
+    public ResultDTO personalMobileSet(Long userId, Integer identityType, String mobile){
+
+        logger.info("personalMobileSet CALLED,用户修改手机号码，入参 userId {},identityType{},mobile{}", userId, identityType,mobile);
+
+        ResultDTO<UserInformationResponse> resultDTO;
+        if (userId == null) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(mobile)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "新手机号码不能为空",
+                    null);
+            logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            if (identityType== 6) {
+                customerService.modifyCustomerMobileByUserId(userId,mobile);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else {
+                employeeService.modifyEmployeeMobileByUserId(userId,mobile);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,用户修改手机号码失败!", null);
+            logger.warn("personalMobileSet EXCEPTION,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -432,6 +489,7 @@ public class UserSettingController {
         UserInformationResponse informationResponse = new UserInformationResponse();
         informationResponse.setPicUrl(appEmployee.getPicUrl());
         informationResponse.setName(appEmployee.getName());
+        informationResponse.setNikeName(appEmployee.getLoginName());
         informationResponse.setSex(appEmployee.getSex().getValue());
         informationResponse.setMobile(appEmployee.getMobile());
         informationResponse.setBirthday(appEmployee.getBirthday());
@@ -450,7 +508,8 @@ public class UserSettingController {
     private UserInformationResponse transform(AppCustomer appCustomer) {
         UserInformationResponse informationResponse = new UserInformationResponse();
         informationResponse.setPicUrl(appCustomer.getPicUrl());
-        informationResponse.setName(appCustomer.getNickName());
+        informationResponse.setName(appCustomer.getName());
+        informationResponse.setNikeName(appCustomer.getNickName());
         informationResponse.setSex(appCustomer.getSex().getValue());
         informationResponse.setMobile(appCustomer.getMobile());
         informationResponse.setBirthday(appCustomer.getBirthday());
@@ -468,5 +527,29 @@ public class UserSettingController {
             informationResponse.setGuideName(guide.getName());
         }
         return informationResponse;
+    }
+
+    private AppCustomer transformAppCustomer(UserSetInformationReq userInformation){
+        AppCustomer appCustomer = new AppCustomer();
+        appCustomer.setCusId(userInformation.getUserId());
+
+        String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+        appCustomer.setPicUrl(picUrl);
+        appCustomer.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
+        appCustomer.setNickName(userInformation.getNikeName());
+        appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        appCustomer.setName(userInformation.getName());
+        return appCustomer;
+    }
+
+    private AppEmployee transformAppEmployee(UserSetInformationReq userInformation){
+        AppEmployee appEmployee = new AppEmployee();
+        appEmployee.setEmpId(userInformation.getUserId());
+        appEmployee.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
+        String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+        appEmployee.setPicUrl(picUrl);
+        appEmployee.setName(userInformation.getName());
+        appEmployee.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        return appEmployee;
     }
 }

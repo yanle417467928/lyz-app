@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.request;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -23,15 +24,15 @@ public class UserSetInformationReq {
     //身份类型
     private Integer identityType;
     //头像地址
-    private String picUrl;
+    private MultipartFile headPic;
+    //n昵称
+    private String nikeName;
     //姓名
     private String name;
     //性别
     private String sex;
     //生日
     private String birthday;
-    //电话
-    private String mobile;
     //所属城市
 //    private String cityName;
     //所属门店

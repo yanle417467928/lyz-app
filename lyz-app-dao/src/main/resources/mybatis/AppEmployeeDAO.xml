@@ -129,4 +129,13 @@
         WHERE
             e.emp_id = #{userId}
     </select>
+
+    <update id="updateEmployeeMobileByUserId">
+        UPDATE
+            emp_employee
+        SET
+            mobile = #{mobile}
+        WHERE
+            emp_id = #{userId}
+    </update>
 </mapper>
