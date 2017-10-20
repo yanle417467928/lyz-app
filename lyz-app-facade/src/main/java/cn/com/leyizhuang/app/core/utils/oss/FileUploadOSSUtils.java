@@ -19,6 +19,12 @@ public class FileUploadOSSUtils {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
+
+    /**
+     * 上传用户头像方法
+     * @param imgFile
+     * @return
+     */
     public static String uploadProfilePhoto(MultipartFile imgFile) {
         String name = imgFile.getOriginalFilename();
         String ext = name.substring(name.lastIndexOf("."));
