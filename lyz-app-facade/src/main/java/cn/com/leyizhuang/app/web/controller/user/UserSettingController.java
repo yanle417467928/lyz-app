@@ -532,24 +532,40 @@ public class UserSettingController {
     private AppCustomer transformAppCustomer(UserSetInformationReq userInformation){
         AppCustomer appCustomer = new AppCustomer();
         appCustomer.setCusId(userInformation.getUserId());
-
-        String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
-        appCustomer.setPicUrl(picUrl);
-        appCustomer.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
         appCustomer.setNickName(userInformation.getNikeName());
-        appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
         appCustomer.setName(userInformation.getName());
+
+        if (null != userInformation.getHeadPic()) {
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            appCustomer.setPicUrl(picUrl);
+        }
+        String birthday = userInformation.getBirthday();
+        if (StringUtils.isNotBlank(birthday)) {
+            appCustomer.setBirthday(DateUtil.parseDate(birthday));
+        }
+        String sex = userInformation.getSex();
+        if (StringUtils.isNotBlank(sex)) {
+            appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        }
         return appCustomer;
     }
 
     private AppEmployee transformAppEmployee(UserSetInformationReq userInformation){
         AppEmployee appEmployee = new AppEmployee();
         appEmployee.setEmpId(userInformation.getUserId());
-        appEmployee.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
-        String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
-        appEmployee.setPicUrl(picUrl);
         appEmployee.setName(userInformation.getName());
-        appEmployee.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
+        String birthday = userInformation.getBirthday();
+        if (StringUtils.isNotBlank(birthday)) {
+            appEmployee.setBirthday(DateUtil.parseDate(userInformation.getBirthday()));
+        }
+        if (null != userInformation.getHeadPic()) {
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            appEmployee.setPicUrl(picUrl);
+        }
+        String sex = userInformation.getSex();
+        if (StringUtils.isNotBlank(sex)) {
+            appEmployee.setSex(SexType.getSexTypeByValue(sex));
+        }
         return appEmployee;
     }
 }

@@ -57,7 +57,7 @@
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != picUrl">
-                pic_url = #{pirUrl},
+                pic_url = #{picUrl},
             </if>
             <if test="null != cityId">
                 city_id = #{cityId},
