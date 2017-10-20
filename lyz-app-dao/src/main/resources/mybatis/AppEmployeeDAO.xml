@@ -98,7 +98,7 @@
 
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
         SELECT
-        balance
+        credit_limit_available balance
         FROM emp_credit_money
         WHERE guide_id = #{userId}
     </select>
@@ -109,7 +109,7 @@
             e.pic_url,
             e.login_name number,
         <if test="type == 0">
-            ecm.balance,
+            ecm.credit_limit_available balance,
         </if>
         <if test="type == 2">
             pd.balance,

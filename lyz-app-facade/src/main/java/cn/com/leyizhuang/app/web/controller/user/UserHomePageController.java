@@ -83,7 +83,7 @@ public class UserHomePageController {
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);
-            logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
+            logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
     }
