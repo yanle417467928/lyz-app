@@ -89,7 +89,7 @@ public class HqAppEmployeeController {
             }
             employee.setIdentityType(AppIdentityType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
-            employee.setCityId(city.getId());
+            employee.setCityId(city.getCityId());
             String salt = employee.generateSalt();
             employee.setSalt(salt);
             try {
