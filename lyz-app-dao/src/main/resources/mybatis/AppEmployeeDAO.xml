@@ -119,11 +119,11 @@
             emp_employee e
         <choose>
             <when test="type == 0">
-                INNER JOIN emp_credit_money ecm ON ecm.guide_id = e.emp_id
+                LEFT JOIN emp_credit_money ecm ON ecm.guide_id = e.emp_id
             </when>
             <when test="type == 2">
-                INNER JOIN st_store st on e.store_id = st.store_id
-                INNER JOIN st_pre_deposit pd ON pd.store_id = st.store_id
+                LEFT JOIN st_store st on e.store_id = st.store_id
+                LEFT JOIN st_pre_deposit pd ON pd.store_id = st.store_id
             </when>
         </choose>
         WHERE
