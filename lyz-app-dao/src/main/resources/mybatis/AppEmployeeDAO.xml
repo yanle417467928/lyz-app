@@ -57,7 +57,7 @@
                 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != picUrl">
-                pic_url = #{pirUrl},
+                pic_url = #{picUrl},
             </if>
             <if test="null != cityId">
                 city_id = #{cityId},
@@ -129,4 +129,13 @@
         WHERE
             e.emp_id = #{userId}
     </select>
+
+    <update id="updateEmployeeMobileByUserId">
+        UPDATE
+            emp_employee
+        SET
+            mobile = #{mobile}
+        WHERE
+            emp_id = #{userId}
+    </update>
 </mapper>

@@ -88,7 +88,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Transactional
     public void modifyEmployeeInformation(UserSetInformationReq userInformation) {
         if (null != userInformation){
-            employeeDAO.update(transform(userInformation));
+//            employeeDAO.update(transform(userInformation));
         }
     }
 
@@ -108,19 +108,11 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         return null;
     }
 
-    public AppEmployee transform(UserSetInformationReq userInformation){
-        AppEmployee appEmployee = new AppEmployee();
-        appEmployee.setEmpId(userInformation.getUserId());
-        try {
-            appEmployee.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userInformation.getBirthday()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
+    @Override
+    public void modifyEmployeeMobileByUserId(Long userId, String mobile) {
+        if (null != userId) {
+            employeeDAO.updateEmployeeMobileByUserId(userId,mobile);
         }
-        appEmployee.setMobile(userInformation.getMobile());
-        appEmployee.setPicUrl(userInformation.getPicUrl());
-        appEmployee.setName(userInformation.getName());
-        appEmployee.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
-        return appEmployee;
     }
+
 }

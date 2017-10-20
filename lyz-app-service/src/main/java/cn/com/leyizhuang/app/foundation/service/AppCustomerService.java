@@ -47,4 +47,6 @@ public interface AppCustomerService {
     Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    void modifyCustomerMobileByUserId(Long userId, String mobile);
 }

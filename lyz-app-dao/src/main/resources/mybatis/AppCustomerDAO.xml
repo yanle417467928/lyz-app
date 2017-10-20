@@ -169,11 +169,21 @@
         WHERE
             cus_id =#{userId};
     </update>
+
+    <update id="updateCustomerMobileByUserId">
+        UPDATE
+            cus_customer
+        SET
+            mobile = #{mobile}
+        WHERE
+            cus_id = #{userId}
+    </update>
     <select id="findCustomerInfoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse">
         SELECT
             c.pic_url,
             c.name,
+            c.nick_name,
             c.light,
             e.name      guideName,
             e.mobile    guideMobile,

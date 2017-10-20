@@ -36,4 +36,6 @@ public interface AppEmployeeService {
     void modifyEmployeeInformation(UserSetInformationReq userInformation);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    void modifyEmployeeMobileByUserId(Long userId, String mobile);
 }
