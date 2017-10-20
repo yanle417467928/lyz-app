@@ -16,7 +16,7 @@ import lombok.ToString;
 public class CustomerRegistryParam {
 
     private String openId;
-    //private String picUrl;
+    private String picUrl;
     private String nickName;
     private Boolean sex;
     private String phone;

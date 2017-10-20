@@ -96,7 +96,7 @@ public class CustomerController {
      * @return resultDTO
      */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam, @RequestParam(value = "picUrl",required = false) MultipartFile picUrl,HttpServletResponse response) {
+    public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam,HttpServletResponse response) {
         logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
         ResultDTO<CustomerRegistResponse> resultDTO;
         try {
@@ -126,8 +126,7 @@ public class CustomerController {
             if (phoneUser != null) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
-                String profilePhotoUrl = FileUploadOSSUtils.uploadProfilePhoto(picUrl);
-                phoneUser.setPicUrl(profilePhotoUrl);
+                phoneUser.setPicUrl(registryParam.getPicUrl());
                 customerService.update(phoneUser);
                 String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
@@ -143,8 +142,12 @@ public class CustomerController {
                 newUser.setStatus(Boolean.TRUE);
                 newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
                 newUser.setNickName(registryParam.getNickName());
-                String profilePhotoUrl = FileUploadOSSUtils.uploadProfilePhoto(picUrl);
-                newUser.setPicUrl(profilePhotoUrl);
+                if(null == registryParam.getSex()){
+                    newUser.setSex(SexType.SECRET);
+                }else{
+                    newUser.setSex(registryParam.getSex()?SexType.MALE:SexType.FEMALE);
+                }
+                newUser.setPicUrl(registryParam.getPicUrl());
                 newUser.setCityId(registryParam.getCityId());
                 newUser.setMobile(registryParam.getPhone());
                 AppCustomer returnUser = customerService.save(newUser);
