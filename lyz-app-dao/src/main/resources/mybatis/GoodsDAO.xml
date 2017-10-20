@@ -423,7 +423,7 @@
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
-            e.id = #{userId}
+            e.emp_id = #{userId}
             AND (
                 g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%')

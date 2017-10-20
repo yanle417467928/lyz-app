@@ -14,7 +14,7 @@ import java.util.List;
  * Created on 2017-07-24 9:12
  **/
 @Repository
-public interface AppStoreDAO extends BaseDAO<AppStore> {
+public interface AppStoreDAO {
 
     List<AppStore> findAll();
 

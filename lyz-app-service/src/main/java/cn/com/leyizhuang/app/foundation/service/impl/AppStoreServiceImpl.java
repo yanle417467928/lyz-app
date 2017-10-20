@@ -2,8 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
-import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +15,7 @@ import java.util.List;
  * Created on 2017-07-20 10:42
  **/
 @Service
-public class AppStoreServiceImpl extends BaseServiceImpl<AppStore> implements cn.com.leyizhuang.app.foundation.service.AppStoreService {
-    public AppStoreServiceImpl(BaseDAO<AppStore> baseDAO) {
-        super(baseDAO);
-    }
+public class AppStoreServiceImpl implements AppStoreService {
 
     private AppStoreDAO storeDAO;
     @Autowired

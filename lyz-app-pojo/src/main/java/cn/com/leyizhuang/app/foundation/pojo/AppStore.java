@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 
-import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
 
 /**
  * @author CrazyApeDX
@@ -13,15 +15,19 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AppStore extends BaseDO{
+public class AppStore{
 
+    private Long storeId;
 
-    private static final long serialVersionUID = 8159082443377417556L;
+    private String creatorType;
 
-    public AppStore() {
-        super();
-    }
+    private Date createTime;
 
+    private String modifierType;
+
+    private Date modifyTime;
+
+    private StoreType storeType;
 
     //门店名称
     private String storeName;
@@ -35,6 +41,8 @@ public class AppStore extends BaseDO{
     //城市id
     private Long cityId;
 
+    //城市code
+    private String cityCode;
 
 
 

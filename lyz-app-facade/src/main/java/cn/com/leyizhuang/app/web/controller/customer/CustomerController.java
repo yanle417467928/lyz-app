@@ -211,7 +211,7 @@ public class CustomerController {
                     return resultDTO;
                 }
                 customer.setSalesConsultId(seller.getEmpId());
-                customer.setStoreId(store.getId());
+                customer.setStoreId(store.getStoreId());
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
@@ -219,7 +219,7 @@ public class CustomerController {
                 return resultDTO;
             } else {
                 AppStore store = storeService.findDefaultStoreByCityId(customer.getCityId());
-                customer.setStoreId(store.getId());
+                customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

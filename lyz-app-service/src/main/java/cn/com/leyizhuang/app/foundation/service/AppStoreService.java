@@ -11,7 +11,7 @@ import java.util.List;
  * @author Richard
  * Created on 2017-07-20 10:40
  **/
-public interface AppStoreService extends BaseService<AppStore> {
+public interface AppStoreService {
 
     List<AppStore> findAll();
 
