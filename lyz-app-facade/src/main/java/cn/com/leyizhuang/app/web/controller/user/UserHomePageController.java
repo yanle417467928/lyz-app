@@ -4,8 +4,9 @@ import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -51,7 +52,7 @@ public class UserHomePageController {
 
         logger.info("personalHomepage CALLED,获取个人主页，入参 userId {},identityType{}", userId, identityType);
 
-        ResultDTO<UserHomePageResponse> resultDTO;
+        ResultDTO<Object> resultDTO;
         if (userId == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
@@ -65,23 +66,20 @@ public class UserHomePageController {
             return resultDTO;
         }
         try{
-            UserHomePageResponse userHomePageResponse = new UserHomePageResponse();
             if (identityType == 6) {
-                userHomePageResponse = customerService.findCustomerInfoByUserId(userId);
-                String parseLight = AppUserLightStatus.valueOf(userHomePageResponse.getLight()).getValue();
-                userHomePageResponse.setLight(parseLight);
-            }else if (identityType == 2){
-                userHomePageResponse = employeeService.findEmployeeInfoByUserId(userId);
+                CustomerHomePageResponse customerHomePageResponse = customerService.findCustomerInfoByUserId(userId);
+                String parseLight = AppUserLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
+                customerHomePageResponse.setLight(parseLight);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
+                logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }else {
-                AppEmployee appEmployee = employeeService.findById(userId);
-                userHomePageResponse.setPicUrl(appEmployee.getPicUrl());
-                userHomePageResponse.setName(appEmployee.getName());
-                userHomePageResponse.setNumber(appEmployee.getLoginName());
+                EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId,identityType);
                 // TODO 配送员还需要查询配送订单数量
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
+                logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userHomePageResponse);
-            logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);

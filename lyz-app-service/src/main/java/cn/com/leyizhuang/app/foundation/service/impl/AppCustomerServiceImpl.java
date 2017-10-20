@@ -8,11 +8,13 @@ import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -103,6 +105,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void modifyCustomerInformation(UserSetInformationReq userInformation) {
         if (null != userInformation){
             customerDAO.update(transform(userInformation));
@@ -115,7 +118,31 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public UserHomePageResponse findCustomerInfoByUserId(Long userId) {
+    public Double findPreDepositBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType ==6){
+            return customerDAO.findPreDepositBalanceByUserId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType ==6){
+            return customerDAO.findLeBiQuantityByUserId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType && identityType ==6){
+            customerDAO.updateLeBiQuantityByUserId(userId);
+        }
+    }
+
+    @Override
+    public CustomerHomePageResponse findCustomerInfoByUserId(Long userId) {
         if (null != userId){
             return customerDAO.findCustomerInfoByUserId(userId);
         }
@@ -126,7 +153,12 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         AppCustomer appCustomer = new AppCustomer();
         appCustomer.setCusId(userInformation.getUserId());
         appCustomer.setPicUrl(userInformation.getPicUrl());
-        appCustomer.setBirthday(userInformation.getBirthday());
+        try {
+            appCustomer.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(userInformation.getBirthday()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
         appCustomer.setMobile(userInformation.getMobile());
         appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
         appCustomer.setName(userInformation.getName());

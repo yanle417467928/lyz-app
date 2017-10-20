@@ -29,7 +29,7 @@ public class UserSetInformationReq {
     //性别
     private String sex;
     //生日
-    private Date birthday;
+    private String birthday;
     //电话
     private String mobile;
     //所属城市

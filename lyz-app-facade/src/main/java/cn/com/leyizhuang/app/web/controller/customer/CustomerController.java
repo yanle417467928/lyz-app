@@ -300,5 +300,116 @@ public class CustomerController {
             return resultDTO;
         }
     }
+
+    /**
+     * 顾客获取账户余额
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/deposit/balance", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType){
+
+        logger.info("getCustomerPreDepositBalance CALLED,顾客获取账户余额，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            Double balance = customerService.findPreDepositBalanceByUserIdAndIdentityType(userId,identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+            logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取账户余额失败", null);
+            logger.warn("getCustomerPreDepositBalance EXCEPTION,顾客获取账户余额失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 顾客获取乐币数量
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/lebi/quantity", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerLeBiQuantity(Long userId, Integer identityType){
+
+        logger.info("getCustomerLeBiQuantity CALLED,顾客获取乐币数量，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            Integer quantity = customerService.findLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
+            logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取乐币数量失败", null);
+            logger.warn("getCustomerLeBiQuantity EXCEPTION,顾客获取乐币数量失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 顾客签到增加乐币
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/lebi/sign", produces = "application/json;charset=UTF-8")
+    public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType){
+
+        logger.info("addCustomerLeBiQuantity CALLED,顾客签到增加乐币，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            customerService.addLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客签到增加乐币失败", null);
+            logger.warn("addCustomerLeBiQuantity EXCEPTION,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }
 
