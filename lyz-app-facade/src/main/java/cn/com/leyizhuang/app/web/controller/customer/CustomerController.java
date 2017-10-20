@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.customer;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
+import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -125,7 +126,8 @@ public class CustomerController {
             if (phoneUser != null) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
-                //phoneUser.setPicUrl(registryParam.getPicUrl());
+                String profilePhotoUrl = FileUploadOSSUtils.uploadProfilePhoto(picUrl);
+                phoneUser.setPicUrl(profilePhotoUrl);
                 customerService.update(phoneUser);
                 String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
@@ -141,7 +143,8 @@ public class CustomerController {
                 newUser.setStatus(Boolean.TRUE);
                 newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
                 newUser.setNickName(registryParam.getNickName());
-               // newUser.setPicUrl(registryParam.getPicUrl());
+                String profilePhotoUrl = FileUploadOSSUtils.uploadProfilePhoto(picUrl);
+                newUser.setPicUrl(profilePhotoUrl);
                 newUser.setCityId(registryParam.getCityId());
                 newUser.setMobile(registryParam.getPhone());
                 AppCustomer returnUser = customerService.save(newUser);

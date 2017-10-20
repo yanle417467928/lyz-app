@@ -19,7 +19,7 @@ public class FileUploadOSSUtils {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-    private String uploadFile(MultipartFile imgFile) {
+    public static String uploadProfilePhoto(MultipartFile imgFile) {
         String name = imgFile.getOriginalFilename();
         String ext = name.substring(name.lastIndexOf("."));
 
@@ -28,7 +28,7 @@ public class FileUploadOSSUtils {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH) + 1;
             Date dt = calendar.getTime();
-            String fileName = "photo/order/" + year + "/" + month + "/" + SDF.format(dt) + ext;
+            String fileName = "profile/photo/" + year + "/" + month + "/" + SDF.format(dt) + ext;
 
             String path = "";
             long fileSize = imgFile.getSize();
