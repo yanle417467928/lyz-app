@@ -23,7 +23,7 @@
 
    <select id="findCreditMoneyBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
       SELECT
-      balance
+      credit_limit_available balance
       FROM st_credit_money
       WHERE store_id = #{storeId}
    </select>
