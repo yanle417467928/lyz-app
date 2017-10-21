@@ -13,13 +13,14 @@ import lombok.ToString;
 @ToString
 public class OrderUsableProductCouponResponse {
 
+    private Long id;
     //商品名称
     private String skuName;
     //商品规格
     private String goodsSpecification;
     //商品单位名称
     private String goodsUnit;
-    //差品卷剩余数量
+    //产品卷剩余数量
     private Integer leftNumber;
     //商品封面图片
     private String coverImageUri;

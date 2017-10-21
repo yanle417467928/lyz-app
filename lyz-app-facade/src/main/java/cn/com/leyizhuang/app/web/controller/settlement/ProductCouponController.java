@@ -36,8 +36,8 @@ public class ProductCouponController {
      * @date 2017/10/19
      */
     @PostMapping(value = "/get/usable/product/coupon", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getUsableProductCoupon(Long userId, Integer identityType, String goodsParam, String giftparam) {
-        logger.info("getUsableProductCoupon CALLED,获取订单可用产品券列表，入参 userId:{} identityType:{} goodsParam:{} giftparam:{}", userId, identityType, goodsParam, giftparam);
+    public ResultDTO<Object> getUsableProductCoupon(Long userId, Integer identityType, String goodsParam, String giftParam) {
+        logger.info("getUsableProductCoupon CALLED,获取订单可用产品券列表，入参 userId:{} identityType:{} goodsParam:{} giftParam:{}", userId, identityType, goodsParam, giftParam);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {

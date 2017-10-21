@@ -4,6 +4,7 @@
 
     <select id="findProductCouponByCustomerIdAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
         SELECT
+            c.id,
             g.sku_name,
             g.goods_specification,
             g.goods_unit goods_unit,
