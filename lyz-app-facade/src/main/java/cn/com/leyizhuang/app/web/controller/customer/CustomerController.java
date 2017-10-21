@@ -313,7 +313,7 @@ public class CustomerController {
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/deposit/balance", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType){
 
         logger.info("getCustomerPreDepositBalance CALLED,顾客获取账户余额，入参 userId {},identityType{}", userId, identityType);
