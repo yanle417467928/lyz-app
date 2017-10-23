@@ -34,7 +34,7 @@ import java.util.List;
  * Created by caiyu on 2017/10/17.
  */
 @RestController
-@RequestMapping(value = "/app/materialAudit")
+@RequestMapping(value = "/app/material/audit")
 public class MaterialAuditSheetController {
 
     private static final Logger logger = LoggerFactory.getLogger(MaterialAuditSheetController.class);
@@ -211,7 +211,7 @@ public class MaterialAuditSheetController {
      * @param auditNo 物料审核单编号
      * @return
      */
-    @RequestMapping(value = "/modifyAuditStatus",method = RequestMethod.POST)
+    @RequestMapping(value = "/modify",method = RequestMethod.POST)
     public ResultDTO<Object> updateStatus(String auditNo){
         ResultDTO<Object> resultDTO;
         logger.info("updateStatus CALLED,修改物料审核单状态，入参 suditNumber:{}",auditNo);
@@ -245,7 +245,7 @@ public class MaterialAuditSheetController {
      * @param auditNo 物料审核单编号
      * @return
      */
-    @RequestMapping(value = "/getMaterialDetails",method = RequestMethod.POST)
+    @RequestMapping(value = "/details",method = RequestMethod.POST)
     public ResultDTO<Object> materialAuditGoodsDetails(String auditNo){
         ResultDTO<Object> resultDTO;
         logger.info("materialAuditGoodsDetails CALLED,查看物料审核单详情，入参 suditNo:{}",auditNo);
@@ -300,7 +300,7 @@ public class MaterialAuditSheetController {
      * @param status    料单状态
      * @return
      */
-    @RequestMapping(value = "/worker/audtiList",method = RequestMethod.POST)
+    @RequestMapping(value = "/worker/list",method = RequestMethod.POST)
     public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID,Integer status){
         ResultDTO<Object> resultDTO;
         logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{}",userID,status);
@@ -336,7 +336,7 @@ public class MaterialAuditSheetController {
      * @param status    订单状态
      * @return
      */
-    @RequestMapping(value = "/manager/auditList",method = RequestMethod.POST)
+    @RequestMapping(value = "/manager/audit",method = RequestMethod.POST)
     public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID,Integer status){
         ResultDTO<Object> resultDTO;
         logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},",userID);
@@ -381,6 +381,65 @@ public class MaterialAuditSheetController {
             logger.warn("{}",e);
             return resultDTO;
         }
+    }
+
+    /**
+     * 项目经理审核物料审核单
+     * @param auditNo 物料审核单编码
+     * @param isAudited 是否通过审核
+     * @param userID 用户id
+     * @return
+     */
+    @RequestMapping(value = "/manager/check",method = RequestMethod.POST)
+    public ResultDTO<Object> managerAudit(Long userID,String auditNo,Boolean isAudited){
+        ResultDTO<Object> resultDTO;
+        logger.info("managerAudit CALLED,项目经理审核物料审核单，入参 userID:{}, auditNo:{}, isAudited:{}",userID,auditNo,isAudited);
+        if (null == userID){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户id不能为空",null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(auditNo)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"物料审核单编号不能为空",null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        if (null == isAudited){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"是否审核通过不能为空",null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        try {
+            MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
+            if (null == materialAuditSheet){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"未查询到此物料审核单",null);
+                logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+            if(materialAuditSheet.getStatus() == 2){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"此物料审核单已被审核",null);
+                logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+            if(isAudited){
+                materialAuditSheet.setIsAudited(true);
+            }else{
+                materialAuditSheet.setIsAudited(false);
+            }
+            materialAuditSheet.setStatus(2);
+            materialAuditSheet.setAuditorID(userID);
+            materialAuditSheetService.modifyMaterialAuditSheet(materialAuditSheet);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单成功，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"发生未知异常，项目经理审核物料审核单失败",null);
+            logger.warn("managerAudit EXCEPTION,项目经理审核物料审核单失败，出参 resultDTO:{}",resultDTO);
+            logger.warn("{}",e);
+            return resultDTO;
+        }
+
     }
 
 

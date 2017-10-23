@@ -15,14 +15,14 @@ import java.util.List;
 @Repository
 public interface MaterialAuditSheetDAO {
     //根据状态查询物料审核list
-   List<MaterialAuditSheet> queryListByStatus(int status);
+    List<MaterialAuditSheet> queryListByStatus(int status);
     //根据工人id查询物料审核list
-   List<MaterialAuditSheet> queryListByEmployeeID(@Param("employeeID") Long employeeID);
-   //添加物料审核单
-   void addMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
-   //修改物料审核单
-   void modifyMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
-   //修改物料审核单状态
+    List<MaterialAuditSheet> queryListByEmployeeID(@Param("employeeID") Long employeeID);
+    //添加物料审核单
+    void addMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
+    //修改物料审核单
+    void modifyMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
+    //修改物料审核单状态
     void modifyStatus(@Param("status") int status, @Param("auditNumber") String auditNumber);
     //根据物料审核单号查找物料单
     MaterialAuditSheet queryByAuditNo(@Param("auditNumber") String auditNumber);
