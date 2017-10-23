@@ -503,4 +503,76 @@
         </foreach>
     </select>
 
+    <select id="filterGoodsCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        SELECT
+        g.cover_image_uri,
+        g.sku_name goods_name,
+        g.gid      id,
+        g.goods_specification,
+        g.goods_unit,
+        p.vip_price,
+        p.retail_price,
+        g.cid      category_id,
+        g.brd_id   brand_id,
+        g.gtid     type_id
+        FROM
+        cus_customer c
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+        WHERE
+        c.cus_id = #{userId}
+        <if test="null != firstCategoryCode ">
+            AND gc.p_category_code = #{firstCategoryCode}
+        </if>
+        <if test="null != secondCategoryId ">
+            AND g.cid = #{secondCategoryId}
+        </if>
+        <if test="null != brandId ">
+            AND g.brandId = #{brandId}
+        </if>
+        <if test="null != typeId ">
+            AND g.gtid = #{typeId}
+        </if>
+        <if test="null != specification and specification != ''">
+            AND g.goods_specification = #{specification}
+        </if>
+    </select>
+
+    <select id="filterGoodsEmployee" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        SELECT
+        g.cover_image_uri,
+        g.sku_name goods_name,
+        g.gid      id,
+        g.goods_specification,
+        g.goods_unit,
+        p.vip_price,
+        p.retail_price,
+        g.cid      category_id,
+        g.brd_id   brand_id,
+        g.gtid     type_id
+        FROM
+        emp_employee e
+        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+        WHERE
+        e.emp_id = #{userId}
+        <if test="null != firstCategoryCode ">
+            AND gc.p_category_code = #{firstCategoryCode}
+        </if>
+        <if test="null != secondCategoryId ">
+            AND g.cid = #{secondCategoryId}
+        </if>
+        <if test="null != brandId ">
+            AND g.brandId = #{brandId}
+        </if>
+        <if test="null != typeId ">
+            AND g.gtid = #{typeId}
+        </if>
+        <if test="null != specification ">
+            AND g.goods_specification = #{specification}
+        </if>
+    </select>
+
 </mapper>

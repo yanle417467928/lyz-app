@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
@@ -47,4 +48,6 @@ public interface GoodsService {
     GoodsDO findGoodsById(Long id);
 
     List<GoodsPrice> getGoodsPriceByCustomerAndGoodsId(Long userId, List<Long> goodsIds);
+
+    List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type,String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId, String specification);
 }

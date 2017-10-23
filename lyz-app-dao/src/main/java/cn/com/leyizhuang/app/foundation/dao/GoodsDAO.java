@@ -76,4 +76,11 @@ public interface GoodsDAO {
 
     List<GoodsPrice> getGoodsPriceByCustomerAndGoodsId(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
+    List<UserGoodsResponse> filterGoodsCustomer(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
+                                                @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
+
+    List<UserGoodsResponse> filterGoodsEmployee(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
+                                                @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 }

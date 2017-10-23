@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -336,6 +337,28 @@ public class GoodsController {
             logger.warn("{}", e);
             return resultDTO;
         }
-
     }
+
+    @PostMapping(value = "/filter",produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType,String firstCategoryCode,Long categoryId,Long brandId,Long typeId,
+                                             String specification ){
+        logger.info("filterGoodsList CALLED,筛选商品，入参 firstCategoryCode {},categoryId{}," +
+                "brandId {},typeId{},specification{}", firstCategoryCode, categoryId,brandId,typeId,specification);
+        ResultDTO<Object> resultDTO;
+        try {
+            List<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
+                    AppIdentityType.getAppUserTypeByValue(identityType),firstCategoryCode,categoryId,
+                    brandId,typeId, specification);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,goodsResponseList);
+            logger.info("filterGoodsList OUT,筛选商品列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，筛选商品失败", null);
+            logger.warn("filterGoodsList EXCEPTION,筛选商品失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }
