@@ -51,4 +51,6 @@ public interface AppCustomerDAO {
     Boolean existsByCustomerId(Long userId);
 
     void updateCustomerMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
+
+    void updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId,@Param("qty") Integer quantity);
 }

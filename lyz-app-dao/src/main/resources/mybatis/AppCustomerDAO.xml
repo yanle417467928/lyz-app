@@ -167,7 +167,16 @@
         SET
             quantity = quantity +10
         WHERE
-            cus_id =#{userId};
+            cus_id =#{userId}
+    </update>
+
+    <update id="updateLeBiQuantityByUserIdAndQty">
+        UPDATE
+            cus_lb
+        SET
+            quantity = quantity - #{qty}
+        WHERE
+            cus_id = #{userId}
     </update>
 
     <update id="updateCustomerMobileByUserId">

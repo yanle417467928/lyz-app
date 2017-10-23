@@ -387,7 +387,7 @@ public class CustomerController {
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/lebi/sign", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/sign", produces = "application/json;charset=UTF-8")
     public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType){
 
         logger.info("addCustomerLeBiQuantity CALLED,顾客签到增加乐币，入参 userId {},identityType{}", userId, identityType);

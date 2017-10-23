@@ -143,8 +143,15 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public void modifyCustomerMobileByUserId(Long userId, String mobile) {
-        if (null != userId){
+        if (null != userId && StringUtils.isNotBlank(mobile)){
             customerDAO.updateCustomerMobileByUserId(userId,mobile);
+        }
+    }
+
+    @Override
+    public void modifyLeBiQuantityByUserIdAndQty(Long userId, Integer quantity) {
+        if (null != userId && null != quantity){
+            customerDAO.updateLeBiQuantityByUserIdAndQty(userId,quantity);
         }
     }
 

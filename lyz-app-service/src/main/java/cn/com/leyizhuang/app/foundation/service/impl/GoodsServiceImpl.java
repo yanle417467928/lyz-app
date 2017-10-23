@@ -202,6 +202,20 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return this.goodsDAO.getGoodsPriceByCustomerAndGoodsId(userId, goodsIds);
     }
 
+    @Override
+    public List<UserGoodsResponse> filterGoods(Long userId,AppIdentityType type,String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId,
+                                               String specification) {
+        if ((null != firstCategoryCode || null != secondCategoryId || null != brandId || null != typeId ||
+                null != specification) && null != userId && null != type){
+            if (type.equals(AppIdentityType.CUSTOMER)){
+                return goodsDAO.filterGoodsCustomer(userId,firstCategoryCode,secondCategoryId,brandId,typeId,specification);
+            }else{
+                return goodsDAO.filterGoodsEmployee(userId,firstCategoryCode,secondCategoryId,brandId,typeId,specification);
+            }
+        }
+        return null;
+    }
+
     /**
      * @title 获取商品详情
      * @descripe

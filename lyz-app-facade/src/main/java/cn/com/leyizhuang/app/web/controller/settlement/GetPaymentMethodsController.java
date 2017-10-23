@@ -64,4 +64,54 @@ public class GetPaymentMethodsController {
         }
     }
 
+    /**
+     * 获取乐币折扣商品金额
+     * @param userId 用户ID
+     * @param identityType 身份类型
+     * @param goodsMoney 需支付商品金额
+     * @return
+     */
+    @PostMapping(value = "/rebate/lebi", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> paymentMethodsOfLeBiRebate(Long userId, Integer identityType,Double goodsMoney) {
+
+        logger.info("paymentMethodsOfLeBiRebate CALLED,乐币折扣商品金额，入参 userId:{},identityType:{},goodsMoney{}", userId, identityType,goodsMoney);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || 6 != identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        if (null == goodsMoney) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "需支付金额不能为空！", null);
+            logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            Integer qty = appCustomerServiceImpl.findLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            Double rebate = (double) (qty / 10);
+            if (rebate >= goodsMoney){
+                rebate = goodsMoney;
+//                Integer rebateMoney = (int) (goodsMoney * 10);
+//                appCustomerServiceImpl.modifyLeBiQuantityByUserIdAndQty(userId,rebateMoney);
+//            }else {
+//                appCustomerServiceImpl.modifyLeBiQuantityByUserIdAndQty(userId,qty);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, rebate);
+            logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,乐币折扣商品金额失败!", null);
+            logger.warn("paymentMethodsOfLeBiRebate EXCEPTION,乐币折扣商品金额失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }
