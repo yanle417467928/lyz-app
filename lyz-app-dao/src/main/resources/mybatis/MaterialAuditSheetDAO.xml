@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaterialAuditSheetDAO">
+
+    <resultMap id="MaterialAuditSheetResult" type="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        <id column="AUDIT_HEADER_ID" property="auditHeaderID" jdbcType="BIGINT"/>
+        <result column="EMPLOYEE_ID" property="employeeID" jdbcType="BIGINT"/>
+        <result column="EMPLOYEE_NAME" property="employeeName" jdbcType="VARCHAR"/>
+        <result column="DELIVERY_TYPE" property="deliveryType" jdbcType="VARCHAR"/>
+        <result column="STORE_ID" property="storeID" jdbcType="BIGINT"/>
+        <result column="RECEIVER" property="receiver" jdbcType="VARCHAR"/>
+        <result column="RECEIVER_PHONE" property="receiverPhone" jdbcType="VARCHAR"/>
+        <result column="DELIVERY_CITY" property="deliveryCity" jdbcType="VARCHAR"/>
+        <result column="DELIVERY_COUNTY" property="deliveryCounty" jdbcType="VARCHAR"/>
+        <result column="DELIVERY_STREET" property="deliveryStreet" jdbcType="VARCHAR"/>
+        <result column="RESIDENCE_NAME" property="residenceName" jdbcType="VARCHAR"/>
+        <result column="DETAILED_ADDRESS" property="detailedAddress" jdbcType="VARCHAR"/>
+        <result column="IS_OWNER_RECEIVING" property="isOwnerReceiving" jdbcType="BIT"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="STATUS" property="status"/>
+        <result column="RESERVATION_DELIVERY_TIME" property="reservationDeliveryTime" jdbcType="TIMESTAMP"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="AUDIT_NO" property="auditNo" jdbcType="VARCHAR"/>
+        <result column="AUDITOR_ID" property="auditorID" jdbcType="BIGINT" />
+    </resultMap>
+
+    <select id="queryListByStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        SELECT AUDIT_HEADER_ID, EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
+          DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
+          REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED
+        FROM material_audit_sheet
+        WHERE
+          STATUS = #{status}
+        ORDER BY AUDIT_HEADER_ID DESC
+    </select>
+
+    <select id="queryListByEmployeeID" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        SELECT AUDIT_HEADER_ID, EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
+        REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED
+        FROM material_audit_sheet
+        WHERE
+        EMPLOYEE_ID = #{employeeID}
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <insert id="addMaterialAuditSheet" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet" useGeneratedKeys="true" keyProperty="auditHeaderID">
+        INSERT INTO material_audit_sheet
+        (EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING, REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED)
+        VALUES
+        (#{employeeID}, #{employeeName}, #{deliveryType}, #{storeID}, #{receiver}, #{receiverPhone},
+        #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet}, #{residenceName}, #{detailedAddress},
+        #{isOwnerReceiving}, #{remark}, #{status}, #{reservationDeliveryTime},#{createTime} ,#{auditNo} ,#{auditorID} ,#{isAudited})
+    </insert>
+
+    <update id="modifyMaterialAuditSheet" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        UPDATE material_audit_sheet
+        <set>
+            <if test="null != employeeID">
+                EMPLOYEE_ID = #{employeeID},
+            </if>
+            <if test="null != employeeName">
+                EMPLOYEE_NAME = #{employeeName},
+            </if>
+            <if test="null != deliveryType">
+                DELIVERY_TYPE = #{deliveryType},
+            </if>
+            <if test="null != storeID">
+                STORE_ID = #{storeID},
+            </if>
+            <if test="null != receiver">
+                RECEIVER = #{receiver},
+            </if>
+            <if test="null != receiverPhone">
+                RECEIVER_PHONE = #{receiverPhone},
+            </if>
+            <if test="null != deliveryCity">
+                DELIVERY_CITY = #{deliveryCity},
+            </if>
+            <if test="null != deliveryCounty">
+                DELIVERY_COUNTY = #{deliveryCounty},
+            </if>
+            <if test="null != deliveryStreet">
+                DELIVERY_STREET = #{deliveryStreet},
+            </if>
+            <if test="null != residenceName">
+                RESIDENCE_NAME = #{residenceName},
+            </if>
+            <if test="null != detailedAddress">
+                DETAILED_ADDRESS = #{detailedAddress},
+            </if>
+            <if test="null != isOwnerReceiving">
+                IS_OWNER_RECEIVING = #{isOwnerReceiving},
+            </if>
+            <if test="null != remark">
+                REMARK = #{remark},
+            </if>
+            <if test="null != status">
+                STATUS = #{status},
+            </if>
+            <if test="null != reservationDeliveryTime">
+                RESERVATION_DELIVERY_TIME = #{reservationDeliveryTime},
+            </if>
+            <if test="null != createTime">
+                CREATE_TIME = #{createTime},
+            </if>
+            <if test="null != auditNo">
+                AUDIT_NO = #{auditNo},
+            </if>
+            <if test="null != auditorID">
+                AUDITOR_ID = #{auditorID},
+            </if>
+            <if test="null != isAudited">
+                IS_AUDITED = #{isAudited},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="modifyStatus">
+        UPDATE material_audit_sheet
+        <set>
+                STATUS = #{status},
+        </set>
+        WHERE  AUDIT_NO = #{auditNumber}
+    </update>
+
+    <select id="queryByAuditNo" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        SELECT AUDIT_HEADER_ID, EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
+        REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED
+        FROM material_audit_sheet
+        WHERE
+        AUDIT_NO = #{auditNumber}
+    </select>
+    
+    <select id="queryDetailsByAuditNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse">
+        SELECT AUDIT_HEADER_ID, RECEIVER, RECEIVER_PHONE,
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
+        REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO
+        FROM material_audit_sheet
+        WHERE
+        AUDIT_NO = #{auditNo}
+    </select>
+
+    <select id="queryListByEmployeeIDAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse">
+        SELECT AUDIT_HEADER_ID, AUDIT_NO, DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET,
+        RESIDENCE_NAME, DETAILED_ADDRESS, STATUS, IS_AUDITED
+        FROM material_audit_sheet
+        WHERE
+        EMPLOYEE_ID = #{employeeID}
+        <if test="null != status">
+        AND STATUS = #{status}
+        </if>
+        ORDER BY AUDIT_HEADER_ID DESC
+    </select>
+
+    <select id="queryListByStoreIDAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
+        SELECT AUDIT_HEADER_ID, EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
+        REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED
+        FROM material_audit_sheet
+        WHERE
+        STORE_ID = #{storeID}
+        <if test="null != status">
+            AND STATUS = #{status}
+        </if>
+        ORDER BY AUDIT_HEADER_ID DESC
+    </select>
+
+</mapper>
