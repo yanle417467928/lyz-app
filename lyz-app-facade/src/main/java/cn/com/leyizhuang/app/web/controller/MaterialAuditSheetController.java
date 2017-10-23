@@ -300,7 +300,7 @@ public class MaterialAuditSheetController {
      * @param status    料单状态
      * @return
      */
-    @RequestMapping(value = "/worker/list",method = RequestMethod.POST)
+    @RequestMapping(value = "/list",method = RequestMethod.POST)
     public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID,Integer status){
         ResultDTO<Object> resultDTO;
         logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{}",userID,status);
