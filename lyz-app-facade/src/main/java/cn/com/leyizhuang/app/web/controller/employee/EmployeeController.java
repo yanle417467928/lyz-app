@@ -138,7 +138,7 @@ public class EmployeeController {
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/creditMoney", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getGuideCreditMoneyBalance(Long userId, Integer identityType){
 
         logger.info("getGuideCreditMoneyBalance CALLED,获取导购信用金余额，入参 userId {},identityType{}", userId, identityType);

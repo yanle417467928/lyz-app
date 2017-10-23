@@ -32,7 +32,7 @@ public class StoreController {
      * @param storeId
      * @return
      */
-    @PostMapping(value = "/subvention", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/subvention/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreSubventionBalance(Long storeId){
 
         logger.info("getStoreSubventionBalance CALLED,获取门店赞助金，入参 storeId{}", storeId);
@@ -62,7 +62,7 @@ public class StoreController {
      * @param storeId
      * @return
      */
-    @PostMapping(value = "/creditMoney", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreCreditMoneyBalance(Long storeId){
 
         logger.info("getStoreCreditMoneyBalance CALLED,获取门店信用金，入参 storeId{}", storeId);
@@ -92,7 +92,7 @@ public class StoreController {
      * @param storeId
      * @return
      */
-    @PostMapping(value = "/preDeposit", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getStorePreDepositBalance(Long storeId) {
 
         logger.info("getStorePreDepositBalance CALLED,获取门店预存款余额，入参 storeId{}", storeId);

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaterialAuditGoodsInfoDAO">
+
+    <resultMap id="MaterialAuditGoodsInfoResult" type="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
+        <id column="ID" property="id" jdbcType="BIGINT"/>
+        <result column="AUDIT_HEADER_ID" property="auditHeaderID" jdbcType="BIGINT"/>
+        <result column="GID" property="gid" jdbcType="BIGINT"/>
+        <result column="SKU" property="sku" jdbcType="VARCHAR"/>
+        <result column="SKU_NAME" property="skuName" jdbcType="VARCHAR"/>
+        <result column="QTY" property="qty" />
+        <result column="GOODS_SPECIFICATION" property="goodsSpecification" jdbcType="VARCHAR"/>
+        <result column="GOODS_UNIT" property="goodsUnit" jdbcType="VARCHAR"/>
+        <result column="COVER_IMAGE_URI" property="coverImageUri" jdbcType="VARCHAR"/>
+        <result column="IS_GIFT" property="isGift" jdbcType="BIT"/>
+    </resultMap>
+
+    <select id="queryListByAuditHeaderID" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
+        SELECT ID, AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT
+        FROM material_audit_goods_info
+        WHERE
+          AUDIT_HEADER_ID = #{auditHeaderID}
+        ORDER BY AUDIT_HEADER_ID DESC
+    </select>
+
+
+    <insert id="addMaterialAuditGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
+        INSERT INTO material_audit_goods_info
+        (AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT)
+        VALUES
+        (#{auditHeaderID}, #{gid}, #{sku}, #{skuName}, #{qty}, #{goodsSpecification}, #{goodsUnit}, #{coverImageUri}, #{isGift})
+    </insert>
+
+    <update id="modifyMaterialAuditGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
+        UPDATE material_audit_goods_info
+        <set>
+            <if test="null != auditHeaderID">
+                AUDIT_HEADER_ID = #{auditHeaderID},
+            </if>
+            <if test="null != gid">
+                GID = #{gid},
+            </if>
+            <if test="null != sku">
+                SKU = #{sku},
+            </if>
+            <if test="null != skuName">
+                SKU_NAME = #{skuName},
+            </if>
+            <if test="null != qty">
+                QTY = #{qty},
+            </if>
+            <if test="null != goodsSpecification">
+                GOODS_SPECIFICATION = #{goodsSpecification},
+            </if>
+            <if test="null != goodsUnit">
+                GOODS_UNIT = #{goodsUnit},
+            </if>
+            <if test="null != coverImageUri">
+                COVER_IMAGE_URI = #{coverImageUri},
+            </if>
+            <if test="null != isGift">
+                IS_GIFT = #{isGift},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <select id="querySumQtyByAuditHeaderID" resultType="java.lang.Integer">
+        SELECT sum(QTY)
+        FROM material_audit_goods_info
+        WHERE
+        AUDIT_HEADER_ID = #{auditHeaderID}
+    </select>
+
+
+</mapper>
