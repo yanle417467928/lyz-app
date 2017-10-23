@@ -17,4 +17,6 @@ public interface CityService {
     City findByCityNumber(String cityNumber);
 
     City findById(Long cityId);
+
+    void save(City city);
 }
