@@ -57,6 +57,16 @@ eureka:
     lease-expiration-duration-in-seconds: 30
     lease-renewal-interval-in-seconds: 10
 
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 50000
+
 ---
 # 开发环境配置
 server:
@@ -81,11 +91,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:1111/eureka/
-    healthcheck:
-          enabled: true
-  instance:
-      lease-renewal-interval-in-seconds: 10
-      lease-expiration-duration-in-seconds: 30
+
 ---
 # 测试环境配置
 spring:
@@ -104,11 +110,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
-    healthcheck:
-          enabled: true
-  instance:
-      lease-renewal-interval-in-seconds: 10
-      lease-expiration-duration-in-seconds: 30
+
 ---
 # 生产环境配置
 spring:
