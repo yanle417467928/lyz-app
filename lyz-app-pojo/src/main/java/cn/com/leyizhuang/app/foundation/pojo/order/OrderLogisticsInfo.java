@@ -19,8 +19,11 @@ public class OrderLogisticsInfo {
 
     private Long id;
 
+    //订单id
+    private Long oid;
+
     //订单号
-    private String orderNumber;
+    private String ordNo;
 
     //配送方式
     private String deliveryType;
@@ -55,6 +58,19 @@ public class OrderLogisticsInfo {
     //收货人电话
     private String receiverPhone;
 
-    //收货人地址
+    //收货地址全称
     private String shippingAddress;
+    //收货省份
+    private String deliveryProvince;
+    //收货城市
+    private String deliveryCity;
+    //收货县
+    private String deliveryCounty;
+    //收货街道
+    private String deliveryStreet;
+    //收货详细地址
+    private String detailedAddress;
+    //小区名
+    private String residenceName;
+
 }
