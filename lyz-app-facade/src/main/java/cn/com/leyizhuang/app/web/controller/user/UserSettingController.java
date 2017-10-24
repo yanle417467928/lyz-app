@@ -544,7 +544,7 @@ public class UserSettingController {
             appCustomer.setSex(SexType.getSexTypeByValue(userInformation.getSex()));
         }
         if (null != userInformation.getHeadPic()) {
-            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic(), "profile/photo/");
             appCustomer.setPicUrl(picUrl);
         }
         return appCustomer;
@@ -563,7 +563,7 @@ public class UserSettingController {
             appEmployee.setSex(SexType.getSexTypeByValue(sex));
         }
         if (null != userInformation.getHeadPic()) {
-            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic());
+            String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic(), "profile/photo/");
             appEmployee.setPicUrl(picUrl);
         }
         return appEmployee;
