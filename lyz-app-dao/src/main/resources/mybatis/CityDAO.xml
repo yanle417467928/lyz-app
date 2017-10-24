@@ -16,7 +16,7 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.City">
         INSERT INTO city
-        (NAME, SPELL, NUMBER, STRUCTURE_ID, STRUCTURE_TITLE, ENABLE, ENABLE_FALSE_TIME)
+        (NAME, SPELL, CODE, STRUCTURE_ID, STRUCTURE_TITLE, ENABLE, ENABLE_FALSE_TIME)
         VALUES
         (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
     </insert>
