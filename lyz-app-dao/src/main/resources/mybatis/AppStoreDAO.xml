@@ -14,24 +14,27 @@
        SELECT * FROM st_store where IS_DEFAULT IS TRUE AND city_id = #{cityId}
    </select>
 
-   <select id="findSubventionBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+   <select id="findSubventionBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
       SELECT
-      balance
-      FROM st_subvention
-      WHERE store_id = #{storeId}
+      sb.balance
+      FROM emp_employee e
+      INNER JOIN st_subvention sb ON sb.store_id = e.store_id
+      WHERE e.emp_id = #{userId}
    </select>
 
-   <select id="findCreditMoneyBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+   <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
       SELECT
-      credit_limit_available balance
-      FROM st_credit_money
-      WHERE store_id = #{storeId}
+        scm.credit_limit_available balance
+      FROM emp_employee e
+      INNER JOIN st_credit_money scm ON scm.store_id = e.store_id
+      WHERE e.emp_id = #{userId};
    </select>
 
-   <select id="findPreDepositBalanceByStoreId" parameterType="java.lang.Long" resultType="java.lang.Double">
+   <select id="findPreDepositBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
       SELECT
-      balance
-      FROM st_pre_deposit
-      WHERE store_id = #{storeId}
+         pd.balance
+      FROM emp_employee e
+      INNER JOIN st_pre_deposit pd ON pd.store_id = e.store_id
+      WHERE e.emp_id = #{userId};
    </select>
 </mapper>

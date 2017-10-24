@@ -57,7 +57,8 @@ public class UserCollectController {
         try {
             List<UserGoodsResponse> collectGoodsResponseList = goodsService.findGoodsCollectListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, collectGoodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (collectGoodsResponseList != null && collectGoodsResponseList.size() > 0) ? collectGoodsResponseList : null);
             logger.info("getPersonalCollectGoodsList OUT,获取收藏商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

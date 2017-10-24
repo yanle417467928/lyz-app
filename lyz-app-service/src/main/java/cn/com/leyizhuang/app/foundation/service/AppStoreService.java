@@ -19,9 +19,9 @@ public interface AppStoreService {
 
     AppStore findDefaultStoreByCityId(Long cityId);
 
-    Double findSubventionBalanceByStoreId(Long storeId);
+    Double findSubventionBalanceByUserId(Long userId);
 
-    Double findCreditMoneyBalanceByStoreId(Long storeId);
+    Double findCreditMoneyBalanceByUserId(Long userId);
 
-    Double findPreDepositBalanceByStoreId(Long storeId);
+    Double findPreDepositBalanceByUserId(Long userId);
 }

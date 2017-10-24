@@ -27,4 +27,10 @@ public interface AppStoreDAO {
     Double findCreditMoneyBalanceByStoreId(Long storeId);
 
     Double findPreDepositBalanceByStoreId(Long storeId);
+
+    Double findSubventionBalanceByUserId(Long userId);
+
+    Double findCreditMoneyBalanceByUserId(Long userId);
+
+    Double findPreDepositBalanceByUserId(Long userId);
 }

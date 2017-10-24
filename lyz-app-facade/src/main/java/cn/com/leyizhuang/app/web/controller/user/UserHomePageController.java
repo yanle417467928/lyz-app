@@ -115,7 +115,8 @@ public class UserHomePageController {
         try {
             List<CustomerListResponse> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomerList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (appCustomerList != null && appCustomerList.size() > 0) ? appCustomerList : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -194,7 +195,8 @@ public class UserHomePageController {
         try {
             List<EmployeeListResponse> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appEmployeeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

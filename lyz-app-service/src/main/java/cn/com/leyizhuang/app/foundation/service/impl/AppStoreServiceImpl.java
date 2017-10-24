@@ -45,25 +45,25 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    public Double findSubventionBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findSubventionBalanceByStoreId(storeId);
+    public Double findSubventionBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findSubventionBalanceByUserId(userId);
         }
         return null;
     }
 
     @Override
-    public Double findCreditMoneyBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findCreditMoneyBalanceByStoreId(storeId);
+    public Double findCreditMoneyBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findCreditMoneyBalanceByUserId(userId);
         }
         return null;
     }
 
     @Override
-    public Double findPreDepositBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findPreDepositBalanceByStoreId(storeId);
+    public Double findPreDepositBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findPreDepositBalanceByUserId(userId);
         }
         return null;
     }

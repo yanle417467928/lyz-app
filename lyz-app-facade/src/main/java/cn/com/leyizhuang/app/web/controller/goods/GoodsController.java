@@ -143,7 +143,8 @@ public class GoodsController {
         }
         try {
             List<GoodsBrandResponse> brandList = goodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, brandList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (brandList != null && brandList.size() > 0) ? brandList : null);  
             logger.info("getGoodsBrandListByUserIdAndIdentityType OUT,获取商品品牌列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -184,7 +185,8 @@ public class GoodsController {
         }
         try {
             List<GoodsTypeResponse> brandList = goodsService.findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, brandList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (brandList != null && brandList.size() > 0) ? brandList : null);
             logger.info("getGoodsTypeListByUserIdAndIdentityType OUT,获取商品类型列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -219,7 +221,8 @@ public class GoodsController {
         }
         try {
             List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userGoodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (userGoodsResponseList != null && userGoodsResponseList.size() > 0) ? userGoodsResponseList : null);
             logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
 
@@ -263,7 +266,8 @@ public class GoodsController {
         }
         try {
             List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsOftenListByUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, userGoodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (userGoodsResponseList != null && userGoodsResponseList.size() > 0) ? userGoodsResponseList : null);
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -307,7 +311,7 @@ public class GoodsController {
         }
         GoodsDetailResponse goodsDetailResponse = this.goodsService.findGoodsDetailByGoodsId(userId, goodsId, identityType);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsDetailResponse);
-        logger.info("getGoodsDetail OUT,获取商品详情，出参 resultDTO:{}", resultDTO);
+        logger.info("getGoodsDetail OUT,获取商品详情成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 
@@ -349,7 +353,8 @@ public class GoodsController {
             List<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
                     AppIdentityType.getAppUserTypeByValue(identityType),firstCategoryCode,categoryId,
                     brandId,typeId, specification);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,goodsResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,
+                    (goodsResponseList != null && goodsResponseList.size() > 0) ? goodsResponseList : null);
             logger.info("filterGoodsList OUT,筛选商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e){
