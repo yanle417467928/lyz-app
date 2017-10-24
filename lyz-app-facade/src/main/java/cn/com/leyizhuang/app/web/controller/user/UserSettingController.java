@@ -462,12 +462,17 @@ public class UserSettingController {
             }
 
             //上传图片
+            String photos = "";
+            for (int i = 0; i < files.length; i++) {
+                photos += FileUploadOSSUtils.uploadProfilePhoto(files[i], "fedback/photo");
+                photos += ",";
+            }
 
             FunctionalFeedbackDO functionalFeedbackDO = new FunctionalFeedbackDO();
             functionalFeedbackDO.setType(type);
             functionalFeedbackDO.setContent(content);
             functionalFeedbackDO.setPhone(phone);
-            functionalFeedbackDO.setPictureUrl("");
+            functionalFeedbackDO.setPictureUrl(photos);
             functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
             functionalFeedbackDO.setUserId(userId);
             functionalFeedbackDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));

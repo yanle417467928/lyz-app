@@ -83,6 +83,7 @@ public class PhotoOrderController {
             String photos = "";
             for (int i = 0; i < files.length; i++) {
                 photos += FileUploadOSSUtils.uploadProfilePhoto(files[i], "order/photo");
+                photos += ",";
             }
             PhotoOrderDO photoOrderDO = new PhotoOrderDO();
             photoOrderDO.setCreateTime(LocalDateTime.now());
