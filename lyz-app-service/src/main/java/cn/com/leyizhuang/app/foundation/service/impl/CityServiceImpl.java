@@ -12,13 +12,14 @@ import java.util.List;
  * 城市API实现
  *
  * @author Richard
- * Created on 2017-09-21 14:25
+ *         Created on 2017-09-21 14:25
  **/
 @Service
 public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
 
     @Autowired
     private CityDAO cityDAO;
+
     @Override
     public List<City> findAll() {
         return cityDAO.findAll();
@@ -26,7 +27,7 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
     public City findByCityNumber(String cityNumber) {
-        if (StringUtils.isNotBlank(cityNumber)){
+        if (StringUtils.isNotBlank(cityNumber)) {
             return cityDAO.findByCityNumber(cityNumber);
         }
         return null;
@@ -34,9 +35,14 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
     public City findById(Long cityId) {
-        if (cityId!=null){
+        if (cityId != null) {
             return cityDAO.findById(cityId);
         }
         return null;
+    }
+
+    @Override
+    public void save(City city) {
+        cityDAO.save(city);
     }
 }

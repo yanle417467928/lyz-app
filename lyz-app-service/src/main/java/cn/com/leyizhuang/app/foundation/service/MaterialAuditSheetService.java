@@ -28,5 +28,5 @@ public interface MaterialAuditSheetService {
     //根据工人id与料单状态查询list
     List<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status);
     //项目经理根据状态查看所属装饰公司下的所有物料审核单
-    List<MaterialAuditSheet> queryListByStoreIDAndStatus(@Param("storeID") Long storeID,@Param("status") Integer status);
+    List<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID,Integer status);
 }

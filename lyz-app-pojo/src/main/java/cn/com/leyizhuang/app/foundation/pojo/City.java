@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * 城市
  *
@@ -26,4 +28,8 @@ public class City {
     private Long structureId;
     // 所属分公司名称
     private String structureTitle;
+    //是否生效
+    private Boolean enable;
+    //失效时间
+    private Date enableFalseTime;
 }

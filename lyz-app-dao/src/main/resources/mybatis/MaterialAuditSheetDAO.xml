@@ -116,7 +116,7 @@
                 IS_AUDITED = #{isAudited},
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE AUDIT_HEADER_ID = #{auditHeaderID}
     </update>
 
     <update id="modifyStatus">
