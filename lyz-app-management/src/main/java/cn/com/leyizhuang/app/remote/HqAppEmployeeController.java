@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.remote;
+package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;
