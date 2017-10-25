@@ -45,11 +45,6 @@ public class ProductCouponController {
                 logger.info("getUsableProductCoupon OUT,获取订单可用产品券列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || 6 != identityType) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getUsableProductCoupon OUT,获取订单可用产品券列表失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
             if (null == goodsParam) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品和数量信息不能为空！", null);
                 logger.info("getUsableProductCoupon OUT,获取订单可用产品券列表失败，出参 resultDTO:{}", resultDTO);

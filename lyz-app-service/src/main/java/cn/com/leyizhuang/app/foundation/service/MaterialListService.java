@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+
 import java.util.List;
 
 /**
@@ -12,5 +14,7 @@ public interface MaterialListService {
     void modifyQty(Long id, Integer qty);
 
     void deleteMaterialList(List<Long> ids);
+
+    List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType);
 
 }

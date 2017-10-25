@@ -3,17 +3,17 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaterialListDAO">
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
       INSERT INTO material_list
-      (user_id, identity_type, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
+      (user_id, identity_type, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
       VALUES
-      (#{userId}, #{identityType}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri}, #{goodsUnit}, #{qty});
+      (#{userId}, #{identityType}, #{gid}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri}, #{goodsUnit}, #{qty});
     </insert>
 
     <insert id="batchSave" parameterType="java.util.List">
       INSERT INTO material_list
-      (user_id, identity_type, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
+      (user_id, identity_type, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
       VALUES
       <foreach collection="list" item="materialListDO" separator=",">
-          (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.sku}, #{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri}, #{materialListDO.goodsUnit}, #{materialListDO.qty})
+          (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.gid}, #{materialListDO.sku}, #{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri}, #{materialListDO.goodsUnit}, #{materialListDO.qty})
       </foreach>
     </insert>
 
@@ -29,5 +29,23 @@
             #{id}
         </foreach>
     </delete>
+    
+    <select id="findByUserIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty, p.retail_price
+            FROM material_list m
+            LEFT JOIN cus_customer c ON c.cus_id = m.user_id
+            LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
+            WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
+        </if>
+        <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
+            SELECT m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty, p.retail_price
+            FROM material_list m
+            LEFT JOIN emp_employee c ON c.emp_id = m.user_id
+            LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
+            WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
+        </if>
+    </select>
+
 
 </mapper>

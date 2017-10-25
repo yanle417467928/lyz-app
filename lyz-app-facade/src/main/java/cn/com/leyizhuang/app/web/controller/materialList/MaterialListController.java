@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.materialList;
 
-import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -130,18 +130,18 @@ public class MaterialListController {
      * @date 2017/10/18
      */
     @PostMapping(value = "/delete", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> deletematerialList(Long userId, Integer identityType, String materialListIds) {
-        logger.info("deletematerialList CALLED,删除下料清单商品，入参 userId:{} identityType:{} materialListId:{}", userId, identityType, materialListIds);
+    public ResultDTO<Object> deleteMaterialList(Long userId, Integer identityType, String materialListIds) {
+        logger.info("deleteMaterialList CALLED,删除下料清单商品，入参 userId:{} identityType:{} materialListId:{}", userId, identityType, materialListIds);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("deletematerialList OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deleteMaterialList OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == materialListIds) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单商品ID不能为空！", null);
-            logger.info("deletematerialList OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deleteMaterialList OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String[] param = materialListIds.split(",");
@@ -151,7 +151,38 @@ public class MaterialListController {
         }
         this.materialListServiceImpl.deleteMaterialList(list);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        logger.info("deletematerialList OUT,删除下料清单商品成功，出参 resultDTO:{}", resultDTO);
+        logger.info("deleteMaterialList OUT,删除下料清单商品成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+
+    /**
+     * @title   下料清单列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/10/25
+     */
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getMaterialList(Long userId, Integer identityType) {
+        logger.info("getMaterialList CALLED,获取下料清单列表，入参 userId:{} identityType:{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListResponses);
+        logger.info("getUsableProductCoupon OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 

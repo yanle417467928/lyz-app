@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +37,12 @@ public class MaterialListServiceImpl implements MaterialListService {
         for (int i = 0; i < param.length; i++) {
             MaterialListDO materialListDO = new MaterialListDO();
             materialListDO.setUserId(userId);
-            materialListDO.setIdentityType(identityType);
+            materialListDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
             String[] arrayParam = param[i].split("-");
             if (arrayParam.length == 2) {
                 GoodsDO goodsDO = this.goodsService.findGoodsById(Long.parseLong(arrayParam[0]));
                 if (null != goodsDO){
+                    materialListDO.setGid(goodsDO.getGid());
                     materialListDO.setSku(goodsDO.getSku());
                     materialListDO.setSkuName(goodsDO.getSkuName());
                     materialListDO.setGoodsSpecification(goodsDO.getGoodsSpecification());
@@ -64,5 +67,10 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public void deleteMaterialList(List<Long> ids) {
         this.materialListDAO.batchDelete(ids);
+    }
+
+    @Override
+    public List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType) {
+        return this.materialListDAO.findByUserIdAndIdentityType(userId, AppIdentityType.getAppUserTypeByValue(identityType));
     }
 }
