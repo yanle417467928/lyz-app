@@ -208,6 +208,7 @@
             c.pic_url,
             c.name,
             c.nick_name,
+            c.mobile,
             c.light,
             e.name      guideName,
             e.mobile    guideMobile,

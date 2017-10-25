@@ -111,6 +111,7 @@
         SELECT
             e.pic_url,
             e.login_name number,
+            e.mobile,
         <if test="type == 0">
             ecm.credit_limit_available balance,
         </if>
