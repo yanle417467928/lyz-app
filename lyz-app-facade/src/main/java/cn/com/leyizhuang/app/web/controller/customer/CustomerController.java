@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -203,6 +205,11 @@ public class CustomerController {
                 if (seller == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购不存在！",
                             new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                if (seller.getCityId() != customer.getCityId()){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"不能绑定其他城市的导购！",null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
@@ -410,7 +417,13 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            customerService.addLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            AppCustomer appCustomer = customerService.findById(userId);
+            if(null != appCustomer.getLastSignTime() && DateUtils.isSameDay(appCustomer.getLastSignTime(),new Date())){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "今天已签到，不能重复签到！", null);
+                logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId,identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

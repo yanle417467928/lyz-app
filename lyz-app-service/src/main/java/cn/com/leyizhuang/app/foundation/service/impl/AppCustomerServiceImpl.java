@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -168,6 +169,13 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     public void savePreDeposit(CustomerPreDeposit preDeposit) {
         if (null != preDeposit){
             customerDAO.savePreDeposit(preDeposit);
+        }
+    }
+
+    @Override
+    public void updateLastSignTimeByCustomerId(Long cusId, Date date) {
+        if (null != cusId){
+            customerDAO.updateLastSignTimeByCustomerId(cusId,date);
         }
     }
 

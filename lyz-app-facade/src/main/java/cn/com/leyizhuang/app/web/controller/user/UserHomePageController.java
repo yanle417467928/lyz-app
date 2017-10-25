@@ -2,14 +2,15 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,16 +66,21 @@ public class UserHomePageController {
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        try{
+        try {
             if (identityType == 6) {
                 CustomerHomePageResponse customerHomePageResponse = customerService.findCustomerInfoByUserId(userId);
                 String parseLight = AppCustomerLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
                 customerHomePageResponse.setLight(parseLight);
+                if (null != customerHomePageResponse.getLastSignTime() && DateUtils.isSameDay(customerHomePageResponse.getLastSignTime(), new Date())) {
+                    customerHomePageResponse.setCanSign(Boolean.FALSE);
+                } else {
+                    customerHomePageResponse.setCanSign(Boolean.TRUE);
+                }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
-                EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId,identityType);
+            } else {
+                EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
                 // TODO 配送员还需要查询配送订单数量
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
@@ -83,7 +90,7 @@ public class UserHomePageController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }

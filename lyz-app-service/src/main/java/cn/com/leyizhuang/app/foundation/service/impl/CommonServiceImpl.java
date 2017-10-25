@@ -109,5 +109,12 @@ public class CommonServiceImpl implements CommonService {
         return customer;
     }
 
-
+    @Transactional
+    @Override
+    public void updateCustomerSignTimeAndCustomerLeBiByUserId(Long userId,Integer identityType) {
+        if (null != userId){
+            appCustomerService.addLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            appCustomerService.updateLastSignTimeByCustomerId(userId,new Date());
+        }
+    }
 }

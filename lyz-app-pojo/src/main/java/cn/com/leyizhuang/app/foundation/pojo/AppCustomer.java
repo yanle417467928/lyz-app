@@ -75,5 +75,9 @@ public class AppCustomer implements Serializable {
     //顾客类型
     private AppCustomerType customerType;
 
+    //上次签到时间
+    private Date lastSignTime;
+
+
 
 }

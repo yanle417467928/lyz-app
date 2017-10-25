@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,4 +58,6 @@ public interface AppCustomerService {
     void saveLeBi(CustomerLeBi leBi);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
+
+    void updateLastSignTimeByCustomerId(Long cusId, Date date);
 }
