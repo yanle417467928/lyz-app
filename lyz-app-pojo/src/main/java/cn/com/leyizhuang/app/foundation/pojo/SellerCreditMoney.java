@@ -16,10 +16,13 @@ import lombok.ToString;
 @ToString
 public class SellerCreditMoney extends BaseDO {
 
+
     //导购固定额度creditLimit
-    private Double limit;
+    private Double limitBalance;
+
     //导购临时额度tempCreditLimit
-    private Double temp;
+    private Double tempBalance;
+
     //导购的可用额度creditLimitAvailable
-    private Double available;
+    private Double availableBalance;
 }

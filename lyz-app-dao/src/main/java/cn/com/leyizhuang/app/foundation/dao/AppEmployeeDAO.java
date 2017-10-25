@@ -38,4 +38,6 @@ public interface AppEmployeeDAO {
             @Param("userId") Long userId,@Param("type") Integer identityType);
 
     void updateEmployeeMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
+
+    Boolean sellerCreditExistsByUserId(Long userId);
 }

@@ -99,9 +99,9 @@
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney">
         SELECT
-        credit_limit limit,
-        credit_limit_available available,
-        temp_credit_limit temp
+        credit_limit limitBalance,
+        credit_limit_available availableBalance,
+        temp_credit_limit tempBalance
         FROM emp_credit_money
         WHERE guide_id = #{userId}
     </select>
@@ -141,4 +141,8 @@
         WHERE
             emp_id = #{userId}
     </update>
+
+    <select id="sellerCreditExistsByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
+        SELECT emp_credit_money.is_active FROM emp_credit_money WHERE guide_id = #{userId}
+    </select>
 </mapper>

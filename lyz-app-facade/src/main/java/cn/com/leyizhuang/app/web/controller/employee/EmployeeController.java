@@ -156,6 +156,13 @@ public class EmployeeController {
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Boolean active = appEmployeeService.sellerCreditExistsByUserId(userId);
+        if (!active){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购没有开通信用额度",
+                    null);
+            logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId,identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerCreditMoney);

@@ -116,4 +116,11 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         }
     }
 
+    @Override
+    public Boolean sellerCreditExistsByUserId(Long userId) {
+        if (null != userId) {
+           return employeeDAO.sellerCreditExistsByUserId(userId);
+        }
+        return false;
+    }
 }

@@ -39,4 +39,6 @@ public interface AppEmployeeService {
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyEmployeeMobileByUserId(Long userId, String mobile);
+
+    Boolean sellerCreditExistsByUserId(Long userId);
 }
