@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.constant.SexType;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,6 +19,8 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppCustomer implements Serializable {
 
     private static final long serialVersionUID = -5749739135096612483L;
@@ -61,10 +63,17 @@ public class AppCustomer implements Serializable {
     //顾客灯号
     private AppUserLightStatus light;
 
-    //注测时间
+    //注册时间
     private LocalDateTime createTime;
 
-    public AppCustomer() {
-    }
+    //是否允许货到付款
+    private Boolean isCashOnDelivery;
+
+    //顾客创建类型
+    private AppCustomerCreateType createType;
+
+    //顾客类型
+    private AppCustomerType customerType;
+
 
 }

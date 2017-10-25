@@ -227,7 +227,7 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId,AppIdentityType.getAppUserTypeByValue(identityType));
+        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId,AppIdentityType.getAppIdentityTypeByValue(identityType));
 
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址成功，出参 resultDTO:{}", resultDTO);
@@ -296,7 +296,7 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.addDeliveryAddress(userId,AppIdentityType.getAppUserTypeByValue(identityType), deliveryAddress);
+            this.deliveryAddressServiceImpl.addDeliveryAddress(userId,AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addDeliveryAddress OUT,顾客新增收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -376,7 +376,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId,AppIdentityType.getAppUserTypeByValue(identityType), deliveryAddress);
+            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId,AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -475,7 +475,7 @@ public class UserSettingController {
             functionalFeedbackDO.setPictureUrl(photos);
             functionalFeedbackDO.setStatus(FunctionalFeedbackStatusEnum.NOT_CHECKED);
             functionalFeedbackDO.setUserId(userId);
-            functionalFeedbackDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
+            functionalFeedbackDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             functionalFeedbackDO.setCreateTime(LocalDateTime.now());
             this.functionalFeedbackServiceImpl.save(functionalFeedbackDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

@@ -89,7 +89,7 @@ public class PhotoOrderController {
             photoOrderDO.setCreateTime(LocalDateTime.now());
             photoOrderDO.setCustomerId(customerId);
             photoOrderDO.setDeliveryId(deliveryId);
-            photoOrderDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
+            photoOrderDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             photoOrderDO.setIsOwnerReceiving(isOwnerReceiving);
             photoOrderDO.setPhotos(photos);
             photoOrderDO.setRemark(remark);

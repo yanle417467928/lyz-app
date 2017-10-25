@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
@@ -24,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -123,7 +127,7 @@ public class CustomerController {
                 return resultDTO;
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
-            if (phoneUser != null) {
+            if (phoneUser != null) { //如果电话号码已经存在
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
@@ -136,8 +140,10 @@ public class CustomerController {
                         new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
                 logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else {
+            } else {//如果电话号码不存在
                 AppCustomer newUser = new AppCustomer();
+                newUser.setCreateTime(LocalDateTime.now());
+                newUser.setCreateType(AppCustomerCreateType.APP_REGISTRY);
                 newUser.setOpenId(registryParam.getOpenId());
                 newUser.setStatus(Boolean.TRUE);
                 newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
@@ -195,7 +201,7 @@ public class CustomerController {
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {
+            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {//如果填写了推荐导购电话
                 AppEmployee seller = employeeService.findByMobile(guidePhone);
                 if (seller == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购不存在！",
@@ -212,15 +218,17 @@ public class CustomerController {
                 }
                 customer.setSalesConsultId(seller.getEmpId());
                 customer.setStoreId(store.getStoreId());
+                customer.setCustomerType(AppCustomerType.MEMBER);
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
                 logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else {
+            } else {//未添加推荐导购电话
                 AppStore store = storeService.findDefaultStoreByCityId(customer.getCityId());
                 customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
+                customer.setCustomerType(AppCustomerType.RETAIL);
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, store.getStoreName()));

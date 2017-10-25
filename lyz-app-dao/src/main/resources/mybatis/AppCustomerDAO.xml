@@ -8,7 +8,7 @@
             select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO cus_customer (name, mobile, birthday, status, sex, open_id,
-        pic_url, nick_name, city_id, sales_consult_id, create_time,light
+        pic_url, nick_name, city_id, sales_consult_id, create_time,light,is_cash_on_delivery,create_type,customer_type
         ) VALUES (
         #{name}, #{mobile}, #{birthday}, #{status},
         #{sex,
@@ -17,6 +17,10 @@
         #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId},
         #{createTime},#{light,
               javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{isCashOnDelivery},#{createType，javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
@@ -64,6 +68,17 @@
             </if>
             <if test="null != storeId">
                 store_id = #{storeId},
+            </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
+            <if test="null != isCashOnDelivery">
+                is_cash_on_delivery = #{isCashOnDelivery},
+            </if>
+            <if test="null != customerType">
+                customer_type = #{customerType,
+                javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
+                   typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != light">
                 light = #{light,

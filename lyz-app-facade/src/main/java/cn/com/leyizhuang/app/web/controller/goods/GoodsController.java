@@ -351,7 +351,7 @@ public class GoodsController {
         ResultDTO<Object> resultDTO;
         try {
             List<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
-                    AppIdentityType.getAppUserTypeByValue(identityType),firstCategoryCode,categoryId,
+                    AppIdentityType.getAppIdentityTypeByValue(identityType),firstCategoryCode,categoryId,
                     brandId,typeId, specification);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,
                     (goodsResponseList != null && goodsResponseList.size() > 0) ? goodsResponseList : null);

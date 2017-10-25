@@ -24,7 +24,7 @@ public enum AppIdentityType {
         return description;
     }
 
-    public static AppIdentityType getAppUserTypeByValue(Integer value){
+    public static AppIdentityType getAppIdentityTypeByValue(Integer value){
         for(AppIdentityType appIdentityType : AppIdentityType.values()){
             if(value == appIdentityType.getValue()){
                 return appIdentityType;
