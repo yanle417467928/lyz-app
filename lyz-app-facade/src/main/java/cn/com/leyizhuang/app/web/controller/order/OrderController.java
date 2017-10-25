@@ -25,4 +25,10 @@ public class OrderController {
         return null;
     }
 
+    @PostMapping(value = "/lock", produces = "application/json;charset=UTF-8")
+    public ResultDTO lockOrder(){
+
+
+        return null;
+    }
 }

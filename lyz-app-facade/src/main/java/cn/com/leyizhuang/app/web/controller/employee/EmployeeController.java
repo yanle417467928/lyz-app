@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.employee;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
@@ -139,11 +140,11 @@ public class EmployeeController {
      * @return
      */
     @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO getGuideCreditMoneyBalance(Long userId, Integer identityType){
+    public ResultDTO<SellerCreditMoney> getGuideCreditMoneyBalance(Long userId, Integer identityType){
 
         logger.info("getGuideCreditMoneyBalance CALLED,获取导购信用金余额，入参 userId {},identityType{}", userId, identityType);
 
-        ResultDTO<Object> resultDTO;
+        ResultDTO<SellerCreditMoney> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
@@ -156,8 +157,8 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            Double balance = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId,identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+            SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId,identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerCreditMoney);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
