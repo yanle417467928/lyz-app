@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.remote;
+package cn.com.leyizhuang.app.remote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
