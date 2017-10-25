@@ -1,13 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.foundation.pojo.management.User;
-import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
-import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,7 +30,7 @@ import java.util.Map;
 public class CommonServiceImpl implements CommonService {
 
     private static final int hashIterations = 3;
-    private static final String algorithmName  = "md5";
+    private static final String algorithmName = "md5";
 
     @Autowired
     private UserRoleService userRoleService;
@@ -34,12 +38,16 @@ public class CommonServiceImpl implements CommonService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AppCustomerService appCustomerService;
+
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveUserAndUserRoleByUserVO(UserVO userVO) {
         User user = BeanUtils.copy(userVO, User.class);
         user.setCreateTime(new Date());
-        Map<String,String> paramMap = EncryptUtils.getPasswordAndSalt(userVO.getLoginName(),userVO.getPassword());
+        Map<String, String> paramMap = EncryptUtils.getPasswordAndSalt(userVO.getLoginName(), userVO.getPassword());
         user.setSalt(paramMap.get("salt"));
         user.setPassword(paramMap.get("encodedPassword"));
         userService.save(user);
@@ -60,8 +68,8 @@ public class CommonServiceImpl implements CommonService {
     public void updateUserAndUserRoleByUserVO(UserVO userVO) {
         if (null != userVO) {
             User user = userVO.convert2User();
-            if(null != user.getPassword() && !"".equalsIgnoreCase(user.getPassword())){
-                Map<String,String> paramMap = EncryptUtils.getPasswordAndSalt(user.getLoginName(),user.getPassword());
+            if (null != user.getPassword() && !"".equalsIgnoreCase(user.getPassword())) {
+                Map<String, String> paramMap = EncryptUtils.getPasswordAndSalt(user.getLoginName(), user.getPassword());
                 user.setSalt(paramMap.get("salt"));
                 user.setPassword(paramMap.get("encodedPassword"));
             }
@@ -82,10 +90,23 @@ public class CommonServiceImpl implements CommonService {
     @Transactional
     @Override
     public void deleteUserAndUserRoleByUserId(Long uid) {
-        if (null != uid){
+        if (null != uid) {
             userRoleService.deleteUserRoleByUserId(uid);
             this.userService.delete(uid);
         }
+    }
+
+    @Transactional
+    @Override
+    public AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit) {
+        appCustomerService.save(customer);
+        leBi.setCusId(customer.getCusId());
+        leBi.setQuantity(leBi.getQuantity() == null ? 0 : leBi.getQuantity());
+        appCustomerService.saveLeBi(leBi);
+        preDeposit.setCusId(customer.getCusId());
+        preDeposit.setBalance(preDeposit.getBalance() == null ? 0 : preDeposit.getBalance());
+        appCustomerService.savePreDeposit(preDeposit);
+        return customer;
     }
 
 

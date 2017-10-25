@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
@@ -51,4 +53,8 @@ public interface AppCustomerService {
     void modifyCustomerMobileByUserId(Long userId, String mobile);
 
     void modifyLeBiQuantityByUserIdAndQty(Long userId, Integer quantity);
+
+    void saveLeBi(CustomerLeBi leBi);
+
+    void savePreDeposit(CustomerPreDeposit preDeposit);
 }

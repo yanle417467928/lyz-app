@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
@@ -154,6 +156,21 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
             customerDAO.updateLeBiQuantityByUserIdAndQty(userId,quantity);
         }
     }
+
+    @Override
+    public void saveLeBi(CustomerLeBi leBi) {
+        if (null != leBi){
+            customerDAO.saveLeBi(leBi);
+        }
+    }
+
+    @Override
+    public void savePreDeposit(CustomerPreDeposit preDeposit) {
+        if (null != preDeposit){
+            customerDAO.savePreDeposit(preDeposit);
+        }
+    }
+
 
     @Override
     public CustomerHomePageResponse findCustomerInfoByUserId(Long userId) {

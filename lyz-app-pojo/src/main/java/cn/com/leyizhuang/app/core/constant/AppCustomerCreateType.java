@@ -27,6 +27,13 @@ public enum AppCustomerCreateType {
         return description;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public static AppCustomerCreateType getAppCustomerCreateTypeByValue(String value) {
         for (AppCustomerCreateType appCustomerCreateType : AppCustomerCreateType.values()) {
             if (value == appCustomerCreateType.getValue()) {

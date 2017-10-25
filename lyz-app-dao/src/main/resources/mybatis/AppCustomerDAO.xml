@@ -16,9 +16,9 @@
         typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId},
         #{createTime},#{light,
-              javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+              javaType =cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{isCashOnDelivery},#{createType，javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
+        #{isCashOnDelivery},#{createType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler}
@@ -82,7 +82,7 @@
             </if>
             <if test="null != light">
                 light = #{light,
-                  javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+                  javaType =cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus,
                    typeHandler=org.apache.ibatis.type.EnumTypeHandler
                 },
             </if>
@@ -224,5 +224,13 @@
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
         SELECT is_cash_on_delivery FROM cus_customer WHERE cus_id = #{userId}
     </select>
+
+    <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi">
+        INSERT INTO cus_lb(cus_id, quantity) VALUES (#{cusId},#{quantity})
+    </insert>
+
+    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit">
+        INSERT INTO cus_pre_deposit(cus_id, balance) VALUES (#{cusId},#{balance})
+    </insert>
 
 </mapper>

@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
+import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.*;
 
@@ -61,7 +61,7 @@ public class AppCustomer implements Serializable {
     private Long storeId;
 
     //顾客灯号
-    private AppUserLightStatus light;
+    private AppCustomerLightStatus light;
 
     //注册时间
     private LocalDateTime createTime;

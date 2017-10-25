@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
@@ -53,4 +55,8 @@ public interface AppCustomerDAO {
     void updateCustomerMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
 
     void updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId,@Param("qty") Integer quantity);
+
+    void saveLeBi(CustomerLeBi leBi);
+
+    void savePreDeposit(CustomerPreDeposit preDeposit);
 }

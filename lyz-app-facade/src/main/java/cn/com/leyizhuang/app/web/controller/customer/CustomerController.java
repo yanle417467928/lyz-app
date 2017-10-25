@@ -1,33 +1,25 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.JwtConstant;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +41,9 @@ public class CustomerController {
 
     @Resource
     private AppStoreService storeService;
+
+    @Resource
+    private CommonService commonService;
 
     /**
      * App 顾客登录
@@ -156,7 +151,9 @@ public class CustomerController {
                 newUser.setPicUrl(registryParam.getPicUrl());
                 newUser.setCityId(registryParam.getCityId());
                 newUser.setMobile(registryParam.getPhone());
-                AppCustomer returnUser = customerService.save(newUser);
+                newUser.setLight(AppCustomerLightStatus.GREEN);
+                newUser.setIsCashOnDelivery(Boolean.FALSE);
+                AppCustomer returnUser =commonService .saveCustomerInfo(newUser,new CustomerLeBi(),new CustomerPreDeposit());
                 //拼装accessToken
                 String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);

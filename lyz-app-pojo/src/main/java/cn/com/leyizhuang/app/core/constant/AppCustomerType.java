@@ -26,4 +26,13 @@ public enum AppCustomerType {
     public String getDescription() {
         return description;
     }
+
+    public static AppCustomerType getAppCustomerTypeByValue(String value) {
+        for (AppCustomerType appCustomerType : AppCustomerType.values()) {
+            if (value == appCustomerType.getValue()) {
+                return appCustomerType;
+            }
+        }
+        return null;
+    }
 }

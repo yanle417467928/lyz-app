@@ -1,6 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 
 /**
@@ -16,5 +19,7 @@ public interface CommonService {
     void updateUserAndUserRoleByUserVO(UserVO userVO);
 
     void deleteUserAndUserRoleByUserId(Long uid);
+
+    AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit);
 
 }

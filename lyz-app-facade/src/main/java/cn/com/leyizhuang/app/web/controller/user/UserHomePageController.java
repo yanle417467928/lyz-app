@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
+import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
@@ -68,7 +67,7 @@ public class UserHomePageController {
         try{
             if (identityType == 6) {
                 CustomerHomePageResponse customerHomePageResponse = customerService.findCustomerInfoByUserId(userId);
-                String parseLight = AppUserLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
+                String parseLight = AppCustomerLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
                 customerHomePageResponse.setLight(parseLight);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
