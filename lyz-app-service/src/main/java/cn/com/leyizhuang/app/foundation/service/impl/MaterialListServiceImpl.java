@@ -37,7 +37,7 @@ public class MaterialListServiceImpl implements MaterialListService {
         for (int i = 0; i < param.length; i++) {
             MaterialListDO materialListDO = new MaterialListDO();
             materialListDO.setUserId(userId);
-            materialListDO.setIdentityType(AppIdentityType.getAppUserTypeByValue(identityType));
+            materialListDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             String[] arrayParam = param[i].split("-");
             if (arrayParam.length == 2) {
                 GoodsDO goodsDO = this.goodsService.findGoodsById(Long.parseLong(arrayParam[0]));
@@ -71,6 +71,6 @@ public class MaterialListServiceImpl implements MaterialListService {
 
     @Override
     public List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType) {
-        return this.materialListDAO.findByUserIdAndIdentityType(userId, AppIdentityType.getAppUserTypeByValue(identityType));
+        return this.materialListDAO.findByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
     }
 }
