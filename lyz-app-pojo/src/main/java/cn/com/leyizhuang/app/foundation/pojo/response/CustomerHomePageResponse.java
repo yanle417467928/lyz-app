@@ -24,6 +24,8 @@ public class CustomerHomePageResponse implements Serializable {
     private String picUrl;
     //姓名
     private String name;
+    //顾客电话
+    private String mobile;
     //所属导购
     private String guideName;
     //所属导购电话

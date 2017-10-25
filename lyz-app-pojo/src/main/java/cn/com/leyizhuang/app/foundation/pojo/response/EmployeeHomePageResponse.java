@@ -25,6 +25,8 @@ public class EmployeeHomePageResponse implements Serializable {
     private String number;
     //账户余额
     private Double balance;
+    //员工电话
+    private String mobile;
     //配送数量（配送员字段）
     private Integer sendQty;
 }
