@@ -94,9 +94,9 @@ public class MaterialListController {
                         materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                         if (null != goodsDO.getCoverImageUri()) {
                             String uri[] = goodsDO.getCoverImageUri().split(",");
-                            materialListDO.setCoverImageUri(uri[0]);
+                            materialListDOTemp.setCoverImageUri(uri[0]);
                         }
-                        materialListSave.add(materialListDO);
+                        materialListSave.add(materialListDOTemp);
                     } else {
                         materialListDO.setQty(materialListDO.getQty() + entry.getValue());
                         materialListUpdate.add(materialListDO);

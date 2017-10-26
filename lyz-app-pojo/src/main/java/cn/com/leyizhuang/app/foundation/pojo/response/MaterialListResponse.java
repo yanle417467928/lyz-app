@@ -17,7 +17,7 @@ public class MaterialListResponse {
     private Long id;
 
     //商品id
-    private Long gid;
+    private Long goodsId;
     //商品名称
     private String skuName;
     //商品规格
