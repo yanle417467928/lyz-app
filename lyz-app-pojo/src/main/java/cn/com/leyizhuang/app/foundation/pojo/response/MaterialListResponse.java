@@ -13,7 +13,11 @@ import lombok.ToString;
 @ToString
 public class MaterialListResponse {
 
+    //下料清单id
     private Long id;
+
+    //商品id
+    private Long gid;
     //商品名称
     private String skuName;
     //商品规格

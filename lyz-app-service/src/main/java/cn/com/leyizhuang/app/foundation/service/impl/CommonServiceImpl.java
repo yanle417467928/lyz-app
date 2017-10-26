@@ -5,12 +5,10 @@ import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.CommonService;
-import cn.com.leyizhuang.app.foundation.service.UserRoleService;
-import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +39,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private AppCustomerService appCustomerService;
+
+    @Autowired
+    private MaterialListService materialListService;
 
 
     @Override
@@ -111,10 +113,21 @@ public class CommonServiceImpl implements CommonService {
 
     @Transactional
     @Override
-    public void updateCustomerSignTimeAndCustomerLeBiByUserId(Long userId,Integer identityType) {
-        if (null != userId){
-            appCustomerService.addLeBiQuantityByUserIdAndIdentityType(userId,identityType);
-            appCustomerService.updateLastSignTimeByCustomerId(userId,new Date());
+    public void updateCustomerSignTimeAndCustomerLeBiByUserId(Long userId, Integer identityType) {
+        if (null != userId) {
+            appCustomerService.addLeBiQuantityByUserIdAndIdentityType(userId, identityType);
+            appCustomerService.updateLastSignTimeByCustomerId(userId, new Date());
+        }
+    }
+
+    @Transactional
+    @Override
+    public void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate) {
+        if ((null != materialListSave && materialListSave.size() > 0) || (null != materialListUpdate && materialListUpdate.size() > 0)){
+            materialListService.batchSave(materialListSave);
+            for (MaterialListDO materialListDO : materialListUpdate){
+                materialListService.modifyQty(materialListDO.getId(),materialListDO.getQty());
+            }
         }
     }
 }

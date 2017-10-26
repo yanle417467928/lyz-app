@@ -487,7 +487,7 @@
     </select>
 
     <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
-        SELECT sku, sku_name, cover_image_uri, goods_specification, goods_unit
+        SELECT gid,sku, sku_name, cover_image_uri, goods_specification, goods_unit
         FROM gds_goods
         WHERE gid = #{gid}
     </select>

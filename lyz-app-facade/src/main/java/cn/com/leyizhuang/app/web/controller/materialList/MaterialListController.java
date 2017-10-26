@@ -1,6 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.materialList;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+import cn.com.leyizhuang.app.foundation.service.CommonService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -12,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -26,12 +33,18 @@ public class MaterialListController {
     @Autowired
     private MaterialListService materialListServiceImpl;
 
+    @Autowired
+    private GoodsService goodsService;
+
+    @Autowired
+    private CommonService commonService;
+
     /**
-     * @title   单或多个商品加入下料清单
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 单或多个商品加入下料清单
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/18
      */
@@ -56,9 +69,44 @@ public class MaterialListController {
                 logger.info("addMaterialList OUT,单或多个商品加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            Map<Long, Integer> goodsMap = new HashMap();
             String[] param = params.split(",");
-
-            this.materialListServiceImpl.batchSave(userId, identityType, param);
+            for (String s : param) {
+                String goodsParam[] = s.split("-");
+                goodsMap.put(Long.parseLong(goodsParam[0]), Integer.parseInt(goodsParam[1]));
+            }
+            List<MaterialListDO> materialListSave = new ArrayList<>();
+            List<MaterialListDO> materialListUpdate = new ArrayList<>();
+            for (Map.Entry<Long, Integer> entry : goodsMap.entrySet()) {
+                GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
+                if (null != goodsDO) {
+                    MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                            AppIdentityType.getAppIdentityTypeByValue(identityType), entry.getKey());
+                    if (null == materialListDO) {
+                        MaterialListDO materialListDOTemp = new MaterialListDO();
+                        materialListDOTemp.setUserId(userId);
+                        materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        materialListDOTemp.setGid(goodsDO.getGid());
+                        materialListDOTemp.setSku(goodsDO.getSku());
+                        materialListDOTemp.setQty(entry.getValue());
+                        materialListDOTemp.setSkuName(goodsDO.getSkuName());
+                        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+                        if (null != goodsDO.getCoverImageUri()) {
+                            String uri[] = goodsDO.getCoverImageUri().split(",");
+                            materialListDO.setCoverImageUri(uri[0]);
+                        }
+                        materialListSave.add(materialListDO);
+                    } else {
+                        materialListDO.setQty(materialListDO.getQty() + entry.getValue());
+                        materialListUpdate.add(materialListDO);
+                    }
+                } else {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + entry.getKey() + "" +
+                            "的商品不存在!", null);
+                }
+            }
+            commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addMaterialList OUT,单或多个商品加入下料清单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -72,11 +120,11 @@ public class MaterialListController {
     }
 
     /**
-      @title  编辑下料清单商品数量
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 编辑下料清单商品数量
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/18
      */
@@ -120,12 +168,12 @@ public class MaterialListController {
         }
     }
 
-    /**  
-     * @title   删除下料清单商品
-     * @descripe
+    /**
      * @param
-     * @return 
-     * @throws 
+     * @return
+     * @throws
+     * @title 删除下料清单商品
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/18
      */
@@ -157,11 +205,11 @@ public class MaterialListController {
 
 
     /**
-     * @title   下料清单列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 下料清单列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/25
      */

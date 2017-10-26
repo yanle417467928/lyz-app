@@ -23,6 +23,8 @@ public interface MaterialListDAO {
 
     void batchDelete(List<Long> ids);
 
-    List<MaterialListResponse> findByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType")AppIdentityType identityType);
+    List<MaterialListResponse> findByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
+    MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
+             AppIdentityType identityType, @Param(value = "goodsId" )Long goodsId);
 }

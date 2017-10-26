@@ -32,7 +32,7 @@
     
     <select id="findByUserIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            SELECT m.id, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty, p.retail_price
+            SELECT m.id,m.gid, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty, p.retail_price
             FROM material_list m
             LEFT JOIN cus_customer c ON c.cus_id = m.user_id
             LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
@@ -45,6 +45,13 @@
             LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
         </if>
+    </select>
+
+    <select id="findByUserIdAndIdentityTypeAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+        SELECT * FROM
+          material_list where user_id = #{userId}
+          AND  identity_type = #{identityType}
+          AND gid = #{goodsId}
     </select>
 
 
