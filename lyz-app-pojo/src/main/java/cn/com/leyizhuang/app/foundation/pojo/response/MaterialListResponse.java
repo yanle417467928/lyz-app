@@ -12,6 +12,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MaterialListResponse {
+
+    private Long id;
     //商品名称
     private String skuName;
     //商品规格
