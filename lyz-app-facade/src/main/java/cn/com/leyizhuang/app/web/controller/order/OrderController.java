@@ -1,7 +1,5 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;

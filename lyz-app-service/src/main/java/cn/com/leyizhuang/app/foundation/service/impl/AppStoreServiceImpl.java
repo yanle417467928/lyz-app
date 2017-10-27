@@ -95,4 +95,16 @@ public class AppStoreServiceImpl implements AppStoreService {
         }
         return 0;
     }
+
+    @Override
+    @Transactional
+    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory) {
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory) {
+        return 0;
+    }
 }
