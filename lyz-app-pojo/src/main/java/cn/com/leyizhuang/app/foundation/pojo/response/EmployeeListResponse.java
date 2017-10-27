@@ -22,6 +22,7 @@ import java.util.List;
 @ToString
 public class EmployeeListResponse implements Serializable {
 
+    private Long empId;
     //真实姓名
     private String name;
 
@@ -39,6 +40,7 @@ public class EmployeeListResponse implements Serializable {
 
     public static EmployeeListResponse transform(AppEmployee appEmployee){
         EmployeeListResponse response = new EmployeeListResponse();
+        response.setEmpId(appEmployee.getEmpId());
         response.setName(appEmployee.getName());
         response.setMobile(appEmployee.getMobile());
         response.setPicUrl(appEmployee.getPicUrl());

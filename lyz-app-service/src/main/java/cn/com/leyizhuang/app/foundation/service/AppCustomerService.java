@@ -53,11 +53,17 @@ public interface AppCustomerService {
 
     void modifyCustomerMobileByUserId(Long userId, String mobile);
 
-    void modifyLeBiQuantityByUserIdAndQty(Long userId, Integer quantity);
-
     void saveLeBi(CustomerLeBi leBi);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
     void updateLastSignTimeByCustomerId(Long cusId, Date date);
+
+    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit);
+
+    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
+
+    int lockCustomerProductCouponByUserIdAndProductCoupon(Long userId, Integer productCoupon);
+
+    int lockCustomerCashCouponByUserIdAndProductCoupon(Long userId, Integer identityType, Integer cashCoupon);
 }

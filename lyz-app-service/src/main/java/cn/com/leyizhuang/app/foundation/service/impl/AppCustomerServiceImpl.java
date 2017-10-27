@@ -145,6 +145,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void modifyCustomerMobileByUserId(Long userId, String mobile) {
         if (null != userId && StringUtils.isNotBlank(mobile)){
             customerDAO.updateCustomerMobileByUserId(userId,mobile);
@@ -152,13 +153,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public void modifyLeBiQuantityByUserIdAndQty(Long userId, Integer quantity) {
-        if (null != userId && null != quantity){
-            customerDAO.updateLeBiQuantityByUserIdAndQty(userId,quantity);
-        }
-    }
-
-    @Override
+    @Transactional
     public void saveLeBi(CustomerLeBi leBi) {
         if (null != leBi){
             customerDAO.saveLeBi(leBi);
@@ -166,6 +161,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void savePreDeposit(CustomerPreDeposit preDeposit) {
         if (null != preDeposit){
             customerDAO.savePreDeposit(preDeposit);
@@ -179,6 +175,23 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         }
     }
 
+    @Override
+    @Transactional
+    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
+        if (null != userId && null != customerDeposit){
+            return customerDAO.updateDepositByUserIdAndDeposit(userId,customerDeposit);
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
+        if (null != userId && null != lebiQty){
+            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId,lebiQty);
+        }
+        return 0;
+    }
 
     @Override
     public CustomerHomePageResponse findCustomerInfoByUserId(Long userId) {
@@ -188,5 +201,13 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         return null;
     }
 
+    @Override
+    public int lockCustomerProductCouponByUserIdAndProductCoupon(Long userId, Integer productCoupon) {
+        return 0;
+    }
 
+    @Override
+    public int lockCustomerCashCouponByUserIdAndProductCoupon(Long userId, Integer identityType, Integer cashCoupon) {
+        return 0;
+    }
 }

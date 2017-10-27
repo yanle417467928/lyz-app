@@ -24,4 +24,14 @@ public interface AppStoreService {
     Double findCreditMoneyBalanceByUserId(Long userId);
 
     Double findPreDepositBalanceByUserId(Long userId);
+
+    int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
+
+    int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit);
+
+    int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
+
+    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory);
+
+    int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory);
 }

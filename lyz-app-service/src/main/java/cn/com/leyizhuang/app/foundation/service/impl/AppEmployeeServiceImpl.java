@@ -110,6 +110,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void modifyEmployeeMobileByUserId(Long userId, String mobile) {
         if (null != userId) {
             employeeDAO.updateEmployeeMobileByUserId(userId,mobile);
@@ -117,10 +118,19 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public Boolean sellerCreditExistsByUserId(Long userId) {
+    public Boolean existsSellerCreditByUserId(Long userId) {
         if (null != userId) {
-           return employeeDAO.sellerCreditExistsByUserId(userId);
+           return employeeDAO.existsSellerCreditByUserId(userId);
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
+        if (null != userId && null != guideCredit){
+            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId,guideCredit);
+        }
+        return 0;
     }
 }

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -22,15 +23,15 @@ public interface AppStoreDAO {
 
     AppStore findDefaultStoreByCityId(Long cityId);
 
-    Double findSubventionBalanceByStoreId(Long storeId);
-
-    Double findCreditMoneyBalanceByStoreId(Long storeId);
-
-    Double findPreDepositBalanceByStoreId(Long storeId);
-
     Double findSubventionBalanceByUserId(Long userId);
 
     Double findCreditMoneyBalanceByUserId(Long userId);
 
     Double findPreDepositBalanceByUserId(Long userId);
+
+    int updateStoreDepositByUserIdAndStoreDeposit(@Param("userId") Long userId,@Param("deposit") Double storeDeposit);
+
+    int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId,@Param("credit") Double storeCredit);
+
+    int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId,@Param("subvention") Double storeSubvention);
 }

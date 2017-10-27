@@ -40,5 +40,7 @@ public interface AppEmployeeService {
 
     void modifyEmployeeMobileByUserId(Long userId, String mobile);
 
-    Boolean sellerCreditExistsByUserId(Long userId);
+    Boolean existsSellerCreditByUserId(Long userId);
+
+    int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit);
 }
