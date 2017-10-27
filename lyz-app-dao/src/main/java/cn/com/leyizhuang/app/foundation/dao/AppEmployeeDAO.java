@@ -39,5 +39,7 @@ public interface AppEmployeeDAO {
 
     void updateEmployeeMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
 
-    Boolean sellerCreditExistsByUserId(Long userId);
+    Boolean existsSellerCreditByUserId(Long userId);
+
+    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
 }

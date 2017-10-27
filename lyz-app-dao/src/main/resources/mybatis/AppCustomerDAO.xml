@@ -143,6 +143,7 @@
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"
             resultType="AppCustomer">
         SELECT
+            c.cus_id,
             c.name,
             c.mobile,
             c.pic_url,
@@ -155,6 +156,7 @@
     <select id="searchBySalesConsultIdAndKeywords" resultType="AppCustomer">
 
         SELECT
+            c.cus_id,
             c.name,
             c.mobile,
             c.pic_url,
@@ -195,7 +197,8 @@
         SET
             quantity = quantity - #{qty}
         WHERE
-            cus_id = #{userId}
+            quantity >= #{qty}
+        AND cus_id = #{userId}
     </update>
 
     <update id="updateCustomerMobileByUserId">
@@ -247,4 +250,7 @@
         WHERE cus_id = #{cusId}
     </update>
 
+    <update id="updateDepositByUserIdAndDeposit">
+        UPDATE cus_pre_deposit SET balance = balance - #{deposit} WHERE balance >= #{deposit} AND cus_id = #{userId}
+    </update>
 </mapper>

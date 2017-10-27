@@ -87,6 +87,7 @@
     <select id="findDecorateEmployeeListByManagerId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT
+        e.emp_id,
         e.name,
         e.mobile,
         e.pic_url,
@@ -143,7 +144,17 @@
             emp_id = #{userId}
     </update>
 
-    <select id="sellerCreditExistsByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
+    <select id="existsSellerCreditByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
         SELECT emp_credit_money.is_active FROM emp_credit_money WHERE guide_id = #{userId}
     </select>
+
+    <update id="lockGuideCreditByUserIdAndGuideCredit">
+        UPDATE
+            emp_credit_money
+        SET
+            credit_limit_available = credit_limit_available - #{credit}
+        WHERE
+            credit_limit_available >= #{credit}
+        AND guide_id = #{userId}
+    </update>
 </mapper>

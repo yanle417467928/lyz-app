@@ -55,11 +55,13 @@ public interface AppCustomerDAO {
 
     void updateCustomerMobileByUserId(@Param("userId") Long userId, @Param("mobile") String mobile);
 
-    void updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId, @Param("qty") Integer quantity);
+    int updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId, @Param("qty") Integer quantity);
 
     void saveLeBi(CustomerLeBi leBi);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
     void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
+
+    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
 }
