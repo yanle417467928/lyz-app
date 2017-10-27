@@ -62,6 +62,15 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
     }
 
+    @Override
+    public DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType
+            identityType) {
+        if (null != userId && null != identityType){
+            return  deliveryAddressDAO.getDefaultDeliveryAddressByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
+    }
+
     private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress){
         if (null != userId && null != deliveryAddress && null != identityType) {
             DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();

@@ -20,4 +20,6 @@ public interface DeliveryAddressService {
     DeliveryAddressRequest modifyDeliveryAddress(Long userId,AppIdentityType identityType, DeliveryAddressRequest deliveryAddress);
 
     void deleteDeliveryAddress(Long deliveryAddressId);
+
+    DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 }

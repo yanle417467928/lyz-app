@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,9 @@ public class AppEmployee {
 
     //app员工身份类型
     private AppIdentityType identityType;
+
+    //导购类型
+    private AppSellerType sellerType;
 
     //员工手机号
     private String mobile;

@@ -27,4 +27,8 @@ public interface MaterialListDAO {
 
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
              AppIdentityType identityType, @Param(value = "goodsId" )Long goodsId);
+
+    List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+
+    List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 }

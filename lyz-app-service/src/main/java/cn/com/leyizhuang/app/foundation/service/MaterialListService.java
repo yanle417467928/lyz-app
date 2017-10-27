@@ -20,4 +20,8 @@ public interface MaterialListService {
     List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType);
 
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId);
+
+    List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+
+    List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 }

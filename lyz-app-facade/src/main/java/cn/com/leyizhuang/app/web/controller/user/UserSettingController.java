@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -112,6 +110,7 @@ public class UserSettingController {
 
     /**
      * 用户修改个人信息
+     *
      * @param userInformation 修改用户传输对象
      * @return
      */
@@ -144,7 +143,7 @@ public class UserSettingController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,用户修改个人信息失败!", null);
             logger.warn("personalInformationSet EXCEPTION,用户修改个人信息失败，出参 resultDTO:{}", resultDTO);
@@ -153,16 +152,18 @@ public class UserSettingController {
         }
     }
 
+
     /**
      * 用户修改手机号码
+     *
      * @param userId
      * @param identityType
      * @return
      */
     @PostMapping(value = "/set/mobile", produces = "application/json;charset=UTF-8")
-    public ResultDTO personalMobileSet(Long userId, Integer identityType, String mobile){
+    public ResultDTO personalMobileSet(Long userId, Integer identityType, String mobile) {
 
-        logger.info("personalMobileSet CALLED,用户修改手机号码，入参 userId {},identityType{},mobile{}", userId, identityType,mobile);
+        logger.info("personalMobileSet CALLED,用户修改手机号码，入参 userId {},identityType{},mobile{}", userId, identityType, mobile);
 
         ResultDTO<UserInformationResponse> resultDTO;
         if (userId == null) {
@@ -176,25 +177,25 @@ public class UserSettingController {
             logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(mobile)){
+        if (StringUtils.isBlank(mobile)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "新手机号码不能为空",
                     null);
             logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            if (identityType== 6) {
-                customerService.modifyCustomerMobileByUserId(userId,mobile);
+            if (identityType == 6) {
+                customerService.modifyCustomerMobileByUserId(userId, mobile);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
-                employeeService.modifyEmployeeMobileByUserId(userId,mobile);
+            } else {
+                employeeService.modifyEmployeeMobileByUserId(userId, mobile);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,用户修改手机号码失败!", null);
             logger.warn("personalMobileSet EXCEPTION,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
@@ -202,6 +203,7 @@ public class UserSettingController {
             return resultDTO;
         }
     }
+
 
     /**
      * @param userId
@@ -213,8 +215,8 @@ public class UserSettingController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/deliveryAddress/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<List> getDeliveryAddress(Long userId,Integer identityType) {
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType", userId,identityType);
+    public ResultDTO<List> getDeliveryAddress(Long userId, Integer identityType) {
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType", userId, identityType);
 
         ResultDTO<List> resultDTO;
         if (null == userId) {
@@ -227,7 +229,7 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId,AppIdentityType.getAppIdentityTypeByValue(identityType));
+        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
 
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址成功，出参 resultDTO:{}", resultDTO);
@@ -296,7 +298,7 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.addDeliveryAddress(userId,AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
+            this.deliveryAddressServiceImpl.addDeliveryAddress(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addDeliveryAddress OUT,顾客新增收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -376,7 +378,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId,AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
+            this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -392,6 +394,7 @@ public class UserSettingController {
 
     /**
      * 删除收货地址
+     *
      * @param userId
      * @param identityType
      * @param deliveryAddressId
@@ -419,16 +422,16 @@ public class UserSettingController {
     }
 
     /**
-     * @title  功能反馈
-     * @descripe 功能反馈
      * @param userId
      * @return resultDTO
      * @throws Exception
+     * @title 功能反馈
+     * @descripe 功能反馈
      * @author GenerationRoad
      * @date 2017/10/10
      */
     @PostMapping(value = "/feedback/add")
-    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam(value = "myfiles",required = false) MultipartFile[] files,
+    public ResultDTO<Object> addFunctionalFeedback(Long userId, Integer identityType, @RequestParam(value = "myfiles", required = false) MultipartFile[] files,
                                                    String type, String content, String phone) {
         logger.info("addFunctionalFeedback CALLED,功能反馈，入参 userId:{} identityType:{} files:{}," +
                 "type:{}, content:{}, phone:{}", userId, identityType, files, type, content, phone);
@@ -497,7 +500,7 @@ public class UserSettingController {
         informationResponse.setNikeName(appEmployee.getLoginName());
         informationResponse.setSex(appEmployee.getSex().getValue());
         informationResponse.setMobile(appEmployee.getMobile());
-        informationResponse.setBirthday(DateUtil.formatDate(appEmployee.getBirthday(),"yyyy-MM-dd"));
+        informationResponse.setBirthday(DateUtil.formatDate(appEmployee.getBirthday(), "yyyy-MM-dd"));
 
         City city = cityService.findById(appEmployee.getCityId());
         if (city != null) {
@@ -518,7 +521,7 @@ public class UserSettingController {
         informationResponse.setSex(appCustomer.getSex().getValue());
         informationResponse.setMobile(appCustomer.getMobile());
         if (null != appCustomer.getBirthday()) {
-            informationResponse.setBirthday(DateUtil.formatDate(appCustomer.getBirthday(),"yyyy-MM-dd"));
+            informationResponse.setBirthday(DateUtil.formatDate(appCustomer.getBirthday(), "yyyy-MM-dd"));
         }
         City city = cityService.findById(appCustomer.getCityId());
         if (city != null) {
@@ -535,7 +538,7 @@ public class UserSettingController {
         return informationResponse;
     }
 
-    private AppCustomer transformAppCustomer(UserSetInformationReq userInformation){
+    private AppCustomer transformAppCustomer(UserSetInformationReq userInformation) {
         AppCustomer appCustomer = new AppCustomer();
         appCustomer.setCusId(userInformation.getUserId());
         appCustomer.setNickName(userInformation.getNikeName());
@@ -555,7 +558,7 @@ public class UserSettingController {
         return appCustomer;
     }
 
-    private AppEmployee transformAppEmployee(UserSetInformationReq userInformation){
+    private AppEmployee transformAppEmployee(UserSetInformationReq userInformation) {
         AppEmployee appEmployee = new AppEmployee();
         appEmployee.setEmpId(userInformation.getUserId());
         appEmployee.setName(userInformation.getName());

@@ -7,6 +7,7 @@ import lombok.ToString;
 
 /**
  * 下料清单
+ *
  * @author GenerationRoad
  * @date 2017/10/17
  */
@@ -33,4 +34,18 @@ public class MaterialListDO {
     private String goodsUnit;
     //商品数量
     private Integer qty;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MaterialListDO that = (MaterialListDO) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        return true;
+    }
+
 }

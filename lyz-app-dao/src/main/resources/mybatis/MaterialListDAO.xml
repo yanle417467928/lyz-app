@@ -9,12 +9,14 @@
     </insert>
 
     <insert id="batchSave" parameterType="java.util.List">
-      INSERT INTO material_list
-      (user_id, identity_type, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
-      VALUES
-      <foreach collection="list" item="materialListDO" separator=",">
-          (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.gid}, #{materialListDO.sku}, #{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri}, #{materialListDO.goodsUnit}, #{materialListDO.qty})
-      </foreach>
+        INSERT INTO material_list
+        (user_id, identity_type, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty)
+        VALUES
+        <foreach collection="list" item="materialListDO" separator=",">
+            (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.gid}, #{materialListDO.sku},
+            #{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri},
+            #{materialListDO.goodsUnit}, #{materialListDO.qty})
+        </foreach>
     </insert>
 
     <update id="modifyQty">
@@ -29,10 +31,12 @@
             #{id}
         </foreach>
     </delete>
-    
-    <select id="findByUserIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
+
+    <select id="findByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            SELECT m.id,m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty, p.retail_price
+            SELECT m.id,m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit, m.qty,
+            p.retail_price
             FROM material_list m
             LEFT JOIN cus_customer c ON c.cus_id = m.user_id
             LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
@@ -47,11 +51,25 @@
         </if>
     </select>
 
-    <select id="findByUserIdAndIdentityTypeAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+    <select id="findByUserIdAndIdentityTypeAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT * FROM
           material_list where user_id = #{userId}
           AND  identity_type = #{identityType}
           AND gid = #{goodsId}
+    </select>
+
+
+    <select id="findMaterialListByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+        SELECT * FROM
+          material_list where user_id = #{userId}
+          AND identity_type = #{identityType}
+    </select>
+
+    <select id="findMaterialListGoodsIdsByUserIdAndIdentityType" resultType="java.lang.Long">
+        SELECT DISTINCT gid  FROM  material_list where user_id = #{userId}
+          AND identity_type = #{identityType}
     </select>
 
 
