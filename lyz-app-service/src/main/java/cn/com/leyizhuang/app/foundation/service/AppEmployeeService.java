@@ -43,4 +43,8 @@ public interface AppEmployeeService {
     Boolean existsSellerCreditByUserId(Long userId);
 
     int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit);
+
+    void updateByLoginName(AppEmployee appEmployee);
+
+    void deleteByLoginName(String loginName);
 }

@@ -42,4 +42,8 @@ public interface AppEmployeeDAO {
     Boolean existsSellerCreditByUserId(Long userId);
 
     int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
+
+    void updateByLoginName(AppEmployee appEmployee);
+
+    void deleteByLoginName(String loginName);
 }

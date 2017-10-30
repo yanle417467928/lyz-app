@@ -157,4 +157,54 @@
             credit_limit_available >= #{credit}
         AND guide_id = #{userId}
     </update>
+
+    <update id="updateByLoginName" parameterType="AppEmployee">
+        UPDATE emp_employee
+        <set>
+            <if test="null != name">
+                name = #{name},
+            </if>
+            <if test="null != password">
+                password = #{password},
+            </if>
+            <if test="null != salt">
+                salt = #{salt},
+            </if>
+            <if test="null != identityType">
+                identity_type = #{identityType},
+            </if>
+            <if test="null != mobile">
+                mobile = #{mobile},
+            </if>
+            <if test="null != birthday">
+                birthday = #{birthday},
+            </if>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != sex">
+                sex = #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.SexType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != picUrl">
+                pic_url = #{picUrl},
+            </if>
+            <if test="null != cityId">
+                city_id = #{cityId},
+            </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
+            <if test="null != managerId">
+                manager_id = #{managerId},
+            </if>
+        </set>
+        WHERE login_name = #{loginName}
+    </update>
+
+    <delete id="deleteByLoginName" parameterType="java.lang.String">
+        DELETE  FROM emp_employee
+        WHERE login_name = #{loginName}
+    </delete>
 </mapper>

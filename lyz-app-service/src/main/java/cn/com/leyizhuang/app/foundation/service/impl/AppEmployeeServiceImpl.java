@@ -133,4 +133,18 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         }
         return 0;
     }
+
+    @Override
+    public void updateByLoginName(AppEmployee appEmployee) {
+        if(null != appEmployee && null != appEmployee.getEmpId()){
+            employeeDAO.updateByLoginName(appEmployee);
+        }
+    }
+
+    @Override
+    public void deleteByLoginName(String loginName) {
+        if(null != loginName){
+            employeeDAO.deleteByLoginName(loginName);
+        }
+    }
 }
