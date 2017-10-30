@@ -39,8 +39,10 @@ public class GoodsPriceRestController extends BaseRestController {
     public GridDataVO<GoodsPriceVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
         size = getSize(size);
         Integer page = getPage(offset, size);
-        ShiroUser user = (ShiroUser) SecurityUtils.getSubject();
+        ShiroUser user = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+//改
         AppEmployee appEmployee = this.appEmployeeServiceImpl.findByUserId(user.getId());
+
         PageInfo<GoodsPrice> goodsPricePageInfo = null;
         if (null != appEmployee && null != appEmployee.getStoreId()){
             goodsPricePageInfo = this.goodsPriceServiceImpl.queryPage(page, size, appEmployee.getStoreId());
