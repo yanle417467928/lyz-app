@@ -20,4 +20,11 @@ public class CustomerLeBi {
     private Long cusId;
 
     private Integer quantity;
+
+    private Double rebate;
+
+    public CustomerLeBi(Integer quantity, Double rebate) {
+        this.quantity = quantity;
+        this.rebate = rebate;
+    }
 }

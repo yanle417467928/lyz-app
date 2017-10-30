@@ -49,6 +49,7 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   row-bounds-with-count: true
+
 eureka:
   client:
     healthcheck:
@@ -81,6 +82,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:1111/eureka/
+
 ---
 # 测试环境配置
 spring:
@@ -99,6 +101,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
+
 ---
 # 生产环境配置
 spring:

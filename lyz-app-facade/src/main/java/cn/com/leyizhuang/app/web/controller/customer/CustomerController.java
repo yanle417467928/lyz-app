@@ -1,29 +1,27 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
-import cn.com.leyizhuang.app.core.constant.JwtConstant;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +43,9 @@ public class CustomerController {
 
     @Resource
     private AppStoreService storeService;
+
+    @Resource
+    private CommonService commonService;
 
     /**
      * App 顾客登录
@@ -123,7 +124,7 @@ public class CustomerController {
                 return resultDTO;
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
-            if (phoneUser != null) {
+            if (phoneUser != null) { //如果电话号码已经存在
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
@@ -136,8 +137,10 @@ public class CustomerController {
                         new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
                 logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else {
+            } else {//如果电话号码不存在
                 AppCustomer newUser = new AppCustomer();
+                newUser.setCreateTime(LocalDateTime.now());
+                newUser.setCreateType(AppCustomerCreateType.APP_REGISTRY);
                 newUser.setOpenId(registryParam.getOpenId());
                 newUser.setStatus(Boolean.TRUE);
                 newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
@@ -150,7 +153,9 @@ public class CustomerController {
                 newUser.setPicUrl(registryParam.getPicUrl());
                 newUser.setCityId(registryParam.getCityId());
                 newUser.setMobile(registryParam.getPhone());
-                AppCustomer returnUser = customerService.save(newUser);
+                newUser.setLight(AppCustomerLightStatus.GREEN);
+                newUser.setIsCashOnDelivery(Boolean.FALSE);
+                AppCustomer returnUser =commonService .saveCustomerInfo(newUser,new CustomerLeBi(),new CustomerPreDeposit());
                 //拼装accessToken
                 String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
@@ -195,11 +200,16 @@ public class CustomerController {
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {
+            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {//如果填写了推荐导购电话
                 AppEmployee seller = employeeService.findByMobile(guidePhone);
                 if (seller == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购不存在！",
                             new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                if (seller.getCityId() != customer.getCityId()){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"不能绑定其他城市的导购！",null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
@@ -212,15 +222,17 @@ public class CustomerController {
                 }
                 customer.setSalesConsultId(seller.getEmpId());
                 customer.setStoreId(store.getStoreId());
+                customer.setCustomerType(AppCustomerType.MEMBER);
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
                 logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else {
+            } else {//未添加推荐导购电话
                 AppStore store = storeService.findDefaultStoreByCityId(customer.getCityId());
                 customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
+                customer.setCustomerType(AppCustomerType.RETAIL);
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, store.getStoreName()));
@@ -405,7 +417,13 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            customerService.addLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            AppCustomer appCustomer = customerService.findById(userId);
+            if(null != appCustomer.getLastSignTime() && DateUtils.isSameDay(appCustomer.getLastSignTime(),new Date())){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "今天已签到，不能重复签到！", null);
+                logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId,identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

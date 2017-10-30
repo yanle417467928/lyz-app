@@ -23,6 +23,6 @@ public class MessageNotificationServiceImpl implements MessageNotificationServic
 
     @Override
     public List<MessageNotificationListResponse> queryListByUserIdAndUserType(Long userId, Integer userType) {
-        return this.messageNotificationDAO.queryListByUserIdAndUserType(userId, AppIdentityType.getAppUserTypeByValue(userType));
+        return this.messageNotificationDAO.queryListByUserIdAndUserType(userId, AppIdentityType.getAppIdentityTypeByValue(userType));
     }
 }

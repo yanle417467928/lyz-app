@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.PhotoOrderDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO">
+        INSERT INTO photo_order
+        (user_id, identity_type, photos, delivery_id, is_owner_receiving, remark, customer_id, status, create_time)
+        VALUES
+        (#{userId}, #{identityType}, #{photos}, #{deliveryId}, #{isOwnerReceiving}, #{remark}, #{customerId}, #{status}, #{createTime});
+    </insert>
+
+</mapper>

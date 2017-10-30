@@ -156,7 +156,7 @@
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid,
+            g.gid id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
@@ -212,7 +212,7 @@
         SELECT
             DISTINCT
             g.brd_id brand_id,
-            g.brand_name
+            g.brand_name brand_name
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -226,7 +226,7 @@
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
             DISTINCT
             g.brd_id     brand_id,
@@ -262,7 +262,7 @@
     </select>
 
     <select id="findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
         SELECT
             DISTINCT
             t.gtid type_id,
@@ -487,7 +487,7 @@
     </select>
 
     <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
-        SELECT sku, sku_name, cover_image_uri, goods_specification, goods_unit
+        SELECT gid,sku, sku_name, cover_image_uri, goods_specification, goods_unit
         FROM gds_goods
         WHERE gid = #{gid}
     </select>

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 城市
@@ -31,5 +31,5 @@ public class City {
     //是否生效
     private Boolean enable;
     //失效时间
-    private LocalDateTime enableFalseTime;
+    private Date enableFalseTime;
 }

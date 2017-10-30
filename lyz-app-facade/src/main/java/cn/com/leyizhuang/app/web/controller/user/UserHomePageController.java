@@ -1,16 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.AppUserLightStatus;
+import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +39,9 @@ public class UserHomePageController {
 
     @Resource
     private AppEmployeeService employeeService;
+
+    @Resource
+    private DeliveryAddressService deliveryAddressService;
 
     /**
      * 个人主页的信息
@@ -65,16 +68,21 @@ public class UserHomePageController {
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        try{
+        try {
             if (identityType == 6) {
                 CustomerHomePageResponse customerHomePageResponse = customerService.findCustomerInfoByUserId(userId);
-                String parseLight = AppUserLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
+                String parseLight = AppCustomerLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
                 customerHomePageResponse.setLight(parseLight);
+                if (null != customerHomePageResponse.getLastSignTime() && DateUtils.isSameDay(customerHomePageResponse.getLastSignTime(), new Date())) {
+                    customerHomePageResponse.setCanSign(Boolean.FALSE);
+                } else {
+                    customerHomePageResponse.setCanSign(Boolean.TRUE);
+                }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
-                EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId,identityType);
+            } else {
+                EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
                 // TODO 配送员还需要查询配送订单数量
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
@@ -84,7 +92,7 @@ public class UserHomePageController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取个人主页失败", null);
             logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}",e);
+            logger.warn("{}", e);
             return resultDTO;
         }
     }
@@ -115,7 +123,8 @@ public class UserHomePageController {
         try {
             List<CustomerListResponse> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomerList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (appCustomerList != null && appCustomerList.size() > 0) ? appCustomerList : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -194,13 +203,50 @@ public class UserHomePageController {
         try {
             List<EmployeeListResponse> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appEmployeeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取我的员工列表失败", null);
             logger.warn("getDecorateEmployeeList EXCEPTION,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取用户默认收货地址
+     *
+     * @param userId 用户id
+     * @param identityType 用户身份类型
+     * @return 用户默认收货地址
+     */
+    @PostMapping(value = "/deliveryAddress/default", produces = "application/json;charset=UTF-8")
+    public ResultDTO getUserDefaultDeliveryAddress(Long userId, Integer identityType) {
+        logger.info("getUserDefaultDeliveryAddress CALLED,获取用户默认收货地址，入参 userId {},identityType", userId, identityType);
+        ResultDTO resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("getDeliveryAddress OUT,获取用户默认收货地址失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityType不能为空！", null);
+                logger.info("getDeliveryAddress OUT,获取用户默认收货地址失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            DeliveryAddressResponse deliveryAddressResponse = deliveryAddressService.
+                    getDefaultDeliveryAddressByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponse);
+            logger.info("getDeliveryAddress OUT,获取用户默认收货地址成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取用户默认收货地址失败!", null);
+            logger.warn("addDeliveryAddress EXCEPTION,获取用户默认收货地址失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -98,12 +99,9 @@ public class GetPaymentMethodsController {
             Double rebate = (double) (qty / 10);
             if (rebate >= goodsMoney){
                 rebate = goodsMoney;
-//                Integer rebateMoney = (int) (goodsMoney * 10);
-//                appCustomerServiceImpl.modifyLeBiQuantityByUserIdAndQty(userId,rebateMoney);
-//            }else {
-//                appCustomerServiceImpl.modifyLeBiQuantityByUserIdAndQty(userId,qty);
+                qty = (int) (goodsMoney * 10);
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, rebate);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CustomerLeBi(qty,rebate));
             logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e) {

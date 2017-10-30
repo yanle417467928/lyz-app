@@ -127,7 +127,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Override
     public List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
-            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             return goodsDAO.findGoodsCollectListByUserIdAndIdentityType(userId,appIdentityType);
         }
         return null;
@@ -148,7 +148,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Override
     public List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
-            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             return goodsDAO.findGoodsOftenListByUserIdAndIdentityType(userId,appIdentityType);
         }
         return null;
@@ -172,7 +172,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Transactional
     public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
-            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             goodsDAO.saveCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
 
         }
@@ -183,7 +183,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Transactional
     public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
-            AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             goodsDAO.deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
 
         }
@@ -227,7 +227,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
      */
     @Override
     public GoodsDetailResponse findGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType) {
-        AppIdentityType appIdentityType = AppIdentityType.getAppUserTypeByValue(identityType);
+        AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
         GoodsDetailResponse goodsDetailResponse = this.goodsDAO.findGoodsDetailByGoodsId(userId, goodsId, appIdentityType);
         if (null != goodsDetailResponse) {
             GoodsDO goodsDO = this.goodsDAO.findGoodsImageUriByGoodsId(goodsId);

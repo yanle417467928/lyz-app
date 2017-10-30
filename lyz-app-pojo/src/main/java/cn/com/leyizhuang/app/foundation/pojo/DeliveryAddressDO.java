@@ -19,6 +19,7 @@ public class DeliveryAddressDO extends BaseDO {
     private String receiver;
     //收货人号码
     private String receiverPhone;
+    //收货省份
     private String deliveryProvince;
     //收货城市
     private String deliveryCity;

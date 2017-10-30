@@ -7,7 +7,7 @@ package cn.com.leyizhuang.app.core.constant;
  * Time: 17:13.
  */
 
-public enum AppUserLightStatus {
+public enum AppCustomerLightStatus {
 
     CLOSE("熄灯"),
     RED("红灯"),
@@ -16,7 +16,7 @@ public enum AppUserLightStatus {
 
     private final String value;
 
-    AppUserLightStatus(String value) {
+    AppCustomerLightStatus(String value) {
         this.value = value;
     }
 

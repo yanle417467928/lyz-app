@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 个人主页(我的)页面信息响应实体
@@ -23,6 +24,8 @@ public class CustomerHomePageResponse implements Serializable {
     private String picUrl;
     //姓名
     private String name;
+    //顾客电话
+    private String mobile;
     //所属导购
     private String guideName;
     //所属导购电话
@@ -33,4 +36,9 @@ public class CustomerHomePageResponse implements Serializable {
     private Integer lb;
     //账户余额
     private Double balance;
+    //上次签到时间
+    private Date lastSignTime;
+    //是否可以签到
+    private Boolean canSign;
+
 }

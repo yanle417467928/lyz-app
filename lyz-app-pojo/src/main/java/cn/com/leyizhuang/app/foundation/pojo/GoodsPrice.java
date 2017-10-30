@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 商品价格表
  *
@@ -38,5 +40,11 @@ public class GoodsPrice {
     //经销价
     private Double wholesalePrice;
 
+    // 生效起始时间
+    private LocalDateTime startTime;
 
+    // 生效结束时间
+    private LocalDateTime endTime;
+
+    private GoodsDO goodsDO;
 }

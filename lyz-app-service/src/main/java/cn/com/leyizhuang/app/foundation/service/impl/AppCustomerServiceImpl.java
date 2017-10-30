@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -142,6 +145,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional
     public void modifyCustomerMobileByUserId(Long userId, String mobile) {
         if (null != userId && StringUtils.isNotBlank(mobile)){
             customerDAO.updateCustomerMobileByUserId(userId,mobile);
@@ -149,10 +153,44 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public void modifyLeBiQuantityByUserIdAndQty(Long userId, Integer quantity) {
-        if (null != userId && null != quantity){
-            customerDAO.updateLeBiQuantityByUserIdAndQty(userId,quantity);
+    @Transactional
+    public void saveLeBi(CustomerLeBi leBi) {
+        if (null != leBi){
+            customerDAO.saveLeBi(leBi);
         }
+    }
+
+    @Override
+    @Transactional
+    public void savePreDeposit(CustomerPreDeposit preDeposit) {
+        if (null != preDeposit){
+            customerDAO.savePreDeposit(preDeposit);
+        }
+    }
+
+    @Override
+    public void updateLastSignTimeByCustomerId(Long cusId, Date date) {
+        if (null != cusId){
+            customerDAO.updateLastSignTimeByCustomerId(cusId,date);
+        }
+    }
+
+    @Override
+    @Transactional
+    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
+        if (null != userId && null != customerDeposit){
+            return customerDAO.updateDepositByUserIdAndDeposit(userId,customerDeposit);
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
+        if (null != userId && null != lebiQty){
+            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId,lebiQty);
+        }
+        return 0;
     }
 
     @Override
@@ -163,5 +201,13 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         return null;
     }
 
+    @Override
+    public int lockCustomerProductCouponByUserIdAndProductCoupon(Long userId, Integer productCoupon) {
+        return 0;
+    }
 
+    @Override
+    public int lockCustomerCashCouponByUserIdAndProductCoupon(Long userId, Integer identityType, Integer cashCoupon) {
+        return 0;
+    }
 }

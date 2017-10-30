@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,26 +46,65 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    public Double findSubventionBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findSubventionBalanceByStoreId(storeId);
+    public Double findSubventionBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findSubventionBalanceByUserId(userId);
         }
         return null;
     }
 
     @Override
-    public Double findCreditMoneyBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findCreditMoneyBalanceByStoreId(storeId);
+    public Double findCreditMoneyBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findCreditMoneyBalanceByUserId(userId);
         }
         return null;
     }
 
     @Override
-    public Double findPreDepositBalanceByStoreId(Long storeId) {
-        if(null != storeId){
-            return storeDAO.findPreDepositBalanceByStoreId(storeId);
+    public Double findPreDepositBalanceByUserId(Long userId) {
+        if (null != userId){
+            return storeDAO.findPreDepositBalanceByUserId(userId);
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
+        if (null != userId && null != storeDeposit){
+            return storeDAO.updateStoreDepositByUserIdAndStoreDeposit(userId,storeDeposit);
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
+        if (null != userId && null != storeCredit){
+            return storeDAO.updateStoreCreditByUserIdAndCredit(userId,storeCredit);
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
+        if (null != userId && null != storeSubvention){
+            return storeDAO.updateStoreSubventionByUserIdAndSubvention(userId,storeSubvention);
+        }
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory) {
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory) {
+        return 0;
     }
 }

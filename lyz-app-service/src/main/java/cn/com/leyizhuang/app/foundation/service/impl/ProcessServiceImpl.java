@@ -79,9 +79,9 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public List<UserGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType) {
         if (identityType == 6) {
-            return processDAO.queryByProcessIdAndEmployeeId(userId, processId);
-        } else {
             return processDAO.queryByProcessIdAndCustomerId(userId, processId);
+        } else {
+            return processDAO.queryByProcessIdAndEmployeeId(userId, processId);
         }
     }
 }

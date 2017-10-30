@@ -26,4 +26,7 @@ public interface DeliveryAddressDAO {
 
     List<DeliveryAddressResponse> queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(@Param(value = "userId") Long userId,
                                                                                       @Param(value = "identityType") AppIdentityType identityType);
+
+    DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                                             @Param(value = "identityType") AppIdentityType identityType);
 }

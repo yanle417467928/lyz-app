@@ -87,6 +87,7 @@
     <select id="findDecorateEmployeeListByManagerId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT
+        e.emp_id,
         e.name,
         e.mobile,
         e.pic_url,
@@ -96,9 +97,12 @@
         AND e.manager_id = #{userId}
     </select>
 
-    <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
+    <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney">
         SELECT
-        credit_limit_available balance
+        credit_limit limitBalance,
+        credit_limit_available availableBalance,
+        temp_credit_limit tempBalance
         FROM emp_credit_money
         WHERE guide_id = #{userId}
     </select>
@@ -108,6 +112,7 @@
         SELECT
             e.pic_url,
             e.login_name number,
+            e.mobile,
         <if test="type == 0">
             ecm.credit_limit_available balance,
         </if>
@@ -138,4 +143,68 @@
         WHERE
             emp_id = #{userId}
     </update>
+
+    <select id="existsSellerCreditByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
+        SELECT emp_credit_money.is_active FROM emp_credit_money WHERE guide_id = #{userId}
+    </select>
+
+    <update id="lockGuideCreditByUserIdAndGuideCredit">
+        UPDATE
+            emp_credit_money
+        SET
+            credit_limit_available = credit_limit_available - #{credit}
+        WHERE
+            credit_limit_available >= #{credit}
+        AND guide_id = #{userId}
+    </update>
+
+    <update id="updateByLoginName" parameterType="AppEmployee">
+        UPDATE emp_employee
+        <set>
+            <if test="null != name">
+                name = #{name},
+            </if>
+            <if test="null != password">
+                password = #{password},
+            </if>
+            <if test="null != salt">
+                salt = #{salt},
+            </if>
+            <if test="null != identityType">
+                identity_type = #{identityType},
+            </if>
+            <if test="null != mobile">
+                mobile = #{mobile},
+            </if>
+            <if test="null != birthday">
+                birthday = #{birthday},
+            </if>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != sex">
+                sex = #{sex,
+                javaType=cn.com.leyizhuang.app.core.constant.SexType,
+                typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
+            <if test="null != picUrl">
+                pic_url = #{picUrl},
+            </if>
+            <if test="null != cityId">
+                city_id = #{cityId},
+            </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
+            <if test="null != managerId">
+                manager_id = #{managerId},
+            </if>
+        </set>
+        WHERE login_name = #{loginName}
+    </update>
+
+    <delete id="deleteByLoginName" parameterType="java.lang.String">
+        DELETE  FROM emp_employee
+        WHERE login_name = #{loginName}
+    </delete>
 </mapper>

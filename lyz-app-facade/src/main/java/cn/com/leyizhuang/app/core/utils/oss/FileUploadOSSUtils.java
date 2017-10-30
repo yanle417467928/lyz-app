@@ -21,11 +21,11 @@ public class FileUploadOSSUtils {
 
 
     /**
-     * 上传用户头像方法
+     * 上传图片到oss方法
      * @param imgFile
      * @return
      */
-    public static String uploadProfilePhoto(MultipartFile imgFile) {
+    public static String uploadProfilePhoto(MultipartFile imgFile, String pathName) {
         String name = imgFile.getOriginalFilename();
         String ext = name.substring(name.lastIndexOf("."));
 
@@ -34,7 +34,7 @@ public class FileUploadOSSUtils {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH) + 1;
             Date dt = calendar.getTime();
-            String fileName = "profile/photo/" + year + "/" + month + "/" + SDF.format(dt) + ext;
+            String fileName = pathName + year + "/" + month + "/" + SDF.format(dt) + ext;
 
             String path = "";
             long fileSize = imgFile.getSize();

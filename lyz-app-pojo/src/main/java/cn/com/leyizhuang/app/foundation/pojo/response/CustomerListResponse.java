@@ -22,6 +22,7 @@ import java.util.List;
 @ToString
 public class CustomerListResponse implements Serializable {
 
+    private Long cusId;
     //真实姓名
     private String name;
 
@@ -44,6 +45,7 @@ public class CustomerListResponse implements Serializable {
 
         CustomerListResponse customerList = new CustomerListResponse();
 
+        customerList.setCusId(appCustomer.getCusId());
         customerList.setName(appCustomer.getName());
         customerList.setPicUrl(appCustomer.getPicUrl());
         customerList.setMobile(appCustomer.getMobile());

@@ -8,7 +8,7 @@
             select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO cus_customer (name, mobile, birthday, status, sex, open_id,
-        pic_url, nick_name, city_id, sales_consult_id, create_time,light
+        pic_url, nick_name, city_id, sales_consult_id, create_time,light,is_cash_on_delivery,create_type,customer_type
         ) VALUES (
         #{name}, #{mobile}, #{birthday}, #{status},
         #{sex,
@@ -16,7 +16,11 @@
         typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId},
         #{createTime},#{light,
-              javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+              javaType =cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus,
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{isCashOnDelivery},#{createType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler}
         )
     </insert>
@@ -65,9 +69,20 @@
             <if test="null != storeId">
                 store_id = #{storeId},
             </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
+            <if test="null != isCashOnDelivery">
+                is_cash_on_delivery = #{isCashOnDelivery},
+            </if>
+            <if test="null != customerType">
+                customer_type = #{customerType,
+                javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
+                   typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            </if>
             <if test="null != light">
                 light = #{light,
-                  javaType =cn.com.leyizhuang.app.core.constant.AppUserLightStatus,
+                  javaType =cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus,
                    typeHandler=org.apache.ibatis.type.EnumTypeHandler
                 },
             </if>
@@ -128,6 +143,7 @@
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"
             resultType="AppCustomer">
         SELECT
+            c.cus_id,
             c.name,
             c.mobile,
             c.pic_url,
@@ -140,6 +156,7 @@
     <select id="searchBySalesConsultIdAndKeywords" resultType="AppCustomer">
 
         SELECT
+            c.cus_id,
             c.name,
             c.mobile,
             c.pic_url,
@@ -154,20 +171,24 @@
     </select>
 
     <select id="findPreDepositBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
-        SELECT balance FROM cus_pre_deposit WHERE cus_id = #{userId}
+        SELECT balance
+        FROM cus_pre_deposit
+        WHERE cus_id = #{userId}
     </select>
 
     <select id="findLeBiQuantityByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
-        SELECT quantity FROM cus_lb WHERE cus_id = #{userId}
+        SELECT quantity
+        FROM cus_lb
+        WHERE cus_id = #{userId}
     </select>
 
     <update id="updateLeBiQuantityByUserId" parameterType="java.lang.Long">
         UPDATE
             cus_lb
         SET
-            quantity = quantity +10
+            quantity = quantity + 10
         WHERE
-            cus_id =#{userId}
+            cus_id = #{userId}
     </update>
 
     <update id="updateLeBiQuantityByUserIdAndQty">
@@ -176,7 +197,8 @@
         SET
             quantity = quantity - #{qty}
         WHERE
-            cus_id = #{userId}
+            quantity >= #{qty}
+        AND cus_id = #{userId}
     </update>
 
     <update id="updateCustomerMobileByUserId">
@@ -193,11 +215,13 @@
             c.pic_url,
             c.name,
             c.nick_name,
+            c.mobile,
             c.light,
             e.name      guideName,
             e.mobile    guideMobile,
             pd.balance,
-            lb.quantity lb
+            lb.quantity lb,
+            c.last_sign_time
         FROM cus_customer c
             LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
             LEFT JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
@@ -207,7 +231,26 @@
     </select>
 
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
-        SELECT is_cash_on_delivery FROM cus_customer WHERE cus_id = #{userId}
+        SELECT is_cash_on_delivery
+        FROM cus_customer
+        WHERE cus_id = #{userId}
     </select>
 
+    <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi">
+        INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
+    </insert>
+
+    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit">
+        INSERT INTO cus_pre_deposit (cus_id, balance) VALUES (#{cusId}, #{balance})
+    </insert>
+
+    <update id="updateLastSignTimeByCustomerId">
+        UPDATE cus_customer
+        SET last_sign_time = #{date}
+        WHERE cus_id = #{cusId}
+    </update>
+
+    <update id="updateDepositByUserIdAndDeposit">
+        UPDATE cus_pre_deposit SET balance = balance - #{deposit} WHERE balance >= #{deposit} AND cus_id = #{userId}
+    </update>
 </mapper>

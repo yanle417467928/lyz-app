@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.remote;
+package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import org.slf4j.Logger;

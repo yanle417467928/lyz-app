@@ -110,5 +110,26 @@
         WHERE ID = #{id}
     </update>
 
+    <select id="getDefaultDeliveryAddressByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_province,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
+        FROM delivery_address
+        WHERE user_id = #{userId}
+              AND identity_type = #{identityType}
+              AND is_default IS TRUE
+              AND status IS TRUE
+        LIMIT 1
+    </select>
+
 
 </mapper>

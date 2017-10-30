@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,30 +32,11 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public void batchSave(Long userId, Integer identityType, String[] param) {
-        List<MaterialListDO> materialListDOlist = new ArrayList<MaterialListDO>();
-        for (int i = 0; i < param.length; i++) {
-            MaterialListDO materialListDO = new MaterialListDO();
-            materialListDO.setUserId(userId);
-            materialListDO.setIdentityType(identityType);
-            String[] arrayParam = param[i].split("-");
-            if (arrayParam.length == 2) {
-                GoodsDO goodsDO = this.goodsService.findGoodsById(Long.parseLong(arrayParam[0]));
-                if (null != goodsDO){
-                    materialListDO.setSku(goodsDO.getSku());
-                    materialListDO.setSkuName(goodsDO.getSkuName());
-                    materialListDO.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                    materialListDO.setGoodsUnit(goodsDO.getGoodsUnit());
-                    if (null != goodsDO.getCoverImageUri()) {
-                        String uri[] = goodsDO.getCoverImageUri().split(",");
-                        materialListDO.setCoverImageUri(uri[0]);
-                    }
-                    materialListDO.setQty(Integer.parseInt(arrayParam[1]));
-                    materialListDOlist.add(materialListDO);
-                }
-            }
+    public void batchSave(List<MaterialListDO> materialListDOList) {
+        if (null != materialListDOList && materialListDOList.size()>0){
+            materialListDAO.batchSave(materialListDOList);
         }
-        this.materialListDAO.batchSave(materialListDOlist);
+
     }
 
     @Override
@@ -64,5 +47,34 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public void deleteMaterialList(List<Long> ids) {
         this.materialListDAO.batchDelete(ids);
+    }
+
+    @Override
+    public List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType) {
+        return this.materialListDAO.findByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    }
+
+    @Override
+    public MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+        if (null != userId && null != identityType && null != goodsId){
+            return materialListDAO.findByUserIdAndIdentityTypeAndGoodsId(userId,identityType,goodsId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType){
+            return materialListDAO.findMaterialListByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType){
+            return materialListDAO.findMaterialListGoodsIdsByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
     }
 }

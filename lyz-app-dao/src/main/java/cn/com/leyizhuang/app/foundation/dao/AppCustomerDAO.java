@@ -1,12 +1,15 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,7 +22,7 @@ import java.util.List;
 public interface AppCustomerDAO {
     AppCustomer findByLoginName(String loginName);
 
-    AppCustomer  findByOpenId(@Param(value = "openId") String openId);
+    AppCustomer findByOpenId(@Param(value = "openId") String openId);
 
     AppCustomer findByMobile(String mobile);
 
@@ -50,7 +53,15 @@ public interface AppCustomerDAO {
 
     Boolean existsByCustomerId(Long userId);
 
-    void updateCustomerMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
+    void updateCustomerMobileByUserId(@Param("userId") Long userId, @Param("mobile") String mobile);
 
-    void updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId,@Param("qty") Integer quantity);
+    int updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId, @Param("qty") Integer quantity);
+
+    void saveLeBi(CustomerLeBi leBi);
+
+    void savePreDeposit(CustomerPreDeposit preDeposit);
+
+    void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
+
+    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
 }

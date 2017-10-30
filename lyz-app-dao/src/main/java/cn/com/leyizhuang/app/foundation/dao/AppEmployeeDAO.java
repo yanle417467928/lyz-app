@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import org.apache.ibatis.annotations.Param;
@@ -31,10 +32,18 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
-    Double findCreditMoneyBalanceByUserId(Long userId);
+    SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
             @Param("userId") Long userId,@Param("type") Integer identityType);
 
     void updateEmployeeMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
+
+    Boolean existsSellerCreditByUserId(Long userId);
+
+    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
+
+    void updateByLoginName(AppEmployee appEmployee);
+
+    void deleteByLoginName(String loginName);
 }

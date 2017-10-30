@@ -1,6 +1,7 @@
-package cn.com.leyizhuang.app.web.controller.remote;
+package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
@@ -78,16 +79,26 @@ public class HqAppEmployeeController {
             switch (employeeDTO.getPositionType()) {
                 case "DG":
                     employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.SELLER);
                     break;
                 case "DZ":
-                    employee.setIdentityType(AppIdentityType.SUPERVISOR);
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.SUPERVISOR);
                     break;
                 case "DJL":
-                    employee.setIdentityType(AppIdentityType.MANAGER);
-                default:
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.MANAGER);
+                    break;
+                case "PSY":
+                    employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                    break;
+                case"ZSJL":
+                    employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    break;
+                case"ZSGR":
+                    employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
                     break;
             }
-            employee.setIdentityType(AppIdentityType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             employee.setCityId(city.getCityId());
             String salt = employee.generateSalt();
@@ -110,4 +121,80 @@ public class HqAppEmployeeController {
         }
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
     }
+
+    /**
+     * 同步修改员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PostMapping(value = "/update")
+    public ResultDTO<String> updateEmployee(@RequestBody HqAppEmployeeDTO employeeDTO) {
+        if (null != employeeDTO) {
+            String password = Base64Utils.decode(employeeDTO.getPassword());
+            AppEmployee employee = employeeService.findByLoginName(employeeDTO.getNumber());
+            employee.setName(employeeDTO.getName());
+            employee.setMobile(employeeDTO.getMobile());
+            employee.setBirthday(employeeDTO.getBirthday());
+            employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
+            employee.setStatus(employeeDTO.getStatus() != 0);
+            switch (employeeDTO.getPositionType()) {
+                case "DG":
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.SELLER);
+                    break;
+                case "DZ":
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.SUPERVISOR);
+                    break;
+                case "DJL":
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    employee.setSellerType(AppSellerType.MANAGER);
+                    break;
+                case "PSY":
+                    employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                    break;
+                case"ZSJL":
+                    employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    break;
+                case"ZSGR":
+                    employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
+                    break;
+            }
+            City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
+            employee.setCityId(city.getCityId());
+            String salt = employee.generateSalt();
+            employee.setSalt(salt);
+            try {
+                String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
+                employee.setPassword(md5Password);
+                employeeService.updateByLoginName(employee);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            }catch (Exception e){
+                e.printStackTrace();
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
+            }
+        }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
+    }
+
+    /**
+     * 同步删除员工信息
+     * @return
+     */
+    @PostMapping(value = "/delete")
+    public ResultDTO<String> deleteEmployee(String loginName) {
+        if (StringUtils.isBlank(loginName)){
+            logger.info("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 loginName:{}",loginName);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工编号为空！", null);
+        }
+        try{
+            employeeService.deleteByLoginName(loginName);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        }catch (Exception e){
+            logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}",e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "未知异常，同步删除员工信息失败！", null);
+
+        }
+    }
+
 }

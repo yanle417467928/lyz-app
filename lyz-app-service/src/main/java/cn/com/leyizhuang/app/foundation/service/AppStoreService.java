@@ -19,9 +19,19 @@ public interface AppStoreService {
 
     AppStore findDefaultStoreByCityId(Long cityId);
 
-    Double findSubventionBalanceByStoreId(Long storeId);
+    Double findSubventionBalanceByUserId(Long userId);
 
-    Double findCreditMoneyBalanceByStoreId(Long storeId);
+    Double findCreditMoneyBalanceByUserId(Long userId);
 
-    Double findPreDepositBalanceByStoreId(Long storeId);
+    Double findPreDepositBalanceByUserId(Long userId);
+
+    int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
+
+    int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit);
+
+    int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
+
+    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory);
+
+    int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory);
 }
