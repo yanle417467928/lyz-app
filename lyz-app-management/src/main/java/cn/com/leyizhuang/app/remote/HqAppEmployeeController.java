@@ -75,18 +75,18 @@ public class HqAppEmployeeController {
             employee.setBirthday(employeeDTO.getBirthday());
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
             employee.setStatus(employeeDTO.getStatus() != 0);
-//            switch (employeeDTO.getPositionType()) {
-//                case "DG":
-//                    employee.setIdentityType(AppIdentityType.SELLER);
-//                    break;
-//                case "DZ":
-//                    employee.setIdentityType(AppIdentityType.SUPERVISOR);
-//                    break;
-//                case "DJL":
-//                    employee.setIdentityType(AppIdentityType.MANAGER);
-//                default:
-//                    break;
-//            }
+            switch (employeeDTO.getPositionType()) {
+                case "DG":
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    break;
+                case "DZ":
+                    employee.setIdentityType(AppIdentityType.SUPERVISOR);
+                    break;
+                case "DJL":
+                    employee.setIdentityType(AppIdentityType.MANAGER);
+                default:
+                    break;
+            }
             employee.setIdentityType(AppIdentityType.SELLER);
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             employee.setCityId(city.getCityId());
