@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.request;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,10 +34,10 @@ public class OrderLockExpendRequest implements Serializable {
     //所有物品消费相关：
 
     private Integer lebiQty;                    //乐币
-//    private List goodsList;
-    private Integer storeInventory;             //门店库存
-    private Integer cityInventory;              //城市库存
-    private Integer productCoupon;  //产品券
-    private Integer cashCoupon;        //现金券
+    //    private Map<Long,Integer> goodsTotal;     //商品总量<商品ids,商品数量qtys>
+    private Map<Long,Integer> storeInventory;   //门店库存商品ID,商品数量qtys>
+    private Map<Long,Integer> cityInventory;    //城市库存商品ID,商品数量qtys>
+    private Map<Long,Integer> productCoupons;    //产品券<券ID,券数量qtys>
+    private Map<Long,Integer> cashCoupons;       //现金券<券ID,券数量qtys>
 
 }

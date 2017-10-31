@@ -3,10 +3,12 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.City;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 城市API实现
@@ -17,7 +19,7 @@ import java.util.List;
 @Service
 public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
 
-    @Autowired
+    @Resource
     private CityDAO cityDAO;
 
     @Override
@@ -44,5 +46,46 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     public void save(City city) {
         cityDAO.save(city);
+    }
+
+    @Override
+//    @Transactional
+    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory) {
+        if (null != userId && !cityInventory.isEmpty()){
+            if (identityType == 6) {
+                for (Long index : cityInventory.keySet()) {
+                    int result = cityDAO.updateCityInventoryByCustomerIdAndIdentityTypeAndInventory(userId, index, cityInventory.get(index));
+                    if (result == 0) {
+                        return 0;
+                    }
+                }
+            }
+            if (identityType == 2){
+                for (Long index : cityInventory.keySet()) {
+                    int result = cityDAO.updateCityInventoryByEmployeeIdAndIdentityTypeAndInventory(userId, index, cityInventory.get(index));
+                    if (result == 0) {
+                        return 0;
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    @Override
+//    @Transactional
+    public void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory) {
+        if (null != userId && !cityInventory.isEmpty()){
+            if (identityType == 6) {
+                for (Long index : cityInventory.keySet()) {
+                    cityDAO.updateCityInventoryByCustomerIdAndGoodsIdAndInventory(userId, index, cityInventory.get(index));
+                }
+            }
+            if (identityType == 2){
+                for (Long index : cityInventory.keySet()) {
+                    cityDAO.updateCityInventoryByEmployeeIdAndGoodsIdAndInventory(userId, index, cityInventory.get(index));
+                }
+            }
+        }
     }
 }

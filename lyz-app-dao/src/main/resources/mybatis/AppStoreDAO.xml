@@ -57,4 +57,57 @@
       WHERE balance >= #{subvention}
       AND store_id = (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
    </update>
+
+   <update id="updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory">
+      UPDATE st_inventory
+      SET available_ity = available_ity - #{qty}
+      WHERE available_ity >= #{qty}
+      AND gid = #{gid}
+      AND store_id = (SELECT emp_employee.store_id FROM emp_employee WHERE emp_id = #{userId})
+   </update>
+
+   <update id="updateStoreInventoryByCustomerIdAndGoodsIdAndInventory">
+      UPDATE st_inventory
+       SET available_ity = available_ity - #{qty}
+      WHERE available_ity >= #{qty}
+      AND gid = #{gid}
+      AND store_id = (SELECT cus_customer.store_id FROM cus_customer WHERE cus_id = #{userId})
+   </update>
+
+   <update id="updateStoreDepositByUserId">
+      UPDATE st_pre_deposit SET balance = balance + #{deposit} WHERE store_id =
+      (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </update>
+
+   <update id="updateStoreCreditByUserId">
+      UPDATE
+      st_credit_money
+      SET credit_limit_available = credit_limit_available + #{credit}
+      WHERE
+      store_id = (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </update>
+
+   <update id="updateStoreSubventionByUserId">
+      UPDATE st_subvention
+      SET balance = balance + #{subvention}
+      WHERE
+      AND store_id = (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </update>
+
+   <update id="updateStoreInventoryByEmployeeIdAndGoodsId">
+      UPDATE st_inventory
+      SET available_ity = available_ity + #{qty}
+      WHERE
+      gid = #{gid}
+      AND store_id = (SELECT emp_employee.store_id FROM emp_employee WHERE emp_id = #{userId})
+   </update>
+
+   <update id="updateStoreInventoryByCustomerIdAndGoodsId">
+      UPDATE st_inventory
+      SET available_ity = available_ity + #{qty}
+      WHERE
+      gid = #{gid}
+      AND store_id = (SELECT cus_customer.store_id FROM cus_customer WHERE cus_id = #{userId})
+   </update>
+
 </mapper>

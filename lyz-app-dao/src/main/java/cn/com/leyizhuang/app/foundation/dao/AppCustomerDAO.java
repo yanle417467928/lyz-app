@@ -64,4 +64,20 @@ public interface AppCustomerDAO {
     void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
 
     int updateDepositByUserIdAndDeposit(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
+
+    int updateProductCouponByUserIdAndProductCoupons(
+            @Param("userId") Long userId,@Param("gid") Long goodsId,@Param("qty") Integer qty);
+
+    int updateCashCouponByUserIdAndCashCoupons(
+            @Param("userId") Long userId,@Param("gid") Long goodsId,@Param("qty") Integer qty);
+
+    void updateDepositByUserId(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
+
+    void updateLeBiByUserIdAndQuantity(@Param("userId") Long userId,@Param("qty") Integer qty);
+
+    void updateProductCouponByUserIdAndGoodsIdAndProductCoupons(
+            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+
+    void updateCashCouponByUserIdAndGoodsIdAndCashCoupons(
+            @Param("userId") Long userId,@Param("ccid") Long index,@Param("qty") Integer integer);
 }

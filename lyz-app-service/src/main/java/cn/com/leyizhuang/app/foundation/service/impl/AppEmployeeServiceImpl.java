@@ -147,4 +147,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
             employeeDAO.deleteByLoginName(loginName);
         }
     }
+
+    @Override
+    @Transactional
+    public void unlockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
+        if (null != userId && null != guideCredit){
+            employeeDAO.unlockGuideCreditByUserIdAndGuideCredit(userId,guideCredit);
+        }
+    }
 }
