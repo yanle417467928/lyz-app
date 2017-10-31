@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.web.controller;
 
-import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
@@ -336,7 +335,7 @@ public class MaterialAuditSheetController {
      * @param status    订单状态
      * @return
      */
-    @RequestMapping(value = "/manager/audit",method = RequestMethod.POST)
+    @RequestMapping(value = "/manager/list",method = RequestMethod.POST)
     public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID,Integer status){
         ResultDTO<Object> resultDTO;
         logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},",userID);
