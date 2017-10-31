@@ -20,4 +20,37 @@
         VALUES
         (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
     </insert>
+
+    <update id="updateCityInventoryByCustomerIdAndIdentityTypeAndInventory">
+      UPDATE city_inventory
+      SET available_ity = available_ity - #{qty}
+      WHERE available_ity >= #{qty}
+      AND gid = #{gid}
+      AND city_id = (SELECT cus_customer.city_id FROM cus_customer WHERE cus_id = #{userId})
+    </update>
+
+    <update id="updateCityInventoryByCustomerIdAndGoodsIdAndInventory">
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{qty}
+        WHERE
+        gid = #{gid}
+        AND city_id = (SELECT cus_customer.city_id FROM cus_customer WHERE cus_id = #{userId})
+    </update>
+
+    <update id="updateCityInventoryByEmployeeIdAndIdentityTypeAndInventory">
+      UPDATE city_inventory
+      SET available_ity = available_ity - #{qty}
+      WHERE available_ity >= #{qty}
+      AND gid = #{gid}
+      AND city_id = (SELECT emp_employee.city_id FROM emp_employee WHERE emp_id = #{userId})
+    </update>
+
+    <update id="updateCityInventoryByEmployeeIdAndGoodsIdAndInventory">
+      UPDATE city_inventory
+      SET available_ity = available_ity + #{qty}
+      WHERE
+      gid = #{gid}
+      AND city_id = (SELECT emp_employee.city_id FROM emp_employee WHERE emp_id = #{userId})
+    </update>
+
 </mapper>

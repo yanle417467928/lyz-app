@@ -47,4 +47,6 @@ public interface AppEmployeeService {
     void updateByLoginName(AppEmployee appEmployee);
 
     void deleteByLoginName(String loginName);
+
+    void unlockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit);
 }

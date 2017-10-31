@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.common.foundation.service.BaseService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 门店服务层
@@ -31,7 +31,14 @@ public interface AppStoreService {
 
     int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
 
-    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory);
+    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory);
 
-    int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory);
+    void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
+
+    void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit);
+
+    void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
+
+    void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory);
+
 }

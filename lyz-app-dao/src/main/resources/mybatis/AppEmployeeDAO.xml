@@ -207,4 +207,13 @@
         DELETE  FROM emp_employee
         WHERE login_name = #{loginName}
     </delete>
+
+    <update id="unlockGuideCreditByUserIdAndGuideCredit">
+        UPDATE
+          emp_credit_money
+        SET
+          credit_limit_available = credit_limit_available + #{credit}
+        WHERE
+          guide_id = #{userId}
+    </update>
 </mapper>

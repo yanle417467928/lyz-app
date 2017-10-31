@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,4 +32,22 @@ public interface AppStoreDAO {
     int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId,@Param("credit") Double storeCredit);
 
     int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId,@Param("subvention") Double storeSubvention);
+
+    int updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory(
+            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+
+    int updateStoreInventoryByCustomerIdAndGoodsIdAndInventory(
+            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+
+    void updateStoreDepositByUserId(@Param("userId") Long userId,@Param("deposit") Double storeDeposit);
+
+    void updateStoreCreditByUserId(@Param("userId") Long userId,@Param("credit") Double storeCredit);
+
+    void updateStoreSubventionByUserId(@Param("userId") Long userId,@Param("subvention") Double storeSubvention);
+
+    void updateStoreInventoryByEmployeeIdAndGoodsId(
+            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+
+    void updateStoreInventoryByCustomerIdAndGoodsId(
+            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
 }

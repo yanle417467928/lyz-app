@@ -253,4 +253,59 @@
     <update id="updateDepositByUserIdAndDeposit">
         UPDATE cus_pre_deposit SET balance = balance - #{deposit} WHERE balance >= #{deposit} AND cus_id = #{userId}
     </update>
+
+    <update id="updateDepositByUserId">
+        UPDATE cus_pre_deposit SET balance = balance + #{deposit} WHERE cus_id = #{userId}
+    </update>
+
+    <update id="updateLeBiByUserIdAndQuantity">
+        UPDATE cus_lb SET quantity = quantity + #{qty} WHERE cus_id = #{userId}
+    </update>
+
+    <update id="updateProductCouponByUserIdAndProductCoupons">
+
+        UPDATE cus_customer_product_coupon
+        SET
+          quantity = quantity - #{qty}
+        WHERE
+          quantity >= #{qty}
+        AND
+          gid = #{gid}
+        AND
+          cus_id = #{userId};
+    </update>
+    <update id="updateProductCouponByUserIdAndGoodsIdAndProductCoupons">
+
+        UPDATE cus_customer_product_coupon
+        SET
+        quantity = quantity + #{qty}
+        WHERE
+        gid = #{gid}
+        AND
+        cus_id = #{userId};
+    </update>
+
+    <update id="updateCashCouponByUserIdAndCashCoupons">
+
+        UPDATE cus_customer_cash_coupon
+        SET
+          qty = qty - #{qty}
+        WHERE
+          qty >= #{qty}
+        AND
+          ccid = #{gid}
+        AND
+          cus_id = #{userId};
+    </update>
+
+    <update id="updateCashCouponByUserIdAndGoodsIdAndCashCoupons">
+
+        UPDATE cus_customer_cash_coupon
+        SET
+        qty = qty + #{qty}
+        WHERE
+        ccid = #{ccid}
+        AND
+        cus_id = #{userId};
+    </update>
 </mapper>

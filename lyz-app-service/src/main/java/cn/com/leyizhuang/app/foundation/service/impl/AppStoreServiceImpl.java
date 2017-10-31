@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 门店服务实现类
@@ -98,13 +99,64 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     @Transactional
-    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer storeInventory) {
-        return 0;
+    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory) {
+        if (null != userId && !storeInventory.isEmpty()){
+            if (identityType == 6) {
+                for (Long index : storeInventory.keySet()) {
+                    int result = storeDAO.updateStoreInventoryByCustomerIdAndGoodsIdAndInventory(userId, index, storeInventory.get(index));
+                    if (result == 0) {
+                        return 0;
+                    }
+                }
+            }else {
+                for (Long index : storeInventory.keySet()) {
+                    int result = storeDAO.updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory(userId, index, storeInventory.get(index));
+                    if (result == 0) {
+                        return 0;
+                    }
+                }
+            }
+        }
+        return 1;
     }
 
     @Override
     @Transactional
-    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Integer cityInventory) {
-        return 0;
+    public void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
+        if (null != userId && null != storeDeposit){
+            storeDAO.updateStoreDepositByUserId(userId,storeDeposit);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
+        if (null != userId && null != storeCredit){
+            storeDAO.updateStoreCreditByUserId(userId,storeCredit);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
+        if (null != userId && null != storeSubvention){
+            storeDAO.updateStoreSubventionByUserId(userId,storeSubvention);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory) {
+        if (null != userId && !storeInventory.isEmpty()){
+            if (identityType == 6) {
+                for (Long index : storeInventory.keySet()) {
+                    storeDAO.updateStoreInventoryByCustomerIdAndGoodsId(userId, index, storeInventory.get(index));
+                }
+            }else {
+                for (Long index : storeInventory.keySet()) {
+                    storeDAO.updateStoreInventoryByEmployeeIdAndGoodsId(userId, index, storeInventory.get(index));
+                }
+            }
+        }
     }
 }

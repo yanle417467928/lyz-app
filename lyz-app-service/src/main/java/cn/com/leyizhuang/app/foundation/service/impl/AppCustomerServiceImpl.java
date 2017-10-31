@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
@@ -8,17 +7,16 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * lyz-app-facade用户服务实现类
@@ -202,12 +200,65 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public int lockCustomerProductCouponByUserIdAndProductCoupon(Long userId, Integer productCoupon) {
-        return 0;
+    @Transactional
+    public int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon) {
+        if (null != userId && !productCoupon.isEmpty()){
+            for (Long index:productCoupon.keySet()) {
+              int result= customerDAO.updateProductCouponByUserIdAndProductCoupons(userId,index,productCoupon.get(index));
+              if (result ==0){
+                  return 0;
+              }
+            }
+        }
+        return 1;
     }
 
     @Override
-    public int lockCustomerCashCouponByUserIdAndProductCoupon(Long userId, Integer identityType, Integer cashCoupon) {
-        return 0;
+    @Transactional
+    public int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon) {
+        if (null != userId && !cashCoupon.isEmpty()){
+            for (Long index:cashCoupon.keySet()) {
+                int result= customerDAO.updateCashCouponByUserIdAndCashCoupons(userId,index,cashCoupon.get(index));
+                if (result ==0){
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+    @Override
+    @Transactional
+    public void unlockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
+        if (null != userId && null != customerDeposit){
+            customerDAO.updateDepositByUserId(userId,customerDeposit);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
+        if (null != userId && null != lebiQty){
+            customerDAO.updateLeBiByUserIdAndQuantity(userId,lebiQty);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon) {
+        if (null != userId && !productCoupon.isEmpty()){
+            for (Long index:productCoupon.keySet()) {
+                customerDAO.updateProductCouponByUserIdAndGoodsIdAndProductCoupons(userId,index,productCoupon.get(index));
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon) {
+        if (null != userId && !cashCoupon.isEmpty()){
+            for (Long index:cashCoupon.keySet()) {
+                customerDAO.updateCashCouponByUserIdAndGoodsIdAndCashCoupons(userId,index,cashCoupon.get(index));
+            }
+        }
     }
 }

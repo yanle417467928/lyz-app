@@ -46,4 +46,6 @@ public interface AppEmployeeDAO {
     void updateByLoginName(AppEmployee appEmployee);
 
     void deleteByLoginName(String loginName);
+
+    void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
 }

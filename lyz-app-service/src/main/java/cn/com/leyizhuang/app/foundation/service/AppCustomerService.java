@@ -6,12 +6,13 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * lyz-app-facade用户服务接口
@@ -63,7 +64,15 @@ public interface AppCustomerService {
 
     int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
 
-    int lockCustomerProductCouponByUserIdAndProductCoupon(Long userId, Integer productCoupon);
+    int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon);
 
-    int lockCustomerCashCouponByUserIdAndProductCoupon(Long userId, Integer identityType, Integer cashCoupon);
+    int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
+
+    void unlockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit);
+
+    void unlockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
+
+    void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon);
+
+    void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
 }
