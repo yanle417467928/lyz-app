@@ -26,20 +26,16 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     @Override
     public void save(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.save(goodsPrice);
-        //日志
     }
 
     @Override
     public void modify(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.modify(goodsPrice);
-        //日志
     }
 
     @Override
     public void delete(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.delete(goodsPrice.getPriceLineId());
-        //日志
-
     }
 
     @Override
