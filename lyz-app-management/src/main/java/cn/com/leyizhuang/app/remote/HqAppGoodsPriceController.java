@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.TimeTransformUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -88,14 +89,13 @@ public class HqAppGoodsPriceController {
                     goodsPrice.setSku(goodsPriceDTO.getSku());
                     goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
                     goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    goodsPrice.setStartTime(LocalDateTime.parse(goodsPriceDTO.getStartTime(),df));
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
                     if (null != goodsPriceDTO.getWholesalePrice()){
                         goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                     }
                     goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                        goodsPrice.setEndTime(LocalDateTime.parse(goodsPriceDTO.getEndTime(), df));
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
 
                     this.GoodsPriceServiceImpl.save(goodsPrice);
@@ -172,15 +172,14 @@ public class HqAppGoodsPriceController {
             try {
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
                 if (null != goodsPrice){
-                    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    goodsPrice.setStartTime(LocalDateTime.parse(goodsPriceDTO.getStartTime(), df));
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
                     if (null != goodsPriceDTO.getWholesalePrice()){
                         goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                     }
                     goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                        goodsPrice.setEndTime(LocalDateTime.parse(goodsPriceDTO.getEndTime(), df));
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
 
                     this.GoodsPriceServiceImpl.modify(goodsPrice);
@@ -255,20 +254,19 @@ public class HqAppGoodsPriceController {
                 return resultDTO;
             }
             try {
-                DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 GoodsPrice goodsPrice = new GoodsPrice();
                 goodsPrice.setGid(goodsPriceDTO.getGid());
                 goodsPrice.setStoreId(goodsPriceDTO.getStoreId());
                 goodsPrice.setSku(goodsPriceDTO.getSku());
                 goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
                 goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                goodsPrice.setStartTime(LocalDateTime.parse(goodsPriceDTO.getStartTime(), df));
+                goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
                 if (null != goodsPriceDTO.getWholesalePrice()){
                     goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                 }
                 goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                 if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                    goodsPrice.setEndTime(LocalDateTime.parse(goodsPriceDTO.getEndTime(), df));
+                    goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                 }
 
                 this.GoodsPriceServiceImpl.delete(goodsPrice);
@@ -338,7 +336,6 @@ public class HqAppGoodsPriceController {
                 return resultDTO;
             }
             try {
-                DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
                 if (null == goodsPrice){
                     goodsPrice = new GoodsPrice();
@@ -347,13 +344,13 @@ public class HqAppGoodsPriceController {
                     goodsPrice.setSku(goodsPriceDTO.getSku());
                     goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
                     goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    goodsPrice.setStartTime(LocalDateTime.parse(goodsPriceDTO.getStartTime(), df));
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
                     if (null != goodsPriceDTO.getWholesalePrice()){
                         goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                     }
                     goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                        goodsPrice.setEndTime(LocalDateTime.parse(goodsPriceDTO.getEndTime(), df));
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
 
                     this.GoodsPriceServiceImpl.save(goodsPrice);
@@ -362,7 +359,7 @@ public class HqAppGoodsPriceController {
                     return resultDTO;
                 }else{
                     goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    goodsPrice.setStartTime(LocalDateTime.parse(goodsPriceDTO.getStartTime(), df));
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
                     if (null != goodsPriceDTO.getWholesalePrice()){
                         goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                     }
@@ -370,7 +367,7 @@ public class HqAppGoodsPriceController {
                         goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                     }
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                        goodsPrice.setEndTime(LocalDateTime.parse(goodsPriceDTO.getEndTime(), df));
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
 
                     this.GoodsPriceServiceImpl.modify(goodsPrice);

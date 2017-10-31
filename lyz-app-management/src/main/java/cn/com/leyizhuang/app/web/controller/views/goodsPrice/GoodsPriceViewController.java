@@ -22,7 +22,7 @@ public class GoodsPriceViewController {
 
 
     @GetMapping(value = "/page")
-    public String companyPage(HttpServletRequest request, ModelMap map) {
+    public String goodsPricePage(HttpServletRequest request, ModelMap map) {
         return "/views/goodsPrice/goodsPrice_page";
     }
 }

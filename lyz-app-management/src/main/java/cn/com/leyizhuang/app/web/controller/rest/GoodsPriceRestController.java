@@ -36,7 +36,7 @@ public class GoodsPriceRestController extends BaseRestController {
     private AppEmployeeService appEmployeeServiceImpl;
 
     @GetMapping(value = "/page/grid")
-    public GridDataVO<GoodsPriceVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
+    public GridDataVO<GoodsPriceVO> restGoodsPricePageGird(Integer offset, Integer size, String keywords){
         size = getSize(size);
         Integer page = getPage(offset, size);
         ShiroUser user = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
