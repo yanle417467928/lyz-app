@@ -46,5 +46,4 @@ public class GoodsPrice {
     // 生效结束时间
     private LocalDateTime endTime;
 
-    private GoodsDO goodsDO;
 }

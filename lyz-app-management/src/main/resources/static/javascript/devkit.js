@@ -192,7 +192,7 @@ var $grid = {
             // 是否开启点击选中
             clickToSelect: false,
             // 是否使用按下Enter键之后执行查询
-            searchOnEnterKey: true,
+            searchOnEnterKey: false,
             // 是否允许空值查询
             trimOnSearch: false,
             // 查询参数

@@ -48,14 +48,23 @@
           price_line_id = #{priceLineId}
     </select>
 
-    <select id="findByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+    <select id="findByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO">
         SELECT
-          p.sku, p.vip_price, p.retail_price, p.wholesale_price, p.start_time, p.end_time, g.sku_name, g.goods_specification
+          p.gpid id, p.sku, p.vip_price, p.retail_price, p.wholesale_price, p.start_time, p.end_time,
+          p.price_line_id, g.sku_name skuName, g.goods_specification goodsSpecification
         FROM
           gds_goods_price p
         LEFT JOIN gds_goods g ON p.gid = g.gid
         WHERE
           p.store_id = #{storeId}
+          <if test="null != keywords">
+              AND (
+                  p.sku LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+              OR g.sku_name LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+              OR g.goods_specification LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+              )
+          </if>
+          ORDER BY p.gpid DESC
     </select>
 
 </mapper>
