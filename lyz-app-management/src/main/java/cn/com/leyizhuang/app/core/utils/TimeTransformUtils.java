@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.core.utils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Date;
  */
 public class TimeTransformUtils {
 
+    private static DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static Date localDateTimeToDate(LocalDateTime localDateTime){
 
@@ -19,5 +21,16 @@ public class TimeTransformUtils {
         Date date = Date.from(zdt.toInstant());
         return date;
     }
+
+
+    public static LocalDateTime stringToLocalDateTime(String time){
+        if (null != time && time.length() >= 19){
+            time = time.substring(0, 19);
+            return LocalDateTime.parse(time, df);
+        }else{
+            return null;
+        }
+    }
+
 
 }

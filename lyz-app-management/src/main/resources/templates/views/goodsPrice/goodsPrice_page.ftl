@@ -28,17 +28,17 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
-                    <button id="btn_add" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                    </button>
-                    <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                    </button>
-                <#--<button id="btn_delete" type="button" class="btn btn-default">-->
-                <#--<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除-->
-                <#--</button>-->
-                </div>
+                <#--<div id="toolbar" class="btn-group">-->
+                    <#--<button id="btn_add" type="button" class="btn btn-default">-->
+                        <#--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增-->
+                    <#--</button>-->
+                    <#--<button id="btn_edit" type="button" class="btn btn-default">-->
+                        <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑-->
+                    <#--</button>-->
+                <#--&lt;#&ndash;<button id="btn_delete" type="button" class="btn btn-default">&ndash;&gt;-->
+                <#--&lt;#&ndash;<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除&ndash;&gt;-->
+                <#--&lt;#&ndash;</button>&ndash;&gt;-->
+                <#--</div>-->
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
