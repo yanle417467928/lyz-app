@@ -53,7 +53,7 @@ public class MaterialAuditSheetController {
     /**
      * 新增物料审核单
      * @param materialAuditSheetRequest 物料审核单相关信息
-     * @return
+     * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/save",method = RequestMethod.POST)
     public ResultDTO<Object> addMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest){
@@ -179,6 +179,13 @@ public class MaterialAuditSheetController {
             for (MaterialAuditSheet materialAuditSheet1 : materialAuditSheetList){
                 //创建一个返回参数对象
                 MaterialAuditSheetResponse materialAuditSheetResponse = new MaterialAuditSheetResponse();
+                //查询每单物料审核单所有商品信息
+                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(auditHeaderID);
+                //创建一个图片list存储图片地址
+                List<String> pictureList = new ArrayList<>();
+                for(MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList){
+                    pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                }
                 //向返回参数对象中设置
                 materialAuditSheetResponse.setAuditNo(materialAuditSheet1.getAuditNo());
                 materialAuditSheetResponse.setDeliveryCity(materialAuditSheet1.getDeliveryCity());
@@ -190,6 +197,7 @@ public class MaterialAuditSheetController {
                //TODO 获取零售价计算总金额
                 materialAuditSheetResponse.setTotalPrice(null);
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
+                materialAuditSheetResponse.setPictureList(pictureList);
                 //把所有返回参数对象放入list
                 materialAuditSheetResponsesList.add(materialAuditSheetResponse);
             }
@@ -208,7 +216,7 @@ public class MaterialAuditSheetController {
     /**
      * 取消物料审核单
      * @param auditNo 物料审核单编号
-     * @return
+     * @return 返回成功或失败
      */
     @RequestMapping(value = "/modify",method = RequestMethod.POST)
     public ResultDTO<Object> updateStatus(String auditNo){
@@ -242,7 +250,7 @@ public class MaterialAuditSheetController {
     /**
      * 根据物料审核单编号查询物料审核单详情
      * @param auditNo 物料审核单编号
-     * @return
+     * @return 返回物料审核单详情
      */
     @RequestMapping(value = "/details",method = RequestMethod.POST)
     public ResultDTO<Object> materialAuditGoodsDetails(String auditNo){
@@ -297,7 +305,7 @@ public class MaterialAuditSheetController {
      * 根据用户id与料单状态获取对应的物料审核单列表
      * @param userID    用户id
      * @param status    料单状态
-     * @return
+     * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/list",method = RequestMethod.POST)
     public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID,Integer status){
@@ -314,8 +322,16 @@ public class MaterialAuditSheetController {
             for (MaterialAuditSheetResponse materialAuditSheetResponse : materialAuditSheetResponseList){
                 //计算每单物料审核单的商品总数
                 int totalQty = materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(materialAuditSheetResponse.getAuditHeaderID());
+                //查询每单物料审核单所有商品信息
+                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheetResponse.getAuditHeaderID());
+                //创建一个图片list存储图片地址
+                List<String> pictureList = new ArrayList<>();
+                for(MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList){
+                    pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                }
                 //设值
                 materialAuditSheetResponse.setTotalQty(totalQty);
+                materialAuditSheetResponse.setPictureList(pictureList);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,materialAuditSheetResponseList);
             logger.info("materialAuditGoodsDetails OUT,获取物料审核单列表成功，出参 resultDTO:{}",resultDTO);
@@ -333,7 +349,7 @@ public class MaterialAuditSheetController {
      * 装饰公司项目经理查看物料审核单列表
      * @param userID    用户id
      * @param status    订单状态
-     * @return
+     * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/manager/list",method = RequestMethod.POST)
     public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID,Integer status){
@@ -355,6 +371,13 @@ public class MaterialAuditSheetController {
             for (MaterialAuditSheet materialAuditSheet1 : materialAuditSheetList){
                 //创建一个返回参数对象
                 MaterialAuditSheetResponse materialAuditSheetResponse = new MaterialAuditSheetResponse();
+                //查询每单物料审核单所有商品信息
+                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet1.getAuditHeaderID());
+                //创建一个图片list存储图片地址
+                List<String> pictureList = new ArrayList<>();
+                for(MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList){
+                    pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                }
                 //向返回参数对象中设置
                 materialAuditSheetResponse.setAuditNo(materialAuditSheet1.getAuditNo());
                 materialAuditSheetResponse.setDeliveryCity(materialAuditSheet1.getDeliveryCity());
@@ -367,6 +390,7 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setTotalPrice(null);
                 materialAuditSheetResponse.setIsAudited(materialAuditSheet1.getIsAudited());
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
+                materialAuditSheetResponse.setPictureList(pictureList);
                 //把所有返回参数对象放入list
                 materialAuditSheetResponsesList.add(materialAuditSheetResponse);
             }
@@ -387,7 +411,7 @@ public class MaterialAuditSheetController {
      * @param auditNo 物料审核单编码
      * @param isAudited 是否通过审核
      * @param userID 用户id
-     * @return
+     * @return 返回成功或失败
      */
     @RequestMapping(value = "/manager/check",method = RequestMethod.POST)
     public ResultDTO<Object> managerAudit(Long userID,String auditNo,Boolean isAudited){
@@ -444,7 +468,7 @@ public class MaterialAuditSheetController {
 
     /**
      * 生成物料审核单编号
-     * @return
+     * @return 返回编号
      */
     public String createNumber(){
         //定义时间格式

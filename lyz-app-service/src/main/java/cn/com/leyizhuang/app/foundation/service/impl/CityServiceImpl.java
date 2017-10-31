@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.City;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -87,5 +86,15 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
                 }
             }
         }
+    }
+
+    @Override
+    public void modifyCity(City city) {
+        cityDAO.modifyCity(city);
+    }
+
+    @Override
+    public void deleteCityByCode(String code) {
+        cityDAO.deleteCityByCode(code);
     }
 }

@@ -27,52 +27,118 @@ public class HqAppCityController {
     @Resource
     private CityService cityService;
 
+    /**
+     * 同步存储城市信息
+     *
+     * @param hqAppCityDTO hq传输对象
+     */
     @PostMapping(value = "/save")
-    public ResultDTO<Object> addCity(@RequestBody HqAppCityDTO hqAppCityDTO) {
-        ResultDTO<Object> resultDTO;
+    public ResultDTO<String> addCity(@RequestBody HqAppCityDTO hqAppCityDTO) {
         if (null != hqAppCityDTO) {
+            logger.info("addCity CALLED,同步存储城市信息，入参 hqAppCityDTO:{}", hqAppCityDTO);
             if (StringUtils.isBlank(hqAppCityDTO.getTitle())) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getTitle());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市名称不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppCityDTO.getSpell())) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getSpell());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市名称拼音不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppCityDTO.getNumber())) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getNumber());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不允许为空！", null);
             }
             if (null == hqAppCityDTO.getStructureId()) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getStructureId());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "所属分公司ID不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppCityDTO.getStructureTitle())) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getStructureTitle());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "所属分公司名称不允许为空！", null);
             }
             if (null == hqAppCityDTO.getEnable()) {
+                logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", hqAppCityDTO.getEnable());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否生效不允许为空！", null);
             }
             try {
-               City city = cityService.findByCityNumber(hqAppCityDTO.getNumber());
-                if (null == city){
-                   city = new City();
-                   city.setName(hqAppCityDTO.getTitle());
-                   city.setNumber(hqAppCityDTO.getNumber());
-                   city.setSpell(hqAppCityDTO.getSpell());
-                   city.setStructureId(hqAppCityDTO.getStructureId());
-                   city.setStructureTitle(hqAppCityDTO.getStructureTitle());
-                   city.setEnable(hqAppCityDTO.getEnable());
-                   city.setEnableFalseTime(hqAppCityDTO.getEnableFalseTime());
-                   cityService.save(city);
+                City city = cityService.findByCityNumber(hqAppCityDTO.getNumber());
+                if (null == city) {
+                    city = new City();
+                    city.setName(hqAppCityDTO.getTitle());
+                    city.setNumber(hqAppCityDTO.getNumber());
+                    city.setSpell(hqAppCityDTO.getSpell());
+                    city.setStructureId(hqAppCityDTO.getStructureId());
+                    city.setStructureTitle(hqAppCityDTO.getStructureTitle());
+                    city.setEnable(hqAppCityDTO.getEnable());
+                    city.setEnableFalseTime(hqAppCityDTO.getEnableFalseTime());
+                    cityService.save(city);
+                    logger.info("addCity OUT,同步存储城市信息成功，出参 resultDTO:{}", city);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-                }else{
+                } else {
+                    logger.info("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", "该城市已存在");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该城市已存在！", null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，城市同步失败", null);
-                logger.warn("addCity EXCEPTION,城市同步失败，出参 resultDTO:{}", resultDTO);
-                logger.warn("{}", e);
-                return resultDTO;
+                logger.warn("addCity EXCEPTION,城市同步失败，出参 e:{}", e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，城市同步失败", null);
             }
         }
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市信息为空！", null);
+    }
+
+    /**
+     * 同步修改城市信息
+     *
+     * @param hqAppCityDTO hq传输对象
+     */
+    @PostMapping(value = "/update")
+    public ResultDTO<String> updateCity(@RequestBody HqAppCityDTO hqAppCityDTO) {
+        if (null != hqAppCityDTO) {
+            logger.info("updateCity CALLED,同步修改城市信息，入参 hqAppCityDTO:{}", hqAppCityDTO);
+            try {
+                City city = cityService.findByCityNumber(hqAppCityDTO.getNumber());
+                if (null == city) {
+                    logger.info("updateCity OUT,同步修改城市信息失败，出参 hqAppCityDTO:{}", "未查询到此城市信息");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市信息，同步修改城市信息失败", null);
+                }
+                city.setEnable(hqAppCityDTO.getEnable());
+                city.setStructureTitle(hqAppCityDTO.getStructureTitle());
+                city.setStructureId(hqAppCityDTO.getStructureId());
+                city.setSpell(hqAppCityDTO.getSpell());
+                city.setName(hqAppCityDTO.getTitle());
+                city.setEnableFalseTime(hqAppCityDTO.getEnableFalseTime());
+                cityService.modifyCity(city);
+                logger.info("updateCity OUT,同步修改城市信息成功，出参 resultDTO:{}", city);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            } catch (Exception e) {
+                logger.info("updateCity OUT,发生未知异常，同步修改城市信息失败！，出参 e:{}", e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，同步修改城市信息失败！", null);
+            }
+        }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市信息为空！", null);
+    }
+
+    /**
+     * 同步删除城市信息
+     *
+     * @param code 城市编码
+     * @return 返回成功或失败
+     */
+    @PostMapping(value = "/delete")
+    public ResultDTO<String> deleteCity(String code) {
+        if (StringUtils.isBlank(code)) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不能为空！", null);
+        }
+        logger.info("deleteCity CALLED,同步删除城市信息，入参 code:{}", code);
+
+        try {
+            cityService.deleteCityByCode(code);
+            logger.info("deleteCity OUT,同步删除城市信息成功！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } catch (Exception e) {
+            logger.info("updateCity OUT,发生未知异常，同步删除城市信息失败！，出参 e:{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，同步删除城市信息失败！", null);
+        }
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
  * 城市API
  *
  * @author Richard
- * Created on 2017-09-21 14:25
+ *         Created on 2017-09-21 14:25
  **/
 public interface CityService {
 
@@ -21,7 +21,11 @@ public interface CityService {
 
     void save(City city);
 
-    int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory);
+    int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> cityInventory);
 
-    void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory);
+    void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> cityInventory);
+
+    void modifyCity(City city);
+
+    void deleteCityByCode(String code);
 }

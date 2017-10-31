@@ -53,4 +53,34 @@
       AND city_id = (SELECT emp_employee.city_id FROM emp_employee WHERE emp_id = #{userId})
     </update>
 
+    <update id="modifyCity" parameterType="cn.com.leyizhuang.app.foundation.pojo.City">
+        UPDATE city
+        <set>
+            <if test="null != name">
+                NAME = #{name},
+            </if>
+            <if test="null != spell">
+                SPELL = #{spell},
+            </if>
+            <if test="null != structureId">
+                STRUCTURE_ID = #{structureId},
+            </if>
+            <if test="null != structureTitle">
+                STRUCTURE_TITLE = #{structureTitle},
+            </if>
+            <if test="null != enable">
+                ENABLE = #{enable},
+            </if>
+            <if test="null != receiverPhone">
+                ENABLE_FALSE_TIME = #{enableFalseTime},
+            </if>
+        </set>
+        WHERE CITY_ID = #{id}
+    </update>
+
+    <delete id="deleteCityByCode" parameterType="java.lang.String">
+        DELETE FROM city
+        WHERE CODE = #{code};
+    </delete>
+
 </mapper>

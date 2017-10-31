@@ -36,4 +36,6 @@ public class MaterialAuditSheetResponse {
     private Double totalPrice;
     //审核是否通过
     private Boolean isAudited;
+    //商品图片
+    private List<String> pictureList;
 }
