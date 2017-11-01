@@ -198,6 +198,7 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setTotalPrice(null);
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
                 materialAuditSheetResponse.setPictureList(pictureList);
+                materialAuditSheetResponse.setWorker(appEmployee.getName());
                 //把所有返回参数对象放入list
                 materialAuditSheetResponsesList.add(materialAuditSheetResponse);
             }
@@ -278,6 +279,7 @@ public class MaterialAuditSheetController {
             materialAuditDetailsResponse.setReservationDeliveryTime(df.format(materialAuditSheet.getReservationDeliveryTime()));
            //TODO 还需要获取零售价计算总金额
             materialAuditDetailsResponse.setTotalPrice(null);
+
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
             if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0){

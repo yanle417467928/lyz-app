@@ -73,6 +73,8 @@ public class MaterialAuditSheet {
         materialAuditDetailsResponse.setAuditHeaderID(this.getAuditHeaderID());
         materialAuditDetailsResponse.setIsOwnerReceiving(this.getIsOwnerReceiving());
         materialAuditDetailsResponse.setRemark(this.getRemark());
+        materialAuditDetailsResponse.setReceiver(this.getReceiver());
+        materialAuditDetailsResponse.setReceiverPhone(this.getReceiverPhone());
         return materialAuditDetailsResponse;
     }
 }

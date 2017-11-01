@@ -110,4 +110,54 @@
       AND store_id = (SELECT cus_customer.store_id FROM cus_customer WHERE cus_id = #{userId})
    </update>
 
+   <insert id="saveStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+      INSERT INTO st_store
+      (CREATOR_TYPE, CREATE_TIME, MODIFIER_TYPE, MODIFY_TIME, CITY_ID, CITY_CODE, STORE_NAME ,STORE_CODE,
+      IS_DEFAULT, STORE_TYPE)
+      VALUES
+      (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityId}, #{cityCode}, #{storeName},
+       #{storeCode}, #{isDefault}, #{storeType})
+   </insert>
+
+   <update id="modifyStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+      UPDATE st_store
+      <set>
+         <if test="null != creatorType">
+            CREATOR_TYPE = #{creatorType},
+         </if>
+         <if test="null != createTime">
+            CREATE_TIME = #{createTime},
+         </if>
+         <if test="null != modifierType">
+            MODIFIER_TYPE = #{modifierType},
+         </if>
+         <if test="null != modifyTime">
+            MODIFY_TIME = #{modifyTime},
+         </if>
+         <if test="null != cityId">
+            CITY_ID = #{cityId},
+         </if>
+         <if test="null != cityCode">
+            CITY_CODE = #{cityCode},
+         </if>
+         <if test="null != storeName">
+            STORE_NAME = #{storeName},
+         </if>
+         <if test="null != storeCode">
+            STORE_CODE = #{storeCode},
+         </if>
+         <if test="null != isDefault">
+            IS_DEFAULT = #{isDefault},
+         </if>
+         <if test="null != storeType">
+            STORE_TYPE = #{storeType},
+         </if>
+      </set>
+      WHERE STORE_CODE = #{storeCode}
+   </update>
+
+   <delete id="deleteStoreByStoreCode" parameterType="java.lang.String">
+      DELETE FROM st_store
+      WHERE STORE_CODE = #{storeCode};
+   </delete>
 </mapper>

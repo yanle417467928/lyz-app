@@ -75,7 +75,7 @@
                 ENABLE_FALSE_TIME = #{enableFalseTime},
             </if>
         </set>
-        WHERE CITY_ID = #{id}
+        WHERE CODE = #{number}
     </update>
 
     <delete id="deleteCityByCode" parameterType="java.lang.String">

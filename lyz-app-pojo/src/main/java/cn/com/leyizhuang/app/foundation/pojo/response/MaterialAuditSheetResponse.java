@@ -38,4 +38,6 @@ public class MaterialAuditSheetResponse {
     private Boolean isAudited;
     //商品图片
     private List<String> pictureList;
+    //工人姓名
+    private String worker;
 }

@@ -26,6 +26,10 @@ public class MaterialAuditDetailsResponse {
     private String createTime;
     //物料单总额（零售）
     private Double totalPrice;
+    //收货人姓名
+    private String receiver;
+    //收货人电话号码
+    private String receiverPhone;
     //收货市
     private String deliveryCity;
     //收货区
