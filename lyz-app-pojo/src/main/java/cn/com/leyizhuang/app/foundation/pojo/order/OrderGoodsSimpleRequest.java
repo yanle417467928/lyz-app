@@ -22,11 +22,11 @@ public class OrderGoodsSimpleRequest implements Serializable {
     /**
      * 商品Id
      */
-    private Long goodsId;
+    private Long id;
     /**
      * 商品数量
      */
-    private Integer qty;
+    private Integer num;
 
     /**
      * 是否赠品

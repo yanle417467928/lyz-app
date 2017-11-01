@@ -128,19 +128,19 @@ public class GetGoodsMoneyController {
             List<OrderGoodsSimpleResponse> goodsInfo;
             for (int i = 0; i <goodsList.size(); i++) {
                 if (!goodsList.get(i).getIsGift()) {
-                    goodsIds.add(goodsList.get(i).getGoodsId());
+                    goodsIds.add(goodsList.get(i).getId());
                 }
                 totalQty++;
             }
             goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId,goodsIds);
             for (int i = 0; i <goodsInfo.size() ; i++) {
                 for (int j = 0; j < goodsList.size(); j++) {
-                    if (goodsList.get(i).getGoodsId().equals(goodsInfo.get(i).getId())) {
+                    if (goodsList.get(i).getId().equals(goodsInfo.get(i).getId())) {
                         if (goodsList.get(i).getIsGift()) {
                             goodsInfo.get(i).setIsGift(Boolean.TRUE);
-                            goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(i).getQty());
+                            goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(i).getNum());
                         }
-                        goodsInfo.get(i).setGoodsQty(goodsList.get(i).getQty());
+                        goodsInfo.get(i).setGoodsQty(goodsList.get(i).getNum());
                     }
                 }
             }
@@ -148,8 +148,8 @@ public class GetGoodsMoneyController {
             for (int i = 0; i < priceList.size(); i++) {
                 GoodsPrice goodsPrice = priceList.get(i);
                 for (int j = 0; j <goodsList.size() ; j++) {
-                    if (goodsPrice.getGid().equals(goodsList.get(j).getGoodsId())){
-                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(goodsPrice.getRetailPrice(), goodsList.get(j).getQty()));
+                    if (goodsPrice.getGid().equals(goodsList.get(j).getId())){
+                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(goodsPrice.getRetailPrice(), goodsList.get(j).getNum()));
                     }
                 }
             }
