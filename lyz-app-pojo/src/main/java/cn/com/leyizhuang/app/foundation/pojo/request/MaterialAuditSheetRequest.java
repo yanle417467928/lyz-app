@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.request;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 物料审核单参数
@@ -19,7 +20,7 @@ public class MaterialAuditSheetRequest {
     //用户类型
     private String identityType;
     //商品id+商品数量+是否是赠品
-    private String ids;
+    private Map<Object,Object>[] ids;
     //收货人姓名
     private String receiver;
     //收货人电话号码

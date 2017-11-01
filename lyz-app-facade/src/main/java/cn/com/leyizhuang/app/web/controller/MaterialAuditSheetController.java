@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.MaterialAuditGoodsInfoService;
 import cn.com.leyizhuang.app.foundation.service.MaterialAuditSheetService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 物料审核单
@@ -69,7 +71,7 @@ public class MaterialAuditSheetController {
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        if(StringUtils.isBlank(materialAuditSheetRequest.getIds())){
+        if(null == materialAuditSheetRequest.getIds()){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"购买商品不能为空",null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
@@ -149,23 +151,22 @@ public class MaterialAuditSheetController {
             Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
 
             //新增物料审核单商品
-            String ids = materialAuditSheetRequest.getIds();
+            //获取商品数组
+            Map<Object,Object>[] ids = materialAuditSheetRequest.getIds();
+
+            JSONObject idss = new JSONObject(String.valueOf(materialAuditSheetRequest.getIds()));
             //切割获得（商品id、商品数量、是否是赠品）三个参数数组
-            String[] subIds = ids.split(",");
-            for (String subId : subIds){
-                //循环遍历再次进行切割获取每个数组中（商品id、商品数量、是否是赠品）具体的数值
-                String[] id = subId.split("_");
+            for (Map id : ids){
                 //根据商品id查找对应的商品
-                GoodsDO goodsDO = goodsService.queryById(Long.parseLong(id[0]));
+                GoodsDO goodsDO = goodsService.queryById((Long)id.get("id"));
                 MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
                 //对物料审核单商品想起进行赋值
                 materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
-                materialAuditGoodsInfo.setGid(Long.parseLong(id[0]));
+                materialAuditGoodsInfo.setGid(Long.parseLong((String)id.get("id")));
                 materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-                materialAuditGoodsInfo.setQty(Integer.parseInt(id[1]));
+                materialAuditGoodsInfo.setQty((Integer)id.get("num"));
                 materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
                 materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
-                materialAuditGoodsInfo.setIsGift(id[2] == "0"?true:false);
                 materialAuditGoodsInfo.setSku(goodsDO.getSku());
                 materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
                 //对物料审核单商品详情进行保存
