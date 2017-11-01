@@ -43,13 +43,11 @@ public class GoodsPriceRestController extends BaseRestController {
 //改
         AppEmployee appEmployee = this.appEmployeeServiceImpl.findByUserId(user.getId());
 
-        PageInfo<GoodsPrice> goodsPricePageInfo = null;
+        PageInfo<GoodsPriceVO> goodsPricePageInfo = null;
         if (null != appEmployee && null != appEmployee.getStoreId()){
-            goodsPricePageInfo = this.goodsPriceServiceImpl.queryPage(page, size, appEmployee.getStoreId());
+            goodsPricePageInfo = this.goodsPriceServiceImpl.queryPage(page, size, appEmployee.getStoreId(), keywords);
         }
-        List<GoodsPrice> goodsPrices = goodsPricePageInfo.getList();
-        List<GoodsPriceVO> goodsPriceVOList = GoodsPriceVO.transform(goodsPrices);
-        return new GridDataVO<GoodsPriceVO>().transform(goodsPriceVOList,goodsPricePageInfo.getTotal());
+        return new GridDataVO<GoodsPriceVO>().transform(goodsPricePageInfo.getList(),goodsPricePageInfo.getTotal());
     }
 
 }

@@ -28,17 +28,6 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <#--<div id="toolbar" class="btn-group">-->
-                    <#--<button id="btn_add" type="button" class="btn btn-default">-->
-                        <#--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增-->
-                    <#--</button>-->
-                    <#--<button id="btn_edit" type="button" class="btn btn-default">-->
-                        <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑-->
-                    <#--</button>-->
-                <#--&lt;#&ndash;<button id="btn_delete" type="button" class="btn btn-default">&ndash;&gt;-->
-                <#--&lt;#&ndash;<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除&ndash;&gt;-->
-                <#--&lt;#&ndash;</button>&ndash;&gt;-->
-                <#--</div>-->
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
@@ -133,7 +122,7 @@
             title: '零售价',
             align: 'center'
         },{
-            field: 'VIPPrice',
+            field: 'vipPrice',
             title: '会员价',
             align: 'center'
         },{
@@ -151,78 +140,6 @@
         }
         ]);
 
-        <#--$('#btn_add').on('click', function () {-->
-            <#--$grid.add('/view/companyUser/edit/0?parentMenuId=${(parentMenuId!'0')}');-->
-        <#--});-->
-
-        <#--$('#btn_edit').on('click', function() {-->
-            <#--$grid.modify($('#dataGrid'), '/view/companyUser/edit/{id}?parentMenuId=${parentMenuId!'0'}')-->
-        <#--});-->
-
-        <#--$('#btn_delete').on('click', function() {-->
-            <#--$grid.remove($('#dataGrid'), '/rest/company', 'delete');-->
-        <#--});-->
     });
-
-//    var $page = {
-//        information: {
-//            show: function (id) {
-//                var URL = '/rest/companyUser/' + id;
-//                var success = function (result) {
-//                    if (0 === result.code) {
-//                        var data = result.content;
-//                        $('#companyUserTitle').html("装饰公司员工详情");
-//
-//                        if (null === data.userName) {
-//                            data.userName = '-';
-//                        }
-//                        $('#userName').html(data.userName);
-//
-//                        if (null === data.mobile) {
-//                            data.mobile = '-';
-//                        }
-//                        $('#mobile').html(data.mobile);
-//                        if (null === data.companyName) {
-//                            data.companyName = '-';
-//                        }
-//                        $('#companyName').html(data.companyName);
-//
-//                        if (true === data.isMain) {
-//                            $('#isMain').html('<span class="label label-primary">主账号</span>');
-//                        } else if (false === data.frozen) {
-//                            $('#isMain').html('<span class="label label-danger">子账号</span>');
-//                        } else {
-//                            $('#isMain').html('-');
-//                        }
-//                        if (true === data.sex) {
-//                            $('#sex').html('<span class="label label-primary">男</span>');
-//                        } else if (false === data.frozen) {
-//                            $('#sex').html('<span class="label label-danger">女</span>');
-//                        } else {
-//                            $('#sex').html('-');
-//                        }
-//                        if (null === data.age) {
-//                            data.age = '-';
-//                        }
-//                        $('#age').html(data.age);
-//                        if (true === data.frozen) {
-//                            $('#frozen').html('<span class="label label-primary">是</span>');
-//                        } else if (false === data.frozen) {
-//                            $('#frozen').html('<span class="label label-danger">否</span>');
-//                        } else {
-//                            $('#frozen').html('-');
-//                        }
-//                        $('#information').modal();
-//                    } else {
-//                        $notify.danger(result.message);
-//                    }
-//                };
-//                $http.GET(URL, null, success);
-//            },
-//            close: function () {
-//                $('#information').modal('hide');
-//            }
-//        }
-//    }
 </script>
 </body>

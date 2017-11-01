@@ -1,12 +1,12 @@
 package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.core.utils.TimeTransformUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.GoodsPriceDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * @author GenerationRoad
@@ -134,50 +131,50 @@ public class HqAppGoodsPriceController {
         logger.info("modifyGoodsPrice CALLED,同步修改商品价目表行，入参 goodsPriceDTO:{}", goodsPriceDTO);
         ResultDTO<Object> resultDTO;
         if (null != goodsPriceDTO) {
-            if (null == goodsPriceDTO.getGid()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getStoreId()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == goodsPriceDTO.getGid()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (null == goodsPriceDTO.getStoreId()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             if (null == goodsPriceDTO.getPriceLineId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "价目表行id不能为空！", null);
                 logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == goodsPriceDTO.getRetailPrice()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "零售价不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getVIPPrice()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "会员价不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getStartTime()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效开始时间不能为空！", null);
+//            if (null == goodsPriceDTO.getRetailPrice()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "零售价不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (null == goodsPriceDTO.getVIPPrice()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "会员价不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+            if (null == goodsPriceDTO.getEndTime()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效结束时间不能为空！", null);
                 logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             try {
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
                 if (null != goodsPrice){
-                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
-                    if (null != goodsPriceDTO.getWholesalePrice()){
-                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
-                    }
-                    goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+//                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
+//                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
+//                    if (null != goodsPriceDTO.getWholesalePrice()){
+//                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
+//                    }
+//                    goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
                         goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
@@ -218,56 +215,56 @@ public class HqAppGoodsPriceController {
         logger.info("deleteGoodsPrice CALLED,同步删除商品价目表行，入参 goodsPriceDTO:{}", goodsPriceDTO);
         ResultDTO<Object> resultDTO;
         if (null != goodsPriceDTO) {
-            if (null == goodsPriceDTO.getGid()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getStoreId()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == goodsPriceDTO.getGid()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (null == goodsPriceDTO.getStoreId()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             if (null == goodsPriceDTO.getPriceLineId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "价目表行id不能为空！", null);
                 logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == goodsPriceDTO.getRetailPrice()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "零售价不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getVIPPrice()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "会员价不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == goodsPriceDTO.getStartTime()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效开始时间不能为空！", null);
-                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == goodsPriceDTO.getRetailPrice()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "零售价不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (null == goodsPriceDTO.getVIPPrice()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "会员价不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
+//            if (null == goodsPriceDTO.getStartTime()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效开始时间不能为空！", null);
+//                logger.info("deleteGoodsPrice OUT,同步删除商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             try {
                 GoodsPrice goodsPrice = new GoodsPrice();
-                goodsPrice.setGid(goodsPriceDTO.getGid());
-                goodsPrice.setStoreId(goodsPriceDTO.getStoreId());
-                goodsPrice.setSku(goodsPriceDTO.getSku());
+//                goodsPrice.setGid(goodsPriceDTO.getGid());
+//                goodsPrice.setStoreId(goodsPriceDTO.getStoreId());
+//                goodsPrice.setSku(goodsPriceDTO.getSku());
                 goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
-                goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
-                if (null != goodsPriceDTO.getWholesalePrice()){
-                    goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
-                }
-                goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
-                if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
-                    goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
-                }
+//                goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
+//                goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
+//                if (null != goodsPriceDTO.getWholesalePrice()){
+//                    goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
+//                }
+//                goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+//                if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
+//                    goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
+//                }
 
                 this.GoodsPriceServiceImpl.delete(goodsPrice);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -358,14 +355,14 @@ public class HqAppGoodsPriceController {
                     logger.info("retransmissionGoodsPrice OUT,重新同步新增商品价目表行成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }else{
-                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
-                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
-                    if (null != goodsPriceDTO.getWholesalePrice()){
-                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
-                    }
-                    if (null != goodsPriceDTO.getVIPPrice()){
-                        goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
-                    }
+//                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
+//                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
+//                    if (null != goodsPriceDTO.getWholesalePrice()){
+//                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
+//                    }
+//                    if (null != goodsPriceDTO.getVIPPrice()){
+//                        goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+//                    }
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())){
                         goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }

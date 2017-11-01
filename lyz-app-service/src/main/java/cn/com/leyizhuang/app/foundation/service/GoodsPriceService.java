@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -16,5 +17,5 @@ public interface GoodsPriceService {
 
     GoodsPrice findGoodsPrice(Long priceLineId);
 
-    PageInfo<GoodsPrice> queryPage(Integer page, Integer size, Long storeId);
+    PageInfo<GoodsPriceVO> queryPage(Integer page, Integer size, Long storeId, String keywords);
 }

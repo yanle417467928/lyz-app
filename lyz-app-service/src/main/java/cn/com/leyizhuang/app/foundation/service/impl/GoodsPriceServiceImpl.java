@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.GoodsPriceDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
+import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +26,16 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     @Override
     public void save(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.save(goodsPrice);
-        //日志
     }
 
     @Override
     public void modify(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.modify(goodsPrice);
-        //日志
     }
 
     @Override
     public void delete(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.delete(goodsPrice.getPriceLineId());
-        //日志
-
     }
 
     @Override
@@ -47,9 +44,9 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     }
 
     @Override
-    public PageInfo<GoodsPrice> queryPage(Integer page, Integer size, Long storeId) {
+    public PageInfo<GoodsPriceVO> queryPage(Integer page, Integer size, Long storeId, String keywords) {
         PageHelper.startPage(page, size);
-        List<GoodsPrice> priceList = this.goodsPriceDAO.findByStoreId(storeId);
+        List<GoodsPriceVO> priceList = this.goodsPriceDAO.findByStoreId(storeId, keywords);
         return new PageInfo<>(priceList);
     }
 }

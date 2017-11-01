@@ -19,7 +19,7 @@ import java.util.List;
 @ToString
 public class GoodsPriceVO {
 
-    private Long gpid;
+    private Long id;
 
     //门店id
     private Long storeId;
@@ -34,7 +34,7 @@ public class GoodsPriceVO {
     private Long priceLineId;
 
     //会员价
-    private Double VIPPrice;
+    private Double vipPrice;
 
     //零售价
     private Double retailPrice;
@@ -43,10 +43,10 @@ public class GoodsPriceVO {
     private Double wholesalePrice;
 
     // 生效起始时间
-    private LocalDateTime startTime;
+    private String startTime;
 
     // 生效结束时间
-    private LocalDateTime endTime;
+    private String endTime;
 
     private String skuName;
 
@@ -67,18 +67,18 @@ public class GoodsPriceVO {
     public static final GoodsPriceVO transform(GoodsPrice goodsPrice){
         if (null != goodsPrice){
             GoodsPriceVO goodsPriceVO = new GoodsPriceVO();
-            goodsPriceVO.setGpid(goodsPrice.getGpid());
+            goodsPriceVO.setId(goodsPrice.getGpid());
             goodsPriceVO.setGid(goodsPrice.getGid());
             goodsPriceVO.setStoreId(goodsPrice.getStoreId());
             goodsPriceVO.setPriceLineId(goodsPrice.getPriceLineId());
             goodsPriceVO.setSku(goodsPrice.getSku());
-            goodsPriceVO.setSkuName(goodsPrice.getGoodsDO().getSkuName());
-            goodsPriceVO.setGoodsSpecification(goodsPrice.getGoodsDO().getGoodsSpecification());
+//            goodsPriceVO.setSkuName(goodsPrice.getGoodsDO().getSkuName());
+//            goodsPriceVO.setGoodsSpecification(goodsPrice.getGoodsDO().getGoodsSpecification());
             goodsPriceVO.setRetailPrice(goodsPrice.getRetailPrice());
-            goodsPriceVO.setVIPPrice(goodsPrice.getVIPPrice());
+            goodsPriceVO.setVipPrice(goodsPrice.getVIPPrice());
             goodsPriceVO.setWholesalePrice(goodsPrice.getWholesalePrice());
-            goodsPriceVO.setStartTime(goodsPrice.getStartTime());
-            goodsPriceVO.setEndTime(goodsPrice.getEndTime());
+//            goodsPriceVO.setStartTime(goodsPrice.getStartTime());
+//            goodsPriceVO.setEndTime(goodsPrice.getEndTime());
             return goodsPriceVO;
         }else{
             return null;
