@@ -153,8 +153,6 @@ public class MaterialAuditSheetController {
             //新增物料审核单商品
             //获取商品数组
             Map<Object,Object>[] ids = materialAuditSheetRequest.getIds();
-
-            JSONObject idss = new JSONObject(String.valueOf(materialAuditSheetRequest.getIds()));
             //切割获得（商品id、商品数量、是否是赠品）三个参数数组
             for (Map id : ids){
                 //根据商品id查找对应的商品
