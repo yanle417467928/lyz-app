@@ -160,4 +160,7 @@
       DELETE FROM st_store
       WHERE STORE_CODE = #{storeCode};
    </delete>
+   <select id="existGoodsStoreInventory" resultType="java.lang.Boolean">
+      select 'X' from st_inventory WHERE available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid};
+   </select>
 </mapper>

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
@@ -16,8 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * 订单相关接口
@@ -44,9 +44,11 @@ public class OrderController {
     private CityService cityService;
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> createOrder(){
+    public ResultDTO<Object> createOrder(Long userId, Integer identityType, List<OrderGoodsSimpleRequest> goodsList){
         return null;
     }
+
+
 
     /**
      * 用户锁定订单相关款项和库存
@@ -99,14 +101,15 @@ public class OrderController {
                     throw new RuntimeException("导购信用额度不足!");
                 }
             }
-            if (null != lockExpendRequest.getStoreDeposit() && (identityType ==0 || identityType ==2)) {
-
-                int result = appStoreService.lockStoreDepositByUserIdAndStoreDeposit(
-                        userId, lockExpendRequest.getStoreDeposit());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店预存款余额不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店预存款余额不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("用户所属门店预存款余额不足!");
+            if (null != lockExpendRequest.getStoreDeposit()) {
+                if(identityType ==0 || identityType ==2) {
+                    int result = appStoreService.lockStoreDepositByUserIdAndStoreDeposit(
+                            userId, lockExpendRequest.getStoreDeposit());
+                    if (result == 0) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店预存款余额不足!", null);
+                        logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店预存款余额不足 出参 resultDTO:{}", resultDTO);
+                        throw new RuntimeException("用户所属门店预存款余额不足!");
+                    }
                 }
             }
             if (null != lockExpendRequest.getStoreCredit() && identityType == 2) {
@@ -234,10 +237,10 @@ public class OrderController {
                 appEmployeeService.unlockGuideCreditByUserIdAndCredit(userId, lockExpendRequest.getGuideCredit());
 
             }
-            if (null != lockExpendRequest.getStoreDeposit() && (identityType ==0 || identityType ==2)) {
-
-                appStoreService.unlockStoreDepositByUserIdAndStoreDeposit(userId, lockExpendRequest.getStoreDeposit());
-
+            if (null != lockExpendRequest.getStoreDeposit()) {
+                if (identityType == 0 || identityType ==2) {
+                    appStoreService.unlockStoreDepositByUserIdAndStoreDeposit(userId, lockExpendRequest.getStoreDeposit());
+                }
             }
             if (null != lockExpendRequest.getStoreCredit() && identityType == 2) {
 

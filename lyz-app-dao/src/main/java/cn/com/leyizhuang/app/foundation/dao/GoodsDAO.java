@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -76,6 +77,8 @@ public interface GoodsDAO {
 
     List<GoodsPrice> getGoodsPriceByCustomerAndGoodsId(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
+    List<GoodsPrice> getGoodsPriceByEmployeeAndGoodsId(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
+
     List<UserGoodsResponse> filterGoodsCustomer(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
                                                 @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
                                                 @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
@@ -83,4 +86,6 @@ public interface GoodsDAO {
     List<UserGoodsResponse> filterGoodsEmployee(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
                                                 @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
                                                 @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
+
+    List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
 }

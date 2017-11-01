@@ -50,4 +50,6 @@ public interface AppStoreDAO {
 
     void updateStoreInventoryByCustomerIdAndGoodsId(
             @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+
+    Boolean existGoodsStoreInventory(@Param("storeId") Long storeId,@Param("gid") Long gid,@Param("qty") Integer qty);
 }
