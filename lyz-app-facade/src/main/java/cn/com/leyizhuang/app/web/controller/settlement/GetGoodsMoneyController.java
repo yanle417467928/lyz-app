@@ -1,20 +1,22 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.apache.catalina.Store;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -90,32 +92,33 @@ public class GetGoodsMoneyController {
     /**
      * 确认商品计算工人订单总金额
      * @author Jerry
-     * @param userId
-     * @param identityType
-     * @param goodsList
+     * @param
      * @return
      */
     @PostMapping(value = "/worker", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getGoodsMoneyOfWorker(@RequestParam Long userId,@RequestParam Integer identityType,@RequestParam List<OrderGoodsSimpleRequest> goodsList) {
+    public ResultDTO<Object> getGoodsMoneyOfWorker(@RequestBody OrderGoodsSimpleRequest goodsSimpleRequest) {
 
-        logger.info("getGoodsMoneyOfWorker CALLED,确认商品计算工人订单总金额，入参 userId:{},identityType:{},goodsList:{}", userId,identityType,goodsList);
+        logger.info("getGoodsMoneyOfWorker CALLED,确认商品计算工人订单总金额，入参 goodsSimpleRequest:{}", goodsSimpleRequest);
+
         ResultDTO resultDTO;
-        if (goodsList.isEmpty()) {
+        if (goodsSimpleRequest.getGoodsList().isEmpty()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-
-        if (null == userId) {
+        if (null == goodsSimpleRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType) {
+        if (null == goodsSimpleRequest.getIdentityType()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Long userId = goodsSimpleRequest.getUserId();
+        Integer identityType = goodsSimpleRequest.getIdentityType();
+        List<GoodsSimpleInfo> goodsList = goodsSimpleRequest.getGoodsList();
         if (identityType != 3){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型错误", null);
             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
@@ -137,11 +140,11 @@ public class GetGoodsMoneyController {
             for (int i = 0; i <goodsInfo.size() ; i++) {
                 for (int j = 0; j < goodsList.size(); j++) {
                     if (goodsList.get(i).getId().equals(goodsInfo.get(i).getId())) {
+                        goodsInfo.get(i).setGoodsQty(goodsList.get(i).getNum());
                         if (goodsList.get(i).getIsGift()) {
                             goodsInfo.get(i).setIsGift(Boolean.TRUE);
                             goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(i).getNum());
                         }
-                        goodsInfo.get(i).setGoodsQty(goodsList.get(i).getNum());
                     }
                 }
             }
