@@ -93,6 +93,7 @@ public class UserBrowseHistoryController {
      * @param identityType 用户类型
      * @return 返回商品list
      */
+    @PostMapping(value = "/show", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> showBrowseHistory(Long userID, Integer identityType) {
         ResultDTO<Object> resultDTO;
         logger.info("showBrowseHistory CALLED,查看商品浏览记录，入参 userID {},identityType{}", userID, identityType);
