@@ -156,12 +156,12 @@ public class MaterialAuditSheetController {
             ObjectMapper objectMapper = new ObjectMapper();
 
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
-            List<GoodsSimpleInfo> goodsList = (List<GoodsSimpleInfo>) objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
+            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
             for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
                 //根据商品id查找对应的商品
                 GoodsDO goodsDO = goodsService.queryById(goodsSimpleInfo.getId());
                 MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
-                //对物料审核单商品想起进行赋值
+                //对物料审核单商品详情请进行赋值
                 materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
                 materialAuditGoodsInfo.setGid(goodsSimpleInfo.getId());
                 materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
@@ -170,6 +170,9 @@ public class MaterialAuditSheetController {
                 materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
                 materialAuditGoodsInfo.setSku(goodsDO.getSku());
                 materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+                //获取商品零售价
+
+                materialAuditGoodsInfo.setRetailPrice(0.0);
                 //对物料审核单商品详情进行保存
                 materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
             }
@@ -196,8 +199,6 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setResidenceName(materialAuditSheet1.getResidenceName());
                 materialAuditSheetResponse.setDetailedAddress(materialAuditSheet1.getDetailedAddress());
                 materialAuditSheetResponse.setTotalQty(materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(auditHeaderID));
-                //TODO 获取零售价计算总金额
-                materialAuditSheetResponse.setTotalPrice(null);
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
                 materialAuditSheetResponse.setPictureList(pictureList);
                 materialAuditSheetResponse.setWorker(appEmployee.getName());
@@ -481,7 +482,8 @@ public class MaterialAuditSheetController {
      * @param identityType 用户类型
      * @return 返回审核料单商品信息
      */
-    public ResultDTO<Object> goPay(Long userID, String auditNo, Integer identityType) {
+    @RequestMapping(value = "/manager/transform/materialList")
+    public ResultDTO<Object> transformMaterialList(Long userID, String auditNo, Integer identityType) {
         ResultDTO<Object> resultDTO;
         logger.info("goPay CALLED,项目经理审核通过去支付，入参 userID:{},auditNo:{},identityType:{}", userID, auditNo, identityType);
         if (null == userID) {

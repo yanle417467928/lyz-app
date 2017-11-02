@@ -2,6 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +21,6 @@ public interface BrowseHistoryService {
     List<Long> existBrowseHistory(BrowseHistoryRequest browseHistory);
 
     void deleteByIds(List<Long> ids);
+
+    List<BrowseHistoryResponse> findBrowseHistoryByUserIdAndIdentityType(Long userId, Integer identityType);
 }

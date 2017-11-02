@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.BrowseHistoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.BrowseHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,5 +40,10 @@ public class BrowseHistoryServiceImpl implements BrowseHistoryService {
     @Override
     public void deleteByIds(List<Long> ids) {
         this.browseHistoryDAO.deleteByIds(ids);
+    }
+
+    @Override
+    public List<BrowseHistoryResponse> findBrowseHistoryByUserIdAndIdentityType(Long userId, Integer identityType) {
+        return this.browseHistoryDAO.findBrowseHistoryByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
     }
 }

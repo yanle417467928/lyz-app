@@ -67,4 +67,16 @@
           ORDER BY p.gpid DESC
     </select>
 
+    <select id="findByStoreId">
+        SELECT
+        retail_price
+        FROM
+        gds_goods_price
+        WHERE
+        gid = 9
+        AND store_id = 2
+        AND start_time < NOW()
+        AND end_time > NOW();
+    </select>
+
 </mapper>

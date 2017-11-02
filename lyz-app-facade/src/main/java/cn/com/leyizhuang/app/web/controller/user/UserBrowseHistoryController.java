@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.BrowseHistoryService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,11 +31,11 @@ public class UserBrowseHistoryController {
     private BrowseHistoryService browseHistoryServiceImpl;
 
     /**
-     * @title   添加商品浏览记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 添加商品浏览记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/2
      */
@@ -58,7 +60,7 @@ public class UserBrowseHistoryController {
             logger.info("addBrowseHistory OUT,添加商品浏览记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if(identityType == 1){
+        if (identityType == 1) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型没有此功能", null);
             logger.info("addBrowseHistory OUT,添加商品浏览记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -79,6 +81,40 @@ public class UserBrowseHistoryController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，添加商品浏览记录失败", null);
             logger.warn("addBrowseHistory EXCEPTION,添加商品浏览记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 查看浏览记录
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 返回商品list
+     */
+    public ResultDTO<Object> showBrowseHistory(Long userID, Integer identityType) {
+        ResultDTO<Object> resultDTO;
+        logger.info("showBrowseHistory CALLED,查看商品浏览记录，入参 userID {},identityType{}", userID, identityType);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("showBrowseHistory OUT,查看商品浏览记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("showBrowseHistory OUT,查看商品浏览记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<BrowseHistoryResponse> browseHistoryResponseList = browseHistoryServiceImpl.findBrowseHistoryByUserIdAndIdentityType(userID, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, browseHistoryResponseList);
+            logger.info("showBrowseHistory OUT,查看商品浏览记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，查看商品浏览记录失败", null);
+            logger.warn("showBrowseHistory EXCEPTION,查看商品浏览记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

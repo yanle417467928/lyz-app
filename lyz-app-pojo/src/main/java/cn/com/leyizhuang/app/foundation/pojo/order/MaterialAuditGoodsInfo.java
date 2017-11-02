@@ -32,4 +32,6 @@ public class MaterialAuditGoodsInfo {
     private String coverImageUri;
     //是否是赠品
     private Boolean isGift;
+    //商品零售价
+    private Double retailPrice;
 }
