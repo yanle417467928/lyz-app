@@ -197,14 +197,14 @@ public class EmployeeController {
                 logger.info("employeeEditPassword OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || identityType == 0) {
+            if (null == identityType || identityType == 6) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                         null);
                 logger.info("employeeEditPassword OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == oldPassword || "".equalsIgnoreCase(oldPassword)) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "原不允许为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "原密码不允许为空！", null);
                 logger.info("employeeEditPassword OUT,员工修改密码失败，返回值resultDTO:{}", resultDTO);
                 return resultDTO;
             }

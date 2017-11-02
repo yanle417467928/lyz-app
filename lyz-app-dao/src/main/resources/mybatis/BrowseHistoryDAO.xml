@@ -26,7 +26,7 @@
         WHERE user_id = #{userId} AND identity_type = #{identityType} AND goods_id = #{goodsId}
     </select>
 
-    <delete id="delete">
+    <delete id="deleteByIds">
         DELETE FROM browse_history
         WHERE id in
         <foreach collection="list" item="id" open="(" close=")" separator=",">
