@@ -503,6 +503,42 @@
         </foreach>
     </select>
 
+    <select id="getGoodsPriceByEmployeeAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
+        FROM emp_employee e
+        LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
+        WHERE e.emp_id = #{userId}
+        AND p.gid IN
+        <foreach collection="list" item="gid" open="(" close=")" separator=",">
+            #{gid}
+        </foreach>
+    </select>
+
+    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse">
+        SELECT
+            g.gid      id,
+            g.sku_name goods_name,
+            g.cover_image_uri,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
+        FROM
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            INNER JOIN gds_goods g ON p.gid = g.gid
+        WHERE
+            e.emp_id = #{userId}
+        AND p.gid IN
+        <foreach collection="list" item="gid" open="(" close=")" separator=",">
+            #{gid}
+        </foreach>
+
+    </select>
+
     <select id="filterGoodsCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
         g.cover_image_uri,

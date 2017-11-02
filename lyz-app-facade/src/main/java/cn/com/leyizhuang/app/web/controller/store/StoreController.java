@@ -43,17 +43,24 @@ public class StoreController {
             logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 2) {
+        if (null == identityType ) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空或没有权限",
                     null);
             logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            Double balance = appStoreService.findSubventionBalanceByUserId(userId);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
-            logger.info("getStoreSubventionBalance OUT,获取门店赞助金成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            if(identityType == 2) {
+                Double balance = appStoreService.findSubventionBalanceByUserId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+                logger.info("getStoreSubventionBalance OUT,获取门店赞助金成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店赞助金失败", null);
@@ -79,17 +86,24 @@ public class StoreController {
             logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 2) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空或没有权限",
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            Double balance = appStoreService.findCreditMoneyBalanceByUserId(userId);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
-            logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            if (identityType == 2) {
+                Double balance = appStoreService.findCreditMoneyBalanceByUserId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+                logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店信用金失败", null);
@@ -115,17 +129,24 @@ public class StoreController {
             logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 0 && identityType != 2) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空或没有权限",
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
-            logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            if (identityType == 0 || identityType == 2) {
+                Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店预存款余额失败", null);

@@ -37,4 +37,6 @@ public interface CityDAO {
     void modifyCity(City city);
 
     void deleteCityByCode(String code);
+
+    Boolean existGoodsCityInventory(@Param("cityId") Long cityId,@Param("gid") Long gid,@Param("qty") Integer qty);
 }

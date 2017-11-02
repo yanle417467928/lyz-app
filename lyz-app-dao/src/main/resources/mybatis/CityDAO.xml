@@ -83,4 +83,8 @@
         WHERE CODE = #{code};
     </delete>
 
+    <select id="existGoodsCityInventory" resultType="java.lang.Boolean">
+        select 'X' from city_inventory WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid};
+    </select>
+
 </mapper>
