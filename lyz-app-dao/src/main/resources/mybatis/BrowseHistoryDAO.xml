@@ -16,15 +16,22 @@
                 (SELECT id FROM browse_history
                 WHERE user_id = #{userId} AND identity_type = #{identityType}
                 ORDER BY id DESC
-                LIMIT 5, 3
+                LIMIT 20, 3
                 ) AS temp
               )
     </delete>
 
-    <select id="existBrowseHistory" resultType="java.lang.Boolean">
-        SELECT 'X' FROM browse_history
-        WHERE user_id = #{userId} AND identity_type = #{idrntityType} AND goods_id = #{goodsId}
+    <select id="existBrowseHistory" resultType="java.lang.Long">
+        SELECT id FROM browse_history
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND goods_id = #{goodsId}
     </select>
 
+    <delete id="delete">
+        DELETE FROM browse_history
+        WHERE id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 
 </mapper>

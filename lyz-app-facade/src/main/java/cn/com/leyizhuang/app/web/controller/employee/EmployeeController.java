@@ -177,4 +177,69 @@ public class EmployeeController {
             return resultDTO;
         }
     }
+
+    /**
+     * @title   员工修改密码
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/2
+     */
+    @PostMapping(value = "/password/edit", produces = "application/json;charset=UTF-8")
+    public ResultDTO<String> employeeEditPassword(Long userId, Integer identityType, String oldPassword, String newPassword) {
+        logger.info("employeeModifyPassword CALLED,员工修改密码，参数: userId{},identityType{},oldPassword{},newPassword{}", userId, identityType, oldPassword, newPassword);
+        ResultDTO<String> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+                logger.info("employeeEditPassword OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType || identityType == 0) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                        null);
+                logger.info("employeeEditPassword OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == oldPassword || "".equalsIgnoreCase(oldPassword)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "原不允许为空！", null);
+                logger.info("employeeEditPassword OUT,员工修改密码失败，返回值resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == newPassword || "".equalsIgnoreCase(newPassword)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "新密码不允许为空！", null);
+                logger.info("employeeEditPassword OUT,员工修改密码失败，返回值resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppEmployee employee = appEmployeeService.findByIdAndStatusIsTrue(userId);
+            if (employee == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户不存在！", null);
+                logger.info("employeeEditPassword OUT,员工修改密码失败，返回值resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                String md5OldPassword = DigestUtils.md5DigestAsHex((Base64Utils.decode(oldPassword) + employee.getSalt()).getBytes("UTF-8"));
+                if (md5OldPassword.compareTo(employee.getPassword()) != 0) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "原密码错误！", null);
+                    logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                String md5NewPassword = DigestUtils.md5DigestAsHex((Base64Utils.decode(newPassword) + employee.getSalt()).getBytes("UTF-8"));
+                AppEmployee newEmployee = new AppEmployee();
+                newEmployee.setEmpId(employee.getEmpId());
+                newEmployee.setPassword(md5NewPassword);
+                appEmployeeService.update(newEmployee);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("employeeEditPassword OUT,员工修改密码成功，返回值resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，密码修改失败", null);
+            logger.warn("employeeEditPassword EXCEPTION,员工修改密码出现未知异常,返回值resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }

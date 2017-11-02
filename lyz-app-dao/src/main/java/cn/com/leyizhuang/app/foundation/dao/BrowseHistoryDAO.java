@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2017/11/2
@@ -16,5 +18,7 @@ public interface BrowseHistoryDAO {
 
     void delete(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
-   Boolean existBrowseHistory(BrowseHistoryRequest browseHistory);
+   List<Long> existBrowseHistory(BrowseHistoryRequest browseHistory);
+
+   void deleteByIds(@Param("list") List<Long> ids);
 }

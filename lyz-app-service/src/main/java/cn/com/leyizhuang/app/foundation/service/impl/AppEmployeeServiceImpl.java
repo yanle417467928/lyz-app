@@ -77,6 +77,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    public AppEmployee findByIdAndStatusIsTrue(Long userId) {
+        if (null != userId){
+            return employeeDAO.findByIdAndStatusIsTrue(userId);
+        }
+        return null;
+    }
+
+    @Override
     public List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType && identityType == 2){
             List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);

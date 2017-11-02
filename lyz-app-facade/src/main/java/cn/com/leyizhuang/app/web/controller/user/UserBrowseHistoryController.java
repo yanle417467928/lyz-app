@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2017/11/2
@@ -64,10 +66,12 @@ public class UserBrowseHistoryController {
         try {
             BrowseHistoryRequest browseHistory = new BrowseHistoryRequest();
             browseHistory = browseHistory.setBrowseHistoryRequest(userId, identityType, goodsId);
-            if (this.browseHistoryServiceImpl.existBrowseHistory(browseHistory)) {
-                this.browseHistoryServiceImpl.save(browseHistory);
-                this.browseHistoryServiceImpl.delete(browseHistory.getUserId(), browseHistory.getIdentityType());
+            List<Long> ids = this.browseHistoryServiceImpl.existBrowseHistory(browseHistory);
+            if (ids.size() > 0) {
+                this.browseHistoryServiceImpl.deleteByIds(ids);
             }
+            this.browseHistoryServiceImpl.save(browseHistory);
+            this.browseHistoryServiceImpl.delete(browseHistory.getUserId(), browseHistory.getIdentityType());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addBrowseHistory OUT,添加商品浏览记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

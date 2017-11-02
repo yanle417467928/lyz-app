@@ -30,6 +30,8 @@ public interface AppEmployeeService {
 
     AppEmployee findById(Long userId);
 
+    AppEmployee findByIdAndStatusIsTrue(Long userId);
+
     List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
 
     SellerCreditMoney findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
