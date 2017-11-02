@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @ToString
 public class FunctionalFeedbackDO extends BaseDO {
     //类型
-    private String type;
+    private FunctionFeedBackType type;
     //内容
     private String content;
     //图片信息

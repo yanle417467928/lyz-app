@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
 import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
@@ -472,7 +473,7 @@ public class UserSettingController {
             }
 
             FunctionalFeedbackDO functionalFeedbackDO = new FunctionalFeedbackDO();
-            functionalFeedbackDO.setType(type);
+            functionalFeedbackDO.setType(FunctionFeedBackType.getFunctionFeedBackTypeByValue(type));
             functionalFeedbackDO.setContent(content);
             functionalFeedbackDO.setPhone(phone);
             functionalFeedbackDO.setPictureUrl(photos);
