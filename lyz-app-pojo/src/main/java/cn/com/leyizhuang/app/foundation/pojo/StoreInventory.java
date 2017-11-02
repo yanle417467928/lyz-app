@@ -1,31 +1,43 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+
 /**
- * 门店库存业务实体
- *
- * @author Richard
- *         Created on 2017-07-12 13:52
- **/
+ * 商店库存
+ * @author liuh
+ * create_time 2017-11-02 14:55:54
+ */
+
+@ToString
 @Getter
 @Setter
-@ToString
-public class StoreInventory extends BaseDO{
+public class StoreInventory {
 
-    //门店ID
+    private Long id;
+    // 城市id
+    private Long cityId;
+    // 城市编码
+    private String cityCode;
+    // 城市名称
+    private String cityName;
+    // 门店id
     private Long storeId;
-
-    //商品ID
-    private Long goodsId;
-
-    //真实库存量
-    private Long realInventory;
-
-    //可售库存量
-    private Long soldInventory;
+    // 门店编码
+    private String storeCode;
+    // 门店名称
+    private String storeName;
+    // 商品id
+    private Long gid;
+    // 商品编码
+    private String sku;
+    // 商品名称
+    private String skuName;
+    // 可售门店库存
+    private Integer availableIty;
+    // 真实门店库存
+    private Integer realIty;
 
 }
