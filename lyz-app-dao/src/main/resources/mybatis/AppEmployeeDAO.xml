@@ -84,6 +84,12 @@
         WHERE emp_id = #{userId}
     </select>
 
+    <select id="findByIdAndStatusIsTrue" parameterType="java.lang.Long" resultType="AppEmployee">
+        SELECT *
+        FROM emp_employee
+        WHERE emp_id = #{userId} AND status is true
+    </select>
+
     <select id="findDecorateEmployeeListByManagerId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT

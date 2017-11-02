@@ -509,7 +509,7 @@
         LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
         WHERE e.emp_id = #{userId}
         AND p.gid IN
-        <foreach collection="list" item="gid" open="(" close=")" separator=",">
+        <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
         </foreach>
     </select>
@@ -533,7 +533,7 @@
         WHERE
             e.emp_id = #{userId}
         AND p.gid IN
-        <foreach collection="list" item="gid" open="(" close=")" separator=",">
+        <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
         </foreach>
 

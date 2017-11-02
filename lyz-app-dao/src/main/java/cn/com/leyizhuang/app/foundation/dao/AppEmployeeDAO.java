@@ -30,6 +30,8 @@ public interface AppEmployeeDAO {
 
     AppEmployee findById(Long id);
 
+    AppEmployee findByIdAndStatusIsTrue(Long id);
+
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
     SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);

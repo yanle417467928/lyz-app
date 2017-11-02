@@ -20,16 +20,15 @@ import java.util.List;
 public class OrderGoodsSimpleRequest implements Serializable {
 
     /**
-     * 商品Id
+     * 用户Id
      */
-    private Long id;
+    private Long userId;
     /**
-     * 商品数量
+     * 用户身份类型
      */
-    private Integer num;
-
+    private Integer identityType;
     /**
-     * 是否赠品
+     * 传输的商品集合
      */
-    private Boolean isGift = Boolean.FALSE;
+    private List<GoodsSimpleInfo> goodsList;
 }
