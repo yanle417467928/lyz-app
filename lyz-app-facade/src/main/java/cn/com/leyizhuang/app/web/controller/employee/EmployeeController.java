@@ -115,7 +115,8 @@ public class EmployeeController {
                 logger.info("employeeModifyPassword OUT,员工修改密码失败，返回值resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
-                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + employee.getSalt()).getBytes("UTF-8"));
+                String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) +
+                        employee.getSalt()).getBytes("UTF-8"));
                 AppEmployee newEmployee = new AppEmployee();
                 newEmployee.setEmpId(employee.getEmpId());
                 newEmployee.setPassword(md5Password);

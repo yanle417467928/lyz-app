@@ -23,7 +23,7 @@ public class MaterialAuditSheetRequest {
     //用户类型
     private String identityType;
     //商品id+商品数量+是否是赠品
-    private List<GoodsSimpleInfo> goodsList;
+    private String goodsList;
     //收货人姓名
     private String receiver;
     //收货人电话号码
