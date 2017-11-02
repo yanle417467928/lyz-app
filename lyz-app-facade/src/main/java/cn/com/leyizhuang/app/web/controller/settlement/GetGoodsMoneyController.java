@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -88,16 +89,16 @@ public class GetGoodsMoneyController {
 
     /**
      * 确认商品计算工人订单总金额
+     * @author Jerry
      * @param userId
      * @param identityType
      * @param goodsList
      * @return
      */
     @PostMapping(value = "/worker", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getGoodsMoneyOfWorker(Long userId, Integer identityType, List<OrderGoodsSimpleRequest> goodsList) {
+    public ResultDTO<Object> getGoodsMoneyOfWorker(@RequestParam Long userId,@RequestParam Integer identityType,@RequestParam List<OrderGoodsSimpleRequest> goodsList) {
 
         logger.info("getGoodsMoneyOfWorker CALLED,确认商品计算工人订单总金额，入参 userId:{},identityType:{},goodsList:{}", userId,identityType,goodsList);
-
         ResultDTO resultDTO;
         if (goodsList.isEmpty()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
