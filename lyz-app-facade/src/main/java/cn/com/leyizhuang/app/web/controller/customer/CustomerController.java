@@ -67,7 +67,7 @@ public class CustomerController {
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！",
-                        new CustomerLoginResponse(Boolean.FALSE, null, null));
+                        new CustomerLoginResponse(Boolean.FALSE, null, null,null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -77,7 +77,7 @@ public class CustomerController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile()));
+                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(),customer.getCityId()));
             logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

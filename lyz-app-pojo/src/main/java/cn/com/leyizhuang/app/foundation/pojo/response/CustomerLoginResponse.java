@@ -26,4 +26,6 @@ public class CustomerLoginResponse implements Serializable{
     //用户电话
     private String mobile;
 
+    private Long cityId;
+
 }
