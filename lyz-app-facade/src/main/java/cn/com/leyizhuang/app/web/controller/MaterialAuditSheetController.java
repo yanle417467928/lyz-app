@@ -3,10 +3,12 @@ package cn.com.leyizhuang.app.web.controller;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -14,9 +16,9 @@ import cn.com.leyizhuang.app.foundation.service.MaterialAuditGoodsInfoService;
 import cn.com.leyizhuang.app.foundation.service.MaterialAuditSheetService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +30,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 物料审核单
@@ -58,7 +59,7 @@ public class MaterialAuditSheetController {
      * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/save",method = RequestMethod.POST)
-    public ResultDTO<Object> addMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest){
+    public ResultDTO<Object> addMaterialAuditSheet(@RequestBody  MaterialAuditSheetRequest materialAuditSheetRequest){
         ResultDTO<Object> resultDTO;
         logger.info("addMaterialAuditSheet CALLED,新增物料审核单，入参 materialAuditSheetRequest:{}",materialAuditSheetRequest);
         if(null == materialAuditSheetRequest.getUserID()){
@@ -71,7 +72,7 @@ public class MaterialAuditSheetController {
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
         }
-        if(null == materialAuditSheetRequest.getIds()){
+        if(null == materialAuditSheetRequest.getGoodsList()){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"购买商品不能为空",null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}",resultDTO);
             return resultDTO;
@@ -147,22 +148,20 @@ public class MaterialAuditSheetController {
             materialAuditSheet.setCreateTime(LocalDateTime.now());
             //保存物料审核单头
             materialAuditSheetService.addMaterialAuditSheet(materialAuditSheet);
-
+            //获取物料审核单id
             Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
+            //获取商品相关信息（id，数量，是否赠品）
+            List<GoodsSimpleInfo> goodsList = materialAuditSheetRequest.getGoodsList();
 
-            //新增物料审核单商品
-            //获取商品数组
-            Map<Object,Object>[] ids = materialAuditSheetRequest.getIds();
-            //切割获得（商品id、商品数量、是否是赠品）三个参数数组
-            for (Map id : ids){
+            for (GoodsSimpleInfo  goodsSimpleInfo : goodsList){
                 //根据商品id查找对应的商品
-                GoodsDO goodsDO = goodsService.queryById((Long)id.get("id"));
+                GoodsDO goodsDO = goodsService.queryById(goodsSimpleInfo.getId());
                 MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
                 //对物料审核单商品想起进行赋值
                 materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
-                materialAuditGoodsInfo.setGid(Long.parseLong((String)id.get("id")));
+                materialAuditGoodsInfo.setGid(goodsSimpleInfo.getId());
                 materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-                materialAuditGoodsInfo.setQty((Integer)id.get("num"));
+                materialAuditGoodsInfo.setQty(goodsSimpleInfo.getNum());
                 materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
                 materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
                 materialAuditGoodsInfo.setSku(goodsDO.getSku());
@@ -463,7 +462,71 @@ public class MaterialAuditSheetController {
             logger.warn("{}",e);
             return resultDTO;
         }
+    }
 
+    /**
+     * 装饰公司项目经理审核通过去支付
+     * @param userID    用户ID
+     * @param auditNo   物料审核单编号
+     * @param identityType  用户类型
+     * @return  返回审核料单商品信息
+     */
+    public ResultDTO<Object> goPay(Long userID,String auditNo,Integer identityType){
+        ResultDTO<Object> resultDTO;
+        logger.info("goPay CALLED,项目经理审核通过去支付，入参 userID:{},auditNo:{},identityType:{}",userID,auditNo,identityType);
+        if (null == userID){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户id不能为空",null);
+            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户类型不能为空",null);
+            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(auditNo)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"审核单编号不能为空",null);
+            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 3){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"该用户类型不能进行支付",null);
+            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            //根据物料审核单编号查找物料审核单
+            MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
+            //创建返回对象
+            MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
+            if (null ==materialAuditSheet){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"未查询到此物料审核单",null);
+                logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+            //查询物料审核单中对应的商品
+            List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
+            if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0){
+                //把物料审核单中所有的商品list放入返回值对象中
+                materialAuditGoPayResponse.setGoodsList(materialAuditGoodsInfoList);
+                materialAuditGoPayResponse.setAuditNo(auditNo);
+                materialAuditGoPayResponse.setWorker(materialAuditSheet.getEmployeeName());
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,materialAuditGoPayResponse);
+                logger.info("goPay OUT,项目经理审核通过去支付成功，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"未查询到此物料审核单商品",null);
+                logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+                return resultDTO;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"发生未知异常，项目经理审核通过去支付失败",null);
+            logger.warn("goPay EXCEPTION,项目经理审核通过去支付失败，出参 resultDTO:{}",resultDTO);
+            logger.warn("{}",e);
+            return resultDTO;
+        }
     }
 
 

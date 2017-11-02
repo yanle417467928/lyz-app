@@ -1,8 +1,11 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +23,7 @@ public class MaterialAuditSheetRequest {
     //用户类型
     private String identityType;
     //商品id+商品数量+是否是赠品
-    private Map<Object,Object>[] ids;
+    private List<GoodsSimpleInfo> goodsList;
     //收货人姓名
     private String receiver;
     //收货人电话号码
