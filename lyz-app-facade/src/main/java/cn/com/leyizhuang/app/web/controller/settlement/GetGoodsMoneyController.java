@@ -139,11 +139,11 @@ public class GetGoodsMoneyController {
             goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId,goodsIds);
             for (int i = 0; i <goodsInfo.size() ; i++) {
                 for (int j = 0; j < goodsList.size(); j++) {
-                    if (goodsList.get(i).getId().equals(goodsInfo.get(i).getId())) {
-                        goodsInfo.get(i).setGoodsQty(goodsList.get(i).getNum());
-                        if (goodsList.get(i).getIsGift()) {
+                    if (goodsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                        goodsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                        if (goodsList.get(j).getIsGift()) {
                             goodsInfo.get(i).setIsGift(Boolean.TRUE);
-                            goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(i).getNum());
+                            goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(j).getNum());
                         }
                     }
                 }
