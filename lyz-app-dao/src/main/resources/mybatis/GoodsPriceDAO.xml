@@ -67,7 +67,7 @@
           ORDER BY p.gpid DESC
     </select>
 
-    <select id="findByStoreId">
+    <!--<select id="findByStoreId1aw">
         SELECT
         retail_price
         FROM
@@ -75,8 +75,8 @@
         WHERE
         gid = 9
         AND store_id = 2
-        AND start_time < NOW()
-        AND end_time > NOW();
-    </select>
+        AND start_time &lt; NOW()
+        AND end_time &gt; NOW();
+    </select>-->
 
 </mapper>
