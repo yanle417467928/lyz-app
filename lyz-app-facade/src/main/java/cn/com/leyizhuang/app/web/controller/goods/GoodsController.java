@@ -356,7 +356,7 @@ public class GoodsController {
     @PostMapping(value = "/filter", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType, String firstCategoryCode, Long categoryId,
                                              Long brandId, Long typeId, String specification) {
-        logger.info("filterGoodsList CALLED,筛选商品，入参 userId:{},identityType:{},firstCategoryCode: {},categoryId{}," +
+        logger.info("filterGoodsList CALLED,筛选商品，入参 userId:{},identityType:{},firstCategoryCode: {},categoryId:{}," +
                 "brandId: {},typeId:{},specification:{}", userId, identityType, firstCategoryCode, categoryId, brandId, typeId, specification);
         ResultDTO<Object> resultDTO;
         try {

@@ -606,7 +606,7 @@
         <if test="null != typeId ">
             AND g.gtid = #{typeId}
         </if>
-        <if test="null != specification ">
+        <if test="null != specification and specification != ''">
             AND g.goods_specification = #{specification}
         </if>
     </select>
