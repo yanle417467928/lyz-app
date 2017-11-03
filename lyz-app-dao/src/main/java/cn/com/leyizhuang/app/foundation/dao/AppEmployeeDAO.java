@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -50,4 +52,6 @@ public interface AppEmployeeDAO {
     void deleteByLoginName(String loginName);
 
     void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
+
+    List<SellerResponse> findSellerByStoreIdAndIdentityType(@Param("storeId") Long storeId, @Param("type")AppIdentityType type);
 }

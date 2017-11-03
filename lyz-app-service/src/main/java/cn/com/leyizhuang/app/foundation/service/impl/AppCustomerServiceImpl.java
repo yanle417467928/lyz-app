@@ -6,10 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -260,5 +257,10 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
                 customerDAO.updateCashCouponByUserIdAndGoodsIdAndCashCoupons(userId,index,cashCoupon.get(index));
             }
         }
+    }
+
+    @Override
+    public AppCustomer findStoreSellerByCustomerId(Long userId) {
+        return this.customerDAO.findStoreSellerByCustomerId(userId);
     }
 }

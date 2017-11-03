@@ -80,4 +80,6 @@ public interface AppCustomerDAO {
 
     void updateCashCouponByUserIdAndGoodsIdAndCashCoupons(
             @Param("userId") Long userId,@Param("ccid") Long index,@Param("qty") Integer integer);
+
+    AppCustomer findStoreSellerByCustomerId(@Param("userId") Long userId);
 }

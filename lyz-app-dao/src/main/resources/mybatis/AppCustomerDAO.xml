@@ -86,6 +86,9 @@
                    typeHandler=org.apache.ibatis.type.EnumTypeHandler
                 },
             </if>
+            <if test="null != bindingTime">
+                binding_time = #{bindingTime},
+            </if>
         </set>
         WHERE cus_id = #{cusId}
     </update>
@@ -308,4 +311,15 @@
         AND
         cus_id = #{userId};
     </update>
+
+    <select id="findStoreSellerByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.AppCustomer">
+        SELECT
+          store_id,
+          sales_consult_id,
+          binding_time,
+          create_time
+        FROM cus_customer
+        WHERE cus_id = #{userId};
+    </select>
+
 </mapper>

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -40,5 +41,7 @@ public interface AppStoreService {
     void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
 
     void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory);
+
+    List<StoreResponse> findStoreByCityId(Long cityId);
 
 }
