@@ -73,9 +73,9 @@
         FROM
         gds_goods_price
         WHERE
-        gid = 9
-        AND store_id = 2
-        AND start_time &lt; NOW()
+        gid = 9        AND store_id = 2
+        AND star=】=
+        _time &lt; NOW()
         AND end_time &gt; NOW();
     </select>-->
 
