@@ -10,10 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.service.MaterialAuditGoodsInfoService;
-import cn.com.leyizhuang.app.foundation.service.MaterialAuditSheetService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -49,6 +46,9 @@ public class MaterialAuditSheetController {
 
     @Resource
     private GoodsService goodsService;
+
+    @Resource
+    private GoodsPriceService goodsPriceService;
 
     @Resource
     private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
@@ -143,6 +143,7 @@ public class MaterialAuditSheetController {
             materialAuditSheet.setIsOwnerReceiving(materialAuditSheetRequest.getIsOwnerReceiving());
             materialAuditSheet.setRemark(materialAuditSheetRequest.getRemark());
             materialAuditSheet.setStatus(1);
+            materialAuditSheet.setIsAudited(false);
             String auditNumber = this.createNumber();
             materialAuditSheet.setAuditNo(auditNumber);
             //把String类型时间转换为LocalDateTime类型
@@ -171,8 +172,8 @@ public class MaterialAuditSheetController {
                 materialAuditGoodsInfo.setSku(goodsDO.getSku());
                 materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
                 //获取商品零售价
-
-                materialAuditGoodsInfo.setRetailPrice(0.0);
+                Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(goodsSimpleInfo.getId(),appEmployee.getStoreId());
+                materialAuditGoodsInfo.setRetailPrice(goodsPrice);
                 //对物料审核单商品详情进行保存
                 materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
             }
@@ -185,20 +186,25 @@ public class MaterialAuditSheetController {
                 //创建一个返回参数对象
                 MaterialAuditSheetResponse materialAuditSheetResponse = new MaterialAuditSheetResponse();
                 //查询每单物料审核单所有商品信息
-                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(auditHeaderID);
+                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet1.getAuditHeaderID());
                 //创建一个图片list存储图片地址
                 List<String> pictureList = new ArrayList<>();
+                //商品总价格
+                Double totalPrice = 0D;
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                    totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
                 }
                 //向返回参数对象中设置
+                materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setAuditNo(materialAuditSheet1.getAuditNo());
                 materialAuditSheetResponse.setDeliveryCity(materialAuditSheet1.getDeliveryCity());
                 materialAuditSheetResponse.setDeliveryCounty(materialAuditSheet1.getDeliveryCounty());
                 materialAuditSheetResponse.setDeliveryStreet(materialAuditSheet1.getDeliveryStreet());
                 materialAuditSheetResponse.setResidenceName(materialAuditSheet1.getResidenceName());
                 materialAuditSheetResponse.setDetailedAddress(materialAuditSheet1.getDetailedAddress());
-                materialAuditSheetResponse.setTotalQty(materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(auditHeaderID));
+                materialAuditSheetResponse.setIsAudited(materialAuditSheet1.getIsAudited());
+                materialAuditSheetResponse.setTotalQty(materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(materialAuditSheet1.getAuditHeaderID()));
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
                 materialAuditSheetResponse.setPictureList(pictureList);
                 materialAuditSheetResponse.setWorker(appEmployee.getName());
@@ -282,8 +288,6 @@ public class MaterialAuditSheetController {
             //把LocalDateTime类型转换为String类型，并进行赋值
             materialAuditDetailsResponse.setCreateTime(df.format(materialAuditSheet.getCreateTime()));
             materialAuditDetailsResponse.setReservationDeliveryTime(df.format(materialAuditSheet.getReservationDeliveryTime()));
-            //TODO 还需要获取零售价计算总金额
-            materialAuditDetailsResponse.setTotalPrice(null);
 
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
@@ -334,10 +338,14 @@ public class MaterialAuditSheetController {
                 List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheetResponse.getAuditHeaderID());
                 //创建一个图片list存储图片地址
                 List<String> pictureList = new ArrayList<>();
+                //商品总金额
+                Double totalPrice = 0d;
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                    totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
                 }
                 //设值
+                materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setTotalQty(totalQty);
                 materialAuditSheetResponse.setPictureList(pictureList);
             }
@@ -384,8 +392,11 @@ public class MaterialAuditSheetController {
                 List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet1.getAuditHeaderID());
                 //创建一个图片list存储图片地址
                 List<String> pictureList = new ArrayList<>();
+                //商品总价格
+                Double totalPrice =0D;
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
+                    totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
                 }
                 //向返回参数对象中设置
                 materialAuditSheetResponse.setAuditNo(materialAuditSheet1.getAuditNo());
@@ -395,8 +406,7 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setResidenceName(materialAuditSheet1.getResidenceName());
                 materialAuditSheetResponse.setDetailedAddress(materialAuditSheet1.getDetailedAddress());
                 materialAuditSheetResponse.setTotalQty(materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(materialAuditSheet1.getAuditHeaderID()));
-                //TODO 获取零售价计算总金额
-                materialAuditSheetResponse.setTotalPrice(null);
+                materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setIsAudited(materialAuditSheet1.getIsAudited());
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
                 materialAuditSheetResponse.setPictureList(pictureList);

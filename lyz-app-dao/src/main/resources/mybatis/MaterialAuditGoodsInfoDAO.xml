@@ -16,7 +16,7 @@
     </resultMap>
 
     <select id="queryListByAuditHeaderID" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
-        SELECT ID, AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT
+        SELECT ID, AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT, RETAIL_PRICE
         FROM material_audit_goods_info
         WHERE
           AUDIT_HEADER_ID = #{auditHeaderID}
@@ -26,9 +26,9 @@
 
     <insert id="addMaterialAuditGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">
         INSERT INTO material_audit_goods_info
-        (AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT)
+        (AUDIT_HEADER_ID, GID, SKU, SKU_NAME, QTY, GOODS_SPECIFICATION, GOODS_UNIT, COVER_IMAGE_URI, IS_GIFT, RETAIL_PRICE)
         VALUES
-        (#{auditHeaderID}, #{gid}, #{sku}, #{skuName}, #{qty}, #{goodsSpecification}, #{goodsUnit}, #{coverImageUri}, #{isGift})
+        (#{auditHeaderID}, #{gid}, #{sku}, #{skuName}, #{qty}, #{goodsSpecification}, #{goodsUnit}, #{coverImageUri}, #{isGift}, #{retailPrice})
     </insert>
 
     <update id="modifyMaterialAuditGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo">

@@ -49,4 +49,9 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
         List<GoodsPriceVO> priceList = this.goodsPriceDAO.findByStoreId(storeId, keywords);
         return new PageInfo<>(priceList);
     }
+
+    @Override
+    public Double findGoodsRetailPriceByGoodsIDAndStoreID(Long goodsID, Long storeID) {
+        return this.goodsPriceDAO.findGoodsRetailPriceByGoodsIDAndStoreID(goodsID,storeID);
+    }
 }
