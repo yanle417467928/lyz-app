@@ -24,5 +24,7 @@ public class EmployeeLoginResponse implements Serializable{
 
     private Long userId;
 
+    //城市id
+    private Long cityId;
 
 }

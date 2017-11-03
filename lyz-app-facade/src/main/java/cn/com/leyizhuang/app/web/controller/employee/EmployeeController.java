@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +44,7 @@ public class EmployeeController {
      * @return ResultDTO
      */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
-    public ResultDTO<EmployeeLoginResponse> employeeLogin(EmployeeLoginParam loginParam, HttpServletResponse response) {
+    public ResultDTO<EmployeeLoginResponse> employeeLogin( EmployeeLoginParam loginParam, HttpServletResponse response) {
         logger.info("employeeLogin CALLED,员工登录，入参 loginParam:{}", loginParam.toString());
         ResultDTO<EmployeeLoginResponse> resultDTO;
         try {
@@ -75,7 +76,8 @@ public class EmployeeController {
                     JwtConstant.EXPPIRES_SECOND * 1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new EmployeeLoginResponse(employee.getIdentityType().getValue(),employee.getEmpId()));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new EmployeeLoginResponse(employee.getIdentityType().getValue(),employee.getEmpId(),employee.getCityId()));
             logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

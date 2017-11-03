@@ -565,7 +565,7 @@
             AND g.cid = #{secondCategoryId}
         </if>
         <if test="null != brandId ">
-            AND g.brandId = #{brandId}
+            AND g.brd_id = #{brandId}
         </if>
         <if test="null != typeId ">
             AND g.gtid = #{typeId}
@@ -601,7 +601,7 @@
             AND g.cid = #{secondCategoryId}
         </if>
         <if test="null != brandId ">
-            AND g.brandId = #{brandId}
+            AND g.brd_id = #{brandId}
         </if>
         <if test="null != typeId ">
             AND g.gtid = #{typeId}
