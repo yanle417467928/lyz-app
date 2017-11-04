@@ -47,6 +47,8 @@ public interface AppCustomerService {
 
     Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
+    CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId,Double goodsMoney);
+
     void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyCustomerMobileByUserId(Long userId, String mobile);
@@ -74,4 +76,6 @@ public interface AppCustomerService {
     void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
 
     AppCustomer findStoreSellerByCustomerId(Long userId);
+
+
 }

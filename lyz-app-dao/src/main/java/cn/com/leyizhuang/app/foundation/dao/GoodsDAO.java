@@ -88,4 +88,6 @@ public interface GoodsDAO {
                                                 @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
+
+    List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
 }

@@ -22,6 +22,25 @@ public class ProductCouponServiceImpl implements ProductCouponService {
 
     @Override
     public List<OrderUsableProductCouponResponse> findProductCouponByCustomerIdAndGoodsId(Long userId, List<Long> goodsIds) {
-        return this.productCouponDAO.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
+        if (null != userId && null != goodsIds) {
+            List<OrderUsableProductCouponResponse> productCouponResponseList = this.productCouponDAO.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
+            //计算订单可使用产品卷（先查可参加的活动，再减去赠品）
+
+
+            for (int i = 0; i < productCouponResponseList.size(); i++) {
+                if (null != productCouponResponseList.get(i).getCoverImageUri()) {
+                    String[] url = productCouponResponseList.get(i).getCoverImageUri().split(",");
+                    if (url.length > 0) {
+                        productCouponResponseList.get(i).setCoverImageUri(url[0]);
+                    } else {
+                        productCouponResponseList.get(i).setCoverImageUri("");
+                    }
+                }
+                productCouponResponseList.get(i).setUsableNumber(1);
+            }
+
+            return productCouponResponseList;
+        }
+        return null;
     }
 }

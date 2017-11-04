@@ -7,6 +7,11 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,6 +132,20 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     public Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType && identityType ==6){
             return customerDAO.findLeBiQuantityByUserId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId,Double goodsMoney) {
+        if (null != userId && null != goodsMoney){
+            Integer qty = customerDAO.findLeBiQuantityByUserId(userId);
+            Double rebate = CountUtil.div(qty,CustomerLeBi.ratio);
+            if (rebate >= goodsMoney){
+                rebate = goodsMoney;
+                qty = (int)CountUtil.mul(goodsMoney,CustomerLeBi.ratio);
+            }
+            return new CustomerLeBi(qty,rebate);
         }
         return null;
     }

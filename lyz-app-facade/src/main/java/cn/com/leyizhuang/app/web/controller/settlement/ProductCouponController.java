@@ -26,12 +26,12 @@ public class ProductCouponController {
     @Autowired
     private ProductCouponService productCouponServiceImpl;
 
-    /**  
+    /**
      * @title   获取订单可用产品券列表
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
+     * @param
+     * @return
+     * @throws
      * @author GenerationRoad
      * @date 2017/10/19
      */
@@ -62,20 +62,6 @@ public class ProductCouponController {
                 goodsIds.add(Long.parseLong(goodsIdParam[0]));
             }
             List<OrderUsableProductCouponResponse> productCouponResponseList = this.productCouponServiceImpl.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
-            //计算订单可使用产品卷（先查可参加的活动，再减去赠品）
-
-
-            for (int i = 0; i < productCouponResponseList.size(); i++) {
-                if (null != productCouponResponseList.get(i).getCoverImageUri()) {
-                    String[] url = productCouponResponseList.get(i).getCoverImageUri().split(",");
-                    if (url.length > 0){
-                        productCouponResponseList.get(i).setCoverImageUri(url[0]);
-                    } else {
-                        productCouponResponseList.get(i).setCoverImageUri("");
-                    }
-                }
-                productCouponResponseList.get(i).setUsableNumber(1);
-            }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
             logger.info("getUsableProductCoupon OUT,获取订单可用产品券列表成功，出参 resultDTO:{}", resultDTO);

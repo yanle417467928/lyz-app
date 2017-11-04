@@ -95,13 +95,8 @@ public class GetPaymentMethodsController {
             return resultDTO;
         }
         try {
-            Integer qty = appCustomerServiceImpl.findLeBiQuantityByUserIdAndIdentityType(userId,identityType);
-            Double rebate = (double) (qty / 10);
-            if (rebate >= goodsMoney){
-                rebate = goodsMoney;
-                qty = (int) (goodsMoney * 10);
-            }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CustomerLeBi(qty,rebate));
+            CustomerLeBi customerLeBi = appCustomerServiceImpl.findLeBiByUserIdAndGoodsMoney(userId,goodsMoney);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,customerLeBi );
             logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e) {
