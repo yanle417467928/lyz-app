@@ -47,7 +47,7 @@ public class MaterialAuditSheet {
     //状态 1.待审核2.已审核3.已取消
     private int status;
     //预约配送时间
-    private LocalDateTime reservationDeliveryTime;
+    private String reservationDeliveryTime;
     //物料审核单创建时间
     private LocalDateTime createTime;
     //物料审核单号

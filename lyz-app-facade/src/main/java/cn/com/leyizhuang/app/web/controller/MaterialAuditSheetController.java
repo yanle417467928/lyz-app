@@ -147,7 +147,7 @@ public class MaterialAuditSheetController {
             String auditNumber = this.createNumber();
             materialAuditSheet.setAuditNo(auditNumber);
             //把String类型时间转换为LocalDateTime类型
-            materialAuditSheet.setReservationDeliveryTime(LocalDateTime.parse(materialAuditSheetRequest.getReservationDeliveryTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            materialAuditSheet.setReservationDeliveryTime(materialAuditSheetRequest.getReservationDeliveryTime());
             materialAuditSheet.setCreateTime(LocalDateTime.now());
             //保存物料审核单头
             materialAuditSheetService.addMaterialAuditSheet(materialAuditSheet);
@@ -287,7 +287,7 @@ public class MaterialAuditSheetController {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             //把LocalDateTime类型转换为String类型，并进行赋值
             materialAuditDetailsResponse.setCreateTime(df.format(materialAuditSheet.getCreateTime()));
-            materialAuditDetailsResponse.setReservationDeliveryTime(df.format(materialAuditSheet.getReservationDeliveryTime()));
+            materialAuditDetailsResponse.setReservationDeliveryTime(materialAuditSheet.getReservationDeliveryTime());
 
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
