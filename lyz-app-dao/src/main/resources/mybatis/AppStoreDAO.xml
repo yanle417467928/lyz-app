@@ -10,6 +10,10 @@
       SELECT * FROM st_store where store_id = #{id}
    </select>
 
+   <select id="findByStoreCode" parameterType="java.lang.String" resultType="AppStore">
+      SELECT * FROM st_store where store_code = #{storeCode}
+   </select>
+
    <select id="findDefaultStoreByCityId" parameterType="java.lang.Long" resultType="AppStore">
        SELECT * FROM st_store where IS_DEFAULT IS TRUE AND city_id = #{cityId}
    </select>
