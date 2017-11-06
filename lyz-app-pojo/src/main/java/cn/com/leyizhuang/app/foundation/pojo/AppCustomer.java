@@ -78,6 +78,6 @@ public class AppCustomer implements Serializable {
     //上次签到时间
     private Date lastSignTime;
 
-
+    private Date bindingTime;
 
 }

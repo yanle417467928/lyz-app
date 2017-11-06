@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
@@ -8,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,5 +164,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         if (null != userId && null != guideCredit){
             employeeDAO.unlockGuideCreditByUserIdAndGuideCredit(userId,guideCredit);
         }
+    }
+
+    @Override
+    public List<SellerResponse> findSellerByStoreIdAndIdentityType(Long storeId, AppIdentityType type) {
+        return this.employeeDAO.findSellerByStoreIdAndIdentityType(storeId, type);
     }
 }

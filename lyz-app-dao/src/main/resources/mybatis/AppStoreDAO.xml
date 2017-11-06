@@ -161,6 +161,12 @@
       WHERE STORE_CODE = #{storeCode};
    </delete>
    <select id="existGoodsStoreInventory" resultType="java.lang.Boolean">
-      select 'X' from st_inventory WHERE available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid};
+      SELECT EXISTS (select 1 from st_inventory WHERE
+      available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid});
    </select>
+
+   <select id="findStoreByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
+      SELECT store_id, store_name FROM st_store WHERE city_id = #{cityId};
+   </select>
+
 </mapper>

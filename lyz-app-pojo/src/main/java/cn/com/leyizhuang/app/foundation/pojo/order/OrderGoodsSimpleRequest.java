@@ -28,6 +28,10 @@ public class OrderGoodsSimpleRequest implements Serializable {
      */
     private Integer identityType;
     /**
+     * 代下单客户id
+     */
+    private Long customerId;
+    /**
      * 传输的商品集合
      */
     private List<GoodsSimpleInfo> goodsList;

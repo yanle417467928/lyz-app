@@ -213,7 +213,7 @@ public class CustomerController {
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                AppStore store = storeService.findById(seller.getEmpId());
+                AppStore store = storeService.findById(seller.getStoreId());
                 if (store == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购没有绑定有效的门店信息",
                             null);
@@ -233,6 +233,7 @@ public class CustomerController {
                 customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
                 customer.setCustomerType(AppCustomerType.RETAIL);
+                customer.setBindingTime(new Date());
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, store.getStoreName()));

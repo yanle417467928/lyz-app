@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -52,4 +53,6 @@ public interface AppStoreDAO {
             @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
 
     Boolean existGoodsStoreInventory(@Param("storeId") Long storeId,@Param("gid") Long gid,@Param("qty") Integer qty);
+
+    List<StoreResponse> findStoreByCityId(Long cityId);
 }

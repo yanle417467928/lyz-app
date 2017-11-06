@@ -23,6 +23,8 @@ public class CustomerLeBi {
 
     private Double rebate;
 
+    public static final Double ratio = 10.00;
+
     public CustomerLeBi(Integer quantity, Double rebate) {
         this.quantity = quantity;
         this.rebate = rebate;

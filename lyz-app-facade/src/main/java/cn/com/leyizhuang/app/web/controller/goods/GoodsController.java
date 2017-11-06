@@ -20,7 +20,7 @@ import java.util.List;
  * 商品接口
  *
  * @author Richard
- *         Created on 2017-09-25 10:17
+ * Created on 2017-09-25 10:17
  **/
 @RestController
 @RequestMapping(value = "/app/goods")
@@ -144,7 +144,7 @@ public class GoodsController {
         try {
             List<GoodsBrandResponse> brandList = goodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (brandList != null && brandList.size() > 0) ? brandList : null);  
+                    (brandList != null && brandList.size() > 0) ? brandList : null);
             logger.info("getGoodsBrandListByUserIdAndIdentityType OUT,获取商品品牌列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -259,7 +259,7 @@ public class GoodsController {
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if(identityType == 1){
+        if (identityType == 1) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型没有此功能", null);
             logger.info("getGoodsOftenBuyListByUserIdAndIdentityType OUT,获取常购商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -343,21 +343,31 @@ public class GoodsController {
         }
     }
 
-    @PostMapping(value = "/filter",produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType,String firstCategoryCode,Long categoryId,Long brandId,Long typeId,
-                                             String specification ){
-        logger.info("filterGoodsList CALLED,筛选商品，入参 firstCategoryCode {},categoryId{}," +
-                "brandId {},typeId{},specification{}", firstCategoryCode, categoryId,brandId,typeId,specification);
+    /**
+     * @param userId            用户ID
+     * @param identityType      身份类型
+     * @param firstCategoryCode 一级分类编码
+     * @param categoryId        二级分类ID
+     * @param brandId           品牌ID
+     * @param typeId            类型ID
+     * @param specification     规格
+     * @return 商品列表
+     */
+    @PostMapping(value = "/filter", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType, String firstCategoryCode, Long categoryId,
+                                             Long brandId, Long typeId, String specification) {
+        logger.info("filterGoodsList CALLED,筛选商品，入参 userId:{},identityType:{},firstCategoryCode: {},categoryId:{}," +
+                "brandId: {},typeId:{},specification:{}", userId, identityType, firstCategoryCode, categoryId, brandId, typeId, specification);
         ResultDTO<Object> resultDTO;
         try {
             List<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
-                    AppIdentityType.getAppIdentityTypeByValue(identityType),firstCategoryCode,categoryId,
-                    brandId,typeId, specification);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,
+                    AppIdentityType.getAppIdentityTypeByValue(identityType), firstCategoryCode, categoryId,
+                    brandId, typeId, specification);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     (goodsResponseList != null && goodsResponseList.size() > 0) ? goodsResponseList : null);
             logger.info("filterGoodsList OUT,筛选商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，筛选商品失败", null);
             logger.warn("filterGoodsList EXCEPTION,筛选商品失败，出参 resultDTO:{}", resultDTO);

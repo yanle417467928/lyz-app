@@ -55,4 +55,6 @@ public interface GoodsService {
     List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type,String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId, String specification);
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(Long userId, List<Long> goodsIds);
+
+    List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 }

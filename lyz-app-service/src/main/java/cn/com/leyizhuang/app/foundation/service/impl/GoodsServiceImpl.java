@@ -224,7 +224,20 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
 
     @Override
     public List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(Long userId, List<Long> goodsIds) {
-        return goodsDAO.findGoodsListByEmployeeIdAndGoodsIdList(userId,goodsIds);
+        if (null != userId && !goodsIds.isEmpty()) {
+            return goodsDAO.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+
+        }
+        return null;
+    }
+
+    @Override
+    public List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds) {
+        if (null != userId && !goodsIds.isEmpty()) {
+            return goodsDAO.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+
+        }
+        return null;
     }
 
     /**

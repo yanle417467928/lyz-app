@@ -1,12 +1,14 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 
 import java.util.List;
 
@@ -51,4 +53,7 @@ public interface AppEmployeeService {
     void deleteByLoginName(String loginName);
 
     void unlockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit);
+
+    List<SellerResponse> findSellerByStoreIdAndIdentityType(Long storeId, AppIdentityType type);
+
 }

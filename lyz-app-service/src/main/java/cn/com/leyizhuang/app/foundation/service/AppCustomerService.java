@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 
 import java.util.Date;
 import java.util.List;
@@ -50,6 +47,8 @@ public interface AppCustomerService {
 
     Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
+    CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId,Double goodsMoney);
+
     void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyCustomerMobileByUserId(Long userId, String mobile);
@@ -75,4 +74,8 @@ public interface AppCustomerService {
     void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon);
 
     void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
+
+    AppCustomer findStoreSellerByCustomerId(Long userId);
+
+
 }

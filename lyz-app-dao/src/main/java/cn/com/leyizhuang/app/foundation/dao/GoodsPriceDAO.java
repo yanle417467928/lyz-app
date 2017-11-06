@@ -23,4 +23,6 @@ public interface GoodsPriceDAO {
     GoodsPrice findByPriceLineId(Long priceLineId);
 
     List<GoodsPriceVO> findByStoreId(@Param("storeId") Long storeId, @Param("keywords") String keywords);
+
+    Double findGoodsRetailPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID,@Param("storeID") Long storeID);
 }

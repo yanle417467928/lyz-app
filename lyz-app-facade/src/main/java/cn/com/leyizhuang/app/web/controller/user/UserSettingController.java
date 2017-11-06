@@ -1,17 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
-import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -25,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -221,12 +219,12 @@ public class UserSettingController {
 
         ResultDTO<List> resultDTO;
         if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityType不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -329,7 +327,7 @@ public class UserSettingController {
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -407,7 +405,7 @@ public class UserSettingController {
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
             logger.info("deleteDeliveryAddress OUT,顾客删除收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -439,7 +437,7 @@ public class UserSettingController {
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
                 logger.info("addFunctionalFeedback OUT,功能反馈失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -576,5 +574,166 @@ public class UserSettingController {
             appEmployee.setPicUrl(picUrl);
         }
         return appEmployee;
+    }
+
+
+   /**
+    * @title 获取客户归属门店和导购
+    * @descripe
+    * @param
+    * @return
+    * @throws
+    * @author GenerationRoad
+    * @date 2017/11/3
+    */
+    @PostMapping(value = "/storeSeller/get", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getStoreSeller(Long userId, Integer identityType, Long cityId) {
+        logger.info("getStoreSeller CALLED,获取客户归属门店和导购，入参 userId {},identityType{}, cityId{}", userId, identityType, cityId);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
+            logger.info("getStoreSeller OUT,获取客户归属门店和导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 6) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getStoreSeller OUT,获取客户归属门店和导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == cityId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "归属城市信息不能为空！", null);
+            logger.info("getStoreSeller OUT,获取客户归属门店和导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        AppCustomer appCustomer = this.customerService.findStoreSellerByCustomerId(userId);
+        StoreSellerResponse storeSeller = new StoreSellerResponse();
+        if (null != appCustomer){
+            storeSeller.setStoreId(appCustomer.getStoreId());
+            storeSeller.setSellerId(appCustomer.getSalesConsultId());
+            AppStore store = storeService.findById(appCustomer.getStoreId());
+            if (null == appCustomer.getBindingTime() || store.getIsDefault()){
+                storeSeller.setIsPassable(Boolean.TRUE);
+            } else {
+                Date date = new Date();
+                if (DateUtil.intervalDay(appCustomer.getBindingTime(), date) > 60) {
+                    storeSeller.setIsPassable(Boolean.TRUE);
+                } else {
+                    storeSeller.setIsPassable(Boolean.FALSE);
+                }
+            }
+            storeSeller.setSellerList(this.employeeService.findSellerByStoreIdAndIdentityType(appCustomer.getStoreId(), AppIdentityType.getAppIdentityTypeByValue(0)));
+        }
+        storeSeller.setStoreList(this.storeService.findStoreByCityId(cityId));
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSeller);
+        logger.info("getStoreSeller OUT,获取客户归属门店和导购成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * @title  根据门店ID查询所有导购
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/3
+     */
+    @PostMapping(value = "/seller/get", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getSeller(Long userId, Integer identityType, Long storeId) {
+        logger.info("getSeller CALLED,根据门店ID查询所有导购，入参 userId {},identityType{}, storeId{}", userId, identityType, storeId);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
+            logger.info("getSeller OUT,根据门店ID查询所有导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getSeller OUT,根据门店ID查询所有导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == storeId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "归属城市信息不能为空！", null);
+            logger.info("getSeller OUT,根据门店ID查询所有导购失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<SellerResponse> sellerResponseList = this.employeeService.findSellerByStoreIdAndIdentityType(storeId, AppIdentityType.getAppIdentityTypeByValue(0));
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerResponseList);
+        logger.info("getSeller OUT,根据门店ID查询所有导购成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * @title   顾客绑定服务导购
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/3
+     */
+    @PostMapping(value = "/binding/seller", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerBindingSeller(Long userId, Integer identityType, Long storeId, Long sellerId) {
+        logger.info("customerBindingSeller CALLED,顾客绑定服务导购，入参 userId {},identityType{},storeId {},sellerId{}", userId, identityType, storeId, sellerId);
+
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType || identityType != 6) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == storeId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店信息不能为空！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == sellerId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购信息不能为空！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppCustomer customer = customerService.findById(userId);
+            AppStore store = storeService.findById(customer.getStoreId());
+            Date date = new Date();
+            if ((!store.getIsDefault()) && null != customer.getBindingTime() && DateUtil.intervalDay(customer.getBindingTime(), date) < 60) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您现在不能修改你的归属导购！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (customer == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppEmployee seller = employeeService.findById(sellerId);
+            if (null != seller && seller.getStoreId() == storeId){
+                customer.setSalesConsultId(sellerId);
+                customer.setStoreId(storeId);
+                customer.setCustomerType(AppCustomerType.MEMBER);
+                customer.setBindingTime(new Date());
+                customerService.update(customer);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,null);
+                logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", null);
+            logger.warn("customerBindingSeller EXCEPTION,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 }

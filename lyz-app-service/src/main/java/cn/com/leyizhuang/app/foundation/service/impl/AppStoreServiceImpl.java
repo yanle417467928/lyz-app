@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -158,5 +159,10 @@ public class AppStoreServiceImpl implements AppStoreService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<StoreResponse> findStoreByCityId(Long cityId) {
+        return this.storeDAO.findStoreByCityId(cityId);
     }
 }

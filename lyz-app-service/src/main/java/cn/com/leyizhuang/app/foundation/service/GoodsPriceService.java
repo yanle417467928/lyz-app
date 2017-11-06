@@ -18,4 +18,6 @@ public interface GoodsPriceService {
     GoodsPrice findGoodsPrice(Long priceLineId);
 
     PageInfo<GoodsPriceVO> queryPage(Integer page, Integer size, Long storeId, String keywords);
+
+    Double findGoodsRetailPriceByGoodsIDAndStoreID(Long goodsID,Long storeID);
 }

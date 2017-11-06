@@ -49,8 +49,9 @@ public class OrderGoodsSimpleResponse implements Serializable{
     private Long typeId;
 
     //是否是赠品
-    private Boolean isGift = Boolean.FALSE;
+    private Boolean hasGift = Boolean.FALSE;
 
     //商品数量
     private Integer goodsQty;
+
 }

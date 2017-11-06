@@ -222,4 +222,13 @@
         WHERE
           guide_id = #{userId}
     </update>
+
+    <select id="findSellerByStoreIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse">
+        SELECT emp_id sellerId, name sellerName
+        FROM emp_employee
+        WHERE store_id = #{storeId} AND identity_type = #{type}
+    </select>
+
+
+
 </mapper>

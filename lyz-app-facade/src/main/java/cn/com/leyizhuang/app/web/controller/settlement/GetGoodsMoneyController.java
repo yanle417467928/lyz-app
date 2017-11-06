@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -31,6 +33,12 @@ public class GetGoodsMoneyController {
 
     @Autowired
     private GoodsService goodsServiceImpl;
+
+    @Autowired
+    private AppOrderService appOrderService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
 
     @PostMapping(value = "/get", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getGoodsMoney(Long userId, Integer identityType, String params) {
@@ -130,24 +138,37 @@ public class GetGoodsMoneyController {
             List<Long> goodsIds = new ArrayList<Long>();
             Map<String,Object> goodsSettlement = new HashMap<>();
             List<OrderGoodsSimpleResponse> goodsInfo;
+            AppEmployee employee = appEmployeeService.findById(userId);
             for (int i = 0; i <goodsList.size(); i++) {
                 if (!goodsList.get(i).getIsGift()) {
                     goodsIds.add(goodsList.get(i).getId());
                 }
-                totalQty++;
+                totalQty = totalQty + goodsList.get(i).getNum();
             }
+            //获取商品信息
             goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId,goodsIds);
+            int goodsTotalQty = 0;
             for (int i = 0; i <goodsInfo.size() ; i++) {
                 for (int j = 0; j < goodsList.size(); j++) {
                     if (goodsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
                         goodsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
                         if (goodsList.get(j).getIsGift()) {
-                            goodsInfo.get(i).setIsGift(Boolean.TRUE);
-                            goodsInfo.get(i).setGoodsQty(goodsInfo.get(i).getGoodsQty() - goodsList.get(j).getNum());
+                            goodsInfo.get(i).setHasGift(Boolean.TRUE);
+                            goodsTotalQty = goodsInfo.get(i).getGoodsQty() + goodsList.get(j).getNum();
+                            goodsInfo.get(i).setGoodsQty(goodsTotalQty);
+                        }
+                        //判断库存
+                        Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(employee.getStoreId(),goodsInfo.get(i).getId(),goodsInfo.get(i).getGoodsQty());
+                        if (!isHaveInventory){
+                            String msg = goodsInfo.get(i).getGoodsName().concat("门店库存不足！");
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                            logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
                         }
                     }
                 }
             }
+            //计算总金额
             List<GoodsPrice> priceList = this.goodsServiceImpl.getGoodsPriceByEmployeeAndGoodsId(userId, goodsIds);
             for (int i = 0; i < priceList.size(); i++) {
                 GoodsPrice goodsPrice = priceList.get(i);
