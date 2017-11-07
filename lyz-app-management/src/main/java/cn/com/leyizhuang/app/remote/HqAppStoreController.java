@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -85,7 +86,8 @@ public class HqAppStoreController {
                         appStore.setStoreType(StoreType.FX);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
-                    appStore.setCreateTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getCreateTime())));
+                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    appStore.setCreateTime(sdf.parse(hqAppStoreDTO.getCreateTime()));
                     appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                     appStore.setStoreName(hqAppStoreDTO.getStoreName());
                     appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
@@ -134,14 +136,15 @@ public class HqAppStoreController {
                     appStore.setStoreType(StoreType.FX);
                 }
                 appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
-                appStore.setCreateTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getCreateTime())));
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                appStore.setCreateTime(sdf.parse(hqAppStoreDTO.getCreateTime()));
                 appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                 appStore.setStoreName(hqAppStoreDTO.getStoreName());
                 appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
                 appStore.setCityId(hqAppStoreDTO.getCityId());
                 appStore.setCityCode(hqAppStoreDTO.getCityCode());
                 appStore.setModifierType(hqAppStoreDTO.getModifierType());
-                appStore.setModifyTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getModifyTime())));
+                appStore.setModifyTime(sdf.parse(hqAppStoreDTO.getModifyTime()));
                 appStoreService.modifyStore(appStore);
                 logger.warn("同步修改门店信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
