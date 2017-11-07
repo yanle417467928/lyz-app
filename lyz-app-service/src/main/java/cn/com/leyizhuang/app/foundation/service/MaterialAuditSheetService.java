@@ -1,10 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
+import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -16,7 +19,7 @@ public interface MaterialAuditSheetService {
     //根据工人id查询物料审核list
     List<MaterialAuditSheet> queryListByEmployeeID(Long employeeID);
     //添加物料审核单
-    void addMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
+    void addMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest,AppEmployee appEmployee) throws IOException;
     //修改物料审核单
     void modifyMaterialAuditSheet(MaterialAuditSheet materialAuditSheet);
     //修改物料审核单状态
