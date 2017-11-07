@@ -224,7 +224,8 @@
             e.mobile    guideMobile,
             pd.balance,
             lb.quantity lb,
-            c.last_sign_time
+            c.last_sign_time,
+            c.city_id
         FROM cus_customer c
             LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
             LEFT JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
