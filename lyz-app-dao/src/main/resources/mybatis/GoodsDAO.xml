@@ -463,7 +463,7 @@
     <select id="findGoodsDetailByGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsDetailResponse">
         <if test="null != type and type.toString() == 'CUSTOMER'">
-            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
+            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
             (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = c.cus_id and gc.identity_type = c.identity_type
@@ -474,7 +474,7 @@
             g.id = p.gid;
         </if>
         <if test="null != type and type.toString() != 'CUSTOMER'">
-            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
+            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
             (SELECT emp_id, identity_type, store_id FROM emp_employee WHERE emp_id = #{userId}) e
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = e.emp_id and gc.identity_type = e.identity_type

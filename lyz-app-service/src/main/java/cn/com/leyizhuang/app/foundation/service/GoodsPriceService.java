@@ -1,8 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -20,4 +24,7 @@ public interface GoodsPriceService {
     PageInfo<GoodsPriceVO> queryPage(Integer page, Integer size, Long storeId, String keywords);
 
     Double findGoodsRetailPriceByGoodsIDAndStoreID(Long goodsID,Long storeID);
+
+    List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(List<Long> goodsIdList, Long userId,
+                                                                                     AppIdentityType identityType);
 }
