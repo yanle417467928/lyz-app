@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppStoreDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * HQ-APP同步门店
@@ -83,7 +85,7 @@ public class HqAppStoreController {
                         appStore.setStoreType(StoreType.FX);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
-                    appStore.setCreateTime(hqAppStoreDTO.getCreateTime());
+                    appStore.setCreateTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getCreateTime())));
                     appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                     appStore.setStoreName(hqAppStoreDTO.getStoreName());
                     appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
@@ -132,14 +134,14 @@ public class HqAppStoreController {
                     appStore.setStoreType(StoreType.FX);
                 }
                 appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
-                appStore.setCreateTime(hqAppStoreDTO.getCreateTime());
+                appStore.setCreateTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getCreateTime())));
                 appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                 appStore.setStoreName(hqAppStoreDTO.getStoreName());
                 appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
                 appStore.setCityId(hqAppStoreDTO.getCityId());
                 appStore.setCityCode(hqAppStoreDTO.getCityCode());
                 appStore.setModifierType(hqAppStoreDTO.getModifierType());
-                appStore.setModifyTime(hqAppStoreDTO.getModifyTime());
+                appStore.setModifyTime(TimeTransformUtils.localDateTimeToDate(TimeTransformUtils.stringToLocalDateTime(hqAppStoreDTO.getModifyTime())));
                 appStoreService.modifyStore(appStore);
                 logger.warn("同步修改门店信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

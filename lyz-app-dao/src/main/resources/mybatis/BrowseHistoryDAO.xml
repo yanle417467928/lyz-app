@@ -43,6 +43,8 @@
             LEFT JOIN cus_customer c ON c.cus_id = b.user_id
             LEFT JOIN gds_goods g ON  g.gid = b.goods_id
             LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND b.goods_id = p.gid
+            AND start_time &lt; NOW()
+            AND end_time &gt; NOW()
             WHERE b.user_id = #{userId} AND b.identity_type = #{identityType}
             ORDER BY b.create_time DESC LIMIT 20
         </if>
@@ -53,6 +55,8 @@
             LEFT JOIN emp_employee c ON c.emp_id = b.user_id
             LEFT JOIN gds_goods g ON  g.gid = b.goods_id
             LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND b.goods_id = p.gid
+            AND start_time &lt; NOW()
+            AND end_time &gt; NOW()
             WHERE b.user_id = #{userId} AND b.identity_type = #{identityType}
             ORDER BY b.create_time DESC LIMIT 20
         </if>
