@@ -59,6 +59,8 @@
         LEFT JOIN gds_goods g ON p.gid = g.gid
         WHERE
         p.store_id = #{storeId}
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         <if test="null != keywords">
             AND (
             p.sku LIKE CONCAT(CONCAT('%', #{keywords}),'%')
@@ -77,7 +79,7 @@
             gid = #{goodsID}
             AND store_id = #{storeID}
             AND start_time &lt; NOW()
-            AND end_time &gt; NOW();
+            AND (end_time IS NULL OR end_time &gt; NOW())
     </select>
 
     <select id="findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType" resultType=
@@ -92,6 +94,8 @@
         FROM
         cus_customer c INNER JOIN
         gds_goods_price gp ON c.store_id = gp.store_id
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
         INNER JOIN gds_goods g ON gp.gid = g.gid
         WHERE
         gp.gid IN
@@ -113,6 +117,8 @@
         FROM
         emp_employee e INNER JOIN
         gds_goods_price gp ON e.store_id = gp.store_id
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
         INNER JOIN gds_goods g ON gp.gid = g.gid
         WHERE
         gp.gid IN
