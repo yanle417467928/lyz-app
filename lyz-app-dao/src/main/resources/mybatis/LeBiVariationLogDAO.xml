@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.LeBiVariationLogDAO">
+
+
+    <select id="queryListBycusIDAndShowTypeType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
+        <if test="null != showType and showType == 1">
+            SELECT *
+            FROM cus_lb_variation_log
+            WHERE
+            CUS_ID = #{cusID}
+            AND
+            (LE_BI_VARIATION_TYPE = 'SIGN'OR LE_BI_VARIATION_TYPE = 'ADMINISTRATORS_UPDATE')
+            ORDER BY VARIATION_TIME DESC
+        </if>
+        <if test="null != showType and showType == 2">
+            SELECT *
+            FROM cus_lb_variation_log
+            WHERE
+            CUS_ID = #{cusID}
+            AND
+            (LE_BI_VARIATION_TYPE = 'CANCEL_ORDER'OR LE_BI_VARIATION_TYPE = 'RETURN_ORDER'OR LE_BI_VARIATION_TYPE =
+            'ORDER' )
+            ORDER BY VARIATION_TIME DESC
+        </if>
+    </select>
+
+    <select id="queryListBycusID" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
+        SELECT *
+        FROM cus_lb_variation_log
+        WHERE
+        CUS_ID = #{cusID}
+        ORDER BY VARIATION_TIME DESC
+    </select>
+
+    <insert id="addCustomerLeBiVariationLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
+        INSERT INTO cus_lb_variation_log
+        (CUS_ID, VARIATION_TIME, LE_BI_VARIATION_TYPE, VARIATION_QUANTITY, AFTER_VARIATION_QUANTITY, ORDER_NUM)
+        VALUES
+        (#{cusID}, #{variationTime}, #{leBiVariationType}, #{variationQuantity}, #{afterVariationQuantity}, #{orderNum})
+    </insert>
+
+</mapper>

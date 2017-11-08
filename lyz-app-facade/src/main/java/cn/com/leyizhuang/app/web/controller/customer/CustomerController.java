@@ -48,6 +48,9 @@ public class CustomerController {
     @Autowired
     private CusPreDepositLogService cusPreDepositLogServiceImpl;
 
+    @Resource
+    private LeBiVariationLogService leBiVariationLogService;
+
     /**
      * App 顾客登录
      *
@@ -426,6 +429,15 @@ public class CustomerController {
                 return resultDTO;
             }
             commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId,identityType);
+
+            //记录变更明细日志
+            CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
+            customerLeBiVariationLog.setCusID(userId);
+            customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
+            customerLeBiVariationLog.setVariationQuantity(1);
+            customerLeBiVariationLog.setVariationTime(new Date());
+            customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId,identityType));
+            leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

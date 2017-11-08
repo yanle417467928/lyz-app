@@ -189,7 +189,7 @@
         UPDATE
             cus_lb
         SET
-            quantity = quantity + 10
+            quantity = quantity + 1
         WHERE
             cus_id = #{userId}
     </update>
