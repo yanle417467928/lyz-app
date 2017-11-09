@@ -7,9 +7,9 @@ import java.util.List;
 
 /**
  * @author GenerationRoad
- * @date 2017/11/7
+ * @date 2017/11/8
  */
-public interface CusPreDepositLogService {
+public interface StorePreDepositLogService {
 
     List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<PreDepositChangeType> typeList);
 }

@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CusPreDepositLogResponse {
+public class PreDepositLogResponse {
     private Long id;
     //生成时间
     private String createTime;
@@ -21,7 +21,11 @@ public class CusPreDepositLogResponse {
     //使用订单号
     private String orderNumber;
     //变更类型
-    private PreDepositChangeType type;
+    private String type;
+
+    public void setType(PreDepositChangeType type){
+        this.type = type.getValue();
+    }
 
 
 }

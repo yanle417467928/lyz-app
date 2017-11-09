@@ -20,4 +20,6 @@ public class MessageNotificationListResponse {
     private String title;
     //消息创建时间
     private Date createTime;
+    //已读标记
+    private Boolean isRead;
 }
