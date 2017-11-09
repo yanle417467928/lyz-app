@@ -158,9 +158,9 @@ public class GetGoodsMoneyController {
                             goodsInfo.get(i).setGoodsQty(goodsTotalQty);
                         }
                         //判断库存
-                        Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(employee.getStoreId(),goodsInfo.get(i).getId(),goodsInfo.get(i).getGoodsQty());
+                        Boolean isHaveInventory = appOrderService.existGoodsCityInventory(employee.getCityId(),goodsInfo.get(i).getId(),goodsInfo.get(i).getGoodsQty());
                         if (!isHaveInventory){
-                            String msg = goodsInfo.get(i).getGoodsName().concat("门店库存不足！");
+                            String msg = goodsInfo.get(i).getGoodsName().concat("城市库存不足！");
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
                             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
                             return resultDTO;

@@ -62,6 +62,11 @@ public class OrderController {
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(Long userId, Integer identityType, List<OrderGoodsSimpleRequest> goodsList){
         return null;
+
+        //先核对页面订单信息
+        //锁定库存
+        //掉用支付接口
+        //减扣库存
     }
 
     /**
@@ -113,7 +118,7 @@ public class OrderController {
 
             if (identityType == 6){
                 AppCustomer customer = appCustomerService.findById(userId);
-                Long storeId = customer.getStoreId();
+                Long cityId = customer.getCityId();
                 for (int i = 0; i <goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
@@ -144,9 +149,9 @@ public class OrderController {
                                 }
                             }
                             //判断库存
-                            Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId,info.getId(),info.getGoodsQty());
+                            Boolean isHaveInventory = appOrderService.existGoodsCityInventory(cityId,info.getId(),info.getGoodsQty());
                             if (!isHaveInventory){
-                                String msg = goodsInfo.get(i).getGoodsName().concat("门店库存不足！");
+                                String msg = goodsInfo.get(i).getGoodsName().concat("城市库存不足！");
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
                                 logger.info("enterOrder OUT,顾客确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
                                 return resultDTO;
