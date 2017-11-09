@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppStoreDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
-import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * HQ-APP同步门店
@@ -73,6 +71,14 @@ public class HqAppStoreController {
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不允许为空！", null);
             }
+            if (StringUtils.isBlank(hqAppStoreDTO.getPhone())){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店电话号码不允许为空！", null);
+            }
+            if (StringUtils.isBlank(hqAppStoreDTO.getAddress())){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店地址不允许为空！", null);
+            }
 
             try {
                 AppStore store = appStoreService.findByStoreCode(hqAppStoreDTO.getStoreCode());
@@ -93,6 +99,8 @@ public class HqAppStoreController {
                     appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
                     appStore.setCityId(hqAppStoreDTO.getCityId());
                     appStore.setCityCode(hqAppStoreDTO.getCityCode());
+                    appStore.setPhone(hqAppStoreDTO.getPhone());
+                    appStore.setAddress(hqAppStoreDTO.getAddress());
                     appStoreService.saveStore(appStore);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 }else{
@@ -145,6 +153,8 @@ public class HqAppStoreController {
                 appStore.setCityCode(hqAppStoreDTO.getCityCode());
                 appStore.setModifierType(hqAppStoreDTO.getModifierType());
                 appStore.setModifyTime(sdf.parse(hqAppStoreDTO.getModifyTime()));
+                appStore.setPhone(hqAppStoreDTO.getPhone());
+                appStore.setAddress(hqAppStoreDTO.getAddress());
                 appStoreService.modifyStore(appStore);
                 logger.warn("同步修改门店信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

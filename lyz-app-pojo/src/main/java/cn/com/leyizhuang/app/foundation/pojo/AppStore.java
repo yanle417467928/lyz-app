@@ -44,6 +44,10 @@ public class AppStore{
     //城市code
     private String cityCode;
 
+    //门店座机号码
+    private String phone;
 
+    //门店地址
+    private String address;
 
 }
