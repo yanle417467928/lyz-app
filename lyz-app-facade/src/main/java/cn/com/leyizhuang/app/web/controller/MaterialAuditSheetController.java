@@ -2,8 +2,6 @@ package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
@@ -13,8 +11,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -128,7 +121,7 @@ public class MaterialAuditSheetController {
                 return resultDTO;
             }
             //进行物料审核单单头、商品明细的保存
-            materialAuditSheetService.addMaterialAuditSheet(materialAuditSheetRequest,appEmployee);
+            materialAuditSheetService.addMaterialAuditSheet(materialAuditSheetRequest, appEmployee);
             //创建一个存储返回参数对象的list
             List<MaterialAuditSheetResponse> materialAuditSheetResponsesList = new ArrayList<>();
             //获取工人所有的物料审核单列表
@@ -138,7 +131,8 @@ public class MaterialAuditSheetController {
                 //创建一个返回参数对象
                 MaterialAuditSheetResponse materialAuditSheetResponse = new MaterialAuditSheetResponse();
                 //查询每单物料审核单所有商品信息
-                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet1.getAuditHeaderID());
+                List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.
+                        queryListByAuditHeaderID(materialAuditSheet1.getAuditHeaderID());
                 //创建一个图片list存储图片地址
                 List<String> pictureList = new ArrayList<>();
                 //商品总价格
@@ -345,7 +339,7 @@ public class MaterialAuditSheetController {
                 //创建一个图片list存储图片地址
                 List<String> pictureList = new ArrayList<>();
                 //商品总价格
-                Double totalPrice =0D;
+                Double totalPrice = 0D;
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     pictureList.add(materialAuditGoodsInfo.getCoverImageUri());
                     totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
@@ -502,7 +496,6 @@ public class MaterialAuditSheetController {
             return resultDTO;
         }
     }
-
 
 
 }

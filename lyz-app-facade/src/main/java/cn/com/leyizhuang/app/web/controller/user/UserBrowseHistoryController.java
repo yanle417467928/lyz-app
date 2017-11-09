@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.BrowseHistoryService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -89,15 +87,15 @@ public class UserBrowseHistoryController {
     /**
      * 查看浏览记录
      *
-     * @param userID       用户id
+     * @param userId       用户id
      * @param identityType 用户类型
      * @return 返回商品list
      */
     @PostMapping(value = "/show", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> showBrowseHistory(Long userID, Integer identityType) {
+    public ResultDTO<Object> showBrowseHistory(Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("showBrowseHistory CALLED,查看商品浏览记录，入参 userID {},identityType{}", userID, identityType);
-        if (null == userID) {
+        logger.info("showBrowseHistory CALLED,查看商品浏览记录，入参 userID {},identityType{}", userId, identityType);
+        if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("showBrowseHistory OUT,查看商品浏览记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -108,7 +106,8 @@ public class UserBrowseHistoryController {
             return resultDTO;
         }
         try {
-            List<BrowseHistoryResponse> browseHistoryResponseList = browseHistoryServiceImpl.findBrowseHistoryByUserIdAndIdentityType(userID, identityType);
+            List<BrowseHistoryResponse> browseHistoryResponseList = browseHistoryServiceImpl.
+                    findBrowseHistoryByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, browseHistoryResponseList);
             logger.info("showBrowseHistory OUT,查看商品浏览记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

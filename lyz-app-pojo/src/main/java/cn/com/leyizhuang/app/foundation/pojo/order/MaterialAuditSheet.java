@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class MaterialAuditSheet {
     //工人姓名
     private String employeeName;
     //配送方式
-    private String deliveryType;
+    private AppDeliveryType deliveryType;
     //门店id
     private Long storeID;
     //收货人姓名

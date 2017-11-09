@@ -31,4 +31,8 @@ public interface MaterialListDAO {
     List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 
     List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+
+    void deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long empId, 
+                                                             @Param(value ="identityType" ) AppIdentityType identityType,
+                                                             @Param(value = "deleteGoodsIds") List<Long> deleteGoodsIds);
 }
