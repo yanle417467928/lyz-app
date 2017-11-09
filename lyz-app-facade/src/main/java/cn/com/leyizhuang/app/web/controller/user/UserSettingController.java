@@ -256,8 +256,8 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || 6 != identityType) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
                         null);
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
