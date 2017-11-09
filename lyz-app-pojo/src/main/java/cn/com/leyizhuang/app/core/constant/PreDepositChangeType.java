@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.core.constant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author GenerationRoad
@@ -22,6 +23,7 @@ public enum  PreDepositChangeType {
     public String getValue() {
         return value;
     }
+
 
 
     /**

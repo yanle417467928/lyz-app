@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.CusPreDepositLogDAO">
 
 
-    <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CusPreDepositLogResponse">
+    <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse">
         SELECT
           id, type, create_time, change_money, order_number
         FROM cus_pre_deposit_log

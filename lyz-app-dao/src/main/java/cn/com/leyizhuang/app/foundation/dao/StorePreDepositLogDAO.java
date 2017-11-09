@@ -9,11 +9,10 @@ import java.util.List;
 
 /**
  * @author GenerationRoad
- * @date 2017/11/7
+ * @date 2017/11/8
  */
 @Repository
-public interface CusPreDepositLogDAO {
+public interface StorePreDepositLogDAO {
 
     List<PreDepositLogResponse> findByUserIdAndType(@Param("userId") Long userId, @Param("list") List<PreDepositChangeType> typeList);
-
 }
