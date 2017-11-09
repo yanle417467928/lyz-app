@@ -71,7 +71,7 @@
             <if test="null != enable">
                 ENABLE = #{enable},
             </if>
-            <if test="null != receiverPhone">
+            <if test="null != enableFalseTime">
                 ENABLE_FALSE_TIME = #{enableFalseTime},
             </if>
         </set>

@@ -63,17 +63,33 @@ public class HqAppStoreController {
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 storeType:{}", hqAppStoreDTO.getStoreType());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店类型不允许为空！", null);
             }
-            if (null == hqAppStoreDTO.getCityId()){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityId:{}", hqAppStoreDTO.getCityId());
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空！", null);
-            }
             if (StringUtils.isBlank(hqAppStoreDTO.getCityCode())){
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不允许为空！", null);
             }
-            if (StringUtils.isBlank(hqAppStoreDTO.getAddress())){
+            if (StringUtils.isBlank(hqAppStoreDTO.getCity())){
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店地址不允许为空！", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市不允许为空！", null);
+            }
+            if (StringUtils.isBlank(hqAppStoreDTO.getProvince())){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省级不允许为空！", null);
+            }
+            if (StringUtils.isBlank(hqAppStoreDTO.getArea())){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不允许为空！", null);
+            }
+            if (StringUtils.isBlank(hqAppStoreDTO.getDetailedAddress())){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店详细地址不允许为空！", null);
+            }
+            if (null == hqAppStoreDTO.getEnable()){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店是否生效不允许为空！", null);
+            }
+            if (null == hqAppStoreDTO.getIsSelfDelivery()){
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否支持门店自提不允许为空！", null);
             }
 
             try {
@@ -93,10 +109,14 @@ public class HqAppStoreController {
                     appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                     appStore.setStoreName(hqAppStoreDTO.getStoreName());
                     appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
-                    appStore.setCityId(hqAppStoreDTO.getCityId());
                     appStore.setCityCode(hqAppStoreDTO.getCityCode());
                     appStore.setPhone(hqAppStoreDTO.getPhone());
-                    appStore.setAddress(hqAppStoreDTO.getAddress());
+                    appStore.setProvince(hqAppStoreDTO.getProvince());
+                    appStore.setCity(hqAppStoreDTO.getCity());
+                    appStore.setArea(hqAppStoreDTO.getArea());
+                    appStore.setDetailedAddress(hqAppStoreDTO.getDetailedAddress());
+                    appStore.setEnable(hqAppStoreDTO.getEnable());
+                    appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
                     appStoreService.saveStore(appStore);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 }else{
@@ -145,12 +165,16 @@ public class HqAppStoreController {
                 appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                 appStore.setStoreName(hqAppStoreDTO.getStoreName());
                 appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
-                appStore.setCityId(hqAppStoreDTO.getCityId());
                 appStore.setCityCode(hqAppStoreDTO.getCityCode());
                 appStore.setModifierType(hqAppStoreDTO.getModifierType());
                 appStore.setModifyTime(sdf.parse(hqAppStoreDTO.getModifyTime()));
                 appStore.setPhone(hqAppStoreDTO.getPhone());
-                appStore.setAddress(hqAppStoreDTO.getAddress());
+                appStore.setProvince(hqAppStoreDTO.getProvince());
+                appStore.setCity(hqAppStoreDTO.getCity());
+                appStore.setArea(hqAppStoreDTO.getArea());
+                appStore.setDetailedAddress(hqAppStoreDTO.getDetailedAddress());
+                appStore.setEnable(hqAppStoreDTO.getEnable());
+                appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
                 appStoreService.modifyStore(appStore);
                 logger.warn("同步修改门店信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
