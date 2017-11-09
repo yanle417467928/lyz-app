@@ -2,8 +2,8 @@ package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
+import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;

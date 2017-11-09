@@ -1,12 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 物料审核单参数

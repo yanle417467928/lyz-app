@@ -548,7 +548,7 @@
         </foreach>
     </select>
 
-    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse">
+    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
             g.gid      id,
             g.sku_name goods_name,
@@ -574,7 +574,7 @@
         </foreach>
 
     </select>
-    <select id="findGoodsListByCustomerIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse">
+    <select id="findGoodsListByCustomerIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
         g.gid      id,
         g.sku_name goods_name,

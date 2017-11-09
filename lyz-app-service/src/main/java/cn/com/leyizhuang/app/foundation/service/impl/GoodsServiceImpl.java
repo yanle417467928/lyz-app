@@ -6,7 +6,7 @@ import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
