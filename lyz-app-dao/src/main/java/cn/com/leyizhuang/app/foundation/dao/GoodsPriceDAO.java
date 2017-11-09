@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -24,5 +25,11 @@ public interface GoodsPriceDAO {
 
     List<GoodsPriceVO> findByStoreId(@Param("storeId") Long storeId, @Param("keywords") String keywords);
 
-    Double findGoodsRetailPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID,@Param("storeID") Long storeID);
+    Double findGoodsRetailPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID);
+
+    List<GiftListResponseGoods> findCustomerGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(@Param(value = "list") List<Long> goodsIdList,
+                                                                                             @Param(value = "userId") Long userId);
+
+    List<GiftListResponseGoods> findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(@Param(value = "list") List<Long> goodsIdList,
+                                                                                             @Param(value = "userId") Long userId);
 }

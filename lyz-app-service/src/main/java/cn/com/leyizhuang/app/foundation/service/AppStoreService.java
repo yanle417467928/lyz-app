@@ -44,4 +44,12 @@ public interface AppStoreService {
 
     List<StoreResponse> findStoreByCityId(Long cityId);
 
+    void saveStore(AppStore appStore);
+
+    void modifyStore(AppStore appStore);
+
+    void deleteStoreByStoreCode(String storeCode);
+
+    AppStore findByStoreCode(String storeCode);
+
 }

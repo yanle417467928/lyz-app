@@ -40,5 +40,7 @@ public class CustomerHomePageResponse implements Serializable {
     private Date lastSignTime;
     //是否可以签到
     private Boolean canSign;
+    //城市ID
+    private Long cityId;
 
 }

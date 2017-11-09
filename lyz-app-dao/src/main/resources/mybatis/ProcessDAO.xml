@@ -122,6 +122,8 @@
             g.gtid     type_id
         FROM
             emp_employee e INNER JOIN gds_goods_price gp ON gp.store_id = e.store_id
+            AND gp.start_time &lt; NOW()
+            AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
             INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
             INNER JOIN gds_goods g ON g.gid = pg.gid
         WHERE e.emp_id = #{userId}
@@ -142,6 +144,8 @@
             g.brd_id   brand_id,
             g.gtid     type_id
         FROM cus_customer c INNER JOIN gds_goods_price gp ON gp.store_id = c.store_id
+            AND gp.start_time &lt; NOW()
+            AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
             INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
             INNER JOIN gds_goods g ON g.gid = pg.gid
         WHERE c.cus_id = #{userId}

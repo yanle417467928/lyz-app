@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.GoodsPriceDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
 import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
 import com.github.pagehelper.PageHelper;
@@ -52,6 +54,19 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
 
     @Override
     public Double findGoodsRetailPriceByGoodsIDAndStoreID(Long goodsID, Long storeID) {
-        return this.goodsPriceDAO.findGoodsRetailPriceByGoodsIDAndStoreID(goodsID,storeID);
+        return this.goodsPriceDAO.findGoodsRetailPriceByGoodsIDAndStoreID(goodsID, storeID);
+    }
+
+    @Override
+    public List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
+            List<Long> goodsIdList, Long userId, AppIdentityType identityType) {
+        if (goodsIdList != null && goodsIdList.size() > 0 && userId != null && identityType != null) {
+            if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
+                return goodsPriceDAO.findCustomerGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(goodsIdList, userId);
+            } else {
+                return goodsPriceDAO.findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(goodsIdList, userId);
+            }
+        }
+        return null;
     }
 }

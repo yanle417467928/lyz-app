@@ -10,6 +10,10 @@
       SELECT * FROM st_store where store_id = #{id}
    </select>
 
+   <select id="findByStoreCode" parameterType="java.lang.String" resultType="AppStore">
+      SELECT * FROM st_store where store_code = #{storeCode}
+   </select>
+
    <select id="findDefaultStoreByCityId" parameterType="java.lang.Long" resultType="AppStore">
        SELECT * FROM st_store where IS_DEFAULT IS TRUE AND city_id = #{cityId}
    </select>
@@ -113,10 +117,10 @@
    <insert id="saveStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
       INSERT INTO st_store
       (CREATOR_TYPE, CREATE_TIME, MODIFIER_TYPE, MODIFY_TIME, CITY_ID, CITY_CODE, STORE_NAME ,STORE_CODE,
-      IS_DEFAULT, STORE_TYPE)
+      IS_DEFAULT, STORE_TYPE, PHONE, ADDRESS)
       VALUES
       (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityId}, #{cityCode}, #{storeName},
-       #{storeCode}, #{isDefault}, #{storeType})
+       #{storeCode}, #{isDefault}, #{storeType}, #{phone}, #{address})
    </insert>
 
    <update id="modifyStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
@@ -151,6 +155,12 @@
          </if>
          <if test="null != storeType">
             STORE_TYPE = #{storeType},
+         </if>
+         <if test="null != phone">
+            PHONE = #{phone},
+         </if>
+         <if test="null != address">
+            ADDRESS = #{address},
          </if>
       </set>
       WHERE STORE_CODE = #{storeCode}

@@ -129,6 +129,7 @@ public class HqAppEmployeeController {
      */
     @PostMapping(value = "/update")
     public ResultDTO<String> updateEmployee(@RequestBody HqAppEmployeeDTO employeeDTO) {
+        logger.warn("updateEmployee CALLED,同步修改员工信息，入参 employeeDTO:{}", employeeDTO);
         if (null != employeeDTO) {
             String password = Base64Utils.decode(employeeDTO.getPassword());
             AppEmployee employee = employeeService.findByLoginName(employeeDTO.getNumber());
@@ -168,6 +169,7 @@ public class HqAppEmployeeController {
                 String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
                 employee.setPassword(md5Password);
                 employeeService.updateByLoginName(employee);
+                logger.warn("同步修改员工信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             }catch (Exception e){
                 e.printStackTrace();
@@ -175,7 +177,7 @@ public class HqAppEmployeeController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
             }
         }
-        logger.warn("员工信息为空");
+        logger.warn("员工信息为空！");
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
     }
 
@@ -185,16 +187,18 @@ public class HqAppEmployeeController {
      */
     @PostMapping(value = "/delete")
     public ResultDTO<String> deleteEmployee(String loginName) {
+        logger.warn("deleteEmployee CALLED,同步删除员工信息，入参 loginName:{}", loginName);
         if (StringUtils.isBlank(loginName)){
-            logger.info("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 loginName:{}",loginName);
+            logger.warn("deleteStore OUT,同步删除员工信息失败，出参 loginName:{}", loginName);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工编号为空！", null);
         }
         try{
             employeeService.deleteByLoginName(loginName);
+            logger.warn("同步删除员工信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }catch (Exception e){
             logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}",e);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "未知异常，同步删除员工信息失败！", null);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除员工信息失败！", null);
 
         }
     }

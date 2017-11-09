@@ -144,6 +144,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -167,6 +169,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE e.emp_id = #{userId}
@@ -182,6 +186,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -199,6 +205,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -216,6 +224,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
@@ -234,6 +244,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
@@ -252,6 +264,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_type t ON g.gtid = t.gtid
@@ -270,6 +284,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_type t ON g.gtid = t.gtid
@@ -295,6 +311,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             c.cus_id = #{userId}
@@ -317,6 +335,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             e.emp_id = #{userId}
@@ -340,6 +360,8 @@
             gds_goods_collect acc
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE
             acc.user_id = #{userId}
             AND acc.identity_type = #{type,
@@ -365,6 +387,8 @@
             gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE
             acg.user_id = #{userId}
             AND acg.identity_type = #{type,
@@ -397,6 +421,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             c.cus_id = #{userId}
@@ -421,6 +447,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             e.emp_id = #{userId}
@@ -463,22 +491,24 @@
     <select id="findGoodsDetailByGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsDetailResponse">
         <if test="null != type and type.toString() == 'CUSTOMER'">
-            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
+            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
             (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = c.cus_id and gc.identity_type = c.identity_type
-            LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId},
+            LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW()),
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
             g.id = p.gid;
         </if>
         <if test="null != type and type.toString() != 'CUSTOMER'">
-            SELECT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
+            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
             (SELECT emp_id, identity_type, store_id FROM emp_employee WHERE emp_id = #{userId}) e
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = e.emp_id and gc.identity_type = e.identity_type
-            LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId},
+            LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW()),
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
@@ -496,6 +526,8 @@
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM cus_customer c
         LEFT JOIN gds_goods_price p ON c.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE c.cus_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" open="(" close=")" separator=",">
@@ -507,6 +539,8 @@
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM emp_employee e
         LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE e.emp_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
@@ -529,6 +563,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             e.emp_id = #{userId}
@@ -553,6 +589,8 @@
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
         c.cus_id = #{userId}
@@ -578,6 +616,8 @@
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
         INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -614,6 +654,8 @@
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
         INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
