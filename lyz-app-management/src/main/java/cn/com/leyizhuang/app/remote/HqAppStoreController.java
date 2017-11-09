@@ -71,10 +71,6 @@ public class HqAppStoreController {
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不允许为空！", null);
             }
-            if (StringUtils.isBlank(hqAppStoreDTO.getPhone())){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店电话号码不允许为空！", null);
-            }
             if (StringUtils.isBlank(hqAppStoreDTO.getAddress())){
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店地址不允许为空！", null);
