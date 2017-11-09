@@ -55,4 +55,12 @@ public interface AppStoreDAO {
     Boolean existGoodsStoreInventory(@Param("storeId") Long storeId,@Param("gid") Long gid,@Param("qty") Integer qty);
 
     List<StoreResponse> findStoreByCityId(Long cityId);
+
+    void saveStore(AppStore appStore);
+
+    void modifyStore(AppStore appStore);
+
+    void deleteStoreByStoreCode(@Param("storeCode") String storeCode);
+
+    AppStore findByStoreCode(@Param("storeCode") String storeCode);
 }

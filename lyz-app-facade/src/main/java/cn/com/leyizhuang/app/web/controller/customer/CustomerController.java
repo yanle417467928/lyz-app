@@ -5,15 +5,13 @@ import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.CommonService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +44,12 @@ public class CustomerController {
 
     @Resource
     private CommonService commonService;
+
+    @Autowired
+    private CusPreDepositLogService cusPreDepositLogServiceImpl;
+
+    @Resource
+    private LeBiVariationLogService leBiVariationLogService;
 
     /**
      * App 顾客登录
@@ -425,6 +429,15 @@ public class CustomerController {
                 return resultDTO;
             }
             commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId,identityType);
+
+            //记录变更明细日志
+            CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
+            customerLeBiVariationLog.setCusID(userId);
+            customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
+            customerLeBiVariationLog.setVariationQuantity(1);
+            customerLeBiVariationLog.setVariationTime(new Date());
+            customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId,identityType));
+            leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -432,6 +445,89 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客签到增加乐币失败", null);
             logger.warn("addCustomerLeBiQuantity EXCEPTION,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+
+    /**
+     * @title   获取客户钱包充值记录
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/7
+     */
+    @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType){
+
+        logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType && identityType != 6) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
+            List<CusPreDepositLogResponse> cusPreDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusPreDepositLogResponseList);
+            logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取客户钱包充值记录失败", null);
+            logger.warn("getCustomerRechargePreDepositLog EXCEPTION,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取客户钱包消费记录
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/7
+     */
+    @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType){
+
+        logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType && identityType != 6) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
+            List<CusPreDepositLogResponse> cusPreDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusPreDepositLogResponseList);
+            logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取客户钱包消费记录失败", null);
+            logger.warn("getCustomerConsumptionPreDepositLog EXCEPTION,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

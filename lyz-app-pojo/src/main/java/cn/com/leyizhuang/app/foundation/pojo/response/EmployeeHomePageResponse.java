@@ -29,4 +29,6 @@ public class EmployeeHomePageResponse implements Serializable {
     private String mobile;
     //配送数量（配送员字段）
     private Integer sendQty;
+    //城市ID
+    private Long cityId;
 }

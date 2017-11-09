@@ -165,4 +165,24 @@ public class AppStoreServiceImpl implements AppStoreService {
     public List<StoreResponse> findStoreByCityId(Long cityId) {
         return this.storeDAO.findStoreByCityId(cityId);
     }
+
+    @Override
+    public void saveStore(AppStore appStore) {
+        this.storeDAO.saveStore(appStore);
+    }
+
+    @Override
+    public void modifyStore(AppStore appStore) {
+        this.storeDAO.modifyStore(appStore);
+    }
+
+    @Override
+    public void deleteStoreByStoreCode(String storeCode) {
+        this.storeDAO.deleteStoreByStoreCode(storeCode);
+    }
+
+    @Override
+    public AppStore findByStoreCode(String storeCode) {
+        return this.storeDAO.findByStoreCode(storeCode);
+    }
 }

@@ -117,6 +117,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse">
         SELECT
             e.pic_url,
+            e.city_id,
             e.login_name number,
             e.mobile,
         <if test="type == 0">

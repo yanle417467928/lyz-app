@@ -6,31 +6,32 @@
         INSERT INTO gds_goods_price
         (gid, store_id, sku, price_line_id, vip_price, retail_price, wholesale_price, start_time, end_time)
         VALUES
-        (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime}, #{endTime})
+            (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
+             #{endTime})
     </insert>
 
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         UPDATE gds_goods_price
         <set>
-          <if test="null != VIPPrice">
-              vip_price = #{VIPPrice},
-          </if>
-          <if test="null != retailPrice">
-              retail_price = #{retailPrice},
-          </if>
-          <if test="null != wholesalePrice">
-              wholesale_price = #{wholesalePrice},
-          </if>
-          <if test="null != startTime">
-              start_time = #{startTime},
-          </if>
-          <if test="null != endTime">
-              end_time = #{endTime},
-          </if>
+            <if test="null != VIPPrice">
+                vip_price = #{VIPPrice},
+            </if>
+            <if test="null != retailPrice">
+                retail_price = #{retailPrice},
+            </if>
+            <if test="null != wholesalePrice">
+                wholesale_price = #{wholesalePrice},
+            </if>
+            <if test="null != startTime">
+                start_time = #{startTime},
+            </if>
+            <if test="null != endTime">
+                end_time = #{endTime},
+            </if>
         </set>
         WHERE
-          price_line_id = #{priceLineId}
+        price_line_id = #{priceLineId}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
@@ -39,44 +40,92 @@
     </delete>
 
 
-    <select id="findByPriceLineId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
-        SELECT
-          *
+    <select id="findByPriceLineId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT *
         FROM
-          gds_goods_price
+            gds_goods_price
         WHERE
-          price_line_id = #{priceLineId}
+            price_line_id = #{priceLineId}
     </select>
 
-    <select id="findByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO">
+    <select id="findByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO">
         SELECT
-          p.gpid id, p.sku, p.vip_price, p.retail_price, p.wholesale_price, p.start_time, p.end_time,
-          p.price_line_id, g.sku_name skuName, g.goods_specification goodsSpecification
+        p.gpid id, p.sku, p.vip_price, p.retail_price, p.wholesale_price, p.start_time, p.end_time,
+        p.price_line_id, g.sku_name skuName, g.goods_specification goodsSpecification
         FROM
-          gds_goods_price p
+        gds_goods_price p
         LEFT JOIN gds_goods g ON p.gid = g.gid
         WHERE
-          p.store_id = #{storeId}
-          <if test="null != keywords">
-              AND (
-                  p.sku LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-              OR g.sku_name LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-              OR g.goods_specification LIKE CONCAT(CONCAT('%', #{keywords}),'%')
-              )
-          </if>
-          ORDER BY p.gpid DESC
+        p.store_id = #{storeId}
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        <if test="null != keywords">
+            AND (
+            p.sku LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+            OR g.sku_name LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+            OR g.goods_specification LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+            )
+        </if>
+        ORDER BY p.gpid DESC
     </select>
 
     <select id="findGoodsRetailPriceByGoodsIDAndStoreID" resultType="java.lang.Double">
-        SELECT
-        retail_price
+        SELECT retail_price
         FROM
-        gds_goods_price
+            gds_goods_price
         WHERE
-        gid = #{goodsID}
-        AND store_id = #{storeID}
-        AND start_time &lt; NOW()
-        AND end_time &gt; NOW();
+            gid = #{goodsID}
+            AND store_id = #{storeID}
+            AND start_time &lt; NOW()
+            AND (end_time IS NULL OR end_time &gt; NOW())
+    </select>
+
+    <select id="findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+        SELECT
+        g.gid goods_id,
+        g.sku_name,
+        g.goods_specification,
+        g.cover_image_uri,
+        g.goods_unit,
+        gp.retail_price
+        FROM
+        cus_customer c INNER JOIN
+        gds_goods_price gp ON c.store_id = gp.store_id
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        WHERE
+        gp.gid IN
+        <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+            #{goodsId}
+        </foreach>
+        AND c.cus_id = #{userId}
+    </select>
+
+    <select id="findCustomerGoodsPriceListByGoodsIdsAndUserIdAndIdentityType" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+        SELECT
+        g.gid goods_id,
+        g.sku_name,
+        g.goods_specification,
+        g.cover_image_uri,
+        g.goods_unit,
+        gp.retail_price
+        FROM
+        emp_employee e INNER JOIN
+        gds_goods_price gp ON e.store_id = gp.store_id
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        WHERE
+        gp.gid IN
+        <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+            #{goodsId}
+        </foreach>
+        AND e.emp_id = #{userId}
     </select>
 
 </mapper>

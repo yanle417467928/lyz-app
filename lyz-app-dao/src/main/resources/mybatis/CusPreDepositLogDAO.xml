@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.CusPreDepositLogDAO">
+
+
+    <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CusPreDepositLogResponse">
+        SELECT
+          id, type, create_time, change_money, order_number
+        FROM cus_pre_deposit_log
+        WHERE cus_id = #{userId}
+          AND type in
+            <foreach collection="list" item="type" separator="," open="(" close=")">
+              #{type}
+            </foreach>
+    </select>
+
+</mapper>
