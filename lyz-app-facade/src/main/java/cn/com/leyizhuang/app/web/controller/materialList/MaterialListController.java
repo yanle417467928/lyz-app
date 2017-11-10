@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
+import cn.com.leyizhuang.app.foundation.service.OrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -38,6 +39,9 @@ public class MaterialListController {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private OrderService orderServiceImpl;
 
     /**
      * @param
@@ -233,5 +237,68 @@ public class MaterialListController {
         logger.info("getUsableProductCoupon OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
+
+    /**
+     * @title 再来一单加入下料清单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/10
+     */
+    @PostMapping(value = "/again/add", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> addAgainMaterialList(Long userId, Integer identityType, String orderNumber) {
+        logger.info("addAgainMaterialList CALLED,再来一单加入下料清单，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("addAgainMaterialList OUT,再来一单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                        null);
+                logger.info("addAgainMaterialList OUT,再来一单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == orderNumber) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+                return resultDTO;
+            }
+            Map<Long, Integer> goodsMap = new HashMap();
+            List<MaterialListDO> materialListDOList = this.orderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
+            List<MaterialListDO> materialListSave = new ArrayList<>();
+            List<MaterialListDO> materialListUpdate = new ArrayList<>();
+            for (MaterialListDO materialList : materialListDOList) {
+                MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                        AppIdentityType.getAppIdentityTypeByValue(identityType), materialList.getGid());
+                if (null == materialListDO) {
+                    materialList.setUserId(userId);
+                    materialList.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    if (null != materialList.getCoverImageUri()) {
+                        String uri[] = materialList.getCoverImageUri().split(",");
+                        materialList.setCoverImageUri(uri[0]);
+                    }
+                    materialListSave.add(materialList);
+                } else {
+                    materialListDO.setQty(materialListDO.getQty() + materialList.getQty());
+                    materialListUpdate.add(materialListDO);
+                }
+            }
+            commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("addAgainMaterialList OUT,再来一单加入下料清单成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,再来一单加入下料清单失败!", null);
+            logger.warn("addAgainMaterialList EXCEPTION,再来一单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 
 }
