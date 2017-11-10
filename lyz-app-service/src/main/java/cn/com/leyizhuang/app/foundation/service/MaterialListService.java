@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -26,4 +27,6 @@ public interface MaterialListService {
     List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 
     void deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(Long empId, AppIdentityType identityType, List<Long> deleteGoodsIds);
+
+    Map<Long,Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId);
 }

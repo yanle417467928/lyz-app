@@ -94,4 +94,13 @@
     </delete>
 
 
+    <select id="findGoodsQtyByUserIdAndIdentityTypeAndGoodsId" resultType="java.util.HashMap">
+        SELECT
+            gid goodsId,
+            qty
+        FROM material_list
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND gid = #{goodsId}
+    </select>
+
+
 </mapper>

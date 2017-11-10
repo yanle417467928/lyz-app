@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -85,5 +86,14 @@ public class MaterialListServiceImpl implements MaterialListService {
             materialListDAO.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(empId,
                     identityType, deleteGoodsIds);
         }
+    }
+
+    @Override
+    public Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+        if (null != userId && null != identityType && null != goodsId ) {
+            return materialListDAO.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(userId,
+                    identityType, goodsId);
+        }
+        return null;
     }
 }
