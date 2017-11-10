@@ -3,11 +3,12 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
     <select id="getGoodsInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
-        SELECT DISTINCT g.gid, g.sku_name, g.goods_specification, g.cover_image_uri, g.goods_unit,
+        SELECT DISTINCT g.gid, g.sku, g.sku_name, g.goods_specification, g.cover_image_uri, g.goods_unit,
             og.order_qty qty
         FROM ord_goods_info og
         LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
+        AND (og.is_gift IS NULL OR og.is_gift = false)
     </select>
 
 

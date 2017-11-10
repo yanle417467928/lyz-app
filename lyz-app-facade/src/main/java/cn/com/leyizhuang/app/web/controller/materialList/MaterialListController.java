@@ -269,6 +269,12 @@ public class MaterialListController {
             }
             Map<Long, Integer> goodsMap = new HashMap();
             List<MaterialListDO> materialListDOList = this.orderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
+            if(null == materialListDOList || materialListDOList.size() == 0){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无此订单信息！",
+                        null);
+                logger.info("addAgainMaterialList OUT,再来一单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
             for (MaterialListDO materialList : materialListDOList) {

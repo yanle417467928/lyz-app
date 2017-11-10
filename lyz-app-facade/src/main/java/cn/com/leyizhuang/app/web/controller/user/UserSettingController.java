@@ -331,7 +331,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || 6 != identityType) {
+            if (null == identityType) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                         null);
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
