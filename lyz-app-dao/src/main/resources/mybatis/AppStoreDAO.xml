@@ -117,7 +117,7 @@
    <insert id="saveStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
       INSERT INTO st_store
       (CREATOR_TYPE, CREATE_TIME, MODIFIER_TYPE, MODIFY_TIME, CITY_CODE, STORE_NAME ,STORE_CODE,
-      IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILE_ADDRESS, ENABLE, IS_SELF_DELIVERY)
+      IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILED_ADDRESS, ENABLE, IS_SELF_DELIVERY)
       VALUES
       (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityCode}, #{storeName},
        #{storeCode}, #{isDefault}, #{storeType}, #{phone}, #{province}, #{city}, #{area}, #{detailedAddress}, #{enable}, #{isSelfDelivery})
@@ -166,7 +166,7 @@
             AREA = #{area},
          </if>
          <if test="null != detailedAddress">
-            DETAILE_ADDRESS = #{detailedAddress},
+            DETAILED_ADDRESS = #{detailedAddress},
          </if>
          <if test="null != enable">
             ENABLE = #{enable},

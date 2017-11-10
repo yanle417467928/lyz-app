@@ -68,27 +68,27 @@ public class HqAppStoreController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市编码不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppStoreDTO.getCity())){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 city:{}", hqAppStoreDTO.getCity());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppStoreDTO.getProvince())){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 Province:{}", hqAppStoreDTO.getProvince());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省级不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppStoreDTO.getArea())){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 Area:{}", hqAppStoreDTO.getArea());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不允许为空！", null);
             }
             if (StringUtils.isBlank(hqAppStoreDTO.getDetailedAddress())){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 DetailedAddress:{}", hqAppStoreDTO.getDetailedAddress());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店详细地址不允许为空！", null);
             }
             if (null == hqAppStoreDTO.getEnable()){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 Enable:{}", hqAppStoreDTO.getEnable());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店是否生效不允许为空！", null);
             }
             if (null == hqAppStoreDTO.getIsSelfDelivery()){
-                logger.warn("addStore OUT,同步添加门店信息失败，出参 cityCode:{}", hqAppStoreDTO.getCityCode());
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 IsSelfDelivery:{}", hqAppStoreDTO.getIsSelfDelivery());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否支持门店自提不允许为空！", null);
             }
 
@@ -96,11 +96,11 @@ public class HqAppStoreController {
                 AppStore store = appStoreService.findByStoreCode(hqAppStoreDTO.getStoreCode());
                 if (null == store) {
                     AppStore appStore = new AppStore();
-                    if (hqAppStoreDTO.getStoreType().equals("ZY")) {
+                    if (hqAppStoreDTO.getStoreType().equals("直营门店")) {
                         appStore.setStoreType(StoreType.ZY);
-                    } else if (hqAppStoreDTO.getStoreType().equals("JM")) {
+                    } else if (hqAppStoreDTO.getStoreType().equals("加盟门店")) {
                         appStore.setStoreType(StoreType.JM);
-                    } else if (hqAppStoreDTO.getStoreType().equals("FX")) {
+                    } else if (hqAppStoreDTO.getStoreType().equals("分销门店")) {
                         appStore.setStoreType(StoreType.FX);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
@@ -152,16 +152,15 @@ public class HqAppStoreController {
             }
             try {
                 AppStore appStore = appStoreService.findByStoreCode(hqAppStoreDTO.getStoreCode());
-                if (hqAppStoreDTO.getStoreType().equals("ZY")){
+                if (hqAppStoreDTO.getStoreType().equals("直营门店")){
                     appStore.setStoreType(StoreType.ZY);
-                }else if (hqAppStoreDTO.getStoreType().equals("JM")){
+                }else if (hqAppStoreDTO.getStoreType().equals("加盟门店")){
                     appStore.setStoreType(StoreType.JM);
-                } else if (hqAppStoreDTO.getStoreType().equals("FX")) {
+                } else if (hqAppStoreDTO.getStoreType().equals("分销门店")) {
                     appStore.setStoreType(StoreType.FX);
                 }
                 appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
                 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                appStore.setCreateTime(sdf.parse(hqAppStoreDTO.getCreateTime()));
                 appStore.setIsDefault(hqAppStoreDTO.getIsDefault());
                 appStore.setStoreName(hqAppStoreDTO.getStoreName());
                 appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
