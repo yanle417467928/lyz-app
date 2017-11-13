@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 
 /**
  * 与HQ同步City
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
 @RequestMapping(value = "/remote/city")
 public class HqAppCityController {
     private static final Logger logger = LoggerFactory.getLogger(HqAppCityController.class);
-
+    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Resource
     private CityService cityService;
 
@@ -70,7 +71,7 @@ public class HqAppCityController {
                     city.setStructureId(hqAppCityDTO.getStructureId());
                     city.setStructureTitle(hqAppCityDTO.getStructureTitle());
                     city.setEnable(hqAppCityDTO.getEnable());
-                    city.setEnableFalseTime(hqAppCityDTO.getEnableFalseTime());
+                    city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
                     cityService.save(city);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else {
@@ -107,7 +108,8 @@ public class HqAppCityController {
                 city.setStructureId(hqAppCityDTO.getStructureId());
                 city.setSpell(hqAppCityDTO.getSpell());
                 city.setName(hqAppCityDTO.getTitle());
-                city.setEnableFalseTime(hqAppCityDTO.getEnableFalseTime());
+                city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
+                city.setNumber(hqAppCityDTO.getNumber());
                 cityService.modifyCity(city);
                 logger.warn("updateCity OUT,同步修改城市信息成功，出参 resultDTO:{}", city);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
