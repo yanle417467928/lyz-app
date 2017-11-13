@@ -2,7 +2,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
-import cn.com.leyizhuang.app.foundation.pojo.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -96,5 +97,13 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     public void deleteCityByCode(String code) {
         cityDAO.deleteCityByCode(code);
+    }
+
+    @Override
+    public List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId) {
+        if (null != cityId){
+            return cityDAO.findCityDeliveryTimeByCityId(cityId);
+        }
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -39,4 +40,6 @@ public interface CityDAO {
     void deleteCityByCode(String code);
 
     Boolean existGoodsCityInventory(@Param("cityId") Long cityId,@Param("gid") Long gid,@Param("qty") Integer qty);
+
+    List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 
 import java.util.List;
 import java.util.Map;
@@ -28,4 +29,6 @@ public interface CityService {
     void modifyCity(City city);
 
     void deleteCityByCode(String code);
+
+    List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 }
