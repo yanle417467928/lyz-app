@@ -22,4 +22,8 @@ public interface DeliveryAddressService {
     void deleteDeliveryAddress(Long deliveryAddressId);
 
     DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+
+    void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityTypeByValue);
+
+    DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityTypeByValue);
 }

@@ -60,7 +60,7 @@ public class OrderController {
     private ProductCouponService productCouponService;
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> createOrder(Long userId, Integer identityType ){
+    public ResultDTO<Object> createOrder(Long userId, Integer identityType,Long customerId,String goodsInfo ){
         return null;
 
         //先核对页面订单信息

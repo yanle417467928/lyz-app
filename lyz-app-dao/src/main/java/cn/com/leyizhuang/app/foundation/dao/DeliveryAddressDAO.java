@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
-import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +28,10 @@ public interface DeliveryAddressDAO {
 
     DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                                                              @Param(value = "identityType") AppIdentityType identityType);
+
+    void clearDefaultAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                    @Param(value = "identityType") AppIdentityType identityType);
+
+    DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                      @Param(value = "identityType") AppIdentityType identityType);
 }

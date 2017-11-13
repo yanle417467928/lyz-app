@@ -12,7 +12,6 @@
         <result column="MODIFY_TIME" property="modifyTime"/>
         <result column="DELIVERY_NAME" property="deliveryName"/>
         <result column="DELIVERY_PHONE" property="deliveryPhone"/>
-        <result column="DELIVERY_PROVINCE" property="deliveryCity"/>
         <result column="DELIVERY_CITY" property="deliveryCity"/>
         <result column="DELIVERY_COUNTY" property="deliveryCounty"/>
         <result column="DELIVERY_STREET" property="DELIVERYSTREET"/>
@@ -28,7 +27,6 @@
             id,
             receiver         delivery_name,
             receiver_phone   delivery_phone,
-            delivery_province,
             delivery_city    delivery_city,
             delivery_county  delivery_county,
             delivery_street  delivery_street,
@@ -46,7 +44,6 @@
             id,
             receiver         delivery_name,
             receiver_phone   delivery_phone,
-            delivery_province,
             delivery_city    delivery_city,
             delivery_county  delivery_county,
             delivery_street  delivery_street,
@@ -61,10 +58,10 @@
     <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
         INSERT INTO delivery_address
         (
-            user_id, identity_type, receiver, receiver_phone, delivery_province, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
+            user_id, identity_type, receiver, receiver_phone, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
             DETAILED_ADDRESS, residence_name, STATUS, is_default)
         VALUES
-            (#{userId}, #{identityType}, #{receiver}, #{receiverPhone}, #{deliveryProvince},
+            (#{userId}, #{identityType}, #{receiver}, #{receiverPhone},
                         #{deliveryCity}, #{deliveryCounty},
                         #{deliveryStreet},
                         #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
@@ -78,9 +75,6 @@
             </if>
             <if test="null != receiverPhone">
                 receiver_phone = #{receiverPhone},
-            </if>
-            <if test="null != deliveryProvince">
-                delivery_province = #{deliveryProvince},
             </if>
             <if test="null != deliveryCity">
                 DELIVERY_CITY = #{deliveryCity},
@@ -116,7 +110,6 @@
             id,
             receiver         delivery_name,
             receiver_phone   delivery_phone,
-            delivery_province,
             delivery_city    delivery_city,
             delivery_county  delivery_county,
             delivery_street  delivery_street,
@@ -131,5 +124,27 @@
         LIMIT 1
     </select>
 
+    <update id="clearDefaultAddressByUserIdAndIdentityType">
+        UPDATE delivery_address
+        SET is_default = FALSE
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND is_default IS TRUE
+    </update>
+
+    <select id="getTopDeliveryAddressByUserIdAndIdentityType" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
+        FROM delivery_address
+        WHERE user_id = #{userId} AND identity_type = #{identityType}
+        LIMIT 1
+    </select>
 
 </mapper>

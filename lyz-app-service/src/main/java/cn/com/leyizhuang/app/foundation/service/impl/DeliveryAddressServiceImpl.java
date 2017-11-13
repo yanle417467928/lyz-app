@@ -71,6 +71,21 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
         return null;
     }
 
+    @Override
+    public void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType){
+            deliveryAddressDAO.clearDefaultAddressByUserIdAndIdentityType(userId,identityType);
+        }
+    }
+
+    @Override
+    public DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType){
+            return deliveryAddressDAO.getTopDeliveryAddressByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
+    }
+
     private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress){
         if (null != userId && null != deliveryAddress && null != identityType) {
             DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
@@ -80,7 +95,6 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
             deliveryAddressDO.setIdentityType(identityType);
             deliveryAddressDO.setReceiver(deliveryAddress.getDeliveryName());
             deliveryAddressDO.setReceiverPhone(deliveryAddress.getDeliveryPhone());
-            deliveryAddressDO.setDeliveryProvince(deliveryAddress.getDeliveryProvince());
             deliveryAddressDO.setDeliveryCity(deliveryAddress.getDeliveryCity());
             deliveryAddressDO.setDeliveryCounty(deliveryAddress.getDeliveryCounty());
             deliveryAddressDO.setDeliveryStreet(deliveryAddress.getDeliveryStreet());
