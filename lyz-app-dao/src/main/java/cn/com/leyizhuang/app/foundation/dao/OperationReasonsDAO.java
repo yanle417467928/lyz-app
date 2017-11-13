@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.response.CancelReasonsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse;
+import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +13,5 @@ import java.util.List;
 @Repository
 public interface OperationReasonsDAO {
 
-    List<CancelReasonsResponse> findAll();
+    List<OperationReasonsResponse> findAllByType(OperationReasonType type);
 }

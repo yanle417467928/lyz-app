@@ -11,7 +11,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class CancelReasonsResponse {
+public class OperationReasonsResponse {
     //取消订单原因
     private String reason;
 }

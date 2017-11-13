@@ -1,8 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.OperationReasonsDAO;
-import cn.com.leyizhuang.app.foundation.pojo.response.CancelReasonsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse;
 import cn.com.leyizhuang.app.foundation.service.OperationReasonsService;
+import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class OperationReasonsServiceImpl implements OperationReasonsService {
 
 
     @Override
-    public List<CancelReasonsResponse> findAll() {
-        return this.cancelReasonsDAO.findAll();
+    public List<OperationReasonsResponse> findAllByType(OperationReasonType type) {
+        return this.cancelReasonsDAO.findAllByType(type);
     }
 }

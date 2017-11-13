@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.response.CancelReasonsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse;
+import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ import java.util.List;
  */
 public interface OperationReasonsService {
 
-    List<CancelReasonsResponse> findAll();
+    List<OperationReasonsResponse> findAllByType(OperationReasonType type);
 }
