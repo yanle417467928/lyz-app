@@ -38,12 +38,6 @@ public class MaterialAuditSheetController {
     private MaterialAuditSheetService materialAuditSheetService;
 
     @Resource
-    private GoodsService goodsService;
-
-    @Resource
-    private GoodsPriceService goodsPriceService;
-
-    @Resource
     private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
 
 
@@ -356,6 +350,7 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setIsAudited(materialAuditSheet1.getIsAudited());
                 materialAuditSheetResponse.setStatus(materialAuditSheet1.getStatus());
                 materialAuditSheetResponse.setPictureList(pictureList);
+                materialAuditSheetResponse.setWorker(materialAuditSheet1.getEmployeeName());
                 //把所有返回参数对象放入list
                 materialAuditSheetResponsesList.add(materialAuditSheetResponse);
             }
