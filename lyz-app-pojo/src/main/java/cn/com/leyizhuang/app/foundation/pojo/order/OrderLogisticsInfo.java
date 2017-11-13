@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
 import java.util.Date;
@@ -26,7 +27,7 @@ public class OrderLogisticsInfo {
     private String ordNo;
 
     //配送方式
-    private String deliveryType;
+    private AppDeliveryType deliveryType;
 
     //预约门店编码
     private String bookingStoreCode;
