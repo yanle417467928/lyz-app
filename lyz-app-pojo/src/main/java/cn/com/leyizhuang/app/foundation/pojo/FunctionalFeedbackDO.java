@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
-import cn.com.leyizhuang.app.core.constant.FunctionalFeedbackStatusEnum;
+import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;

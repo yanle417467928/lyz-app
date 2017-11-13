@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

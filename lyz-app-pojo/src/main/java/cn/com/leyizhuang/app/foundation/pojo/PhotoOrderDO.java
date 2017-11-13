@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.PhotoOrderStatus;
+import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

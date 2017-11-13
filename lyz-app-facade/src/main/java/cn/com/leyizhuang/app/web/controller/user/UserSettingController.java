@@ -17,6 +17,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.StoreSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
