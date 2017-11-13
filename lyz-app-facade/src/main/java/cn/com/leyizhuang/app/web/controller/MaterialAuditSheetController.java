@@ -228,12 +228,18 @@ public class MaterialAuditSheetController {
             //把LocalDateTime类型转换为String类型，并进行赋值
             materialAuditDetailsResponse.setCreateTime(df.format(materialAuditSheet.getCreateTime()));
             materialAuditDetailsResponse.setReservationDeliveryTime(materialAuditSheet.getReservationDeliveryTime());
-
+            //商品总金额（零售）
+            Double totalPrice = 0D;
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
             if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0) {
+                for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList){
+                    totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
+                }
+                materialAuditDetailsResponse.setTotalPrice(totalPrice);
                 //把物料审核单中所有的商品list放入返回值对象中
                 materialAuditDetailsResponse.setGoodsList(materialAuditGoodsInfoList);
+
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialAuditDetailsResponse);
                 logger.info("materialAuditGoodsDetails OUT,查看物料审核单详情成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
