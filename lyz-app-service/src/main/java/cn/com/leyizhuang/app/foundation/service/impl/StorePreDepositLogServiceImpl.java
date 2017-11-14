@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.dao.StorePreDepositLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;

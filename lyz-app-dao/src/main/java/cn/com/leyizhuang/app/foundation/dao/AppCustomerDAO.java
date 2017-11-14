@@ -82,4 +82,7 @@ public interface AppCustomerDAO {
             @Param("userId") Long userId,@Param("ccid") Long index,@Param("qty") Integer integer);
 
     AppCustomer findStoreSellerByCustomerId(@Param("userId") Long userId);
+
+    CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(
+            @Param("ccId") Long id,@Param("cusId") Long userId,@Param("qty") Integer qty);
 }

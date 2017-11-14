@@ -77,5 +77,5 @@ public interface AppCustomerService {
 
     AppCustomer findStoreSellerByCustomerId(Long userId);
 
-
+    CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(Long id, Long userId, Integer integer);
 }

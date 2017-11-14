@@ -238,7 +238,7 @@ public class MaterialListController {
 
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListResponses);
-        logger.info("getUsableProductCoupon OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
+        logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 

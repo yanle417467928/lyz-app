@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
-import cn.com.leyizhuang.app.core.pay.wechat.util.MD5Util;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -25,9 +24,9 @@ public class WechatUtil {
     /**
      * 微信参数配置
      */
-    public static String API_KEY = "BA7BE39E2620A8F12F975CD6E555CA5D";
-    public static String APPID = "wx6ea338a1c0fc1978";
-    public static String MCH_ID = "1446016602";
+    public static final String API_KEY = "BA7BE39E2620A8F12F975CD6E555CA5D";
+    public static final String APPID = "wx6ea338a1c0fc1978";
+    public static final String MCH_ID = "1446016602";
 
     /**
      * 随机字符串生成

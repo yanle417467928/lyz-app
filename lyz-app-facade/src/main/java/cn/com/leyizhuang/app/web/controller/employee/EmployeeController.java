@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
-import cn.com.leyizhuang.app.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;

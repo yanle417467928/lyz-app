@@ -30,6 +30,9 @@ public class OrderBaseInfo {
     //订单类型
     private AppOrderType orderType;
 
+    //有效期失效时间
+    private Date effectiveEndTime;
+
     //订单头状态
     private String status;
 
@@ -53,8 +56,4 @@ public class OrderBaseInfo {
 
     //门店订单主体信息
     private StoreOrderSubjectInfo storeOrderInfo;
-
-    //订单类型
-
-
 }
