@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import lombok.*;
 
 import java.io.Serializable;

@@ -1,16 +1,17 @@
-package cn.com.leyizhuang.app.foundation.pojo.order;
+package cn.com.leyizhuang.app.foundation.pojo.request.settlement;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
- * 简单商品信息，用于前后台商品信息交互
- * @author Jerry.Ren
- * Date: 2017/11/2.
+ *  生成订单时配送信息参数封装类
+ * @author Richard
+ * Date: 2017/11/13.
  * Time: 10:55.
  */
 @Getter
@@ -51,5 +52,6 @@ public class DeliverySimpleInfo implements Serializable {
     private String detailedAddress;
 
     //配送时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date deliveryTime;
 }

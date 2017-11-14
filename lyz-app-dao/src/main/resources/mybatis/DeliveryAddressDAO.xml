@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO">
 
-    <resultMap id="DeliveryAddressResult" type="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
+    <resultMap id="DeliveryAddressResult" type="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         <id column="ID" property="id" jdbcType="BIGINT"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
@@ -55,7 +55,7 @@
               AND identity_type = #{identityType}
               AND status IS TRUE
     </select>
-    <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
+    <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         INSERT INTO delivery_address
         (
             user_id, identity_type, receiver, receiver_phone, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
@@ -67,7 +67,7 @@
                         #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
     </insert>
 
-    <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO">
+    <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         UPDATE delivery_address
         <set>
             <if test="null != receiver">

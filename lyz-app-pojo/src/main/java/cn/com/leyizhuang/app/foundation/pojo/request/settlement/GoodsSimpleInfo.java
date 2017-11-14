@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.order;
+package cn.com.leyizhuang.app.foundation.pojo.request.settlement;
 
 import lombok.*;
 

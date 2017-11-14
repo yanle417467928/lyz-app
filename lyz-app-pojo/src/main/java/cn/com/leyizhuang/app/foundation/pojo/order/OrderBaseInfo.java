@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import lombok.*;
 
 import java.util.Date;
@@ -25,6 +27,9 @@ public class OrderBaseInfo {
     //订单创建时间
     private Date createTime;
 
+    //订单类型
+    private AppOrderType orderType;
+
     //订单头状态
     private String status;
 
@@ -35,7 +40,7 @@ public class OrderBaseInfo {
     private String pickUpCode;
 
     //配送方式
-    private String deliveryType;
+    private AppDeliveryType deliveryType;
 
     //订单下单主体类型，装饰公司、门店
     private String orderSubjectType;
@@ -48,4 +53,8 @@ public class OrderBaseInfo {
 
     //门店订单主体信息
     private StoreOrderSubjectInfo storeOrderInfo;
+
+    //订单类型
+
+
 }

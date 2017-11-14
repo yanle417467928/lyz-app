@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppAdminStoreInventoryDAO;
-import cn.com.leyizhuang.app.foundation.pojo.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;

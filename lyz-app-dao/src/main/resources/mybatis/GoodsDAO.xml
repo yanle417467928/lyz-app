@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsDAO">
-    <resultMap id="goodsResult" type="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <resultMap id="goodsResult" type="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
@@ -68,7 +68,7 @@
         </foreach>
     </delete>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         UPDATE gds_goods
         <set>
             <if test="null != brdId">
@@ -396,7 +396,7 @@
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
-    <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI
@@ -516,7 +516,7 @@
         </if>
     </select>
 
-    <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT gid,sku, sku_name, cover_image_uri, goods_specification, goods_unit
         FROM gds_goods
         WHERE gid = #{gid}

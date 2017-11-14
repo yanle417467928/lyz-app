@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo;
+package cn.com.leyizhuang.app.foundation.pojo.user;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;

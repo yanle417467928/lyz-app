@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;

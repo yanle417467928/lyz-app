@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo;
+package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;

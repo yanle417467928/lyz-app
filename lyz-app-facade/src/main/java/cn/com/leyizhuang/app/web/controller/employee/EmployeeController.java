@@ -3,8 +3,8 @@ package cn.com.leyizhuang.app.web.controller.employee;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

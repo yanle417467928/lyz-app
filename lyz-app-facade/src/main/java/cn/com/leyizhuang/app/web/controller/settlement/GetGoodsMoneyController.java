@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;

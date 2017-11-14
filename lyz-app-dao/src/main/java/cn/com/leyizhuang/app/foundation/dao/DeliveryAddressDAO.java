@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

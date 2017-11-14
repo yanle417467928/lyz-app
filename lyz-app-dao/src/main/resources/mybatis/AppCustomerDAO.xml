@@ -240,11 +240,11 @@
         WHERE cus_id = #{userId}
     </select>
 
-    <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi">
+    <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
         INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
     </insert>
 
-    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit">
+    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
         INSERT INTO cus_pre_deposit (cus_id, balance) VALUES (#{cusId}, #{balance})
     </insert>
 
@@ -313,7 +313,7 @@
         cus_id = #{userId};
     </update>
 
-    <select id="findStoreSellerByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.AppCustomer">
+    <select id="findStoreSellerByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
         SELECT
           store_id,
           sales_consult_id,

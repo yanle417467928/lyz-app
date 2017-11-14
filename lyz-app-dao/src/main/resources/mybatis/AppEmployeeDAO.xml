@@ -104,7 +104,7 @@
     </select>
 
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney">
         SELECT
         credit_limit limitBalance,
         credit_limit_available availableBalance,
