@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -37,10 +36,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单相关接口
@@ -801,8 +797,6 @@ public class OrderController {
             List<String> goodsImgList = new ArrayList<>();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
-            //定义时间格式
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             //循环遍历订单列表
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 //创建一个返回类
@@ -813,11 +807,15 @@ public class OrderController {
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
                 }
+                //计算剩余过期失效时间
+                Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
                 //设置
-                orderListResponse.setEndTime(sdf.format(orderBaseInfo.getEffectiveEndTime()));
+                if (time > 0){
+                    orderListResponse.setEndTime(time);
+                }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus());
-                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
