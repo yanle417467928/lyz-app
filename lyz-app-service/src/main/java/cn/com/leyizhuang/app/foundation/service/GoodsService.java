@@ -59,4 +59,6 @@ public interface GoodsService {
     List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long userId,Long pcId,Integer qty);
+
+    GoodsDO queryBySku(String sku);
 }

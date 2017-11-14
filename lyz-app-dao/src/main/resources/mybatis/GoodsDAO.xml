@@ -61,6 +61,12 @@
         WHERE gid = #{gid}
     </select>
 
+    <select id="queryBySku" parameterType="java.lang.Long" resultMap="goodsResult">
+        SELECT *
+        FROM gds_goods
+        WHERE sku = #{sku}
+    </select>
+
     <delete id="batchRemove" parameterType="java.util.List">
         DELETE FROM gds_goods WHERE gid IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">

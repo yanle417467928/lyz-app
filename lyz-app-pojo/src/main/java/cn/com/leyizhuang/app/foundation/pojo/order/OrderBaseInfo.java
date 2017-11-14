@@ -25,6 +25,9 @@ public class OrderBaseInfo {
     //订单创建时间
     private Date createTime;
 
+    //有效期失效时间
+    private Date effectiveEndTime;
+
     //订单头状态
     private String status;
 

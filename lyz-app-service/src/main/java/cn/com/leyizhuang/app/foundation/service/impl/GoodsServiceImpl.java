@@ -248,6 +248,11 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return null;
     }
 
+    @Override
+    public GoodsDO queryBySku(String sku) {
+        return goodsDAO.queryBySku(sku);
+    }
+
     /**
      * @title 获取商品详情
      * @descripe

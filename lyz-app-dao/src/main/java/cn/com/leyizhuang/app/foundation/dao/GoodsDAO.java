@@ -93,4 +93,6 @@ public interface GoodsDAO {
     List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
 
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(@Param("cusId") Long cusId,@Param("pcId") Long pcId,@Param("qty") Integer qty);
+
+    GoodsDO queryBySku(@Param("sku") String sku);
 }
