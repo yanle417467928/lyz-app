@@ -240,6 +240,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return null;
     }
 
+    @Override
+    public GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long id,Long cusId,Integer qty) {
+        if (null != id  && null != cusId) {
+            return goodsDAO.findGoodsPriceByProductCouponIdAndUserId(id,cusId,qty);
+        }
+        return null;
+    }
+
     /**
      * @title 获取商品详情
      * @descripe

@@ -151,6 +151,7 @@
             c.mobile,
             c.pic_url,
             c.light,
+            c.customer_type,
             c.create_time
         FROM cus_customer c
         WHERE sales_consult_id = #{userId}
@@ -321,6 +322,19 @@
           create_time
         FROM cus_customer
         WHERE cus_id = #{userId};
+    </select>
+
+    <select id="findCashCouponByCcIdAndUserIdAndQty" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
+        SELECT
+        cp.denomination
+        FROM cus_customer_cash_coupon cccc
+        INNER JOIN cp_cash_coupon cp ON cp.ccid = cccc.ccid
+        WHERE cccc.ccid = #{ccId}
+        AND cccc.cus_id = #{cusId}
+        AND cccc.qty &gt;= #{qty}
+        AND cccc.is_used = FALSE
+        AND cp.effective_start_time &lt; NOW()
+        AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
     </select>
 
 </mapper>

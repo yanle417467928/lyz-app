@@ -282,4 +282,12 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     public AppCustomer findStoreSellerByCustomerId(Long userId) {
         return this.customerDAO.findStoreSellerByCustomerId(userId);
     }
+
+    @Override
+    public CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(Long id, Long userId, Integer qty) {
+        if (null != userId && null != id && null != qty) {
+            return customerDAO.findCashCouponByCcIdAndUserIdAndQty(id, userId, qty);
+        }
+        return null;
+    }
 }

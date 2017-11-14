@@ -522,13 +522,33 @@
         WHERE gid = #{gid}
     </select>
 
+    <select id="findGoodsPriceByProductCouponIdAndUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT
+        p.gid,
+        p.retail_price,
+        p.vip_price,
+        p.wholesale_price
+        FROM cus_customer c
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
+        WHERE c.cus_id = #{cusId}
+        AND pcp.id = #{pcId}
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND pcp.effective_start_time &lt; NOW()
+        AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
+        AND pcp.is_used = FALSE
+        AND PCP.gid = P.gid
+        AND pcp.quantity >= #{qty};
+    </select>
+
     <select id="getGoodsPriceByCustomerAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM cus_customer c
         LEFT JOIN gds_goods_price p ON c.store_id = p.store_id
+        WHERE c.cus_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE c.cus_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" open="(" close=")" separator=",">
             #{gid}
@@ -539,9 +559,9 @@
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM emp_employee e
         LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
+        WHERE e.emp_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE e.emp_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
