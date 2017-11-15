@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo;
 
-import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

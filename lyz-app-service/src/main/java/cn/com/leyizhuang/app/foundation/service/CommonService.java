@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 

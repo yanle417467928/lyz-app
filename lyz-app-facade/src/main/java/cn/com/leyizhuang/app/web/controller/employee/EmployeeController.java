@@ -1,25 +1,29 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * App 员工相关http接口
@@ -36,6 +40,8 @@ public class EmployeeController {
     @Resource
     private AppEmployeeService appEmployeeService;
 
+    @Autowired
+    private StorePreDepositLogService storePreDepositLogServiceImpl;
     /**
      * App 员工登录接口
      *
@@ -240,6 +246,88 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，密码修改失败", null);
             logger.warn("employeeEditPassword EXCEPTION,员工修改密码出现未知异常,返回值resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取装饰公司钱包充值记录
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/8
+     */
+    @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType){
+
+        logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
+            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取装饰公司钱包充值记录失败", null);
+            logger.warn("getStoreRechargePreDepositLog EXCEPTION,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取装饰公司钱包消费记录
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/7
+     */
+    @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType){
+
+        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
+            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取装饰公司钱包消费记录失败", null);
+            logger.warn("getStoreConsumptionPreDepositLog EXCEPTION, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

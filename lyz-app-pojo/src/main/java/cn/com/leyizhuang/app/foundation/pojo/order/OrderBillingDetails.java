@@ -23,7 +23,7 @@ public class OrderBillingDetails {
     //是否业主收货
     private Boolean isOwnerReceiving;
 
-    //订单金额
+    //订单金额小计
     private Double orderAmount;
 
     //会员折扣
@@ -53,7 +53,7 @@ public class OrderBillingDetails {
     //订单金额小计
     private Double orderAmountSubtotal;
 
-    //应付金额
+    //应付款
     private Double amountPayable;
 
     //代收金额
@@ -61,4 +61,8 @@ public class OrderBillingDetails {
 
     //欠款
     private Double arrearage;
+    //现金返利
+    private Double subvention;
+    //信用金
+    private Double creditMoney;
 }

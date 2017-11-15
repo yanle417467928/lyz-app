@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 
@@ -77,5 +77,5 @@ public interface AppCustomerService {
 
     AppCustomer findStoreSellerByCustomerId(Long userId);
 
-
+    CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(Long id, Long userId, Integer integer);
 }

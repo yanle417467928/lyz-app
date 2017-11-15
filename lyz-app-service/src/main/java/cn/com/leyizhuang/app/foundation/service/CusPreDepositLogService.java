@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.core.constant.PreDepositChangeType;
-import cn.com.leyizhuang.app.foundation.pojo.response.CusPreDepositLogResponse;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface CusPreDepositLogService {
 
-    List<CusPreDepositLogResponse> findByUserIdAndType(Long userId, List<PreDepositChangeType> typeList);
+    List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<PreDepositChangeType> typeList);
 }

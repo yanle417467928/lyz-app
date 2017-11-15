@@ -2,11 +2,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
@@ -281,5 +280,13 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public AppCustomer findStoreSellerByCustomerId(Long userId) {
         return this.customerDAO.findStoreSellerByCustomerId(userId);
+    }
+
+    @Override
+    public CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(Long id, Long userId, Integer qty) {
+        if (null != userId && null != id && null != qty) {
+            return customerDAO.findCashCouponByCcIdAndUserIdAndQty(id, userId, qty);
+        }
+        return null;
     }
 }

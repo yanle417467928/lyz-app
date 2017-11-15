@@ -3,57 +3,70 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.CityDAO">
 
     <select id="findAll" resultType="City">
-        SELECT * FROM city
+        SELECT *
+        FROM city
     </select>
 
     <select id="findByCityNumber" parameterType="java.lang.String" resultType="City">
-        SELECT * FROM city where code = #{cityNumber}
+        SELECT *
+        FROM city
+        WHERE code = #{cityNumber}
     </select>
 
     <select id="findById" parameterType="java.lang.Long" resultType="City">
-         SELECT * FROM city where city_id = #{cityId}
+        SELECT *
+        FROM city
+        WHERE city_id = #{cityId}
     </select>
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.City">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.city.City">
         INSERT INTO city
         (NAME, SPELL, CODE, STRUCTURE_ID, STRUCTURE_TITLE, ENABLE, ENABLE_FALSE_TIME)
         VALUES
-        (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
+            (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
     </insert>
 
     <update id="updateCityInventoryByCustomerIdAndIdentityTypeAndInventory">
-      UPDATE city_inventory
-      SET available_ity = available_ity - #{qty}
-      WHERE available_ity >= #{qty}
-      AND gid = #{gid}
-      AND city_id = (SELECT cus_customer.city_id FROM cus_customer WHERE cus_id = #{userId})
+        UPDATE city_inventory
+        SET available_ity = available_ity - #{qty}
+        WHERE available_ity >= #{qty}
+              AND gid = #{gid}
+              AND city_id = (SELECT cus_customer.city_id
+                             FROM cus_customer
+                             WHERE cus_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByCustomerIdAndGoodsIdAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND city_id = (SELECT cus_customer.city_id FROM cus_customer WHERE cus_id = #{userId})
+            gid = #{gid}
+            AND city_id = (SELECT cus_customer.city_id
+                           FROM cus_customer
+                           WHERE cus_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByEmployeeIdAndIdentityTypeAndInventory">
-      UPDATE city_inventory
-      SET available_ity = available_ity - #{qty}
-      WHERE available_ity >= #{qty}
-      AND gid = #{gid}
-      AND city_id = (SELECT emp_employee.city_id FROM emp_employee WHERE emp_id = #{userId})
+        UPDATE city_inventory
+        SET available_ity = available_ity - #{qty}
+        WHERE available_ity >= #{qty}
+              AND gid = #{gid}
+              AND city_id = (SELECT emp_employee.city_id
+                             FROM emp_employee
+                             WHERE emp_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByEmployeeIdAndGoodsIdAndInventory">
-      UPDATE city_inventory
-      SET available_ity = available_ity + #{qty}
-      WHERE
-      gid = #{gid}
-      AND city_id = (SELECT emp_employee.city_id FROM emp_employee WHERE emp_id = #{userId})
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{qty}
+        WHERE
+            gid = #{gid}
+            AND city_id = (SELECT emp_employee.city_id
+                           FROM emp_employee
+                           WHERE emp_id = #{userId})
     </update>
 
-    <update id="modifyCity" parameterType="cn.com.leyizhuang.app.foundation.pojo.City">
+    <update id="modifyCity" parameterType="cn.com.leyizhuang.app.foundation.pojo.city.City">
         UPDATE city
         <set>
             <if test="null != name">
@@ -71,7 +84,7 @@
             <if test="null != enable">
                 ENABLE = #{enable},
             </if>
-            <if test="null != receiverPhone">
+            <if test="null != enableFalseTime">
                 ENABLE_FALSE_TIME = #{enableFalseTime},
             </if>
         </set>
@@ -84,7 +97,17 @@
     </delete>
 
     <select id="existGoodsCityInventory" resultType="java.lang.Boolean">
-        select 'X' from city_inventory WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid};
+        SELECT EXISTS(SELECT 'X'
+                      FROM city_inventory
+                      WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid});
+    </select>
+
+    <select id="findCityDeliveryTimeByCityId" parameterType="java.lang.Long" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime">
+        SELECT *
+        FROM city_delivery_time
+        WHERE cityId = #{cityId}
+        ORDER BY start_hour
     </select>
 
 </mapper>

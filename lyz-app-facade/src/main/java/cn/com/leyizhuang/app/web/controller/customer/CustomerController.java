@@ -5,8 +5,13 @@ import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -471,7 +476,7 @@ public class CustomerController {
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 6) {
+        if (null == identityType || identityType != 6) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
@@ -479,8 +484,8 @@ public class CustomerController {
         }
         try {
             List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
-            List<CusPreDepositLogResponse> cusPreDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusPreDepositLogResponseList);
+            List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -512,7 +517,7 @@ public class CustomerController {
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 6) {
+        if (null == identityType || identityType != 6) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
@@ -520,8 +525,8 @@ public class CustomerController {
         }
         try {
             List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
-            List<CusPreDepositLogResponse> cusPreDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusPreDepositLogResponseList);
+            List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

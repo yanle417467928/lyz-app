@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
@@ -82,4 +82,7 @@ public interface AppCustomerDAO {
             @Param("userId") Long userId,@Param("ccid") Long index,@Param("qty") Integer integer);
 
     AppCustomer findStoreSellerByCustomerId(@Param("userId") Long userId);
+
+    CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(
+            @Param("ccId") Long id,@Param("cusId") Long userId,@Param("qty") Integer qty);
 }

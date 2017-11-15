@@ -1,12 +1,11 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.foundation.pojo.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,24 +37,32 @@ public class CustomerListResponse implements Serializable {
     //用户灯号
     private String light;
 
+    //顾客身份类型
+    private String customerType;
+
     public CustomerListResponse() {
     }
 
     public static CustomerListResponse transform(AppCustomer appCustomer){
 
-        CustomerListResponse customerList = new CustomerListResponse();
+        CustomerListResponse customer = new CustomerListResponse();
 
-        customerList.setCusId(appCustomer.getCusId());
-        customerList.setName(appCustomer.getName());
-        customerList.setPicUrl(appCustomer.getPicUrl());
-        customerList.setMobile(appCustomer.getMobile());
-        customerList.setLight(appCustomer.getLight().getValue());
+        customer.setCusId(appCustomer.getCusId());
+        customer.setName(appCustomer.getName());
+        customer.setPicUrl(appCustomer.getPicUrl());
+        customer.setMobile(appCustomer.getMobile());
+        if (appCustomer.getLight() != null) {
+            customer.setLight(appCustomer.getLight().getValue());
+        }
+        if (appCustomer.getCustomerType() != null) {
+            customer.setCustomerType(appCustomer.getCustomerType().getValue());
+        }
         if (null != appCustomer.getCreateTime()){
             String time = appCustomer.getCreateTime()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            customerList.setCreateTime(time);
+            customer.setCreateTime(time);
         }
-        return customerList;
+        return customer;
     }
 
     public static List<CustomerListResponse> transform(List<AppCustomer> appCustomerList){

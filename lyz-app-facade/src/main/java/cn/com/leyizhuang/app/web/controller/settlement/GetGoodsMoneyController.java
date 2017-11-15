@@ -1,24 +1,23 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
-import cn.com.leyizhuang.app.foundation.pojo.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleRequest;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
-import org.apache.catalina.Store;
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
@@ -158,9 +157,9 @@ public class GetGoodsMoneyController {
                             goodsInfo.get(i).setGoodsQty(goodsTotalQty);
                         }
                         //判断库存
-                        Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(employee.getStoreId(),goodsInfo.get(i).getId(),goodsInfo.get(i).getGoodsQty());
+                        Boolean isHaveInventory = appOrderService.existGoodsCityInventory(employee.getCityId(),goodsInfo.get(i).getId(),goodsInfo.get(i).getGoodsQty());
                         if (!isHaveInventory){
-                            String msg = goodsInfo.get(i).getGoodsName().concat("门店库存不足！");
+                            String msg = goodsInfo.get(i).getGoodsName().concat("城市库存不足！");
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
                             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
                             return resultDTO;

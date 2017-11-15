@@ -7,7 +7,7 @@
         STORE_ID, GOODS_ID, REAL_INVENTORY,SOLD_INVENTORY
     </sql>
 
-    <resultMap id="storeInventoryResult" type="cn.com.leyizhuang.app.foundation.pojo.StoreInventory">
+    <resultMap id="storeInventoryResult" type="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
         <id column="ID" property="id"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>

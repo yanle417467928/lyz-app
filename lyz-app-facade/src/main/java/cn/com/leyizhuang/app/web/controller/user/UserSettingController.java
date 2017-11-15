@@ -4,12 +4,20 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.FunctionalFeedbackDO;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.StoreSellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -248,7 +255,8 @@ public class UserSettingController {
      */
     @PostMapping(value = "/deliveryAddress/add", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> addDeliveryAddress(Long userId, Integer identityType, DeliveryAddressRequest deliveryAddress) {
-        logger.info("addDeliveryAddress CALLED,顾客新增收货地址，入参 userId:{} identityType:{} deliveryAddress:{}", userId, identityType, deliveryAddress);
+        logger.info("addDeliveryAddress CALLED,顾客新增收货地址，入参 userId:{} identityType:{} deliveryAddress:{}",
+                userId, identityType, deliveryAddress);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -256,8 +264,8 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || 6 != identityType) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
                         null);
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -297,7 +305,13 @@ public class UserSettingController {
                 logger.info("addDeliveryAddress OUT,顾客新增收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            this.deliveryAddressServiceImpl.addDeliveryAddress(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
+            //如果新增的地址要设置为默认收货地址，则要该用户原有默认收货地址设置成false
+            if (deliveryAddress.getIsDefault()) {
+                this.deliveryAddressServiceImpl.clearDefaultAddressByUserIdAndIdentityType
+                        (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            }
+            this.deliveryAddressServiceImpl.
+                    addDeliveryAddress(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addDeliveryAddress OUT,顾客新增收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -331,7 +345,7 @@ public class UserSettingController {
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == identityType || 6 != identityType) {
+            if (null == identityType) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                         null);
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
@@ -376,6 +390,10 @@ public class UserSettingController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货详细地址不能为空！", null);
                 logger.info("modifyDeliveryAddress OUT,顾客编辑收货地址失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
+            }
+            if (null != deliveryAddress.getIsDefault()) {
+                this.deliveryAddressServiceImpl.clearDefaultAddressByUserIdAndIdentityType
+                        (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
             }
             this.deliveryAddressServiceImpl.modifyDeliveryAddress(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), deliveryAddress);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -577,15 +595,15 @@ public class UserSettingController {
     }
 
 
-   /**
-    * @title 获取客户归属门店和导购
-    * @descripe
-    * @param
-    * @return
-    * @throws
-    * @author GenerationRoad
-    * @date 2017/11/3
-    */
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取客户归属门店和导购
+     * @descripe
+     * @author GenerationRoad
+     * @date 2017/11/3
+     */
     @PostMapping(value = "/storeSeller/get", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getStoreSeller(Long userId, Integer identityType, Long cityId) {
         logger.info("getStoreSeller CALLED,获取客户归属门店和导购，入参 userId {},identityType{}, cityId{}", userId, identityType, cityId);
@@ -608,11 +626,11 @@ public class UserSettingController {
         }
         AppCustomer appCustomer = this.customerService.findStoreSellerByCustomerId(userId);
         StoreSellerResponse storeSeller = new StoreSellerResponse();
-        if (null != appCustomer){
+        if (null != appCustomer) {
             storeSeller.setStoreId(appCustomer.getStoreId());
             storeSeller.setSellerId(appCustomer.getSalesConsultId());
             AppStore store = storeService.findById(appCustomer.getStoreId());
-            if (null == appCustomer.getBindingTime() || store.getIsDefault()){
+            if (null == appCustomer.getBindingTime() || store.getIsDefault()) {
                 storeSeller.setIsPassable(Boolean.TRUE);
             } else {
                 Date date = new Date();
@@ -631,11 +649,11 @@ public class UserSettingController {
     }
 
     /**
-     * @title  根据门店ID查询所有导购
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 根据门店ID查询所有导购
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/3
      */
@@ -666,11 +684,11 @@ public class UserSettingController {
     }
 
     /**
-     * @title   顾客绑定服务导购
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 顾客绑定服务导购
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/3
      */
@@ -714,13 +732,13 @@ public class UserSettingController {
                 return resultDTO;
             }
             AppEmployee seller = employeeService.findById(sellerId);
-            if (null != seller && seller.getStoreId() == storeId){
+            if (null != seller && seller.getStoreId() == storeId) {
                 customer.setSalesConsultId(sellerId);
                 customer.setStoreId(storeId);
                 customer.setCustomerType(AppCustomerType.MEMBER);
                 customer.setBindingTime(new Date());
                 customerService.update(customer);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {

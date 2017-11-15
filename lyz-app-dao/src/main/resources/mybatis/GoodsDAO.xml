@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsDAO">
-    <resultMap id="goodsResult" type="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <resultMap id="goodsResult" type="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="CREATOR_ID" property="creatorId"/>
         <result column="CREATOR_TYPE" property="creatorType"/>
@@ -61,6 +61,12 @@
         WHERE gid = #{gid}
     </select>
 
+    <select id="queryBySku" parameterType="java.lang.Long" resultMap="goodsResult">
+        SELECT *
+        FROM gds_goods
+        WHERE sku = #{sku}
+    </select>
+
     <delete id="batchRemove" parameterType="java.util.List">
         DELETE FROM gds_goods WHERE gid IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">
@@ -68,7 +74,7 @@
         </foreach>
     </delete>
 
-    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         UPDATE gds_goods
         <set>
             <if test="null != brdId">
@@ -396,7 +402,7 @@
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
-    <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI
@@ -516,19 +522,39 @@
         </if>
     </select>
 
-    <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsDO">
+    <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT gid,sku, sku_name, cover_image_uri, goods_specification, goods_unit
         FROM gds_goods
         WHERE gid = #{gid}
+    </select>
+
+    <select id="findGoodsPriceByProductCouponIdAndUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT
+        p.gid,
+        p.retail_price,
+        p.vip_price,
+        p.wholesale_price
+        FROM cus_customer c
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
+        WHERE c.cus_id = #{cusId}
+        AND pcp.id = #{pcId}
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND pcp.effective_start_time &lt; NOW()
+        AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
+        AND pcp.is_used = FALSE
+        AND PCP.gid = P.gid
+        AND pcp.quantity >= #{qty};
     </select>
 
     <select id="getGoodsPriceByCustomerAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM cus_customer c
         LEFT JOIN gds_goods_price p ON c.store_id = p.store_id
+        WHERE c.cus_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE c.cus_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" open="(" close=")" separator=",">
             #{gid}
@@ -539,16 +565,16 @@
         SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
         FROM emp_employee e
         LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
+        WHERE e.emp_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE e.emp_id = #{userId}
         AND p.gid IN
         <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
         </foreach>
     </select>
 
-    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse">
+    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
             g.gid      id,
             g.sku_name goods_name,
@@ -574,7 +600,7 @@
         </foreach>
 
     </select>
-    <select id="findGoodsListByCustomerIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse">
+    <select id="findGoodsListByCustomerIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
         g.gid      id,
         g.sku_name goods_name,

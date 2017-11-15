@@ -7,7 +7,7 @@
                                   status, sex, pic_url, city_id, store_id, manager_id, create_time
         ) VALUES (
             #{loginName}, #{name}, #{password}, #{salt},
-                          #{employeeType,
+                          #{identityType,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                           #{mobile}, #{birthday}, #{status},
@@ -104,7 +104,7 @@
     </select>
 
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.SellerCreditMoney">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney">
         SELECT
         credit_limit limitBalance,
         credit_limit_available availableBalance,

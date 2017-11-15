@@ -219,7 +219,7 @@ public class UserHomePageController {
     /**
      * 获取用户默认收货地址
      *
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return 用户默认收货地址
      */
@@ -240,6 +240,10 @@ public class UserHomePageController {
             }
             DeliveryAddressResponse deliveryAddressResponse = deliveryAddressService.
                     getDefaultDeliveryAddressByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            if (null == deliveryAddressResponse) {
+                deliveryAddressResponse = deliveryAddressService.getTopDeliveryAddressByUserIdAndIdentityType
+                        (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponse);
             logger.info("getDeliveryAddress OUT,获取用户默认收货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

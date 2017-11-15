@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -12,10 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
+/**支付功能调用
  * @author GenerationRoad
  * @date 2017/10/19
  */
@@ -106,5 +102,21 @@ public class GetPaymentMethodsController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
+
+    /**
+     * 调用微信支付支付金额
+     * @return
+     */
+    @PostMapping(value = "/wechat/pay", produces = "application/json;charset=UTF-8")
+    public ResultDTO paymentMethodsOfWChatPayment(){
+
+        logger.info("paymentMethodsOfWChatPayment CALLED,调用微信支付支付金额，入参 userId:{},identityType:{},goodsMoney{}");
+
+        ResultDTO<Object> resultDTO;
+
+
+
+        return null;
     }
 }

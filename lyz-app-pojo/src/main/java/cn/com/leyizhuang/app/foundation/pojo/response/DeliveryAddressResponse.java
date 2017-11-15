@@ -1,12 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.foundation.pojo.DeliveryAddressDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -23,8 +19,6 @@ public class DeliveryAddressResponse {
     private String deliveryName;
     //收货人号码
     private String deliveryPhone;
-    //收货省份
-    private String deliveryProvince;
     //收货城市
     private String deliveryCity;
     //收货县

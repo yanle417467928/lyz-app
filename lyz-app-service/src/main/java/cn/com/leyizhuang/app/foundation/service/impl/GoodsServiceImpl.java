@@ -3,10 +3,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsSimpleResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -238,6 +238,19 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
 
         }
         return null;
+    }
+
+    @Override
+    public GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long id,Long cusId,Integer qty) {
+        if (null != id  && null != cusId) {
+            return goodsDAO.findGoodsPriceByProductCouponIdAndUserId(id,cusId,qty);
+        }
+        return null;
+    }
+
+    @Override
+    public GoodsDO queryBySku(String sku) {
+        return goodsDAO.queryBySku(sku);
     }
 
     /**
