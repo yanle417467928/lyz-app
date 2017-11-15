@@ -61,4 +61,6 @@ public interface GoodsService {
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long userId,Long pcId,Integer qty);
 
     GoodsDO queryBySku(String sku);
+
+    Boolean existGoodsBrandByGoodsIdAndBrandName(Long id, String brandName);
 }

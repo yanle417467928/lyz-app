@@ -351,6 +351,8 @@
 
     <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+
+        <if test="null != type and type.toString() == 'CUSTOMER'">
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
@@ -364,8 +366,9 @@
             g.gtid     type_id
         FROM
             gds_goods_collect acc
+            INNER JOIN cus_customer c ON c.cus_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
-            INNER JOIN gds_goods_price p ON p.gid = g.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid AND c.store_id = p.store_id
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE
@@ -373,6 +376,34 @@
             AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        </if>
+
+        <if test="null != type and type.toString() != 'CUSTOMER'">
+        SELECT
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
+        FROM
+            gds_goods_collect acc
+            INNER JOIN emp_employee e ON e.emp_id = acc.user_id
+            INNER JOIN gds_goods g ON g.gid = acc.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid AND e.store_id = p.store_id
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        WHERE
+            acc.user_id = #{userId}
+            AND acc.identity_type = #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        </if>
+
     </select>
 
     <select id="findGoodsOftenListByUserIdAndIdentityType" parameterType="java.lang.Long"
@@ -703,4 +734,9 @@
         </if>
     </select>
 
+    <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+        SELECT 'X' FROM gds_goods WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName},'%'))
+
+    </select>
 </mapper>

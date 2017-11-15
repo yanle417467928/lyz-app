@@ -253,6 +253,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return goodsDAO.queryBySku(sku);
     }
 
+    @Override
+    public Boolean existGoodsBrandByGoodsIdAndBrandName(Long id, String brandName) {
+        if (id != null && StringUtils.isNotBlank(brandName)) {
+            return goodsDAO.existGoodsBrandByGoodsIdAndBrandName(id,brandName);
+        }
+        return null;
+    }
+
     /**
      * @title 获取商品详情
      * @descripe
