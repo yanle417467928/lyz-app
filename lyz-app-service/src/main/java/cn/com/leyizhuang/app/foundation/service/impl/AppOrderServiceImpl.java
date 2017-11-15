@@ -66,7 +66,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public int querySumQtyByOrderNumber(String orderNumber) {
+    public Integer querySumQtyByOrderNumber(String orderNumber) {
         return orderDAO.querySumQtyByOrderNumber(orderNumber);
     }
 

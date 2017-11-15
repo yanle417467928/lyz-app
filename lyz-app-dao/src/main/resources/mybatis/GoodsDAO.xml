@@ -61,7 +61,7 @@
         WHERE gid = #{gid}
     </select>
 
-    <select id="queryBySku" parameterType="java.lang.Long" resultMap="goodsResult">
+    <select id="queryBySku" parameterType="java.lang.String" resultMap="goodsResult">
         SELECT *
         FROM gds_goods
         WHERE sku = #{sku}

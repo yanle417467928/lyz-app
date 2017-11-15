@@ -24,7 +24,7 @@ public interface OrderDAO {
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(@Param("orderNumber") String orderNumber);
     //计算获取订单所有商品数量
-    int querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
+    Integer querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
     //模糊查询订单
     List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType,@Param("condition") String condition);
 }
