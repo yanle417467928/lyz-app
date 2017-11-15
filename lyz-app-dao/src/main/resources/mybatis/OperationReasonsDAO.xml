@@ -4,7 +4,7 @@
 
     <select id="findAllByType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse">
         SELECT reason
-        FROM cancel_reasons
+        FROM operation_reason
         WHERE type = #{type}
           AND status IS NOT FALSE
     </select>
