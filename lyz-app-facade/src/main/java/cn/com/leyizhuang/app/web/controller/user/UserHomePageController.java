@@ -306,7 +306,7 @@ public class UserHomePageController {
             Long userId = simpleRequest.getUserId();
             Integer identityType = simpleRequest.getIdentityType();
             List<GoodsSimpleInfo> goodsList = simpleRequest.getGoodsList();
-            List<StoreResponse> storeResponseList = null;
+            List<StoreResponse> storeList = null;
             List<OrderGoodsSimpleResponse> goodsInfo;
             List<Long> goodsIds = new ArrayList<Long>();
 
@@ -314,7 +314,7 @@ public class UserHomePageController {
                 AppCustomer customer = customerService.findById(userId);
                 Long storeId = customer.getStoreId();
                 Long cityId = customer.getCityId();
-                storeResponseList = appStoreService.findStoreByCityId(cityId);
+                storeList = appStoreService.findStoreByCityId(cityId);
 
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
@@ -361,7 +361,7 @@ public class UserHomePageController {
                 AppEmployee employee = employeeService.findById(userId);
                 Long storeId = employee.getStoreId();
                 Long cityId = employee.getCityId();
-                storeResponseList = appStoreService.findStoreByCityId(cityId);
+                storeList = appStoreService.findStoreByCityId(cityId);
 
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
@@ -405,7 +405,7 @@ public class UserHomePageController {
                 }
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    storeResponseList.size() > 0 ? storeResponseList : null);
+                    storeList.size() > 0 ? storeList : null);
             logger.info("getGoodsMoney OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e) {
