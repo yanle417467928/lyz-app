@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
@@ -80,7 +81,7 @@ public class OrderController {
                         " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", userId, identityType, customerId, goodsInfo, deliveryInfo,
                 leBiQuantity, cashCouponIds, productCouponInfo, billingInfo);
         ResultDTO<Object> resultDTO;
-        if(null == userId){
+        if (null == userId) {
 
         }
 
@@ -96,7 +97,7 @@ public class OrderController {
             BillingSimpleInfo billing = objectMapper.readValue(billingInfo, BillingSimpleInfo.class);
 
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,6 +112,7 @@ public class OrderController {
 
     /**
      * 用户确认订单计算商品价格明细
+     *
      * @param goodsSimpleRequest 用户下料清单里的商品信息DTO对象
      * @return
      * @author Jerry
@@ -807,11 +809,13 @@ public class OrderController {
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
                 }
-                //计算剩余过期失效时间
-                Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
-                //设置
-                if (time > 0){
-                    orderListResponse.setEndTime(time);
+                if ("待付款".equals(orderBaseInfo.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    //设置
+                    if (time > 0) {
+                        orderListResponse.setEndTime(time);
+                    }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus());
@@ -829,6 +833,79 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单列表失败", null);
             logger.warn("getOrderList EXCEPTION,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 模糊查询订单
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param condition    查询条件
+     * @return 订单列表
+     */
+    @PostMapping(value = "/fuzzy/query", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getFuzzyQuery(Long userID, Integer identityType, String condition) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getFuzzyQuery CALLED,模糊查询订单列表，入参 userID:{}, identityType:{}, condition:{}", userID, identityType, condition);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(condition)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "查询条件不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取符合条件所有订单列表
+            List<OrderBaseInfo> orderBaseInfoList = appOrderService.getFuzzyQuery(userID, identityType, condition);
+            //创建有个存放图片地址的list
+            List<String> goodsImgList = new ArrayList<>();
+            //创建一个返回对象list
+            List<OrderListResponse> orderListResponses = new ArrayList<>();
+            //循环遍历订单列表
+            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                //创建一个返回类
+                OrderListResponse orderListResponse = new OrderListResponse();
+                //获取订单商品
+                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                //遍历订单商品
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+                }
+                if ("待付款".equals(orderBaseInfo.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    //设置
+                    if (time > 0) {
+                        orderListResponse.setEndTime(time);
+                    }
+                }
+                orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
+                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
+                orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                orderListResponse.setGoodsImgList(goodsImgList);
+                //添加到返回类list中
+                orderListResponses.add(orderListResponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderListResponses);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，模糊查询订单列表失败", null);
+            logger.warn("getFuzzyQuery EXCEPTION,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

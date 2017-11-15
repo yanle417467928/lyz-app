@@ -17,7 +17,7 @@ import java.util.List;
 public interface OrderDAO {
 
     List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber);
-    //用户回去我的订单列表
+    //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType);
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(@Param("orderNumber") String orderNumber);
@@ -25,4 +25,6 @@ public interface OrderDAO {
     Double getAmountPayableByOrderNumber(@Param("orderNumber") String orderNumber);
     //计算获取订单所有商品数量
     int querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
+    //模糊查询订单
+    List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType,@Param("condition") String condition);
 }

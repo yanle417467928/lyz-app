@@ -69,4 +69,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     public int querySumQtyByOrderNumber(String orderNumber) {
         return orderDAO.querySumQtyByOrderNumber(orderNumber);
     }
+
+    @Override
+    public List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition) {
+        return orderDAO.getFuzzyQuery(userID,AppIdentityType.getAppIdentityTypeByValue(identityType),condition);
+    }
 }

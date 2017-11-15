@@ -12,23 +12,85 @@
         AND (og.is_gift IS NULL OR og.is_gift = false)
     </select>
 
-    <select id="getOrderListByUserIDAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-       SELECT
+    <select id="getOrderListByUserIDAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
             obi.`status`,
             obi.ord_no,
             obi.effective_end_time,
             obi.delivery_type
-        FROM
+            FROM
             ord_base_info AS obi
-        WHERE
-        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            WHERE
             obi.customer_id = #{userID}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
             obi.manager_id = #{userID}
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
             obi.sales_consult_id = #{userID}
+        </if>
+    </select>
+
+    <select id="getFuzzyQuery" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.customer_id = #{userID}
+            AND
+            (oli.ord_no LIKE #{condition} OR oli.shipping_address LIKE #{condition} OR oli.receiver LIKE #{condition})
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.manager_id = #{userID}
+            AND
+            (oli.ord_no LIKE #{condition} OR oli.shipping_address LIKE #{condition} OR oli.receiver LIKE #{condition})
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.sales_consult_id = #{userID}
+            AND
+            (oli.ord_no LIKE #{condition} OR oli.shipping_address LIKE #{condition} OR oli.receiver LIKE #{condition})
         </if>
     </select>
 
