@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.response.PaymentMethodResponse;
 
 import java.util.List;
 
@@ -9,5 +10,5 @@ import java.util.List;
  * @date 2017/11/15
  */
 public interface PaymentMethodService {
-    List<String> findByTypeAndCityId(AppIdentityType type, Long cityId);
+    List<PaymentMethodResponse> findByTypeAndCityId(AppIdentityType type, Long cityId);
 }

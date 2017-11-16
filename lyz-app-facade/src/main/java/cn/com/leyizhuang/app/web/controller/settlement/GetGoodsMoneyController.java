@@ -78,7 +78,7 @@ public class GetGoodsMoneyController {
                 GoodsPrice goodsPrice = priceList.get(i);
                 Set<Long> key = map.keySet();
                 for (Long goodId : key) {
-                    if (goodId.equals(goodsPrice.getGid())){
+                    if (goodId.equals(goodsPrice.getGid())) {
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(goodsPrice.getRetailPrice(), map.get(goodId)));
                     }
                 }
@@ -98,9 +98,10 @@ public class GetGoodsMoneyController {
 
     /**
      * 确认商品计算工人订单总金额
-     * @author Jerry
+     *
      * @param
      * @return
+     * @author Jerry
      */
     @PostMapping(value = "/worker", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getGoodsMoneyOfWorker(@RequestBody OrderGoodsSimpleRequest goodsSimpleRequest) {
@@ -126,58 +127,48 @@ public class GetGoodsMoneyController {
         Long userId = goodsSimpleRequest.getUserId();
         Integer identityType = goodsSimpleRequest.getIdentityType();
         List<GoodsSimpleInfo> goodsList = goodsSimpleRequest.getGoodsList();
-        if (identityType != 3){
+        if (identityType != 3) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型错误", null);
             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        try{
+        try {
             int totalQty = 0;
             Double totalPrice = 0.00;
             List<Long> goodsIds = new ArrayList<Long>();
             List<Long> giftIds = new ArrayList<>();
-            Map<String,Object> goodsSettlement = new HashMap<>();
+            Map<String, Object> goodsSettlement = new HashMap<>();
             List<OrderGoodsSimpleResponse> goodsInfo;
             List<OrderGoodsSimpleResponse> giftInfo;
             AppEmployee employee = appEmployeeService.findById(userId);
-            for (int i = 0; i <goodsList.size(); i++) {
+            for (int i = 0; i < goodsList.size(); i++) {
                 if (!goodsList.get(i).getIsGift()) {
                     goodsIds.add(goodsList.get(i).getId());
-                }else {
+                } else {
                     giftIds.add(goodsList.get(i).getId());
                 }
                 totalQty = totalQty + goodsList.get(i).getNum();
             }
             //获取商品信息
-            goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId,goodsIds);
+            goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
             //获取赠品信息
-            giftInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId,giftIds);
-            //赠品的数量和标识
-            for (int i = 0; i <giftInfo.size() ; i++) {
-                for (int j = 0; j < goodsList.size(); j++) {
-                    if (giftInfo.get(i).getId().equals(goodsList.get(j).getId())) {
-                        if (goodsList.get(j).getIsGift()) {
-                            giftInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
-                            giftInfo.get(i).setIsGift(Boolean.TRUE);
-                        }
-                    }
-                }
-            }
+            giftInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
+
             //正品的数量和标识这里需要判断库存的特殊处理（所以不能和赠品的集合加在一起循环）
             int goodsTotalQty = 0;
-            for (int i = 0; i <goodsInfo.size() ; i++) {
+            for (int i = 0; i < goodsInfo.size(); i++) {
                 for (int j = 0; j < goodsList.size(); j++) {
                     if (goodsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
                         if (goodsList.get(j).getIsGift()) {
                             goodsTotalQty = goodsInfo.get(i).getGoodsQty() + goodsList.get(j).getNum();
-                        }else {
+                        } else {
                             goodsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
                             goodsInfo.get(i).setIsGift(Boolean.FALSE);
                             goodsTotalQty = goodsInfo.get(i).getGoodsQty();
                         }
                         //判断库存
-                        Boolean isHaveInventory = appOrderService.existGoodsCityInventory(employee.getCityId(),goodsInfo.get(i).getId(),goodsTotalQty);
-                        if (!isHaveInventory){
+                        Boolean isHaveInventory = appOrderService.existGoodsCityInventory(employee.getCityId(), goodsInfo.get(i).getId(), goodsTotalQty);
+                        if (!isHaveInventory) {
                             String msg = goodsInfo.get(i).getGoodsName().concat("城市库存不足！");
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
                             logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
@@ -190,21 +181,34 @@ public class GetGoodsMoneyController {
             List<GoodsPrice> priceList = this.goodsServiceImpl.getGoodsPriceByEmployeeAndGoodsId(userId, goodsIds);
             for (int i = 0; i < priceList.size(); i++) {
                 GoodsPrice goodsPrice = priceList.get(i);
-                for (int j = 0; j <goodsList.size() ; j++) {
-                    if (goodsPrice.getGid().equals(goodsList.get(j).getId())){
+                for (int j = 0; j < goodsList.size(); j++) {
+                    if (goodsPrice.getGid().equals(goodsList.get(j).getId())) {
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(goodsPrice.getRetailPrice(), goodsList.get(j).getNum()));
                     }
                 }
             }
-            //合并商品和赠品集合
-            goodsInfo.addAll(giftInfo);
-            goodsSettlement.put("totalQty",totalQty);
-            goodsSettlement.put("totalPrice",totalPrice);
-            goodsSettlement.put("totalGoodsInfo",goodsInfo);
+            //加赠品的数量和标识，除非是有赠品
+            if (giftInfo != null) {
+                for (int i = 0; i < giftInfo.size(); i++) {
+                    for (int j = 0; j < goodsList.size(); j++) {
+                        if (giftInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                            if (goodsList.get(j).getIsGift()) {
+                                giftInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                giftInfo.get(i).setIsGift(Boolean.TRUE);
+                            }
+                        }
+                    }
+                }
+                //合并商品和赠品集合
+                goodsInfo.addAll(giftInfo);
+            }
+            goodsSettlement.put("totalQty", totalQty);
+            goodsSettlement.put("totalPrice", totalPrice);
+            goodsSettlement.put("totalGoodsInfo", goodsInfo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsSettlement);
             logger.info("getGoodsMoney OUT,确认商品计算工人订单总金额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,确认商品计算工人订单总金额失败!", null);
             logger.warn("getGoodsMoneyOfWorker EXCEPTION,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);

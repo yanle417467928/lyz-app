@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderEvaluationDAO">
+
+    <select id="queryOrderEvaluationListByGid" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation">
+        SELECT
+        *
+        FROM gds_goods_evaluation
+        WHERE
+         GID = #{gid}
+        ORDER BY EVALUATION_TIME DESC
+    </select>
+
+    <insert id="addOrderEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gds_goods_evaluation
+        (GID, PRODUCT_STAR, LOGISTICE_STAR, SERVICE_STARS, ORDER_NUMBER)
+        VALUES
+        (#{gid}, #{productStar}, #{logisticsStar}, #{serviceStars}, #{orderNumber})
+    </insert>
+
+
+</mapper>

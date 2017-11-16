@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -216,5 +217,41 @@ public class WechatUtil {
 
     public static String getTimeStamp() {
         return String.valueOf(System.currentTimeMillis() / 1000);
+    }
+
+    /**
+     * 检查微信返回结果的签名是不是调用的签名
+     * @param map
+     * @return
+     */
+    public static boolean verifyNotify(Map<Object, Object> map) {
+        SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
+        String sign = (String) map.get("sign");
+        for (Object keyValue : map.keySet()) {
+            if (!"sign".equals(keyValue.toString())) {
+                parameterMap.put(keyValue.toString(), map.get(keyValue));
+            }
+        }
+        String createSign = createSign("UTF-8", parameterMap);
+        return createSign.equals(sign);
+    }
+
+    /**
+     * 将流转换成字符串
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static String streamToString(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, len);
+        }
+        outputStream.close();
+        inputStream.close();
+
+        return new String(outputStream.toByteArray(),"UTF-8");
     }
 }

@@ -14,6 +14,7 @@ import lombok.ToString;
 @ToString
 public class ArrearsAuditResponse {
 
+    private Long id;
     //订单编号
     private String orderNumber;
     //会员姓名
@@ -39,7 +40,7 @@ public class ArrearsAuditResponse {
     //状态
     private String status;
 
-    public void setType(ArrearsAuditStatus arrearsAuditStatus){
+    public void setStatus(ArrearsAuditStatus arrearsAuditStatus){
         this.status = arrearsAuditStatus.getValue();
     }
 }
