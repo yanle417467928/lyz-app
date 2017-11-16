@@ -1,8 +1,15 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import lombok.*;
+
 /**
  * Created by caiyu on 2017/11/16.
  */
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderEvaluation {
     //自增id
     private Long id;
