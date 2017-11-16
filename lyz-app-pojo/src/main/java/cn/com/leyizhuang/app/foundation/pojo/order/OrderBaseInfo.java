@@ -61,5 +61,5 @@ public class OrderBaseInfo {
     private Double totalGoodsPrice;
 
     //是否已评价
-    private Boolean isEvaluation;
+    private Boolean isEvaluated;
 }
