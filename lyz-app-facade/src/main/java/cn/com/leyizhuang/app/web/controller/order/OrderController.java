@@ -2,8 +2,6 @@ package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
@@ -28,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -38,7 +34,7 @@ import java.util.*;
  * 订单相关接口
  *
  * @author Richard
- *         Created on 2017-10-23 17:02
+ * Created on 2017-10-23 17:02
  **/
 @RestController
 @RequestMapping(value = "/app/order")
@@ -162,7 +158,7 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
-                    }else {
+                    } else {
                         giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
@@ -173,17 +169,6 @@ public class OrderController {
                 //获取赠品信息
                 giftsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
 
-                //赠品的数量和标识
-                for (int i = 0; i <giftsInfo.size() ; i++) {
-                    for (int j = 0; j < goodsList.size(); j++) {
-                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
-                            if (goodsList.get(j).getIsGift()) {
-                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
-                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
-                            }
-                        }
-                    }
-                }
                 //正品的数量和标识这里需要判断库存的特殊处理（所以不能和赠品的集合加在一起循环）
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
@@ -229,8 +214,21 @@ public class OrderController {
                 //查询顾客预存款
                 Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
 
-                //合并商品和赠品集合
-                goodsInfo.addAll(giftsInfo);
+                if (giftsInfo != null) {
+                    //赠品的数量和标识
+                    for (int i = 0; i < giftsInfo.size(); i++) {
+                        for (int j = 0; j < goodsList.size(); j++) {
+                            if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                                if (goodsList.get(j).getIsGift()) {
+                                    giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                    giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                                }
+                            }
+                        }
+                    }
+                    //合并商品和赠品集合
+                    goodsInfo.addAll(giftsInfo);
+                }
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -258,7 +256,7 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
-                    }else {
+                    } else {
                         giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
@@ -266,18 +264,6 @@ public class OrderController {
                 }
                 goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
                 giftsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
-
-                //赠品的数量和标识
-                for (int i = 0; i <giftsInfo.size() ; i++) {
-                    for (int j = 0; j < goodsList.size(); j++) {
-                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
-                            if (goodsList.get(j).getIsGift()) {
-                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
-                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
-                            }
-                        }
-                    }
-                }
 
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
@@ -325,7 +311,20 @@ public class OrderController {
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
-                goodsInfo.addAll(giftsInfo);
+                //赠品的数量和标识
+                if (giftsInfo != null) {
+                    for (int i = 0; i < giftsInfo.size(); i++) {
+                        for (int j = 0; j < goodsList.size(); j++) {
+                            if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                                if (goodsList.get(j).getIsGift()) {
+                                    giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                    giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                                }
+                            }
+                        }
+                    }
+                    goodsInfo.addAll(giftsInfo);
+                }
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -349,7 +348,7 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
-                    }else {
+                    } else {
                         giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
@@ -358,18 +357,6 @@ public class OrderController {
                 goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
 
                 giftsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
-
-                //赠品的数量和标识
-                for (int i = 0; i <giftsInfo.size() ; i++) {
-                    for (int j = 0; j < goodsList.size(); j++) {
-                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
-                            if (goodsList.get(j).getIsGift()) {
-                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
-                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
-                            }
-                        }
-                    }
-                }
 
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
@@ -407,7 +394,21 @@ public class OrderController {
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
                 Double storeSubvention = appStoreService.findSubventionBalanceByUserId(userId);
 
-                goodsInfo.addAll(giftsInfo);
+
+                //赠品的数量和标识
+                if (giftsInfo != null) {
+                    for (int i = 0; i < giftsInfo.size(); i++) {
+                        for (int j = 0; j < goodsList.size(); j++) {
+                            if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                                if (goodsList.get(j).getIsGift()) {
+                                    giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                    giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                                }
+                            }
+                        }
+                    }
+                    goodsInfo.addAll(giftsInfo);
+                }
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
