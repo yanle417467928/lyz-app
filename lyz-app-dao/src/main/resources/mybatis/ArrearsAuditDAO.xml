@@ -3,12 +3,13 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO">
 
     <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
-        SELECT ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
-          seller_name sellerName, seller_phone sellerphone, distribution_address, distributionAddress,
+        SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
+          seller_name sellerName, seller_phone sellerphone, distribution_address distributionAddress,
           distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
-          payment_method paymentMethod, status, orderMoney
+          payment_method paymentMethod, status, order_money
         FROM ord_arrears_audit
-        WHERE userId = #{userId}
+        WHERE user_id = #{userId}
+        ORDER BY create_time desc
     </select>
 
 </mapper>
