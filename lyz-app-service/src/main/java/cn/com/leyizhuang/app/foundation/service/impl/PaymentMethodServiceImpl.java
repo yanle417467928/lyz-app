@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.PaymentMethodDAO;
+import cn.com.leyizhuang.app.foundation.pojo.response.PaymentMethodResponse;
 import cn.com.leyizhuang.app.foundation.service.PaymentMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     private PaymentMethodDAO paymentMethodDAO;
 
     @Override
-    public List<String> findByTypeAndCityId(AppIdentityType type, Long cityId) {
+    public List<PaymentMethodResponse> findByTypeAndCityId(AppIdentityType type, Long cityId) {
         return this.paymentMethodDAO.findByTypeAndCityId(type, cityId);
     }
 }

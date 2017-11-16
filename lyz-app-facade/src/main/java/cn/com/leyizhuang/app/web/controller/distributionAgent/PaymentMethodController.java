@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.distributionAgent;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.response.PaymentMethodResponse;
 import cn.com.leyizhuang.app.foundation.service.PaymentMethodService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -55,7 +56,7 @@ public class PaymentMethodController {
             return resultDTO;
         }
 
-        List<String> paymentmethods = this.paymentMethodServiceImpl.findByTypeAndCityId(AppIdentityType.getAppIdentityTypeByValue(identityType), cityId);
+        List<PaymentMethodResponse> paymentmethods = this.paymentMethodServiceImpl.findByTypeAndCityId(AppIdentityType.getAppIdentityTypeByValue(identityType), cityId);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, paymentmethods);
         logger.info("getMethodList OUT,获取配送员收款方式成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
