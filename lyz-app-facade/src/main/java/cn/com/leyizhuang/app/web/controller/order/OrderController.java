@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.order.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -817,7 +816,7 @@ public class OrderController {
                 orderListResponse.setEndTime(sdf.format(orderBaseInfo.getEffectiveEndTime()));
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus());
-                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
