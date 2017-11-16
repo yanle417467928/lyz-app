@@ -1,9 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
@@ -28,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -67,17 +64,33 @@ public class OrderController {
     @Autowired
     private ProductCouponService productCouponService;
 
-    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> createOrder(Long userId, Integer identityType, Long customerId, String goodsInfo,
-                                         String deliveryInfo, Integer leBiQuantity,
-                                         @RequestParam(value = "cashCouponIds", required = false) String[] cashCouponIds,
-                                         String productCouponInfo, String billingInfo) {
-        logger.info("createOrder CALLED,去支付生成订单,入参 userId:{},identityType:{},customerId:{},goodsInfo:{}," +
-                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", userId, identityType, customerId, goodsInfo, deliveryInfo,
-                leBiQuantity, cashCouponIds, productCouponInfo, billingInfo);
-        ResultDTO<Object> resultDTO;
-        if (null == userId) {
 
+    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> createOrder(OrderCreateParam orderParam) {
+        logger.info("createOrder CALLED,去支付生成订单,入参 userId:{},identityType:{},customerId:{},goodsInfo:{}," +
+                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}",
+                orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getGoodsInfo(),
+                orderParam.getDeliveryInfo(), orderParam.getLeBiQuantity(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
+        ResultDTO<Object> resultDTO;
+        if (null == orderParam.getUserId()){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户id不允许为空!","");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == orderParam.getIdentityType()){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"用户身份类型不允许为空!","");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getGoodsInfo())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"商品信息不允许为空!","");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getDeliveryInfo())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"配送信息不允许为空!","");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -86,11 +99,13 @@ public class OrderController {
         JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
         try {
             //转化前台提交过来的json类型参数
-            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(goodsInfo, goodsSimpleInfo);
-            DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(deliveryInfo, DeliverySimpleInfo.class);
-            List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(productCouponInfo, productCouponSimpleInfo);
-            BillingSimpleInfo billing = objectMapper.readValue(billingInfo, BillingSimpleInfo.class);
+            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(orderParam.getGoodsInfo(), goodsSimpleInfo);
+            DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
+            List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
+            OrderBaseInfo tempOrder = new OrderBaseInfo();
+            String orderNumber = OrderUtils.generateOrderNumber(1L);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {
@@ -861,7 +876,7 @@ public class OrderController {
                 }
                 if ("待付款".equals(orderBaseInfo.getStatus())) {
                     //计算剩余过期失效时间
-                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
                     //设置
                     if (time > 0) {
                         orderListResponse.setEndTime(time);
@@ -897,7 +912,7 @@ public class OrderController {
      * @param condition    查询条件
      * @return 订单列表
      */
-    @PostMapping(value = "/fuzzy/query", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/search", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getFuzzyQuery(Long userID, Integer identityType, String condition) {
         ResultDTO<Object> resultDTO;
         logger.info("getFuzzyQuery CALLED,模糊查询订单列表，入参 userID:{}, identityType:{}, condition:{}", userID, identityType, condition);
@@ -935,7 +950,7 @@ public class OrderController {
                 }
                 if ("待付款".equals(orderBaseInfo.getStatus())) {
                     //计算剩余过期失效时间
-                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
                     //设置
                     if (time > 0) {
                         orderListResponse.setEndTime(time);

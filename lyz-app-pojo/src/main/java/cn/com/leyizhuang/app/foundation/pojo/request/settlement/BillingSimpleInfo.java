@@ -18,16 +18,31 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class BillingSimpleInfo implements Serializable {
 
+    private static final long serialVersionUID = 8532606023597121783L;
+
+    /**
+     * 顾客预存款
+     */
     private Double cusPreDeposit;
-
+    /**
+     * 门店预存款
+     */
     private Double stPreDeposit;
-
+    /**
+     * 导购信用额度
+     */
     private Double empCreditMoney;
-
+    /**
+     * 门店信用额度
+     */
     private Double storeCreditMoney;
-
+    /**
+     * 门店现金返利
+     */
     private Double storeSubvention;
-
+    /**
+     * 代收款
+     */
     private Double collectionAmount;
 
 }
