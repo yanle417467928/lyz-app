@@ -59,4 +59,7 @@ public class OrderBaseInfo {
 
     //商品总金额
     private Double totalGoodsPrice;
+
+    //是否已评价
+    private Boolean isEvaluation;
 }
