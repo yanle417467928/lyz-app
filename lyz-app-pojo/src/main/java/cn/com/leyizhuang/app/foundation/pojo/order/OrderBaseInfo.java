@@ -56,4 +56,7 @@ public class OrderBaseInfo {
 
     //门店订单主体信息
     private StoreOrderSubjectInfo storeOrderInfo;
+
+    //商品总金额
+    private Double totalGoodsPrice;
 }

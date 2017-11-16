@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -24,7 +25,7 @@ public interface AppOrderService {
 
     Boolean existGoodsCityInventory(Long cityId,Long gid,Integer qty);
 
-    //用户回去我的订单列表
+    //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID,Integer identityType);
 
     //获取订单所有商品
@@ -32,5 +33,7 @@ public interface AppOrderService {
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(String orderNumber);
     //计算获取订单所有商品数量
-    int querySumQtyByOrderNumber(String orderNumber);
+    Integer querySumQtyByOrderNumber(String orderNumber);
+    //模糊查询订单
+    List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition);
 }

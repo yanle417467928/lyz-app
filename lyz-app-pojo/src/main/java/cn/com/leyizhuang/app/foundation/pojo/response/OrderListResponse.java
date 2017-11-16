@@ -21,11 +21,11 @@ public class OrderListResponse {
     //商品图片
     private List<String> goodsImgList;
     //商品总数量
-    private int count;
+    private Integer count;
     //应付/实付金额
     private Double price;
     //过期时间
-    private String endTime;
+    private Long endTime;
     //配送方式
     private String deliveryType;
 }

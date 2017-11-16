@@ -1,21 +1,17 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
-import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
+import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -36,10 +32,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单相关接口
@@ -83,7 +76,7 @@ public class OrderController {
                         " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", userId, identityType, customerId, goodsInfo, deliveryInfo,
                 leBiQuantity, cashCouponIds, productCouponInfo, billingInfo);
         ResultDTO<Object> resultDTO;
-        if(null == userId){
+        if (null == userId) {
 
         }
 
@@ -99,7 +92,7 @@ public class OrderController {
             BillingSimpleInfo billing = objectMapper.readValue(billingInfo, BillingSimpleInfo.class);
 
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,6 +107,7 @@ public class OrderController {
 
     /**
      * 用户确认订单计算商品价格明细
+     *
      * @param goodsSimpleRequest 用户下料清单里的商品信息DTO对象
      * @return
      * @author Jerry
@@ -154,7 +148,9 @@ public class OrderController {
             Double upstairsFee = 0.00;
             Double totalOrderAmount = 0.00;
             List<Long> goodsIds = new ArrayList<Long>();
+            List<Long> giftIds = new ArrayList<>();
             List<OrderGoodsSimpleResponse> goodsInfo = null;
+            List<OrderGoodsSimpleResponse> giftsInfo = null;
             List<OrderUsableProductCouponResponse> productCouponResponseList = null;
             List<CashCouponResponse> cashCouponResponseList = null;
             Map<String, Object> goodsSettlement = new HashMap<>();
@@ -166,26 +162,43 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
+                    }else {
+                        giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
                     totalQty = totalQty + goodsList.get(i).getNum();
                 }
+                //获取商品信息
                 goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+                //获取赠品信息
+                giftsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
+
+                //赠品的数量和标识
+                for (int i = 0; i <giftsInfo.size() ; i++) {
+                    for (int j = 0; j < goodsList.size(); j++) {
+                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                            if (goodsList.get(j).getIsGift()) {
+                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                            }
+                        }
+                    }
+                }
+                //正品的数量和标识这里需要判断库存的特殊处理（所以不能和赠品的集合加在一起循环）
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
                     for (int j = 0; j < goodsList.size(); j++) {
                         OrderGoodsSimpleResponse info = goodsInfo.get(i);
                         GoodsSimpleInfo simpleInfo = goodsList.get(j);
                         if (info.getId().equals(simpleInfo.getId())) {
-                            //如果是赠品则标识设置为赠品
+                            //如果是赠品则加上赠品数量后面判断库存
                             if (simpleInfo.getIsGift()) {
                                 goodsTotalQty = info.getGoodsQty() + simpleInfo.getNum();
-                                info.setHasGift(Boolean.TRUE);
-                                info.setGoodsQty(goodsTotalQty);
                             } else {
+                                info.setIsGift(Boolean.FALSE);
                                 //先获取本品数量
                                 info.setGoodsQty(simpleInfo.getNum());
-
+                                goodsTotalQty = simpleInfo.getNum();
                                 //可以算出总金额
                                 totalPrice = CountUtil.add(totalPrice, CountUtil.mul(info.getRetailPrice(), simpleInfo.getNum()));
                                 if (null != customer.getSalesConsultId()) {
@@ -193,7 +206,7 @@ public class OrderController {
                                 }
                             }
                             //判断库存
-                            Boolean isHaveInventory = appOrderService.existGoodsCityInventory(cityId, info.getId(), info.getGoodsQty());
+                            Boolean isHaveInventory = appOrderService.existGoodsCityInventory(cityId, info.getId(), goodsTotalQty);
                             if (!isHaveInventory) {
                                 String msg = goodsInfo.get(i).getGoodsName().concat("城市库存不足！");
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
@@ -216,6 +229,8 @@ public class OrderController {
                 //查询顾客预存款
                 Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
 
+                //合并商品和赠品集合
+                goodsInfo.addAll(giftsInfo);
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -243,31 +258,47 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
+                    }else {
+                        giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
                     totalQty = totalQty + goodsList.get(i).getNum();
                 }
                 goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+                giftsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
+
+                //赠品的数量和标识
+                for (int i = 0; i <giftsInfo.size() ; i++) {
+                    for (int j = 0; j < goodsList.size(); j++) {
+                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                            if (goodsList.get(j).getIsGift()) {
+                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                            }
+                        }
+                    }
+                }
+
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
                     for (int j = 0; j < goodsList.size(); j++) {
                         OrderGoodsSimpleResponse info = goodsInfo.get(i);
                         GoodsSimpleInfo simpleInfo = goodsList.get(j);
                         if (info.getId().equals(simpleInfo.getId())) {
-                            //如果是赠品则标识设置为包含赠品
+                            //如果是赠品则加上赠品数量后面判断库存
                             if (simpleInfo.getIsGift()) {
                                 goodsTotalQty = info.getGoodsQty() + simpleInfo.getNum();
-                                info.setHasGift(Boolean.TRUE);
-                                info.setGoodsQty(goodsTotalQty);
                             } else {
+                                info.setIsGift(Boolean.FALSE);
                                 //先获取本品数量
                                 info.setGoodsQty(simpleInfo.getNum());
+                                goodsTotalQty = simpleInfo.getNum();
                                 //可以算出总金额
                                 totalPrice = CountUtil.add(totalPrice, CountUtil.mul(info.getRetailPrice(), simpleInfo.getNum()));
                                 memberDiscount = CountUtil.mul(CountUtil.sub(info.getRetailPrice(), info.getVipPrice()), goodsList.get(j).getNum());
                             }
                             //判断库存
-                            Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, info.getId(), info.getGoodsQty());
+                            Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, info.getId(), goodsTotalQty);
                             if (!isHaveInventory) {
                                 String msg = goodsInfo.get(i).getGoodsName().concat("门店库存不足！");
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
@@ -294,7 +325,7 @@ public class OrderController {
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
-
+                goodsInfo.addAll(giftsInfo);
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -318,25 +349,42 @@ public class OrderController {
                 for (int i = 0; i < goodsList.size(); i++) {
                     if (!goodsList.get(i).getIsGift()) {
                         goodsIds.add(goodsList.get(i).getId());
+                    }else {
+                        giftIds.add(goodsList.get(i).getId());
                     }
                     //获取商品总数
                     totalQty = totalQty + goodsList.get(i).getNum();
                 }
                 goodsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+
+                giftsInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
+
+                //赠品的数量和标识
+                for (int i = 0; i <giftsInfo.size() ; i++) {
+                    for (int j = 0; j < goodsList.size(); j++) {
+                        if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
+                            if (goodsList.get(j).getIsGift()) {
+                                giftsInfo.get(i).setGoodsQty(goodsList.get(j).getNum());
+                                giftsInfo.get(i).setIsGift(Boolean.TRUE);
+                            }
+                        }
+                    }
+                }
+
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
                     for (int j = 0; j < goodsList.size(); j++) {
                         OrderGoodsSimpleResponse info = goodsInfo.get(i);
                         GoodsSimpleInfo simpleInfo = goodsList.get(j);
                         if (info.getId().equals(simpleInfo.getId())) {
-                            //如果是赠品则标识设置为赠品
+                            //如果是赠品则加上赠品数量后面判断库存
                             if (simpleInfo.getIsGift()) {
                                 goodsTotalQty = info.getGoodsQty() + simpleInfo.getNum();
-                                info.setHasGift(Boolean.TRUE);
-                                info.setGoodsQty(goodsTotalQty);
                             } else {
+                                info.setIsGift(Boolean.FALSE);
                                 //先获取本品数量
                                 info.setGoodsQty(simpleInfo.getNum());
+                                goodsTotalQty = simpleInfo.getNum();
                                 //可以算出总金额
                                 totalPrice = CountUtil.add(totalPrice, CountUtil.mul(info.getRetailPrice(), simpleInfo.getNum()));
                             }
@@ -359,6 +407,7 @@ public class OrderController {
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
                 Double storeSubvention = appStoreService.findSubventionBalanceByUserId(userId);
 
+                goodsInfo.addAll(giftsInfo);
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -800,8 +849,6 @@ public class OrderController {
             List<String> goodsImgList = new ArrayList<>();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
-            //定义时间格式
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             //循环遍历订单列表
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 //创建一个返回类
@@ -812,10 +859,17 @@ public class OrderController {
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
                 }
-                //设置
-                orderListResponse.setEndTime(sdf.format(orderBaseInfo.getEffectiveEndTime()));
+                if ("待付款".equals(orderBaseInfo.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    //设置
+                    if (time > 0) {
+                        orderListResponse.setEndTime(time);
+                    }
+                }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -830,6 +884,79 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单列表失败", null);
             logger.warn("getOrderList EXCEPTION,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 模糊查询订单
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param condition    查询条件
+     * @return 订单列表
+     */
+    @PostMapping(value = "/fuzzy/query", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getFuzzyQuery(Long userID, Integer identityType, String condition) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getFuzzyQuery CALLED,模糊查询订单列表，入参 userID:{}, identityType:{}, condition:{}", userID, identityType, condition);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(condition)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "查询条件不能为空！", null);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取符合条件所有订单列表
+            List<OrderBaseInfo> orderBaseInfoList = appOrderService.getFuzzyQuery(userID, identityType, condition);
+            //创建有个存放图片地址的list
+            List<String> goodsImgList = new ArrayList<>();
+            //创建一个返回对象list
+            List<OrderListResponse> orderListResponses = new ArrayList<>();
+            //循环遍历订单列表
+            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                //创建一个返回类
+                OrderListResponse orderListResponse = new OrderListResponse();
+                //获取订单商品
+                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                //遍历订单商品
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+                }
+                if ("待付款".equals(orderBaseInfo.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (new Date().getTime()));
+                    //设置
+                    if (time > 0) {
+                        orderListResponse.setEndTime(time);
+                    }
+                }
+                orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
+                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
+                orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                orderListResponse.setGoodsImgList(goodsImgList);
+                //添加到返回类list中
+                orderListResponses.add(orderListResponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderListResponses);
+            logger.info("getFuzzyQuery OUT,模糊查询订单列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，模糊查询订单列表失败", null);
+            logger.warn("getFuzzyQuery EXCEPTION,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

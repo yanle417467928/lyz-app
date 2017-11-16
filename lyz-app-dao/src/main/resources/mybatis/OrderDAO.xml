@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
+    <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        <result column="ord_no" property="orderNumber" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="effective_end_time" property="effectiveEndTime" jdbcType="TIMESTAMP"/>
+        <result column="delivery_type" property="deliveryType"
+                javaType="cn.com.leyizhuang.app.core.constant.AppDeliveryType"/>
+    </resultMap>
+
     <select id="getGoodsInfoByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT DISTINCT g.gid, g.sku, g.sku_name, g.goods_specification, g.cover_image_uri, g.goods_unit,
@@ -12,23 +20,84 @@
         AND (og.is_gift IS NULL OR og.is_gift = false)
     </select>
 
-    <select id="getOrderListByUserIDAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-       SELECT
+    <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
             obi.`status`,
             obi.ord_no,
             obi.effective_end_time,
             obi.delivery_type
-        FROM
+            FROM
             ord_base_info AS obi
-        WHERE
-        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            WHERE
             obi.customer_id = #{userID}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
             obi.manager_id = #{userID}
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
             obi.sales_consult_id = #{userID}
+        </if>
+    </select>
+
+    <select id="getFuzzyQuery" resultMap="orderBeseInfoList">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.customer_id = #{userID}
+            AND
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.manager_id = #{userID}
+            AND
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            WHERE
+            obi.sales_consult_id = #{userID}
+            AND
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
         </if>
     </select>
 
@@ -41,7 +110,7 @@
         ord_no = #{orderNumber}
     </select>
 
-    <select id="getAmountPayableByOrderNumber">
+    <select id="getAmountPayableByOrderNumber" resultType="java.lang.Double">
         SELECT
         amount_payable
         FROM
@@ -50,7 +119,7 @@
         ord_no = #{orderNumber}
     </select>
 
-    <select id="querySumQtyByOrderNumber">
+    <select id="querySumQtyByOrderNumber" resultType="java.lang.Integer">
         SELECT sum(order_qty)
         FROM ord_goods_info
         WHERE

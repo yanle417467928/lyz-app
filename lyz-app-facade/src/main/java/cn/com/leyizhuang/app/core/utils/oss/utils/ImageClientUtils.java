@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package cn.com.leyizhuang.app.core.utils.oss.utils;
 
@@ -78,7 +78,7 @@ public class ImageClientUtils {
 
 		return SiteMagConstant.ossFolder + fileName;
 	}
-	
+
 	/**
 	 * 上传其它来源图片.
 	 *
@@ -94,10 +94,10 @@ public class ImageClientUtils {
 		path.append(source);
 		path.append("/");
 		client.saveImage(stream, length, path.toString(), fileName);
-		
+
 		return path.append(fileName).toString();
 	}
-	
+
 	/**
 	 * 上传商品图片.
 	 *
@@ -113,7 +113,7 @@ public class ImageClientUtils {
 		path.append(goodsId);
 		path.append("/");
 		client.saveImage(stream, length, path.toString(), fileName);
-		
+
 		return path.append(fileName).toString();
 	}
 
@@ -132,7 +132,7 @@ public class ImageClientUtils {
 		path.append(adId);
 		path.append("/");
 		client.saveImage(stream, length, path.toString(), fileName);
-		
+
 		return path.append(fileName).toString();
 	}
 
