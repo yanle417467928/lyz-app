@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.LeBiVariationLogResPonse;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,6 +30,9 @@ public class LeBiVariationLogController {
 
     @Autowired
     private LeBiVariationLogService leBiVariationLogService;
+
+    @Autowired
+    private AppCustomerService appCustomerService;
 
     /**
      * 根据乐币变动类型查看明细
@@ -93,6 +97,7 @@ public class LeBiVariationLogController {
                 if (showType == 2){
                     leBiVariationLogResponse.setOrderNum(customerLeBiVariationLog.getOrderNum());
                 }
+                leBiVariationLogResponse.setTotalQuantity(appCustomerService.findLeBiQuantityByUserIdAndIdentityType(userID,identityType));
                 leBiVariationLogResPonseList.add(leBiVariationLogResponse);
             }
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsEvaluationDAO">
+
+    <select id="queryEvaluationListByGid" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
+        SELECT
+        *
+        FROM gds_goods_evaluation
+        WHERE
+         GID = #{gid}
+        ORDER BY EVALUATION_TIME DESC
+    </select>
+
+
+    <insert id="addGoodsEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
+        INSERT INTO gds_goods_evaluation
+        (GID, ORDER_EVALUATION_ID, COMMENT_CONTENT, EVALUATION_PICTURES, EVALUATION_TIME, EVALUATION_NAME)
+        VALUES
+        (#{gid}, #{orderEvaluationId}, #{commentContent}, #{evaluationPictures}, #{evaluationTime}, #{evaluationName})
+    </insert>
+
+    <select id="getEvaluationQuantityByGid" resultType="java.lang.Integer">
+      SELECT
+        COUNT(*)
+      FROM
+        gds_goods_evaluation
+      WHERE
+	    GID = #{gid}
+    </select>
+
+
+</mapper>
