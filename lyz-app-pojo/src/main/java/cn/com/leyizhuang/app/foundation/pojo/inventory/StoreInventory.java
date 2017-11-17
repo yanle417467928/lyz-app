@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
+import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class StoreInventory {
+public class StoreInventory extends BaseDO {
 
     private Long id;
     // 城市id

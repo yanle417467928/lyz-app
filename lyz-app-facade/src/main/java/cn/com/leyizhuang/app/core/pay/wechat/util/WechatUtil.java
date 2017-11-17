@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
