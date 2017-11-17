@@ -188,7 +188,7 @@ public class EvaluationController {
      * @param gid   商品id
      * @return  商品评价List
      */
-    @PostMapping(value = "/goods/evaluation/list", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/goods/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getGoodsEvaluationList(Long gid){
         logger.info("getGoodsEvaluationList CALLED,获取商品评价,入参 gid:{}, ", gid);
         ResultDTO<Object> resultDTO;
