@@ -74,4 +74,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     public List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition) {
         return orderDAO.getFuzzyQuery(userID,AppIdentityType.getAppIdentityTypeByValue(identityType),condition);
     }
+
+    @Override
+    public OrderBaseInfo getOrderByOrderNumber(String outTradeNo) {
+        return orderDAO.findByOrderName(outTradeNo);
+    }
 }

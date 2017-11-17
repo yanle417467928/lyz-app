@@ -25,8 +25,9 @@ public class ImageClientUtils {
 	public static ImageClientUtils getInstance() {
 		if (instance == null) {
 			synchronized (ImageClientUtils.class) {
-				if (instance == null)
+				if (instance == null) {
 					instance = new ImageClientUtils();
+				}
 			}
 		}
 

@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import lombok.*;
 
+import java.util.Date;
+
 /**
  * Created by caiyu on 2017/11/16.
  */
@@ -21,4 +23,8 @@ public class OrderEvaluation {
     private int serviceStars;
     //订单编号
     private String orderNumber;
+    /**
+     * 评价时间
+     */
+    private Date evaluationTime;
 }

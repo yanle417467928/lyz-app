@@ -29,6 +29,7 @@ public class ImageClient {
 		ossClient = new OSSClient(END_POINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
 	}
 
+	@Override
 	protected void finalize() {
 		ossClient.shutdown();
 
@@ -42,8 +43,9 @@ public class ImageClient {
 	public static ImageClient getInstance() {
 		if (instance == null) {
 			synchronized (ImageClient.class) {
-				if (instance == null)
+				if (instance == null) {
 					instance = new ImageClient();
+				}
 			}
 		}
 

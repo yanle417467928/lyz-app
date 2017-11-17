@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;

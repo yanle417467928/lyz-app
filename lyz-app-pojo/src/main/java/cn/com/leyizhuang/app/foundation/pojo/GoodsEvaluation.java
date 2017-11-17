@@ -5,7 +5,9 @@ import lombok.*;
 import java.util.Date;
 
 /**
- * Created by caiyu on 2017/11/16.
+ *
+ * @author caiyu
+ * @date 2017/11/16
  */
 @Getter
 @Setter
@@ -13,19 +15,37 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GoodsEvaluation {
-    //自增id
+    /**
+     * 自增id
+     */
     private Long id;
-    //订单评价id
-    private Long orderEvaluationId;
-    //商品id
+    /**
+     * 商品id
+     */
     private Long gid;
-    //评价内容
+    /**
+     * 评价内容
+     */
     private String commentContent;
-    //评价图片
+    /**
+     * 评价图片
+     */
     private String evaluationPictures;
-    //评价时间
+    /**
+     * 评价时间
+     */
     private Date evaluationTime;
-    //评价人
+    /**
+     * 评价人
+     */
     private String evaluationName;
+    /**
+     * 订单号
+     */
+    private String orderNumber;
 
+    /**
+     * 是否显示
+     */
+    private Boolean isShow;
 }

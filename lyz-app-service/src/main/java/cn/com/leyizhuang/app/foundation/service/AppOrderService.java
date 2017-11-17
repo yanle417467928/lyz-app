@@ -36,4 +36,6 @@ public interface AppOrderService {
     Integer querySumQtyByOrderNumber(String orderNumber);
     //模糊查询订单
     List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition);
+
+    OrderBaseInfo getOrderByOrderNumber(String outTradeNo);
 }
