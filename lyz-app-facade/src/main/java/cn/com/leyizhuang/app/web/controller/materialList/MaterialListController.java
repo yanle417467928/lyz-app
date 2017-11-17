@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.materialList;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
@@ -18,13 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author GenerationRoad
@@ -243,11 +241,11 @@ public class MaterialListController {
     }
 
     /**
-     * @title 再来一单加入下料清单
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 再来一单加入下料清单
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/10
      */
@@ -273,7 +271,7 @@ public class MaterialListController {
             }
             Map<Long, Integer> goodsMap = new HashMap();
             List<MaterialListDO> materialListDOList = this.orderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
-            if(null == materialListDOList || materialListDOList.size() == 0){
+            if (null == materialListDOList || materialListDOList.size() == 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无此订单信息！",
                         null);
                 logger.info("addAgainMaterialList OUT,再来一单加入下料清单失败，出参 resultDTO:{}", resultDTO);
@@ -349,9 +347,9 @@ public class MaterialListController {
     }
 
     /**
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份
-     * @param goodsList 商品列表
+     * @param goodsList    商品列表
      * @return 更新状态
      */
     @PostMapping(value = "/edit/batch", produces = "application/json;charset=UTF-8")
@@ -425,4 +423,37 @@ public class MaterialListController {
             return resultDTO;
         }
     }
+
+
+    @PostMapping(value = "/goods/delete", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> deleteMaterialListGoodsById(Long userId, Integer identityType,
+                                                         @RequestParam(value = "goodsIdArray", required = false) Long [] goodsIdArray) {
+        logger.info("deleteMaterialListGoodsById CALLED,删除下料清单商品，入参 userId:{} identityType:{} " +
+                "goodsIdArray:{}", userId, identityType, goodsIdArray);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不能为空！", null);
+            logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == goodsIdArray) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不能为空！", null);
+            logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<Long> goodsIdList = Arrays.asList(goodsIdArray);
+        this.materialListServiceImpl.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(userId,
+                AppIdentityType.getAppIdentityTypeByValue(identityType),goodsIdList);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+
 }

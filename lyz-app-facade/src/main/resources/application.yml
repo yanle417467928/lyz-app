@@ -85,12 +85,12 @@ eureka:
 deploy:
   image-path: src/main/resources/static/images
   alipay:
-    url: http://test.leyizhuang.com.cn/alipay/pay/alipay/return
+    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
     async:
-      url: http://test.leyizhuang.com.cn/alipay/pay/alipay/return/async
+      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
   wechat:
     async:
-      url: http://test.leyizhuang.com.cn/pay/wechat/return/async
+      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
@@ -122,12 +122,12 @@ eureka:
 deploy:
   image-path: /mnt/root/images/goods
   alipay:
-    url: http://test.leyizhuang.com.cn/alipay/pay/alipay/return
+    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
     async:
-      url: http://test.leyizhuang.com.cn/alipay/pay/alipay/return/async
+      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
   wechat:
     async:
-      url: http://test.leyizhuang.com.cn/pay/wechat/return/async
+      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/

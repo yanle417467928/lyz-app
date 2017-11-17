@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.PaymentMethodDAO">
+
+    <select id="findByTypeAndCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PaymentMethodResponse">
+        SELECT method
+        FROM payment_method
+        WHERE city_id = #{cityId} AND identity_type = #{type}
+    </select>
+
+</mapper>

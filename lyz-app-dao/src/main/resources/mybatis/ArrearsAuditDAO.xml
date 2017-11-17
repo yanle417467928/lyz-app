@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO">
+
+    <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
+        SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
+          seller_name sellerName, seller_phone sellerphone, distribution_address distributionAddress,
+          distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
+          payment_method paymentMethod, status, order_money
+        FROM ord_arrears_audit
+        WHERE user_id = #{userId}
+        ORDER BY create_time desc
+    </select>
+
+</mapper>

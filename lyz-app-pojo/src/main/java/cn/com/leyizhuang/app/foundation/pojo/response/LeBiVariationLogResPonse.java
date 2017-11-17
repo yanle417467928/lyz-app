@@ -20,4 +20,6 @@ public class LeBiVariationLogResPonse {
     private int variationQuantity;
     //乐币使用订单号
     private String orderNum;
+    //乐币总数量
+    private int totalQuantity;
 }

@@ -95,4 +95,6 @@ public interface GoodsDAO {
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(@Param("cusId") Long cusId,@Param("pcId") Long pcId,@Param("qty") Integer qty);
 
     GoodsDO queryBySku(@Param("sku") String sku);
+
+    Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id,@Param("brandName") String brandName);
 }

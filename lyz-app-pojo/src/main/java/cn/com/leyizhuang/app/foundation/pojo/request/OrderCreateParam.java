@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.request;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 创建订单接口入参
@@ -15,62 +16,45 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreateParam implements Serializable{
+public class OrderCreateParam implements Serializable {
+
+    private static final long serialVersionUID = 2270780578977688132L;
+
     /**
      * 用户id
      */
     private Long userId;
     /**
-     * 身份类型
+     * 用户身份类型
      */
     private Integer identityType;
     /**
-     * 总金额
+     * 本单顾客id
      */
-    private Double totalPrice;
+    private Long customerId;
     /**
-     * 应付金额
+     * 商品信息
      */
-    private Double amountPayable;
+    private String goodsInfo;
     /**
-     * 会员折扣
+     * 配送信息
      */
-    private Double memberDiscount;
+    private String deliveryInfo;
     /**
-     * 订单折扣
+     * 乐币数量
      */
-    private Double orderDiscount;
+    private Integer leBiQuantity;
     /**
-     * 运费
+     * 现金券id
      */
-    private Double freight;
+    private List<Long> cashCouponIds;
     /**
-     * 乐币折算
+     * 产品券信息
      */
-    private Double lbRebate;
+    private String productCouponInfo;
     /**
-     * 现金券面额
+     * 账单信息
      */
-    private Double ccpDenomination;
-    /**
-     * 顾客预存款
-     */
-    private Double preDeposit;
-    /**
-     * 导购信用金
-     */
-    private Double creditMoney;
-    /**
-     * 门店信用金
-     */
-    private Double storeCreditMoney;
-    /**
-     * 门店预存款
-     */
-    private Double storePreDeposit;
-    /**
-     * 门店现金返利
-     */
-    private Double storeSubvention;
+    private String billingInfo;
 
 }

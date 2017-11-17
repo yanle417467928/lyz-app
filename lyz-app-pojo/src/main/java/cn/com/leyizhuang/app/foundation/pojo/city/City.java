@@ -15,21 +15,47 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class City {
+public class  City {
 
     private Long cityId;
-    // 城市名称（唯一）
+
+    /**
+     *  城市名称（唯一）
+     */
     private String name;
-    // 城市名称拼音
+
+    /**
+     * 城市名称拼音
+     */
     private String spell;
-    // 城市编码（唯一）
+
+    /**
+     * 城市名称首字母
+     */
+    private String briefSpell;
+
+    /**
+     * 城市编码（唯一）
+     */
     private String number;
-    // 所属分公司（组织架构的一种）ID
+
+    /**
+     * 所属分公司（组织架构的一种）ID
+     */
     private Long structureId;
-    // 所属分公司名称
+
+    /**
+     * 所属分公司名称
+     */
     private String structureTitle;
-    //是否生效
+
+    /**
+     * 是否生效
+     */
     private Boolean enable;
-    //失效时间
+
+    /**
+     * 失效时间
+     */
     private Date enableFalseTime;
 }
