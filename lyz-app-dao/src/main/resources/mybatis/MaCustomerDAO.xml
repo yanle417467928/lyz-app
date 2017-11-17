@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO">
+
+   <resultMap id="customerVoResultMap" type="CustomerVO">
+        <id column="cus_id" property="cusId" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="pic_url" property="picUrl" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="light" property="light" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="BIT"/>
+        <result column="is_cash_on_delivery" property="isCashOnDelivery" jdbcType="BIT"/>
+        <result column="birthday" property="birthday" jdbcType="TIMESTAMP"/>
+        <result column="customer_type" property="customerType" jdbcType="VARCHAR"/>
+        <result column="last_sign_time" property="lastSignTime" jdbcType="TIMESTAMP"/>
+        <result column="binding_time" property="bindingTime" jdbcType="TIMESTAMP"/>
+        <result column="create_type" property="createType" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+
+       <association property="store" javaType="StoreVO">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+      </association>
+       <association property="city" javaType="CityVO">
+           <id property="cityId" column="city_id"/>
+           <result property="name" column="city_name"/>
+       </association>
+       <association property="salesConsultId" javaType="ShoppingGuideVO">
+           <id property="empId" column="emp_id"/>
+           <result property="name" column="emp_name"/>
+       </association>
+    </resultMap>
+
+
+    <select id="findAllVO" resultMap="customerVoResultMap">
+        SELECT
+        c.cus_id,
+        c.name,
+        c.mobile,
+        c.pic_url,
+        c.status,
+        c.light,
+        s.store_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id ORDER BY c.create_time DESC
+    </select>
+    <select id="queryCustomerVOById" parameterType="java.lang.Long" resultMap="customerVoResultMap">
+       SELECT
+              c.*,
+             ci.`name` as city_name ,
+             s.store_name
+             ,e.`name` as emp_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        LEFT JOIN city ci ON c.city_id = ci.city_id
+        LEFT JOIN emp_employee e ON c.sales_consult_id = e.emp_id
+        WHERE  c.cus_id=#{cusId} ORDER BY c.create_time DESC
+    </select>
+
+
+    <select id="queryCustomerVOByCityId" parameterType="java.lang.Long" resultMap="customerVoResultMap">
+        SELECT
+        c.cus_id,
+        c.name,
+        c.mobile,
+        c.pic_url,
+        c.status,
+        c.light,
+        s.store_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        WHERE  c.city_id =#{cityId} ORDER BY c.create_time DESC
+    </select>
+
+    <select id="queryCustomerVOByStoreId" parameterType="java.lang.Long" resultMap="customerVoResultMap">
+    SELECT
+    c.cus_id,
+    c.name,
+    c.mobile,
+    c.pic_url,
+    c.status,
+    c.light,
+    s.store_name
+    FROM
+    cus_customer c
+    LEFT JOIN st_store s ON c.store_id = s.store_id
+    WHERE  c.store_id =#{storeId} ORDER BY c.create_time DESC
+</select>
+
+    <select id="queryCustomerVOByGuideId" parameterType="java.lang.Long" resultMap="customerVoResultMap">
+     SELECT
+        c.cus_id,
+        c.name,
+        c.mobile,
+        c.pic_url,
+        c.status,
+        c.light,
+        s.store_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        WHERE   c.sales_consult_id =#{guideId} ORDER BY c.create_time DESC
+    </select>
+
+
+    <select id="queryCustomerVOByPhone" parameterType="java.lang.Long" resultMap="customerVoResultMap">
+        SELECT
+        c.cus_id,
+        c.name,
+        c.mobile,
+        c.pic_url,
+        c.status,
+        c.light,
+        s.store_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        WHERE   c.mobile LIKE  CONCAT('%',#{queryCusInfo},'%') ORDER BY c.create_time DESC
+    </select>
+
+
+    <select id="queryCustomerVOByName" parameterType="java.lang.String" resultMap="customerVoResultMap">
+        SELECT
+        c.cus_id,
+        c.name,
+        c.mobile,
+        c.pic_url,
+        c.status,
+        c.light,
+        s.store_name
+        FROM
+        cus_customer c
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        WHERE   c.name LIKE CONCAT('%',#{queryCusInfo},'%')   ORDER BY c.create_time DESC
+    </select>
+
+
+    <insert id="save" parameterType="Customer">
+        INSERT INTO
+        cus_customer ( city_id,store_id,sales_consult_id,name,mobile,birthday,status,sex,open_id,pic_url,nick_name,is_cash_on_delivery,create_time,light,create_type,customer_type,last_sign_time,binding_time)
+        VALUES
+        (#{cityId}, #{storeId}, #{salesConsultId}, #{name}, #{mobile}, #{birthday}, #{status}, #{sex},
+        #{openId},#{picUrl},#{nickName},#{isCashOnDelivery},#{createTime},#{light},#{createType},#{customerType},#{lastSignTime},#{bindingTime})
+    </insert>
+
+    <select id="isExistPhoneNumber" parameterType="java.lang.Long"  resultType="boolean" >
+                SELECT EXISTS(SELECT 1
+                FROM cus_customer
+                WHERE mobile = #{mobile})
+    </select>
+
+</mapper>

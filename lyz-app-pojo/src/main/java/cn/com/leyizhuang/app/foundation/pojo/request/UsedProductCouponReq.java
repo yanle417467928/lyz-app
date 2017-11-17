@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+
 import lombok.*;
 
 import java.io.Serializable;

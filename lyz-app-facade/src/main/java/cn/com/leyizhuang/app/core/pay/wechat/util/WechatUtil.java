@@ -223,7 +223,7 @@ public class WechatUtil {
      * @param map
      * @return
      */
-    public static boolean verifyNotify(Map map) {
+    public static boolean verifyNotify(Map<Object, Object> map) {
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
         String sign = (String) map.get("sign");
         for (Object keyValue : map.keySet()) {
