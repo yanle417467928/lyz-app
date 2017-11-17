@@ -6,10 +6,12 @@ import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderEvaluationRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsEvaluationRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.GoodsEvaluationListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.GoodsEvaluationService;
 import cn.com.leyizhuang.app.foundation.service.OrderEvaluationService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -46,6 +48,9 @@ public class EvaluationController {
 
     @Resource
     private AppEmployeeService employeeService;
+
+    @Resource
+    private GoodsEvaluationService goodsEvaluationService;
 
     /**
      * 保存订单评价
@@ -102,7 +107,12 @@ public class EvaluationController {
         }
     }
 
-
+    /**
+     *  订单商品评价
+     * @param orderGoodsEvaluationRequest   订单商品评价参数
+     * @param pictures  评价图片文件
+     * @return  图片地址
+     */
     @PostMapping(value = "/goods/submit", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> orderEvaluationGoodsSubmit(OrderGoodsEvaluationRequest orderGoodsEvaluationRequest, @RequestParam(value = "pictures",
             required = false) MultipartFile[] pictures) {
@@ -168,6 +178,54 @@ public class EvaluationController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,订单评价图片上传失败!", null);
             logger.warn("orderEvaluationPictureSubmit EXCEPTION,订单评价图片上传失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取商品评价
+     * @param gid   商品id
+     * @return  商品评价List
+     */
+    @PostMapping(value = "/goods/evaluation/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getGoodsEvaluationList(Long gid){
+        logger.info("getGoodsEvaluationList CALLED,获取商品评价,入参 gid:{}, ", gid);
+        ResultDTO<Object> resultDTO;
+
+        if (null == gid){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
+            logger.info("getGoodsEvaluationList OUT,获取商品评价失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            //查询所有评价
+            List<GoodsEvaluation> goodsEvaluationList = goodsEvaluationService.queryEvaluationListByGid(gid);
+            //创建商品评价返回list
+            List<GoodsEvaluationListResponse> goodsEvaluationListResponses = new ArrayList<>();
+            for (GoodsEvaluation goodsEvaluation : goodsEvaluationList){
+                GoodsEvaluationListResponse goodsEvaluationListResponse = new GoodsEvaluationListResponse();
+                goodsEvaluationListResponse.setCommentContent(goodsEvaluation.getCommentContent());
+                goodsEvaluationListResponse.setEvaluationName(goodsEvaluation.getEvaluationName());
+                List<String> pictureList = new ArrayList<>();
+                String[] pictures = goodsEvaluation.getEvaluationPictures().split(",");
+                for (int i = 0; i < pictures.length; i++) {
+                    pictureList.add(pictures[i]);
+                }
+                goodsEvaluationListResponse.setEvaluationPictures(pictureList);
+                goodsEvaluationListResponse.setIsShow(goodsEvaluation.getIsShow());
+                goodsEvaluationListResponse.setEvaluationQuantity(goodsEvaluationService.getEvaluationQuantityByGid(gid));
+
+                goodsEvaluationListResponses.add(goodsEvaluationListResponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsEvaluationListResponses);
+            logger.info("getGoodsEvaluationList OUT,获取商品评价成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取商品评价失败!", null);
+            logger.warn("getGoodsEvaluationList EXCEPTION,获取商品评价失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

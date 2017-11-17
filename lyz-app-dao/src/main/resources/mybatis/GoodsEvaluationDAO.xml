@@ -11,14 +11,6 @@
         ORDER BY EVALUATION_TIME DESC
     </select>
 
-
-    <insert id="addGoodsEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
-        INSERT INTO gds_goods_evaluation
-        (GID, ORDER_EVALUATION_ID, COMMENT_CONTENT, EVALUATION_PICTURES, EVALUATION_TIME, EVALUATION_NAME)
-        VALUES
-        (#{gid}, #{orderEvaluationId}, #{commentContent}, #{evaluationPictures}, #{evaluationTime}, #{evaluationName})
-    </insert>
-
     <select id="getEvaluationQuantityByGid" resultType="java.lang.Integer">
       SELECT
         COUNT(*)

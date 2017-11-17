@@ -11,7 +11,5 @@ import java.util.List;
 public interface GoodsEvaluationService {
     List<GoodsEvaluation> queryEvaluationListByGid(Long gid);
 
-    void addGoodsEvaluation(GoodsEvaluation goodsEvaluation);
-
     Integer getEvaluationQuantityByGid(Long gid);
 }
