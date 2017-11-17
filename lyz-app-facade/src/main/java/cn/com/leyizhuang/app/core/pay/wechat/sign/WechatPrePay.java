@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.pay.wechat.sign;
 
-import cn.com.leyizhuang.app.core.constant.SiteMagConstant;
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.pay.wechat.util.WechatUtil;
 import org.jdom.JDOMException;
 
@@ -42,7 +42,7 @@ public class WechatPrePay {
         String ip = request.getRemoteAddr();
         ip = "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip) ? "127.0.0.1" : ip;
         parameterMap.put("spbill_create_ip", ip);
-        parameterMap.put("notify_url", SiteMagConstant.wechatReturnUrlAsnyc);
+        parameterMap.put("notify_url", ApplicationConstant.wechatReturnUrlAsnyc);
         parameterMap.put("trade_type", "APP");
         String sign = WechatUtil.createSign("UTF-8", parameterMap);
         parameterMap.put("sign", sign);

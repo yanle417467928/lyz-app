@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
 import lombok.*;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 订单商品评价参数接受类
+ * 订单评价参数类
  *
  * @author caiyu
  * @date 2017/11/16
@@ -15,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderGoodsEvaluationRequest {
+public class OrderEvaluationRequest {
     /**
      * 用户id
      */
@@ -25,16 +23,20 @@ public class OrderGoodsEvaluationRequest {
      */
     private Integer identityType;
     /**
+     * 产品星级
+     */
+    private Integer productStar;
+    /**
+     * 物流星级
+     */
+    private Integer logisticsStar;
+    /**
+     * 服务星级
+     */
+    private Integer serviceStars;
+    /**
      * 订单编号
      */
     private String orderNumber;
-    /**
-     * 商品id
-     */
-    private Long goodsId;
-    /**
-     * 评价内容
-     */
-    private String evaluationContent;
 
 }

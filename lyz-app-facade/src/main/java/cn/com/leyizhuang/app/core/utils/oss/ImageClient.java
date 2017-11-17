@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.utils.oss;
 
-import cn.com.leyizhuang.app.core.constant.SiteMagConstant;
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.oss.exception.ImageClientException;
 import cn.com.leyizhuang.app.core.utils.oss.exception.ImageClientExceptionCode;
 import com.aliyun.oss.OSSClient;
@@ -67,7 +67,7 @@ public class ImageClient {
 			throw ex;
 		}
 
-		return ossClient.doesObjectExist(SiteMagConstant.ossBucket, dir);
+		return ossClient.doesObjectExist(ApplicationConstant.ossBucket, dir);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class ImageClient {
 		meta.setContentLength(0);
 
 		try {
-			ossClient.putObject(SiteMagConstant.ossBucket, dir, in, meta);
+			ossClient.putObject(ApplicationConstant.ossBucket, dir, in, meta);
 		} finally {
 			in.close();
 		}
@@ -126,7 +126,7 @@ public class ImageClient {
 			throw ex;
 		}
 
-		ossClient.deleteObject(SiteMagConstant.ossBucket, dir);
+		ossClient.deleteObject(ApplicationConstant.ossBucket, dir);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class ImageClient {
 	 * @return
 	 */
 	public List<String> listDirs() {
-		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(SiteMagConstant.ossBucket);
+		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(ApplicationConstant.ossBucket);
 
 		listObjectsRequest.setDelimiter("/");
 
@@ -166,7 +166,7 @@ public class ImageClient {
 			throw ex;
 		}
 
-		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(SiteMagConstant.ossBucket);
+		ListObjectsRequest listObjectsRequest = new ListObjectsRequest(ApplicationConstant.ossBucket);
 
 		listObjectsRequest.setDelimiter("/");
 		listObjectsRequest.setPrefix(path);
@@ -182,15 +182,17 @@ public class ImageClient {
 	}
 
 	private String getFullPath(String filePath, String fileName) throws ImageClientException, IOException {
-		if (filePath == null)
+		if (filePath == null) {
 			filePath = "";
+		}
 
 		// 判断目录是否存在.
 		if (filePath.length() != 0 && filePath.charAt(filePath.length() - 1) != '/') {
 			filePath += '/';
 
-			if (!isDirExist(filePath))
+			if (!isDirExist(filePath)) {
 				createDir(filePath);
+			}
 		}
 
 		return filePath + fileName;
@@ -203,7 +205,7 @@ public class ImageClient {
 		meta.setContentLength(length);
 		meta.setContentType("image/jpeg");
 
-		PutObjectResult result = ossClient.putObject(SiteMagConstant.ossBucket, key, stream, meta);
+		PutObjectResult result = ossClient.putObject(ApplicationConstant.ossBucket, key, stream, meta);
 		return result;
 	}
 
@@ -257,7 +259,7 @@ public class ImageClient {
 	 * @return
 	 */
 	public InputStream getImage(String fileName) {
-		OSSObject object = ossClient.getObject(SiteMagConstant.ossBucket, fileName);
+		OSSObject object = ossClient.getObject(ApplicationConstant.ossBucket, fileName);
 
 		return object.getObjectContent();
 	}
@@ -270,7 +272,7 @@ public class ImageClient {
 	 * @return
 	 */
 	public File getImage(String fileName, String filePath) {
-		GetObjectRequest request = new GetObjectRequest(SiteMagConstant.ossBucket, fileName);
+		GetObjectRequest request = new GetObjectRequest(ApplicationConstant.ossBucket, fileName);
 		File file = new File(filePath);
 
 		ossClient.getObject(request, file);
@@ -284,7 +286,7 @@ public class ImageClient {
 	 * @param name 图片名称(可能包含path信息).
 	 */
 	public void deleteImage(String name) {
-		ossClient.deleteObject(SiteMagConstant.ossBucket, name);
+		ossClient.deleteObject(ApplicationConstant.ossBucket, name);
 	}
 
 	/**
@@ -294,7 +296,7 @@ public class ImageClient {
 	 * @return
 	 */
 	public boolean isImageExist(String name) {
-		return ossClient.doesObjectExist(SiteMagConstant.ossBucket, name);
+		return ossClient.doesObjectExist(ApplicationConstant.ossBucket, name);
 	}
 
 	/**

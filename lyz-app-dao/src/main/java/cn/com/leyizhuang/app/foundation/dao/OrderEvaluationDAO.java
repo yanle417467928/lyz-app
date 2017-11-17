@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
 import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderEvaluationDAO {
     void addOrderEvaluation(OrderEvaluation orderEvaluation);
+
+    void addOrderGoodsEvaluation(GoodsEvaluation goodsEvaluation);
 }

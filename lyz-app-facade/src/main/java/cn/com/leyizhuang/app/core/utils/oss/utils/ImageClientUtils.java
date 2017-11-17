@@ -3,7 +3,7 @@
  */
 package cn.com.leyizhuang.app.core.utils.oss.utils;
 
-import cn.com.leyizhuang.app.core.constant.SiteMagConstant;
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.RandomUtil;
 import cn.com.leyizhuang.app.core.utils.oss.ImageClient;
@@ -40,7 +40,7 @@ public class ImageClientUtils {
 	 * @return
 	 */
 	public String getAbsProjectImagePath(String path) {
-		String[] hosts = SiteMagConstant.cdnHosts;
+		String[] hosts = ApplicationConstant.cdnHosts;
 		int i = RandomUtil.nextGaussian(hosts.length);
 		return String.format("%s/%s", "http://" + hosts[i], path);
 	}
@@ -55,7 +55,7 @@ public class ImageClientUtils {
 	public String uploadImage(InputStream stream, long length) throws IOException, ImageClientException {
 		ImageClient client = ImageClient.getInstance();
 
-		String filePath = String.format("%s/%s/", SiteMagConstant.ossFolder, DateUtil.getCurrentDateStr("yyyyMMdd"));
+		String filePath = String.format("%s/%s/", ApplicationConstant.ossFolder, DateUtil.getCurrentDateStr("yyyyMMdd"));
 		String fileName = String.format("%s_%s.jpg", DateUtil.getCurrentTimeStr("HHmmssSSS"), RandomUtil.randomNumCode(4));
 
 		client.saveImage(stream, length, filePath, fileName);
@@ -74,9 +74,9 @@ public class ImageClientUtils {
 	public String uploadImage(InputStream stream, long length, String fileName) throws IOException, ImageClientException {
 		ImageClient client = ImageClient.getInstance();
 
-		client.saveImage(stream, length, SiteMagConstant.ossFolder, fileName);
+		client.saveImage(stream, length, ApplicationConstant.ossFolder, fileName);
 
-		return SiteMagConstant.ossFolder + fileName;
+		return ApplicationConstant.ossFolder + fileName;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class ImageClientUtils {
 	 */
 	public String uploadImage(InputStream stream, long length, String fileName, String source) throws IOException, ImageClientException {
 		ImageClient client = ImageClient.getInstance();
-		StringBuilder path = new StringBuilder(SiteMagConstant.ossFolder);
+		StringBuilder path = new StringBuilder(ApplicationConstant.ossFolder);
 		path.append(source);
 		path.append("/");
 		client.saveImage(stream, length, path.toString(), fileName);
@@ -108,7 +108,7 @@ public class ImageClientUtils {
 	 */
 	public String uploadGoodsImage(InputStream stream, long length, String fileName, Long goodsId) throws IOException, ImageClientException {
 		ImageClient client = ImageClient.getInstance();
-		StringBuilder path = new StringBuilder(SiteMagConstant.ossFolder);
+		StringBuilder path = new StringBuilder(ApplicationConstant.ossFolder);
 		path.append("goods/");
 		path.append(goodsId);
 		path.append("/");
@@ -127,7 +127,7 @@ public class ImageClientUtils {
 	 */
 	public String uploadAdImage(InputStream stream, long length, String fileName, Long adId) throws IOException, ImageClientException {
 		ImageClient client = ImageClient.getInstance();
-		StringBuilder path = new StringBuilder(SiteMagConstant.ossFolder);
+		StringBuilder path = new StringBuilder(ApplicationConstant.ossFolder);
 		path.append("ad/");
 		path.append(adId);
 		path.append("/");
