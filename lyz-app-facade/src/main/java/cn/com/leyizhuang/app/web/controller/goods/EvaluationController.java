@@ -164,9 +164,11 @@ public class EvaluationController {
             if(AppIdentityType.getAppIdentityTypeByValue(orderGoodsEvaluationRequest.getIdentityType()).equals(AppIdentityType.CUSTOMER)){
                 AppCustomer customer = customerService.findById(orderGoodsEvaluationRequest.getUserId());
                 goodsEvaluation.setEvaluationName(customer.getName());
+                goodsEvaluation.setPicUrl(customer.getPicUrl());
             }else{
                 AppEmployee employee = employeeService.findById(orderGoodsEvaluationRequest.getUserId());
                 goodsEvaluation.setEvaluationName(employee.getName());
+                goodsEvaluation.setPicUrl(employee.getPicUrl());
             }
             goodsEvaluation.setEvaluationPictures(pictureUrls.toString());
             goodsEvaluation.setIsShow(Boolean.TRUE);
@@ -213,6 +215,7 @@ public class EvaluationController {
                 for (int i = 0; i < pictures.length; i++) {
                     pictureList.add(pictures[i]);
                 }
+                goodsEvaluationListResponse.setPicUrl(goodsEvaluation.getPicUrl());
                 goodsEvaluationListResponse.setEvaluationPictures(pictureList);
                 goodsEvaluationListResponse.setIsShow(goodsEvaluation.getIsShow());
                 goodsEvaluationListResponse.setEvaluationQuantity(goodsEvaluationService.getEvaluationQuantityByGid(gid));

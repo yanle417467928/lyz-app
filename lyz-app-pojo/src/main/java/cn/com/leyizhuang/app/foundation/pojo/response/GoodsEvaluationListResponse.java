@@ -34,4 +34,8 @@ public class GoodsEvaluationListResponse {
      * 是否显示
      */
     private Boolean isShow;
+    /**
+     * 评价人头像
+     */
+    private String picUrl;
 }
