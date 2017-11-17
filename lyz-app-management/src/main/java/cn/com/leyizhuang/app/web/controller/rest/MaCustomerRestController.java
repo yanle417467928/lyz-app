@@ -161,7 +161,7 @@ public class MaCustomerRestController extends  BaseRestController {
     public ResultDTO<Object>  restCustomerVOPost(@Valid Customer customer, BindingResult result, MultipartFile file) {
         if (!result.hasErrors()) {
             if(null!=file){
-               String picUrl =  FileUploadOSSUtils.uploadProfilePhoto(file,"/fedback/photo");
+               String picUrl =  FileUploadOSSUtils.uploadProfilePhoto(file,"/profile/photo/");
                customer.setPicUrl(picUrl);
             }else{
                 customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
