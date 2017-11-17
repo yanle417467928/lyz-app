@@ -14,9 +14,9 @@
             useGeneratedKeys="true" keyProperty="id">
 
         INSERT INTO ord_evaluation
-        (product_star, logistics_star, service_star, order_number)
+        (product_star, logistics_star, service_star, order_number,evaluation_time)
         VALUES
-            (#{productStar}, #{logisticsStar}, #{serviceStars}, #{orderNumber})
+            (#{productStar}, #{logisticsStar}, #{serviceStars}, #{orderNumber},#{evaluationTime})
     </insert>
     <insert id="addOrderGoodsEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
         INSERT INTO gds_goods_evaluation

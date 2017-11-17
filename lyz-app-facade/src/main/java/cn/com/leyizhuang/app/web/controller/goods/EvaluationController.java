@@ -161,7 +161,7 @@ public class EvaluationController {
             goodsEvaluation.setEvaluationPictures(pictureUrls.toString());
             goodsEvaluation.setIsShow(Boolean.TRUE);
             orderEvaluationService.addOrderGoodsEvaluation(goodsEvaluation);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, pictureUrls);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("orderEvaluationPictureSubmit OUT,订单评价图片上传成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
