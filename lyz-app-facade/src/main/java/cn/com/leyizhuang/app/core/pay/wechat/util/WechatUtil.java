@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -224,7 +223,7 @@ public class WechatUtil {
      * @param map
      * @return
      */
-    public static boolean verifyNotify(Map<Object, Object> map) {
+    public static boolean verifyNotify(Map map) {
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
         String sign = (String) map.get("sign");
         for (Object keyValue : map.keySet()) {

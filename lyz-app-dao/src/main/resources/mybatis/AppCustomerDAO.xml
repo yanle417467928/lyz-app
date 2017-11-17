@@ -105,8 +105,10 @@
         WHERE open_id = #{openId}
     </select>
 
-    <select id="findCashCouponByCustomerId" parameterType="java.lang.Long" resultType="CashCouponResponse">
+    <select id="findCashCouponByCustomerId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
+            cc.ccid id,
             c.denomination,
             c.effective_start_time,
             c.effective_end_time,
