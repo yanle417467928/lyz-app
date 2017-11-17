@@ -82,7 +82,24 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:1111/eureka/
-
+deploy:
+  image-path: src/main/resources/static/images
+  alipay:
+    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
+    async:
+      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
+  wechat:
+    async:
+      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
+  oss:
+    cdnHosts: img-dev.leyizhuang.com.cn
+    folder: lyz-app/images/
+    bucket: leyizhuang-dev
+  wms:
+    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
+  ebs:
+    url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
+    newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
 ---
 # 测试环境配置
 spring:
@@ -102,6 +119,24 @@ eureka:
     service-url:
       defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
 
+deploy:
+  image-path: /mnt/root/images/goods
+  alipay:
+    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
+    async:
+      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
+  wechat:
+    async:
+      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
+  oss:
+    cdnHosts: img-dev.leyizhuang.com.cn
+    folder: lyz-app/images/
+    bucket: leyizhuang-dev
+  wms:
+    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
+  ebs:
+    url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
+    newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
 ---
 # 生产环境配置
 spring:
