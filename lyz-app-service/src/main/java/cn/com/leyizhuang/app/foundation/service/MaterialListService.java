@@ -30,4 +30,7 @@ public interface MaterialListService {
 
     Map<Long,Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId);
 
+    Boolean existOtherMaterialListByUserIdAndIdentityType(Long userID, Integer identityType);
+
+    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType appIdentityTypeByValue);
 }

@@ -18,7 +18,7 @@ import java.util.Map;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsedCashCouponReq implements Serializable {
+public class UsedCouponRequest implements Serializable {
 
     /**
      * 顾客ID
@@ -33,20 +33,8 @@ public class UsedCashCouponReq implements Serializable {
      */
     private Integer identityType;
     /**
-     * 总价格
+     * 使用的券ID和数量
      */
-//    private Double totalPrice;
-    /**
-     * 订单小计金额
-     */
-    private Double totalOrderAmount;
-    /**
-     * 订单折扣
-     */
-    private Double orderDiscount;
-    /**
-     * 使用的现金券ID和数量
-     */
-    private List<GoodsIdQtyParam> cashCouponsList;
+    private List<GoodsIdQtyParam> couponsList;
 
 }

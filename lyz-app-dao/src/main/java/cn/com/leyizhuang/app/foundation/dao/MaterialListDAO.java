@@ -41,4 +41,10 @@ public interface MaterialListDAO {
     Map<Long,Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
                                                                     @Param(value = "identityType") AppIdentityType identityType,
                                                                     @Param(value = "goodsId") Long goodsId);
+
+    Boolean existOtherMaterialListByUserIdAndIdentityType(@Param("userId") Long userID,
+                                                          @Param("identityType") AppIdentityType appIdentityTypeByValue);
+
+    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
+                                                                    @Param("identityType") AppIdentityType identityType);
 }
