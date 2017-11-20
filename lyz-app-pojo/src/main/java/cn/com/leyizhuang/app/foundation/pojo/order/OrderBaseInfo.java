@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.order;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import lombok.*;
 
 import java.util.Date;
@@ -62,4 +63,7 @@ public class OrderBaseInfo {
 
     //是否已评价
     private Boolean isEvaluated;
+
+    //线上支付方式
+    private OnlinePayType onlinePayType;
 }

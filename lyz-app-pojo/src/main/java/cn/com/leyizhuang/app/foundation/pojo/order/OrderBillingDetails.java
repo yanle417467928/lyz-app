@@ -61,8 +61,13 @@ public class OrderBillingDetails {
 
     //欠款
     private Double arrearage;
+
     //现金返利
     private Double subvention;
+
     //信用金
     private Double creditMoney;
+
+    //预存款
+    private Double PreDeposit;
 }

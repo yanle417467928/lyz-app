@@ -77,7 +77,8 @@
             WHERE
             obi.customer_id = #{userID}
             AND
-            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             SELECT
@@ -91,7 +92,8 @@
             WHERE
             obi.manager_id = #{userID}
             AND
-            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
@@ -105,7 +107,8 @@
             WHERE
             obi.sales_consult_id = #{userID}
             AND
-            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
         </if>
     </select>
 
@@ -142,5 +145,57 @@
         ord_base_info
         WHERE
         ord_no = #{orderNumber}
+    </select>
+
+    <select id="getOrderDetail" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+            ord_no,
+            create_time,
+            `status`,
+            delivery_type,
+            total_goods_price
+        FROM
+            ord_base_info
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <select id="getOrderLogistice" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
+        SELECT
+        *
+        FROM
+        ord_logistics_info
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <select id="getOrderBillingDetail" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+        SELECT
+        *
+        FROM
+        ord_billing_details
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <select id="getOrderGoodsDetails" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+         SELECT
+        ogi.order_qty qty,
+        ogi.retail_price,
+        ogi.is_gift,
+        gg.sku_name,
+        gg.gid goodsId,
+        gg.goods_specification,
+        gg.cover_image_uri ,
+        gg.goods_unit
+        FROM
+            ord_goods_info AS ogi
+        INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
+        WHERE
+        ogi.ord_no = #{orderNumber}
     </select>
 </mapper>

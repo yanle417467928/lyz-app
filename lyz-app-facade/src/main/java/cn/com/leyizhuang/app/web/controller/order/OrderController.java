@@ -1,10 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -941,6 +945,120 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，模糊查询订单列表失败", null);
             logger.warn("getFuzzyQuery EXCEPTION,模糊查询订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取订单详情
+     * @param userID    用户id
+     * @param identityType  用户类型
+     * @param orderNumber   订单号
+     * @return  订单详情
+     */
+    @PostMapping(value = "/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getOrderDetail(Long userID, Integer identityType,String orderNumber){
+        ResultDTO<Object> resultDTO;
+        logger.info("getOrderDetail CALLED,用户获取订单详情，入参 userID:{}, identityType:{}, identityType:{}", userID, identityType, orderNumber);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("getOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try{
+            //获取订单详情
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(orderNumber);
+            //获取订单收货/自提门店地址
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+            //创建返回对象
+            OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //设值
+            orderDetailsResponse.setOrderNumber(orderNumber);
+            orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
+            orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
+            orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
+            orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+            //根据不同的配送方式进行设值
+            if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())){
+            orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
+            orderDetailsResponse.setBookingTime(sdf.format(orderLogisticsInfo.getBookingTime()));
+                AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
+             orderDetailsResponse.setBookingStorePhone(appStore.getPhone());
+             orderDetailsResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+            }else{
+                orderDetailsResponse.setDeliveryTime(sdf.format(orderLogisticsInfo.getDeliveryTime()));
+                orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
+                orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
+                orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+            }
+            //获取订单账目明细
+            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+            //根据不同的身份返回对应的账目明细
+            if(AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)){
+                //会员
+                CustomerBillingDetailResponse customerBillingDetailResponse = new CustomerBillingDetailResponse();
+                customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLeBiCashDiscount());
+                customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                orderDetailsResponse.setCustomerBillingDetailResponse(customerBillingDetailResponse);
+            }else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)){
+                //经理
+                ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
+                managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                managerBillingDetailResponse.setSubvention(orderBillingDetails.getSubvention());
+                managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
+                managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
+            }else{
+                //导购
+                SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
+                sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
+                sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
+            }
+            orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsDetails(orderNumber));
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
+            logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单详情失败", null);
+            logger.warn("getOrderDetail EXCEPTION,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
