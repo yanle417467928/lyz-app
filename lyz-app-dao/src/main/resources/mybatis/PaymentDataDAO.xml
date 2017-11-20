@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.PaymentDataDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+        INSERT INTO payment_data
+        (userId,notify_url,out_trade_no,payment_type,
+        payment_method,subject,total_fee,trade_status,remarks)
+        VALUES
+        (#{userId},#{notifyUrl},#{outTradeNo},#{paymentType},
+        #{paymentMethod},#{subject},#{totalFee},#{tradeStatus},#{remarks})
+    </insert>
+
+
+    <select id="findByOutTradeNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+        SELECT out_trade_no, total_fee, trade_status
+        FROM payment_data
+        WHERE out_trade_no = #{outTradeNo}
+          AND trade_status = #{tradeStatus}
+    </select>
+
+    <update id="updateByTradeStatusIsWaitPay" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+        UPDATE payment_data
+        <set>
+            <if test="null != tradeNo">
+                trade_no = #{tradeNo},
+            </if>
+            <if test="null != tradeStatus">
+                trade_status = #{tradeStatus},
+            </if>
+        </set>
+        WHERE out_trade_no = #{outTradeNo}
+        AND trade_status = 'WAIT_PAY'
+    </update>
+
+</mapper>
