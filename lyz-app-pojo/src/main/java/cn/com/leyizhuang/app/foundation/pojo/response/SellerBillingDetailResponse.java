@@ -38,5 +38,5 @@ public class SellerBillingDetailResponse {
     private Double creditMoney;
 
     //预存款
-    private Double PreDeposit;
+    private Double preDeposit;
 }
