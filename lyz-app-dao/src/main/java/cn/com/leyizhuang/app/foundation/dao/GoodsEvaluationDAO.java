@@ -14,7 +14,5 @@ import java.util.List;
 public interface GoodsEvaluationDAO {
     List<GoodsEvaluation> queryEvaluationListByGid(@Param("gid") Long gid);
 
-    void addGoodsEvaluation(GoodsEvaluation goodsEvaluation);
-
     Integer getEvaluationQuantityByGid(@Param("gid") Long gid);
 }

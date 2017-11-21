@@ -64,6 +64,8 @@ public class OrderLogisticsInfo {
 
     //配送员id
     private Long deliveryClerkId;
+    //配送员编码
+    private String deliveryClerkNo;
     //配送员姓名
     private String deliveryClerkName;
     //配送仓名称

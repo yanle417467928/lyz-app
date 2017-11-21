@@ -96,4 +96,20 @@ public class MaterialListServiceImpl implements MaterialListService {
         }
         return null;
     }
+
+    @Override
+    public Boolean existOtherMaterialListByUserIdAndIdentityType(Long userID, Integer identityType) {
+        if (null != userID && null != identityType) {
+            return materialListDAO.existOtherMaterialListByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        }
+        return null;
+    }
+
+    @Override
+    public List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType) {
+            return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId,identityType);
+        }
+        return null;
+    }
 }

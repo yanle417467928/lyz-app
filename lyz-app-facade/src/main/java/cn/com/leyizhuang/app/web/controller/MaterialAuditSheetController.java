@@ -1,18 +1,21 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +43,11 @@ public class MaterialAuditSheetController {
     @Resource
     private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
 
+    @Autowired
+    private MaterialListService materialListService;
 
+    @Autowired
+    private CommonService commonService;
     /**
      * 新增物料审核单
      *
@@ -400,6 +407,13 @@ public class MaterialAuditSheetController {
             return resultDTO;
         }
         try {
+            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID,2);
+            if (isOther){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在通过审核的料单", null);
+                logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
             if (null == materialAuditSheet) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此物料审核单", null);
@@ -432,71 +446,114 @@ public class MaterialAuditSheetController {
     }
 
     /**
-     * 装饰公司项目经理审核通过去支付
+     * 装饰公司项目经理审核通过加入下料清单
      *
      * @param userID       用户ID
      * @param auditNo      物料审核单编号
      * @param identityType 用户类型
      * @return 返回审核料单商品信息
+     * @anther Jerry.Ren
      */
     @RequestMapping(value = "/manager/transform/materialList")
     public ResultDTO<Object> transformMaterialList(Long userID, String auditNo, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("goPay CALLED,项目经理审核通过去支付，入参 userID:{},auditNo:{},identityType:{}", userID, auditNo, identityType);
+        logger.info("transformMaterialList CALLED,装饰公司项目经理审核通过加入下料清单，入参 userID:{},auditNo:{},identityType:{}", userID, auditNo, identityType);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
-            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (StringUtils.isBlank(auditNo)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "审核单编号不能为空", null);
-            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 3) {
+        if (identityType != 2) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型不能进行支付", null);
-            logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
         try {
-            //根据物料审核单编号查找物料审核单
-            MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
-            //创建返回对象
-            MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
-            if (null == materialAuditSheet) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此物料审核单", null);
-                logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID,identityType);
+            if (isOther){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在待支付的料单", null);
+                logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            //查询物料审核单中对应的商品
+            //根据物料审核单编号查找物料审核单
+            MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
+            if (null == materialAuditSheet) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此物料审核单", null);
+                logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //查询物料审核单中对应的商品加入下料清单
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
             if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0) {
-                //把物料审核单中所有的商品list放入返回值对象中
-                materialAuditGoPayResponse.setGoodsList(materialAuditGoodsInfoList);
-                materialAuditGoPayResponse.setAuditNo(auditNo);
-                materialAuditGoPayResponse.setWorker(materialAuditSheet.getEmployeeName());
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialAuditGoPayResponse);
-                logger.info("goPay OUT,项目经理审核通过去支付成功，出参 resultDTO:{}", resultDTO);
+                //创建一个持久化下料清单对象
+                List<MaterialListDO> materialListSave = new ArrayList<>(materialAuditGoodsInfoList.size());
+                List<MaterialListDO> materialListUpdate = new ArrayList<>(materialAuditGoodsInfoList.size());
+                List<Long> deleteGoodsIds = new ArrayList<>();
+                AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
+                //遍历这个料单
+                for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
+                    //如果发现经理的下料清单中有相同的商品
+                    MaterialListDO material = materialListService.findByUserIdAndIdentityTypeAndGoodsId(userID,
+                            appIdentityType ,materialAuditGoodsInfo.getGid());
+                    //转化料单到经理的下料清单中
+                    MaterialListDO materialListDO = transform(materialAuditGoodsInfo, userID, auditNo);
+                    //有相同商品直接和料单的商品合并
+                    if (material != null) {
+                        materialListDO.setQty(materialListDO.getQty() + material.getQty());
+                        deleteGoodsIds.add(material.getId());
+                    }
+                    materialListSave.add(materialListDO);
+                }
+                //删掉已经合并的商品
+                materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(userID,appIdentityType,deleteGoodsIds);
+                //新增转化的料单
+                commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此物料审核单商品", null);
-                logger.info("goPay OUT,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+                logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，项目经理审核通过去支付失败", null);
-            logger.warn("goPay EXCEPTION,项目经理审核通过去支付失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，装饰公司项目经理审核通过加入下料清单失败", null);
+            logger.warn("transformMaterialList EXCEPTION,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
     }
 
+    private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo,Long userID,String auditNo){
 
+        MaterialListDO materialListDO = new MaterialListDO();
+
+        materialListDO.setUserId(userID);
+        materialListDO.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+        materialListDO.setQty(materialAuditGoodsInfo.getQty());
+        materialListDO.setCoverImageUri(materialAuditGoodsInfo.getCoverImageUri());
+        materialListDO.setGid(materialAuditGoodsInfo.getGid());
+        materialListDO.setGoodsSpecification(materialAuditGoodsInfo.getGoodsSpecification());
+        materialListDO.setGoodsUnit(materialAuditGoodsInfo.getGoodsUnit());
+        materialListDO.setSku(materialAuditGoodsInfo.getSku());
+        materialListDO.setSkuName(materialAuditGoodsInfo.getSkuName());
+        materialListDO.setAuditNo(auditNo);
+        materialListDO.setMaterialListType(MaterialListType.AUDIT_TRANSFORM);
+
+        return materialListDO;
+
+    }
 }

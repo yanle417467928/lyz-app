@@ -67,6 +67,9 @@ public class AppEmployee {
     //员工所属门店id
     private Long storeId;
 
+    //配送员编码
+    private String deliveryClerkNo;
+
     //注册时间
     private LocalDateTime createTime;
 

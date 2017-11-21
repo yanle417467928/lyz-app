@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppStoreDAO">
 
+   <sql id="ALL_FILED">
+       store_id,area,city,city_code,create_time,creator_type,detailed_address,enable,is_default,is_self_delivery,
+      modifier_type,modify_time,phone,province,store_code,store_name,store_type
+   </sql>
+
    <select id="findAll" resultType="AppStore">
       SELECT * FROM st_store;
    </select>
@@ -188,10 +193,41 @@
    </select>
 
    <select id="findStoreByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
-      SELECT s.store_id, s.store_name
+      SELECT
+      s.store_id,
+      s.store_name
       FROM st_store s
       LEFT JOIN city c ON c.code = s.city_code
       WHERE c.city_id = #{cityId};
    </select>
+
+   <select id="findStoreListByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+      SELECT
+        <include refid="ALL_FILED"/>
+      FROM st_store s
+      LEFT JOIN city c ON c.code = s.city_code
+      WHERE c.city_id = #{cityId};
+   </select>
+
+   <select id="findStorePreDepositByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+      SELECT store_id, balance
+      FROM st_pre_deposit
+      WHERE store_id =
+      (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </select>
+
+   <select id="findAppStoreByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+      SELECT store_id
+      FROM st_store
+      WHERE store_id =
+      (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </select>
+
+   <insert id="saveStorePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+      INSERT INTO st_pre_deposit
+      (store_id, balance)
+      VALUES
+      (storeId, balance)
+   </insert>
 
 </mapper>

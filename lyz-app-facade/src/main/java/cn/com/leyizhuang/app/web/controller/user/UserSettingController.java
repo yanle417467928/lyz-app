@@ -550,7 +550,7 @@ public class UserSettingController {
         }
         AppEmployee guide = employeeService.findByUserId(appCustomer.getCusId());
         if (guide != null) {
-            informationResponse.setGuideName(guide.getName());
+            informationResponse.setGuideMobile(guide.getMobile());
         }
         return informationResponse;
     }

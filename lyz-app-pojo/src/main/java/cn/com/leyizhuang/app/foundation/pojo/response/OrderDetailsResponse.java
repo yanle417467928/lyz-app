@@ -3,6 +3,9 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 订单详情返回类
  * Created by caiyu on 2017/11/14.
@@ -13,38 +16,74 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDetailsResponse {
+    /**
+     * 订单号
+     */
     private String orderNumber;
-    //订单创建时间
+    /**
+     * 订单创建时间
+     */
     private String createTime;
-    //订单类型
-    private String orderType;
-    //订单头状态
+    /**
+     * 订单头状态
+     */
     private String status;
-    //订单物流状态
-    private String deliveryStatus;
-    //配送方式
+    /**
+     * 支付方式
+     */
+    private String payType;
+    /**
+     * 配送方式
+     */
     private String deliveryType;
-    //收货地址全称
+    /**
+     * 配送时间
+     */
+    private String deliveryTime;
+    /**
+     * 收货人姓名
+     */
+    private String receiver;
+    /**
+     * 收货人电话
+     */
+    private String receiverPhone;
+    /**
+     * 收货地址全称
+     */
     private String shippingAddress;
-    //运费
-    private Double freight;
-    //会员折扣
-    private Double memberDiscount;
-    //促销折扣
-    private Double promotionDiscount;
-    //乐币抵现金额
-    private Double leBiCashDiscount;
-    //优惠券抵现金额
-    private Double couponDiscount;
-    //产品券抵现金额
-    private Double productCouponDiscount;
-    //应付款
-    private Double amountPayable;
-    //现金返利
-    private Double subvention;
-    //信用金
-    private Double creditMoney;
-    //商品总金额
-    private Double totalPrice;
+    /**
+     * 预约门店名称
+     */
+    private String bookingStoreName;
+    /**
+     * 预约门店电话
+     */
+    private String bookingStorePhone;
+    /**
+     * 门店详细地址
+     */
+    private String storeDetailedAddress;
+    /**
+     * 预约提货时间
+     */
+    private String bookingTime;
+    /**
+     * 导购账目明细
+     */
+    private SellerBillingDetailResponse sellerBillingDetailResponse;
+    /**
+     * 经理账目明细
+     */
+    private ManagerBillingDetailResponse managerBillingDetailResponse;
+    /**
+     * 会员账目明细
+     */
+    private CustomerBillingDetailResponse customerBillingDetailResponse;
+    /**
+     * 商品list
+     */
+    private List<GiftListResponseGoods> goodsList;
+
 
 }

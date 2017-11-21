@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -10,11 +12,15 @@ import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +36,9 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Resource
     private AppCustomerDAO customerDAO;
+
+    @Autowired
+    private CusPreDepositLogService cusPreDepositLogServiceImpl;
 
     @Override
     @Transactional
@@ -288,5 +297,41 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
             return customerDAO.findCashCouponByCcIdAndUserIdAndQty(id, userId, qty);
         }
         return null;
+    }
+
+    @Override
+    public CustomerPreDeposit findByCusId(Long cusId) {
+        return this.customerDAO.findByCusId(cusId);
+    }
+
+    /**
+     * @title  充值加预存款和日志
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/21
+     */
+    @Override
+    public void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type) {
+        Long userId = paymentDataDO.getUserId();
+        Double money = paymentDataDO.getTotalFee();
+        CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(userId);
+        if (null == customerPreDeposit){
+            customerPreDeposit = new CustomerPreDeposit();
+            customerPreDeposit.setBalance(money);
+            customerPreDeposit.setCusId(userId);
+            this.customerDAO.savePreDeposit(customerPreDeposit);
+        } else {
+            this.customerDAO.updateDepositByUserId(userId, money);
+        }
+        CusPreDepositLogDO log = new CusPreDepositLogDO();
+        log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);
+        log.setUserIdAndOperatorinfo(userId, userId, paymentDataDO.getAppIdentityType(), "");
+        log.setOrderNumber(paymentDataDO.getOutTradeNo());
+        log.setUserOrderNumber(paymentDataDO.getTradeNo());
+        log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), money));
+        this.cusPreDepositLogServiceImpl.save(log);
     }
 }

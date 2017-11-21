@@ -21,10 +21,10 @@
     <insert id="addOrderGoodsEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
         INSERT INTO gds_goods_evaluation
         (order_number, gid, comment_content, evaluation_pictures, evaluation_time,
-         evaluation_name, is_show)
+         evaluation_name, is_show, pic_url)
         VALUES (#{orderNumber}, #{gid}, #{commentContent},
                 #{evaluationPictures}, #{evaluationTime},
-                #{evaluationName}, #{isShow})
+                #{evaluationName}, #{isShow},#{picUrl})
     </insert>
 
 

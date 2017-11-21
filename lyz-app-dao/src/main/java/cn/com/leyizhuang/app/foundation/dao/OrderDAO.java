@@ -3,7 +3,10 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +32,12 @@ public interface OrderDAO {
     List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType,@Param("condition") String condition);
 
     OrderBaseInfo findByOrderName(@Param("orderNumber") String outTradeNo);
+    //获取订单头详情
+    OrderBaseInfo getOrderDetail(@Param("orderNumber") String orderNumber);
+    //获取订单收货/自提门店地址
+    OrderLogisticsInfo getOrderLogistice(@Param("orderNumber") String orderNumber);
+    //获取订单账目明细
+    OrderBillingDetails getOrderBillingDetail(@Param("orderNumber") String orderNumber);
+    //获取订单商品
+    List<GiftListResponseGoods> getOrderGoodsDetails(@Param("orderNumber") String orderNumber);
 }

@@ -5,8 +5,11 @@ import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
@@ -78,5 +81,25 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public OrderBaseInfo getOrderByOrderNumber(String outTradeNo) {
         return orderDAO.findByOrderName(outTradeNo);
+    }
+
+    @Override
+    public OrderBaseInfo getOrderDetail(String orderNumber) {
+        return orderDAO.getOrderDetail(orderNumber);
+    }
+
+    @Override
+    public OrderLogisticsInfo getOrderLogistice(String orderNumber) {
+        return orderDAO.getOrderLogistice(orderNumber);
+    }
+
+    @Override
+    public OrderBillingDetails getOrderBillingDetail(String orderNumber) {
+        return orderDAO.getOrderBillingDetail(orderNumber);
+    }
+
+    @Override
+    public List<GiftListResponseGoods> getOrderGoodsDetails(String orderNumber) {
+        return orderDAO.getOrderGoodsDetails(orderNumber);
     }
 }

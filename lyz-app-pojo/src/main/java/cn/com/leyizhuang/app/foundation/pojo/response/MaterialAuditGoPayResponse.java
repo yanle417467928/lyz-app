@@ -19,7 +19,7 @@ public class MaterialAuditGoPayResponse {
     //物料单编号
     private String auditNo;
     //物料单商品list
-    private List<MaterialAuditGoodsInfo> goodsList;
+    private List<MaterialListResponse> goodsList;
     //提交人姓名
     private String worker;
 

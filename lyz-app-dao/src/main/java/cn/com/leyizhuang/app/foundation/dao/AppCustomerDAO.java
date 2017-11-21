@@ -85,4 +85,7 @@ public interface AppCustomerDAO {
 
     CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(
             @Param("ccId") Long id,@Param("cusId") Long userId,@Param("qty") Integer qty);
+
+    CustomerPreDeposit findByCusId(Long cusId);
+
 }

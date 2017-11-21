@@ -40,6 +40,10 @@ public class GoodsEvaluation {
      */
     private String evaluationName;
     /**
+     * 评价人头像
+     */
+    private String picUrl;
+    /**
      * 订单号
      */
     private String orderNumber;

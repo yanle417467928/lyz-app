@@ -1,14 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.materialList;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
-import cn.com.leyizhuang.app.foundation.service.CommonService;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.service.MaterialListService;
-import cn.com.leyizhuang.app.foundation.service.OrderService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -35,6 +36,12 @@ public class MaterialListController {
 
     @Autowired
     private MaterialListService materialListServiceImpl;
+
+    @Resource
+    private MaterialAuditSheetService materialAuditSheetService;
+
+    @Resource
+    private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
 
     @Autowired
     private GoodsService goodsService;
@@ -98,6 +105,7 @@ public class MaterialListController {
                         materialListDOTemp.setSkuName(goodsDO.getSkuName());
                         materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
                         materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+                        materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                         if (null != goodsDO.getCoverImageUri()) {
                             String uri[] = goodsDO.getCoverImageUri().split(",");
                             materialListDOTemp.setCoverImageUri(uri[0]);
@@ -233,8 +241,37 @@ public class MaterialListController {
             logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+
+        if (identityType == 2) {
+            //创建返回对象
+            MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
+            Map<String, Object> returnMap = new HashMap<>(2);
+            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
+            //查询的是所有的商品下料清单（这个集合对象中的料单号和类型是一样的）
+            List<MaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
+
+            if (materialListDOS != null) {
+                //只需得到一个料单对象中料单编号
+                MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                        appIdentityType, materialListDOS.get(0).getGoodsId());
+                String auditNo = materialListDO.getAuditNo();
+                //可以得到一个审核料单
+                MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
+
+                //返回工人料单商品
+                materialAuditGoPayResponse.setGoodsList(materialListDOS);
+                materialAuditGoPayResponse.setAuditNo(auditNo);
+                materialAuditGoPayResponse.setWorker(materialAuditSheet.getEmployeeName());
+
+
+                returnMap.put("auditListRes", materialAuditGoPayResponse);
+                returnMap.put("materialListRes", materialListResponses);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
+                logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        }
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListResponses);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
@@ -391,6 +428,7 @@ public class MaterialListController {
                         MaterialListDO materialListDOTemp = new MaterialListDO();
                         materialListDOTemp.setUserId(userId);
                         materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                         materialListDOTemp.setGid(goodsDO.getGid());
                         materialListDOTemp.setSku(goodsDO.getSku());
                         materialListDOTemp.setQty(param.getQty());
