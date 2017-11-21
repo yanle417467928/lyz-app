@@ -340,7 +340,7 @@
     </select>
 
 
-    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositDO">
+    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
         SELECT *
         FROM cus_pre_deposit
         WHERE cus_id = #{cusId}
