@@ -4,7 +4,7 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         INSERT INTO payment_data
-        (userId, identity_type, notify_url,out_trade_no,payment_type,
+        (user_id, identity_type, notify_url,out_trade_no,payment_type,
         payment_method,subject,total_fee,trade_status,remarks)
         VALUES
         (#{userId},#{appIdentityType},#{notifyUrl},#{outTradeNo},#{paymentType},

@@ -196,28 +196,28 @@
             <artifactId>lyz-app-alipay</artifactId>    <!--自定义-->
             <version>1.0-SNAPSHOT</version> <!--自定义-->
             <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
-            <systemPath>${basedir}/src/main/java/cn/com/leyizhuang/app/lib/alipay-sdk-java20171027120314.jar</systemPath> <!--项目根目录下的lib文件夹下-->
+            <systemPath>${basedir}/src/main/resources/lib/alipay-sdk-java20171027120314.jar</systemPath> <!--项目根目录下的lib文件夹下-->
         </dependency>
         <dependency>
             <groupId>cn.com.leyizhuang</groupId>  <!--自定义-->
             <artifactId>lyz-app-alipay-source</artifactId>    <!--自定义-->
             <version>1.0-SNAPSHOT</version> <!--自定义-->
             <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
-            <systemPath>${basedir}/src/main/java/cn/com/leyizhuang/app/lib/alipay-sdk-java20171027120314-source.jar</systemPath> <!--项目根目录下的lib文件夹下-->
+            <systemPath>${basedir}/src/main/resources/lib/alipay-sdk-java20171027120314-source.jar</systemPath> <!--项目根目录下的lib文件夹下-->
         </dependency>
         <dependency>
             <groupId>cn.com.leyizhuang</groupId>  <!--自定义-->
             <artifactId>lyz-app-alipay-logging</artifactId>    <!--自定义-->
             <version>1.0-SNAPSHOT</version> <!--自定义-->
             <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
-            <systemPath>${basedir}/src/main/java/cn/com/leyizhuang/app/lib/commons-logging-1.1.1.jar</systemPath> <!--项目根目录下的lib文件夹下-->
+            <systemPath>${basedir}/src/main/resources/lib/commons-logging-1.1.1.jar</systemPath> <!--项目根目录下的lib文件夹下-->
         </dependency>
         <dependency>
             <groupId>cn.com.leyizhuang</groupId>  <!--自定义-->
             <artifactId>lyz-app-alipay-logging-source</artifactId>    <!--自定义-->
             <version>1.0-SNAPSHOT</version> <!--自定义-->
             <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
-            <systemPath>${basedir}/src/main/java/cn/com/leyizhuang/app/lib/commons-logging-1.1.1-sources.jar</systemPath> <!--项目根目录下的lib文件夹下-->
+            <systemPath>${basedir}/src/main/resources/lib/commons-logging-1.1.1-sources.jar</systemPath> <!--项目根目录下的lib文件夹下-->
         </dependency>
 
 
@@ -240,12 +240,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                    <compilerArguments>
+                        <extdirs>${project.basedir}/lib</extdirs>
+                    </compilerArguments>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>
+       <!-- <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>lib/</targetPath>
+                <includes>
+                    <include>**/*.jar</include>
+                </includes>
+            </resource>
+        </resources>-->
     </build>
 
 </project>

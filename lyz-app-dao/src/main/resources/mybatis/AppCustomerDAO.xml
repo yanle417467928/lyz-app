@@ -204,7 +204,7 @@
             quantity = quantity - #{qty}
         WHERE
             quantity >= #{qty}
-        AND cus_id = #{userId}
+            AND cus_id = #{userId}
     </update>
 
     <update id="updateCustomerMobileByUserId">
@@ -240,6 +240,7 @@
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
         SELECT is_cash_on_delivery
         FROM cus_customer
+    </select>
 
     <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
         INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
@@ -256,94 +257,100 @@
     </update>
 
     <update id="updateDepositByUserIdAndDeposit">
-        UPDATE cus_pre_deposit SET balance = balance - #{deposit} WHERE balance >= #{deposit} AND cus_id = #{userId}
+        UPDATE cus_pre_deposit
+        SET balance = balance - #{deposit}
+        WHERE balance >= #{deposit} AND cus_id = #{userId}
     </update>
 
     <update id="updateDepositByUserId">
-        UPDATE cus_pre_deposit SET balance = balance + #{deposit} WHERE cus_id = #{userId}
+        UPDATE cus_pre_deposit
+        SET balance = balance + #{deposit}
+        WHERE cus_id = #{userId}
     </update>
 
     <update id="updateLeBiByUserIdAndQuantity">
-        UPDATE cus_lb SET quantity = quantity + #{qty} WHERE cus_id = #{userId}
+        UPDATE cus_lb
+        SET quantity = quantity + #{qty}
+        WHERE cus_id = #{userId}
     </update>
 
     <update id="updateProductCouponByUserIdAndProductCoupons">
 
         UPDATE cus_customer_product_coupon
         SET
-          quantity = quantity - #{qty}
+            quantity = quantity - #{qty}
         WHERE
-          quantity >= #{qty}
-        AND
-          gid = #{gid}
-        AND
-          cus_id = #{userId};
+            quantity >= #{qty}
+            AND
+            gid = #{gid}
+            AND
+            cus_id = #{userId};
     </update>
     <update id="updateProductCouponByUserIdAndGoodsIdAndProductCoupons">
 
         UPDATE cus_customer_product_coupon
         SET
-        quantity = quantity + #{qty}
+            quantity = quantity + #{qty}
         WHERE
-        gid = #{gid}
-        AND
-        cus_id = #{userId};
+            gid = #{gid}
+            AND
+            cus_id = #{userId};
     </update>
 
     <update id="updateCashCouponByUserIdAndCashCoupons">
 
         UPDATE cus_customer_cash_coupon
         SET
-          qty = qty - #{qty}
+            qty = qty - #{qty}
         WHERE
-          qty >= #{qty}
-        AND
-          ccid = #{gid}
-        AND
-          cus_id = #{userId};
+            qty >= #{qty}
+            AND
+            ccid = #{gid}
+            AND
+            cus_id = #{userId};
     </update>
 
     <update id="updateCashCouponByUserIdAndGoodsIdAndCashCoupons">
 
         UPDATE cus_customer_cash_coupon
         SET
-        qty = qty + #{qty}
+            qty = qty + #{qty}
         WHERE
-        ccid = #{ccid}
-        AND
-        cus_id = #{userId};
+            ccid = #{ccid}
+            AND
+            cus_id = #{userId};
     </update>
 
     <select id="findStoreSellerByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
         SELECT
-          store_id,
-          sales_consult_id,
-          binding_time,
-          create_time
+            store_id,
+            sales_consult_id,
+            binding_time,
+            create_time
         FROM cus_customer
         WHERE cus_id = #{userId};
     </select>
 
-    <select id="findCashCouponByCcIdAndUserIdAndQty" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
-        SELECT
-        cp.denomination
+    <select id="findCashCouponByCcIdAndUserIdAndQty"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
+        SELECT cp.denomination
         FROM cus_customer_cash_coupon cccc
-        INNER JOIN cp_cash_coupon cp ON cp.ccid = cccc.ccid
+            INNER JOIN cp_cash_coupon cp ON cp.ccid = cccc.ccid
         WHERE cccc.ccid = #{ccId}
-        AND cccc.cus_id = #{cusId}
-        AND cccc.qty &gt;= #{qty}
-        AND cccc.is_used = FALSE
-        AND cp.effective_start_time &lt; NOW()
-        AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
+              AND cccc.cus_id = #{cusId}
+              AND cccc.qty &gt;= #{qty}
+              AND cccc.is_used = FALSE
+              AND cp.effective_start_time &lt; NOW()
+              AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
     </select>
 
 
-    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+    <select id="findByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
         SELECT *
         FROM cus_pre_deposit
         WHERE cus_id = #{cusId}
     </select>
-
 
 
 </mapper>
