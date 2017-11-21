@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO">
+
+
+    <select id="queryListByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        SELECT
+            *
+        FROM ord_delivery_info_details
+        WHERE
+            order_no = #{orderNumber}
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="addOrderDeliveryInfoDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        INSERT INTO ord_delivery_info_details
+        (order_no, logistic_status, create_time, description, operation_type, operator_no, warehouse_no, task_no)
+        VALUES
+            (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo}, #{taskNo})
+    </insert>
+
+    <select id="getDeliveryBydeliveryClerkNo" resultType="java.lang.String"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse">
+       SELECT
+        e.`name` deliveryName,
+        e.mobile deliveryPhone,
+        odi.order_no orderNumber,
+        oli.warehouse warehouseName
+        FROM
+            ord_delivery_info_details AS odi
+        INNER JOIN emp_employee AS e ON e.delivery_clerk_no = odi.operator_no
+        INNER JOIN ord_logistics_info AS oli ON oli.delivery_clerk_no = odi.operator_no
+        WHERE
+            odi.delivery_clerk_no = #{deliveryClerkNo}
+    </select>
+
+
+</mapper>
