@@ -3,9 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.constant.PaymentDataType;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author GenerationRoad
@@ -14,6 +12,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentDataDO {
 
     private Long id;
@@ -48,8 +48,6 @@ public class PaymentDataDO {
     private String paymentMethod;
     //备注
     private String remarks;
-
-    public PaymentDataDO(){}
 
     public PaymentDataDO(Long userId, String outTradeNo, Integer paymentType, String notifyUrl, String subject,
                          Double totalFee, PaymentDataStatus tradeStatus, String paymentMethod, String remarks){
