@@ -14,7 +14,7 @@ public interface OrderDeliveryInfoDetailsService {
 
     List<OrderDeliveryInfoDetails> queryListByOrderNumber(String orderNumber);
 
-    LogisticsInformationResponse getDeliveryByOperatorNo(String operatorNo);
+    LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber);
 
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);

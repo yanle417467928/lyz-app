@@ -60,7 +60,7 @@ public class OrderDeliveryInfoDetailsController {
 
                 logisticsDetailResponseList.add(logisticsDetailResponse);
             }
-            LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNo(deliveryNumber);
+            LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber,orderNumber);
             logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);

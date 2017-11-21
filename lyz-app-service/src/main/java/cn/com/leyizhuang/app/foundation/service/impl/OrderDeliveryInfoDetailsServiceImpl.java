@@ -29,8 +29,8 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public LogisticsInformationResponse getDeliveryByOperatorNo(String operatorNo) {
-        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNo(operatorNo);
+    public LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber) {
+        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNoAndOrderNumber(operatorNo,orderNumber);
     }
 
     @Override

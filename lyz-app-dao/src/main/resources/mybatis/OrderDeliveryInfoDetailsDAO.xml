@@ -20,7 +20,7 @@
             (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo}, #{taskNo})
     </insert>
 
-    <select id="getDeliveryByOperatorNo" resultType="java.lang.String"
+    <select id="getDeliveryByOperatorNoAndOrderNumber" resultType="java.lang.String"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse">
        SELECT
             e.`name` deliveryName,

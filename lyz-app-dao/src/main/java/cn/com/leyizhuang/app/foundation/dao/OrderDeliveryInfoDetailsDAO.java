@@ -18,7 +18,7 @@ public interface OrderDeliveryInfoDetailsDAO {
 
     List<OrderDeliveryInfoDetails> queryListByOrderNumber(@Param("orderNumber") String orderNumber);
 
-    LogisticsInformationResponse getDeliveryByOperatorNo(@Param("operatorNo") String operatorNo);
+    LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(@Param("operatorNo") String operatorNo,@Param("orderNumber") String orderNumber);
 
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(@Param("operatorNo") String operatorNo);
