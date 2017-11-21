@@ -240,6 +240,8 @@
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
         SELECT is_cash_on_delivery
         FROM cus_customer
+        WHERE cus_id = #{userId}
+    </select>
 
     <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
         INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
@@ -338,7 +340,7 @@
     </select>
 
 
-    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositDO">
         SELECT *
         FROM cus_pre_deposit
         WHERE cus_id = #{cusId}
