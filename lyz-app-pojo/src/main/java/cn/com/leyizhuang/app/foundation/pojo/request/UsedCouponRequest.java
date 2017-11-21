@@ -33,8 +33,20 @@ public class UsedCouponRequest implements Serializable {
      */
     private Integer identityType;
     /**
-     * 使用的券ID和数量
+     * 订单小计金额
+     */
+    private Double totalOrderAmount;
+    /**
+     * 会员折扣
+     */
+    private Double memberDiscount;
+    /**
+     * 使用的优惠券券ID和数量
      */
     private List<GoodsIdQtyParam> couponsList;
+    /**
+     * 使用的产品券ID和数量
+     */
+    private List<GoodsIdQtyParam> proCouponList;
 
 }

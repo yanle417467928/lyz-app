@@ -167,6 +167,11 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    public List<AppStore> findStoreListByCityId(Long cityId) {
+        return this.storeDAO.findStoreListByCityId(cityId);
+    }
+
+    @Override
     public void saveStore(AppStore appStore) {
         this.storeDAO.saveStore(appStore);
     }

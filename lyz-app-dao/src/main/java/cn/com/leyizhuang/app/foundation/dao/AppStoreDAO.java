@@ -63,4 +63,6 @@ public interface AppStoreDAO {
     void deleteStoreByStoreCode(@Param("storeCode") String storeCode);
 
     AppStore findByStoreCode(@Param("storeCode") String storeCode);
+
+    List<AppStore> findStoreListByCityId(Long cityId);
 }

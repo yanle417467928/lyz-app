@@ -44,6 +44,8 @@ public interface AppStoreService {
 
     List<StoreResponse> findStoreByCityId(Long cityId);
 
+    List<AppStore> findStoreListByCityId(Long cityId);
+
     void saveStore(AppStore appStore);
 
     void modifyStore(AppStore appStore);

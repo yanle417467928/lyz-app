@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.user;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -11,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.catalina.Store;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,28 +281,28 @@ public class UserHomePageController {
     @PostMapping(value = "/deliveryType/selfTake", produces = "application/json;charset=UTF-8")
     public ResultDTO getUserDeliveryTypeBySelfTake(@RequestBody OrderGoodsSimpleRequest simpleRequest) {
 
-        logger.info("enterOrder CALLED,顾客选择门店自提，入参 simpleRequest:{}", simpleRequest);
+        logger.info("getUserDeliveryTypeBySelfTake CALLED,顾客选择门店自提，入参 simpleRequest:{}", simpleRequest);
 
         ResultDTO resultDTO;
         try {
             if (simpleRequest.getGoodsList().isEmpty()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
-                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == simpleRequest.getUserId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == simpleRequest.getIdentityType()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
-                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if(simpleRequest.getIdentityType() == 0 && null == simpleRequest.getCustomerId()){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单客户身份不能为空", null);
-                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             Long userId = simpleRequest.getUserId();
@@ -313,105 +315,125 @@ public class UserHomePageController {
             if (identityType == 6) {
                 AppCustomer customer = customerService.findById(userId);
                 Long storeId = customer.getStoreId();
-                Long cityId = customer.getCityId();
-                storeList = appStoreService.findStoreByCityId(cityId);
 
-                for (int i = 0; i < goodsList.size(); i++) {
-                    if (!goodsList.get(i).getIsGift()) {
-                        goodsIds.add(goodsList.get(i).getId());
+                if (null != storeId) {
+
+                    for (int i = 0; i < goodsList.size(); i++) {
+                        if (!goodsList.get(i).getIsGift()) {
+                            goodsIds.add(goodsList.get(i).getId());
+                        }
                     }
-                }
-                goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
-                int goodsTotalQty = 0;
-                for (OrderGoodsSimpleResponse aGoodsInfo : goodsInfo) {
-                    for (GoodsSimpleInfo aGoodsList : goodsList) {
-                        if (aGoodsInfo.getId().equals(aGoodsList.getId())) {
-                            //如果是赠品则标识设置为赠品
-                            if (aGoodsList.getIsGift()) {
-                                goodsTotalQty = aGoodsInfo.getGoodsQty() + aGoodsList.getNum();
-                                aGoodsInfo.setIsGift(Boolean.TRUE);
-                                aGoodsInfo.setGoodsQty(goodsTotalQty);
-                            } else {
-                                //先获取本品数量
-                                aGoodsInfo.setGoodsQty(aGoodsList.getNum());
-                                goodsTotalQty = aGoodsList.getNum();
-                            }
-                            //判断是否是乐意装产品不可门店自提
-                            String brandName = "乐意装";
-                            Boolean isLyzProduct = goodsServiceImpl.existGoodsBrandByGoodsIdAndBrandName(aGoodsInfo.getId(),brandName);
-                            if (isLyzProduct) {
-                                String msg = aGoodsInfo.getGoodsName().concat("是乐意装产品不可自提！");
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
-                                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
-                                return resultDTO;
-                            }
-                            //判断库存
-                            Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, aGoodsInfo.getId(), goodsTotalQty);
-                            if (!isHaveInventory) {
-                                String msg = aGoodsInfo.getGoodsName().concat("门店库存不足！");
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
-                                logger.info("enterOrder OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
-                                return resultDTO;
+                    goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+                    int goodsTotalQty = 0;
+                    for (OrderGoodsSimpleResponse aGoodsInfo : goodsInfo) {
+                        for (GoodsSimpleInfo aGoodsList : goodsList) {
+                            if (aGoodsInfo.getId().equals(aGoodsList.getId())) {
+                                //如果是赠品则标识设置为赠品
+                                if (aGoodsList.getIsGift()) {
+                                    goodsTotalQty = aGoodsInfo.getGoodsQty() + aGoodsList.getNum();
+                                    aGoodsInfo.setIsGift(Boolean.TRUE);
+                                    aGoodsInfo.setGoodsQty(goodsTotalQty);
+                                } else {
+                                    //先获取本品数量
+                                    aGoodsInfo.setGoodsQty(aGoodsList.getNum());
+                                    goodsTotalQty = aGoodsList.getNum();
+                                }
+                                //判断是否是乐意装产品不可门店自提
+                                String brandName = "乐意装";
+                                Boolean isLyzProduct = goodsServiceImpl.existGoodsBrandByGoodsIdAndBrandName(aGoodsInfo.getId(), brandName);
+                                if (isLyzProduct) {
+                                    String msg = aGoodsInfo.getGoodsName().concat("是乐意装产品不可自提！");
+                                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                                    logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                                    return resultDTO;
+                                }
+                                //判断库存
+                                Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, aGoodsInfo.getId(), goodsTotalQty);
+                                if (!isHaveInventory) {
+                                    String msg = aGoodsInfo.getGoodsName().concat("门店库存不足！");
+                                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                                    logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                                    return resultDTO;
+                                }
                             }
                         }
+                    }
+                    AppStore store = appStoreService.findById(storeId);
+
+                    StoreResponse storeResponse = StoreResponse.transform(store);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
+                    logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }else {
+                    Long cityId = customer.getCityId();
+                    if (null != cityId) {
+                        storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                     }
                 }
             }else {
-
                 AppEmployee employee = employeeService.findById(userId);
                 Long storeId = employee.getStoreId();
-                Long cityId = employee.getCityId();
-                storeList = appStoreService.findStoreByCityId(cityId);
 
-                for (int i = 0; i < goodsList.size(); i++) {
-                    if (!goodsList.get(i).getIsGift()) {
-                        goodsIds.add(goodsList.get(i).getId());
+                if (null != storeId) {
+                    for (int i = 0; i < goodsList.size(); i++) {
+                        if (!goodsList.get(i).getIsGift()) {
+                            goodsIds.add(goodsList.get(i).getId());
+                        }
                     }
-                }
-                goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
-                int goodsTotalQty = 0;
-                for (OrderGoodsSimpleResponse aGoodsInfo : goodsInfo) {
-                    for (GoodsSimpleInfo aGoodsList : goodsList) {
-                        if (aGoodsInfo.getId().equals(aGoodsList.getId())) {
-                            //如果是赠品则标识设置为赠品
-                            if (aGoodsList.getIsGift()) {
-                                goodsTotalQty = aGoodsInfo.getGoodsQty() + aGoodsList.getNum();
-                                aGoodsInfo.setIsGift(aGoodsList.getIsGift());
-                                aGoodsInfo.setGoodsQty(goodsTotalQty);
-                            } else {
-                                //先获取本品数量
-                                aGoodsInfo.setGoodsQty(aGoodsList.getNum());
-                                goodsTotalQty = aGoodsList.getNum();
-                            }
-                            //判断是否是乐意装产品不可门店自提
-                            String brandName = "乐意装";
-                            Boolean isLyzProduct = goodsServiceImpl.existGoodsBrandByGoodsIdAndBrandName(aGoodsInfo.getId(),brandName);
-                            if (isLyzProduct) {
-                                String msg = aGoodsInfo.getGoodsName().concat("是乐意装产品不可自提！");
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
-                                logger.info("enterOrder OUT,员工选择门店自提失败，出参 resultDTO:{}", resultDTO);
-                                return resultDTO;
-                            }
-                            //判断库存
-                            Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, aGoodsInfo.getId(), goodsTotalQty);
-                            if (!isHaveInventory) {
-                                String msg = aGoodsInfo.getGoodsName().concat("的门店库存不足！");
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
-                                logger.info("enterOrder OUT,员工选择门店自提失败，出参 resultDTO:{}", resultDTO);
-                                return resultDTO;
+                    goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+                    int goodsTotalQty = 0;
+                    for (OrderGoodsSimpleResponse aGoodsInfo : goodsInfo) {
+                        for (GoodsSimpleInfo aGoodsList : goodsList) {
+                            if (aGoodsInfo.getId().equals(aGoodsList.getId())) {
+                                //如果是赠品则标识设置为赠品
+                                if (aGoodsList.getIsGift()) {
+                                    goodsTotalQty = aGoodsInfo.getGoodsQty() + aGoodsList.getNum();
+                                    aGoodsInfo.setIsGift(aGoodsList.getIsGift());
+                                    aGoodsInfo.setGoodsQty(goodsTotalQty);
+                                } else {
+                                    //先获取本品数量
+                                    aGoodsInfo.setGoodsQty(aGoodsList.getNum());
+                                    goodsTotalQty = aGoodsList.getNum();
+                                }
+                                //判断是否是乐意装产品不可门店自提
+                                String brandName = "乐意装";
+                                Boolean isLyzProduct = goodsServiceImpl.existGoodsBrandByGoodsIdAndBrandName(aGoodsInfo.getId(), brandName);
+                                if (isLyzProduct) {
+                                    String msg = aGoodsInfo.getGoodsName().concat("是乐意装产品不可自提！");
+                                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                                    logger.info("getUserDeliveryTypeBySelfTake OUT,员工选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                                    return resultDTO;
+                                }
+                                //判断库存
+                                Boolean isHaveInventory = appOrderService.existGoodsStoreInventory(storeId, aGoodsInfo.getId(), goodsTotalQty);
+                                if (!isHaveInventory) {
+                                    String msg = aGoodsInfo.getGoodsName().concat("的门店库存不足！");
+                                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                                    logger.info("getUserDeliveryTypeBySelfTake OUT,员工选择门店自提失败，出参 resultDTO:{}", resultDTO);
+                                    return resultDTO;
+                                }
                             }
                         }
                     }
+                    AppStore store = appStoreService.findById(storeId);
+
+                    StoreResponse storeResponse = StoreResponse.transform(store);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
+                    logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }else {
+                    Long cityId = employee.getCityId();
+                    storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                 }
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     storeList.size() > 0 ? storeList : null);
-            logger.info("getGoodsMoney OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客选择门店自提失败!", null);
-            logger.warn("enterOrder EXCEPTION,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getUserDeliveryTypeBySelfTake EXCEPTION,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

@@ -407,6 +407,13 @@ public class MaterialAuditSheetController {
             return resultDTO;
         }
         try {
+            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID,2);
+            if (isOther){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在通过审核的料单", null);
+                logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             MaterialAuditSheet materialAuditSheet = materialAuditSheetService.queryByAuditNo(auditNo);
             if (null == materialAuditSheet) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此物料审核单", null);
