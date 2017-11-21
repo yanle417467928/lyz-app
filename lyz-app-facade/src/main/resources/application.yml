@@ -85,9 +85,9 @@ eureka:
 deploy:
   image-path: src/main/resources/static/images
   alipay:
-    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
+    url:
     async:
-      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
+      url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
       url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
@@ -122,9 +122,9 @@ eureka:
 deploy:
   image-path: /mnt/root/images/goods
   alipay:
-    url: http://test.leyizhuang.com.cn/app/pay/alipay/return
+    url:
     async:
-      url: http://test.leyizhuang.com.cn/app/pay/alipay/return/async
+      url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
       url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
