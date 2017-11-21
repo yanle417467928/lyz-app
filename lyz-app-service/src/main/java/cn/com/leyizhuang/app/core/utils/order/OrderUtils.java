@@ -26,7 +26,7 @@ public class OrderUtils {
         if (null != cityId){
             City city = cityService.findById(cityId);
             if (null != city && null != city.getBriefSpell()){
-                String orderNumber = city.getBriefSpell();
+                String orderNumber = city.getBriefSpell()+"_XN";
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -36,6 +36,9 @@ public class OrderUtils {
                 String randomNumber = random.nextInt(900000) + 100000+"";
                 orderNumber+=randomNumber;
                 System.out.println(orderNumber);
+                return orderNumber;
+            }else{
+                return null;
             }
         }
         return null;
