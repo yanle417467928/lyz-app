@@ -5,8 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * 个人设置页面响应实体
@@ -37,5 +35,5 @@ public class UserInformationResponse implements Serializable {
     //所属门店
     private String storeName;
     //所属导购
-    private String guidePhone;
+    private String guideMobile;
 }
