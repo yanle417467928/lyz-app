@@ -1,13 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,9 @@ public class AppStoreServiceImpl implements AppStoreService {
     public void setStoreDAO(AppStoreDAO storeDAO) {
         this.storeDAO = storeDAO;
     }
+
+    @Autowired
+    private StorePreDepositLogService storePreDepositLogServiceImpl;
 
     @Override
     public List<AppStore> findAll() {
@@ -189,5 +196,28 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     public AppStore findByStoreCode(String storeCode) {
         return this.storeDAO.findByStoreCode(storeCode);
+    }
+
+    @Override
+    public void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type) {
+        Long userId = paymentDataDO.getUserId();
+        Double money = paymentDataDO.getTotalFee();
+        StorePreDeposit storePreDeposit = this.storeDAO.findStorePreDepositByEmpId(userId);
+        if (null == storePreDeposit){
+            storePreDeposit = new StorePreDeposit();
+            storePreDeposit.setBalance(money);
+            AppStore store = this.storeDAO.findAppStoreByEmpId(userId);
+            storePreDeposit.setStoreId(store.getStoreId());
+            this.storeDAO.saveStorePreDeposit(storePreDeposit);
+        } else {
+            this.storeDAO.updateStoreDepositByUserId(userId, money);
+        }
+        StPreDepositLogDO log = new StPreDepositLogDO();
+        log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);
+        log.setUserIdAndOperatorinfo(storePreDeposit.getStoreId(), userId, paymentDataDO.getAppIdentityType(), "");
+        log.setOrderNumber(paymentDataDO.getOutTradeNo());
+        log.setUserOrderNumber(paymentDataDO.getTradeNo());
+        log.setBalance(CountUtil.add(storePreDeposit.getBalance(), money));
+        this.storePreDepositLogServiceImpl.save(log);
     }
 }

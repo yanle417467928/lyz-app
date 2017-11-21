@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -63,6 +64,12 @@ public interface AppStoreDAO {
     void deleteStoreByStoreCode(@Param("storeCode") String storeCode);
 
     AppStore findByStoreCode(@Param("storeCode") String storeCode);
+
+    StorePreDeposit findStorePreDepositByEmpId(Long userId);
+
+    AppStore findAppStoreByEmpId(Long userId);
+
+    void saveStorePreDeposit(StorePreDeposit storePreDeposit);
 
     List<AppStore> findStoreListByCityId(Long cityId);
 }

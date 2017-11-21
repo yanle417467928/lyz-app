@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,7 @@ import java.util.List;
 public interface StorePreDepositLogDAO {
 
     List<PreDepositLogResponse> findByUserIdAndType(@Param("userId") Long userId, @Param("list") List<PreDepositChangeType> typeList);
+
+    void save(StPreDepositLogDO stPreDepositLogDO);
+
 }

@@ -209,4 +209,25 @@
       WHERE c.city_id = #{cityId};
    </select>
 
+   <select id="findStorePreDepositByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+      SELECT store_id, balance
+      FROM st_pre_deposit
+      WHERE store_id =
+      (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </select>
+
+   <select id="findAppStoreByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+      SELECT store_id
+      FROM st_store
+      WHERE store_id =
+      (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+   </select>
+
+   <insert id="saveStorePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+      INSERT INTO st_pre_deposit
+      (store_id, balance)
+      VALUES
+      (storeId, balance)
+   </insert>
+
 </mapper>

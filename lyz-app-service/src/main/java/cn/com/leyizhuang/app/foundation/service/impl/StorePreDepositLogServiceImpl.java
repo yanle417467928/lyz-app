@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.dao.StorePreDepositLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
@@ -24,5 +26,11 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     @Override
     public List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<PreDepositChangeType> typeList) {
         return this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
+    }
+
+    @Override
+    public StPreDepositLogDO save(StPreDepositLogDO stPreDepositLogDO) {
+        this.storePreDepositLogDAO.save(stPreDepositLogDO);
+        return stPreDepositLogDO;
     }
 }

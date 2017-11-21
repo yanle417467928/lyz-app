@@ -240,8 +240,6 @@
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
         SELECT is_cash_on_delivery
         FROM cus_customer
-        WHERE cus_id = #{userId}
-    </select>
 
     <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
         INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
@@ -338,5 +336,14 @@
         AND cp.effective_start_time &lt; NOW()
         AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
     </select>
+
+
+    <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+        SELECT *
+        FROM cus_pre_deposit
+        WHERE cus_id = #{cusId}
+    </select>
+
+
 
 </mapper>

@@ -15,4 +15,13 @@
         </foreach>
     </select>
 
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
+        INSERT INTO cus_pre_deposit_log
+        (create_time, change_money, remarks, type, store_id, operator_id, operator_type,
+        operator_ip, order_number, balance, detail_reason, transfer_time, user_order_number)
+        VALUES
+        (createTime, changeMoney, remarks, type, storeId, operatorId, operatorType,
+        operatorIp, orderNumber, balance, detailReason, transferTime, userOrderNumber)
+    </insert>
+
 </mapper>

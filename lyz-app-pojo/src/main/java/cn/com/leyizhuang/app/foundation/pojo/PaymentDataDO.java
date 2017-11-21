@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.constant.PaymentDataType;
 import lombok.Getter;
@@ -19,6 +20,8 @@ public class PaymentDataDO {
 
     //支付人id
     private Long userId;
+
+    private AppIdentityType appIdentityType;
 
     //商户订单号
     private String outTradeNo;
@@ -59,7 +62,7 @@ public class PaymentDataDO {
         } else if(null != paymentType && paymentType == 6){
             this.paymentType = PaymentDataType.CUS_PRE_DEPOSIT;
         }
-
+        this.appIdentityType = AppIdentityType.getAppIdentityTypeByValue(paymentType);
         this.notifyUrl = notifyUrl;
         this.subject = subject;
         this.totalFee = totalFee;

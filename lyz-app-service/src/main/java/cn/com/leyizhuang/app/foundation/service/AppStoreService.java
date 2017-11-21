@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 
 import java.util.List;
 import java.util.Map;
@@ -54,4 +56,6 @@ public interface AppStoreService {
 
     AppStore findByStoreCode(String storeCode);
 
+    void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
+    
 }

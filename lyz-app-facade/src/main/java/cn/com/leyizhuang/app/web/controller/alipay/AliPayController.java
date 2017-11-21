@@ -1,10 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.alipay;
 
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
+import cn.com.leyizhuang.app.core.constant.PaymentDataType;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.alipay.api.AlipayApiException;
@@ -39,6 +43,13 @@ public class AliPayController {
 
     @Autowired
     private PaymentDataService paymentDataServiceImpl;
+
+    @Autowired
+    private AppCustomerService appCustomerServiceImpl;
+
+    @Autowired
+    private AppStoreService appStoreServiceImpl;
+
 
 
     /**  
@@ -162,6 +173,14 @@ public class AliPayController {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
+
+                            //充值加预存款和日志
+                            if (paymentDataDO.getPaymentType() == PaymentDataType.CUS_PRE_DEPOSIT){
+                                this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                            } else if (paymentDataDO.getPaymentType() == PaymentDataType.ST_PRE_DEPOSIT
+                                    && paymentDataDO.getPaymentType() == PaymentDataType.DEC_PRE_DEPOSIT){
+                                this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                            }
                             return "success";
                         }
                     }
