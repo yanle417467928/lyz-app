@@ -19,8 +19,22 @@ import java.util.Random;
 @Component
 public class OrderUtils {
 
-    @Autowired
     private static CityService cityService;
+
+
+    public static CityService getCityService() {
+        return cityService;
+    }
+
+    @Autowired
+    public static void setCityService(CityService cityService) {
+        OrderUtils.cityService = cityService;
+    }
+
+    @Autowired
+    public OrderUtils(CityService cityService) {
+        OrderUtils.cityService = cityService;
+    }
 
     public static String generateOrderNumber(Long cityId){
         if (null != cityId){
@@ -45,7 +59,7 @@ public class OrderUtils {
     }
 
     public static void main(String[] args) {
-        String orderNumber = generateOrderNumber(1L);
+        String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);
     }
 }

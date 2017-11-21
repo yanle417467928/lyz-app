@@ -242,7 +242,6 @@
         FROM cus_customer
         WHERE cus_id = #{userId}
     </select>
-    </select>
 
     <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
         INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
