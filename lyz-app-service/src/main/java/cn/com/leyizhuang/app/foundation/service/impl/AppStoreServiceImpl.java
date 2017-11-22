@@ -1,7 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
-import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
@@ -25,6 +30,7 @@ import java.util.Map;
 public class AppStoreServiceImpl implements AppStoreService {
 
     private AppStoreDAO storeDAO;
+
     @Autowired
     public void setStoreDAO(AppStoreDAO storeDAO) {
         this.storeDAO = storeDAO;
@@ -40,7 +46,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public AppStore findById(Long id) {
-        if (null != id){
+        if (null != id) {
             return storeDAO.findById(id);
         }
         return null;
@@ -48,7 +54,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public AppStore findDefaultStoreByCityId(Long cityId) {
-        if (null != cityId){
+        if (null != cityId) {
             return storeDAO.findDefaultStoreByCityId(cityId);
         }
         return null;
@@ -56,7 +62,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Double findSubventionBalanceByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return storeDAO.findSubventionBalanceByUserId(userId);
         }
         return null;
@@ -64,7 +70,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Double findCreditMoneyBalanceByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return storeDAO.findCreditMoneyBalanceByUserId(userId);
         }
         return null;
@@ -72,7 +78,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Double findPreDepositBalanceByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return storeDAO.findPreDepositBalanceByUserId(userId);
         }
         return null;
@@ -81,8 +87,8 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     @Transactional
     public int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
-        if (null != userId && null != storeDeposit){
-            return storeDAO.updateStoreDepositByUserIdAndStoreDeposit(userId,storeDeposit);
+        if (null != userId && null != storeDeposit) {
+            return storeDAO.updateStoreDepositByUserIdAndStoreDeposit(userId, storeDeposit);
         }
         return 0;
     }
@@ -90,8 +96,8 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     @Transactional
     public int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
-        if (null != userId && null != storeCredit){
-            return storeDAO.updateStoreCreditByUserIdAndCredit(userId,storeCredit);
+        if (null != userId && null != storeCredit) {
+            return storeDAO.updateStoreCreditByUserIdAndCredit(userId, storeCredit);
         }
         return 0;
     }
@@ -99,16 +105,16 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     @Transactional
     public int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
-        if (null != userId && null != storeSubvention){
-            return storeDAO.updateStoreSubventionByUserIdAndSubvention(userId,storeSubvention);
+        if (null != userId && null != storeSubvention) {
+            return storeDAO.updateStoreSubventionByUserIdAndSubvention(userId, storeSubvention);
         }
         return 0;
     }
 
     @Override
     @Transactional
-    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory) {
-        if (null != userId && !storeInventory.isEmpty()){
+    public int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory) {
+        if (null != userId && !storeInventory.isEmpty()) {
             if (identityType == 6) {
                 for (Long index : storeInventory.keySet()) {
                     int result = storeDAO.updateStoreInventoryByCustomerIdAndGoodsIdAndInventory(userId, index, storeInventory.get(index));
@@ -116,7 +122,7 @@ public class AppStoreServiceImpl implements AppStoreService {
                         return 0;
                     }
                 }
-            }else {
+            } else {
                 for (Long index : storeInventory.keySet()) {
                     int result = storeDAO.updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory(userId, index, storeInventory.get(index));
                     if (result == 0) {
@@ -131,36 +137,36 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     @Transactional
     public void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
-        if (null != userId && null != storeDeposit){
-            storeDAO.updateStoreDepositByUserId(userId,storeDeposit);
+        if (null != userId && null != storeDeposit) {
+            storeDAO.updateStoreDepositByUserId(userId, storeDeposit);
         }
     }
 
     @Override
     @Transactional
     public void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
-        if (null != userId && null != storeCredit){
-            storeDAO.updateStoreCreditByUserId(userId,storeCredit);
+        if (null != userId && null != storeCredit) {
+            storeDAO.updateStoreCreditByUserId(userId, storeCredit);
         }
     }
 
     @Override
     @Transactional
     public void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
-        if (null != userId && null != storeSubvention){
-            storeDAO.updateStoreSubventionByUserId(userId,storeSubvention);
+        if (null != userId && null != storeSubvention) {
+            storeDAO.updateStoreSubventionByUserId(userId, storeSubvention);
         }
     }
 
     @Override
     @Transactional
-    public void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory) {
-        if (null != userId && !storeInventory.isEmpty()){
+    public void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory) {
+        if (null != userId && !storeInventory.isEmpty()) {
             if (identityType == 6) {
                 for (Long index : storeInventory.keySet()) {
                     storeDAO.updateStoreInventoryByCustomerIdAndGoodsId(userId, index, storeInventory.get(index));
                 }
-            }else {
+            } else {
                 for (Long index : storeInventory.keySet()) {
                     storeDAO.updateStoreInventoryByEmployeeIdAndGoodsId(userId, index, storeInventory.get(index));
                 }
@@ -203,7 +209,7 @@ public class AppStoreServiceImpl implements AppStoreService {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();
         StorePreDeposit storePreDeposit = this.storeDAO.findStorePreDepositByEmpId(userId);
-        if (null == storePreDeposit){
+        if (null == storePreDeposit) {
             storePreDeposit = new StorePreDeposit();
             storePreDeposit.setBalance(money);
             AppStore store = this.storeDAO.findAppStoreByEmpId(userId);
@@ -219,5 +225,28 @@ public class AppStoreServiceImpl implements AppStoreService {
         log.setUserOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(storePreDeposit.getBalance(), money));
         this.storePreDepositLogServiceImpl.save(log);
+    }
+
+    @Override
+    public AppStore findStoreByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType) {
+            new AppStore();
+            AppStore store;
+            if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+                store = storeDAO.findAppStoreCusId(userId);
+            } else {
+                store = storeDAO.findAppStoreByEmpId(userId);
+            }
+            return store;
+        }
+        return null;
+    }
+
+    @Override
+    public List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId) {
+        if (null != cityId){
+            return storeDAO.findSelfTakePermittedStoreByCityId(cityId);
+        }
+        return null;
     }
 }

@@ -98,5 +98,5 @@ public interface GoodsDAO {
 
     Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id,@Param("brandName") String brandName);
 
-    List<String> findCompanyFlagListById(@Param(value = "goodsIdList") List<Long> goodsIdList);
+    List<String> findCompanyFlagListById(@Param(value = "list") List<Long> goodsIdList);
 }

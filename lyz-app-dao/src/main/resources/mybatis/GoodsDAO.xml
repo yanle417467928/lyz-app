@@ -150,8 +150,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -164,7 +164,7 @@
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid id,
+            g.gid      id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
@@ -175,8 +175,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE e.emp_id = #{userId}
@@ -192,8 +192,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -211,8 +211,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -225,13 +225,13 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
             DISTINCT
-            g.brd_id brand_id,
+            g.brd_id     brand_id,
             g.brand_name brand_name
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
@@ -250,8 +250,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
@@ -270,8 +270,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_type t ON g.gtid = t.gtid
@@ -290,8 +290,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             INNER JOIN gds_goods_type t ON g.gtid = t.gtid
@@ -306,7 +306,7 @@
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid id,
+            g.gid      id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
@@ -317,8 +317,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             c.cus_id = #{userId}
@@ -330,7 +330,7 @@
         SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid id,
+            g.gid      id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
@@ -341,8 +341,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             e.emp_id = #{userId}
@@ -353,7 +353,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         <if test="null != type and type.toString() == 'CUSTOMER'">
-        SELECT
+            SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
             g.gid id,
@@ -361,17 +361,17 @@
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            g.cid      category_id,
-            g.brd_id   brand_id,
-            g.gtid     type_id
-        FROM
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
+            FROM
             gds_goods_collect acc
             INNER JOIN cus_customer c ON c.cus_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND c.store_id = p.store_id
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE
+            WHERE
             acc.user_id = #{userId}
             AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
@@ -379,7 +379,7 @@
         </if>
 
         <if test="null != type and type.toString() != 'CUSTOMER'">
-        SELECT
+            SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
             g.gid id,
@@ -387,17 +387,17 @@
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            g.cid      category_id,
-            g.brd_id   brand_id,
-            g.gtid     type_id
-        FROM
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id
+            FROM
             gds_goods_collect acc
             INNER JOIN emp_employee e ON e.emp_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND e.store_id = p.store_id
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        WHERE
+            WHERE
             acc.user_id = #{userId}
             AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
@@ -424,8 +424,8 @@
             gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE
             acg.user_id = #{userId}
             AND acg.identity_type = #{type,
@@ -458,8 +458,8 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             c.cus_id = #{userId}
@@ -484,8 +484,8 @@
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             e.emp_id = #{userId}
@@ -553,30 +553,37 @@
         </if>
     </select>
 
-    <select id="findGoodsById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
-        SELECT gid,sku, sku_name, cover_image_uri, goods_specification, goods_unit
+    <select id="findGoodsById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+            gid,
+            sku,
+            sku_name,
+            cover_image_uri,
+            goods_specification,
+            goods_unit
         FROM gds_goods
         WHERE gid = #{gid}
     </select>
 
     <select id="findGoodsPriceByProductCouponIdAndUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT
-        p.gid,
-        p.retail_price,
-        p.vip_price,
-        p.wholesale_price
+            p.gid,
+            p.retail_price,
+            p.vip_price,
+            p.wholesale_price
         FROM cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
         WHERE c.cus_id = #{cusId}
-        AND pcp.id = #{pcId}
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        AND pcp.effective_start_time &lt; NOW()
-        AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
-        AND pcp.is_used = FALSE
-        AND PCP.gid = P.gid
-        AND pcp.quantity >= #{qty};
+              AND pcp.id = #{pcId}
+              AND p.start_time &lt; NOW()
+              AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+              AND pcp.effective_start_time &lt; NOW()
+              AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
+              AND pcp.is_used = FALSE
+              AND PCP.gid = P.gid
+              AND pcp.quantity >= #{qty};
     </select>
 
     <select id="getGoodsPriceByCustomerAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
@@ -605,44 +612,46 @@
         </foreach>
     </select>
 
-    <select id="findGoodsListByEmployeeIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
+    <select id="findGoodsListByEmployeeIdAndGoodsIdList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
-            g.gid      id,
-            g.sku_name goods_name,
-            g.cover_image_uri,
-            g.goods_specification,
-            g.goods_unit,
-            p.vip_price,
-            p.retail_price,
-            g.cid      category_id,
-            g.brd_id   brand_id,
-            g.gtid     type_id
-        FROM
-            emp_employee e
-            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-            AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-            INNER JOIN gds_goods g ON p.gid = g.gid
-        WHERE
-            e.emp_id = #{userId}
-        AND p.gid IN
-        <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
-            #{gid}
-        </foreach>
-
-    </select>
-    <select id="findGoodsListByCustomerIdAndGoodsIdList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
-        SELECT
-        g.gid      id,
+        g.gid id,
         g.sku_name goods_name,
         g.cover_image_uri,
         g.goods_specification,
         g.goods_unit,
         p.vip_price,
         p.retail_price,
-        g.cid      category_id,
-        g.brd_id   brand_id,
-        g.gtid     type_id
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id
+        FROM
+        emp_employee e
+        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        WHERE
+        e.emp_id = #{userId}
+        AND p.gid IN
+        <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
+            #{gid}
+        </foreach>
+
+    </select>
+    <select id="findGoodsListByCustomerIdAndGoodsIdList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
+        SELECT
+        g.gid id,
+        g.sku_name goods_name,
+        g.cover_image_uri,
+        g.goods_specification,
+        g.goods_unit,
+        p.vip_price,
+        p.retail_price,
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -662,14 +671,14 @@
         SELECT
         g.cover_image_uri,
         g.sku_name goods_name,
-        g.gid      id,
+        g.gid id,
         g.goods_specification,
         g.goods_unit,
         p.vip_price,
         p.retail_price,
-        g.cid      category_id,
-        g.brd_id   brand_id,
-        g.gtid     type_id
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -700,14 +709,14 @@
         SELECT
         g.cover_image_uri,
         g.sku_name goods_name,
-        g.gid      id,
+        g.gid id,
         g.goods_specification,
         g.goods_unit,
         p.vip_price,
         p.retail_price,
-        g.cid      category_id,
-        g.brd_id   brand_id,
-        g.gtid     type_id
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -735,14 +744,16 @@
     </select>
 
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
-        SELECT EXISTS (
-        SELECT 'X' FROM gds_goods WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName},'%'))
+        SELECT EXISTS(
+                SELECT 'X'
+                FROM gds_goods
+                WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName}, '%'))
     </select>
 
     <select id="findCompanyFlagListById" resultType="java.lang.String">
-        SELECT DISTINCT company_flag FROM  gds_goods WHERE gid in
+        SELECT DISTINCT company_flag FROM gds_goods WHERE gid in
         <foreach collection="list" item="type" separator="," open="(" close=")">
-            #{gid}
+            #{type}
         </foreach>
     </select>
 </mapper>

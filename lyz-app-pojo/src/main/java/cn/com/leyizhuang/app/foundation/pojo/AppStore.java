@@ -18,6 +18,11 @@ import java.util.Date;
 public class AppStore {
 
     private Long storeId;
+
+    /**
+     * 所在城市id
+     */
+    private Long cityId;
     //创建类型
     private String creatorType;
     //创建时间

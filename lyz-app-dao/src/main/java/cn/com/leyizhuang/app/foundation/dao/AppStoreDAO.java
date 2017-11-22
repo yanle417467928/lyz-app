@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -72,4 +73,8 @@ public interface AppStoreDAO {
     void saveStorePreDeposit(StorePreDeposit storePreDeposit);
 
     List<AppStore> findStoreListByCityId(Long cityId);
+
+    AppStore findAppStoreCusId(@Param(value = "userId") Long userId);
+
+    List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId);
 }

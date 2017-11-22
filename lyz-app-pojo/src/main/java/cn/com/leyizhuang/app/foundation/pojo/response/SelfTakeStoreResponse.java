@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 获取可选自提门店列表返回对象
@@ -17,19 +15,19 @@ import java.io.Serializable;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class SelfTakeStoreResponse implements Serializable{
 
-    //是否允许门店自提
+    private static final long serialVersionUID = -8432769934421527145L;
+    /**
+     * 是否允许门店自提
+     */
     private Boolean isSelfTakePermitted;
 
+    /**
+     * 自提门店列表
+     */
+    private List<SelfTakeStore> storeList;
 
-
-    private Boolean isExist;
-    //用户id
-    private Long userId;
-    //用户电话
-    private String mobile;
-
-    private Long cityId;
 
 }

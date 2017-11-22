@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderGoodsSimpleRequest implements Serializable {
 
+    private static final long serialVersionUID = 6037339634254711067L;
     /**
      * 用户Id
      */
