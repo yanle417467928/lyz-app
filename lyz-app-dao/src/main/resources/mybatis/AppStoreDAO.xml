@@ -252,7 +252,7 @@
 
     <select id="findAppStoreByEmpId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
-        SELECT store_id
+        SELECT *
         FROM st_store
         WHERE store_id =
               (SELECT store_id
@@ -266,7 +266,8 @@
         VALUES
             (storeId, balance)
     </insert>
-    <select id="findAppStoreCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+    <select id="findAppStoreCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         SELECT *
         FROM st_store
         WHERE store_id = (
@@ -287,13 +288,14 @@
     </select>
 
 
-   <select id="findStoreByCityIdAndNotStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
-      SELECT
-      s.store_id,
-      s.store_name
-      FROM st_store s
-      LEFT JOIN city c ON c.code = s.city_code
-      WHERE c.city_id = #{cityId} AND s.store_type != #{storeType};
-   </select>
+    <select id="findStoreByCityIdAndNotStoreType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
+        SELECT
+            s.store_id,
+            s.store_name
+        FROM st_store s
+            LEFT JOIN city c ON c.code = s.city_code
+        WHERE c.city_id = #{cityId} AND s.store_type != #{storeType};
+    </select>
 
 </mapper>

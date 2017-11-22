@@ -66,8 +66,9 @@ public class SettlementController {
             logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不允许为空", null);
+        if (null == identityType || identityType == AppIdentityType.DECORATE_MANAGER.getValue()
+                || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该身份类型不允许门店自提,", null);
             logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -162,7 +163,7 @@ public class SettlementController {
             logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!(null != requestParam.getGoodsList() && requestParam.getGoodsList().size()>0)) {
+        if (!(null != requestParam.getGoodsList() && requestParam.getGoodsList().size() > 0)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
             logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -172,8 +173,8 @@ public class SettlementController {
             return resultDTO;
         }*/
         try {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
-           return resultDTO;
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,选择自提门店失败",
