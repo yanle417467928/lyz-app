@@ -88,11 +88,11 @@ public class AliPayController {
             logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        Double totlefee = CountUtil.HALF_UP_SCALE_2(money);
-        String outTradeNo = "CZ" + OrderUtils.generateOrderNumber(cityId);
+        String totlefee = CountUtil.retainTwoDecimalPlaces(money);
+        String outTradeNo = "CZ_" + OrderUtils.generateRechargeNumber(cityId);
         String subject = "预存款充值";
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, "http://192.168.0.245:9999/app/alipay/return/async", subject,
-                totlefee, PaymentDataStatus.WAIT_PAY, "支付宝", "");
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc, subject,
+                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "支付宝", "");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
@@ -109,7 +109,7 @@ public class AliPayController {
         model.setSubject(subject);
         model.setOutTradeNo(outTradeNo);
         model.setTimeoutExpress("30m");
-        model.setTotalAmount(totlefee + "");
+        model.setTotalAmount(totlefee);
         model.setProductCode(AlipayConfig.productCode);
         request.setBizModel(model);
         request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
