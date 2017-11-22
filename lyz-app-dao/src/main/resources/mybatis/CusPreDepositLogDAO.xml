@@ -12,6 +12,7 @@
             <foreach collection="list" item="type" separator="," open="(" close=")">
               #{type}
             </foreach>
+        ORDER BY create_time DESC
     </select>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO">

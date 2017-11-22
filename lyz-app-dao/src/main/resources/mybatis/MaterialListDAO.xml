@@ -47,6 +47,7 @@
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
             AND m.coupon_id = '0'
+            ORDER BY m.id DESC
         </if>
         <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
             SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
@@ -59,6 +60,7 @@
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
             AND m.coupon_id = '0'
+            ORDER BY m.id DESC
         </if>
     </select>
 
