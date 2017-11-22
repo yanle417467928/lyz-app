@@ -169,16 +169,16 @@ public class AliPayController {
                 if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
-                        if (Double.parseDouble(total_fee) == paymentDataDO.getTotalFee()) {
+                        if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
 
                             //充值加预存款和日志
-                            if (paymentDataDO.getPaymentType() == PaymentDataType.CUS_PRE_DEPOSIT){
+                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)){
                                 this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
-                            } else if (paymentDataDO.getPaymentType() == PaymentDataType.ST_PRE_DEPOSIT
-                                    && paymentDataDO.getPaymentType() == PaymentDataType.DEC_PRE_DEPOSIT){
+                            } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
+                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)){
                                 this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
                             }
                             return "success";
