@@ -230,4 +230,14 @@
       (storeId, balance)
    </insert>
 
+
+   <select id="findStoreByCityIdAndNotStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
+      SELECT
+      s.store_id,
+      s.store_name
+      FROM st_store s
+      LEFT JOIN city c ON c.code = s.city_code
+      WHERE c.city_id = #{cityId} AND s.store_type != #{storeType};
+   </select>
+
 </mapper>

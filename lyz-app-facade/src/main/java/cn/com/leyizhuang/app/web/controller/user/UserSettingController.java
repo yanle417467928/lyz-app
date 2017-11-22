@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
@@ -645,7 +642,7 @@ public class UserSettingController {
             }
             storeSeller.setSellerList(this.employeeService.findSellerByStoreIdAndIdentityType(appCustomer.getStoreId(), AppIdentityType.getAppIdentityTypeByValue(0)));
         }
-        storeSeller.setStoreList(this.storeService.findStoreByCityId(cityId));
+        storeSeller.setStoreList(this.storeService.findStoreByCityIdAndNotStoreType(cityId, StoreType.ZS));
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSeller);
         logger.info("getStoreSeller OUT,获取客户归属门店和导购成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

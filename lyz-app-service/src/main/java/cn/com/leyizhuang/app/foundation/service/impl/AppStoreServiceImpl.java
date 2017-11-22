@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
@@ -222,5 +223,10 @@ public class AppStoreServiceImpl implements AppStoreService {
         log.setUserOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(storePreDeposit.getBalance(), money));
         this.storePreDepositLogServiceImpl.save(log);
+    }
+
+    @Override
+    public List<StoreResponse> findStoreByCityIdAndNotStoreType(Long cityId, StoreType storeType) {
+        return this.storeDAO.findStoreByCityIdAndNotStoreType(cityId, storeType);
     }
 }

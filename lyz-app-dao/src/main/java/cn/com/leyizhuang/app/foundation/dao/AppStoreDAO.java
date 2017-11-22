@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
@@ -72,4 +73,6 @@ public interface AppStoreDAO {
     void saveStorePreDeposit(StorePreDeposit storePreDeposit);
 
     List<AppStore> findStoreListByCityId(Long cityId);
+
+    List<StoreResponse> findStoreByCityIdAndNotStoreType(@Param("cityId") Long cityId, @Param("storeType") StoreType storeType);
 }
