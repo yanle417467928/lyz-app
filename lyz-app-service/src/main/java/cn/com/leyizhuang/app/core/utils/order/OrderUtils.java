@@ -58,6 +58,36 @@ public class OrderUtils {
         return null;
     }
 
+    /**
+     * @title   生成充值单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/22
+     */
+    public static String generateRechargeNumber(Long cityId){
+        if (null != cityId){
+            City city = cityService.findById(cityId);
+            if (null != city && null != city.getBriefSpell()){
+                String orderNumber = city.getBriefSpell();
+                Calendar calendar = Calendar.getInstance();
+                Date date = calendar.getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+                String timeStamp = sdf.format(date);
+                orderNumber+=timeStamp;
+                Random random = new Random();
+                String randomNumber = random.nextInt(900000) + 100000+"";
+                orderNumber+=randomNumber;
+                return orderNumber;
+            }else{
+                return null;
+            }
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);

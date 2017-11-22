@@ -1,11 +1,11 @@
 package cn.com.leyizhuang.app.foundation.pojo.management;
 
-        import lombok.Getter;
-        import lombok.Setter;
-        import lombok.ToString;
-        import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
-        import java.util.Date;
+import java.util.Date;
 
 /**
  * 顾客

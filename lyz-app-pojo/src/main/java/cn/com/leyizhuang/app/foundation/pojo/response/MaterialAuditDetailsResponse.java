@@ -1,11 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**

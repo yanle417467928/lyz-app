@@ -2,8 +2,8 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
-import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -128,7 +128,7 @@ public class AppAdminResourceRestController extends BaseRestController {
                     this.menuService.batchRemove(Arrays.asList(id));
                 }
             }
-             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null); 
+             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (InvalidDataException e) {
             LOG.error("批量删除菜单数据发生错误");
             LOG.error(e.getMessage());

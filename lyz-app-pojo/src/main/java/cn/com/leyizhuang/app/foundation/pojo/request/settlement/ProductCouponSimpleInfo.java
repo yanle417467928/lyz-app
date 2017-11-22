@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.request.settlement;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
                     this.menuService.batchRemove(Arrays.asList(id));
                 }
             }
-             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null); 
+             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (InvalidDataException e) {
             LOG.error("批量删除菜单数据发生错误");
             LOG.error(e.getMessage());

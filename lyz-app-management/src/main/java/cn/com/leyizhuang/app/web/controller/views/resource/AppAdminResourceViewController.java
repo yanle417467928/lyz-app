@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.views.resource;
 
 import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
-import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

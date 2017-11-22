@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.LeBiVariationType;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

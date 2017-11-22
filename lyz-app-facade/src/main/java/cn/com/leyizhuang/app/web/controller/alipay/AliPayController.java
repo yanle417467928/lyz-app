@@ -88,11 +88,11 @@ public class AliPayController {
             logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        Double totlefee = CountUtil.HALF_UP_SCALE_2(money);
-        String outTradeNo = "CZ" + OrderUtils.generateOrderNumber(cityId);
+        String totlefee = CountUtil.retainTwoDecimalPlaces(money);
+        String outTradeNo = "CZ_" + OrderUtils.generateRechargeNumber(cityId);
         String subject = "预存款充值";
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, "http://192.168.0.245:9999/app/alipay/return/async", subject,
-                totlefee, PaymentDataStatus.WAIT_PAY, "支付宝", "");
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc, subject,
+                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "支付宝", "");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
@@ -109,7 +109,7 @@ public class AliPayController {
         model.setSubject(subject);
         model.setOutTradeNo(outTradeNo);
         model.setTimeoutExpress("30m");
-        model.setTotalAmount(totlefee + "");
+        model.setTotalAmount(totlefee);
         model.setProductCode(AlipayConfig.productCode);
         request.setBizModel(model);
         request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
@@ -169,16 +169,16 @@ public class AliPayController {
                 if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
-                        if (Double.parseDouble(total_fee) == paymentDataDO.getTotalFee()) {
+                        if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
 
                             //充值加预存款和日志
-                            if (paymentDataDO.getPaymentType() == PaymentDataType.CUS_PRE_DEPOSIT){
+                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)){
                                 this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
-                            } else if (paymentDataDO.getPaymentType() == PaymentDataType.ST_PRE_DEPOSIT
-                                    && paymentDataDO.getPaymentType() == PaymentDataType.DEC_PRE_DEPOSIT){
+                            } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
+                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)){
                                 this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
                             }
                             return "success";

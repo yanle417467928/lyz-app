@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.QuickOrderRelationDAO">
+
+    <select id="findByNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT g.gid, g.sku, g.sku_name, g.cover_image_uri, g.goods_specification, g.goods_unit
+        FROM quick_order_relation q
+        LEFT JOIN gds_goods g ON q.goods_id = g.gid
+        WHERE q.number = #{number}
+    </select>
+
+</mapper>

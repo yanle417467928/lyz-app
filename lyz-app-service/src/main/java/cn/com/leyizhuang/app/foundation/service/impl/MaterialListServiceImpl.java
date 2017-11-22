@@ -112,4 +112,12 @@ public class MaterialListServiceImpl implements MaterialListService {
         }
         return null;
     }
+
+    @Override
+    public List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType) {
+            return materialListDAO.findMaterialListByUserIdAndTypeAndIsCouponId(userId,identityType);
+        }
+        return null;
+    }
 }

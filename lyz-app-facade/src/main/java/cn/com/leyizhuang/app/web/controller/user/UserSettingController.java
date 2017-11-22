@@ -4,8 +4,6 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.FunctionalFeedbackDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
@@ -15,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
@@ -642,7 +642,7 @@ public class UserSettingController {
             }
             storeSeller.setSellerList(this.employeeService.findSellerByStoreIdAndIdentityType(appCustomer.getStoreId(), AppIdentityType.getAppIdentityTypeByValue(0)));
         }
-        storeSeller.setStoreList(this.storeService.findStoreByCityId(cityId));
+        storeSeller.setStoreList(this.storeService.findStoreByCityIdAndNotStoreType(cityId, StoreType.ZS));
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSeller);
         logger.info("getStoreSeller OUT,获取客户归属门店和导购成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

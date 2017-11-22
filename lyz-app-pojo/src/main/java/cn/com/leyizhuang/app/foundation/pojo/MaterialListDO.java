@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
-import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -40,6 +39,8 @@ public class MaterialListDO {
     private String auditNo;
     //加入类型
     private MaterialListType materialListType;
+    //产品券id（从产品券转化的商品）
+    private Long couponId;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

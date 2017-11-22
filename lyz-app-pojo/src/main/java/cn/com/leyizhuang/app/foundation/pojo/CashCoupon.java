@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.SexType;
 import lombok.*;
 
 import java.io.Serializable;

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
@@ -58,6 +59,9 @@ public interface AppStoreService {
     AppStore findByStoreCode(String storeCode);
 
     void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
+
+    List<StoreResponse> findStoreByCityIdAndNotStoreType(Long cityId, StoreType storeType);
+
 
     AppStore findStoreByUserIdAndIdentityType(Long userId, Integer identityType);
 

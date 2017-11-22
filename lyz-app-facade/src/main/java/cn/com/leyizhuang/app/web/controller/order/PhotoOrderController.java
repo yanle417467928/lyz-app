@@ -1,11 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO;
 import cn.com.leyizhuang.app.foundation.service.PhotoOrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

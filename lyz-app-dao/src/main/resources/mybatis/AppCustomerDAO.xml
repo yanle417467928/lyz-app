@@ -127,6 +127,7 @@
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
         SELECT
+            c.id,
             g.sku_name      goods_name,
             g.sku           goods_code,
             g.goods_specification,

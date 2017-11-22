@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
 import lombok.*;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 订单商品评价参数接受类

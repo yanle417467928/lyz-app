@@ -44,6 +44,9 @@ public class MaterialListController {
     private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
 
     @Autowired
+    private QuickOrderRelationService quickOrderRelationServiceImpl;
+
+    @Autowired
     private GoodsService goodsService;
 
     @Autowired
@@ -106,6 +109,7 @@ public class MaterialListController {
                         materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
                         materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                        materialListDOTemp.setCouponId(0L);
                         if (null != goodsDO.getCoverImageUri()) {
                             String uri[] = goodsDO.getCoverImageUri().split(",");
                             materialListDOTemp.setCoverImageUri(uri[0]);
@@ -242,16 +246,17 @@ public class MaterialListController {
             return resultDTO;
         }
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+            //创建返回对象
+        MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
+        Map<String, Object> returnMap = new HashMap<>(2);
+        AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
         if (identityType == 2) {
-            //创建返回对象
-            MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
-            Map<String, Object> returnMap = new HashMap<>(2);
-            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             //查询的是所有的商品下料清单（这个集合对象中的料单号和类型是一样的）
             List<MaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
 
             if (materialListDOS != null) {
+
                 //只需得到一个料单对象中料单编号
                 MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                         appIdentityType, materialListDOS.get(0).getGoodsId());
@@ -264,15 +269,20 @@ public class MaterialListController {
                 materialAuditGoPayResponse.setAuditNo(auditNo);
                 materialAuditGoPayResponse.setWorker(materialAuditSheet.getEmployeeName());
 
-
-                returnMap.put("auditListRes", materialAuditGoPayResponse);
-                returnMap.put("materialListRes", materialListResponses);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
-                logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             }
         }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListResponses);
+        if (identityType == 6 || identityType ==0){
+            List<MaterialListResponse> listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId,appIdentityType);
+            if (listResponses != null) {
+                for (MaterialListResponse materialListResponse : listResponses) {
+                    materialListResponse.setRetailPrice(0.00);
+                }
+                materialAuditGoPayResponse.setGoodsList(listResponses);
+            }
+        }
+        returnMap.put("auditListRes", materialAuditGoPayResponse);
+        returnMap.put("materialListRes", materialListResponses);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
@@ -491,6 +501,87 @@ public class MaterialListController {
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
+    }
+
+    /**
+     * @title   快捷下单加入下料清单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/21
+     */
+    @PostMapping(value = "/quickOrder/add", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> addQuickOrderMaterialList(Long userId, Integer identityType, String params) {
+        logger.info("addQuickOrderMaterialList CALLED,快捷下单加入下料清单，入参 userId:{} identityType:{} params:{}", userId, identityType, params);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("addQuickOrderMaterialList OUT,快捷下单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                        null);
+                logger.info("addQuickOrderMaterialList OUT,快捷下单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == params) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品和数量信息不能为空！", null);
+                logger.info("addQuickOrderMaterialList OUT,快捷下单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            Map<String, Integer> goodsMap = new HashMap();
+            String[] param = params.split(",");
+            for (String s : param) {
+                String goodsParam[] = s.split("-");
+                goodsMap.put(goodsParam[0], Integer.parseInt(goodsParam[1]));
+            }
+            List<MaterialListDO> materialListSave = new ArrayList<>();
+            List<MaterialListDO> materialListUpdate = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : goodsMap.entrySet()) {
+                GoodsDO goodsDO = this.quickOrderRelationServiceImpl.findByNumber(entry.getKey());
+                if (null != goodsDO) {
+                    MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                            AppIdentityType.getAppIdentityTypeByValue(identityType), goodsDO.getGid());
+                    if (null == materialListDO) {
+                        MaterialListDO materialListDOTemp = new MaterialListDO();
+                        materialListDOTemp.setUserId(userId);
+                        materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        materialListDOTemp.setGid(goodsDO.getGid());
+                        materialListDOTemp.setSku(goodsDO.getSku());
+                        materialListDOTemp.setQty(entry.getValue());
+                        materialListDOTemp.setSkuName(goodsDO.getSkuName());
+                        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+                        materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                        if (null != goodsDO.getCoverImageUri()) {
+                            String uri[] = goodsDO.getCoverImageUri().split(",");
+                            materialListDOTemp.setCoverImageUri(uri[0]);
+                        }
+                        materialListSave.add(materialListDOTemp);
+                    } else {
+                        materialListDO.setQty(materialListDO.getQty() + entry.getValue());
+                        materialListUpdate.add(materialListDO);
+                    }
+                } else {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + entry.getKey() + "" +
+                            "的商品不存在!", null);
+                }
+            }
+            commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("addQuickOrderMaterialList OUT,快捷下单加入下料清单成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,快捷下单加入下料清单失败!", null);
+            logger.warn("addQuickOrderMaterialList EXCEPTION,快捷下单加入下料清单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 
 

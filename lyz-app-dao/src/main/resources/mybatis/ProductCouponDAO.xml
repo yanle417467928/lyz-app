@@ -26,5 +26,17 @@
             g.sku
     </select>
 
+    <select id="findGoodsIdByUserIdAndProductCouponId" resultType="java.lang.Long">
+        SELECT
+          ccpc.gid
+        FROM
+          cus_customer_product_coupon ccpc
+        WHERE
+          ccpc.cus_id = #{userId}
+          AND ccpc.is_used IS FALSE
+          AND ccpc.effective_start_time &lt; NOW()
+          AND ccpc.effective_end_time &gt; NOW()
+          AND ccpc.id = #{pcId}
+    </select>
 
 </mapper>

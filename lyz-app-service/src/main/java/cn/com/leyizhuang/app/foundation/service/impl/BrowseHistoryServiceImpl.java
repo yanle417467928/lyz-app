@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.BrowseHistoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.BrowseHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

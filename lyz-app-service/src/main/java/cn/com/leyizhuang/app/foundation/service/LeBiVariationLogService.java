@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.core.constant.LeBiVariationType;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

@@ -1,12 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
@@ -225,6 +230,11 @@ public class AppStoreServiceImpl implements AppStoreService {
         log.setUserOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(storePreDeposit.getBalance(), money));
         this.storePreDepositLogServiceImpl.save(log);
+    }
+
+    @Override
+    public List<StoreResponse> findStoreByCityIdAndNotStoreType(Long cityId, StoreType storeType) {
+        return this.storeDAO.findStoreByCityIdAndNotStoreType(cityId, storeType);
     }
 
     @Override
