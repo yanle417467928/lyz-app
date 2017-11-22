@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.BrowseHistoryRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BrowseHistoryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

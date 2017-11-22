@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import org.apache.ibatis.annotations.Param;

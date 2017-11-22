@@ -1,11 +1,12 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
-import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.FunctionFeedBackType;
+import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.FunctionalFeedbackDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
@@ -15,6 +16,8 @@ import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;

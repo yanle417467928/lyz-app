@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

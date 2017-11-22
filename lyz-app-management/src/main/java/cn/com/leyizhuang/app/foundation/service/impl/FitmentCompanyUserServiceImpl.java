@@ -2,13 +2,13 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.foundation.dao.FitmentCompanyUserDAO;
+import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyUserDTO;
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
-import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyUserDTO;
-import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.FitmentCompanyUserService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;

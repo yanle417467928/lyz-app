@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,4 +46,7 @@ public interface MaterialListDAO {
 
     List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
                                                                     @Param("identityType") AppIdentityType identityType);
+
+    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
+                                                                            @Param("identityType") AppIdentityType identityType);
 }

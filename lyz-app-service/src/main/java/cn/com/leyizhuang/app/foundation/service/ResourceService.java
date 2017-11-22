@@ -1,9 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.core.constant.AppAdminResourceType;
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.management.Resource;
 import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
-import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.company;
 
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO;
-import cn.com.leyizhuang.app.foundation.vo.FitmentCompanyVO;
 import cn.com.leyizhuang.app.foundation.service.FitmentCompanyService;
+import cn.com.leyizhuang.app.foundation.vo.FitmentCompanyVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

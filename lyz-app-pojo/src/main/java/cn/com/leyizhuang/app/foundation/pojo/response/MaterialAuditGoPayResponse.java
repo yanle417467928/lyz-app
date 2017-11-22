@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

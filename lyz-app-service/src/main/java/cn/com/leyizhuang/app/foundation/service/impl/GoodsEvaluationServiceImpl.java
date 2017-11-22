@@ -1,14 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.GoodsEvaluationDAO;
-import cn.com.leyizhuang.app.foundation.dao.MaterialAuditGoodsInfoDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
-import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.GoodsEvaluationService;
-import cn.com.leyizhuang.app.foundation.service.MaterialAuditGoodsInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

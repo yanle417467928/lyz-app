@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -9,7 +8,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

@@ -109,6 +109,7 @@ public class MaterialListController {
                         materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
                         materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                        materialListDOTemp.setCouponId(0L);
                         if (null != goodsDO.getCoverImageUri()) {
                             String uri[] = goodsDO.getCoverImageUri().split(",");
                             materialListDOTemp.setCoverImageUri(uri[0]);
@@ -245,16 +246,17 @@ public class MaterialListController {
             return resultDTO;
         }
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+            //创建返回对象
+        MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
+        Map<String, Object> returnMap = new HashMap<>(2);
+        AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
         if (identityType == 2) {
-            //创建返回对象
-            MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
-            Map<String, Object> returnMap = new HashMap<>(2);
-            AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
             //查询的是所有的商品下料清单（这个集合对象中的料单号和类型是一样的）
             List<MaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
 
             if (materialListDOS != null) {
+
                 //只需得到一个料单对象中料单编号
                 MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                         appIdentityType, materialListDOS.get(0).getGoodsId());
@@ -267,15 +269,20 @@ public class MaterialListController {
                 materialAuditGoPayResponse.setAuditNo(auditNo);
                 materialAuditGoPayResponse.setWorker(materialAuditSheet.getEmployeeName());
 
-
-                returnMap.put("auditListRes", materialAuditGoPayResponse);
-                returnMap.put("materialListRes", materialListResponses);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
-                logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             }
         }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListResponses);
+        if (identityType == 6 || identityType ==0){
+            List<MaterialListResponse> listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId,appIdentityType);
+            if (listResponses != null) {
+                for (MaterialListResponse materialListResponse : listResponses) {
+                    materialListResponse.setRetailPrice(0.00);
+                }
+                materialAuditGoPayResponse.setGoodsList(listResponses);
+            }
+        }
+        returnMap.put("auditListRes", materialAuditGoPayResponse);
+        returnMap.put("materialListRes", materialListResponses);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.inventory;
 
-import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

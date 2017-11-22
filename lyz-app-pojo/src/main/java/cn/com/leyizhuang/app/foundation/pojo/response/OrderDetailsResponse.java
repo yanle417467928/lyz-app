@@ -1,9 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**

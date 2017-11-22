@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.advice;
 
-import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.service.ResourceService;
+import cn.com.leyizhuang.app.foundation.vo.ResourceVO;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;

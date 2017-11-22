@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.core.config.shiro;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Set;

@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.dao.CusPreDepositLogDAO;
+import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
+import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

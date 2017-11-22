@@ -1,12 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.foundation.dao.AppAdminMemberDAO;
 import cn.com.leyizhuang.app.core.constant.RegistrationType;
+import cn.com.leyizhuang.app.foundation.dao.AppAdminMemberDAO;
 import cn.com.leyizhuang.app.foundation.pojo.Member;
 import cn.com.leyizhuang.app.foundation.pojo.MemberAuth;
-import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberAuthService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminMemberService;
+import cn.com.leyizhuang.app.foundation.vo.AppAdminMemberVO;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import cn.com.leyizhuang.common.util.CryptologyUtils;

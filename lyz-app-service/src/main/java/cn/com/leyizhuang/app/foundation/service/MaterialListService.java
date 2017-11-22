@@ -33,4 +33,6 @@ public interface MaterialListService {
     Boolean existOtherMaterialListByUserIdAndIdentityType(Long userID, Integer identityType);
 
     List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType appIdentityTypeByValue);
+
+    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType appIdentityType);
 }

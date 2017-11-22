@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyUserDTO;
 import cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyUserDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.dto.FitmentCompanyUserDTO;
-import cn.com.leyizhuang.app.foundation.vo.FitmentCompanyUserVO;
 import cn.com.leyizhuang.app.foundation.service.FitmentCompanyUserService;
+import cn.com.leyizhuang.app.foundation.vo.FitmentCompanyUserVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;

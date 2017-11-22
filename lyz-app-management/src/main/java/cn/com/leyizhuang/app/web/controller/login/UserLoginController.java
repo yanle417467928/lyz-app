@@ -3,9 +3,9 @@ package cn.com.leyizhuang.app.web.controller.login;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroDbRealm;
 import cn.com.leyizhuang.app.core.utils.LoggerUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -18,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +79,7 @@ public class UserLoginController extends BaseController {
 			return resultMap;
 		}
 		String email =  entity.getEmail();
-		
+
 		UUser user = userService.findUserByEmail(email);
 		if(null != user){
 			resultMap.put("message", "帐号|Email已经存在！");
@@ -89,7 +92,7 @@ public class UserLoginController extends BaseController {
 		entity = UserManager.md5Pswd(entity);
 		//设置有效
 		entity.setStatus(UUser._1);
-		
+
 		entity = userService.insert(entity);
 		LoggerUtils.fmtDebug(getClass(), "注册插入完毕！", JSONObject.fromObject(entity).toString());
 		entity = TokenManager.login(entity, Boolean.TRUE);

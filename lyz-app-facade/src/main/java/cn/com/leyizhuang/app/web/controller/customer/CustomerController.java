@@ -2,7 +2,8 @@ package cn.com.leyizhuang.app.web.controller.customer;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
-import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;

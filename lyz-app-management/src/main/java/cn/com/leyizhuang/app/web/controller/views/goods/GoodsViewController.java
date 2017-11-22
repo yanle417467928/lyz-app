@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

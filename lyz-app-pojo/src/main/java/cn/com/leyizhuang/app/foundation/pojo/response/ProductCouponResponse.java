@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 顾客产品券接口返回对象
@@ -20,6 +19,8 @@ public class ProductCouponResponse implements Serializable{
 
 
     private static final long serialVersionUID = -210446196520449249L;
+
+    private Long id;
 
     private String goodsName;
 

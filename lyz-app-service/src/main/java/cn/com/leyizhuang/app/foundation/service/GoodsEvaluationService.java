@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
-import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 
 import java.util.List;
 

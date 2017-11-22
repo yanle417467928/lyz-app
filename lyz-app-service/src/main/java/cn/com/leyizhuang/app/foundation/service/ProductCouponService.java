@@ -12,4 +12,6 @@ public interface ProductCouponService {
 
     List<OrderUsableProductCouponResponse> findProductCouponByCustomerIdAndGoodsId(
             Long userId, List<Long> goodsIds);
+
+    Long findGoodsIdByUserIdAndProductCouponId(Long userId, Long id);
 }

@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.ProcessDAO;
 import cn.com.leyizhuang.app.foundation.pojo.ProcessDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProcessGoodsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse;
 import cn.com.leyizhuang.app.foundation.service.ProcessService;

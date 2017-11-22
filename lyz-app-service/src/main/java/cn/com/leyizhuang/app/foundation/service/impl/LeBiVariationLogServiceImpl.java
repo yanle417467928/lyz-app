@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.LeBiVariationType;
 import cn.com.leyizhuang.app.foundation.dao.LeBiVariationLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
