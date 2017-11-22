@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import lombok.*;
 
 import java.io.Serializable;
@@ -36,16 +37,12 @@ public class UsedCouponRequest implements Serializable {
      */
     private Double totalOrderAmount;
     /**
-     * 会员折扣
+     * 顾客乐币
      */
-    private Double memberDiscount;
+    private CustomerLeBi leBi;
     /**
      * 使用的优惠券券ID和数量
      */
     private List<GoodsIdQtyParam> couponsList;
-    /**
-     * 使用的产品券ID和数量
-     */
-    private List<GoodsIdQtyParam> proCouponList;
 
 }
