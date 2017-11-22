@@ -150,11 +150,7 @@
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
-            ord_no,
-            create_time,
-            `status`,
-            delivery_type,
-            total_goods_price
+           *
         FROM
             ord_base_info
         WHERE
@@ -198,4 +194,5 @@
         WHERE
         ogi.ord_no = #{orderNumber}
     </select>
+
 </mapper>

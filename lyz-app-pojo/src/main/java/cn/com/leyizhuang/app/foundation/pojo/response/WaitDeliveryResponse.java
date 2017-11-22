@@ -17,11 +17,15 @@ public class WaitDeliveryResponse {
      */
     private String shipperNumber;
     /**
-     * 顾客/收货人姓名
+     * 订单号
+     */
+    private String orderNumber;
+    /**
+     * 收货人姓名
      */
     private String receiver;
     /**
-     * 顾客/收货人电话
+     * 收货人电话
      */
     private String receiverPhone;
     /**

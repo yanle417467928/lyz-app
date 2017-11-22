@@ -979,81 +979,86 @@ public class OrderController {
         try{
             //获取订单详情
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(orderNumber);
-            //获取订单收货/自提门店地址
-            OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
-            //创建返回对象
-            OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            //设值
-            orderDetailsResponse.setOrderNumber(orderNumber);
-            orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
-            orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
-            orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
-            orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
-            //根据不同的配送方式进行设值
-            if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())){
-            orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
-            orderDetailsResponse.setBookingTime(sdf.format(orderLogisticsInfo.getBookingTime()));
-                AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
-             orderDetailsResponse.setBookingStorePhone(appStore.getPhone());
-             orderDetailsResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
-            }else{
-                orderDetailsResponse.setDeliveryTime(sdf.format(orderLogisticsInfo.getDeliveryTime()));
-                orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
-                orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
-                orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+            if (null != orderBaseInfo) {
+                //获取订单收货/自提门店地址
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+                //创建返回对象
+                OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                //设值
+                orderDetailsResponse.setOrderNumber(orderNumber);
+                orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
+                orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
+                orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                //根据不同的配送方式进行设值
+                if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                    orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
+                    orderDetailsResponse.setBookingTime(sdf.format(orderLogisticsInfo.getBookingTime()));
+                    AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
+                    orderDetailsResponse.setBookingStorePhone(appStore.getPhone());
+                    orderDetailsResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                } else {
+                    orderDetailsResponse.setDeliveryTime(sdf.format(orderLogisticsInfo.getDeliveryTime()));
+                    orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
+                    orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
+                    orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                }
+                //获取订单账目明细
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                //根据不同的身份返回对应的账目明细
+                if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                    //会员
+                    CustomerBillingDetailResponse customerBillingDetailResponse = new CustomerBillingDetailResponse();
+                    customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                    customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                    customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                    customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLeBiCashDiscount());
+                    customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                    customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                    customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                    customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                    orderDetailsResponse.setCustomerBillingDetailResponse(customerBillingDetailResponse);
+                } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
+                    //经理
+                    ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
+                    managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                    managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                    managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                    managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getSubvention());
+                    managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
+                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                    orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
+                } else {
+                    //导购
+                    SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
+                    sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                    sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
+                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
+                    sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
+                    sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
+                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
+                    sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
+                    sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
+                    sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+
+                    orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
+                }
+                orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsDetails(orderNumber));
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
+                logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            //获取订单账目明细
-            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-            //根据不同的身份返回对应的账目明细
-            if(AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)){
-                //会员
-                CustomerBillingDetailResponse customerBillingDetailResponse = new CustomerBillingDetailResponse();
-                customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
-                customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLeBiCashDiscount());
-                customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
-                customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
-
-                orderDetailsResponse.setCustomerBillingDetailResponse(customerBillingDetailResponse);
-            }else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)){
-                //经理
-                ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
-                managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
-                managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                managerBillingDetailResponse.setSubvention(orderBillingDetails.getSubvention());
-                managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
-                managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
-                managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
-
-                orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
-            }else{
-                //导购
-                SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
-                sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCouponDiscount());
-                sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getCreditMoney());
-                sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getPreDeposit());
-                sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
-
-                orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
-            }
-            orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsDetails(orderNumber));
-
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
-            logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
+            logger.info("getOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e){
             e.printStackTrace();

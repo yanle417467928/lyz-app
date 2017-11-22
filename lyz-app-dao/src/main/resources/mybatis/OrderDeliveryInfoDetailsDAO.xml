@@ -20,20 +20,44 @@
             (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo}, #{taskNo})
     </insert>
 
-    <select id="getDeliveryBydeliveryClerkNo" resultType="java.lang.String"
+    <select id="getDeliveryByOperatorNoAndOrderNumber" resultType="java.lang.String"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse">
        SELECT
-        e.`name` deliveryName,
-        e.mobile deliveryPhone,
-        odi.order_no orderNumber,
-        oli.warehouse warehouseName
+            e.`name` deliveryName,
+            e.mobile deliveryPhone,
+            odi.order_no orderNumber,
+            oli.warehouse warehouseName
         FROM
             ord_delivery_info_details AS odi
         INNER JOIN emp_employee AS e ON e.delivery_clerk_no = odi.operator_no
         INNER JOIN ord_logistics_info AS oli ON oli.delivery_clerk_no = odi.operator_no
         WHERE
-            odi.delivery_clerk_no = #{deliveryClerkNo}
+            odi.order_no = #{orderNumber}
+        AND
+            odi.operator_no = #{operatorNo}
+        LIMIT 1
     </select>
 
+    <select id="getOrderBeasInfoByOperatorNo" resultType="java.lang.String"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse">
+        SELECT
+            obi.sales_consult_name sellerName,
+            obi.sales_consult_phone sellerPhone,
+            obi.ord_no orderNumber,
+            oli.shipping_address,
+            oli.delivery_time deliveryTime,
+            oli.receiver receiver,
+            oli.receiver_phone receiverPhone,
+            odid.task_no shipperNumber,
+            obd.collection_amount collectionAmount
+        FROM
+            ord_base_info AS obi
+        INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        WHERE
+            odid.operation_type = '已封车'
+        AND odid.operator_no = #{operatorNo}
+    </select>
 
 </mapper>

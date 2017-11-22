@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
 
 import java.util.List;
 
@@ -13,5 +14,8 @@ public interface OrderDeliveryInfoDetailsService {
 
     List<OrderDeliveryInfoDetails> queryListByOrderNumber(String orderNumber);
 
-    LogisticsInformationResponse getDeliveryBydeliveryClerkNo(String deliveryClerkNo);
+    LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber);
+
+    //获取配送员待配送列表
+    List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);
 }
