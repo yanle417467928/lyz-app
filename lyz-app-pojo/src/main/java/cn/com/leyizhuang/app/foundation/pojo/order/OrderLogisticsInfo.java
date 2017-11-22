@@ -36,10 +36,10 @@ public class OrderLogisticsInfo {
     private String bookingStoreName;
 
     //预约提货时间
-    private Date bookingTime;
+    private String bookingTime;
 
     //配送时间
-    private Date deliveryTime;
+    private String deliveryTime;
 
     //收货人姓名
     private String receiver;
