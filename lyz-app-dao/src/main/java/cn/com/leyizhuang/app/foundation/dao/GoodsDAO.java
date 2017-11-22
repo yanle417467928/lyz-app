@@ -97,4 +97,6 @@ public interface GoodsDAO {
     GoodsDO queryBySku(@Param("sku") String sku);
 
     Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id,@Param("brandName") String brandName);
+
+    List<String> findCompanyFlagListById(@Param(value = "goodsIdList") List<Long> goodsIdList);
 }

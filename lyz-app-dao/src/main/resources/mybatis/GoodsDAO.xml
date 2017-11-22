@@ -737,6 +737,12 @@
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
         SELECT EXISTS (
         SELECT 'X' FROM gds_goods WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName},'%'))
+    </select>
 
+    <select id="findCompanyFlagListById" resultType="java.lang.String">
+        SELECT DISTINCT company_flag FROM  gds_goods WHERE gid in
+        <foreach collection="list" item="type" separator="," open="(" close=")">
+            #{gid}
+        </foreach>
     </select>
 </mapper>

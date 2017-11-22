@@ -261,6 +261,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return null;
     }
 
+    @Override
+    public List<String> findCompanyFlagListById(List<Long> goodsIdList) {
+        if (null != goodsIdList && !goodsIdList.isEmpty()){
+            return goodsDAO.findCompanyFlagListById(goodsIdList);
+        }
+        return null;
+    }
+
     /**
      * @title 获取商品详情
      * @descripe

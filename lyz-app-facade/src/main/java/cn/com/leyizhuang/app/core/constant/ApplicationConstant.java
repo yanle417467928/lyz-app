@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.config.InterfaceConfigure;
 
 public class ApplicationConstant {
 
+    //从配置文件加载值的常量
     public static String imagePath;
     public static String alipayReturnUrl;
     public static String alipayReturnUrlAsnyc;
@@ -88,4 +89,12 @@ public class ApplicationConstant {
         ApplicationConstant.ebsUrl = ebsUrl;
         InterfaceConfigure.EBS_WS_URL = ebsUrl;
     }
+
+
+
+    public static final String FORBIDDEN_SELFT_TAKE_COMPANY_FLAG = "YR|LYZ";
+
+
+
+
 }

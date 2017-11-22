@@ -63,4 +63,6 @@ public interface GoodsService {
     GoodsDO queryBySku(String sku);
 
     Boolean existGoodsBrandByGoodsIdAndBrandName(Long id, String brandName);
+
+    List<String> findCompanyFlagListById(List<Long> goodsIdList);
 }
