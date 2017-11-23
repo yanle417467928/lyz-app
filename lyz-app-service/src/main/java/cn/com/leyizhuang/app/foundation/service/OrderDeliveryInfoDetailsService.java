@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationRespon
 import cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,4 +22,6 @@ public interface OrderDeliveryInfoDetailsService {
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);
     //获取出货单详情
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
+    //获取推送的物流消息
+    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime);
 }

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import lombok.*;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ public class OrderDeliveryInfoDetails {
     /**
      * 操作后物流状态
      */
-    private String logisticStatus;
+    private LogisticStatus logisticStatus;
     /**
      * 操作（创建）时间
      */

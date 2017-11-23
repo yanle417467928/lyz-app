@@ -1,17 +1,15 @@
 package cn.com.leyizhuang.app.core.constant;
 
 /**
- * 支付方式枚举
- * Created by caiyu on 2017/11/20.
+ * Created by caiyu on 2017/11/22.
  */
-public enum OnlinePayType {
-
-    ALIPAY(0,"支付宝"), WE_CHAT(1,"微信"),UNION_PAY(2,"银联"),NO(3,"无");
+public enum LogisticStatus {
+    RECEIVED(0,"已接收"),ALREADY_POSITIONED(1,"已定位"),PICKING_GOODS(2,"已拣货"),LOADING(3,"已装车"),SEALED_CAR(4,"已封车"),CONFIRM_ARRIVAL(5,"确认到货");
 
     private final int value;
     private final String description;
 
-    OnlinePayType(int value, String description) {
+    LogisticStatus(int value, String description) {
         this.value = value;
         this.description = description;
     }
@@ -31,6 +29,5 @@ public enum OnlinePayType {
         }
         return null;
     }
-
 
 }

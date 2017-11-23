@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,5 +44,10 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(String operatorNo, String orderNumber) {
         return orderDeliveryInfoDetailsDAO.getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(operatorNo, orderNumber);
+    }
+
+    @Override
+    public List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime) {
+        return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID,createTime);
     }
 }

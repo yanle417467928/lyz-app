@@ -1050,12 +1050,12 @@ public class OrderController {
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
                     orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
-                    orderDetailsResponse.setBookingTime(sdf.format(orderLogisticsInfo.getBookingTime()));
+                    orderDetailsResponse.setBookingTime(orderLogisticsInfo.getBookingTime());
                     AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
                     orderDetailsResponse.setBookingStorePhone(appStore.getPhone());
                     orderDetailsResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
                 } else {
-                    orderDetailsResponse.setDeliveryTime(sdf.format(orderLogisticsInfo.getDeliveryTime()));
+                    orderDetailsResponse.setDeliveryTime(orderLogisticsInfo.getDeliveryTime());
                     orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
                     orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
                     orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());

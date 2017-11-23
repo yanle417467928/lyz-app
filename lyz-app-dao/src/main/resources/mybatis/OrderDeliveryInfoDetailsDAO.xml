@@ -56,7 +56,7 @@
         INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         WHERE
-            odid.operation_type = '已封车'
+            odid.logistic_status = 'SEALED_CAR'
         AND odid.operator_no = #{operatorNo}
     </select>
 
@@ -79,7 +79,57 @@
         INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         WHERE
             obi.ord_no = #{orderNumber}
-        AND odid.operation_type = '已封车'
+        AND odid.logistic_status = 'SEALED_CAR'
         AND odid.operator_no = #{operatorNo}
+    </select>
+
+    <select id="getLogisticsMessageByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            odid.*
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            WHERE
+            obi.customer_id = #{userID}
+            AND
+            obi.create_time >= #{createTime}
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+            ORDER BY
+            obi.create_time
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            odid.*
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            WHERE
+            obi.manager_id = #{userID}
+            AND
+            obi.create_time >= #{createTime}
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+            ORDER BY
+            obi.create_time
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            odid.*
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            FROM
+            ord_base_info AS obi
+            WHERE
+            obi.sales_consult_id = #{userID}
+            AND
+            obi.create_time >= #{createTime}
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+            ORDER BY
+            obi.create_time
+        </if>
     </select>
 </mapper>

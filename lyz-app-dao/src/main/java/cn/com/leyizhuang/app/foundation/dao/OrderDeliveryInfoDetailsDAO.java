@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,4 +26,6 @@ public interface OrderDeliveryInfoDetailsDAO {
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(@Param("operatorNo") String operatorNo);
     //获取出货单详情
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(@Param("operatorNo") String operatorNo, @Param("orderNumber") String orderNumber);
+    //获取推送的物流消息
+    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(@Param("userID") Long userID, @Param("createTime") Date createTime);
 }
