@@ -17,28 +17,44 @@ import java.util.Date;
 @AllArgsConstructor
 public class FitOrderSubjectInfo {
 
-    //装饰公司编码
+    /**
+     *  装饰公司编码
+     */
     private String companyCode;
 
-    //下单装饰公司组织全编码
+    /**
+     * 下单装饰公司组织全编码
+     */
     private String companyStructureCode;
 
-    //下单人id
+    /**
+     * 下单人id
+     */
     private Long creatorIdFit;
 
-    //下单人姓名
+    /**
+     * 下单人姓名
+     */
     private String creatorNameFit;
 
-    //下单人手机
+    /**
+     * 下单人手机
+     */
     private String creatorPhoneFit;
 
-    //员工id
+    /**
+     * 员工id
+     */
     private Long employeeId;
 
-    //员工姓名
+    /**
+     * 员工姓名
+     */
     private String employeeName;
 
-    //经理id
+    /**
+     * 经理id
+     */
     private Long managerId;
 
     //经理姓名

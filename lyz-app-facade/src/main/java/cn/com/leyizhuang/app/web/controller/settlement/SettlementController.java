@@ -3,15 +3,19 @@ package cn.com.leyizhuang.app.web.controller.settlement;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStoreResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 结算页面控制器
@@ -44,6 +46,9 @@ public class SettlementController {
 
     @Resource
     private AppCustomerService customerService;
+
+    @Resource
+    private AppOrderService orderService;
 
 
     /**
@@ -147,33 +152,66 @@ public class SettlementController {
     }
 
 
+    /**
+     * 客户选择自提门店时检核
+     * 该门店库存是否充足
+     *
+     * @param userId       用户id
+     * @param identityType 身份类型
+     * @param storeId      门店id
+     * @param goodsList    商品信息列表
+     * @return 门店库存是否充足
+     */
     @RequestMapping(value = "/selfTakeStore/choose", method = RequestMethod.POST)
-    public ResultDTO<Object> chooseSelfTakeStore(OrderGoodsSimpleRequest requestParam) {
-        logger.info("chooseSelfTakeStore CALLED,选择自提门店,入参 userId:{},identityType:{},goodsList:{}",
-                requestParam.getUserId(), requestParam.getIdentityType(), requestParam.getGoodsList());
+    public ResultDTO<Object> chooseSelfTakeStore(Long userId, Integer identityType, Long storeId, String goodsList) {
+        logger.info("chooseSelfTakeStore CALLED,选择自提门店,入参 userId:{},identityType:{},storeId:{},goodsList:{}",
+                userId, identityType, storeId, goodsList);
 
         ResultDTO<Object> resultDTO;
-        if (null == requestParam.getUserId()) {
+        if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户ID不允许为空", null);
-            logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == requestParam.getIdentityType()) {
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不允许为空", null);
-            logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!(null != requestParam.getGoodsList() && requestParam.getGoodsList().size() > 0)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
-            logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+        if (null == storeId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不允许为空", null);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }/* else if (goodsIds.length == 0) {
+        }
+        if (!(null != goodsList && goodsList.length() > 0)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
-            logger.warn("getSelfTakeStoreAvailable OUT,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }*/
+        }
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+            List<GoodsSimpleInfo> simpleInfos = objectMapper.readValue(goodsList, javaType1);
+            Map<Long, Integer> goodsQuantity = new HashMap<>();
+            for (GoodsSimpleInfo info : simpleInfos) {
+                if (!goodsQuantity.containsKey(info.getId())) {
+                    goodsQuantity.put(info.getId(), info.getNum());
+                } else {
+                    goodsQuantity.put(info.getId(), info.getNum() + goodsQuantity.get(info.getId()));
+                }
+            }
+            for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
+                GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
+                Boolean enoughInvFlag = orderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
+                if (!enoughInvFlag) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该门店 '" + goodsDO.getSkuName()
+                            + "' 库存不足，无法门店自提!", null);
+                    logger.info("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

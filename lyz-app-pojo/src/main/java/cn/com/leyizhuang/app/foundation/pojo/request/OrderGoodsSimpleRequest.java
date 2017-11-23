@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderGoodsSimpleRequest implements Serializable {
+public class    OrderGoodsSimpleRequest implements Serializable {
 
     private static final long serialVersionUID = 6037339634254711067L;
     /**
