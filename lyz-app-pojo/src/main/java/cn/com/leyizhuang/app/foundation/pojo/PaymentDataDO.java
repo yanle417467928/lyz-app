@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.PaymentDataType;
 import lombok.*;
 
 /**
+ * 第三方支付信息类
  * @author GenerationRoad
  * @date 2017/11/17
  */

@@ -636,7 +636,7 @@ public class UserSettingController {
                 storeSeller.setIsPassable(Boolean.TRUE);
             } else {
                 Date date = new Date();
-                if (DateUtil.intervalDay(appCustomer.getBindingTime(), date) > 60) {
+                if (DateUtil.intervalDay(appCustomer.getBindingTime(), date) > ApplicationConstant.CHANGE_SELLER_DATE) {
                     storeSeller.setIsPassable(Boolean.TRUE);
                 } else {
                     storeSeller.setIsPassable(Boolean.FALSE);

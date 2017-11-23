@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 
 import java.util.List;
 
@@ -10,5 +11,8 @@ import java.util.List;
  */
 public interface ArrearsAuditService {
 
-    List<ArrearsAuditResponse> findByUserId(Long userId);
+    List<ArrearsAuditResponse> findByUserId(Long userId, List<ArrearsAuditStatus> arrearsAuditStatusList);
+
+    List<ArrearsAuditResponse> findByUserIdAndOrderNo(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList);
+
 }

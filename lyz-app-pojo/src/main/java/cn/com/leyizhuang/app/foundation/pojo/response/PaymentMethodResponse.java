@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
+ * 配送员收款方式
  * @author GenerationRoad
  * @date 2017/11/16
  */

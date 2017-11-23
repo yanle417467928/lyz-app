@@ -9,6 +9,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 /**
+ * 拍照下单类
  * @author GenerationRoad
  * @date 2017/10/24
  */

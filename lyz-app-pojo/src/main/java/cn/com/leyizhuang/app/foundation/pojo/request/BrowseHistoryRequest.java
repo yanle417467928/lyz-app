@@ -8,6 +8,7 @@ import lombok.ToString;
 import java.time.LocalDate;
 
 /**
+ * 浏览记录
  * @author GenerationRoad
  * @date 2017/11/2
  */

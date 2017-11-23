@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
+ * 操作订单原因
  * @author GenerationRoad
  * @date 2017/11/13
  */
@@ -12,6 +13,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class OperationReasonsResponse {
-    //取消订单原因
+    //操作订单原因
     private String reason;
 }

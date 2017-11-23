@@ -7,6 +7,7 @@ import lombok.ToString;
 import java.util.Date;
 
 /**
+ * 通知消息
  * @author GenerationRoad
  * @date 2017/10/10
  */

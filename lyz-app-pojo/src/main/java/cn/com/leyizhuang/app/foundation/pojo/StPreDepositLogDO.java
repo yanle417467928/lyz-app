@@ -9,6 +9,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 /**
+ * 门店预存款便更明细类
  * @author GenerationRoad
  * @date 2017/11/21
  */

@@ -53,7 +53,7 @@ public class MaterialListController {
     private CommonService commonService;
 
     @Autowired
-    private OrderService orderServiceImpl;
+    private AppOrderService AppOrderServiceImpl;
 
     /**
      * @param
@@ -317,7 +317,7 @@ public class MaterialListController {
                 return resultDTO;
             }
             Map<Long, Integer> goodsMap = new HashMap();
-            List<MaterialListDO> materialListDOList = this.orderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
+            List<MaterialListDO> materialListDOList = this.AppOrderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
             if (null == materialListDOList || materialListDOList.size() == 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无此订单信息！",
                         null);

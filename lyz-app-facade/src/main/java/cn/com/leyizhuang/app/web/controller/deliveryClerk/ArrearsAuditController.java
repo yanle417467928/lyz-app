@@ -1,7 +1,8 @@
-package cn.com.leyizhuang.app.web.controller.distributionAgent;
+package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,8 +51,9 @@ public class ArrearsAuditController {
             logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-
-        List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserId(userId);
+        List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
+        arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
+        List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserId(userId, arrearsAuditStatusList);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
         logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

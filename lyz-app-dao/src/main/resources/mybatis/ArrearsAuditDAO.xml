@@ -9,6 +9,25 @@
         payment_method paymentMethod, status, order_money
         FROM ord_arrears_audit
         WHERE user_id = #{userId}
+        AND status IN
+        <foreach collection="list" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="findByUserIdAndOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
+        SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
+        seller_name sellerName, seller_phone sellerphone, distribution_address distributionAddress,
+        distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
+        payment_method paymentMethod, status, order_money
+        FROM ord_arrears_audit
+        WHERE user_id = #{userId}
+        AND ord_no = #{orderNo}
+        AND status IN
+        <foreach collection="list" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
         ORDER BY create_time desc
     </select>
 

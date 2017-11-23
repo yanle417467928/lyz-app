@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,12 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     private ArrearsAuditDAO arrearsAuditDAO;
 
     @Override
-    public List<ArrearsAuditResponse> findByUserId(Long userId) {
-        return this.arrearsAuditDAO.findByUserId(userId);
+    public List<ArrearsAuditResponse> findByUserId(Long userId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
+        return this.arrearsAuditDAO.findByUserId(userId, arrearsAuditStatusList);
+    }
+
+    @Override
+    public List<ArrearsAuditResponse> findByUserIdAndOrderNo(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList) {
+        return null;
     }
 }

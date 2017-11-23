@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -49,4 +46,6 @@ public interface OrderDAO {
 
     //获取订单商品
     List<GiftListResponseGoods> getOrderGoodsDetails(@Param("orderNumber") String orderNumber);
+
+    OrderTempInfo getOrderInfoByOrderNo(String orderNo);
 }

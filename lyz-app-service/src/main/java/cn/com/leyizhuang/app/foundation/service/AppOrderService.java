@@ -1,9 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 
@@ -55,4 +53,8 @@ public interface AppOrderService {
 
     //获取订单商品
     List<GiftListResponseGoods> getOrderGoodsDetails(String orderNumber);
+
+    List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber);
+
+    OrderTempInfo getOrderInfoByOrderNo(String orderNo);
 }

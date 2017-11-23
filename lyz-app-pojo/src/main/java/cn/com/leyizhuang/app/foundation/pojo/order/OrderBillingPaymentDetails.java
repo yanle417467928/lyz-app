@@ -39,4 +39,13 @@ public class OrderBillingPaymentDetails {
 
     //第三方支付接口回复码
     private String replyCode;
+
+    public void setConstructor(String currencyType, String payType, String orderNumber,
+                               Double amount){
+        this.amount = amount;
+        this.currencyType = currencyType;
+        this.orderNumber = orderNumber;
+        this.payType = payType;
+        this.payTime = new Date();
+    }
 }

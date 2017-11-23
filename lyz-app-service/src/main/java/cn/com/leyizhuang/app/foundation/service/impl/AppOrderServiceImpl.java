@@ -4,10 +4,8 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
@@ -99,5 +97,14 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<GiftListResponseGoods> getOrderGoodsDetails(String orderNumber) {
         return orderDAO.getOrderGoodsDetails(orderNumber);
+    }
+    @Override
+    public List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber) {
+        return this.orderDAO.getGoodsInfoByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public OrderTempInfo getOrderInfoByOrderNo(String orderNo) {
+        return this.orderDAO.getOrderInfoByOrderNo(orderNo);
     }
 }
