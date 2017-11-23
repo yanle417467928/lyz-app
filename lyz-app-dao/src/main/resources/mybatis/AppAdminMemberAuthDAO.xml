@@ -9,25 +9,25 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
         INSERT INTO member_auth (
-            CREATOR_ID,
-            CREATOR_TYPE,
-            CREATE_TIME,
-            MODIFIER_ID,
-            MODIFIER_TYPE,
-            MODIFY_TIME,
-            MEMBER_ID,
-            USER_NAME,
-            PASSWORD,
-            MOBILE,
-            EMAIL,
-            STATUS,
-            DISABLE_END_TIME
+        CREATOR_ID,
+        CREATOR_TYPE,
+        CREATE_TIME,
+        MODIFIER_ID,
+        MODIFIER_TYPE,
+        MODIFY_TIME,
+        MEMBER_ID,
+        USER_NAME,
+        PASSWORD,
+        MOBILE,
+        EMAIL,
+        STATUS,
+        DISABLE_END_TIME
         )
         VALUES
-            (
-                #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-                              #{memberId},#{username},#{password},#{mobile},#{email},#{status},#{disableEndTime}
-            )
+        (
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{memberId},#{username},#{password},#{mobile},#{email},#{status},#{disableEndTime}
+        )
     </insert>
 
     <select id="existsByMobile" parameterType="java.lang.String" resultType="java.lang.Boolean">
@@ -36,24 +36,25 @@
 
     <select id="existsByMobileAndIdNot" resultType="java.lang.Boolean">
         SELECT
-            EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        member_auth
-                    WHERE
-                       MOBILE = #{mobile}
-                    AND
-                       MEMBER_ID != #{id});
+        EXISTS (
+        SELECT
+        1
+        FROM
+        member_auth
+        WHERE
+        MOBILE = #{mobile}
+        AND
+        MEMBER_ID != #{id});
     </select>
 
-    <select id="queryByMemberId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
+    <select id="queryByMemberId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
         SELECT
-            *
+        *
         FROM
-            member_auth
+        member_auth
         WHERE
-            MEMBER_ID = #{memberId};
+        MEMBER_ID = #{memberId};
     </select>
 
     <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.MemberAuth">
@@ -73,14 +74,14 @@
             </if>
         </set>
         WHERE
-         id = #{id}
+        id = #{id}
     </update>
 
-    <update id="modifyMemberPassword" >
+    <update id="modifyMemberPassword">
         UPDATE member_auth
-          SET PASSWORD = #{password}
+        SET PASSWORD = #{password}
         WHERE
-          MEMBER_ID=#{id}
+        MEMBER_ID=#{id}
     </update>
 
 </mapper>

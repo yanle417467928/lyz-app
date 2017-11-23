@@ -29,14 +29,18 @@
         <div class=" col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findStoreByCity(this.value);">
+                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findStoreByCity(this.value);">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="enabled" id="enabled"  class="form-control select"  style="width:auto;" data-live-search="true" onchange="findStoreByEnable(this.value);">
-                        <option value="-1" >是否可用</option>
+                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findStoreByEnable(this.value);">
+                        <option value="-1">是否可用</option>
                     </select>
-                    <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入要查找的店名或编码..">
-                    <button type="button" name="search" id="search-btn" class="btn btn-flat "  onclick="return findStoreByNameOrCode()">
+                    <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control "
+                           style="width:auto;" placeholder="请输入要查找的店名或编码..">
+                    <button type="button" name="search" id="search-btn" class="btn btn-flat "
+                            onclick="return findStoreByNameOrCode()">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
@@ -115,7 +119,7 @@
 </div>
 <script>
 
-    $(function(){
+    $(function () {
         var city = "";
         $.ajax({
             url: '/rest/citys/findCitylist',
@@ -129,7 +133,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" +item.name + "</option>";
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 })
                 $("#cityCode").append(city);
             }
@@ -137,14 +141,14 @@
     });
 
 
-    $(function() {
+    $(function () {
         initDateGird('/rest/stores/page/grid');
     });
 
-    function initDateGird(url){
-        $grid.init($('#dataGrid'), $('#toolbar') ,url, 'get', false, function(params) {
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -152,11 +156,11 @@
             checkbox: true,
             title: '选择'
         }, {
-                field: 'storeId',
-                title: '门店id',
-                align: 'center',
-                visible:false
-        },{
+            field: 'storeId',
+            title: '门店id',
+            align: 'center',
+            visible: false
+        }, {
             field: 'storeCode',
             title: '门店编码',
             align: 'center'
@@ -165,25 +169,25 @@
             title: '门店名称',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.storeId);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'cityId.name',
             title: '所属城市',
             align: 'center'
-        },{
+        }, {
             field: 'enable',
             title: '是否生效',
             align: 'center',
-            formatter: function(value,row,index){
+            formatter: function (value, row, index) {
                 if (true === value) {
                     return '是'
-                }else if(false === value){
+                } else if (false === value) {
                     return '否'
                 } else {
                     return '-';
@@ -238,45 +242,45 @@
 
                                 if (true === data.isDefault) {
                                     data.isDefault = '是';
-                                }else if(false === data.isDefault){
+                                } else if (false === data.isDefault) {
                                     data.isDefault = '否';
-                                }else{
-                                    data.isDefault  = '-';
+                                } else {
+                                    data.isDefault = '-';
                                 }
                                 $('#isDefault').html(data.isDefault);
 
                                 if (true === data.enable) {
                                     data.enable = '是';
-                                }else if(false === data.enable){
+                                } else if (false === data.enable) {
                                     data.enable = '否';
-                                }else{
-                                    data.enable  = '-';
+                                } else {
+                                    data.enable = '-';
                                 }
                                 $('#enable').html(data.enable);
 
-                                if ('ZY'  === data.storeType) {
+                                if ('ZY' === data.storeType) {
                                     data.storeType = '自营';
-                                }else if('ZS' === data.storeType){
+                                } else if ('ZS' === data.storeType) {
                                     data.storeType = '装饰公司';
-                                }else if('JM' === data.storeType){
+                                } else if ('JM' === data.storeType) {
                                     data.storeType = '加盟店';
-                                }else{
-                                    data.storeType  = '-';
+                                } else {
+                                    data.storeType = '-';
                                 }
                                 $('#storeType').html(data.storeType);
 
                                 if (null === data.createTime) {
                                     $('#createTime').html('-');
-                                }else{
+                                } else {
                                     $('#createTime').html(formatDateTime(data.createTime));
                                 }
 
                                 if (true === data.isSelfDelivery) {
                                     data.isSelfDelivery = '是';
-                                }else if(false === data.isSelfDelivery){
+                                } else if (false === data.isSelfDelivery) {
                                     data.isSelfDelivery = '否';
-                                }else{
-                                    data.isSelfDelivery  = '-';
+                                } else {
+                                    data.isSelfDelivery = '-';
                                 }
                                 $('#isSelfDelivery').html(data.isSelfDelivery);
 
@@ -320,57 +324,57 @@
     }
 
 
-    function  findStoreByCity(cityId){
+    function findStoreByCity(cityId) {
         $("#enabled").empty();
-        var enabled='';
-        if(-1== $("#cityCode").val()){
+        var enabled = '';
+        if (-1 == $("#cityCode").val()) {
             enabled += "<option value=-1>是否可用</option>";
-           }else{
-             enabled += "<option value=-1>是否可用</option><option value=1>可用</option><option value=0>不可用</option>";
-          }
-         $("#enabled").append(enabled);
+        } else {
+            enabled += "<option value=-1>是否可用</option><option value=1>可用</option><option value=0>不可用</option>";
+        }
+        $("#enabled").append(enabled);
         findStoreByCityId(cityId);
     }
 
-    function  findStoreByCityId(cityId){
+    function findStoreByCityId(cityId) {
         $("#queryStoreInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
-        if(cityId==-1){
+        if (cityId == -1) {
             initDateGird('/rest/stores/page/grid');
-        }else{
-            initDateGird('/rest/stores/findStoresListByCity/'+cityId);
+        } else {
+            initDateGird('/rest/stores/findStoresListByCity/' + cityId);
         }
     }
 
-    function findStoreByEnable(enabled){
+    function findStoreByEnable(enabled) {
         $("#queryStoreInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
-        var cityId =$("#cityCode").val();
-        if(enabled==-1){
-            initDateGird('/rest/stores/findStoresListByCity/'+cityId);
-        }else{
-            initDateGird('/rest/stores/findStoresListByEnable?enabled='+enabled+'&cityId='+cityId);
+        var cityId = $("#cityCode").val();
+        if (enabled == -1) {
+            initDateGird('/rest/stores/findStoresListByCity/' + cityId);
+        } else {
+            initDateGird('/rest/stores/findStoresListByEnable?enabled=' + enabled + '&cityId=' + cityId);
         }
     }
 
-    function findStoreByNameOrCode(){
-        var queryStoreInfo =$("#queryStoreInfo").val();
-        if(null==queryStoreInfo||""==queryStoreInfo) {
+    function findStoreByNameOrCode() {
+        var queryStoreInfo = $("#queryStoreInfo").val();
+        if (null == queryStoreInfo || "" == queryStoreInfo) {
             $("#dataGrid").bootstrapTable('destroy');
             $('#cityCode').val("-1");
-            initSelect("#enabled","是否可用");
+            initSelect("#enabled", "是否可用");
             initDateGird('/rest/stores/page/grid');
-        }else{
-            if(!checkCharacter(queryStoreInfo)){
+        } else {
+            if (!checkCharacter(queryStoreInfo)) {
                 $notify.warning('请检查输入是否为汉子或者字母');
                 $('#cityCode').val("-1");
-                initSelect("#enabled","是否可用");
+                initSelect("#enabled", "是否可用");
                 return false;
             }
             $("#dataGrid").bootstrapTable('destroy');
             $('#cityCode').val("-1");
-            initSelect("#enabled","是否可用");
-            initDateGird('/rest/stores/page/storeGrid/'+queryStoreInfo);
+            initSelect("#enabled", "是否可用");
+            initDateGird('/rest/stores/page/storeGrid/' + queryStoreInfo);
         }
     }
 
@@ -384,9 +388,9 @@
     }
 
 
-    function initSelect(select,optionName){
+    function initSelect(select, optionName) {
         $(select).empty();
-        var selectOption = "<option value=-1>"+optionName+"</option>";
+        var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
     }
 
@@ -398,12 +402,12 @@
         var d = dt.getDate();
         d = d < 10 ? ('0' + d) : d;
         var h = dt.getHours();
-        h=h < 10 ? ('0' + h) : h;
+        h = h < 10 ? ('0' + h) : h;
         var minute = dt.getMinutes();
         minute = minute < 10 ? ('0' + minute) : minute;
-        var second=dt.getSeconds();
-        second=second < 10 ? ('0' + second) : second;
-        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 </script>
 </body>

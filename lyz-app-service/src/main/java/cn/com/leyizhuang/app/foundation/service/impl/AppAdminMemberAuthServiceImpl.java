@@ -14,13 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
  * App后台会员身份鉴权服务实现类
  *
  * @author Richard
- *         Created on 2017-05-23 10:04
+ * Created on 2017-05-23 10:04
  **/
 @Service
 @Transactional
 public class AppAdminMemberAuthServiceImpl extends BaseServiceImpl<MemberAuth> implements AppAdminMemberAuthService {
 
     private AppAdminMemberAuthDAO memberAuthDAO;
+
     @Autowired
     public AppAdminMemberAuthServiceImpl(AppAdminMemberAuthDAO memberAuthDAO) {
         super(memberAuthDAO);
@@ -29,32 +30,32 @@ public class AppAdminMemberAuthServiceImpl extends BaseServiceImpl<MemberAuth> i
 
     @Override
     public Boolean existsByMobile(String mobile) {
-        if(null == mobile){
+        if (null == mobile) {
             return true;
-        }else{
-           return memberAuthDAO.existsByMobile(mobile);
+        } else {
+            return memberAuthDAO.existsByMobile(mobile);
         }
     }
 
     @Override
     public Boolean existsByMobileAndIdNot(String mobile, Long id) {
-        if(null == mobile || null ==id){
+        if (null == mobile || null == id) {
             return true;
         }
-        return memberAuthDAO.existsByMobileAndIdNot(mobile,id);
+        return memberAuthDAO.existsByMobileAndIdNot(mobile, id);
     }
 
     @Override
     public MemberAuth queryByMemberId(Long memberId) {
-        if(null != memberId){
+        if (null != memberId) {
             return memberAuthDAO.queryByMemberId(memberId);
         }
         return null;
     }
 
     @Override
-    public void modifyMemberPassword(Long id,String password) {
-        if(null != id || null != password){
+    public void modifyMemberPassword(Long id, String password) {
+        if (null != id || null != password) {
             memberAuthDAO.modifyMemberPassword(id, CryptologyUtils.MD5Encrypt(password));
         }
     }

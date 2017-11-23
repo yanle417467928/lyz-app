@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     if (!$global.validateMobile()) {
         $('.select').selectpicker({
             size: '5'
@@ -101,7 +101,7 @@ $(function() {
                         regexp: /^[0-9.-]+$/,
                         message: '只能输入表示金额的数字'
                     },
-                    numeric:{
+                    numeric: {
                         message: '信用金余额只能输入数字'
                     },
                     stringLength: {
@@ -111,15 +111,15 @@ $(function() {
                     },
                     callback: {
                         message: '请输入正确的金额,并且信用金余额小数点后最多为两位',
-                        callback: function(value, validator) {
+                        callback: function (value, validator) {
                             var returnVal = true;
-                            if ((value+"").indexOf(".") >= 0) {
+                            if ((value + "").indexOf(".") >= 0) {
                                 var ArrMen = value.split(".");    //截取字符串
                                 if (ArrMen.length != 2) {
                                     returnVal = false;
                                     return returnVal;
                                 } else {
-                                    if (ArrMen[0].length == 0){
+                                    if (ArrMen[0].length == 0) {
                                         returnVal = false;
                                         return returnVal;
                                     }
@@ -137,7 +137,7 @@ $(function() {
             promotionMoney: {
                 message: '赞助金余额校验失败',
                 validators: {
-                    numeric:{
+                    numeric: {
                         message: '赞助金余额只能输入数字'
                     },
                     stringLength: {
@@ -147,15 +147,15 @@ $(function() {
                     },
                     callback: {
                         message: '请输入正确的金额,并且赞助金余额小数点后最多为两位',
-                        callback: function(value, validator) {
+                        callback: function (value, validator) {
                             var returnVal = true;
-                            if ((value+"").indexOf(".") >= 0) {
+                            if ((value + "").indexOf(".") >= 0) {
                                 var ArrMen = value.split(".");    //截取字符串
                                 if (ArrMen.length != 2) {
                                     returnVal = false;
                                     return returnVal;
                                 } else {
-                                    if (ArrMen[0].length == 0){
+                                    if (ArrMen[0].length == 0) {
                                         returnVal = false;
                                         return returnVal;
                                     }
@@ -173,7 +173,7 @@ $(function() {
             walletMoney: {
                 message: '钱包余额校验失败',
                 validators: {
-                    numeric:{
+                    numeric: {
                         message: '钱包余额只能输入数字'
                     },
                     stringLength: {
@@ -183,15 +183,15 @@ $(function() {
                     },
                     callback: {
                         message: '请输入正确的金额,并且钱包余额小数点后最多为两位',
-                        callback: function(value, validator) {
+                        callback: function (value, validator) {
                             var returnVal = true;
-                            if ((value+"").indexOf(".") >= 0) {
+                            if ((value + "").indexOf(".") >= 0) {
                                 var ArrMen = value.split(".");    //截取字符串
                                 if (ArrMen.length != 2) {
                                     returnVal = false;
                                     return returnVal;
                                 } else {
-                                    if (ArrMen[0].length == 0){
+                                    if (ArrMen[0].length == 0) {
                                         returnVal = false;
                                         return returnVal;
                                     }

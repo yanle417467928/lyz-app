@@ -38,19 +38,19 @@ public interface AppEmployeeDAO {
     SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
-            @Param("userId") Long userId,@Param("type") Integer identityType);
+            @Param("userId") Long userId, @Param("type") Integer identityType);
 
-    void updateEmployeeMobileByUserId(@Param("userId") Long userId,@Param("mobile") String mobile);
+    void updateEmployeeMobileByUserId(@Param("userId") Long userId, @Param("mobile") String mobile);
 
     Boolean existsSellerCreditByUserId(Long userId);
 
-    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
+    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
 
     void updateByLoginName(AppEmployee appEmployee);
 
     void deleteByLoginName(String loginName);
 
-    void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId,@Param("credit") Double guideCredit);
+    void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
 
-    List<SellerResponse> findSellerByStoreIdAndIdentityType(@Param("storeId") Long storeId, @Param("type")AppIdentityType type);
+    List<SellerResponse> findSellerByStoreIdAndIdentityType(@Param("storeId") Long storeId, @Param("type") AppIdentityType type);
 }

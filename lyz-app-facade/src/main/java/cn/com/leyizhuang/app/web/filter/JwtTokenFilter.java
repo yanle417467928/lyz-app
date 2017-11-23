@@ -15,7 +15,7 @@ import java.io.IOException;
  * token拦截器
  *
  * @author Richard
- *         Created on 2017-09-19 17:07
+ * Created on 2017-09-19 17:07
  **/
 public class JwtTokenFilter implements Filter {
 

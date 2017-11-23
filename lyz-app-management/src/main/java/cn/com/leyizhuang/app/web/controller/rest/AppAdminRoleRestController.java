@@ -105,7 +105,7 @@ public class AppAdminRoleRestController extends BaseRestController {
         try {
             for (Long id : ids) {
                 Role role = roleService.queryById(id);
-                if(role.getName().contains("admin")||role.getName().contains("超级管理员")){
+                if (role.getName().contains("admin") || role.getName().contains("超级管理员")) {
                     logger.error("超级管理员角色不允许删除!");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                             "超级管理员角色不允许删除", null);
@@ -135,7 +135,7 @@ public class AppAdminRoleRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,role);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, role);
         }
     }
 

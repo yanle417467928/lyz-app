@@ -9,7 +9,7 @@ package cn.com.leyizhuang.app.core.constant;
 public enum AppSellerType {
 
 
-    SELLER("SELLER","普通导购"),SUPERVISOR("SUPERVISOR","店长"),MANAGER("MANAGER","店经理");
+    SELLER("SELLER", "普通导购"), SUPERVISOR("SUPERVISOR", "店长"), MANAGER("MANAGER", "店经理");
 
     private String value;
 
@@ -20,20 +20,20 @@ public enum AppSellerType {
         this.desccription = desccription;
     }
 
+    public static AppSellerType getAppSellerTypeByValue(String value) {
+        for (AppSellerType sellerType : AppSellerType.values()) {
+            if (value == sellerType.getValue()) {
+                return sellerType;
+            }
+        }
+        return null;
+    }
+
     public String getValue() {
         return value;
     }
 
     public String getDesccription() {
         return desccription;
-    }
-
-    public static AppSellerType getAppSellerTypeByValue(String value){
-        for(AppSellerType sellerType : AppSellerType.values()){
-            if(value == sellerType.getValue()){
-                return sellerType;
-            }
-        }
-        return null;
     }
 }

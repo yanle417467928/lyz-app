@@ -176,7 +176,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="name" type="text" class="form-control" id="name" placeholder="角色名称" value="${role.name}" >
+                                    <input name="name" type="text" class="form-control" id="name" placeholder="角色名称"
+                                           value="${role.name}">
                                 </div>
                             </div>
                         </div>
@@ -215,7 +216,8 @@
                                 <div class="form-group">
                                     <label for="status">状态</label>
                                     <br>
-                                    <input name="status" class="switch" id="status" type="checkbox"  data-on-text="启用" data-off-text="停用" <#if role.status>checked</#if> />
+                                    <input name="status" class="switch" id="status" type="checkbox" data-on-text="启用"
+                                           data-off-text="停用" <#if role.status>checked</#if>/>
                                 </div>
                             </div>
                         </div>

@@ -92,10 +92,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/companyUser/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/companyUser/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -111,22 +111,22 @@
             title: '姓名',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'mobile',
             title: '手机号码',
             align: 'center'
-        },{
+        }, {
             field: 'companyName',
             title: '装饰公司名称',
             align: 'center'
-        },{
+        }, {
             field: 'isMain',
             align: 'center',
             title: '是否主账号',
@@ -139,7 +139,7 @@
                     return '<span class="label label-danger">-</span>'
                 }
             }
-        },{
+        }, {
             field: 'sex',
             title: '性别',
             align: 'center',
@@ -152,11 +152,11 @@
                     return '<span class="label label-danger">-</span>'
                 }
             }
-        },{
+        }, {
             field: 'age',
             align: 'center',
             title: '年龄'
-        },{
+        }, {
             field: 'frozen',
             align: 'center',
             title: '是否冻结',
@@ -176,11 +176,11 @@
             $grid.add('/view/companyUser/edit/0?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/view/companyUser/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/company', 'delete');
         });
     });

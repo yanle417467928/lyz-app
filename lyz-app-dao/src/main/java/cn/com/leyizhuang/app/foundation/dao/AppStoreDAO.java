@@ -31,31 +31,31 @@ public interface AppStoreDAO {
 
     Double findPreDepositBalanceByUserId(Long userId);
 
-    int updateStoreDepositByUserIdAndStoreDeposit(@Param("userId") Long userId,@Param("deposit") Double storeDeposit);
+    int updateStoreDepositByUserIdAndStoreDeposit(@Param("userId") Long userId, @Param("deposit") Double storeDeposit);
 
-    int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId,@Param("credit") Double storeCredit);
+    int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId, @Param("credit") Double storeCredit);
 
-    int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId,@Param("subvention") Double storeSubvention);
+    int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId, @Param("subvention") Double storeSubvention);
 
     int updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory(
-            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
     int updateStoreInventoryByCustomerIdAndGoodsIdAndInventory(
-            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
-    void updateStoreDepositByUserId(@Param("userId") Long userId,@Param("deposit") Double storeDeposit);
+    void updateStoreDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double storeDeposit);
 
-    void updateStoreCreditByUserId(@Param("userId") Long userId,@Param("credit") Double storeCredit);
+    void updateStoreCreditByUserId(@Param("userId") Long userId, @Param("credit") Double storeCredit);
 
-    void updateStoreSubventionByUserId(@Param("userId") Long userId,@Param("subvention") Double storeSubvention);
+    void updateStoreSubventionByUserId(@Param("userId") Long userId, @Param("subvention") Double storeSubvention);
 
     void updateStoreInventoryByEmployeeIdAndGoodsId(
-            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
     void updateStoreInventoryByCustomerIdAndGoodsId(
-            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
-    Boolean existGoodsStoreInventory(@Param("storeId") Long storeId,@Param("gid") Long gid,@Param("qty") Integer qty);
+    Boolean existGoodsStoreInventory(@Param("storeId") Long storeId, @Param("gid") Long gid, @Param("qty") Integer qty);
 
     List<StoreResponse> findStoreByCityId(Long cityId);
 

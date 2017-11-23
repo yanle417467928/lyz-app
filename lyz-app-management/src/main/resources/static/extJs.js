@@ -1,32 +1,32 @@
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 当页面加载完毕关闭加载进度
  * **/
-$(window).load(function(){
+$(window).load(function () {
     $("#loading").fadeOut();
 });
 
 /**
  * 使panel和datagrid在加载时提示
- * 
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  */
 $.fn.panel.defaults.loadingMessage = '加载中....';
 $.fn.datagrid.defaults.loadMsg = '加载中....';
 
 /**
  * @requires jQuery,EasyUI
- * 
+ *
  * panel关闭时回收内存，主要用于layout使用iframe嵌入网页时的内存泄漏问题
  */
-$.fn.panel.defaults.onBeforeDestroy = function() {
+$.fn.panel.defaults.onBeforeDestroy = function () {
     var frame = $('iframe', this);
     try {
         if (frame.length > 0) {
-            for ( var i = 0; i < frame.length; i++) {
+            for (var i = 0; i < frame.length; i++) {
                 frame[i].src = '';
                 frame[i].contentWindow.document.write('');
                 frame[i].contentWindow.close();
@@ -44,15 +44,15 @@ $.fn.panel.defaults.onBeforeDestroy = function() {
 };
 
 /**
- *  
- * 
+ *
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  * 防止panel/window/dialog组件超出浏览器边界
  * @param left
  * @param top
  */
-var easyuiPanelOnMove = function(left, top) {
+var easyuiPanelOnMove = function (left, top) {
     var l = left;
     var t = top;
     if (l < 1) {
@@ -73,9 +73,10 @@ var easyuiPanelOnMove = function(left, top) {
     if (buttom > browserHeight) {
         t = browserHeight - height;
     }
-    $(this).parent().css({/* 修正面板位置 */
-        left : l,
-        top : t
+    $(this).parent().css({
+        /* 修正面板位置 */
+        left: l,
+        top: t
     });
 };
 $.fn.dialog.defaults.onMove = easyuiPanelOnMove;
@@ -83,15 +84,15 @@ $.fn.window.defaults.onMove = easyuiPanelOnMove;
 $.fn.panel.defaults.onMove = easyuiPanelOnMove;
 
 /**
- *  
- * 
+ *
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  * 通用错误提示
- * 
+ *
  * 用于datagrid/treegrid/tree/combogrid/combobox/form加载数据出错时的操作
  */
-var easyuiErrorFunction = function(XMLHttpRequest) {
+var easyuiErrorFunction = function (XMLHttpRequest) {
     parent.$.messager.alert('错误', XMLHttpRequest.responseText);
 };
 $.fn.datagrid.defaults.onLoadError = easyuiErrorFunction;
@@ -102,20 +103,22 @@ $.fn.combobox.defaults.onLoadError = easyuiErrorFunction;
 $.fn.form.defaults.onLoadError = easyuiErrorFunction;
 
 /**
- *  
- * 
+ *
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  * 为datagrid、treegrid增加表头菜单，用于显示或隐藏列，注意：冻结列不在此菜单中
  */
-var createGridHeaderContextMenu = function(e, field) {
+var createGridHeaderContextMenu = function (e, field) {
     e.preventDefault();
-    var grid = $(this);/* grid本身 */
-    var headerContextMenu = this.headerContextMenu;/* grid上的列头菜单对象 */
+    var grid = $(this);
+    /* grid本身 */
+    var headerContextMenu = this.headerContextMenu;
+    /* grid上的列头菜单对象 */
     if (!headerContextMenu) {
         var tmenu = $('<div style="width:100px;"></div>').appendTo('body');
         var fields = grid.datagrid('getColumnFields');
-        for ( var i = 0; i < fields.length; i++) {
+        for (var i = 0; i < fields.length; i++) {
             var fildOption = grid.datagrid('getColumnOption', fields[i]);
             if (!fildOption.hidden) {
                 $('<div iconCls="tick" field="' + fields[i] + '"/>').html(fildOption.title).appendTo(tmenu);
@@ -124,27 +127,27 @@ var createGridHeaderContextMenu = function(e, field) {
             }
         }
         headerContextMenu = this.headerContextMenu = tmenu.menu({
-            onClick : function(item) {
+            onClick: function (item) {
                 var field = $(item.target).attr('field');
                 if (item.iconCls == 'tick') {
                     grid.datagrid('hideColumn', field);
                     $(this).menu('setIcon', {
-                        target : item.target,
-                        iconCls : 'bullet_blue'
+                        target: item.target,
+                        iconCls: 'bullet_blue'
                     });
                 } else {
                     grid.datagrid('showColumn', field);
                     $(this).menu('setIcon', {
-                        target : item.target,
-                        iconCls : 'tick'
+                        target: item.target,
+                        iconCls: 'tick'
                     });
                 }
             }
         });
     }
     headerContextMenu.menu('show', {
-        left : e.pageX,
-        top : e.pageY
+        left: e.pageX,
+        top: e.pageY
     });
 };
 $.fn.datagrid.defaults.onHeaderContextMenu = createGridHeaderContextMenu;
@@ -152,15 +155,15 @@ $.fn.treegrid.defaults.onHeaderContextMenu = createGridHeaderContextMenu;
 
 /**
  * grid tooltip参数
- * 
- *  
+ *
+ *
  */
 var gridTooltipOptions = {
-    tooltip : function(jq, fields) {
-        return jq.each(function() {
+    tooltip: function (jq, fields) {
+        return jq.each(function () {
             var panel = $(this).datagrid('getPanel');
             if (fields && typeof fields == 'object' && fields.sort) {
-                $.each(fields, function() {
+                $.each(fields, function () {
                     var field = this;
                     bindEvent($('.datagrid-body td[field=' + field + '] .datagrid-cell', panel));
                 });
@@ -170,17 +173,17 @@ var gridTooltipOptions = {
         });
 
         function bindEvent(jqs) {
-            jqs.mouseover(function() {
+            jqs.mouseover(function () {
                 var content = $(this).text();
                 if (content.replace(/(^\s*)|(\s*$)/g, '').length > 5) {
                     $(this).tooltip({
-                        content : content,
-                        trackMouse : true,
-                        position : 'bottom',
-                        onHide : function() {
+                        content: content,
+                        trackMouse: true,
+                        position: 'bottom',
+                        onHide: function () {
                             $(this).tooltip('destroy');
                         },
-                        onUpdate : function(p) {
+                        onUpdate: function (p) {
                             var tip = $(this).tooltip('tip');
                             if (parseInt(tip.css('width')) > 500) {
                                 tip.css('width', 500);
@@ -194,77 +197,77 @@ var gridTooltipOptions = {
 };
 /**
  * Datagrid扩展方法tooltip 基于Easyui 1.3.3，可用于Easyui1.3.3+
- * 
+ *
  * 简单实现，如需高级功能，可以自由修改
- * 
+ *
  * 使用说明:
- * 
+ *
  * 在easyui.min.js之后导入本js
- * 
+ *
  * 代码案例:
- * 
+ *
  * $("#dg").datagrid('tooltip'); 所有列
- * 
+ *
  * $("#dg").datagrid('tooltip',['productid','listprice']); 指定列
- * 
- *  
+ *
+ *
  */
 $.extend($.fn.datagrid.methods, gridTooltipOptions);
 
 /**
  * Treegrid扩展方法tooltip 基于Easyui 1.3.3，可用于Easyui1.3.3+
- * 
+ *
  * 简单实现，如需高级功能，可以自由修改
- * 
+ *
  * 使用说明:
- * 
+ *
  * 在easyui.min.js之后导入本js
- * 
+ *
  * 代码案例:
- * 
+ *
  * $("#dg").treegrid('tooltip'); 所有列
- * 
+ *
  * $("#dg").treegrid('tooltip',['productid','listprice']); 指定列
- * 
- *  
+ *
+ *
  */
 $.extend($.fn.treegrid.methods, gridTooltipOptions);
 
 /**
- *  
- * 
+ *
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  * 扩展validatebox，添加验证两次密码功能
  */
 $.extend($.fn.validatebox.defaults.rules, {
-    eqPwd : {
-        validator : function(value, param) {
+    eqPwd: {
+        validator: function (value, param) {
             return value == $(param[0]).val();
         },
-        message : '密码不一致！'
+        message: '密码不一致！'
     }
 });
 
 //扩展tree，使其可以获取实心节点
 $.extend($.fn.tree.methods, {
-    getCheckedExt : function(jq) {// 获取checked节点(包括实心)
+    getCheckedExt: function (jq) {// 获取checked节点(包括实心)
         var checked = $(jq).tree("getChecked");
         var checkbox2 = $(jq).find("span.tree-checkbox2").parent();
-        $.each(checkbox2, function() {
+        $.each(checkbox2, function () {
             var node = $.extend({}, $.data(this, "tree-node"), {
-                target : this
+                target: this
             });
             checked.push(node);
         });
         return checked;
     },
-    getSolidExt : function(jq) {// 获取实心节点
+    getSolidExt: function (jq) {// 获取实心节点
         var checked = [];
         var checkbox2 = $(jq).find("span.tree-checkbox2").parent();
-        $.each(checkbox2, function() {
+        $.each(checkbox2, function () {
             var node = $.extend({}, $.data(this, "tree-node"), {
-                target : this
+                target: this
             });
             checked.push(node);
         });
@@ -273,7 +276,7 @@ $.extend($.fn.tree.methods, {
 });
 
 //扩展tree，使其支持平滑数据格式
-$.fn.tree.defaults.loadFilter = function(data, parent) {
+$.fn.tree.defaults.loadFilter = function (data, parent) {
     var opt = $(this).data().tree.options;
     var idFiled, textFiled, parentField;
     if (opt.parentField) {
@@ -301,7 +304,7 @@ $.fn.tree.defaults.loadFilter = function(data, parent) {
 };
 
 // 扩展treegrid，使其支持平滑数据格式
-$.fn.treegrid.defaults.loadFilter = function(data, parentId) {
+$.fn.treegrid.defaults.loadFilter = function (data, parentId) {
     var opt = $(this).data().treegrid.options;
     var idFiled, textFiled, parentField;
     if (opt.parentField) {
@@ -332,27 +335,27 @@ $.fn.treegrid.defaults.loadFilter = function(data, parentId) {
 $.fn.combotree.defaults.loadFilter = $.fn.tree.defaults.loadFilter;
 
 /**
- * 
+ *
  * @requires jQuery,EasyUI
- * 
+ *
  * 创建一个模式化的dialog
- * 
+ *
  * @returns $.modalDialog.handler 这个handler代表弹出的dialog句柄
- * 
+ *
  * @returns $.modalDialog.xxx 这个xxx是可以自己定义名称，主要用在弹窗关闭时，刷新某些对象的操作，可以将xxx这个对象预定义好
  */
-$.modalDialog = function(options) {
+$.modalDialog = function (options) {
     if ($.modalDialog.handler == undefined) {// 避免重复弹出
         var opts = $.extend({
-            title : '',
-            width : 840,
-            height : 680,
-            modal : true,
-            onClose : function() {
+            title: '',
+            width: 840,
+            height: 680,
+            modal: true,
+            onClose: function () {
                 $.modalDialog.handler = undefined;
                 $(this).dialog('destroy');
             },
-            onOpen : function() {
+            onOpen: function () {
             }
         }, options);
         opts.modal = true;// 强制此dialog为模式化，无视传递过来的modal参数
@@ -361,7 +364,7 @@ $.modalDialog = function(options) {
 };
 
 
-$.cookie = function(key, value, options) {
+$.cookie = function (key, value, options) {
     if (arguments.length > 1 && (value === null || typeof value !== "object")) {
         options = $.extend({}, options);
         if (value === null) {
@@ -371,26 +374,26 @@ $.cookie = function(key, value, options) {
             var days = options.expires, t = options.expires = new Date();
             t.setDate(t.getDate() + days);
         }
-        return (document.cookie = [ encodeURIComponent(key), '=', options.raw ? String(value) : encodeURIComponent(String(value)), options.expires ? '; expires=' + options.expires.toUTCString() : '', options.path ? '; path=' + options.path : '', options.domain ? '; domain=' + options.domain : '', options.secure ? '; secure' : '' ].join(''));
+        return (document.cookie = [encodeURIComponent(key), '=', options.raw ? String(value) : encodeURIComponent(String(value)), options.expires ? '; expires=' + options.expires.toUTCString() : '', options.path ? '; path=' + options.path : '', options.domain ? '; domain=' + options.domain : '', options.secure ? '; secure' : ''].join(''));
     }
     options = value || {};
-    var result, decode = options.raw ? function(s) {
+    var result, decode = options.raw ? function (s) {
         return s;
     } : decodeURIComponent;
     return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null;
 };
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 将form表单元素的值序列化成对象
- * 
+ *
  * @returns object
  */
-$.serializeObject = function(form) {
+$.serializeObject = function (form) {
     var o = {};
-    $.each(form.serializeArray(), function(index) {
+    $.each(form.serializeArray(), function (index) {
         if (o[this['name']]) {
             o[this['name']] = o[this['name']] + "," + this['value'];
         } else {
@@ -401,32 +404,33 @@ $.serializeObject = function(form) {
 };
 
 /**
- * 
+ *
  * 增加formatString功能
- * 
+ *
  * 使用方法：$.formatString('字符串{0}字符串{1}字符串','第一个变量','第二个变量');
- * 
+ *
  * @returns 格式化后的字符串
  */
-$.formatString = function(str) {
-    for ( var i = 0; i < arguments.length - 1; i++) {
+$.formatString = function (str) {
+    for (var i = 0; i < arguments.length - 1; i++) {
         str = str.replace("{" + i + "}", arguments[i + 1]);
     }
     return str;
 };
 
 /**
- * 
+ *
  * 接收一个以逗号分割的字符串，返回List，list里每一项都是一个字符串
- * 
+ *
  * @returns list
  */
-$.stringToList = function(value) {
+$.stringToList = function (value) {
     if (value != undefined && value != '') {
         var values = [];
         var t = value.split(',');
-        for ( var i = 0; i < t.length; i++) {
-            values.push('' + t[i]);/* 避免他将ID当成数字 */
+        for (var i = 0; i < t.length; i++) {
+            values.push('' + t[i]);
+            /* 避免他将ID当成数字 */
         }
         return values;
     } else {
@@ -435,14 +439,14 @@ $.stringToList = function(value) {
 };
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 改变jQuery的AJAX默认属性和方法
  */
 $.ajaxSetup({
-    type : 'POST',
-    error : function(XMLHttpRequest, textStatus, errorThrown) {
+    type: 'POST',
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
         try {
             parent.$.messager.progress('close');
             parent.$.messager.alert('错误', XMLHttpRequest.responseText);
@@ -454,63 +458,71 @@ $.ajaxSetup({
 
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 去掉空格
  * **/
-String.prototype.trim = function() {
+String.prototype.trim = function () {
     return this.replace(/(^\s*)|(\s*$)/g, '');
 };
-String.prototype.ltrim = function() {
+String.prototype.ltrim = function () {
     return this.replace(/(^\s*)/g, '');
 };
-String.prototype.rtrim = function() {
+String.prototype.rtrim = function () {
     return this.replace(/(\s*$)/g, '');
 };
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 页面加载加载进度条启用
  * **/
-function progressLoad(){  
-    $("<div class=\"datagrid-mask\" style=\"position:absolute;z-index: 9999;\"></div>").css({display:"block",width:"100%",height:$(window).height()}).appendTo("body");  
-    $("<div class=\"datagrid-mask-msg\" style=\"position:absolute;z-index: 9999;\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({display:"block",left:($(document.body).outerWidth(true) - 190) / 2,top:($(window).height() - 45) / 2});  
+function progressLoad() {
+    $("<div class=\"datagrid-mask\" style=\"position:absolute;z-index: 9999;\"></div>").css({
+        display: "block",
+        width: "100%",
+        height: $(window).height()
+    }).appendTo("body");
+    $("<div class=\"datagrid-mask-msg\" style=\"position:absolute;z-index: 9999;\"></div>").html("正在处理，请稍候。。。").appendTo("body").css({
+        display: "block",
+        left: ($(document.body).outerWidth(true) - 190) / 2,
+        top: ($(window).height() - 45) / 2
+    });
 }
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 页面加载加载进度条关闭
  * **/
-function progressClose(){
-    $(".datagrid-mask").remove();  
+function progressClose() {
+    $(".datagrid-mask").remove();
     $(".datagrid-mask-msg").remove();
 }
 
 /**
- * 
+ *
  * @requires jQuery
- * 
+ *
  * 防止退格键导致页面回退
  */
-$(document).keydown(function (e) { 
-    var doPrevent; 
-    if (e.keyCode == 8) { 
-        var d = e.srcElement || e.target; 
-        if (d.tagName.toUpperCase() == 'INPUT' || d.tagName.toUpperCase() == 'TEXTAREA') { 
-            doPrevent = d.readOnly || d.disabled; 
-        }else{
-            doPrevent = true; 
+$(document).keydown(function (e) {
+    var doPrevent;
+    if (e.keyCode == 8) {
+        var d = e.srcElement || e.target;
+        if (d.tagName.toUpperCase() == 'INPUT' || d.tagName.toUpperCase() == 'TEXTAREA') {
+            doPrevent = d.readOnly || d.disabled;
+        } else {
+            doPrevent = true;
         }
-    }else{ 
-        doPrevent = false; 
+    } else {
+        doPrevent = false;
     }
-    if (doPrevent) 
-    e.preventDefault(); 
+    if (doPrevent)
+        e.preventDefault();
 });
 
 /**
@@ -519,7 +531,7 @@ $(document).keydown(function (e) {
 function showMsg(msg) {
     top.window.$.messager.show({
         title: '提示',
-        msg:'<div class="light-info"><div class="light-tip icon-tip"></div><div>' + msg||"消息内容！" + '</div></div>',
+        msg: '<div class="light-info"><div class="light-tip icon-tip"></div><div>' + msg || "消息内容！" + '</div></div>',
         timeout: 3000,
         showType: 'slide'
     });

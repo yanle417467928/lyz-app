@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
  * Created by Jerry.Ren
  * Date: 2017/10/19.
  * Time: 9:02.
+ *
+ * @author Jerry
  */
 
 @Setter
@@ -17,24 +19,42 @@ import org.springframework.web.multipart.MultipartFile;
 @ToString
 public class UserSetInformationReq {
 
-    //用户ID
+    /**
+     * 用户ID
+     */
     private Long userId;
-    //身份类型
+    /**
+     * 身份类型
+     */
     private Integer identityType;
-    //头像地址
+    /**
+     * 头像地址
+     */
     private MultipartFile headPic;
-    //n昵称
+    /**
+     * n昵称
+     */
     private String nikeName;
-    //姓名
+    /**
+     * 姓名
+     */
     private String name;
-    //性别
+    /**
+     * 性别
+     */
     private String sex;
-    //生日
+    /**
+     * 生日
+     */
     private String birthday;
     //所属城市
 //    private String cityName;
-    //所属门店
-//    private String storeName;
-    //所属导购
-//    private String guideName;
+    /**
+     * 所属门店
+     */
+    private Long storeId;
+    /**
+     * 所属导购
+     */
+    private Long salesConsultId;
 }

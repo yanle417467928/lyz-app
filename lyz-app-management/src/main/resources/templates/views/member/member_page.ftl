@@ -35,9 +35,9 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <#--<button id="btn_delete" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
-                    </button>-->
+                <#--<button id="btn_delete" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
+                </button>-->
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -63,9 +63,9 @@
                     </span>
                     <span id="identityType" class="description"></span>
                     <ul id="memberAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
-                       <#-- <li class="list-group-item">
-                            <b>所在城市</b> <a class="pull-right" id="city"></a>
-                        </li>-->
+                    <#-- <li class="list-group-item">
+                         <b>所在城市</b> <a class="pull-right" id="city"></a>
+                     </li>-->
                         <li class="list-group-item">
                             <b>归属门店</b> <span class="pull-right" id="store"></span>
                         </li>
@@ -94,10 +94,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/member/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/member/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -113,15 +113,15 @@
             title: '姓名',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value, row) {
+            formatter: function (value, row) {
                 var id = row.id;
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'mobile',
             title: '电话',
             align: 'center',
@@ -130,7 +130,7 @@
             field: 'storeName',
             title: '门店',
             align: 'center'
-        },{
+        }, {
             field: 'salesConsultName',
             title: '导购',
             align: 'center'
@@ -138,32 +138,32 @@
             field: 'identityType',
             title: '会员身份',
             align: 'center',
-            formatter: function(value) {
+            formatter: function (value) {
                 if ('MEMBER' === value) {
                     return '<span class="label label-success">会员</span>';
                 } else {
                     return '<span class="label label-danger">零售</span>';
                 }
             }
-            },{
-                field: 'status',
-                title: '会员状态',
-                align: 'center',
-                formatter: function(value) {
-                    if (true === value) {
-                        return '<span class="label label-success">生效</span>';
-                    } else {
-                        return '<span class="label label-danger">失效</span>';
-                    }
+        }, {
+            field: 'status',
+            title: '会员状态',
+            align: 'center',
+            formatter: function (value) {
+                if (true === value) {
+                    return '<span class="label label-success">生效</span>';
+                } else {
+                    return '<span class="label label-danger">失效</span>';
                 }
             }
+        }
         ]);
 
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/member/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/member/edit/{id}?parentMenuId=${(parentMenuId!'0')?c}')
         });
 
@@ -174,7 +174,7 @@
 
     var $page = {
         information: {
-            show: function(id) {
+            show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -194,18 +194,18 @@
                                 var data = result.content;
                                 $('#memberHeadImage').attr('src', "/images/user2-160x160.jpg");
                                 $('#memberName').html(data.name);
-                                if (null === data.identityType || "MEMBER"===data.identityType) {
+                                if (null === data.identityType || "MEMBER" === data.identityType) {
                                     $('#identityType').html("<i class='fa fa-user-plus'></i> 会员");
-                                } else{
+                                } else {
                                     $('#identityType').html("<i class='fa fa-user'></i> 零售");
                                 }
-                                if(null === data.storeName){
-                                    data.storeName='-'
+                                if (null === data.storeName) {
+                                    data.storeName = '-'
                                 }
                                 $('#store').html(data.storeName);
 
-                                if(null === data.salesConsultName){
-                                    data.salesConsultName='-'
+                                if (null === data.salesConsultName) {
+                                    data.salesConsultName = '-'
                                 }
                                 $('#salesConsult').html(data.salesConsultName);
 
@@ -221,9 +221,9 @@
 
                                 if (null === data.sex) {
                                     data.sex = '保密';
-                                }else if("FEMALE" === data.sex){
+                                } else if ("FEMALE" === data.sex) {
                                     data.sex = "女";
-                                }else{
+                                } else {
                                     data.sex = "男";
                                 }
                                 $('#sex').html(data.sex);
@@ -243,7 +243,7 @@
                     })
                 }
             },
-            close: function() {
+            close: function () {
                 $('#information').modal('hide');
             }
         }

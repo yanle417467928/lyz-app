@@ -22,6 +22,7 @@ public class FileUploadOSSUtils {
 
     /**
      * 上传图片到oss方法
+     *
      * @param imgFile
      * @return
      */

@@ -34,15 +34,15 @@
 
     <insert id="add" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO admin_menu (
-            CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
-            TITLE, ICON_STYLE, PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
+        CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
+        TITLE, ICON_STYLE, PARENT_ID, LINK_URI, SORT_ID, TYPE, REFERENCE_TABLE
         ) VALUES(
-            #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
-            #{title}, #{iconStyle}, #{parentId}, #{linkUri},#{sortId},
-            #{type,
-                javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
-                typeHandler=org.apache.ibatis.type.EnumTypeHandler
-            }, #{referenceTable}
+        #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
+        #{title}, #{iconStyle}, #{parentId}, #{linkUri},#{sortId},
+        #{type,
+            javaType=cn.com.leyizhuang.app.core.constant.AppAdminMenuType,
+            typeHandler=org.apache.ibatis.type.EnumTypeHandler
+        }, #{referenceTable}
         )
     </insert>
 
@@ -139,7 +139,7 @@
         <include refid="ALL_FIELDS"/>
         FROM admin_menu WHERE ID = #{id}
     </select>
-    
+
     <select id="queryList" resultMap="menuResult">
         SELECT
         <include refid="ALL_FIELDS"/>
@@ -153,16 +153,16 @@
     </select>
     <select id="existsByTitleAndIdNot" resultType="java.lang.Boolean">
         SELECT
-            EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        admin_menu
-                    WHERE
-                        TITLE = #{title}
-                            <if test="null != id">
-                                AND id != #{id});
-                            </if>
+        EXISTS (
+        SELECT
+        1
+        FROM
+        admin_menu
+        WHERE
+        TITLE = #{title}
+        <if test="null != id">
+            AND id != #{id});
+        </if>
 
     </select>
 

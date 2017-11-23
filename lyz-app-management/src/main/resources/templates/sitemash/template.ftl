@@ -29,26 +29,26 @@
 
     <script src="/javascript/devkit.js"></script>
 
-    <sitemesh:write property="head" />
+    <sitemesh:write property="head"/>
 
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 
-    <#include "./modal.ftl">
-    <#include "./loading.ftl">
+<#include "./modal.ftl">
+<#include "./loading.ftl">
 
-    <div class="wrapper">
+<div class="wrapper">
 
-        <#include "./header.ftl">
+<#include "./header.ftl">
 
-        <#include "./menu.ftl">
+<#include "./menu.ftl">
 
-        <div class="content-wrapper">
-            <sitemesh:write property="body" />
-        </div>
-
-        <#include "./footer.ftl">
-
+    <div class="content-wrapper">
+        <sitemesh:write property="body"/>
     </div>
+
+<#include "./footer.ftl">
+
+</div>
 </body>
 </html>

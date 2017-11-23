@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2017/10/27
  */
 @RestController
-@RequestMapping(value = GoodsPriceRestController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = GoodsPriceRestController.PRE_URL, produces = "application/json;charset=utf-8")
 public class GoodsPriceRestController extends BaseRestController {
     protected final static String PRE_URL = "/rest/goodsPrice";
 
@@ -33,7 +33,7 @@ public class GoodsPriceRestController extends BaseRestController {
     private AppEmployeeService appEmployeeServiceImpl;
 
     @GetMapping(value = "/page/grid")
-    public GridDataVO<GoodsPriceVO> restGoodsPricePageGird(Integer offset, Integer size, String keywords){
+    public GridDataVO<GoodsPriceVO> restGoodsPricePageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         ShiroUser user = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
@@ -41,10 +41,10 @@ public class GoodsPriceRestController extends BaseRestController {
         AppEmployee appEmployee = this.appEmployeeServiceImpl.findByUserId(user.getId());
 
         PageInfo<GoodsPriceVO> goodsPricePageInfo = null;
-        if (null != appEmployee && null != appEmployee.getStoreId()){
+        if (null != appEmployee && null != appEmployee.getStoreId()) {
             goodsPricePageInfo = this.goodsPriceServiceImpl.queryPage(page, size, appEmployee.getStoreId(), keywords);
         }
-        return new GridDataVO<GoodsPriceVO>().transform(goodsPricePageInfo.getList(),goodsPricePageInfo.getTotal());
+        return new GridDataVO<GoodsPriceVO>().transform(goodsPricePageInfo.getList(), goodsPricePageInfo.getTotal());
     }
 
 }

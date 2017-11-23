@@ -27,11 +27,11 @@ public class UserVO implements Serializable {
     private Long id;
 
     @NotNull(message = "登录名不允许为空")
-    @Length(max = 20,min = 2,message = "登录名长度必须在2-20之间")
+    @Length(max = 20, min = 2, message = "登录名长度必须在2-20之间")
     private String loginName;
 
     @NotNull(message = "姓名不允许为空")
-    @Length(max = 20,min = 2,message = "姓名长度必须在2-20之间")
+    @Length(max = 20, min = 2, message = "姓名长度必须在2-20之间")
     private String name;
 
     private String password;
@@ -50,13 +50,14 @@ public class UserVO implements Serializable {
 
     private List<Role> rolesList;
 
-    private Long roleIds [];
+    private Long roleIds[];
 
     private Date createdateStart;
     private Date createdateEnd;
 
     /**
      * 比较vo和数据库中的用户是否同一个user，采用id比较
+     *
      * @param user 用户
      * @return 是否同一个人
      */
@@ -71,7 +72,7 @@ public class UserVO implements Serializable {
         return id.equals(userId);
     }
 
-    public User convert2User(){
+    public User convert2User() {
         User user = new User();
         user.setPassword(password);
         user.setLoginName(loginName);

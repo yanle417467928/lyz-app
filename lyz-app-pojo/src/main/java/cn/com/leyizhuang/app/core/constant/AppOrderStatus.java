@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.core.constant;
 
 /**
- *  App 订单状态枚举
+ * App 订单状态枚举
+ *
  * @author CrazyApeDX
  * Created on 2017/3/24.
  */
@@ -17,14 +18,6 @@ public enum AppOrderStatus {
         this.description = description;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static AppOrderStatus getAppOrderTypeByValue(String value) {
         for (AppOrderStatus orderType : AppOrderStatus.values()) {
             if (value == orderType.getValue()) {
@@ -32,6 +25,14 @@ public enum AppOrderStatus {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 

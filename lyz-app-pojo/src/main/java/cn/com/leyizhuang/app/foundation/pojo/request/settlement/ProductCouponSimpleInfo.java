@@ -6,7 +6,8 @@ import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
- *  生成订单时产品券信息封装类
+ * 生成订单时产品券信息封装类
+ *
  * @author Richard
  * Date: 2017/11/13.
  * Time: 10:55.

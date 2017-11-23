@@ -11,7 +11,7 @@ import java.util.List;
  * lyz-app-facade用户数据仓库
  *
  * @author Richard
- *         Created on 2017-09-19 11:26
+ * Created on 2017-09-19 11:26
  **/
 @Repository
 public interface CityDAO {
@@ -39,7 +39,7 @@ public interface CityDAO {
 
     void deleteCityByCode(String code);
 
-    Boolean existGoodsCityInventory(@Param("cityId") Long cityId,@Param("gid") Long gid,@Param("qty") Integer qty);
+    Boolean existGoodsCityInventory(@Param("cityId") Long cityId, @Param("gid") Long gid, @Param("qty") Integer qty);
 
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 }

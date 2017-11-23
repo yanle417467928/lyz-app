@@ -14,7 +14,7 @@ import java.util.List;
  * Created on 2017-07-28 14:55
  **/
 @Repository
-public interface  UserDAO {
+public interface UserDAO {
     List<User> selectByLoginName(UserVO userVO);
 
     List<User> queryList();

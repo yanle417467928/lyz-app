@@ -11,18 +11,18 @@
 <body>
 
 <section class="content-header">
-    <#if selectedMenu??>
-        <h1>${selectedMenu.title!'??'}</h1>
-        <ol class="breadcrumb">
-            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-            <#if selectedMenu.parent??>
-                <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
-            </#if>
-            <li class="active">${selectedMenu.title!'??'}</li>
-        </ol>
-    <#else>
-        <h1>加载中...</h1>
-    </#if>
+<#if selectedMenu??>
+    <h1>${selectedMenu.title!'??'}</h1>
+    <ol class="breadcrumb">
+        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
+        <#if selectedMenu.parent??>
+            <li><a href="javascript:void(0);">${selectedMenu.parent.title!'??'}</a></li>
+        </#if>
+        <li class="active">${selectedMenu.title!'??'}</li>
+    </ol>
+<#else>
+    <h1>加载中...</h1>
+</#if>
 </section>
 
 <section class="content">
@@ -87,10 +87,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/menu/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/menu/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -105,17 +105,17 @@
             field: 'title',
             title: '菜单标题',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         }, {
             field: 'type',
             title: '菜单类型',
-            formatter: function(value) {
+            formatter: function (value) {
                 if ('PARENT' === String(value)) {
                     return '<span class="label label-primary">一级菜单</span>'
                 } else {
@@ -139,18 +139,18 @@
             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
         });
     });
 
     var $page = {
         information: {
-            show: function(id) {
+            show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -207,7 +207,7 @@
                     })
                 }
             },
-            close: function() {
+            close: function () {
                 $('#information').modal('hide');
             }
         }

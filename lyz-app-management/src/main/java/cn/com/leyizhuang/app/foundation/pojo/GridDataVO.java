@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Richard
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @Getter
 @Setter

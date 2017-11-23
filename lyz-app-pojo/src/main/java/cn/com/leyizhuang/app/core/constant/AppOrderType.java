@@ -16,14 +16,6 @@ public enum AppOrderType {
         this.description = description;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static AppOrderType getAppOrderTypeByValue(String value) {
         for (AppOrderType orderType : AppOrderType.values()) {
             if (value == orderType.getValue()) {
@@ -31,6 +23,14 @@ public enum AppOrderType {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 

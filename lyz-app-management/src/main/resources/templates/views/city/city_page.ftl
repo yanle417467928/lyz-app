@@ -83,10 +83,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/citys/page/grid', 'get', false, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/citys/page/grid', 'get', false, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -98,51 +98,51 @@
                 field: 'cityId',
                 title: '城市ID',
                 align: 'center',
-                visible:false
-            },{
-            field: 'code',
-            title: '城市编码',
-            align: 'center'
-        }, {
-            field: 'name',
-            title: '城市名称',
-            align: 'center',
-            events: {
-                'click .scan': function(e, value, row) {
-                    $page.information.show(row.cityId);
+                visible: false
+            }, {
+                field: 'code',
+                title: '城市编码',
+                align: 'center'
+            }, {
+                field: 'name',
+                title: '城市名称',
+                align: 'center',
+                events: {
+                    'click .scan': function (e, value, row) {
+                        $page.information.show(row.cityId);
+                    }
+                },
+                formatter: function (value) {
+                    return '<a class="scan" href="#">' + value + '</a>';
+                }
+            }, {
+                field: 'structureTitle',
+                title: '所属分公司',
+                align: 'center'
+            }, {
+                field: 'enable',
+                title: '是否生效',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (true == value) {
+                        return '是';
+                    } else if (false == value) {
+                        return '否';
+                    } else {
+                        return '-';
+                    }
                 }
             },
-            formatter: function(value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            }
-        },{
-            field: 'structureTitle',
-            title: '所属分公司',
-            align: 'center'
-        },{
-            field: 'enable',
-            title: '是否生效',
-            align: 'center',
-                formatter: function(value,row,index){
-                if(true==value){
-                    return '是';
-                }else if(false==value){
-                    return '否';
-                }else {
-                    return '-';
-                }
-            }
-        },
         ]);
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/view/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/goods', 'delete');
         });
     });
@@ -155,12 +155,12 @@
         var d = dt.getDate();
         d = d < 10 ? ('0' + d) : d;
         var h = dt.getHours();
-        h=h < 10 ? ('0' + h) : h;
+        h = h < 10 ? ('0' + h) : h;
         var minute = dt.getMinutes();
         minute = minute < 10 ? ('0' + minute) : minute;
-        var second=dt.getSeconds();
-        second=second < 10 ? ('0' + second) : second;
-        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
     var $page = {
@@ -212,16 +212,16 @@
 
                                 if (true === data.enable) {
                                     data.enable = '是';
-                                }else if(false === data.enable){
+                                } else if (false === data.enable) {
                                     data.enable = '否';
-                                }else{
-                                    data.enable  = '-';
+                                } else {
+                                    data.enable = '-';
                                 }
                                 $('#enable').html(data.enable);
 
                                 if (null === data.enableFalseTime) {
                                     $('#enableFalseTime').html('-');
-                                }else{
+                                } else {
                                     $('#enableFalseTime').html(formatDateTime(data.enableFalseTime));
                                 }
 

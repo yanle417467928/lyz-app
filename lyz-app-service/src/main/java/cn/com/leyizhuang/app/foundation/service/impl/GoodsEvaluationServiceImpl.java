@@ -21,6 +21,7 @@ public class GoodsEvaluationServiceImpl implements GoodsEvaluationService {
     public List<GoodsEvaluation> queryEvaluationListByGid(Long gid) {
         return goodsEvaluationDAO.queryEvaluationListByGid(gid);
     }
+
     @Override
     public Integer getEvaluationQuantityByGid(Long gid) {
         return goodsEvaluationDAO.getEvaluationQuantityByGid(gid);

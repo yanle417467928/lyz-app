@@ -114,26 +114,27 @@
         WHERE uid = #{uid}
     </update>
 
-    <select id="                                                                                                                                                                                           existsByLoginName" parameterType="java.lang.String" resultType="java.lang.Boolean">
+    <select id="                                                                                                                                                                                           existsByLoginName"
+            parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 1
-                      FROM admin_user
-                      WHERE LOGIN_NAME = #{loginName})
+        FROM admin_user
+        WHERE LOGIN_NAME = #{loginName})
     </select>
 
     <select id="queryByLoginName" parameterType="UserVO" resultType="User">
         SELECT
-            uid          ,
-            LOGIN_NAME  LOGIN_NAME,
-            NAME        NAME,
-            PASSWORD    PASSWORD,
-            SEX         SEX,
-            AGE         AGE,
-            USER_TYPE   USER_TYPE,
-            STATUS      STATUS,
-            CREATE_TIME CREATE_TIME,
-            mobile
+        uid ,
+        LOGIN_NAME LOGIN_NAME,
+        NAME NAME,
+        PASSWORD PASSWORD,
+        SEX SEX,
+        AGE AGE,
+        USER_TYPE USER_TYPE,
+        STATUS STATUS,
+        CREATE_TIME CREATE_TIME,
+        mobile
         FROM
-            admin_user
+        admin_user
         WHERE LOGIN_NAME = #{loginName}
     </select>
 </mapper>

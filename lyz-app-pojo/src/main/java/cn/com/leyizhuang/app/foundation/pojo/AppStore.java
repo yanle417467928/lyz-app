@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/3/24.
+ * Created on 2017/3/24.
  */
 @Getter
 @Setter

@@ -7,7 +7,7 @@ import cn.com.leyizhuang.common.foundation.service.BaseService;
  * App后台会员身份鉴权信息服务
  *
  * @author Richard
- *         Created on 2017-05-23 9:52
+ * Created on 2017-05-23 9:52
  **/
 public interface AppAdminMemberAuthService extends BaseService<MemberAuth> {
 

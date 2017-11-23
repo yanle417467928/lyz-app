@@ -45,12 +45,13 @@ public class ProductCouponController {
 
     @Autowired
     private CommonService commonService;
+
     /**
-     * @title   获取订单可用产品券列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取订单可用产品券列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/19
      */
@@ -96,14 +97,15 @@ public class ProductCouponController {
 
     /**
      * 顾客点击使用产品券通过加入下料清单
+     *
      * @param productCouponRequest
      * @return
      */
     @PostMapping(value = "/transform/materialList", produces = "application/json;charset=UTF-8")
-    public ResultDTO productCouponTransformMaterialList(@RequestBody ProductCouponRequest productCouponRequest){
+    public ResultDTO productCouponTransformMaterialList(@RequestBody ProductCouponRequest productCouponRequest) {
 
         ResultDTO<Object> resultDTO;
-        logger.info("productCouponTransformMaterialList CALLED,顾客点击使用产品券通过加入下料清单，入参 productCouponRequest:{}",productCouponRequest);
+        logger.info("productCouponTransformMaterialList CALLED,顾客点击使用产品券通过加入下料清单，入参 productCouponRequest:{}", productCouponRequest);
         if (null == productCouponRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
@@ -124,7 +126,7 @@ public class ProductCouponController {
         Integer identityType = productCouponRequest.getIdentityType();
         List<GoodsIdQtyParam> requestList = productCouponRequest.getProductCouponList();
 
-        try{
+        try {
 
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
@@ -157,15 +159,16 @@ public class ProductCouponController {
                             }
                             materialListSave.add(materialListDOTemp);
                         } else {
-                            materialListDO.setQty(materialListDO.getQty() + qty);
-                            materialListUpdate.add(materialListDO);
+                            //暂时做法：发现已加入的产品券做不处理
+//                            materialListDO.setQty(materialListDO.getQty() + qty);
+//                            materialListUpdate.add(materialListDO);
                         }
                     } else {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + qty + "" +
-                                "的商品不存在!", null);
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + couponId + "" +
+                                "的产品券对应商品不存在!", null);
                     }
                 }
-            }else {
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型不能使用产品券", null);
                 logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -175,7 +178,7 @@ public class ProductCouponController {
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客点击使用产品券通过加入下料清单失败", null);
             logger.warn("productCouponTransformMaterialList EXCEPTION,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);

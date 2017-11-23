@@ -37,13 +37,13 @@ public class EmployeeListResponse implements Serializable {
     public EmployeeListResponse() {
     }
 
-    public static EmployeeListResponse transform(AppEmployee appEmployee){
+    public static EmployeeListResponse transform(AppEmployee appEmployee) {
         EmployeeListResponse response = new EmployeeListResponse();
         response.setEmpId(appEmployee.getEmpId());
         response.setName(appEmployee.getName());
         response.setMobile(appEmployee.getMobile());
         response.setPicUrl(appEmployee.getPicUrl());
-        if (null != appEmployee.getCreateTime()){
+        if (null != appEmployee.getCreateTime()) {
             String time = appEmployee.getCreateTime()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             response.setCreateTime(time);
@@ -51,13 +51,13 @@ public class EmployeeListResponse implements Serializable {
         return response;
     }
 
-    public static List<EmployeeListResponse> transform(List<AppEmployee> appEmployeeList){
+    public static List<EmployeeListResponse> transform(List<AppEmployee> appEmployeeList) {
 
         List<EmployeeListResponse> listResponses;
-        if (appEmployeeList.size() > 0 && !appEmployeeList.isEmpty()){
+        if (appEmployeeList.size() > 0 && !appEmployeeList.isEmpty()) {
             listResponses = new ArrayList<>(appEmployeeList.size());
             appEmployeeList.forEach(appEmployee -> listResponses.add(transform(appEmployee)));
-        }else {
+        } else {
             listResponses = new ArrayList<>(0);
         }
         return listResponses;

@@ -4,31 +4,31 @@
 
     <select id="selectResourceListByRoleId" resultType="java.util.HashMap" parameterType="java.lang.Long">
         SELECT
-            rr.id  AS id,
-            rs.url AS url
+        rr.id AS id,
+        rs.url AS url
         FROM admin_role r LEFT JOIN admin_role_resource rr ON r.rid = rr.rid
-            LEFT JOIN admin_resource rs ON rr.rs_id = rs.rs_id
+        LEFT JOIN admin_resource rs ON rr.rs_id = rs.rs_id
         WHERE r.rid = #{id};
     </select>
 
     <select id="selectById" parameterType="java.lang.Long" resultType="Role">
         SELECT
-            rid id,
-            name,
-            description,
-            status,
-            sort_id
+        rid id,
+        name,
+        description,
+        status,
+        sort_id
         FROM admin_role
         WHERE rid = #{roleId};
     </select>
 
     <select id="queryList" resultType="Role">
         SELECT
-            rid id,
-            name,
-            description,
-            status,
-            sort_id
+        rid id,
+        name,
+        description,
+        status,
+        sort_id
         FROM admin_role
     </select>
 
@@ -38,17 +38,17 @@
     </insert>
     <select id="findAllResource" resultType="ResourceVO">
         SELECT
-            r.rs_id        id,
-            r.name         resource_name,
-            r.DESCRIPTION  resource_description,
-            pr.rs_id       parent_resource_id,
-            pr.name        parent_resource_name,
-            pr.DESCRIPTION parent_resource_description
+        r.rs_id id,
+        r.name resource_name,
+        r.DESCRIPTION resource_description,
+        pr.rs_id parent_resource_id,
+        pr.name parent_resource_name,
+        pr.DESCRIPTION parent_resource_description
         FROM
-            admin_resource r
-            LEFT JOIN admin_resource pr ON r.PID = pr.rs_id
+        admin_resource r
+        LEFT JOIN admin_resource pr ON r.PID = pr.rs_id
         WHERE
-            r.PID != 0
+        r.PID != 0
     </select>
 
     <delete id="batchRemove" parameterType="java.util.List">
@@ -60,11 +60,11 @@
 
     <select id="queryById" parameterType="java.lang.Long" resultType="Role">
         SELECT
-            rid id,
-            name,
-            description,
-            status,
-            sort_id
+        rid id,
+        name,
+        description,
+        status,
+        sort_id
         FROM admin_role
         WHERE rid = #{id}
     </select>
@@ -90,11 +90,11 @@
 
     <select id="findByStatus" parameterType="java.lang.Boolean" resultType="Role">
         SELECT
-            rid id,
-            name,
-            description,
-            status,
-            sort_id
+        rid id,
+        name,
+        description,
+        status,
+        sort_id
         FROM admin_role
         WHERE STATUS = #{status};
     </select>

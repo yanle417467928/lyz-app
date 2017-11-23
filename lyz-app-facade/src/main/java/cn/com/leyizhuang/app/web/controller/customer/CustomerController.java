@@ -32,7 +32,7 @@ import java.util.List;
  * Richard
  *
  * @author 顾客控制器
- *         Created on 2017-09-21 12:59
+ * Created on 2017-09-21 12:59
  **/
 @RestController
 @RequestMapping(value = "/app/customer")
@@ -77,7 +77,7 @@ public class CustomerController {
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！",
-                        new CustomerLoginResponse(Boolean.FALSE, null, null,null));
+                        new CustomerLoginResponse(Boolean.FALSE, null, null, null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -87,7 +87,7 @@ public class CustomerController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(),customer.getCityId()));
+                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(), customer.getCityId()));
             logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class CustomerController {
      * @return resultDTO
      */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam,HttpServletResponse response) {
+    public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam, HttpServletResponse response) {
         logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
         ResultDTO<CustomerRegistResponse> resultDTO;
         try {
@@ -155,17 +155,17 @@ public class CustomerController {
                 newUser.setStatus(Boolean.TRUE);
                 newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
                 newUser.setNickName(registryParam.getNickName());
-                if(null == registryParam.getSex()){
+                if (null == registryParam.getSex()) {
                     newUser.setSex(SexType.SECRET);
-                }else{
-                    newUser.setSex(registryParam.getSex()?SexType.MALE:SexType.FEMALE);
+                } else {
+                    newUser.setSex(registryParam.getSex() ? SexType.MALE : SexType.FEMALE);
                 }
                 newUser.setPicUrl(registryParam.getPicUrl());
                 newUser.setCityId(registryParam.getCityId());
                 newUser.setMobile(registryParam.getPhone());
                 newUser.setLight(AppCustomerLightStatus.GREEN);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
-                AppCustomer returnUser =commonService .saveCustomerInfo(newUser,new CustomerLeBi(),new CustomerPreDeposit());
+                AppCustomer returnUser = commonService.saveCustomerInfo(newUser, new CustomerLeBi(), new CustomerPreDeposit());
                 //拼装accessToken
                 String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
@@ -188,6 +188,7 @@ public class CustomerController {
 
     /**
      * 顾客注册 - 绑定导购
+     *
      * @param userId     顾客id
      * @param guidePhone 导购电话
      * @return resultDTO
@@ -218,8 +219,8 @@ public class CustomerController {
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                if (seller.getCityId() != customer.getCityId()){
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"不能绑定其他城市的导购！",null);
+                if (seller.getCityId() != customer.getCityId()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "不能绑定其他城市的导购！", null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
@@ -332,12 +333,13 @@ public class CustomerController {
 
     /**
      * 顾客获取账户余额
+     *
      * @param userId
      * @param identityType
      * @return
      */
     @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType){
+    public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType) {
 
         logger.info("getCustomerPreDepositBalance CALLED,顾客获取账户余额，入参 userId {},identityType{}", userId, identityType);
 
@@ -354,7 +356,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            Double balance = customerService.findPreDepositBalanceByUserIdAndIdentityType(userId,identityType);
+            Double balance = customerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
             logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -369,12 +371,13 @@ public class CustomerController {
 
     /**
      * 顾客获取乐币数量
+     *
      * @param userId
      * @param identityType
      * @return
      */
     @PostMapping(value = "/lebi/quantity", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerLeBiQuantity(Long userId, Integer identityType){
+    public ResultDTO getCustomerLeBiQuantity(Long userId, Integer identityType) {
 
         logger.info("getCustomerLeBiQuantity CALLED,顾客获取乐币数量，入参 userId {},identityType{}", userId, identityType);
 
@@ -391,7 +394,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            Integer quantity = customerService.findLeBiQuantityByUserIdAndIdentityType(userId,identityType);
+            Integer quantity = customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
             logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -406,12 +409,13 @@ public class CustomerController {
 
     /**
      * 顾客签到增加乐币
+     *
      * @param userId
      * @param identityType
      * @return
      */
     @PostMapping(value = "/sign", produces = "application/json;charset=UTF-8")
-    public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType){
+    public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType) {
 
         logger.info("addCustomerLeBiQuantity CALLED,顾客签到增加乐币，入参 userId {},identityType{}", userId, identityType);
 
@@ -429,12 +433,12 @@ public class CustomerController {
         }
         try {
             AppCustomer appCustomer = customerService.findById(userId);
-            if(null != appCustomer.getLastSignTime() && DateUtils.isSameDay(appCustomer.getLastSignTime(),new Date())){
+            if (null != appCustomer.getLastSignTime() && DateUtils.isSameDay(appCustomer.getLastSignTime(), new Date())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "今天已签到，不能重复签到！", null);
                 logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId,identityType);
+            commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId, identityType);
 
             //记录变更明细日志
             CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
@@ -442,7 +446,7 @@ public class CustomerController {
             customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
             customerLeBiVariationLog.setVariationQuantity(1);
             customerLeBiVariationLog.setVariationTime(new Date());
-            customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId,identityType));
+            customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType));
             leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
@@ -458,16 +462,16 @@ public class CustomerController {
 
 
     /**
-     * @title   获取客户钱包充值记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取客户钱包充值记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType){
+    public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType) {
 
         logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
 
@@ -499,16 +503,16 @@ public class CustomerController {
     }
 
     /**
-     * @title   获取客户钱包消费记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取客户钱包消费记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType){
+    public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType) {
 
         logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
 

@@ -8,14 +8,14 @@ import java.util.Date;
  * 商品业务实体
  *
  * @author Richard
- *         Created on 2017-07-12 17:26
+ * Created on 2017-07-12 17:26
  **/
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoodsDO{
+public class GoodsDO {
 
     private Long gid;
 
@@ -32,7 +32,7 @@ public class GoodsDO{
     private String rotationImageUri;
 
     //商品规格
-    private  String goodsSpecification;
+    private String goodsSpecification;
 
     //单位名称
     private String goodsUnit;

@@ -4,17 +4,17 @@
 
     <insert id="save" parameterType="AppEmployee">
         INSERT INTO emp_employee (login_name, name, password, salt, identity_type, mobile, birthday,
-                                  status, sex, pic_url, city_id, store_id, manager_id, create_time
+        status, sex, pic_url, city_id, store_id, manager_id, create_time
         ) VALUES (
-            #{loginName}, #{name}, #{password}, #{salt},
-                          #{identityType,
-            javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
-            typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                          #{mobile}, #{birthday}, #{status},
-                          #{sex,
-            javaType=cn.com.leyizhuang.app.core.constant.SexType,
-            typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                          #{picUrl}, #{cityId}, #{storeId},#{managerId},#{createTime}
+        #{loginName}, #{name}, #{password}, #{salt},
+        #{identityType,
+javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
+typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{mobile}, #{birthday}, #{status},
+        #{sex,
+javaType=cn.com.leyizhuang.app.core.constant.SexType,
+typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{picUrl}, #{cityId}, #{storeId},#{managerId},#{createTime}
         )
     </insert>
     <select id="findByLoginName" parameterType="java.lang.String" resultType="AppEmployee">
@@ -75,8 +75,8 @@
         SELECT *
         FROM emp_employee
         WHERE emp_id = (SELECT c.sales_consult_id
-                    FROM cus_customer c
-                    WHERE c.cus_id = #{userId})
+        FROM cus_customer c
+        WHERE c.cus_id = #{userId})
     </select>
     <select id="findById" parameterType="java.lang.Long" resultType="AppEmployee">
         SELECT *
@@ -116,19 +116,19 @@
     <select id="findEmployeeInfoByUserIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse">
         SELECT
-            e.pic_url,
-            e.city_id,
-            e.login_name number,
-            e.mobile,
+        e.pic_url,
+        e.city_id,
+        e.login_name number,
+        e.mobile,
         <if test="type == 0">
             ecm.credit_limit_available balance,
         </if>
         <if test="type == 2">
             pd.balance,
         </if>
-            e.name
+        e.name
         FROM
-            emp_employee e
+        emp_employee e
         <choose>
             <when test="type == 0">
                 LEFT JOIN emp_credit_money ecm ON ecm.guide_id = e.emp_id
@@ -139,16 +139,16 @@
             </when>
         </choose>
         WHERE
-            e.emp_id = #{userId}
+        e.emp_id = #{userId}
     </select>
 
     <update id="updateEmployeeMobileByUserId">
         UPDATE
-            emp_employee
+        emp_employee
         SET
-            mobile = #{mobile}
+        mobile = #{mobile}
         WHERE
-            emp_id = #{userId}
+        emp_id = #{userId}
     </update>
 
     <select id="existsSellerCreditByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
@@ -157,11 +157,11 @@
 
     <update id="lockGuideCreditByUserIdAndGuideCredit">
         UPDATE
-            emp_credit_money
+        emp_credit_money
         SET
-            credit_limit_available = credit_limit_available - #{credit}
+        credit_limit_available = credit_limit_available - #{credit}
         WHERE
-            credit_limit_available >= #{credit}
+        credit_limit_available >= #{credit}
         AND guide_id = #{userId}
     </update>
 
@@ -211,25 +211,25 @@
     </update>
 
     <delete id="deleteByLoginName" parameterType="java.lang.String">
-        DELETE  FROM emp_employee
+        DELETE FROM emp_employee
         WHERE login_name = #{loginName}
     </delete>
 
     <update id="unlockGuideCreditByUserIdAndGuideCredit">
         UPDATE
-          emp_credit_money
+        emp_credit_money
         SET
-          credit_limit_available = credit_limit_available + #{credit}
+        credit_limit_available = credit_limit_available + #{credit}
         WHERE
-          guide_id = #{userId}
+        guide_id = #{userId}
     </update>
 
-    <select id="findSellerByStoreIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse">
+    <select id="findSellerByStoreIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse">
         SELECT emp_id sellerId, name sellerName
         FROM emp_employee
         WHERE store_id = #{storeId} AND identity_type = #{type}
     </select>
-
 
 
 </mapper>

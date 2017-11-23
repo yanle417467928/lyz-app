@@ -9,7 +9,8 @@ import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
- *  生成订单时配送信息参数封装类
+ * 生成订单时配送信息参数封装类
+ *
  * @author Richard
  * Date: 2017/11/13.
  * Time: 10:55.

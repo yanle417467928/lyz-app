@@ -33,5 +33,5 @@ public interface DeliveryAddressDAO {
                                                     @Param(value = "identityType") AppIdentityType identityType);
 
     DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
-                                                      @Param(value = "identityType") AppIdentityType identityType);
+                                                                         @Param(value = "identityType") AppIdentityType identityType);
 }

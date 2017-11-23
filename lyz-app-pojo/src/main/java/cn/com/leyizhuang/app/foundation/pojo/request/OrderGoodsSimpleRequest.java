@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * 确认订单页面简单商品信息请求
+ *
  * @author Jerry.Ren
  * Date: 2017/11/1.
  * Time: 10:45.
@@ -18,7 +19,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class    OrderGoodsSimpleRequest implements Serializable {
+public class OrderGoodsSimpleRequest implements Serializable {
 
     private static final long serialVersionUID = 6037339634254711067L;
     /**

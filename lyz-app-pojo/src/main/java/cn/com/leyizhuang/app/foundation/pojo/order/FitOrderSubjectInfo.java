@@ -18,7 +18,7 @@ import java.util.Date;
 public class FitOrderSubjectInfo {
 
     /**
-     *  装饰公司编码
+     * 装饰公司编码
      */
     private String companyCode;
 

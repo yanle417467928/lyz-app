@@ -35,9 +35,9 @@ public class OrderLockExpendRequest implements Serializable {
 
     private Integer lebiQty;                    //乐币
     //    private Map<Long,Integer> goodsTotal;     //商品总量<商品ids,商品数量qtys>
-    private Map<Long,Integer> storeInventory;   //门店库存商品ID,商品数量qtys>
-    private Map<Long,Integer> cityInventory;    //城市库存商品ID,商品数量qtys>
-    private Map<Long,Integer> productCoupons;    //产品券<券ID,券数量qtys>
-    private Map<Long,Integer> cashCoupons;       //现金券<券ID,券数量qtys>
+    private Map<Long, Integer> storeInventory;   //门店库存商品ID,商品数量qtys>
+    private Map<Long, Integer> cityInventory;    //城市库存商品ID,商品数量qtys>
+    private Map<Long, Integer> productCoupons;    //产品券<券ID,券数量qtys>
+    private Map<Long, Integer> cashCoupons;       //现金券<券ID,券数量qtys>
 
 }

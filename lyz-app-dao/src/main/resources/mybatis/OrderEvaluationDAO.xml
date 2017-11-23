@@ -6,7 +6,7 @@
         SELECT *
         FROM ord_evaluation
         WHERE
-            order_number = #{orderNumber}
+        order_number = #{orderNumber}
         ORDER BY id DESC
     </select>
 
@@ -16,15 +16,15 @@
         INSERT INTO ord_evaluation
         (product_star, logistics_star, service_star, order_number,evaluation_time)
         VALUES
-            (#{productStar}, #{logisticsStar}, #{serviceStars}, #{orderNumber},#{evaluationTime})
+        (#{productStar}, #{logisticsStar}, #{serviceStars}, #{orderNumber},#{evaluationTime})
     </insert>
     <insert id="addOrderGoodsEvaluation" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation">
         INSERT INTO gds_goods_evaluation
         (order_number, gid, comment_content, evaluation_pictures, evaluation_time,
-         evaluation_name, is_show, pic_url)
+        evaluation_name, is_show, pic_url)
         VALUES (#{orderNumber}, #{gid}, #{commentContent},
-                #{evaluationPictures}, #{evaluationTime},
-                #{evaluationName}, #{isShow},#{picUrl})
+        #{evaluationPictures}, #{evaluationTime},
+        #{evaluationName}, #{isShow},#{picUrl})
     </insert>
 
 

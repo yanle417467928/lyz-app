@@ -21,7 +21,7 @@
     <select id="getGoodsInfoByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT DISTINCT g.gid, g.sku, g.sku_name, g.goods_specification, g.cover_image_uri, g.goods_unit,
-            og.order_qty qty
+        og.order_qty qty
         FROM ord_goods_info og
         LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
@@ -150,9 +150,9 @@
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
-           *
+        *
         FROM
-            ord_base_info
+        ord_base_info
         WHERE
         ord_no = #{orderNumber}
     </select>
@@ -179,7 +179,7 @@
 
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
-         SELECT
+        SELECT
         ogi.order_qty qty,
         ogi.retail_price,
         ogi.is_gift,
@@ -189,7 +189,7 @@
         gg.cover_image_uri ,
         gg.goods_unit
         FROM
-            ord_goods_info AS ogi
+        ord_goods_info AS ogi
         INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
         WHERE
         ogi.ord_no = #{orderNumber}

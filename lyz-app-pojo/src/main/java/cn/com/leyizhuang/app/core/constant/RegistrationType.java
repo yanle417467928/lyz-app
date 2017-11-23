@@ -4,7 +4,7 @@ package cn.com.leyizhuang.app.core.constant;
  * 会员注册方式枚举
  *
  * @author Richard
- *         Created on 2017/07/14.
+ * Created on 2017/07/14.
  */
 public enum RegistrationType {
 
@@ -14,7 +14,8 @@ public enum RegistrationType {
     RegistrationType(String value) {
         this.value = value;
     }
-    public String getValue(){
+
+    public String getValue() {
         return value;
     }
 

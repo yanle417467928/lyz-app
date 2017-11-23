@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppAdminSalesConsultDAO">
 
-   <select id="findAll" resultType="SalesConsult">
-      SELECT * FROM sales_consult;
-   </select>
+    <select id="findAll" resultType="SalesConsult">
+        SELECT * FROM sales_consult;
+    </select>
 
-   <select id="findByStoreId" resultType="SalesConsult">
-      SELECT * FROM sales_consult where ASCRIPTION_STORE_ID = #{storeId};
-   </select>
+    <select id="findByStoreId" resultType="SalesConsult">
+        SELECT * FROM sales_consult where ASCRIPTION_STORE_ID = #{storeId};
+    </select>
 
     <select id="findByConsultId" resultType="SalesConsult">
         SELECT * FROM sales_consult where id = #{consultId};

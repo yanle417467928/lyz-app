@@ -17,6 +17,7 @@ import java.util.List;
 public class MaterialAuditGoodsInfoServiceImpl implements MaterialAuditGoodsInfoService {
     @Autowired
     private MaterialAuditGoodsInfoDAO materialAuditGoodsInfoDAO;
+
     @Override
     public void addMaterialAuditGoodsInfo(MaterialAuditGoodsInfo materialAuditGoodsInfo) {
         materialAuditGoodsInfoDAO.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
@@ -29,7 +30,7 @@ public class MaterialAuditGoodsInfoServiceImpl implements MaterialAuditGoodsInfo
 
     @Override
     public List<MaterialAuditGoodsInfo> queryListByAuditHeaderID(Long auditHeaderID) {
-        if (null == auditHeaderID){
+        if (null == auditHeaderID) {
             return null;
         }
         return materialAuditGoodsInfoDAO.queryListByAuditHeaderID(auditHeaderID);

@@ -12,7 +12,7 @@ import java.util.List;
  * App后台管理中心菜单Dao层接口
  *
  * @author Richard
- *         Created on 2017-05-08 14:38
+ * Created on 2017-05-08 14:38
  **/
 @Repository
 public interface AppAdminMenuDAO extends BaseDAO<AppAdminMenuDO> {

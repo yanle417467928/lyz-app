@@ -40,7 +40,7 @@ public class ArrearsAuditResponse {
     //状态
     private String status;
 
-    public void setStatus(ArrearsAuditStatus arrearsAuditStatus){
+    public void setStatus(ArrearsAuditStatus arrearsAuditStatus) {
         this.status = arrearsAuditStatus.getValue();
     }
 }

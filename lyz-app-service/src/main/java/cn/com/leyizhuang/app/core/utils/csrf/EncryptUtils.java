@@ -17,13 +17,14 @@ public class EncryptUtils {
 
     /**
      * 根据原始用户名、密码得到加密后的密码以及salt（盐）
-     *  md5加密 三次，转hex
+     * md5加密 三次，转hex
+     *
      * @param username
      * @param password
      * @return
      */
     public static Map<String, String> getPasswordAndSalt(String username, String password) {
-        Map<String,String> paramMap = new HashMap<>();
+        Map<String, String> paramMap = new HashMap<>();
         int hashIterations = 3;
         String algorithmName = "md5";
         if (null != username && null != password) {
@@ -31,8 +32,8 @@ public class EncryptUtils {
             String salt2 = new SecureRandomNumberGenerator().nextBytes().toHex();
             SimpleHash hash = new SimpleHash(algorithmName, password, salt1 + salt2, hashIterations);
             String encodedPassword = hash.toHex();
-            paramMap.put("encodedPassword",encodedPassword);
-            paramMap.put("salt",salt2);
+            paramMap.put("encodedPassword", encodedPassword);
+            paramMap.put("salt", salt2);
             return paramMap;
         } else {
             throw new RuntimeException("加密失败，用户名或密码为空");

@@ -25,7 +25,7 @@ import java.util.List;
  * App后台管理会员服务实现类
  *
  * @author Richard
- *         Created on 2017-05-09 10:04
+ * Created on 2017-05-09 10:04
  **/
 @Service
 public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implements AppAdminMemberService {
@@ -41,18 +41,52 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
         this.memberDAO = memberDAO;
     }
 
+    public static Member transformMemberVoToMember(AppAdminMemberVO memberVO) throws ParseException {
+        Member member = new Member();
+        if (null != memberVO.getId()) {
+            member.setId(memberVO.getId());
+        }
+        if (null != memberVO.getStore()) {
+            member.setStoreId(memberVO.getStore());
+        }
+        if (null != memberVO.getSalesConsult()) {
+            member.setConsultId(memberVO.getSalesConsult());
+        }
+        if (null != memberVO.getIdentityType()) {
+            member.setIdentityType(memberVO.getIdentityType());
+        }
+        if (null != memberVO.getName()) {
+            member.setMemberName(memberVO.getName());
+        }
+        if (null != memberVO.getBirthday()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            member.setBirthday(sdf.parse(memberVO.getBirthday()));
+        }
+        if (null != memberVO.getSex()) {
+            member.setSex(memberVO.getSex());
+        }
+        MemberAuth memberAuth = new MemberAuth();
+        if (null != memberVO.getMobile()) {
+            memberAuth.setMobile(memberVO.getMobile());
+        }
+        if (null != memberVO.getStatus()) {
+            memberAuth.setStatus(memberVO.getStatus());
+        }
+        return member;
+    }
+
     @Override
     public PageInfo<AppAdminMemberVO> queryMemberVOPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
+        PageHelper.startPage(page, size);
         List<AppAdminMemberVO> memberList = memberDAO.queryMemberVOPage();
         return new PageInfo<>(memberList);
     }
 
     public void modifyMemberInfo(AppAdminMemberVO memberVO) {
-        if (null != memberVO){
+        if (null != memberVO) {
             Member member = new Member();
             try {
-                member  = transformMemberVoToMember(memberVO);
+                member = transformMemberVoToMember(memberVO);
             } catch (ParseException e) {
                 throw new InvalidDataException("日期转换异常");
             }
@@ -72,7 +106,7 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
 
     @Override
     public void updateUserAuth(MemberAuth memberAuth) {
-        if(null != memberAuth) {
+        if (null != memberAuth) {
             memberDAO.updateUserAuth(memberAuth);
         }
     }
@@ -80,7 +114,7 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
     @Override
     public MemberAuth queryAuthById(Long id) {
         if (null != id) {
-         return memberDAO.queryAuthById(id);
+            return memberDAO.queryAuthById(id);
         }
         return null;
     }
@@ -89,7 +123,7 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
     public void saveMemberInfo(AppAdminMemberVO memberVO) {
         Member member = new Member();
         try {
-            member=transformMemberVoToMember(memberVO);
+            member = transformMemberVoToMember(memberVO);
         } catch (ParseException e) {
             throw new InvalidDataException("日期转换异常");
         }
@@ -107,19 +141,11 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
         memberAuth.setMobile(memberVO.getMobile());
         memberAuth.setStatus(memberVO.getStatus());
         //存储member表信息
-        Member returnMemberDO =  this.save(member);
+        Member returnMemberDO = this.save(member);
         //将member表返回的主键id设置到member_auth表member_id字段中
         memberAuth.setMemberId(returnMemberDO.getId());
         //存储member_auth表信息
         MemberAuth returnAuth = memberAuthService.save(memberAuth);
-    }
-
-    @Override
-    public AppAdminMemberVO queryMemberVOById(Long id) {
-        if (null != id){
-            return memberDAO.queryMemberVOById(id);
-        }
-        return null;
     }
 
 
@@ -158,37 +184,11 @@ public class AppAdminMemberServiceImpl extends BaseServiceImpl<Member> implement
         return memberDO;
     }*/
 
-    public static Member transformMemberVoToMember(AppAdminMemberVO memberVO) throws ParseException {
-        Member member = new Member();
-        if(null != memberVO.getId()){
-            member.setId(memberVO.getId());
+    @Override
+    public AppAdminMemberVO queryMemberVOById(Long id) {
+        if (null != id) {
+            return memberDAO.queryMemberVOById(id);
         }
-        if (null != memberVO.getStore()){
-            member.setStoreId(memberVO.getStore());
-        }
-        if(null != memberVO.getSalesConsult()){
-            member.setConsultId(memberVO.getSalesConsult());
-        }
-        if(null != memberVO.getIdentityType()){
-            member.setIdentityType(memberVO.getIdentityType());
-        }
-        if(null != memberVO.getName()){
-            member.setMemberName(memberVO.getName());
-        }
-        if(null != memberVO.getBirthday()){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            member.setBirthday(sdf.parse(memberVO.getBirthday()));
-        }
-        if(null != memberVO.getSex()){
-            member.setSex(memberVO.getSex());
-        }
-        MemberAuth memberAuth = new MemberAuth();
-        if(null != memberVO.getMobile()){
-            memberAuth.setMobile(memberVO.getMobile());
-        }
-        if(null != memberVO.getStatus()){
-            memberAuth.setStatus(memberVO.getStatus());
-        }
-        return member;
+        return null;
     }
 }

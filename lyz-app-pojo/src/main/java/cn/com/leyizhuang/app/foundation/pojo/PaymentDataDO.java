@@ -50,14 +50,14 @@ public class PaymentDataDO {
     private String remarks;
 
     public PaymentDataDO(Long userId, String outTradeNo, Integer paymentType, String notifyUrl, String subject,
-                         Double totalFee, PaymentDataStatus tradeStatus, String paymentMethod, String remarks){
+                         Double totalFee, PaymentDataStatus tradeStatus, String paymentMethod, String remarks) {
         this.userId = userId;
         this.outTradeNo = outTradeNo;
-        if(null != paymentType && paymentType == 0){
+        if (null != paymentType && paymentType == 0) {
             this.paymentType = PaymentDataType.ST_PRE_DEPOSIT;
-        } else if(null != paymentType && paymentType == 2){
+        } else if (null != paymentType && paymentType == 2) {
             this.paymentType = PaymentDataType.DEC_PRE_DEPOSIT;
-        } else if(null != paymentType && paymentType == 6){
+        } else if (null != paymentType && paymentType == 6) {
             this.paymentType = PaymentDataType.CUS_PRE_DEPOSIT;
         }
         this.appIdentityType = AppIdentityType.getAppIdentityTypeByValue(paymentType);

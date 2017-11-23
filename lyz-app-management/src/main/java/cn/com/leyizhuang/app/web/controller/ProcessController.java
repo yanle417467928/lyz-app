@@ -47,8 +47,8 @@ public class ProcessController {
     @RequestMapping(value = "/select")
     public String select() {
 
-            return "根据ID查找成功";
-        }
+        return "根据ID查找成功";
+    }
 
     @RequestMapping(value = "/selectList")
     public String selectList() {
@@ -60,9 +60,9 @@ public class ProcessController {
     }
 
     @RequestMapping(value = "/test")
-    public String test(){
+    public String test() {
         List<ProcessDO> processDOList = processService.findAllProcessAndGoods();
-        if (processDOList != null && processDOList.size()>0) {
+        if (processDOList != null && processDOList.size() > 0) {
             for (ProcessDO processDO : processDOList) {
                 System.out.println(processDO);
             }

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**支付功能调用
+/**
+ * 支付功能调用
+ *
  * @author GenerationRoad
  * @date 2017/10/19
  */
@@ -24,11 +26,11 @@ public class GetPaymentMethodsController {
     private AppCustomerService appCustomerServiceImpl;
 
     /**
-     * @title   获取付款方式
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取付款方式
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/19
      */
@@ -47,7 +49,7 @@ public class GetPaymentMethodsController {
                 logger.info("getPaymentMethods OUT,获取付款方式失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            Boolean isCashOnDelivery  = this.appCustomerServiceImpl.existsByCustomerId(userId);
+            Boolean isCashOnDelivery = this.appCustomerServiceImpl.existsByCustomerId(userId);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, isCashOnDelivery);
             logger.info("getPaymentMethods OUT,获取付款方式成功，出参 resultDTO:{}", resultDTO);
@@ -63,15 +65,16 @@ public class GetPaymentMethodsController {
 
     /**
      * 获取乐币折扣商品金额
-     * @param userId 用户ID
+     *
+     * @param userId       用户ID
      * @param identityType 身份类型
-     * @param goodsMoney 需支付商品金额
+     * @param goodsMoney   需支付商品金额
      * @return
      */
     @PostMapping(value = "/rebate/lebi", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> paymentMethodsOfLeBiRebate(Long userId, Integer identityType,Double goodsMoney) {
+    public ResultDTO<Object> paymentMethodsOfLeBiRebate(Long userId, Integer identityType, Double goodsMoney) {
 
-        logger.info("paymentMethodsOfLeBiRebate CALLED,乐币折扣商品金额，入参 userId:{},identityType:{},goodsMoney{}", userId, identityType,goodsMoney);
+        logger.info("paymentMethodsOfLeBiRebate CALLED,乐币折扣商品金额，入参 userId:{},identityType:{},goodsMoney{}", userId, identityType, goodsMoney);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -91,11 +94,11 @@ public class GetPaymentMethodsController {
             return resultDTO;
         }
         try {
-            CustomerLeBi customerLeBi = appCustomerServiceImpl.findLeBiByUserIdAndGoodsMoney(userId,goodsMoney);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,customerLeBi );
+            CustomerLeBi customerLeBi = appCustomerServiceImpl.findLeBiByUserIdAndGoodsMoney(userId, goodsMoney);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerLeBi);
             logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,乐币折扣商品金额失败!", null);
             logger.warn("paymentMethodsOfLeBiRebate EXCEPTION,乐币折扣商品金额失败，出参 resultDTO:{}", resultDTO);
@@ -106,15 +109,15 @@ public class GetPaymentMethodsController {
 
     /**
      * 调用微信支付支付金额
+     *
      * @return
      */
     @PostMapping(value = "/wechat/pay", produces = "application/json;charset=UTF-8")
-    public ResultDTO paymentMethodsOfWChatPayment(){
+    public ResultDTO paymentMethodsOfWChatPayment() {
 
         logger.info("paymentMethodsOfWChatPayment CALLED,调用微信支付支付金额，入参 userId:{},identityType:{},goodsMoney{}");
 
         ResultDTO<Object> resultDTO;
-
 
 
         return null;

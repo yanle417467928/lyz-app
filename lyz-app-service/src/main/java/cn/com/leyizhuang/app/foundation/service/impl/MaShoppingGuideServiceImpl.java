@@ -13,11 +13,12 @@ public class MaShoppingGuideServiceImpl implements MaShoppingGuideService {
 
     @Autowired
     private MaShoppingGuideDAO maEmployeeDAO;
-        @Override
-        public List<ShoppingGuideVO> findGuideListById(Long storeId){
 
-            return  maEmployeeDAO.findGuideListById(storeId);
-        }
+    @Override
+    public List<ShoppingGuideVO> findGuideListById(Long storeId) {
+
+        return maEmployeeDAO.findGuideListById(storeId);
     }
+}
 
 

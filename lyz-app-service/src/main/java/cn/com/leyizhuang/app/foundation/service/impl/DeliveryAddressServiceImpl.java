@@ -29,25 +29,25 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
 
     @Override
     public List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType) {
-        if (identityType.getValue() == 6 ){
+        if (identityType.getValue() == 6) {
             return this.deliveryAddressDAO.queryListByCustomerIdAndStatusIsTrue(userId);
-        }else{
-            return this.deliveryAddressDAO.queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(userId,identityType);
+        } else {
+            return this.deliveryAddressDAO.queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(userId, identityType);
         }
 
     }
 
     @Override
-    public DeliveryAddressRequest addDeliveryAddress(Long userId, AppIdentityType identityType,DeliveryAddressRequest deliveryAddress) {
-        DeliveryAddressDO deliveryAddressDO = transform(userId,identityType, deliveryAddress);
+    public DeliveryAddressRequest addDeliveryAddress(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress) {
+        DeliveryAddressDO deliveryAddressDO = transform(userId, identityType, deliveryAddress);
         deliveryAddressDO.setCreatorInfoByBusiness("DeliveryAddressServiceImpl", "addDeliveryAddress");
         this.deliveryAddressDAO.addDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
 
     @Override
-    public DeliveryAddressRequest modifyDeliveryAddress(Long userId, AppIdentityType identityType,DeliveryAddressRequest deliveryAddress) {
-        DeliveryAddressDO deliveryAddressDO = transform(userId,identityType, deliveryAddress);
+    public DeliveryAddressRequest modifyDeliveryAddress(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress) {
+        DeliveryAddressDO deliveryAddressDO = transform(userId, identityType, deliveryAddress);
         this.deliveryAddressDAO.modifyDeliveryAddress(deliveryAddressDO);
         return deliveryAddress;
     }
@@ -64,28 +64,28 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     @Override
     public DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType
             identityType) {
-        if (null != userId && null != identityType){
-            return  deliveryAddressDAO.getDefaultDeliveryAddressByUserIdAndIdentityType(userId,identityType);
+        if (null != userId && null != identityType) {
+            return deliveryAddressDAO.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }
 
     @Override
     public void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
-        if (null != userId && null != identityType){
-            deliveryAddressDAO.clearDefaultAddressByUserIdAndIdentityType(userId,identityType);
+        if (null != userId && null != identityType) {
+            deliveryAddressDAO.clearDefaultAddressByUserIdAndIdentityType(userId, identityType);
         }
     }
 
     @Override
     public DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
-        if (null != userId && null != identityType){
-            return deliveryAddressDAO.getTopDeliveryAddressByUserIdAndIdentityType(userId,identityType);
+        if (null != userId && null != identityType) {
+            return deliveryAddressDAO.getTopDeliveryAddressByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }
 
-    private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress){
+    private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress) {
         if (null != userId && null != deliveryAddress && null != identityType) {
             DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
             if (null != deliveryAddress.getId()) {

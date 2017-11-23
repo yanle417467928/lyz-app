@@ -38,7 +38,7 @@ public class OrderBaseInfo {
     private AppOrderType orderType;
 
     /**
-     *  有效期失效时间
+     * 有效期失效时间
      */
     private Date effectiveEndTime;
 
@@ -48,7 +48,7 @@ public class OrderBaseInfo {
     private String status;
 
     /**
-     *  订单物流状态
+     * 订单物流状态
      */
     private String deliveryStatus;
 
@@ -63,7 +63,7 @@ public class OrderBaseInfo {
     private AppDeliveryType deliveryType;
 
     /**
-     *  订单下单主体类型，装饰公司、门店
+     * 订单下单主体类型，装饰公司、门店
      */
     private String orderSubjectType;
 

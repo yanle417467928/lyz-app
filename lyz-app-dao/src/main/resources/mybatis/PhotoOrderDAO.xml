@@ -6,7 +6,8 @@
         INSERT INTO photo_order
         (user_id, identity_type, photos, delivery_id, is_owner_receiving, remark, customer_id, status, create_time)
         VALUES
-        (#{userId}, #{identityType}, #{photos}, #{deliveryId}, #{isOwnerReceiving}, #{remark}, #{customerId}, #{status}, #{createTime});
+        (#{userId}, #{identityType}, #{photos}, #{deliveryId}, #{isOwnerReceiving}, #{remark}, #{customerId}, #{status},
+        #{createTime});
     </insert>
 
 </mapper>

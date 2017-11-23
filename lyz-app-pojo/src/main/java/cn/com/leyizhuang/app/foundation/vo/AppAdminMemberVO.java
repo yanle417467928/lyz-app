@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
  * 会员视图层模型
  *
  * @author Richard
- *         Created on 2017-05-23 14:20
+ * Created on 2017-05-23 14:20
  **/
 @Getter
 @Setter
@@ -42,7 +42,7 @@ public class AppAdminMemberVO {
 
     //会员姓名
     @NotNull(message = "会员姓名不能为空")
-    @Length(min = 2,max = 20,message = "会员姓名的长度必须控制在2~20位")
+    @Length(min = 2, max = 20, message = "会员姓名的长度必须控制在2~20位")
     private String name;
 
     //会员生日
@@ -57,8 +57,8 @@ public class AppAdminMemberVO {
     //会员性别
     private SexType sex;
 
-   //会员账号状态
-   @NotNull(message = "会员状态不能为空")
+    //会员账号状态
+    @NotNull(message = "会员状态不能为空")
     private Boolean status;
 
 

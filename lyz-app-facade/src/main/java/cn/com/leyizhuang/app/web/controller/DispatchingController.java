@@ -38,12 +38,13 @@ public class DispatchingController {
 
     /**
      * 配送员获取待配送列表
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @return  返回待配送列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 返回待配送列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getDispatchingList(Long userID,Integer identityType){
+    public ResultDTO<Object> getDispatchingList(Long userID, Integer identityType) {
         ResultDTO<Object> resultDTO;
         logger.info("getDispatchingList CALLED,配送员获取待配送列表，入参 userID:{}, identityType:{}", userID, identityType);
         if (null == userID) {
@@ -64,12 +65,12 @@ public class DispatchingController {
 
         try {
             AppEmployee appEmployee = appEmployeeService.findById(userID);
-            if (null == appEmployee){
+            if (null == appEmployee) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
                 logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())){
+            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
                 logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -78,7 +79,7 @@ public class DispatchingController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, waitDeliveryResponseList);
             logger.info("getDispatchingList OUT,配送员获取待配送列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获配送员获取待配送列表失败", null);
             logger.warn("getDispatchingList EXCEPTION,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
@@ -88,14 +89,15 @@ public class DispatchingController {
     }
 
     /**
-     *  获取出货单详情
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @param orderNumber   订单号
-     * @return  返回详情
+     * 获取出货单详情
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param orderNumber  订单号
+     * @return 返回详情
      */
     @RequestMapping(value = "/shipper/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getDeliveryDetails(Long userID,Integer identityType,String orderNumber){
+    public ResultDTO<Object> getDeliveryDetails(Long userID, Integer identityType, String orderNumber) {
         ResultDTO<Object> resultDTO;
         logger.info("getDeliveryDetails CALLED,获取出货单详情，入参 userID:{}, identityType:{}, orderNumber:{}", userID, identityType, orderNumber);
         if (null == userID) {
@@ -120,22 +122,22 @@ public class DispatchingController {
         }
         try {
             AppEmployee appEmployee = appEmployeeService.findById(userID);
-            if (null == appEmployee){
+            if (null == appEmployee) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
                 logger.info("getDeliveryDetails OUT,获取出货单详情失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())){
+            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
                 logger.info("getDeliveryDetails OUT,获取出货单详情失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            ShipperDetailResponse shipperDetailResponse = orderDeliveryInfoDetailsService.getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(appEmployee.getDeliveryClerkNo(),orderNumber);
+            ShipperDetailResponse shipperDetailResponse = orderDeliveryInfoDetailsService.getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(appEmployee.getDeliveryClerkNo(), orderNumber);
             shipperDetailResponse.setGoodsList(appOrderService.getOrderGoodsDetails(orderNumber));
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,shipperDetailResponse );
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, shipperDetailResponse);
             logger.info("getDeliveryDetails OUT,获取出货单详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取出货单详情失败", null);
             logger.warn("getDeliveryDetails EXCEPTION,获取出货单详情失败，出参 resultDTO:{}", resultDTO);

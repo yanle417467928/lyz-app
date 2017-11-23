@@ -37,15 +37,15 @@ public interface MaterialListDAO {
                                                              @Param(value = "identityType") AppIdentityType identityType,
                                                              @Param(value = "deleteGoodsIds") List<Long> deleteGoodsIds);
 
-    Map<Long,Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
-                                                                    @Param(value = "identityType") AppIdentityType identityType,
-                                                                    @Param(value = "goodsId") Long goodsId);
+    Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
+                                                                     @Param(value = "identityType") AppIdentityType identityType,
+                                                                     @Param(value = "goodsId") Long goodsId);
 
     Boolean existOtherMaterialListByUserIdAndIdentityType(@Param("userId") Long userID,
                                                           @Param("identityType") AppIdentityType appIdentityTypeByValue);
 
     List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
-                                                                    @Param("identityType") AppIdentityType identityType);
+                                                                                @Param("identityType") AppIdentityType identityType);
 
     List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
                                                                             @Param("identityType") AppIdentityType identityType);

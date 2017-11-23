@@ -28,71 +28,79 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="user-panel">
-                                <div class="pull-left image">
-                                    <img src="/images/user2-160x160.jpg" class="img-circle"
-                                         style="max-width: 70px;" alt="User Image">
-                                </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="user-panel">
+                            <div class="pull-left image">
+                                <img src="/images/user2-160x160.jpg" class="img-circle"
+                                     style="max-width: 70px;" alt="User Image">
                             </div>
                         </div>
                     </div>
+                </div>
                 <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label>所在城市</label>
-                                <input  readOnly="true" class="form-control select" name="city" data-live-search="true" value="${member.city}">
-                                </input>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label> 归属门店</label>
-                                <input readOnly="true" class="form-control select" name="storeName" data-live-search="true" value="${member.store.name}">
-                                </input>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label>专属导购</label>
-                                <input readOnly="true" class="form-control select" name="managerName" data-live-search="true" value="${member.manager.name}">
-                                </input>
-                            </div>
-                            </div>
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label>导购电话</label>
-                                <input readOnly="true" class="form-control select" name="managerMobile" data-live-search="true" value="${member.manager.mobile}">
-                                </input>
-                            </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label>所在城市</label>
+                            <input readOnly="true" class="form-control select" name="city" data-live-search="true"
+                                   value="${member.city}">
+                            </input>
                         </div>
                     </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label> 归属门店</label>
+                            <input readOnly="true" class="form-control select" name="storeName" data-live-search="true"
+                                   value="${member.store.name}">
+                            </input>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label>专属导购</label>
+                            <input readOnly="true" class="form-control select" name="managerName"
+                                   data-live-search="true" value="${member.manager.name}">
+                            </input>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label>导购电话</label>
+                            <input readOnly="true" class="form-control select" name="managerMobile"
+                                   data-live-search="true" value="${member.manager.mobile}">
+                            </input>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label>会员姓名</label>
-                            <input  readOnly="true" class="form-control select" name="name" data-live-search="true" value="${member.name}">
+                            <input readOnly="true" class="form-control select" name="name" data-live-search="true"
+                                   value="${member.name}">
                             </input>
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label> 联系电话</label>
-                            <input readOnly="true" class="form-control select" name="mobile" data-live-search="true" value="${member.auth.mobile}">
+                            <input readOnly="true" class="form-control select" name="mobile" data-live-search="true"
+                                   value="${member.auth.mobile}">
                             </input>
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label>会员生日</label>
-                            <input readOnly="true" class="form-control select" name="birthday" data-live-search="true" value="${member.birthday?date}">
+                            <input readOnly="true" class="form-control select" name="birthday" data-live-search="true"
+                                   value="${member.birthday?date}">
                             </input>
                         </div>
                     </div>
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label>性别</label>
-                            <input readOnly="true" class="form-control select" name="sex" data-live-search="true" value="${member.sex}">
+                            <input readOnly="true" class="form-control select" name="sex" data-live-search="true"
+                                   value="${member.sex}">
                             </input>
                         </div>
                     </div>
@@ -101,33 +109,34 @@
                     <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label> 会员性质</label>
-                            <input readOnly="true" class="form-control select" name="identityType" data-live-search="true" value="${member.identityType}">
+                            <input readOnly="true" class="form-control select" name="identityType"
+                                   data-live-search="true" value="${member.identityType}">
                             </input>
                         </div>
                     </div>
-                  <#--  <div class="col-md-6 col-xs-12">
-                        <div class="form-group">
-                            <label>注册时间</label>
-                            <input readOnly="true" class="form-control select" name="registryTime" data-live-search="true" value="${member.registryTime?date}">
-                            </input>
-                        </div>
-                    </div>-->
-                   <#-- <div class="col-md-6 col-xs-12">
-                        <div class="form-group">
-                            <label>有效消费额</label>
-                            <input  readOnly="true" class="form-control select" name="effectiveConsumption" data-live-search="true" value="${member.effectiveConsumption}">
-                            </input>
-                        </div>
-                    </div>-->
+                <#--  <div class="col-md-6 col-xs-12">
+                      <div class="form-group">
+                          <label>注册时间</label>
+                          <input readOnly="true" class="form-control select" name="registryTime" data-live-search="true" value="${member.registryTime?date}">
+                          </input>
+                      </div>
+                  </div>-->
+                <#-- <div class="col-md-6 col-xs-12">
+                     <div class="form-group">
+                         <label>有效消费额</label>
+                         <input  readOnly="true" class="form-control select" name="effectiveConsumption" data-live-search="true" value="${member.effectiveConsumption}">
+                         </input>
+                     </div>
+                 </div>-->
                 </div>
                 <div class="row">
-                   <#-- <div class="col-md-6 col-xs-12">
-                    <div class="form-group">
-                        <label> 有效单量</label>
-                        <input readOnly="true" class="form-control select" name="effectiveOrderCount" data-live-search="true" value="${member.effectiveOrderCount}">
-                        </input>
-                    </div>
-                    </div>-->
+                <#-- <div class="col-md-6 col-xs-12">
+                 <div class="form-group">
+                     <label> 有效单量</label>
+                     <input readOnly="true" class="form-control select" name="effectiveOrderCount" data-live-search="true" value="${member.effectiveOrderCount}">
+                     </input>
+                 </div>
+                 </div>-->
                    <#-- <div class="col-md-6 col-xs-12">
                         <div class="form-group">
                             <label>账户状态</label>
@@ -137,10 +146,10 @@
                     </div>-->
                 </div>
             </div>
-    </div>
+        </div>
 </section>
 <script>
-    $(function() {
+    $(function () {
         if (!$global.validateMobile()) {
             $('.select').selectpicker();
         }

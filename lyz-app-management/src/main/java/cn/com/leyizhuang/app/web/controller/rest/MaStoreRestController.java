@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = MaStoreRestController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = MaStoreRestController.PRE_URL, produces = "application/json;charset=utf-8")
 public class MaStoreRestController extends BaseRestController {
 
     protected final static String PRE_URL = "/rest/stores";
@@ -26,6 +26,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 初始门店页面
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -42,6 +43,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 查询门店列表
+     *
      * @return
      */
     @GetMapping(value = "/findStorelist")
@@ -52,6 +54,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 查询该城市ID的门店列表
+     *
      * @param cityId
      * @return
      */
@@ -63,6 +66,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 查询门店信息
+     *
      * @param storeId
      * @return
      */
@@ -81,6 +85,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 查询该城市下的门店
+     *
      * @param cityId
      * @param offset
      * @param size
@@ -98,6 +103,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 查询可用或不可用的门店
+     *
      * @param enabled
      * @param cityId
      * @param offset
@@ -106,10 +112,10 @@ public class MaStoreRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findStoresListByEnable")
-    public GridDataVO<StoreVO> findStoresListByEnable(@RequestParam("enabled") Boolean enabled,@RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
+    public GridDataVO<StoreVO> findStoresListByEnable(@RequestParam("enabled") Boolean enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.MaStoreService.findStoresListByEnable(page, size, enabled,cityId);
+        PageInfo<StoreVO> storePage = this.MaStoreService.findStoresListByEnable(page, size, enabled, cityId);
         List<StoreVO> PageAllStoresList = storePage.getList();
         return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
     }
@@ -117,6 +123,7 @@ public class MaStoreRestController extends BaseRestController {
 
     /**
      * 通过门店名称或者门店编码查询门店
+     *
      * @param queryStoreInfo
      * @param offset
      * @param size

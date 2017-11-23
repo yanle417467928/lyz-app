@@ -13,21 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * APP后端库存视图控制器
  *
  * @author Richard
- *         Created on 2017-07-12 14:26
+ * Created on 2017-07-12 14:26
  **/
 @Controller
-@RequestMapping(value = AppAdminStoreInventoryViewController.PRE_URL,produces = "text/html;charset=utf-8")
-public class AppAdminStoreInventoryViewController extends BaseController{
-
-    protected final static String PRE_URL = "/views/admin/inventory";
+@RequestMapping(value = AppAdminStoreInventoryViewController.PRE_URL, produces = "text/html;charset=utf-8")
+public class AppAdminStoreInventoryViewController extends BaseController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AppAdminStoreInventoryViewController.class);
-
+    protected final static String PRE_URL = "/views/admin/inventory";
     @Autowired
     private AppAdminStoreInventoryService storeInventoryService;
 
     @RequestMapping("/page")
-    public String inventoryList(Model model,Integer page,Integer size){
+    public String inventoryList(Model model, Integer page, Integer size) {
         /*page = null == page ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
         size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
         PageInfo<StoreInventoryDO> storeInventoryPage = storeInventoryService.queryPage(page,size);

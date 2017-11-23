@@ -19,9 +19,9 @@ public interface BrowseHistoryDAO {
 
     void delete(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
-   List<Long> existBrowseHistory(BrowseHistoryRequest browseHistory);
+    List<Long> existBrowseHistory(BrowseHistoryRequest browseHistory);
 
-   void deleteByIds(@Param("list") List<Long> ids);
+    void deleteByIds(@Param("list") List<Long> ids);
 
-   List<BrowseHistoryResponse> findBrowseHistoryByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
+    List<BrowseHistoryResponse> findBrowseHistoryByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 }

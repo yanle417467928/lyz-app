@@ -32,17 +32,17 @@ public class PhotoOrderController {
 
 
     /**
-     * @title   拍照下单
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 拍照下单
+     * @descripe
      * @author GenerationRoad
      * @date 2017/10/24
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> photoOrder(Long userId, Integer identityType, @RequestParam(value = "myfiles",required = false) MultipartFile[] files,
-                                             Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId) {
+    public ResultDTO<Object> photoOrder(Long userId, Integer identityType, @RequestParam(value = "myfiles", required = false) MultipartFile[] files,
+                                        Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId) {
         logger.info("photoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{} files:{} deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, files, deliveryId, isOwnerReceiving, remark, customerId);
         ResultDTO<Object> resultDTO;
         try {
@@ -57,7 +57,7 @@ public class PhotoOrderController {
                 logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == files || files.length == 0){
+            if (null == files || files.length == 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
                 logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;

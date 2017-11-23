@@ -14,16 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 public class DateUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
-
     public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss";
-
     public static final String FORMAT_DATE = "yyyy-MM-dd";
-
     public static final String FORMAT_MONTH = "yyyy-MM";
-
     public static final String FORMAT_TIME = "HH:mm:ss";
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
     public static long SECOND_MILLIS = 1000L;
 
     public static long MINUTE_MILLIS = 60 * SECOND_MILLIS;

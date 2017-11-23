@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.SmsAccountDAO">
 
     <select id="findOne" resultType="cn.com.leyizhuang.common.foundation.pojo.SmsAccount">
-      SELECT * FROM sms_account LIMIT 1
+        SELECT * FROM sms_account LIMIT 1
     </select>
 
 </mapper>

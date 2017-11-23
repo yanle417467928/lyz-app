@@ -59,6 +59,7 @@ public class UserHomePageController {
 
     @Resource
     private GoodsService goodsServiceImpl;
+
     /**
      * 个人主页的信息
      *
@@ -274,6 +275,7 @@ public class UserHomePageController {
 
     /**
      * 顾客选择门店自提
+     *
      * @param simpleRequest
      * @return
      */
@@ -299,7 +301,7 @@ public class UserHomePageController {
                 logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if(simpleRequest.getIdentityType() == 0 && null == simpleRequest.getCustomerId()){
+            if (simpleRequest.getIdentityType() == 0 && null == simpleRequest.getCustomerId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单客户身份不能为空", null);
                 logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -363,13 +365,13 @@ public class UserHomePageController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
                     logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                }else {
+                } else {
                     Long cityId = customer.getCityId();
                     if (null != cityId) {
                         storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                     }
                 }
-            }else {
+            } else {
                 AppEmployee employee = employeeService.findById(userId);
                 Long storeId = employee.getStoreId();
 
@@ -420,7 +422,7 @@ public class UserHomePageController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
                     logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                }else {
+                } else {
                     Long cityId = employee.getCityId();
                     storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                 }
@@ -429,7 +431,7 @@ public class UserHomePageController {
                     storeList.size() > 0 ? storeList : null);
             logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客选择门店自提失败!", null);
             logger.warn("getUserDeliveryTypeBySelfTake EXCEPTION,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);

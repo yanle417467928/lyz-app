@@ -8,7 +8,7 @@ package cn.com.leyizhuang.app.core.constant;
  **/
 public enum AppDeliveryType {
 
-    SELF_TAKE("SELF_TAKE","门店自提"),HOUSE_DELIVERY("HOUSE_DELIVERY","送货上门");
+    SELF_TAKE("SELF_TAKE", "门店自提"), HOUSE_DELIVERY("HOUSE_DELIVERY", "送货上门");
 
     private String value;
 
@@ -19,14 +19,6 @@ public enum AppDeliveryType {
         this.description = description;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static AppDeliveryType getAppDeliveryTypeByValue(String value) {
         for (AppDeliveryType appDeliveryType : AppDeliveryType.values()) {
             if (value == appDeliveryType.getValue()) {
@@ -34,5 +26,13 @@ public enum AppDeliveryType {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

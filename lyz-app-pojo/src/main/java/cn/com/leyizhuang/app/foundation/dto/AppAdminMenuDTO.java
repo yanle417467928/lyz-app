@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 /**
  * @author Richard
- *         Created on 2017/6/27.
+ * Created on 2017/6/27.
  */
 @Getter
 @Setter

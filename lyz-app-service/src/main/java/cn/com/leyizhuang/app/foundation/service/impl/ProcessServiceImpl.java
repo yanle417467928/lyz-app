@@ -67,7 +67,7 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public void saveProcessAndGoods(Long pID, Long gID) {
-        processDAO.saveProcessAndGoods(pID,gID);
+        processDAO.saveProcessAndGoods(pID, gID);
     }
 
     @Override

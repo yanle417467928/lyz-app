@@ -138,13 +138,13 @@
                 var data = {};
 
                 $.each(origin, function () {
-                    if(null != this.value && "" != this.value){
+                    if (null != this.value && "" != this.value) {
                         data[this.name] = this.value;
                     }
                 });
-                var reslist=$("#role").select2("data");
-                var roleIds=[];
-                $.each(reslist,function() {
+                var reslist = $("#role").select2("data");
+                var roleIds = [];
+                $.each(reslist, function () {
                     roleIds.push(this.id);
                 });
                 data["roleIdsStr"] = roleIds;
@@ -283,7 +283,7 @@
                                             data-placeholder="请为用户分配角色" style="width: 100%;" id="role" name="role">
                                     <#if roleList??>
                                         <#list roleList as item>
-                                            <option value="${item.id}" >${item.name}</option>
+                                            <option value="${item.id}">${item.name}</option>
                                         </#list>
                                     </#if>
                                     </select>
@@ -292,20 +292,20 @@
                         </div>
                     </div>
                     <div class="row">
-                        <#--<div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label for="type">
-                                    用户密码
-                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                       data-content="请填写用户密码，如不填，默认123456"></i>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="password" type="text" class="form-control" id="password"
-                                           placeholder="用户密码">
-                                </div>
+                    <#--<div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label for="type">
+                                用户密码
+                                <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                   data-content="请填写用户密码，如不填，默认123456"></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                <input name="password" type="text" class="form-control" id="password"
+                                       placeholder="用户密码">
                             </div>
-                        </div>-->
+                        </div>
+                    </div>-->
                         <div class="row">
                             <div class="col-md-6 col-xs-12">
                                 <div class="form-group" style="margin-left: 2%">

@@ -12,7 +12,7 @@ import java.util.List;
  * Created by caiyu on 2017/11/8.
  */
 @Service
-public class LeBiVariationLogServiceImpl implements LeBiVariationLogService{
+public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     @Autowired
     private LeBiVariationLogDAO leBiVariationLogDAO;
 
@@ -28,6 +28,6 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService{
 
     @Override
     public List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusID, Integer showType) {
-        return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusID,showType);
+        return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusID, showType);
     }
 }

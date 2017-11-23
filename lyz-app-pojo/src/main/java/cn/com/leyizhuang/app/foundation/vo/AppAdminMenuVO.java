@@ -14,7 +14,7 @@ import java.util.List;
  * App后台菜单视图模型
  *
  * @author Richard
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @Getter
 @Setter
@@ -36,15 +36,15 @@ public class AppAdminMenuVO implements Serializable {
     public final static AppAdminMenuVO transform(AppAdminMenuDO menuDO) {
         AppAdminMenuVO menuVO;
         if (null != menuDO) {
-        menuVO = new AppAdminMenuVO();
-        menuVO.setId(menuDO.getId());
-        menuVO.setTitle(menuDO.getTitle());
-        menuVO.setIconStyle(menuDO.getIconStyle());
-        menuVO.setLinkUri(menuDO.getLinkUri());
-        menuVO.setParentId(menuDO.getParentId());
-        menuVO.setType(menuDO.getType());
-        menuVO.setSortId(menuDO.getSortId());
-        menuVO.setReferenceTable(menuDO.getReferenceTable());
+            menuVO = new AppAdminMenuVO();
+            menuVO.setId(menuDO.getId());
+            menuVO.setTitle(menuDO.getTitle());
+            menuVO.setIconStyle(menuDO.getIconStyle());
+            menuVO.setLinkUri(menuDO.getLinkUri());
+            menuVO.setParentId(menuDO.getParentId());
+            menuVO.setType(menuDO.getType());
+            menuVO.setSortId(menuDO.getSortId());
+            menuVO.setReferenceTable(menuDO.getReferenceTable());
         } else {
             menuVO = null;
         }

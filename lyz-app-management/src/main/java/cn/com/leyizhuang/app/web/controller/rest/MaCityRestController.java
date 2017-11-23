@@ -19,7 +19,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping(value = MaCityRestController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = MaCityRestController.PRE_URL, produces = "application/json;charset=utf-8")
 public class MaCityRestController extends BaseRestController {
     protected final static String PRE_URL = "/rest/citys";
 
@@ -28,30 +28,32 @@ public class MaCityRestController extends BaseRestController {
     @Autowired
     private MaCityService maCityService;
 
-    /**城市信息分页查询
-     * @descripe
+    /**
+     * 城市信息分页查询
+     *
      * @param
      * @return
      * @throws
+     * @descripe
      * @author
      * @date 2017/11/3
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<CityVO> restCitysPageGird(Integer offset, Integer size, String keywords){
+    public GridDataVO<CityVO> restCitysPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CityVO> cityPage = this.maCityService.queryPageVO(page,size);
+        PageInfo<CityVO> cityPage = this.maCityService.queryPageVO(page, size);
         List<CityVO> citysList = cityPage.getList();
-        return new GridDataVO<CityVO>().transform(citysList,cityPage.getTotal());
+        return new GridDataVO<CityVO>().transform(citysList, cityPage.getTotal());
 
     }
 
     /**
-     * @title   根据ID查询城市信息
-     * @descripe
      * @param cityId
      * @return
      * @throws
+     * @title 根据ID查询城市信息
+     * @descripe
      * @author
      * @date 2017/11/3
      */
@@ -63,24 +65,24 @@ public class MaCityRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null, cityVO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cityVO);
         }
     }
 
 
     /**
-     * @title   查询城市列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 查询城市列表
+     * @descripe
      * @author
      * @date 2017/11/3
      */
     @GetMapping(value = "/findCitylist")
-    public List<CityVO> findCitysList(){
-        List<CityVO> citysList =  this.maCityService.findCitysList();
-        return  citysList ;
+    public List<CityVO> findCitysList() {
+        List<CityVO> citysList = this.maCityService.findCitysList();
+        return citysList;
     }
 
 }

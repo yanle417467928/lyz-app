@@ -16,7 +16,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class SelfTakeStoreResponse implements Serializable{
+public class SelfTakeStoreResponse implements Serializable {
 
     private static final long serialVersionUID = -8432769934421527145L;
     /**

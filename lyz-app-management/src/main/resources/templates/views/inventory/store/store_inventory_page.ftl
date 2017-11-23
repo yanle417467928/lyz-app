@@ -11,18 +11,18 @@
 <body>
 
 <section class="content-header">
-    <#if selectedMenu??>
-        <h1>${selectedMenu.resourceName!'??'}</h1>
-        <ol class="breadcrumb">
-            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-            <#if selectedMenu.parentResourceName??>
-                <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
-            </#if>
-            <li class="active">${selectedMenu.resourceName!'??'}</li>
-        </ol>
-    <#else>
-        <h1>加载中...</h1>
-    </#if>
+<#if selectedMenu??>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
+    <ol class="breadcrumb">
+        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
+        </#if>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
+    </ol>
+<#else>
+    <h1>加载中...</h1>
+</#if>
 </section>
 
 <section class="content">
@@ -30,7 +30,7 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                    <#--<button id="btn_add" type="button" class="btn btn-default">
+                <#--<button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
                     <button id="btn_edit" type="button" class="btn btn-default">
@@ -87,10 +87,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -109,7 +109,7 @@
             field: 'goodsName',
             title: '商品名称',
             align: 'center'
-        },{
+        }, {
             field: 'goodsCode',
             title: '商品编码',
             align: 'center'
@@ -123,22 +123,24 @@
             align: 'center'
         }]);
 
-       /* $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}');
-        });
+        /* $('#btn_add').on('click', function () {
+             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
+        ');
+                });
 
-        $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}')
-        });
+                $('#btn_edit').on('click', function() {
+                    $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
+        ')
+                });
 
-        $('#btn_delete').on('click', function() {
-            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-        });*/
+                $('#btn_delete').on('click', function() {
+                    $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
+                });*/
     });
 
     var $page = {
         information: {
-            show: function(id) {
+            show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -195,7 +197,7 @@
                     })
                 }
             },
-            close: function() {
+            close: function () {
                 $('#information').modal('hide');
             }
         }

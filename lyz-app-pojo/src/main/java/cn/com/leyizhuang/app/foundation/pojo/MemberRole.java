@@ -7,7 +7,7 @@ import lombok.ToString;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/3/24.
+ * Created on 2017/3/24.
  * <section>会员角色信息表</section>
  */
 @Getter
@@ -16,6 +16,8 @@ import lombok.ToString;
 public class MemberRole extends BaseDO {
 
     private static final long serialVersionUID = -7689232560379303914L;
+    //会员角色名称
+    private String title;
 
     public MemberRole() {
         super();
@@ -25,8 +27,6 @@ public class MemberRole extends BaseDO {
         super();
         this.title = title;
     }
-    //会员角色名称
-    private String title;
 
 
 }

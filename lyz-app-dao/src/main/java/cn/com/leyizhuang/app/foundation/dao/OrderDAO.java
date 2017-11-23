@@ -20,24 +20,33 @@ import java.util.List;
 public interface OrderDAO {
 
     List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber);
+
     //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType);
+
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(@Param("orderNumber") String orderNumber);
+
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(@Param("orderNumber") String orderNumber);
+
     //计算获取订单所有商品数量
     Integer querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
+
     //模糊查询订单
-    List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType,@Param("condition") String condition);
+    List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType, @Param("condition") String condition);
 
     OrderBaseInfo findByOrderName(@Param("orderNumber") String outTradeNo);
+
     //获取订单头详情
     OrderBaseInfo getOrderDetail(@Param("orderNumber") String orderNumber);
+
     //获取订单收货/自提门店地址
     OrderLogisticsInfo getOrderLogistice(@Param("orderNumber") String orderNumber);
+
     //获取订单账目明细
     OrderBillingDetails getOrderBillingDetail(@Param("orderNumber") String orderNumber);
+
     //获取订单商品
     List<GiftListResponseGoods> getOrderGoodsDetails(@Param("orderNumber") String orderNumber);
 }

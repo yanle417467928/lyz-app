@@ -68,7 +68,7 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 positionType:{}", employeeDTO.getPosition());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型不在约定范围之内！", null);
             }
-            if(StringUtils.isBlank(employeeDTO.getCityNumber())){
+            if (StringUtils.isBlank(employeeDTO.getCityNumber())) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 cityNumber:{}", employeeDTO.getCityNumber());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工城市编码{cityNumber}不允许为空！", null);
             }
@@ -100,15 +100,15 @@ public class HqAppEmployeeController {
                 case "PSY":
                     employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
                     break;
-                case"ZSJL":
+                case "ZSJL":
                     employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
                     break;
-                case"ZSGR":
+                case "ZSGR":
                     employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
                     break;
             }
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
-            if (null == city){
+            if (null == city) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 city:{}", city);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
             }
@@ -137,6 +137,7 @@ public class HqAppEmployeeController {
 
     /**
      * 同步修改员工信息
+     *
      * @param employeeDTO
      * @return
      */
@@ -167,15 +168,15 @@ public class HqAppEmployeeController {
                 case "PSY":
                     employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
                     break;
-                case"ZSJL":
+                case "ZSJL":
                     employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
                     break;
-                case"ZSGR":
+                case "ZSGR":
                     employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
                     break;
             }
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
-            if (null == city){
+            if (null == city) {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 city:{}", city);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
             }
@@ -188,9 +189,9 @@ public class HqAppEmployeeController {
                 employeeService.updateByLoginName(employee);
                 logger.warn("同步修改员工信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("deleteEmployee EXCEPTION,同步修改员工信息失败，出参 resultDTO:{}",e);
+                logger.warn("deleteEmployee EXCEPTION,同步修改员工信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
             }
         }
@@ -200,21 +201,22 @@ public class HqAppEmployeeController {
 
     /**
      * 同步删除员工信息
+     *
      * @return
      */
     @PostMapping(value = "/delete")
     public ResultDTO<String> deleteEmployee(String loginName) {
         logger.warn("deleteEmployee CALLED,同步删除员工信息，入参 loginName:{}", loginName);
-        if (StringUtils.isBlank(loginName)){
+        if (StringUtils.isBlank(loginName)) {
             logger.warn("deleteStore OUT,同步删除员工信息失败，出参 loginName:{}", loginName);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工编号为空！", null);
         }
-        try{
+        try {
             employeeService.deleteByLoginName(loginName);
             logger.warn("同步删除员工信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }catch (Exception e){
-            logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}",e);
+        } catch (Exception e) {
+            logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除员工信息失败！", null);
 
         }

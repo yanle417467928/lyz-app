@@ -246,7 +246,7 @@ public class MaterialListController {
             return resultDTO;
         }
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
-            //创建返回对象
+        //创建返回对象
         MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
         Map<String, Object> returnMap = new HashMap<>(2);
         AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
@@ -271,8 +271,8 @@ public class MaterialListController {
 
             }
         }
-        if (identityType == 6 || identityType ==0){
-            List<MaterialListResponse> listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId,appIdentityType);
+        if (identityType == 6 || identityType == 0) {
+            List<MaterialListResponse> listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId, appIdentityType);
             if (listResponses != null) {
                 for (MaterialListResponse materialListResponse : listResponses) {
                     materialListResponse.setRetailPrice(0.00);
@@ -475,7 +475,7 @@ public class MaterialListController {
 
     @PostMapping(value = "/goods/delete", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> deleteMaterialListGoodsById(Long userId, Integer identityType,
-                                                         @RequestParam(value = "goodsIdArray", required = false) Long [] goodsIdArray) {
+                                                         @RequestParam(value = "goodsIdArray", required = false) Long[] goodsIdArray) {
         logger.info("deleteMaterialListGoodsById CALLED,删除下料清单商品，入参 userId:{} identityType:{} " +
                 "goodsIdArray:{}", userId, identityType, goodsIdArray);
 
@@ -497,18 +497,18 @@ public class MaterialListController {
         }
         List<Long> goodsIdList = Arrays.asList(goodsIdArray);
         this.materialListServiceImpl.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(userId,
-                AppIdentityType.getAppIdentityTypeByValue(identityType),goodsIdList);
+                AppIdentityType.getAppIdentityTypeByValue(identityType), goodsIdList);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         logger.info("deleteMaterialListGoodsById OUT,删除下料清单商品成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 
     /**
-     * @title   快捷下单加入下料清单
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 快捷下单加入下料清单
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/21
      */

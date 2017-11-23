@@ -9,9 +9,9 @@ import com.github.pagehelper.PageInfo;
  * App后台管理门店库存服务
  *
  * @author Richard
- *         Created on 2017-07-12 15:01
+ * Created on 2017-07-12 15:01
  **/
-public interface AppAdminStoreInventoryService extends BaseService<StoreInventory>{
+public interface AppAdminStoreInventoryService extends BaseService<StoreInventory> {
     PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size);
 
 

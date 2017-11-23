@@ -8,10 +8,6 @@ import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
@@ -35,14 +31,13 @@ import java.util.Map;
 public class AppStoreServiceImpl implements AppStoreService {
 
     private AppStoreDAO storeDAO;
+    @Autowired
+    private StorePreDepositLogService storePreDepositLogServiceImpl;
 
     @Autowired
     public void setStoreDAO(AppStoreDAO storeDAO) {
         this.storeDAO = storeDAO;
     }
-
-    @Autowired
-    private StorePreDepositLogService storePreDepositLogServiceImpl;
 
     @Override
     public List<AppStore> findAll() {
@@ -254,7 +249,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId) {
-        if (null != cityId){
+        if (null != cityId) {
             return storeDAO.findSelfTakePermittedStoreByCityId(cityId);
         }
         return null;

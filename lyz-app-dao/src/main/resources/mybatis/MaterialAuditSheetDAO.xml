@@ -28,57 +28,57 @@
 
     <select id="queryListByStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
         SELECT
-            AUDIT_HEADER_ID,
-            EMPLOYEE_ID,
-            EMPLOYEE_NAME,
-            DELIVERY_TYPE,
-            STORE_ID,
-            RECEIVER,
-            RECEIVER_PHONE,
-            DELIVERY_CITY,
-            DELIVERY_COUNTY,
-            DELIVERY_STREET,
-            RESIDENCE_NAME,
-            DETAILED_ADDRESS,
-            IS_OWNER_RECEIVING,
-            REMARK,
-            STATUS,
-            RESERVATION_DELIVERY_TIME,
-            CREATE_TIME,
-            AUDIT_NO,
-            AUDITOR_ID,
-            IS_AUDITED
+        AUDIT_HEADER_ID,
+        EMPLOYEE_ID,
+        EMPLOYEE_NAME,
+        DELIVERY_TYPE,
+        STORE_ID,
+        RECEIVER,
+        RECEIVER_PHONE,
+        DELIVERY_CITY,
+        DELIVERY_COUNTY,
+        DELIVERY_STREET,
+        RESIDENCE_NAME,
+        DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING,
+        REMARK,
+        STATUS,
+        RESERVATION_DELIVERY_TIME,
+        CREATE_TIME,
+        AUDIT_NO,
+        AUDITOR_ID,
+        IS_AUDITED
         FROM material_audit_sheet
         WHERE
-            STATUS = #{status}
+        STATUS = #{status}
         ORDER BY AUDIT_HEADER_ID DESC
     </select>
 
     <select id="queryListByEmployeeID" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
         SELECT
-            AUDIT_HEADER_ID,
-            EMPLOYEE_ID,
-            EMPLOYEE_NAME,
-            DELIVERY_TYPE,
-            STORE_ID,
-            RECEIVER,
-            RECEIVER_PHONE,
-            DELIVERY_CITY,
-            DELIVERY_COUNTY,
-            DELIVERY_STREET,
-            RESIDENCE_NAME,
-            DETAILED_ADDRESS,
-            IS_OWNER_RECEIVING,
-            REMARK,
-            STATUS,
-            RESERVATION_DELIVERY_TIME,
-            CREATE_TIME,
-            AUDIT_NO,
-            AUDITOR_ID,
-            IS_AUDITED
+        AUDIT_HEADER_ID,
+        EMPLOYEE_ID,
+        EMPLOYEE_NAME,
+        DELIVERY_TYPE,
+        STORE_ID,
+        RECEIVER,
+        RECEIVER_PHONE,
+        DELIVERY_CITY,
+        DELIVERY_COUNTY,
+        DELIVERY_STREET,
+        RESIDENCE_NAME,
+        DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING,
+        REMARK,
+        STATUS,
+        RESERVATION_DELIVERY_TIME,
+        CREATE_TIME,
+        AUDIT_NO,
+        AUDITOR_ID,
+        IS_AUDITED
         FROM material_audit_sheet
         WHERE
-            EMPLOYEE_ID = #{employeeID}
+        EMPLOYEE_ID = #{employeeID}
         ORDER BY CREATE_TIME DESC
     </select>
 
@@ -86,18 +86,18 @@
             useGeneratedKeys="true" keyProperty="auditHeaderID">
         INSERT INTO material_audit_sheet
         (EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
-         DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS,
-         IS_OWNER_RECEIVING, REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED)
+        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING, REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED)
         VALUES
-            (
-                #{employeeID}, #{employeeName},
-                               #{deliveryType,javaType=cn.com.leyizhuang.app.core.constant.AppDeliveryType,
-        typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                               #{storeID}, #{receiver}, #{receiverPhone},
-                               #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet}, #{residenceName},
-                               #{detailedAddress},
-                #{isOwnerReceiving}, #{remark}, #{status}, #{reservationDeliveryTime}, #{createTime}, #{auditNo},
-                #{auditorID}, #{isAudited})
+        (
+        #{employeeID}, #{employeeName},
+        #{deliveryType,javaType=cn.com.leyizhuang.app.core.constant.AppDeliveryType,
+typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{storeID}, #{receiver}, #{receiverPhone},
+        #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet}, #{residenceName},
+        #{detailedAddress},
+        #{isOwnerReceiving}, #{remark}, #{status}, #{reservationDeliveryTime}, #{createTime}, #{auditNo},
+        #{auditorID}, #{isAudited})
     </insert>
 
     <update id="modifyMaterialAuditSheet"
@@ -176,51 +176,51 @@
 
     <select id="queryByAuditNo" resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
         SELECT
-            AUDIT_HEADER_ID,
-            EMPLOYEE_ID,
-            EMPLOYEE_NAME,
-            DELIVERY_TYPE,
-            STORE_ID,
-            RECEIVER,
-            RECEIVER_PHONE,
-            DELIVERY_CITY,
-            DELIVERY_COUNTY,
-            DELIVERY_STREET,
-            RESIDENCE_NAME,
-            DETAILED_ADDRESS,
-            IS_OWNER_RECEIVING,
-            REMARK,
-            STATUS,
-            RESERVATION_DELIVERY_TIME,
-            CREATE_TIME,
-            AUDIT_NO,
-            AUDITOR_ID,
-            IS_AUDITED
+        AUDIT_HEADER_ID,
+        EMPLOYEE_ID,
+        EMPLOYEE_NAME,
+        DELIVERY_TYPE,
+        STORE_ID,
+        RECEIVER,
+        RECEIVER_PHONE,
+        DELIVERY_CITY,
+        DELIVERY_COUNTY,
+        DELIVERY_STREET,
+        RESIDENCE_NAME,
+        DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING,
+        REMARK,
+        STATUS,
+        RESERVATION_DELIVERY_TIME,
+        CREATE_TIME,
+        AUDIT_NO,
+        AUDITOR_ID,
+        IS_AUDITED
         FROM material_audit_sheet
         WHERE
-            AUDIT_NO = #{auditNumber}
+        AUDIT_NO = #{auditNumber}
     </select>
 
     <select id="queryDetailsByAuditNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse">
         SELECT
-            AUDIT_HEADER_ID,
-            RECEIVER,
-            RECEIVER_PHONE,
-            DELIVERY_CITY,
-            DELIVERY_COUNTY,
-            DELIVERY_STREET,
-            RESIDENCE_NAME,
-            DETAILED_ADDRESS,
-            IS_OWNER_RECEIVING,
-            REMARK,
-            STATUS,
-            RESERVATION_DELIVERY_TIME,
-            CREATE_TIME,
-            AUDIT_NO
+        AUDIT_HEADER_ID,
+        RECEIVER,
+        RECEIVER_PHONE,
+        DELIVERY_CITY,
+        DELIVERY_COUNTY,
+        DELIVERY_STREET,
+        RESIDENCE_NAME,
+        DETAILED_ADDRESS,
+        IS_OWNER_RECEIVING,
+        REMARK,
+        STATUS,
+        RESERVATION_DELIVERY_TIME,
+        CREATE_TIME,
+        AUDIT_NO
         FROM material_audit_sheet
         WHERE
-            AUDIT_NO = #{auditNo}
+        AUDIT_NO = #{auditNo}
     </select>
 
     <select id="queryListByEmployeeIDAndStatus"

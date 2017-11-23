@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class ProductCouponResponse implements Serializable{
+public class ProductCouponResponse implements Serializable {
 
 
     private static final long serialVersionUID = -210446196520449249L;

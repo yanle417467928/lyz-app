@@ -128,7 +128,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     public List<UserGoodsResponse> findGoodsCollectListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
-            return goodsDAO.findGoodsCollectListByUserIdAndIdentityType(userId,appIdentityType);
+            return goodsDAO.findGoodsCollectListByUserIdAndIdentityType(userId, appIdentityType);
         }
         return null;
     }
@@ -149,7 +149,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     public List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
-            return goodsDAO.findGoodsOftenListByUserIdAndIdentityType(userId,appIdentityType);
+            return goodsDAO.findGoodsOftenListByUserIdAndIdentityType(userId, appIdentityType);
         }
         return null;
     }
@@ -173,7 +173,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
-            goodsDAO.saveCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
+            goodsDAO.saveCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId, goodsId, appIdentityType);
 
         }
 
@@ -184,7 +184,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
-            goodsDAO.deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId,goodsId,appIdentityType);
+            goodsDAO.deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType(userId, goodsId, appIdentityType);
 
         }
     }
@@ -208,14 +208,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    public List<UserGoodsResponse> filterGoods(Long userId,AppIdentityType type,String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId,
+    public List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type, String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId,
                                                String specification) {
         if ((null != firstCategoryCode || null != secondCategoryId || null != brandId || null != typeId ||
-                null != specification) && null != userId && null != type){
-            if (type.equals(AppIdentityType.CUSTOMER)){
-                return goodsDAO.filterGoodsCustomer(userId,firstCategoryCode,secondCategoryId,brandId,typeId,specification);
-            }else{
-                return goodsDAO.filterGoodsEmployee(userId,firstCategoryCode,secondCategoryId,brandId,typeId,specification);
+                null != specification) && null != userId && null != type) {
+            if (type.equals(AppIdentityType.CUSTOMER)) {
+                return goodsDAO.filterGoodsCustomer(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+            } else {
+                return goodsDAO.filterGoodsEmployee(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
             }
         }
         return null;
@@ -240,9 +240,9 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    public GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long id,Long cusId,Integer qty) {
-        if (null != id  && null != cusId) {
-            return goodsDAO.findGoodsPriceByProductCouponIdAndUserId(id,cusId,qty);
+    public GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long id, Long cusId, Integer qty) {
+        if (null != id && null != cusId) {
+            return goodsDAO.findGoodsPriceByProductCouponIdAndUserId(id, cusId, qty);
         }
         return null;
     }
@@ -255,25 +255,25 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Override
     public Boolean existGoodsBrandByGoodsIdAndBrandName(Long id, String brandName) {
         if (id != null && StringUtils.isNotBlank(brandName)) {
-            return goodsDAO.existGoodsBrandByGoodsIdAndBrandName(id,brandName);
+            return goodsDAO.existGoodsBrandByGoodsIdAndBrandName(id, brandName);
         }
         return null;
     }
 
     @Override
     public List<String> findCompanyFlagListById(List<Long> goodsIdList) {
-        if (null != goodsIdList && !goodsIdList.isEmpty()){
+        if (null != goodsIdList && !goodsIdList.isEmpty()) {
             return goodsDAO.findCompanyFlagListById(goodsIdList);
         }
         return null;
     }
 
     /**
-     * @title 获取商品详情
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取商品详情
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/29
      */

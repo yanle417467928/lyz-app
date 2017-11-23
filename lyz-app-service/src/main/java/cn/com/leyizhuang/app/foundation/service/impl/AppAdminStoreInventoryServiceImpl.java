@@ -17,21 +17,21 @@ import java.util.List;
  * 门店库存服务实现类
  *
  * @author Richard
- *         Created on 2017-07-12 15:06
+ * Created on 2017-07-12 15:06
  **/
 @Service
 public class AppAdminStoreInventoryServiceImpl extends BaseServiceImpl<StoreInventory> implements AppAdminStoreInventoryService {
+
+    @Autowired
+    private AppAdminStoreInventoryDAO storeInventoryDAO;
 
     public AppAdminStoreInventoryServiceImpl(BaseDAO<StoreInventory> baseDAO) {
         super(baseDAO);
     }
 
-    @Autowired
-    private AppAdminStoreInventoryDAO storeInventoryDAO;
-
     @Override
     public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
+        PageHelper.startPage(page, size);
         List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO();
         return new PageInfo<>(storeInventoryList);
     }

@@ -8,7 +8,7 @@ package cn.com.leyizhuang.app.core.constant;
  **/
 public enum AppCustomerType {
 
-    MEMBER("MEMBER","会员"),RETAIL("RETAIL","零售");
+    MEMBER("MEMBER", "会员"), RETAIL("RETAIL", "零售");
 
     private String value;
 
@@ -19,14 +19,6 @@ public enum AppCustomerType {
         this.description = description;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static AppCustomerType getAppCustomerTypeByValue(String value) {
         for (AppCustomerType appCustomerType : AppCustomerType.values()) {
             if (value == appCustomerType.getValue()) {
@@ -34,5 +26,13 @@ public enum AppCustomerType {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @Configuration
 public class SiteMeshConfiguration {

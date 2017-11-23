@@ -1,5 +1,5 @@
-$(function() {
-    $('.btn-cancel').on('click', function() {
+$(function () {
+    $('.btn-cancel').on('click', function () {
         history.go(-1);
     });
 
@@ -57,13 +57,13 @@ $(function() {
                 }
             },
         }
-    }).on('success.form.bv', function(e) {
+    }).on('success.form.bv', function (e) {
         e.preventDefault();
         var $form = $(e.target);
         var origin = $form.serializeArray();
         var data = {};
 
-        $.each(origin, function() {
+        $.each(origin, function () {
             data[this.name] = this.value;
         });
 
@@ -76,14 +76,14 @@ $(function() {
                 url: url,
                 method: 'POST',
                 data: data,
-                error: function() {
+                error: function () {
                     clearTimeout($global.timer);
                     $loading.close();
                     $global.timer = null;
                     $notify.danger('网络异常，请稍后重试或联系管理员');
                     $('#employeeFrom').bootstrapValidator('disableSubmitButtons', false);
                 },
-                success: function(result) {
+                success: function (result) {
                     if (0 === result.code) {
                         window.location.href = document.referrer;
                     } else {
@@ -169,7 +169,7 @@ $(function() {
                         url: '/rest/member/validator/mobile',
                         message: '该联系电话已经存在!',
                         delay: 500,
-                        data: function() {
+                        data: function () {
                             return {
                                 mobile: $('#mobile').val(),
                                 // id: $('#id').val()
@@ -179,13 +179,13 @@ $(function() {
                 }
             }
         }
-    }).on('success.form.bv', function(e) {
+    }).on('success.form.bv', function (e) {
         e.preventDefault();
         var $form = $(e.target);
         var origin = $form.serializeArray();
         var data = {};
 
-        $.each(origin, function() {
+        $.each(origin, function () {
             data[this.name] = this.value;
         });
 
@@ -204,14 +204,14 @@ $(function() {
                 url: url,
                 method: 'POST',
                 data: data,
-                error: function() {
+                error: function () {
                     clearTimeout($global.timer);
                     $loading.close();
                     $global.timer = null;
                     $notify.danger('网络异常，请稍后重试或联系管理员');
                     $('#member_add').bootstrapValidator('disableSubmitButtons', false);
                 },
-                success: function(result) {
+                success: function (result) {
                     if (0 === result.code) {
                         window.location.href = document.referrer;
                     } else {

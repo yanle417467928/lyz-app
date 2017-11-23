@@ -57,29 +57,30 @@ public class ShiroDbRealm extends AuthorizingRealm {
         userVO.setLoginName(token.getUsername());
         List<User> list = userService.selectByLoginName(userVO);
         //账号不存在
-        if (list == null ||list.isEmpty()){
+        if (list == null || list.isEmpty()) {
             return null;
         }
         User user = list.get(0);
         //账号未启用
-        if (user.getStatus()==false){
+        if (user.getStatus() == false) {
             throw new DisabledAccountException("账号未启用");
         }
         //读取用户的角色和url
-        Map<String,Set<String>> resourceMap = roleService.selectResourceMapByUserId(user.getUid());
+        Map<String, Set<String>> resourceMap = roleService.selectResourceMapByUserId(user.getUid());
         Set<String> urls = resourceMap.get("urls");
         Set<String> roles = resourceMap.get("roles");
-        ShiroUser shiroUser = new ShiroUser(user.getUid(),user.getLoginName(),user.getName(),urls);
+        ShiroUser shiroUser = new ShiroUser(user.getUid(), user.getLoginName(), user.getName(), urls);
         shiroUser.setRoles(roles);
-        return new SimpleAuthenticationInfo(shiroUser,user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()),getName());
+        return new SimpleAuthenticationInfo(shiroUser, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
     }
 
 
     /**
      * 清除用户缓存
+     *
      * @param shiroUser
      */
-    public void removeUserCache(ShiroUser shiroUser){
+    public void removeUserCache(ShiroUser shiroUser) {
         SimplePrincipalCollection principals = new SimplePrincipalCollection();
         principals.add(shiroUser, super.getName());
         super.clearCachedAuthorizationInfo(principals);
@@ -88,9 +89,10 @@ public class ShiroDbRealm extends AuthorizingRealm {
 
     /**
      * 清除用户缓存
+     *
      * @param loginName
      */
-    public void removeUserCache(String loginName){
+    public void removeUserCache(String loginName) {
         SimplePrincipalCollection principals = new SimplePrincipalCollection();
         principals.add(new ShiroUser(loginName), super.getName());
         super.clearCachedAuthorizationInfo(principals);

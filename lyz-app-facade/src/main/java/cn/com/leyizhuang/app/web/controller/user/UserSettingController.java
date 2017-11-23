@@ -560,6 +560,8 @@ public class UserSettingController {
         appCustomer.setCusId(userInformation.getUserId());
         appCustomer.setNickName(userInformation.getNikeName());
         appCustomer.setName(userInformation.getName());
+        appCustomer.setStoreId(userInformation.getStoreId());
+        appCustomer.setSalesConsultId(userInformation.getSalesConsultId());
         String birthday = userInformation.getBirthday();
         if (StringUtils.isNotBlank(birthday)) {
             appCustomer.setBirthday(DateUtil.parseDate(birthday));

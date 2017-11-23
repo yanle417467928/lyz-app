@@ -12,104 +12,104 @@ import java.util.Arrays;
 @Configuration
 // @AutoConfigureBefore(WebServiceConfiguration.class)
 public class DeployConfiguration {
-	
-	private final Logger LOG = LoggerFactory.getLogger(DeployConfiguration.class);
-	
-	@Value("${deploy.image-path}")
-	private String imagePath;
-	
-	@Value("${deploy.alipay.url}")
-	private String alipayReturnUrl;
-	
-	@Value("${deploy.alipay.async.url}")
-	private String alipayReturnUrlAsync;
-	
-	@Value("${deploy.wechat.async.url}")
-	private String wechatReturnUrlAsnyc;
-	
-	@Value("${deploy.oss.cdnHosts}")
-	private String[] cdnHosts;
 
-	@Value("${deploy.oss.folder}")
-	private String ossFolder;
+    private final Logger LOG = LoggerFactory.getLogger(DeployConfiguration.class);
 
-	@Value("${deploy.oss.bucket}")
-	private String ossBucket;
-	
-	@Bean
-	public ApplicationConstant applicationConstant() {
-		LOG.info("imagePath : {}", imagePath);
-		LOG.info("alipayReturnUrl : {}", alipayReturnUrl);
-		LOG.info("alipayReturnUrlAsync : {}", alipayReturnUrlAsync);
-		LOG.info("wechatReturnUrlAsnyc : {}", wechatReturnUrlAsnyc);
-		LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
-		LOG.info("ossFolder : {}", ossFolder);
-		LOG.info("ossBucket : {}", ossBucket);
+    @Value("${deploy.image-path}")
+    private String imagePath;
 
-		ApplicationConstant constant = new ApplicationConstant();
-		constant.setImagePath(imagePath);
-		constant.setAlipayReturnUrl(alipayReturnUrl);
-		constant.setAlipayReturnUrlAsnyc(alipayReturnUrlAsync);
-		constant.setWechatReturnUrlAsnyc(wechatReturnUrlAsnyc);
-		constant.setCdnHosts(cdnHosts);
-		constant.setOssFolder(ossFolder);
-		constant.setOssBucket(ossBucket);
-		return constant;
-	}
+    @Value("${deploy.alipay.url}")
+    private String alipayReturnUrl;
 
-	public String getImagePath() {
-		return imagePath;
-	}
+    @Value("${deploy.alipay.async.url}")
+    private String alipayReturnUrlAsync;
 
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
+    @Value("${deploy.wechat.async.url}")
+    private String wechatReturnUrlAsnyc;
 
-	public String getAlipayReturnUrl() {
-		return alipayReturnUrl;
-	}
+    @Value("${deploy.oss.cdnHosts}")
+    private String[] cdnHosts;
 
-	public void setAlipayReturnUrl(String alipayReturnUrl) {
-		this.alipayReturnUrl = alipayReturnUrl;
-	}
+    @Value("${deploy.oss.folder}")
+    private String ossFolder;
 
-	public String getAlipayReturnUrlAsync() {
-		return alipayReturnUrlAsync;
-	}
+    @Value("${deploy.oss.bucket}")
+    private String ossBucket;
 
-	public void setAlipayReturnUrlAsync(String alipayReturnUrlAsync) {
-		this.alipayReturnUrlAsync = alipayReturnUrlAsync;
-	}
+    @Bean
+    public ApplicationConstant applicationConstant() {
+        LOG.info("imagePath : {}", imagePath);
+        LOG.info("alipayReturnUrl : {}", alipayReturnUrl);
+        LOG.info("alipayReturnUrlAsync : {}", alipayReturnUrlAsync);
+        LOG.info("wechatReturnUrlAsnyc : {}", wechatReturnUrlAsnyc);
+        LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
+        LOG.info("ossFolder : {}", ossFolder);
+        LOG.info("ossBucket : {}", ossBucket);
 
-	public String getWechatReturnUrlAsnyc() {
-		return wechatReturnUrlAsnyc;
-	}
+        ApplicationConstant constant = new ApplicationConstant();
+        constant.setImagePath(imagePath);
+        constant.setAlipayReturnUrl(alipayReturnUrl);
+        constant.setAlipayReturnUrlAsnyc(alipayReturnUrlAsync);
+        constant.setWechatReturnUrlAsnyc(wechatReturnUrlAsnyc);
+        constant.setCdnHosts(cdnHosts);
+        constant.setOssFolder(ossFolder);
+        constant.setOssBucket(ossBucket);
+        return constant;
+    }
 
-	public void setWechatReturnUrlAsnyc(String wechatReturnUrlAsnyc) {
-		this.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
-	}
+    public String getImagePath() {
+        return imagePath;
+    }
 
-	public String[] getCdnHosts() {
-		return cdnHosts;
-	}
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
-	public void setCdnHosts(String[] cdnHosts) {
-		this.cdnHosts = cdnHosts;
-	}
+    public String getAlipayReturnUrl() {
+        return alipayReturnUrl;
+    }
 
-	public String getOssFolder() {
-		return ossFolder;
-	}
+    public void setAlipayReturnUrl(String alipayReturnUrl) {
+        this.alipayReturnUrl = alipayReturnUrl;
+    }
 
-	public void setOssFolder(String ossFolder) {
-		this.ossFolder = ossFolder;
-	}
+    public String getAlipayReturnUrlAsync() {
+        return alipayReturnUrlAsync;
+    }
 
-	public String getOssBucket() {
-		return ossBucket;
-	}
+    public void setAlipayReturnUrlAsync(String alipayReturnUrlAsync) {
+        this.alipayReturnUrlAsync = alipayReturnUrlAsync;
+    }
 
-	public void setOssBucket(String ossBucket) {
-		this.ossBucket = ossBucket;
-	}
+    public String getWechatReturnUrlAsnyc() {
+        return wechatReturnUrlAsnyc;
+    }
+
+    public void setWechatReturnUrlAsnyc(String wechatReturnUrlAsnyc) {
+        this.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
+    }
+
+    public String[] getCdnHosts() {
+        return cdnHosts;
+    }
+
+    public void setCdnHosts(String[] cdnHosts) {
+        this.cdnHosts = cdnHosts;
+    }
+
+    public String getOssFolder() {
+        return ossFolder;
+    }
+
+    public void setOssFolder(String ossFolder) {
+        this.ossFolder = ossFolder;
+    }
+
+    public String getOssBucket() {
+        return ossBucket;
+    }
+
+    public void setOssBucket(String ossBucket) {
+        this.ossBucket = ossBucket;
+    }
 }

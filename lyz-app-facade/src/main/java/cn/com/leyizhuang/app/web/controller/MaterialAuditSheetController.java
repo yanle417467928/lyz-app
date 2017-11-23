@@ -48,6 +48,7 @@ public class MaterialAuditSheetController {
 
     @Autowired
     private CommonService commonService;
+
     /**
      * 新增物料审核单
      *
@@ -240,7 +241,7 @@ public class MaterialAuditSheetController {
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
             if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0) {
-                for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList){
+                for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
                 }
                 materialAuditDetailsResponse.setTotalPrice(totalPrice);
@@ -407,8 +408,8 @@ public class MaterialAuditSheetController {
             return resultDTO;
         }
         try {
-            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID,2);
-            if (isOther){
+            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID, 2);
+            if (isOther) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在通过审核的料单", null);
                 logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -480,8 +481,8 @@ public class MaterialAuditSheetController {
         }
 
         try {
-            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID,identityType);
-            if (isOther){
+            Boolean isOther = materialListService.existOtherMaterialListByUserIdAndIdentityType(userID, identityType);
+            if (isOther) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在待支付的料单", null);
                 logger.info("transformMaterialList OUT,装饰公司项目经理审核通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -505,7 +506,7 @@ public class MaterialAuditSheetController {
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     //如果发现经理的下料清单中有相同的商品
                     MaterialListDO material = materialListService.findByUserIdAndIdentityTypeAndGoodsId(userID,
-                            appIdentityType ,materialAuditGoodsInfo.getGid());
+                            appIdentityType, materialAuditGoodsInfo.getGid());
                     //转化料单到经理的下料清单中
                     MaterialListDO materialListDO = transform(materialAuditGoodsInfo, userID, auditNo);
                     //有相同商品直接和料单的商品合并
@@ -516,7 +517,7 @@ public class MaterialAuditSheetController {
                     materialListSave.add(materialListDO);
                 }
                 //删掉已经合并的商品
-                materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(userID,appIdentityType,deleteGoodsIds);
+                materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(userID, appIdentityType, deleteGoodsIds);
                 //新增转化的料单
                 commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
 
@@ -537,7 +538,7 @@ public class MaterialAuditSheetController {
         }
     }
 
-    private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo,Long userID,String auditNo){
+    private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo, Long userID, String auditNo) {
 
         MaterialListDO materialListDO = new MaterialListDO();
 

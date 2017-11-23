@@ -6,19 +6,19 @@
         SELECT *
         FROM product_category
         WHERE parent_id = (SELECT pc.id
-                           FROM product_category pc
-                           WHERE pc.category_code = #{categoryCode})
+        FROM product_category pc
+        WHERE pc.category_code = #{categoryCode})
     </select>
 
     <select id="findSecondCategoryByFirstCategoryCodeAndStoreId" resultType="GoodsCategory">
         SELECT p.*
         FROM product_category p INNER JOIN store_category_relations s ON p.id = s.category_id
         WHERE
-            s.store_id = #{storeId}
-            AND
-            p.parent_id = (SELECT pc.id
-                           FROM product_category pc
-                           WHERE pc.category_code = #{categoryCode})
+        s.store_id = #{storeId}
+        AND
+        p.parent_id = (SELECT pc.id
+        FROM product_category pc
+        WHERE pc.category_code = #{categoryCode})
     </select>
 
 </mapper>

@@ -14,7 +14,7 @@ import java.util.Map;
  * 城市API实现
  *
  * @author Richard
- *         Created on 2017-09-21 14:25
+ * Created on 2017-09-21 14:25
  **/
 @Service
 public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
@@ -50,8 +50,8 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
 //    @Transactional
-    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory) {
-        if (null != userId && !cityInventory.isEmpty()){
+    public int lockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> cityInventory) {
+        if (null != userId && !cityInventory.isEmpty()) {
             if (identityType == 6) {
                 for (Long index : cityInventory.keySet()) {
                     int result = cityDAO.updateCityInventoryByCustomerIdAndIdentityTypeAndInventory(userId, index, cityInventory.get(index));
@@ -60,7 +60,7 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
                     }
                 }
             }
-            if (identityType == 2){
+            if (identityType == 2) {
                 for (Long index : cityInventory.keySet()) {
                     int result = cityDAO.updateCityInventoryByEmployeeIdAndIdentityTypeAndInventory(userId, index, cityInventory.get(index));
                     if (result == 0) {
@@ -74,14 +74,14 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
 //    @Transactional
-    public void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> cityInventory) {
-        if (null != userId && !cityInventory.isEmpty()){
+    public void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> cityInventory) {
+        if (null != userId && !cityInventory.isEmpty()) {
             if (identityType == 6) {
                 for (Long index : cityInventory.keySet()) {
                     cityDAO.updateCityInventoryByCustomerIdAndGoodsIdAndInventory(userId, index, cityInventory.get(index));
                 }
             }
-            if (identityType == 2){
+            if (identityType == 2) {
                 for (Long index : cityInventory.keySet()) {
                     cityDAO.updateCityInventoryByEmployeeIdAndGoodsIdAndInventory(userId, index, cityInventory.get(index));
                 }
@@ -101,7 +101,7 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
     public List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId) {
-        if (null != cityId){
+        if (null != cityId) {
             return cityDAO.findCityDeliveryTimeByCityId(cityId);
         }
         return null;

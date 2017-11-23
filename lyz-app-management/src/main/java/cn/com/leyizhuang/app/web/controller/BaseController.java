@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/18.
+ * Created on 2017/5/18.
  */
 public abstract class BaseController {
 
@@ -40,6 +40,7 @@ public abstract class BaseController {
 
     /**
      * 获取当前登录用户对象
+     *
      * @return {ShiroUser}
      */
     public ShiroUser getShiroUser() {

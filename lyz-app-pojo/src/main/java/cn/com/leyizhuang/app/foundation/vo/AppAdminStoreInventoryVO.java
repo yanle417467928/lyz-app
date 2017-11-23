@@ -8,8 +8,9 @@ import java.io.Serializable;
 
 /**
  * 电商App后台门店库存视图模型
+ *
  * @author Richard
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @Getter
 @Setter

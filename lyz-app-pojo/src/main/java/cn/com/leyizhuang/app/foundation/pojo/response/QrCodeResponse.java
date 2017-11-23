@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class QrCodeResponse implements Serializable{
+public class QrCodeResponse implements Serializable {
 
 
     private String smsCode;

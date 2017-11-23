@@ -15,7 +15,7 @@ import java.io.Serializable;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeLoginResponse implements Serializable{
+public class EmployeeLoginResponse implements Serializable {
 
     private static final long serialVersionUID = 768360299867556490L;
 

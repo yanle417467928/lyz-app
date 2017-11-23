@@ -29,11 +29,12 @@ public class StoreController {
 
     /**
      * 获取门店赞助金余额
+     *
      * @param userId
      * @return
      */
     @PostMapping(value = "/subvention/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreSubventionBalance(Long userId, Integer identityType){
+    public ResultDTO getStoreSubventionBalance(Long userId, Integer identityType) {
 
         logger.info("getStoreSubventionBalance CALLED,获取门店赞助金，入参 userId {},identityType{}", userId, identityType);
 
@@ -43,19 +44,19 @@ public class StoreController {
             logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType ) {
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空或没有权限",
                     null);
             logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            if(identityType == 2) {
+            if (identityType == 2) {
                 Double balance = appStoreService.findSubventionBalanceByUserId(userId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
                 logger.info("getStoreSubventionBalance OUT,获取门店赞助金成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
                         null);
                 logger.info("getStoreSubventionBalance OUT,获取门店赞助金失败，出参 resultDTO:{}", resultDTO);
@@ -72,11 +73,12 @@ public class StoreController {
 
     /**
      * 获取门店信用金余额
+     *
      * @param userId
      * @return
      */
     @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreCreditMoneyBalance(Long userId, Integer identityType){
+    public ResultDTO getStoreCreditMoneyBalance(Long userId, Integer identityType) {
 
         logger.info("getStoreCreditMoneyBalance CALLED,获取门店信用金，入参 userId {},identityType{}", userId, identityType);
 
@@ -98,7 +100,7 @@ public class StoreController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
                 logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
                         null);
                 logger.info("getStoreCreditMoneyBalance OUT,获取门店信用金失败，出参 resultDTO:{}", resultDTO);
@@ -115,7 +117,8 @@ public class StoreController {
 
     /**
      * 获取门店预存款余额
-     * @param  userId
+     *
+     * @param userId
      * @return
      */
     @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
@@ -141,7 +144,7 @@ public class StoreController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
                 logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else {
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
                         null);
                 logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);

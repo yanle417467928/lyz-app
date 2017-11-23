@@ -30,14 +30,14 @@
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
                     <button id="btn_add" type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <#--<button id="btn_delete" type="button" class="btn btn-default">-->
-                        <#--<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除-->
-                    <#--</button>-->
+                <#--<button id="btn_delete" type="button" class="btn btn-default">-->
+                <#--<span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除-->
+                <#--</button>-->
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -95,10 +95,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/company/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/company/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -114,34 +114,34 @@
             title: '装饰公司名称',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'code',
             title: '装饰公司编码',
             align: 'center'
-        },{
+        }, {
             field: 'address',
             title: '公司地址',
             align: 'center'
-        },{
+        }, {
             field: 'phone',
             align: 'center',
             title: '公司电话'
-        },{
+        }, {
             field: 'credit',
             title: '信用金余额',
             align: 'center'
-        },{
+        }, {
             field: 'promotionMoney',
             align: 'center',
             title: '赞助金余额'
-        },{
+        }, {
             field: 'walletMoney',
             align: 'center',
             title: '钱包金额'
@@ -165,11 +165,11 @@
             $grid.add('/view/company/edit/0?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/view/company/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/company', 'delete');
         });
     });

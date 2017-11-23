@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class FunctionalFeedbackServiceImpl implements FunctionalFeedbackService {
 
     private FunctionalFeedbackDAO functionalFeedbackDAO;
-    public FunctionalFeedbackServiceImpl(FunctionalFeedbackDAO functionalFeedbackDAO){
+
+    public FunctionalFeedbackServiceImpl(FunctionalFeedbackDAO functionalFeedbackDAO) {
         this.functionalFeedbackDAO = functionalFeedbackDAO;
     }
+
     @Override
     public FunctionalFeedbackDO save(FunctionalFeedbackDO functionalFeedbackDO) {
         functionalFeedbackDO.setCreatorInfoByBusiness("FunctionalFeedbackServiceImpl", "save");

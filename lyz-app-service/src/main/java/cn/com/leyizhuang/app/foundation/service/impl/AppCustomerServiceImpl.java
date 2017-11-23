@@ -43,15 +43,16 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public AppCustomer save(AppCustomer appCustomer) {
-        if(null != appCustomer){
+        if (null != appCustomer) {
             customerDAO.save(appCustomer);
             return appCustomer;
         }
         return null;
     }
+
     @Override
     public AppCustomer findByOpenId(String openId) {
-        if(null != openId && !"".equalsIgnoreCase(openId)){
+        if (null != openId && !"".equalsIgnoreCase(openId)) {
             return customerDAO.findByOpenId(openId);
         }
         return null;
@@ -59,7 +60,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public AppCustomer findByMobile(String phone) {
-        if(null != phone){
+        if (null != phone) {
             return customerDAO.findByMobile(phone);
         }
         return null;
@@ -68,14 +69,14 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void update(AppCustomer phoneUser) {
-        if (null != phoneUser){
+        if (null != phoneUser) {
             customerDAO.update(phoneUser);
         }
     }
 
     @Override
     public AppCustomer findById(Long cusId) {
-        if (null != cusId){
+        if (null != cusId) {
             return customerDAO.findById(cusId);
         }
         return null;
@@ -83,7 +84,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<CashCouponResponse> findCashCouponByCustomerId(Long userId) {
-        if(null != userId){
+        if (null != userId) {
             return customerDAO.findCashCouponByCustomerId(userId);
         }
         return null;
@@ -91,7 +92,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<ProductCouponResponse> findProductCouponByCustomerId(Long userId) {
-        if(null != userId){
+        if (null != userId) {
             return customerDAO.findProductCouponByCustomerId(userId);
         }
         return null;
@@ -99,9 +100,9 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType == 0){
-           List<AppCustomer> appCustomerList = customerDAO.findListBySalesConsultId(userId);
-           return CustomerListResponse.transform(appCustomerList);
+        if (null != userId && null != identityType && identityType == 0) {
+            List<AppCustomer> appCustomerList = customerDAO.findListBySalesConsultId(userId);
+            return CustomerListResponse.transform(appCustomerList);
         }
         return null;
     }
@@ -109,7 +110,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType) {
         if (StringUtils.isNotBlank(keywords) && null != userId && null != identityType && identityType == 0) {
-            List<AppCustomer> appCustomerList = customerDAO.searchBySalesConsultIdAndKeywords(userId,keywords);
+            List<AppCustomer> appCustomerList = customerDAO.searchBySalesConsultIdAndKeywords(userId, keywords);
             return CustomerListResponse.transform(appCustomerList);
         }
         return null;
@@ -118,7 +119,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void modifyCustomerInformation(UserSetInformationReq userInformation) {
-        if (null != userInformation){
+        if (null != userInformation) {
 //            customerDAO.update(transform(userInformation));
         }
     }
@@ -130,7 +131,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public Double findPreDepositBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType ==6){
+        if (null != userId && null != identityType && identityType == 6) {
             return customerDAO.findPreDepositBalanceByUserId(userId);
         }
         return null;
@@ -138,22 +139,22 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType ==6){
+        if (null != userId && null != identityType && identityType == 6) {
             return customerDAO.findLeBiQuantityByUserId(userId);
         }
         return null;
     }
 
     @Override
-    public CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId,Double goodsMoney) {
-        if (null != userId && null != goodsMoney){
+    public CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney) {
+        if (null != userId && null != goodsMoney) {
             Integer qty = customerDAO.findLeBiQuantityByUserId(userId);
-            Double rebate = CountUtil.div(qty,CustomerLeBi.ratio);
-            if (rebate >= goodsMoney){
+            Double rebate = CountUtil.div(qty, CustomerLeBi.ratio);
+            if (rebate >= goodsMoney) {
                 rebate = goodsMoney;
-                qty = (int)CountUtil.mul(goodsMoney,CustomerLeBi.ratio);
+                qty = (int) CountUtil.mul(goodsMoney, CustomerLeBi.ratio);
             }
-            return new CustomerLeBi(qty,rebate);
+            return new CustomerLeBi(qty, rebate);
         }
         return null;
     }
@@ -161,7 +162,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType ==6){
+        if (null != userId && null != identityType && identityType == 6) {
             customerDAO.updateLeBiQuantityByUserId(userId);
         }
     }
@@ -169,15 +170,15 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void modifyCustomerMobileByUserId(Long userId, String mobile) {
-        if (null != userId && StringUtils.isNotBlank(mobile)){
-            customerDAO.updateCustomerMobileByUserId(userId,mobile);
+        if (null != userId && StringUtils.isNotBlank(mobile)) {
+            customerDAO.updateCustomerMobileByUserId(userId, mobile);
         }
     }
 
     @Override
     @Transactional
     public void saveLeBi(CustomerLeBi leBi) {
-        if (null != leBi){
+        if (null != leBi) {
             customerDAO.saveLeBi(leBi);
         }
     }
@@ -185,23 +186,23 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void savePreDeposit(CustomerPreDeposit preDeposit) {
-        if (null != preDeposit){
+        if (null != preDeposit) {
             customerDAO.savePreDeposit(preDeposit);
         }
     }
 
     @Override
     public void updateLastSignTimeByCustomerId(Long cusId, Date date) {
-        if (null != cusId){
-            customerDAO.updateLastSignTimeByCustomerId(cusId,date);
+        if (null != cusId) {
+            customerDAO.updateLastSignTimeByCustomerId(cusId, date);
         }
     }
 
     @Override
     @Transactional
     public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
-        if (null != userId && null != customerDeposit){
-            return customerDAO.updateDepositByUserIdAndDeposit(userId,customerDeposit);
+        if (null != userId && null != customerDeposit) {
+            return customerDAO.updateDepositByUserIdAndDeposit(userId, customerDeposit);
         }
         return 0;
     }
@@ -209,15 +210,15 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
-        if (null != userId && null != lebiQty){
-            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId,lebiQty);
+        if (null != userId && null != lebiQty) {
+            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId, lebiQty);
         }
         return 0;
     }
 
     @Override
     public CustomerHomePageResponse findCustomerInfoByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return customerDAO.findCustomerInfoByUserId(userId);
         }
         return null;
@@ -225,63 +226,64 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     @Transactional
-    public int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon) {
-        if (null != userId && !productCoupon.isEmpty()){
-            for (Long index:productCoupon.keySet()) {
-              int result= customerDAO.updateProductCouponByUserIdAndProductCoupons(userId,index,productCoupon.get(index));
-              if (result ==0){
-                  return 0;
-              }
-            }
-        }
-        return 1;
-    }
-
-    @Override
-    @Transactional
-    public int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon) {
-        if (null != userId && !cashCoupon.isEmpty()){
-            for (Long index:cashCoupon.keySet()) {
-                int result= customerDAO.updateCashCouponByUserIdAndCashCoupons(userId,index,cashCoupon.get(index));
-                if (result ==0){
+    public int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon) {
+        if (null != userId && !productCoupon.isEmpty()) {
+            for (Long index : productCoupon.keySet()) {
+                int result = customerDAO.updateProductCouponByUserIdAndProductCoupons(userId, index, productCoupon.get(index));
+                if (result == 0) {
                     return 0;
                 }
             }
         }
         return 1;
     }
+
+    @Override
+    @Transactional
+    public int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long, Integer> cashCoupon) {
+        if (null != userId && !cashCoupon.isEmpty()) {
+            for (Long index : cashCoupon.keySet()) {
+                int result = customerDAO.updateCashCouponByUserIdAndCashCoupons(userId, index, cashCoupon.get(index));
+                if (result == 0) {
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+
     @Override
     @Transactional
     public void unlockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
-        if (null != userId && null != customerDeposit){
-            customerDAO.updateDepositByUserId(userId,customerDeposit);
+        if (null != userId && null != customerDeposit) {
+            customerDAO.updateDepositByUserId(userId, customerDeposit);
         }
     }
 
     @Override
     @Transactional
     public void unlockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
-        if (null != userId && null != lebiQty){
-            customerDAO.updateLeBiByUserIdAndQuantity(userId,lebiQty);
+        if (null != userId && null != lebiQty) {
+            customerDAO.updateLeBiByUserIdAndQuantity(userId, lebiQty);
         }
     }
 
     @Override
     @Transactional
-    public void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon) {
-        if (null != userId && !productCoupon.isEmpty()){
-            for (Long index:productCoupon.keySet()) {
-                customerDAO.updateProductCouponByUserIdAndGoodsIdAndProductCoupons(userId,index,productCoupon.get(index));
+    public void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon) {
+        if (null != userId && !productCoupon.isEmpty()) {
+            for (Long index : productCoupon.keySet()) {
+                customerDAO.updateProductCouponByUserIdAndGoodsIdAndProductCoupons(userId, index, productCoupon.get(index));
             }
         }
     }
 
     @Override
     @Transactional
-    public void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon) {
-        if (null != userId && !cashCoupon.isEmpty()){
-            for (Long index:cashCoupon.keySet()) {
-                customerDAO.updateCashCouponByUserIdAndGoodsIdAndCashCoupons(userId,index,cashCoupon.get(index));
+    public void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long, Integer> cashCoupon) {
+        if (null != userId && !cashCoupon.isEmpty()) {
+            for (Long index : cashCoupon.keySet()) {
+                customerDAO.updateCashCouponByUserIdAndGoodsIdAndCashCoupons(userId, index, cashCoupon.get(index));
             }
         }
     }
@@ -301,8 +303,8 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId, Double totalOrderAmount) {
-        if (null != customerId && null != totalOrderAmount){
-            return customerDAO.findCashCouponUseableByCustomerId(customerId,totalOrderAmount);
+        if (null != customerId && null != totalOrderAmount) {
+            return customerDAO.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
         }
         return null;
     }
@@ -313,11 +315,11 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     /**
-     * @title  充值加预存款和日志
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 充值加预存款和日志
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/21
      */
@@ -326,7 +328,7 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();
         CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(userId);
-        if (null == customerPreDeposit){
+        if (null == customerPreDeposit) {
             customerPreDeposit = new CustomerPreDeposit();
             customerPreDeposit.setBalance(money);
             customerPreDeposit.setCusId(userId);

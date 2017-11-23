@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * MEMBER_ATUH表对应的Mapper
  *
  * @author Richard
- *         Created on 2017-05-23 17:30
+ * Created on 2017-05-23 17:30
  **/
 @Repository
 public interface AppAdminMemberAuthDAO extends BaseDAO<MemberAuth> {

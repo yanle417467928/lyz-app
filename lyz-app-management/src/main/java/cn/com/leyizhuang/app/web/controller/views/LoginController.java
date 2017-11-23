@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @date：2015/10/1 14:51
  */
 @Controller
-public class LoginController{
+public class LoginController {
     @Autowired
     private ShiroDbRealm shiroDbRealm;
 
@@ -62,7 +62,7 @@ public class LoginController{
     @PostMapping("/login")
     @CsrfToken(remove = true)
     @ResponseBody
-    public Object loginPost(HttpServletRequest request, String username, String password, String captcha, 
+    public Object loginPost(HttpServletRequest request, String username, String password, String captcha,
             @RequestParam(value = "rememberMe", defaultValue = "1") Integer rememberMe) {
         logger.info("POST请求登录");
         // 改为全部抛出异常，避免ajax csrf token被刷新

@@ -11,14 +11,14 @@ import java.util.List;
  * App后台 门店库存管理DAO层
  *
  * @author Richard
- *         Created on 2017-05-08 14:38
+ * Created on 2017-05-08 14:38
  **/
 @Repository
 public interface AppAdminStoreInventoryDAO extends BaseDAO<StoreInventory> {
 
     List<StoreInventory> queryByStoreId(Long storeId);
-    List<AppAdminStoreInventoryVO> queryListVO();
 
+    List<AppAdminStoreInventoryVO> queryListVO();
 
 
 }

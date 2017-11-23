@@ -20,17 +20,17 @@
         }
     </style>
     <script type="text/javascript">
-        function changeStore(){
+        function changeStore() {
             var storeId = $("#store").val();
             $.ajax({
                 url: "/rest/member/change/store",
-                cache:false,
+                cache: false,
                 type: "post",
                 dataType: "json",
                 data: {"storeId": storeId},
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                 },
-                success: function(data) {
+                success: function (data) {
                     $("#salesConsult").html("");
                     $.each(data.sales_consult_list, function (i, val) {
                         $("#salesConsult").append("<option value='" + val.id + "'>" + val.consultName + "</option>");
@@ -39,22 +39,23 @@
                 }
             });
         }
+
         function changeSalesConsult() {
             var consultId = $("#salesConsult").val();
             $.ajax({
                 url: "/rest/member/change/consult",
-                cache:false,
+                cache: false,
                 type: "post",
                 dataType: "json",
                 data: {"consultId": consultId},
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                 },
-                success: function(data) {
+                success: function (data) {
                     $("#store").html("");
                     $.each(data.all_store_list, function (i, val) {
-                        if(val.id == data.storeId){
+                        if (val.id == data.storeId) {
                             $("#store").append("<option value='" + val.id + "' selected >" + val.storeName + "</option>");
-                        }else{
+                        } else {
                             $("#store").append("<option value='" + val.id + "'>" + val.storeName + "</option>");
                         }
 
@@ -112,10 +113,12 @@
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label>门店</label>
-                                <select class="form-control select" name="store" id="store" data-live-search="true" onchange="changeStore();">
+                                <select class="form-control select" name="store" id="store" data-live-search="true"
+                                        onchange="changeStore();">
                                 <#if store_list??>
                                     <#list store_list as item>
-                                        <option value="${item.id}" <#if item ?? && member ?? && item.id == member.store > selected</#if>>${item.storeName}</option>
+                                        <option value="${item.id}" <#if item ?? && member ?? && item.id == member.store >
+                                                selected</#if>>${item.storeName}</option>
                                     </#list>
                                 </#if>
                                 </select>
@@ -124,10 +127,12 @@
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label>专属导购</label>
-                                <select class="form-control select" name="salesConsult" id="salesConsult" data-live-search="true" onchange="changeSalesConsult();">
+                                <select class="form-control select" name="salesConsult" id="salesConsult"
+                                        data-live-search="true" onchange="changeSalesConsult();">
                                 <#if sales_consult_list??>
                                     <#list sales_consult_list as item>
-                                        <option value="${item.id}" <#if item.id == member.salesConsult > selected</#if>>${item.consultName}</option>
+                                        <option value="${item.id}" <#if item.id == member.salesConsult >
+                                                selected</#if>>${item.consultName}</option>
                                     </#list>
                                 </#if>
                                 </select>
@@ -205,7 +210,7 @@
                                         <label for="status">是否启用</label>
                                         <br>
                                         <input name="status" id="status" class="switch" type="checkbox"
-                                        <#if member.status?? && member.status>checked</#if>>
+                                               <#if member.status?? && member.status>checked</#if>>
                                     </div>
                                 </div>
                             </div>

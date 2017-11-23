@@ -37,22 +37,22 @@ public class StoreResponse {
         storeResponse.setStoreId(store.getStoreId());
         storeResponse.setStoreName(store.getStoreName());
 
-        if (null != store.getDetailedAddress()){
+        if (null != store.getDetailedAddress()) {
             String address = GenerateInfoUtils.generateString(true,
-                    store.getProvince(),store.getCity(),store.getArea(),store.getDetailedAddress());
+                    store.getProvince(), store.getCity(), store.getArea(), store.getDetailedAddress());
             storeResponse.setStoreAddress(address);
         }
         return storeResponse;
     }
 
-    public static List<StoreResponse> transform(List<AppStore> appStores){
+    public static List<StoreResponse> transform(List<AppStore> appStores) {
         List<StoreResponse> responseList;
-        if (!appStores.isEmpty()){
+        if (!appStores.isEmpty()) {
             responseList = new ArrayList<>(appStores.size());
             appStores.forEach(appStore -> responseList.add(transform(appStore)));
-        }else {
+        } else {
             responseList = new ArrayList<>(0);
         }
-         return responseList;
+        return responseList;
     }
 }

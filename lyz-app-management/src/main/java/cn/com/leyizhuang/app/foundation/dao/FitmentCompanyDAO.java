@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2017/9/19
  */
 @Repository
-public interface FitmentCompanyDAO extends BaseDAO<FitmentCompanyDO>{
+public interface FitmentCompanyDAO extends BaseDAO<FitmentCompanyDO> {
 
     List<FitmentCompanyDO> queryListByFrozen(Boolean frozen);
 

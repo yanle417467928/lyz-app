@@ -62,8 +62,8 @@ public class GoodsPriceVO {
         return goodsPriceVOList;
     }
 
-    public static final GoodsPriceVO transform(GoodsPrice goodsPrice){
-        if (null != goodsPrice){
+    public static final GoodsPriceVO transform(GoodsPrice goodsPrice) {
+        if (null != goodsPrice) {
             GoodsPriceVO goodsPriceVO = new GoodsPriceVO();
             goodsPriceVO.setId(goodsPrice.getGpid());
             goodsPriceVO.setGid(goodsPrice.getGid());
@@ -78,7 +78,7 @@ public class GoodsPriceVO {
 //            goodsPriceVO.setStartTime(goodsPrice.getStartTime());
 //            goodsPriceVO.setEndTime(goodsPrice.getEndTime());
             return goodsPriceVO;
-        }else{
+        } else {
             return null;
         }
     }

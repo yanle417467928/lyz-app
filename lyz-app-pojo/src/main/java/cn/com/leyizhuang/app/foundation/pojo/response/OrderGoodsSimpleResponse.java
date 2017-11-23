@@ -6,7 +6,8 @@ import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
- *确认订单页面简单商品信息响应
+ * 确认订单页面简单商品信息响应
+ *
  * @author Jerry.Ren
  * Date: 2017/11/1.
  * Time: 15:53.
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderGoodsSimpleResponse implements Serializable{
+public class OrderGoodsSimpleResponse implements Serializable {
 
     //商品ID
     private Long id;
@@ -28,7 +29,7 @@ public class OrderGoodsSimpleResponse implements Serializable{
     private String coverImageUri;
 
     //商品规格
-    private  String goodsSpecification;
+    private String goodsSpecification;
 
     //单位名称
     private String goodsUnit;

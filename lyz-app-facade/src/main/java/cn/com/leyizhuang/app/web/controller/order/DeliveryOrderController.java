@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Created with IntelliJ IDEA.
  * 配送单相关接口
+ *
  * @author Jerry.Ren
  * Date: 2017/11/8.
  * Time: 10:36.
@@ -22,7 +23,7 @@ public class DeliveryOrderController {
 
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> photoOrder(Long userId, Integer identityType){
+    public ResultDTO<Object> photoOrder(Long userId, Integer identityType) {
 
 
         return null;

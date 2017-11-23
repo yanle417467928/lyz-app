@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 public interface MaCustomerDAO {
     List<CustomerVO> findAllVO();

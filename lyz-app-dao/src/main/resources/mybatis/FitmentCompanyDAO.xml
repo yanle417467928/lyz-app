@@ -79,13 +79,13 @@
     </update>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.FitmentCompanyDO">
-      INSERT INTO FITMENT_COMPANY(
+        INSERT INTO FITMENT_COMPANY(
         CREATOR_ID, CREATOR_TYPE, CREATE_TIME, MODIFIER_ID, MODIFIER_TYPE, MODIFY_TIME,
         NAME, CODE, ADDRESS, PHONE, CREDIT, PROMOTION_MONEY, WALLET_MONEY, FROZEN
-      ) VALUES (
+        ) VALUES (
         #{creatorId}, #{creatorType}, #{createTime}, #{modifierId}, #{modifierType}, #{modifyTime},
         #{name}, #{code}, #{address}, #{phone}, #{credit}, #{promotionMoney}, #{walletMoney}, #{frozen}
-      )
+        )
     </insert>
 
 </mapper>

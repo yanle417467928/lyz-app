@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/4/29.
+ * Created on 2017/4/29.
  */
 @SpringBootApplication
 @EnableDruidDataSource

@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
  * 会员视图层~服务层传输实体模型
  *
  * @author Richard
- *         Created on 2017-05-23 14:20
+ * Created on 2017-05-23 14:20
  **/
 @Getter
 @Setter
@@ -26,7 +26,7 @@ public class AppAdminMemberDTO {
     private Long id;
 
     @NotNull(message = "必须选择会员所在城市")
-    @Length(max = 10,message = "城市名称不能超过10个汉字")
+    @Length(max = 10, message = "城市名称不能超过10个汉字")
     private String city;
 
     private Long storeId;
@@ -42,7 +42,7 @@ public class AppAdminMemberDTO {
     private IdentityType identityType;
 
     @NotNull(message = "会员姓名不能为空")
-    @Length(min = 2,max = 10,message = "会员姓名的长度必须控制在2~10位")
+    @Length(min = 2, max = 10, message = "会员姓名的长度必须控制在2~10位")
     private String memberName;
 
     private String birthday;

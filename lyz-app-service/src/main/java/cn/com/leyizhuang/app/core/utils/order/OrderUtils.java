@@ -22,6 +22,11 @@ public class OrderUtils {
     private static CityService cityService;
 
 
+    @Autowired
+    public OrderUtils(CityService cityService) {
+        OrderUtils.cityService = cityService;
+    }
+
     public static CityService getCityService() {
         return cityService;
     }
@@ -31,27 +36,22 @@ public class OrderUtils {
         OrderUtils.cityService = cityService;
     }
 
-    @Autowired
-    public OrderUtils(CityService cityService) {
-        OrderUtils.cityService = cityService;
-    }
-
-    public static String generateOrderNumber(Long cityId){
-        if (null != cityId){
+    public static String generateOrderNumber(Long cityId) {
+        if (null != cityId) {
             City city = cityService.findById(cityId);
-            if (null != city && null != city.getBriefSpell()){
-                String orderNumber = city.getBriefSpell()+"_XN";
+            if (null != city && null != city.getBriefSpell()) {
+                String orderNumber = city.getBriefSpell() + "_XN";
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
                 String timeStamp = sdf.format(date);
-                orderNumber+=timeStamp;
+                orderNumber += timeStamp;
                 Random random = new Random();
-                String randomNumber = random.nextInt(900000) + 100000+"";
-                orderNumber+=randomNumber;
+                String randomNumber = random.nextInt(900000) + 100000 + "";
+                orderNumber += randomNumber;
                 System.out.println(orderNumber);
                 return orderNumber;
-            }else{
+            } else {
                 return null;
             }
         }
@@ -59,29 +59,29 @@ public class OrderUtils {
     }
 
     /**
-     * @title   生成充值单号
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 生成充值单号
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/22
      */
-    public static String generateRechargeNumber(Long cityId){
-        if (null != cityId){
+    public static String generateRechargeNumber(Long cityId) {
+        if (null != cityId) {
             City city = cityService.findById(cityId);
-            if (null != city && null != city.getBriefSpell()){
+            if (null != city && null != city.getBriefSpell()) {
                 String orderNumber = city.getBriefSpell();
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
                 String timeStamp = sdf.format(date);
-                orderNumber+=timeStamp;
+                orderNumber += timeStamp;
                 Random random = new Random();
-                String randomNumber = random.nextInt(900000) + 100000+"";
-                orderNumber+=randomNumber;
+                String randomNumber = random.nextInt(900000) + 100000 + "";
+                orderNumber += randomNumber;
                 return orderNumber;
-            }else{
+            } else {
                 return null;
             }
         }

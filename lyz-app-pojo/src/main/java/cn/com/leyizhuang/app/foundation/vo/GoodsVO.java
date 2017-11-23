@@ -38,7 +38,7 @@ public class GoodsVO {
     private String rotationImageUri;
 
     //商品规格
-    private  String goodsSpecification;
+    private String goodsSpecification;
 
     //单位名称
     private String goodsUnit;

@@ -33,7 +33,7 @@
                                          style="max-width: 70px;" alt="User Image">
                                 </div>
                                 <div class="pull-left info"
-                                    style="padding: 10px 5px 5px 15px; left: 90px;">
+                                     style="padding: 10px 5px 5px 15px; left: 90px;">
                                     <p style="color:black;">Alexander Pierce</p>
                                     <a class="btn btn-primary btn-xs" href="#">
                                         <i class="fa fa-cloud-upload"></i> 上传头像
@@ -93,7 +93,8 @@
                             <div class="form-group">
                                 <label for="mobile">联系电话</label>
                                 <div class="input-group">
-                                    <input name="mobile" type="text" class="form-control" id="mobile" placeholder="联系电话">
+                                    <input name="mobile" type="text" class="form-control" id="mobile"
+                                           placeholder="联系电话">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                 </div>
                             </div>
@@ -124,7 +125,7 @@
     </div>
 </section>
 <script>
-    $(function() {
+    $(function () {
         if (!$global.validateMobile()) {
             $('.select').selectpicker();
         }

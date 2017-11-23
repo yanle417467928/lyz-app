@@ -29,7 +29,7 @@ public class CustomerHomePageResponse implements Serializable {
     //所属导购
     private String guideName;
     //所属导购电话
-    private String  guideMobile;
+    private String guideMobile;
     //灯号
     private String light;
     //乐币数量

@@ -23,7 +23,7 @@ public class PreDepositLogResponse {
     //变更类型
     private String type;
 
-    public void setType(PreDepositChangeType type){
+    public void setType(PreDepositChangeType type) {
         this.type = type.getValue();
     }
 

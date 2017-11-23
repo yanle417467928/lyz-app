@@ -33,7 +33,7 @@ public class OrderDeliveryInfoDetails {
      */
     private String description;
     /**
-     *操作类型
+     * 操作类型
      */
     private String operationType;
     /**

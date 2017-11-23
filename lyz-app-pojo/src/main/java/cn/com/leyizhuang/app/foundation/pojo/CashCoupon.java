@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- *  现金优惠券
+ * 现金优惠券
  *
  * @author Richard
  * Created on 2017-09-19 11:00

@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
+ *
  * @author Jerry.Ren
  * Date: 2017/10/30.
  * Time: 18:17.
@@ -41,13 +42,13 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public Boolean existGoodsStoreInventory(Long storeId,Long gid,Integer qty) {
-        return  appStoreDAO.existGoodsStoreInventory(storeId,gid,qty);
+    public Boolean existGoodsStoreInventory(Long storeId, Long gid, Integer qty) {
+        return appStoreDAO.existGoodsStoreInventory(storeId, gid, qty);
     }
 
     @Override
     public Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty) {
-        return cityDAO.existGoodsCityInventory(cityId,gid,qty);
+        return cityDAO.existGoodsCityInventory(cityId, gid, qty);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition) {
-        return orderDAO.getFuzzyQuery(userID,AppIdentityType.getAppIdentityTypeByValue(identityType),condition);
+        return orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition);
     }
 
     @Override

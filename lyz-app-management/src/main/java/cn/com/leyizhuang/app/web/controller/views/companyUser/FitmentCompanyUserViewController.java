@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2017/9/20
  */
 @Controller
-@RequestMapping(value = FitmentCompanyUserViewController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = FitmentCompanyUserViewController.PRE_URL, produces = "application/json;charset=utf-8")
 public class FitmentCompanyUserViewController extends BaseController {
 
     protected final static String PRE_URL = "/view/companyUser";
@@ -51,7 +51,7 @@ public class FitmentCompanyUserViewController extends BaseController {
                 return "/error/404";
             } else {
                 FitmentCompanyUserVO fitCompanyUserVO = FitmentCompanyUserVO.transform(fitmentCompanyUserDO);
-                map.addAttribute("fitCompanyUserVO",fitCompanyUserVO);
+                map.addAttribute("fitCompanyUserVO", fitCompanyUserVO);
             }
         }
         List<FitmentCompanyDO> fitmentCompanyDOList = this.fitmentCompanyServiceImpl.queryListByFrozen(false);

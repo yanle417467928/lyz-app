@@ -19,6 +19,7 @@
             top: 0px;
             left: 0px;
         }
+
         /*::-moz-placeholder { color:  #99090f; }
         ::-webkit-input-placeholder { color:  #99090f; }
         :-ms-input-placeholder { color: #99090f; }*/
@@ -158,8 +159,8 @@
         <input type="text" name="account" class="username" placeholder="Account">
         <input type="password" name="password" class="password" placeholder="Password">
         <div style="text-align: center; margin-left: 10px;">
-            <label>记住密码？<input type="checkbox" checked  class="minimal" id="rememberMe"
-                          style="width: 20px; height: 20px;"></label>
+            <label>记住密码？<input type="checkbox" checked class="minimal" id="rememberMe"
+                               style="width: 20px; height: 20px;"></label>
         </div>
         <button type="button" id="login">登录</button>
         <button type="button" id="register" class="register">Register</button>

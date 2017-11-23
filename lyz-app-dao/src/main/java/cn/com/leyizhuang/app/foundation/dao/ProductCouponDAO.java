@@ -16,5 +16,5 @@ public interface ProductCouponDAO {
     List<OrderUsableProductCouponResponse> findProductCouponByCustomerIdAndGoodsId(
             @Param(value = "userId") Long userId, @Param("list") List<Long> goodsIds);
 
-    Long findGoodsIdByUserIdAndProductCouponId(@Param("userId") Long userId,@Param("pcId") Long pcId);
+    Long findGoodsIdByUserIdAndProductCouponId(@Param("userId") Long userId, @Param("pcId") Long pcId);
 }

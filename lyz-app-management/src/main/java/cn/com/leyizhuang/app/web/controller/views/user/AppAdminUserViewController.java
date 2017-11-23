@@ -26,7 +26,7 @@ import java.util.List;
  **/
 @Controller
 @RequestMapping("/views/admin/user")
-public class AppAdminUserViewController extends BaseController{
+public class AppAdminUserViewController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppAdminUserViewController.class);
 
@@ -46,18 +46,20 @@ public class AppAdminUserViewController extends BaseController{
 
     /**
      * 跳转到新增用户页面
+     *
      * @return
      */
     @GetMapping(value = "/add")
-    public String add(Model model){
+    public String add(Model model) {
         logger.info("新增用户");
         List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
-        model.addAttribute("roleList",roleList);
+        model.addAttribute("roleList", roleList);
         return "/views/user/user_add";
     }
 
     /**
      * 跳转到编辑用户页面
+     *
      * @param map
      * @param id
      * @return
@@ -73,9 +75,9 @@ public class AppAdminUserViewController extends BaseController{
             } else {
                 List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
                 List<Long> roleIds = userRoleService.findRoleIdsByUserId(id);
-                map.addAttribute("roleIds",roleIds);
-                map.addAttribute("roleList",roleList);
-                map.addAttribute("user",user);
+                map.addAttribute("roleIds", roleIds);
+                map.addAttribute("roleList", roleList);
+                map.addAttribute("user", user);
             }
         }
         return "/views/user/user_edit";

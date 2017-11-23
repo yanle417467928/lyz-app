@@ -45,9 +45,9 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public Long findGoodsIdByUserIdAndProductCouponId(Long userId,Long pcId) {
+    public Long findGoodsIdByUserIdAndProductCouponId(Long userId, Long pcId) {
         if (userId != null && pcId != null) {
-            return productCouponDAO.findGoodsIdByUserIdAndProductCouponId(userId,pcId);
+            return productCouponDAO.findGoodsIdByUserIdAndProductCouponId(userId, pcId);
         }
         return null;
     }

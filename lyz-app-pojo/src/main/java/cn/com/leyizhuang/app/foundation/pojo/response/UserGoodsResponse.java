@@ -31,7 +31,7 @@ public class UserGoodsResponse implements Serializable {
     private String coverImageUri;
 
     //商品规格
-    private  String goodsSpecification;
+    private String goodsSpecification;
 
     //单位名称
     private String goodsUnit;

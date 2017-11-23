@@ -35,7 +35,7 @@ public class GoodsDetailResponse {
 
     public static final GoodsDetailResponse transform(GoodsDetailResponse goodsDetailResponse, GoodsDO goodsDO) {
         if (null != goodsDO) {
-            if (null == goodsDetailResponse){
+            if (null == goodsDetailResponse) {
                 goodsDetailResponse = new GoodsDetailResponse();
             }
             String coverImageUri = goodsDO.getCoverImageUri();

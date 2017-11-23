@@ -1137,11 +1137,11 @@
             if (msg && $error.length) {
                 $error.html(self.errorCloseButton + msg);
                 self._handler($error.find('.kv-error-close'), 'click', function () {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (self.showPreview && !self.getFrames().length) {
                             self.clear();
                         }
-                        $error.fadeOut('slow');                    
+                        $error.fadeOut('slow');
                     }, 10);
                 });
             }
@@ -1379,7 +1379,7 @@
             $zone.attr('tabindex', -1);
             self._handler($zone, 'click', function (e) {
                 var $tar = $(e.target);
-                if (!$zone.find('.kv-fileinput-error:visible').length && 
+                if (!$zone.find('.kv-fileinput-error:visible').length &&
                     (!$tar.parents('.file-preview-thumbnails').length || $tar.parents('.file-default-preview').length)) {
                     self.$element.trigger('click');
                     $zone.blur();

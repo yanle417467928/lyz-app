@@ -20,6 +20,7 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Autowired
     private OrderDeliveryInfoDetailsDAO orderDeliveryInfoDetailsDAO;
+
     @Override
     public void addOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
         orderDeliveryInfoDetailsDAO.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
@@ -31,8 +32,8 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber) {
-        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNoAndOrderNumber(operatorNo,orderNumber);
+    public LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo, String orderNumber) {
+        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNoAndOrderNumber(operatorNo, orderNumber);
     }
 
     @Override
@@ -48,6 +49,6 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Override
     public List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime) {
-        return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID,createTime);
+        return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID, createTime);
     }
 }

@@ -23,16 +23,14 @@ import java.util.stream.Collectors;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @Controller
 @RequestMapping(value = AppAdminMenuViewController.PRE_URL, produces = "text/html;charset=utf-8")
 public class AppAdminMenuViewController extends BaseController {
 
-    protected final static String PRE_URL = "/views/admin/menu";
-
     public static final Logger LOGGER = LoggerFactory.getLogger(AppAdminMenuViewController.class);
-
+    protected final static String PRE_URL = "/views/admin/menu";
     @Autowired
     private AppAdminMenuService menuService;
 
@@ -47,69 +45,72 @@ public class AppAdminMenuViewController extends BaseController {
 
     /**
      * 跳转到添加菜单页面
+     *
      * @return
      */
     @GetMapping(value = "/add")
-    public String add(Model model){
+    public String add(Model model) {
         List<AppAdminMenuDO> menuDOList = menuService.queryByParentId(0L);
         List<AppAdminMenuVO> menuVOList = AppAdminMenuVO.transform(menuDOList);
-        model.addAttribute("menuVOList",menuVOList);
+        model.addAttribute("menuVOList", menuVOList);
         return "/views/menu/menu_add";
     }
 
     /**
      * 根据ID查询菜单，返回修改页面
-     * @param id    菜单ID
+     *
+     * @param id  菜单ID
      * @param map
      * @return
      */
     @GetMapping(value = "/select/{id}")
-    public String selectMenu(@PathVariable Long id,ModelMap map){
+    public String selectMenu(@PathVariable Long id, ModelMap map) {
         AppAdminMenuDO appAdminMenuDO = menuService.queryMenuById(id);
         String type = "";
-        if (appAdminMenuDO.getType().equals(AppAdminMenuType.PARENT)){
+        if (appAdminMenuDO.getType().equals(AppAdminMenuType.PARENT)) {
             type = "一级菜单";
-        }else {
+        } else {
             type = "二级菜单";
         }
 
         map.addAttribute(appAdminMenuDO);
-        map.addAttribute("type",type);
+        map.addAttribute("type", type);
         return "/views/menu/menu_update";
     }
 
 
     /**
      * 查看菜单详情方法，返回详情页面
-     * @param id    菜单ID
+     *
+     * @param id  菜单ID
      * @param map
      * @return
      */
     @RequestMapping(value = "/details/{id}")
-    public String menuDetails(@PathVariable Long id,ModelMap map){
+    public String menuDetails(@PathVariable Long id, ModelMap map) {
         AppAdminMenuDO appAdminMenuDO = menuService.queryMenuById(id);
         String type = "";
-        if (appAdminMenuDO.getType().equals(AppAdminMenuType.PARENT)){
+        if (appAdminMenuDO.getType().equals(AppAdminMenuType.PARENT)) {
             type = "一级菜单";
-        }else {
+        } else {
             type = "二级菜单";
         }
 
         map.addAttribute(appAdminMenuDO);
-        map.addAttribute("type",type);
+        map.addAttribute("type", type);
         return "/views/menu/menu_details";
     }
 
 
     @GetMapping(value = "/info/{id}")
-    public String menuInfo(HttpServletRequest request, ModelMap map, @PathVariable(value = "id")Long id) {
+    public String menuInfo(HttpServletRequest request, ModelMap map, @PathVariable(value = "id") Long id) {
         AppAdminMenuDO menuDO = menuService.queryById(id);
         map.addAttribute("menuDO", menuDO);
         return "/views/menu_info";
     }
 
     @GetMapping(value = "/edit/{id}")
-    public String menuEdit(ModelMap map, @PathVariable(value = "id")Long id) {
+    public String menuEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             AppAdminMenuDO menuDO = menuService.queryById(id);
             if (null == menuDO) {

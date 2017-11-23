@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class CityListResponse implements Serializable{
+public class CityListResponse implements Serializable {
 
     private Long cityId;
 

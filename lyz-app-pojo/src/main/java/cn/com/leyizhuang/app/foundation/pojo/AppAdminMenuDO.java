@@ -10,7 +10,7 @@ import lombok.ToString;
  * App后台管理导航菜单列表
  *
  * @author Richard
- *         Created on 2017-05-08 10:27
+ * Created on 2017-05-08 10:27
  **/
 
 @Getter
@@ -38,7 +38,6 @@ public class AppAdminMenuDO extends BaseDO {
     private AppAdminMenuType type;
     // 相关数据表
     private String referenceTable;
-
 
 
 }

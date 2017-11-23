@@ -16,14 +16,6 @@ public enum FunctionFeedBackType {
         this.description = description;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public static FunctionFeedBackType getFunctionFeedBackTypeByValue(String value) {
         for (FunctionFeedBackType functionFeedBackType : FunctionFeedBackType.values()) {
             if (value.equalsIgnoreCase(functionFeedBackType.getValue())) {
@@ -31,6 +23,14 @@ public enum FunctionFeedBackType {
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 

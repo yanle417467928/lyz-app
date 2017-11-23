@@ -6,7 +6,7 @@
         INSERT INTO functional_feedback
         (type, content, picture_url, phone, status, identity_type, user_id, create_time)
         VALUES
-            (
-                #{type}, #{content}, #{pictureUrl}, #{phone}, #{status}, #{identityType}, #{userId}, #{createTime})
+        (
+        #{type}, #{content}, #{pictureUrl}, #{phone}, #{status}, #{identityType}, #{userId}, #{createTime})
     </insert>
 </mapper>

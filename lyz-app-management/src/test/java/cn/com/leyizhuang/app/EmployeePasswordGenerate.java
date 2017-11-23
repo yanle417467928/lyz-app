@@ -16,7 +16,7 @@ public class EmployeePasswordGenerate {
         String salt = org.apache.commons.codec.digest.DigestUtils.md5Hex("XQ-000510" +
                 AppConstant.APP_USER_SALT);
         String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(password) + salt).getBytes());
-        System.out.println("salt:"+salt);
-        System.out.println("password:"+md5Password);
+        System.out.println("salt:" + salt);
+        System.out.println("password:" + md5Password);
     }
 }

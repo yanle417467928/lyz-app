@@ -1,16 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.city;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityDeliveryTimeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
-import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStoreResponse;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -21,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -141,7 +134,6 @@ public class CityController {
         }
 
     }
-
 
 
     public List<String> transformDeliveryTimeToString(List<CityDeliveryTime> deliveryTimeList) {

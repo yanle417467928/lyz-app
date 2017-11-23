@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @AllArgsConstructor
-public class CustomerBindingSellerResponse implements Serializable{
+public class CustomerBindingSellerResponse implements Serializable {
 
     private static final long serialVersionUID = -2021841116529083413L;
     //导购电话是否存在

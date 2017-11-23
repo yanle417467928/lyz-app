@@ -63,59 +63,59 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
 
     @Override
     @Transactional
-    public void addMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest,AppEmployee appEmployee) throws IOException {
-            //新增物料审核单头赋值
-            MaterialAuditSheet materialAuditSheet = materialAuditSheetRequestToMaterialAuditSheet(materialAuditSheetRequest);
-            materialAuditSheet.setEmployeeName(appEmployee.getName());
-            materialAuditSheet.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
-            materialAuditSheet.setStoreID(appEmployee.getStoreId());
-            materialAuditSheet.setStatus(1);
-            materialAuditSheet.setIsAudited(false);
-            String auditNumber = this.createNumber();
-            materialAuditSheet.setAuditNo(auditNumber);
-            materialAuditSheet.setCreateTime(LocalDateTime.now());
-            //保存物料审核单头
-            materialAuditSheetDAO.addMaterialAuditSheet(materialAuditSheet);
+    public void addMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest, AppEmployee appEmployee) throws IOException {
+        //新增物料审核单头赋值
+        MaterialAuditSheet materialAuditSheet = materialAuditSheetRequestToMaterialAuditSheet(materialAuditSheetRequest);
+        materialAuditSheet.setEmployeeName(appEmployee.getName());
+        materialAuditSheet.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+        materialAuditSheet.setStoreID(appEmployee.getStoreId());
+        materialAuditSheet.setStatus(1);
+        materialAuditSheet.setIsAudited(false);
+        String auditNumber = this.createNumber();
+        materialAuditSheet.setAuditNo(auditNumber);
+        materialAuditSheet.setCreateTime(LocalDateTime.now());
+        //保存物料审核单头
+        materialAuditSheetDAO.addMaterialAuditSheet(materialAuditSheet);
 
 
-            //获取物料审核单id
-            Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
-            //获取商品相关信息（id，数量，是否赠品）
-            ObjectMapper objectMapper = new ObjectMapper();
-            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
-            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
-            for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
-                //根据商品id查找对应的商品
-                GoodsDO goodsDO = goodsService.queryById(goodsSimpleInfo.getId());
-                MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
-                //对物料审核单商品详情请进行赋值
-                materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
-                materialAuditGoodsInfo.setGid(goodsSimpleInfo.getId());
-                materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-                materialAuditGoodsInfo.setQty(goodsSimpleInfo.getNum());
-                materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
-                materialAuditGoodsInfo.setSku(goodsDO.getSku());
-                materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
-                //获取商品零售价
-                Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(goodsSimpleInfo.getId(), appEmployee.getStoreId());
-                materialAuditGoodsInfo.setRetailPrice(goodsPrice);
-                //对物料审核单商品详情进行保存
-                materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
-            }
+        //获取物料审核单id
+        Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
+        //获取商品相关信息（id，数量，是否赠品）
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+        List<GoodsSimpleInfo> goodsList = objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
+        for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
+            //根据商品id查找对应的商品
+            GoodsDO goodsDO = goodsService.queryById(goodsSimpleInfo.getId());
+            MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
+            //对物料审核单商品详情请进行赋值
+            materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
+            materialAuditGoodsInfo.setGid(goodsSimpleInfo.getId());
+            materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
+            materialAuditGoodsInfo.setQty(goodsSimpleInfo.getNum());
+            materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
+            materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
+            materialAuditGoodsInfo.setSku(goodsDO.getSku());
+            materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+            //获取商品零售价
+            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(goodsSimpleInfo.getId(), appEmployee.getStoreId());
+            materialAuditGoodsInfo.setRetailPrice(goodsPrice);
+            //对物料审核单商品详情进行保存
+            materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
+        }
 
-            //工人料单提交审核之后，需要清空工人下料清单中对应的商品
-            List<Long> deleteGoodsIds = new ArrayList<>();
-            for (GoodsSimpleInfo simpleInfo:goodsList){
-                deleteGoodsIds.add(simpleInfo.getId());
-            }
+        //工人料单提交审核之后，需要清空工人下料清单中对应的商品
+        List<Long> deleteGoodsIds = new ArrayList<>();
+        for (GoodsSimpleInfo simpleInfo : goodsList) {
+            deleteGoodsIds.add(simpleInfo.getId());
+        }
 
-            materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(appEmployee.getEmpId(),
-                    appEmployee.getIdentityType(),deleteGoodsIds);
+        materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsId(appEmployee.getEmpId(),
+                appEmployee.getIdentityType(), deleteGoodsIds);
 
     }
 
-    public MaterialAuditSheet materialAuditSheetRequestToMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest){
+    public MaterialAuditSheet materialAuditSheetRequestToMaterialAuditSheet(MaterialAuditSheetRequest materialAuditSheetRequest) {
         MaterialAuditSheet materialAuditSheet = new MaterialAuditSheet();
         materialAuditSheet.setEmployeeID(materialAuditSheetRequest.getUserID());
         materialAuditSheet.setReceiver(materialAuditSheetRequest.getReceiver());
@@ -129,7 +129,7 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
         materialAuditSheet.setRemark(materialAuditSheetRequest.getRemark());
         //把String类型时间转换为LocalDateTime类型
         materialAuditSheet.setReservationDeliveryTime(materialAuditSheetRequest.getReservationDeliveryTime());
-        return  materialAuditSheet;
+        return materialAuditSheet;
     }
 
     @Override
@@ -138,8 +138,8 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
     }
 
     @Override
-    public void modifyStatus(int status,String auditNumber) {
-        materialAuditSheetDAO.modifyStatus(status,auditNumber);
+    public void modifyStatus(int status, String auditNumber) {
+        materialAuditSheetDAO.modifyStatus(status, auditNumber);
     }
 
     @Override
@@ -154,19 +154,19 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
 
     @Override
     public List<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status) {
-        return materialAuditSheetDAO.queryListByEmployeeIDAndStatus(employeeID,status);
+        return materialAuditSheetDAO.queryListByEmployeeIDAndStatus(employeeID, status);
     }
 
     @Override
     public List<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status) {
-        return materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID,status);
+        return materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID, status);
     }
 
-        /**
-         * 生成物料审核单编号
-         *
-         * @return 返回编号
-         */
+    /**
+     * 生成物料审核单编号
+     *
+     * @return 返回编号
+     */
     public String createNumber() {
         //定义时间格式
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping(value= MaCustomerViewsController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = MaCustomerViewsController.PRE_URL, produces = "application/json;charset=utf-8")
 public class MaCustomerViewsController extends BaseController {
 
     protected final static String PRE_URL = "/views/admin/customers";
@@ -18,12 +18,12 @@ public class MaCustomerViewsController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(MaCustomerViewsController.class);
 
     @RequestMapping(value = "/list")
-    public String getCityList(){
+    public String getCityList() {
         return "/views/customer/customer_page";
-}
+    }
 
     @RequestMapping(value = "/add")
-    public String add(Model model){
+    public String add(Model model) {
         logger.info("新增顾客");
         return "/views/customer/customer_add";
     }

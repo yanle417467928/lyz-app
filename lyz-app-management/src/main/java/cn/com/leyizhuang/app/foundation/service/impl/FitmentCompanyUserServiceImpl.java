@@ -86,9 +86,9 @@ public class FitmentCompanyUserServiceImpl extends BaseServiceImpl<FitmentCompan
         return fitmentCompanyUserDO;
     }
 
-    private UserVO transform1(FitmentCompanyUserDO fitmentCompanyUserDO){
+    private UserVO transform1(FitmentCompanyUserDO fitmentCompanyUserDO) {
         UserVO user = null;
-        if (null != fitmentCompanyUserDO){
+        if (null != fitmentCompanyUserDO) {
             user = new UserVO();
             user.setCreateTime(TimeTransformUtils.localDateTimeToDate(fitmentCompanyUserDO.getCreateTime()));
             user.setUserType(2);
@@ -97,9 +97,9 @@ public class FitmentCompanyUserServiceImpl extends BaseServiceImpl<FitmentCompan
             user.setAge(fitmentCompanyUserDO.getAge());
             user.setName(fitmentCompanyUserDO.getUserName());
             user.setPhone(fitmentCompanyUserDO.getMobile());
-            if (fitmentCompanyUserDO.getSex()){
+            if (fitmentCompanyUserDO.getSex()) {
                 user.setSex(SexType.MALE);
-            } else if (!fitmentCompanyUserDO.getSex()){
+            } else if (!fitmentCompanyUserDO.getSex()) {
                 user.setSex(SexType.FEMALE);
             } else {
                 user.setSex(SexType.SECRET);
@@ -114,12 +114,12 @@ public class FitmentCompanyUserServiceImpl extends BaseServiceImpl<FitmentCompan
 
         User user = null;
         UserVO userVO = null;
-        if (null != fitmentCompanyUserDO){
+        if (null != fitmentCompanyUserDO) {
             user = new User();
             userVO = new UserVO();
-            if (null != fitmentCompanyUserDO.getId() || fitmentCompanyUserDO.getId() != 0){
+            if (null != fitmentCompanyUserDO.getId() || fitmentCompanyUserDO.getId() != 0) {
                 FitmentCompanyUserDO fitmentCompanyUserDO1 = this.fitmentCompanyUserDAO.queryById(fitmentCompanyUserDO.getId());
-                if (null != fitmentCompanyUserDO1){
+                if (null != fitmentCompanyUserDO1) {
                     userVO.setLoginName(fitmentCompanyUserDO1.getMobile());
                 }
             }

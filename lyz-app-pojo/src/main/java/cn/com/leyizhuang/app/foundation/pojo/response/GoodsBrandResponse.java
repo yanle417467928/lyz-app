@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class GoodsBrandResponse implements Serializable{
+public class GoodsBrandResponse implements Serializable {
 
     private Long brandId;
 

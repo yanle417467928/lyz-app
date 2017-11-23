@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class MaStoreServiceImp implements MaStoreService {
 
@@ -24,39 +25,39 @@ public class MaStoreServiceImp implements MaStoreService {
     }
 
     @Override
-    public List<StoreVO> findStoreList(){
+    public List<StoreVO> findStoreList() {
         List<StoreVO> allStoreList = this.mastoreDAO.findAllVO();
-        return  allStoreList;
+        return allStoreList;
     }
 
     @Override
-    public List<StoreVO> findStoresListByCityId(Long cityId){
+    public List<StoreVO> findStoresListByCityId(Long cityId) {
         List<StoreVO> storeList = this.mastoreDAO.findStoresListByCityId(cityId);
-        return  storeList;
+        return storeList;
     }
 
     @Override
-    public StoreVO queryStoreVOById(Long storeId){
+    public StoreVO queryStoreVOById(Long storeId) {
         StoreVO storeVO = this.mastoreDAO.findStoresVOById(storeId);
-        return  storeVO;
+        return storeVO;
     }
 
     @Override
-    public PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size,Long cityId) {
+    public PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId) {
         PageHelper.startPage(page, size);
         List<StoreVO> pageStoreList = this.mastoreDAO.queryStoreListByCityId(cityId);
         return new PageInfo<>(pageStoreList);
     }
 
     @Override
-    public PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size,Boolean enabled,Long cityId) {
+    public PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size, Boolean enabled, Long cityId) {
         PageHelper.startPage(page, size);
-        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByEnable(enabled,cityId);
+        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByEnable(enabled, cityId);
         return new PageInfo<>(pageStoreList);
     }
 
     @Override
-    public PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo) {
+    public PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size, String queryStoreInfo) {
         PageHelper.startPage(page, size);
         List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByStoreInfo(queryStoreInfo);
         return new PageInfo<>(pageStoreList);
