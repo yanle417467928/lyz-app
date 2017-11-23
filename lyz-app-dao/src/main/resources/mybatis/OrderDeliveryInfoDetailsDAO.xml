@@ -12,6 +12,18 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="queryByOrderNumberAndOperatorNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        SELECT
+        *
+        FROM ord_delivery_info_details
+        WHERE
+        order_no = #{orderNumber}
+        AND
+        operator_no = #{operatorNumber}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
     <insert id="addOrderDeliveryInfoDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         INSERT INTO ord_delivery_info_details
