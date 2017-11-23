@@ -103,6 +103,23 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         AND e.manager_id = #{userId}
     </select>
 
+    <select id="searchBySalesConsultIdAndKeywords"
+            resultType="AppEmployee">
+        SELECT
+        e.emp_id,
+        e.name,
+        e.mobile,
+        e.pic_url,
+        e.create_time
+        FROM emp_employee e
+        WHERE e.identity_type = 'DECORATE_EMPLOYEE'
+        AND e.manager_id = #{userId}
+        AND (
+                  e.name LIKE concat('%', #{keywords}, '%')
+                  OR e.mobile LIKE concat('%', #{keywords}, '%')
+              )
+    </select>
+
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney">
         SELECT

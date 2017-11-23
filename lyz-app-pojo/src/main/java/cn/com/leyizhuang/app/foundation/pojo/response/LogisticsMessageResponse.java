@@ -20,4 +20,8 @@ public class LogisticsMessageResponse {
      * 推送时间
      */
     private String createTime;
+    /**
+     * 订单号
+     */
+    private String orderNumber;
 }

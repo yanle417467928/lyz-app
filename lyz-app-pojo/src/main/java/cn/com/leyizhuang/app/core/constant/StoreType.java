@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * 门店类型枚举
  *
@@ -8,7 +10,7 @@ package cn.com.leyizhuang.app.core.constant;
  **/
 public enum StoreType {
 
-    ZY("ZY", "直营门店"), JM("JM ", "加盟门店"), FX("FX", "分销公司"), ZS("ZS", "装饰公司");
+    ZY("ZY","直营门店"),JM("JM ","加盟门店"),FX("FX","分销公司"),ZS("ZS","装饰公司");
 
     private final String value;
     private final String description;
@@ -19,20 +21,20 @@ public enum StoreType {
         this.description = description;
     }
 
-    public static StoreType getStorerTypeByValue(String value) {
-        for (StoreType storeType : StoreType.values()) {
-            if (value == storeType.getValue()) {
-                return storeType;
-            }
-        }
-        return null;
-    }
-
     public String getValue() {
         return value;
     }
 
-    public String getDescription() {
+    public String getDescription(){
         return description;
+    }
+
+    public static StoreType getStorerTypeByValue(String value){
+        for(StoreType storeType : StoreType.values()){
+            if(Objects.equals(value, storeType.getValue())){
+                return storeType;
+            }
+        }
+        return null;
     }
 }

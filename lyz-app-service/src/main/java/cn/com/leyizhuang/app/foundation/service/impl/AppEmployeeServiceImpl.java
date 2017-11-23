@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
@@ -87,6 +88,15 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         if (null != userId && null != identityType && identityType == 2) {
             List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);
             return EmployeeListResponse.transform(appEmployeeList);
+        }
+        return null;
+    }
+
+    @Override
+    public List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType) {
+        if (StringUtils.isNotBlank(keywords) && null != userId && null != identityType && identityType == 2) {
+            List<AppEmployee> appCustomerList = employeeDAO.searchBySalesConsultIdAndKeywords(userId, keywords);
+            return EmployeeListResponse.transform(appCustomerList);
         }
         return null;
     }

@@ -49,7 +49,7 @@ public class OrderDeliveryInfoDetailsController {
             return resultDTO;
         }
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             //查询该订单所有物流状态
             List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber);
             //配送员编号
@@ -64,7 +64,7 @@ public class OrderDeliveryInfoDetailsController {
 
                 logisticsDetailResponseList.add(logisticsDetailResponse);
             }
-            LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber, orderNumber);
+            LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber,orderNumber);
             logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
@@ -81,13 +81,12 @@ public class OrderDeliveryInfoDetailsController {
 
     /**
      * 用户获取物流推送信息
-     *
-     * @param userID       用户id
-     * @param identityType 用户类型
-     * @return 返回信息列表
+     * @param userID    用户id
+     * @param identityType  用户类型
+     * @return  返回信息列表
      */
     @RequestMapping(value = "/message", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderLogisticsMessage(Long userID, Integer identityType) {
+    public ResultDTO<Object> getOrderLogisticsMessage(Long userID,Integer identityType){
         ResultDTO<Object> resultDTO;
         logger.info("getOrderLogisticsResponse CALLED,用户获取物流推送信息，入参 userID:{}, identityType:{}", userID, identityType);
 
@@ -103,27 +102,35 @@ public class OrderDeliveryInfoDetailsController {
         }
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //定义时间格式
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Calendar c = Calendar.getInstance();
-            c.add(Calendar.DATE, -7);
+            //计算7天前时间
+            c.add(Calendar.DATE, - 7);
+            //获取7天前的时间
             Date monday = c.getTime();
-            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.getLogisticsMessageByUserId(userID, monday);
+            //查询推送的物流细信息
+            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.getLogisticsMessageByUserId(userID,monday,identityType);
+            //创建返回list
             List<LogisticsMessageResponse> logisticsMessageResponseList = new ArrayList<>();
-            for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList) {
+            for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList){
+                //创建返回类
                 LogisticsMessageResponse logisticsMessageResponse = new LogisticsMessageResponse();
+                //设置
                 logisticsMessageResponse.setCreateTime(sdf.format(orderDeliveryInfoDetails.getCreateTime()));
-                if ("已封车".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())) {
-                    logisticsMessageResponse.setMessage("您的订单 " + orderDeliveryInfoDetails.getOrderNo() + "  商家已发货！");
-                } else if ("确认到货".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())) {
-                    logisticsMessageResponse.setMessage("您的订单 " + orderDeliveryInfoDetails.getOrderNo() + "  商家已确认到货！");
+                logisticsMessageResponse.setOrderNumber(orderDeliveryInfoDetails.getOrderNo());
+                if ("已封车".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())){
+                    logisticsMessageResponse.setMessage("您的订单 "+orderDeliveryInfoDetails.getOrderNo()+"  商家已发货！");
+                }else if ("确认到货".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())){
+                    logisticsMessageResponse.setMessage("您的订单 "+orderDeliveryInfoDetails.getOrderNo()+"  商家已确认到货！");
                 }
-
+                //讲返回类加入返回list中
                 logisticsMessageResponseList.add(logisticsMessageResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsMessageResponseList);
             logger.info("getOrderLogisticsResponse OUT,用户获取物流推送信息成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取物流推送信息失败", null);
             logger.warn("getOrderLogisticsResponse EXCEPTION,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);

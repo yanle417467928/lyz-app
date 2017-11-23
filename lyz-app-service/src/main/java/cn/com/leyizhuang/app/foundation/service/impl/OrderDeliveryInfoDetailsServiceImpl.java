@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
@@ -20,7 +21,6 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Autowired
     private OrderDeliveryInfoDetailsDAO orderDeliveryInfoDetailsDAO;
-
     @Override
     public void addOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
         orderDeliveryInfoDetailsDAO.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
@@ -32,8 +32,8 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo, String orderNumber) {
-        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNoAndOrderNumber(operatorNo, orderNumber);
+    public LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber) {
+        return orderDeliveryInfoDetailsDAO.getDeliveryByOperatorNoAndOrderNumber(operatorNo,orderNumber);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime) {
-        return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID, createTime);
+    public List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime , Integer identityType) {
+        return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID,createTime, AppIdentityType.getAppIdentityTypeByValue(identityType));
     }
 }

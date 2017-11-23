@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * APP顾客类型
  *
@@ -21,7 +23,7 @@ public enum AppCustomerType {
 
     public static AppCustomerType getAppCustomerTypeByValue(String value) {
         for (AppCustomerType appCustomerType : AppCustomerType.values()) {
-            if (value == appCustomerType.getValue()) {
+            if (Objects.equals(value, appCustomerType.getValue())) {
                 return appCustomerType;
             }
         }

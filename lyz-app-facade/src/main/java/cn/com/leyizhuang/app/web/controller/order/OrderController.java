@@ -115,7 +115,10 @@ public class OrderController {
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
             OrderBaseInfo tempOrder = new OrderBaseInfo();
+
             String orderNumber = OrderUtils.generateOrderNumber(1L);
+
+
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {
@@ -871,12 +874,12 @@ public class OrderController {
         try {
             //获取用户所有订单列表
             List<OrderBaseInfo> orderBaseInfoList = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType);
-            //创建有个存放图片地址的list
-            List<String> goodsImgList = new ArrayList<>();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
             //循环遍历订单列表
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                //创建有个存放图片地址的list
+                List<String> goodsImgList = new ArrayList<>();
                 //创建一个返回类
                 OrderListResponse orderListResponse = new OrderListResponse();
                 //获取订单商品
@@ -945,12 +948,12 @@ public class OrderController {
         try {
             //获取符合条件所有订单列表
             List<OrderBaseInfo> orderBaseInfoList = appOrderService.getFuzzyQuery(userID, identityType, condition);
-            //创建有个存放图片地址的list
-            List<String> goodsImgList = new ArrayList<>();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
             //循环遍历订单列表
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                //创建有个存放图片地址的list
+                List<String> goodsImgList = new ArrayList<>();
                 //创建一个返回类
                 OrderListResponse orderListResponse = new OrderListResponse();
                 //获取订单商品

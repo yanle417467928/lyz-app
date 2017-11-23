@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * 配送方式枚举
  *
@@ -21,7 +23,7 @@ public enum AppDeliveryType {
 
     public static AppDeliveryType getAppDeliveryTypeByValue(String value) {
         for (AppDeliveryType appDeliveryType : AppDeliveryType.values()) {
-            if (value == appDeliveryType.getValue()) {
+            if (Objects.equals(value, appDeliveryType.getValue())) {
                 return appDeliveryType;
             }
         }
