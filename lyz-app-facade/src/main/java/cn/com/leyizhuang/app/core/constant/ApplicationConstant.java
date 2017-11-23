@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.core.constant;
 
 import cn.com.leyizhuang.app.core.config.InterfaceConfigure;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ApplicationConstant {
 
     //从配置文件加载值的常量
@@ -91,8 +93,16 @@ public class ApplicationConstant {
     }
 
 
+    /**
+     * 不允许门店自提的公司标识
+     */
+    public static final String FORBIDDEN_SELF_TAKE_COMPANY_FLAG = "YR|LYZ";
 
-    public static final String FORBIDDEN_SELFT_TAKE_COMPANY_FLAG = "YR|LYZ";
+    /**
+     * 订单有效时间,按分钟计算
+     */
+
+    public static final int ORDER_EFFECTIVE_MINUTE = 60;
 
 
 

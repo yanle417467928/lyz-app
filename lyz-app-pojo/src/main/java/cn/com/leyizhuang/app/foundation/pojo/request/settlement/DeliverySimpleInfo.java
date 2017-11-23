@@ -21,37 +21,59 @@ import java.util.Date;
 @AllArgsConstructor
 public class DeliverySimpleInfo implements Serializable {
 
-    //配送方式
-    private AppDeliveryType deliveryType;
+    private static final long serialVersionUID = 6314671804291929229L;
+    /**
+     * 配送方式
+     */
+    private String deliveryType;
 
     /* ********************* 门店自提 *********************** */
 
-    //预约门店id
+    /**
+     *  预约门店id
+     */
     private String bookingStoreId;
-
-    //预约门店名称
+    /**
+     * 预约门店名称
+     */
     private String bookingStoreName;
-
-    //预约提货时间
-    private Date bookingTime;
+    /**
+     * 门店地址
+     */
+    private String storeAddress;
 
     /* ********************* 送货上门 ************************ */
-    //收货人姓名
+    /**
+     * 收货人姓名
+     */
     private String receiver;
-    //收货人电话
+    /**
+     * 收货人电话
+     */
     private String receiverPhone;
-    //收货城市
+    /**
+     *  收货城市
+     */
     private String deliveryCity;
-    //收货县
+    /**
+     * 收货县
+     */
     private String deliveryCounty;
-    //收货街道
+    /**
+     * 收货街道
+     */
     private String deliveryStreet;
-    //小区名
+    /**
+     * 小区名
+     */
     private String residenceName;
-    //收货详细地址
+    /**
+     *  收货详细地址
+     */
     private String detailedAddress;
-
-    //配送时间
+    /**
+     * 配送时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date deliveryTime;
 }

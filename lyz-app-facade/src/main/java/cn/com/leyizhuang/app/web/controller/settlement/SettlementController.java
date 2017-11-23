@@ -89,7 +89,7 @@ public class SettlementController {
         try {
             //商品id数组转化成list
             List<Long> goodsIdList = Arrays.asList(goodsIds);
-            String[] forbiddenSelfTakeCompany = ApplicationConstant.FORBIDDEN_SELFT_TAKE_COMPANY_FLAG.split("|");
+            String[] forbiddenSelfTakeCompany = ApplicationConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("|");
             List<String> forbiddenSelfTakeCompanyList = Arrays.asList(forbiddenSelfTakeCompany);
             List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIdList);
             SelfTakeStoreResponse response = new SelfTakeStoreResponse();

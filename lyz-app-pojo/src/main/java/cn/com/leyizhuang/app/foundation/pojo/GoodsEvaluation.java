@@ -42,7 +42,7 @@ public class GoodsEvaluation {
     /**
      * 评价人头像
      */
-    private String picUrl;
+    private String  picUrl;
     /**
      * 订单号
      */
