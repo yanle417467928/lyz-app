@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @RestController
 @RequestMapping(value = AppAdminMenuRestController.PRE_URL, produces = "application/json;charset=utf8")
@@ -44,12 +44,12 @@ public class AppAdminMenuRestController extends BaseRestController {
         PageInfo<AppAdminMenuDO> menuDOPage = menuService.queryPage(page, size);
         List<AppAdminMenuDO> menuDOList = menuDOPage.getList();
         List<AppAdminMenuVO> menuVOList = AppAdminMenuVO.transform(menuDOList);
-        return new GridDataVO<AppAdminMenuVO>().transform(menuVOList,menuDOPage.getTotal());
+        return new GridDataVO<AppAdminMenuVO>().transform(menuVOList, menuDOPage.getTotal());
     }
 
 
     @PostMapping(value = "/validator/title")
-    public ValidatorResultDTO restMenuValidatorTitlePost(@RequestParam Long id,@RequestParam String title){
+    public ValidatorResultDTO restMenuValidatorTitlePost(@RequestParam Long id, @RequestParam String title) {
         Boolean result = menuService.existsByTitleAndIdNot(title, id);
         return new ValidatorResultDTO(!result);
     }
@@ -65,7 +65,7 @@ public class AppAdminMenuRestController extends BaseRestController {
                     this.menuService.batchRemove(Arrays.asList(id));
                 }
             }
-             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (InvalidDataException e) {
             LOG.error("批量删除菜单数据发生错误");
             LOG.error(e.getMessage());
@@ -81,10 +81,10 @@ public class AppAdminMenuRestController extends BaseRestController {
 
     @PostMapping
     public ResultDTO<?> restMenuPost(AppAdminMenuDTO menuDTO, BindingResult result) {
-        if(!result.hasErrors()){
+        if (!result.hasErrors()) {
             menuService.add(menuDTO);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
-        }else{
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
             return actFor400(result);
         }
     }
@@ -112,7 +112,7 @@ public class AppAdminMenuRestController extends BaseRestController {
                     "指定数据不存在，请联系管理员", null);
         } else {
             AppAdminMenuVO menuVO = AppAdminMenuVO.transform(menuDO);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,menuVO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, menuVO);
         }
     }
 }

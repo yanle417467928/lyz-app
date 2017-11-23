@@ -80,22 +80,22 @@ public interface GoodsDAO {
     List<GoodsPrice> getGoodsPriceByEmployeeAndGoodsId(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
     List<UserGoodsResponse> filterGoodsCustomer(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
-                                                @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
+                                                @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
                                                 @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
     List<UserGoodsResponse> filterGoodsEmployee(@Param(value = "userId") Long userId, @Param(value = "firstCategoryCode") String firstCategoryCode,
-                                                @Param(value = "secondCategoryId") Long secondCategoryId,@Param(value = "brandId") Long brandId,
+                                                @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
                                                 @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
-    List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
+    List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
-    List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(@Param("userId") Long userId,@Param("list") List<Long> goodsIds);
+    List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
-    GoodsPrice findGoodsPriceByProductCouponIdAndUserId(@Param("cusId") Long cusId,@Param("pcId") Long pcId,@Param("qty") Integer qty);
+    GoodsPrice findGoodsPriceByProductCouponIdAndUserId(@Param("cusId") Long cusId, @Param("pcId") Long pcId, @Param("qty") Integer qty);
 
     GoodsDO queryBySku(@Param("sku") String sku);
 
-    Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id,@Param("brandName") String brandName);
+    Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id, @Param("brandName") String brandName);
 
     List<String> findCompanyFlagListById(@Param(value = "list") List<Long> goodsIdList);
 }

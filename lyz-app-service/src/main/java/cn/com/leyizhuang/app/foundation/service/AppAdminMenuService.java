@@ -12,9 +12,9 @@ import java.util.List;
  * App后台管理菜单服务
  *
  * @author Richard
- *         Created on 2017-05-08 14:23
+ * Created on 2017-05-08 14:23
  **/
-public interface AppAdminMenuService extends BaseService<AppAdminMenuDO>{
+public interface AppAdminMenuService extends BaseService<AppAdminMenuDO> {
     PageInfo<AppAdminMenuDO> queryPage(Integer page, Integer size);
 
     List<AppAdminMenuVO> loadAdminMenuTree();

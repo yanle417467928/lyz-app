@@ -21,20 +21,20 @@
     <script src="https://cdn.bootcss.com/admin-lte/2.3.11/js/app.min.js"></script>
 </head>
 <body>
-    <section class="content">
-        <div class="error-page">
-            <h2 class="headline text-yellow"> 404</h2>
-            <div class="error-content">
-                <h3><i class="fa fa-warning text-yellow"></i> 对不起，页面不存在</h3>
-                <p>
-                    非常抱歉，该资源可能已经被删除，点击下方按钮时光倒流
-                </p>
-                <form class="search-form">
-                    <div class="input-group">
-                        <a href="javascript:history.go(-1);" class="btn"><i class="fa fa-hand-o-right"></i> 点击返回</a>
-                    </div>
-                </form>
-            </div>
+<section class="content">
+    <div class="error-page">
+        <h2 class="headline text-yellow"> 404</h2>
+        <div class="error-content">
+            <h3><i class="fa fa-warning text-yellow"></i> 对不起，页面不存在</h3>
+            <p>
+                非常抱歉，该资源可能已经被删除，点击下方按钮时光倒流
+            </p>
+            <form class="search-form">
+                <div class="input-group">
+                    <a href="javascript:history.go(-1);" class="btn"><i class="fa fa-hand-o-right"></i> 点击返回</a>
+                </div>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 </body>

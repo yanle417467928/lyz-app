@@ -8,6 +8,7 @@ import java.util.Date;
 
 /**
  * 城市库存
+ *
  * @author liuh
  * create_time 2017-11-02 14:50:51
  */
@@ -21,7 +22,7 @@ public class CityInventory {
     // 城市id
     private Long cityId;
     // 城市编码
-    private String  city_code;
+    private String city_code;
     // 城市名称
     private String city_name;
     // 商品id

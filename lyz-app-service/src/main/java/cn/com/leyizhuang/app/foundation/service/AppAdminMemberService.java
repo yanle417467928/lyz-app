@@ -10,14 +10,18 @@ import com.github.pagehelper.PageInfo;
  * App后台管理会员服务
  *
  * @author Richard
- *         Created on 2017-05-09 9:52
+ * Created on 2017-05-09 9:52
  **/
 public interface AppAdminMemberService extends BaseService<Member> {
 
     PageInfo<AppAdminMemberVO> queryMemberVOPage(Integer page, Integer size);
+
     void modifyMemberInfo(AppAdminMemberVO memberVO);
+
     void updateUserAuth(MemberAuth memberAuth);
+
     MemberAuth queryAuthById(Long id);
+
     void saveMemberInfo(AppAdminMemberVO memberVO);
 
     AppAdminMemberVO queryMemberVOById(Long id);

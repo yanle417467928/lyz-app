@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/3/24.
+ * Created on 2017/3/24.
  * <section>会员鉴权信息表</section>
  */
 @Getter
@@ -18,20 +18,6 @@ import java.util.Date;
 public class MemberAuth extends BaseDO {
 
     private static final long serialVersionUID = 7068812928546792515L;
-
-    public MemberAuth() {
-    }
-
-    public MemberAuth(Long memberId, String username, String password,
-                        String mobile, String email, Boolean status, Date disableEndTime) {
-        this.memberId = memberId;
-        this.username = username;
-        this.password = password;
-        this.mobile = mobile;
-        this.email = email;
-        this.status = status;
-        this.disableEndTime = disableEndTime;
-    }
     //会员主键
     private Long memberId;
     //会员用户名
@@ -46,6 +32,18 @@ public class MemberAuth extends BaseDO {
     private Boolean status;
     //会员账号禁用结束时间
     private Date disableEndTime;
+    public MemberAuth() {
+    }
+    public MemberAuth(Long memberId, String username, String password,
+                      String mobile, String email, Boolean status, Date disableEndTime) {
+        this.memberId = memberId;
+        this.username = username;
+        this.password = password;
+        this.mobile = mobile;
+        this.email = email;
+        this.status = status;
+        this.disableEndTime = disableEndTime;
+    }
 
     public static Boolean validateMobile(String origin) {
         return origin.matches("^1([0-9]{10})$");

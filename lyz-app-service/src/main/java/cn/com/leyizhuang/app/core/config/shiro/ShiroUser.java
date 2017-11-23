@@ -1,4 +1,3 @@
-
 package cn.com.leyizhuang.app.core.config.shiro;
 
 import lombok.Getter;
@@ -17,9 +16,8 @@ import java.util.Set;
 @Setter
 public class ShiroUser implements Serializable {
     private static final long serialVersionUID = -1373760761780840081L;
-
-    private Long id;
     private final String loginName;
+    private Long id;
     private String name;
     private Set<String> urlSet;
     private Set<String> roles;
@@ -34,7 +32,6 @@ public class ShiroUser implements Serializable {
         this.name = name;
         this.urlSet = urlSet;
     }
-
 
 
     /**

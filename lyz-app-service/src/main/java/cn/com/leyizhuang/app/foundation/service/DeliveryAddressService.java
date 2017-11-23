@@ -16,7 +16,7 @@ public interface DeliveryAddressService {
 
     DeliveryAddressRequest addDeliveryAddress(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress);
 
-    DeliveryAddressRequest modifyDeliveryAddress(Long userId,AppIdentityType identityType, DeliveryAddressRequest deliveryAddress);
+    DeliveryAddressRequest modifyDeliveryAddress(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress);
 
     void deleteDeliveryAddress(Long deliveryAddressId);
 

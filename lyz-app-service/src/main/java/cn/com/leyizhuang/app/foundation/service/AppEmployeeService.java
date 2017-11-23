@@ -35,6 +35,8 @@ public interface AppEmployeeService {
 
     List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
 
+    List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType);
+
     SellerCreditMoney findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyEmployeeInformation(UserSetInformationReq userInformation);

@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * @date 2017/9/20
  */
 @Repository
-public interface FitmentCompanyUserDAO extends BaseDAO<FitmentCompanyUserDO>{
+public interface FitmentCompanyUserDAO extends BaseDAO<FitmentCompanyUserDO> {
 }

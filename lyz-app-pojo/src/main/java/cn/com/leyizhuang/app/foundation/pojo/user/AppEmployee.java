@@ -76,7 +76,7 @@ public class AppEmployee {
     public AppEmployee() {
     }
 
-    public String generateSalt(){
+    public String generateSalt() {
         return DigestUtils.md5Hex(loginName + AppConstant.APP_USER_SALT);
     }
 

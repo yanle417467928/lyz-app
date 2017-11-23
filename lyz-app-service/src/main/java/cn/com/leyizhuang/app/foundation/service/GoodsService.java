@@ -19,7 +19,7 @@ public interface GoodsService {
 
     GoodsDO managerSaveGoods(GoodsDTO goodsDTO);
 
-    List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode,Long userId, Integer identityType);
+    List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType);
 
     GoodsDO queryById(Long id);
 
@@ -39,7 +39,7 @@ public interface GoodsService {
 
     List<UserGoodsResponse> findGoodsOftenListByUserIdAndIdentityType(Long userId, Integer identityType);
 
-    List<UserGoodsResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords,Integer identityType);
+    List<UserGoodsResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
 
     void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType);
 
@@ -51,13 +51,13 @@ public interface GoodsService {
 
     List<GoodsPrice> getGoodsPriceByEmployeeAndGoodsId(Long userId, List<Long> goodsIds);
 
-    List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type,String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId, String specification);
+    List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type, String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId, String specification);
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 
     List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 
-    GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long userId,Long pcId,Integer qty);
+    GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long userId, Long pcId, Integer qty);
 
     GoodsDO queryBySku(String sku);
 

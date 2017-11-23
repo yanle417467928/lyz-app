@@ -23,18 +23,18 @@
 
     <select id="queryListVO" resultType="AppAdminStoreInventoryVO">
         SELECT
-            inv.ID ID,
-            inv.STORE_ID STORE_ID,
-            s.STORE_NAME STORE_NAME,
-            inv.GOODS_ID GOODS_ID,
-            g.GOODS_NAME GOODS_NAME,
-            g.GOODS_CODE GOODS_CODE,
-            inv.REAL_INVENTORY REAL_INVENTORY,
-            inv.SOLD_INVENTORY SOLD_INVENTORY
+        inv.ID ID,
+        inv.STORE_ID STORE_ID,
+        s.STORE_NAME STORE_NAME,
+        inv.GOODS_ID GOODS_ID,
+        g.GOODS_NAME GOODS_NAME,
+        g.GOODS_CODE GOODS_CODE,
+        inv.REAL_INVENTORY REAL_INVENTORY,
+        inv.SOLD_INVENTORY SOLD_INVENTORY
         FROM
-            store_inventory inv
-            LEFT JOIN st_store s ON inv.STORE_ID = s.ID
-            LEFT JOIN goods g ON inv.GOODS_ID = g.ID
+        store_inventory inv
+        LEFT JOIN st_store s ON inv.STORE_ID = s.ID
+        LEFT JOIN goods g ON inv.GOODS_ID = g.ID
     </select>
 
 

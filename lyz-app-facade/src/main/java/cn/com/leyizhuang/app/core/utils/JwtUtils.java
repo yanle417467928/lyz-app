@@ -15,7 +15,7 @@ import java.util.Date;
  * JWT工具类
  *
  * @author Richard
- *         Created on 2017-09-19 9:37
+ * Created on 2017-09-19 9:37
  **/
 public class JwtUtils {
 

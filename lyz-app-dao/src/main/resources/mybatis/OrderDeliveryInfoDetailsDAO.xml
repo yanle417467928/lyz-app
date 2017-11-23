@@ -5,10 +5,10 @@
 
     <select id="queryListByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         SELECT
-            *
+        *
         FROM ord_delivery_info_details
         WHERE
-            order_no = #{orderNumber}
+        order_no = #{orderNumber}
         ORDER BY create_time DESC
     </select>
 
@@ -17,73 +17,75 @@
         INSERT INTO ord_delivery_info_details
         (order_no, logistic_status, create_time, description, operation_type, operator_no, warehouse_no, task_no)
         VALUES
-            (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo}, #{taskNo})
+        (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo},
+        #{taskNo})
     </insert>
 
     <select id="getDeliveryByOperatorNoAndOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse">
-       SELECT
-            e.`name` deliveryName,
-            e.mobile deliveryPhone,
-            odi.order_no orderNumber,
-            oli.warehouse warehouseName
+        SELECT
+        e.`name` deliveryName,
+        e.mobile deliveryPhone,
+        odi.order_no orderNumber,
+        oli.warehouse warehouseName
         FROM
-            ord_delivery_info_details AS odi
+        ord_delivery_info_details AS odi
         INNER JOIN emp_employee AS e ON e.delivery_clerk_no = odi.operator_no
         INNER JOIN ord_logistics_info AS oli ON oli.ord_no = odi.order_no
         WHERE
-            odi.order_no = #{orderNumber}
+        odi.order_no = #{orderNumber}
         AND
-            odi.operator_no = #{operatorNo}
+        odi.operator_no = #{operatorNo}
         LIMIT 1
     </select>
 
     <select id="getOrderBeasInfoByOperatorNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse">
         SELECT
-            obi.sales_consult_name sellerName,
-            obi.sales_consult_phone sellerPhone,
-            obi.ord_no orderNumber,
-            oli.shipping_address shippingAddress,
-            oli.delivery_time deliveryTime,
-            oli.receiver receiver,
-            oli.receiver_phone receiverPhone,
-            odid.task_no shipperNumber,
-            obd.collection_amount collectionAmount
+        obi.sales_consult_name sellerName,
+        obi.sales_consult_phone sellerPhone,
+        obi.ord_no orderNumber,
+        oli.shipping_address shippingAddress,
+        oli.delivery_time deliveryTime,
+        oli.receiver receiver,
+        oli.receiver_phone receiverPhone,
+        odid.task_no shipperNumber,
+        obd.collection_amount collectionAmount
         FROM
-            ord_base_info AS obi
+        ord_base_info AS obi
         INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
         INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         WHERE
-            odid.logistic_status = 'SEALED_CAR'
+        odid.logistic_status = 'SEALED_CAR'
         AND odid.operator_no = #{operatorNo}
     </select>
 
     <select id="getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse">
         SELECT
-            obi.sales_consult_name sellerName,
-            obi.sales_consult_phone sellerPhone,
-            obi.ord_no orderNumber,
-            oli.shipping_address shippingAddress,
-            oli.delivery_time deliveryTime,
-            oli.receiver receiver,
-            oli.receiver_phone receiverPhone,
-            odid.task_no shipperNumber,
-            obd.collection_amount collectionAmount
+        obi.sales_consult_name sellerName,
+        obi.sales_consult_phone sellerPhone,
+        obi.ord_no orderNumber,
+        oli.shipping_address shippingAddress,
+        oli.delivery_time deliveryTime,
+        oli.receiver receiver,
+        oli.receiver_phone receiverPhone,
+        odid.task_no shipperNumber,
+        obd.collection_amount collectionAmount
         FROM
-            ord_base_info AS obi
+        ord_base_info AS obi
         INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
         INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         WHERE
-            obi.ord_no = #{orderNumber}
+        obi.ord_no = #{orderNumber}
         AND odid.logistic_status = 'SEALED_CAR'
         AND odid.operator_no = #{operatorNo}
     </select>
 
-    <select id="getLogisticsMessageByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+    <select id="getLogisticsMessageByUserId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT
             odid.*

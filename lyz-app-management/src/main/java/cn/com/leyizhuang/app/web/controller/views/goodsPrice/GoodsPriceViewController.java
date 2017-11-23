@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2017/10/27
  */
 @Controller
-@RequestMapping(value = GoodsPriceViewController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = GoodsPriceViewController.PRE_URL, produces = "application/json;charset=utf-8")
 public class GoodsPriceViewController {
 
     protected final static String PRE_URL = "/view/goodsPrice";

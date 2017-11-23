@@ -23,7 +23,7 @@ import java.util.List;
  * @date 2017/9/19
  */
 @RestController
-@RequestMapping(value = FitmentCompanyRestController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = FitmentCompanyRestController.PRE_URL, produces = "application/json;charset=utf-8")
 public class FitmentCompanyRestController extends BaseRestController {
 
     protected final static String PRE_URL = "/rest/company";
@@ -34,14 +34,14 @@ public class FitmentCompanyRestController extends BaseRestController {
     private FitmentCompanyService fitmentCompanyServiceImpl;
 
     @GetMapping(value = "/page/grid")
-    public GridDataVO<FitmentCompanyVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
+    public GridDataVO<FitmentCompanyVO> restGoodsPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
 
-        PageInfo<FitmentCompanyDO> companyDOPage = this.fitmentCompanyServiceImpl.queryPage(page,size);
+        PageInfo<FitmentCompanyDO> companyDOPage = this.fitmentCompanyServiceImpl.queryPage(page, size);
         List<FitmentCompanyDO> companyDOList = companyDOPage.getList();
         List<FitmentCompanyVO> decorationCompanyVOList = FitmentCompanyVO.transform(companyDOList);
-        return new GridDataVO<FitmentCompanyVO>().transform(decorationCompanyVOList,companyDOPage.getTotal());
+        return new GridDataVO<FitmentCompanyVO>().transform(decorationCompanyVOList, companyDOPage.getTotal());
     }
 
     @GetMapping(value = "/{id}")
@@ -53,16 +53,16 @@ public class FitmentCompanyRestController extends BaseRestController {
                     "指定数据不存在，请联系管理员", null);
         } else {
             FitmentCompanyVO decorationCompanyVO = FitmentCompanyVO.transform(fitmentCompanyDO);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null, decorationCompanyVO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, decorationCompanyVO);
         }
     }
 
     @PutMapping(value = "/{id}")
-    public ResultDTO<String> modifyCompanyPut(@Valid FitmentCompanyDTO fitmentCompanyDTO, BindingResult result){
+    public ResultDTO<String> modifyCompanyPut(@Valid FitmentCompanyDTO fitmentCompanyDTO, BindingResult result) {
         if (!result.hasErrors()) {
             this.fitmentCompanyServiceImpl.managerModifyCompany(fitmentCompanyDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }else {
+        } else {
             List<ObjectError> allErrors = result.getAllErrors();
             logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
@@ -75,7 +75,7 @@ public class FitmentCompanyRestController extends BaseRestController {
         if (!result.hasErrors()) {
             this.fitmentCompanyServiceImpl.managerSaveCompany(fitmentCompanyDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }else {
+        } else {
             List<ObjectError> allErrors = result.getAllErrors();
             logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,

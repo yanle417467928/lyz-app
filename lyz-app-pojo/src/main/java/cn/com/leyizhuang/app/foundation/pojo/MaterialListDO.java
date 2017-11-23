@@ -41,6 +41,7 @@ public class MaterialListDO {
     private MaterialListType materialListType;
     //产品券id（从产品券转化的商品）
     private Long couponId;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

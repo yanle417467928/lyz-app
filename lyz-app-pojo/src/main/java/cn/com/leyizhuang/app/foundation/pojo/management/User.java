@@ -27,11 +27,11 @@ User implements Serializable {
     private Long uid;
 
     @NotNull(message = "登录名不允许为空")
-    @Length(max = 20,min = 2,message = "登录名长度必须在2-20之间")
+    @Length(max = 20, min = 2, message = "登录名长度必须在2-20之间")
     private String loginName;
 
     @NotNull(message = "姓名不允许为空")
-    @Length(max = 20,min = 2,message = "姓名长度必须在2-20之间")
+    @Length(max = 20, min = 2, message = "姓名长度必须在2-20之间")
     private String name;
 
     private String password;
@@ -54,7 +54,7 @@ User implements Serializable {
         return loginName + salt;
     }
 
-    public UserVO convert2UserVO(){
+    public UserVO convert2UserVO() {
         UserVO userVO = new UserVO();
         userVO.setLoginName(loginName);
         userVO.setName(name);

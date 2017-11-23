@@ -14,6 +14,7 @@ import java.util.*;
 /**
  * Created with IntelliJ IDEA.
  * 调用微信接口工具类
+ *
  * @author Jerry.Ren
  * Date: 2017/11/8.
  * Time: 14:30.
@@ -30,6 +31,7 @@ public class WechatUtil {
 
     /**
      * 随机字符串生成
+     *
      * @param length
      * @return
      */
@@ -46,6 +48,7 @@ public class WechatUtil {
 
     /**
      * 请求xml组装
+     *
      * @param parameters
      * @return
      */
@@ -79,6 +82,7 @@ public class WechatUtil {
 
     /**
      * 生成签名
+     *
      * @param characterEncoding
      * @param parameters
      * @return
@@ -102,6 +106,7 @@ public class WechatUtil {
 
     /**
      * 请求方法
+     *
      * @param requestUrl
      * @param requestMethod
      * @param outputStr
@@ -152,6 +157,7 @@ public class WechatUtil {
 
     /**
      * xml解析
+     *
      * @param strxml
      * @return
      * @throws JDOMException
@@ -220,6 +226,7 @@ public class WechatUtil {
 
     /**
      * 检查微信返回结果的签名是不是调用的签名
+     *
      * @param map
      * @return
      */
@@ -237,6 +244,7 @@ public class WechatUtil {
 
     /**
      * 将流转换成字符串
+     *
      * @param inputStream
      * @return
      * @throws IOException
@@ -251,6 +259,6 @@ public class WechatUtil {
         outputStream.close();
         inputStream.close();
 
-        return new String(outputStream.toByteArray(),"UTF-8");
+        return new String(outputStream.toByteArray(), "UTF-8");
     }
 }

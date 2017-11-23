@@ -2,41 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO">
 
-    <select id="findProductCouponByCustomerIdAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
+    <select id="findProductCouponByCustomerIdAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
         SELECT
-            c.id,
-            g.sku_name,
-            g.goods_specification,
-            g.goods_unit goods_unit,
-            c.quantity left_number,
-            g.cover_image_uri
+        c.id,
+        g.sku_name,
+        g.goods_specification,
+        g.goods_unit goods_unit,
+        c.quantity left_number,
+        g.cover_image_uri
         FROM
-            cus_customer_product_coupon c
-            INNER JOIN gds_goods g ON c.gid = g.gid
+        cus_customer_product_coupon c
+        INNER JOIN gds_goods g ON c.gid = g.gid
         WHERE
-            c.cus_id = #{userId}
-            AND c.is_used IS FALSE
-            AND c.effective_start_time &lt; NOW()
-            AND c.effective_end_time &gt; NOW()
-            AND c.gid IN
-            <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
-                #{goodsId}
-            </foreach>
+        c.cus_id = #{userId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND c.effective_end_time &gt; NOW()
+        AND c.gid IN
+        <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+            #{goodsId}
+        </foreach>
         GROUP BY
-            g.sku
+        g.sku
     </select>
 
     <select id="findGoodsIdByUserIdAndProductCouponId" resultType="java.lang.Long">
         SELECT
-          ccpc.gid
+        ccpc.gid
         FROM
-          cus_customer_product_coupon ccpc
+        cus_customer_product_coupon ccpc
         WHERE
-          ccpc.cus_id = #{userId}
-          AND ccpc.is_used IS FALSE
-          AND ccpc.effective_start_time &lt; NOW()
-          AND ccpc.effective_end_time &gt; NOW()
-          AND ccpc.id = #{pcId}
+        ccpc.cus_id = #{userId}
+        AND ccpc.is_used IS FALSE
+        AND ccpc.effective_start_time &lt; NOW()
+        AND ccpc.effective_end_time &gt; NOW()
+        AND ccpc.id = #{pcId}
     </select>
 
 </mapper>

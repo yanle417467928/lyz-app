@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class GoodsDTO implements Serializable{
+public class GoodsDTO implements Serializable {
 
     // 自增主键
     private Long id;

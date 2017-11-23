@@ -18,6 +18,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Resource
     private MaCustomerDAO maCustomerDAO;
+
     @Override
     public PageInfo<CustomerVO> queryPageVO(Integer page, Integer size) {
         PageHelper.startPage(page, size);
@@ -33,7 +34,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 customerVO.setLight(AppCustomerLightStatus.CLOSE.getValue());
             }
         }
-            return new PageInfo<>(CustmoerList);
+        return new PageInfo<>(CustmoerList);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerVO> queryCustomerVOByCityId(Integer page, Integer size,Long cityId){
+    public PageInfo<CustomerVO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId) {
         PageHelper.startPage(page, size);
         List<CustomerVO> CustmoerList = maCustomerDAO.queryCustomerVOByCityId(cityId);
         for (CustomerVO customerVO : CustmoerList) {
@@ -74,7 +75,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
 
     @Override
-    public PageInfo<CustomerVO> queryCustomerVOByStoreId(Integer page, Integer size,Long storeId){
+    public PageInfo<CustomerVO> queryCustomerVOByStoreId(Integer page, Integer size, Long storeId) {
         PageHelper.startPage(page, size);
         List<CustomerVO> CustmoerList = maCustomerDAO.queryCustomerVOByStoreId(storeId);
         for (CustomerVO customerVO : CustmoerList) {
@@ -92,7 +93,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerVO> queryCustomerVOByGuideId(Integer page, Integer size,Long guideId){
+    public PageInfo<CustomerVO> queryCustomerVOByGuideId(Integer page, Integer size, Long guideId) {
         PageHelper.startPage(page, size);
         List<CustomerVO> CustmoerList = maCustomerDAO.queryCustomerVOByGuideId(guideId);
         for (CustomerVO customerVO : CustmoerList) {
@@ -110,7 +111,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerVO> queryCustomerVOByPhone(Integer page, Integer size,Long queryCusInfo){
+    public PageInfo<CustomerVO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo) {
         PageHelper.startPage(page, size);
         List<CustomerVO> CustmoerList = maCustomerDAO.queryCustomerVOByPhone(queryCusInfo);
         for (CustomerVO customerVO : CustmoerList) {
@@ -128,7 +129,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerVO> queryCustomerVOByName(Integer page, Integer size,String queryCusInfo){
+    public PageInfo<CustomerVO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo) {
         PageHelper.startPage(page, size);
         List<CustomerVO> CustmoerList = maCustomerDAO.queryCustomerVOByName(queryCusInfo);
         for (CustomerVO customerVO : CustmoerList) {
@@ -144,16 +145,17 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }
         return new PageInfo<>(CustmoerList);
     }
+
     @Override
-    public void saveCustomer(Customer customer){
-        if(null!=customer){
+    public void saveCustomer(Customer customer) {
+        if (null != customer) {
             maCustomerDAO.save(customer);
         }
     }
 
     @Override
-    public Boolean isExistPhoneNumber(Long moblie){
-        return  maCustomerDAO.isExistPhoneNumber(moblie);
+    public Boolean isExistPhoneNumber(Long moblie) {
+        return maCustomerDAO.isExistPhoneNumber(moblie);
     }
 }
 

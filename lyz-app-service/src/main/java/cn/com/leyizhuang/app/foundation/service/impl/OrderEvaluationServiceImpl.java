@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- *
  * @author caiyu
  * @date 2017/11/16
  */
@@ -28,7 +27,7 @@ public class OrderEvaluationServiceImpl implements OrderEvaluationService {
     @Transactional(rollbackFor = Exception.class)
     public void addOrderEvaluation(OrderEvaluationRequest orderEvaluationRequest) throws IOException {
 
-        OrderEvaluation orderEvaluation =  new OrderEvaluation();
+        OrderEvaluation orderEvaluation = new OrderEvaluation();
         //订单评价设值
         orderEvaluation.setLogisticsStar(orderEvaluationRequest.getLogisticsStar());
         orderEvaluation.setProductStar(orderEvaluationRequest.getProductStar());
@@ -52,7 +51,7 @@ public class OrderEvaluationServiceImpl implements OrderEvaluationService {
 
     @Override
     public void addOrderGoodsEvaluation(GoodsEvaluation goodsEvaluation) {
-        if (null != goodsEvaluation){
+        if (null != goodsEvaluation) {
             orderEvaluationDAO.addOrderGoodsEvaluation(goodsEvaluation);
         }
     }

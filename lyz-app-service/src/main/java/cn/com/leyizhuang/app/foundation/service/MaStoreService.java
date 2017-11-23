@@ -13,11 +13,11 @@ public interface MaStoreService {
 
     List<StoreVO> findStoresListByCityId(Long cityId);
 
-    StoreVO queryStoreVOById(Long storeId );
+    StoreVO queryStoreVOById(Long storeId);
 
-    PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size,Long cityId);
+    PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId);
 
-    PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size,Boolean enabled ,Long cityId);
+    PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size, Boolean enabled, Long cityId);
 
-    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo);
+    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size, String queryStoreInfo);
 }

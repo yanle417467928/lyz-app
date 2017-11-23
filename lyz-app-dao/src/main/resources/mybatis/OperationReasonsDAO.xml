@@ -6,8 +6,8 @@
         SELECT reason
         FROM operation_reason
         WHERE type = #{type}
-          AND status IS NOT FALSE
-          ORDER BY sort ASC
+        AND status IS NOT FALSE
+        ORDER BY sort ASC
     </select>
 
 </mapper>

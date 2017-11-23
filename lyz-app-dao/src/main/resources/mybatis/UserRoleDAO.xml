@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.UserRoleDAO">
 
-   <select id="selectRoleIdListByUserId" resultType="java.lang.Long">
-      SELECT rid FROM  admin_user_role where uid = #{userId};
-   </select>
-   <insert id="save" parameterType="UserRole">
-           INSERT INTO admin_user_role( uid,rid)
-           VALUES (#{userId}, #{roleId})
-   </insert>
+    <select id="selectRoleIdListByUserId" resultType="java.lang.Long">
+        SELECT rid FROM admin_user_role where uid = #{userId};
+    </select>
+    <insert id="save" parameterType="UserRole">
+        INSERT INTO admin_user_role( uid,rid)
+        VALUES (#{userId}, #{roleId})
+    </insert>
 
     <select id="findRoleIdsByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT rid FROM admin_user_role where uid = #{id}

@@ -87,10 +87,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/goodsPrice/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/goodsPrice/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -105,35 +105,35 @@
             field: 'skuName',
             title: '商品名称',
             align: 'center'
-        },{
+        }, {
             field: 'sku',
             title: '商品编码',
             align: 'center'
-        },{
+        }, {
             field: 'goodsSpecification',
             title: '商品规格',
             align: 'center'
-        },{
+        }, {
             field: 'priceLineId',
             title: '价目行ID',
             align: 'center'
-        },{
+        }, {
             field: 'retailPrice',
             title: '零售价',
             align: 'center'
-        },{
+        }, {
             field: 'vipPrice',
             title: '会员价',
             align: 'center'
-        },{
+        }, {
             field: 'wholesalePrice',
             title: '经销价',
             align: 'center'
-        },{
+        }, {
             field: 'startTime',
             align: 'center',
             title: '开始时间'
-        },{
+        }, {
             field: 'endTime',
             title: '结束时间',
             align: 'center'

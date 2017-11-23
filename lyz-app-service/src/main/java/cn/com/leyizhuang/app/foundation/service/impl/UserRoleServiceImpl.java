@@ -16,7 +16,7 @@ import java.util.List;
  * Created on 2017-07-28 15:15
  **/
 @Service
-public class UserRoleServiceImpl  implements UserRoleService {
+public class UserRoleServiceImpl implements UserRoleService {
 
     @Autowired
     private UserRoleDAO userRoleDAO;
@@ -24,14 +24,14 @@ public class UserRoleServiceImpl  implements UserRoleService {
     @Override
     @Transactional
     public void save(UserRole userRole) {
-        if(null != userRole){
+        if (null != userRole) {
             userRoleDAO.save(userRole);
         }
     }
 
     @Override
     public List<Long> findRoleIdsByUserId(Long id) {
-        if(null != id){
+        if (null != id) {
             return userRoleDAO.findRoleIdsByUserId(id);
         }
         return null;
@@ -41,7 +41,7 @@ public class UserRoleServiceImpl  implements UserRoleService {
     @Override
     @Transactional
     public void deleteUserRoleByUserId(Long id) {
-        if(null != id){
+        if (null != id) {
             userRoleDAO.deleteUserRoleByUserId(id);
         }
     }

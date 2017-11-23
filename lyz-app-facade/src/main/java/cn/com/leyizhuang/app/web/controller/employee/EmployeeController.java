@@ -29,7 +29,7 @@ import java.util.List;
  * App 员工相关http接口
  *
  * @author Richard
- *         Created on 2017-09-19 9:44
+ * Created on 2017-09-19 9:44
  **/
 @RestController
 @RequestMapping(value = "/app/employee")
@@ -42,6 +42,7 @@ public class EmployeeController {
 
     @Autowired
     private StorePreDepositLogService storePreDepositLogServiceImpl;
+
     /**
      * App 员工登录接口
      *
@@ -50,7 +51,7 @@ public class EmployeeController {
      * @return ResultDTO
      */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
-    public ResultDTO<EmployeeLoginResponse> employeeLogin( EmployeeLoginParam loginParam, HttpServletResponse response) {
+    public ResultDTO<EmployeeLoginResponse> employeeLogin(EmployeeLoginParam loginParam, HttpServletResponse response) {
         logger.info("employeeLogin CALLED,员工登录，入参 loginParam:{}", loginParam.toString());
         ResultDTO<EmployeeLoginResponse> resultDTO;
         try {
@@ -83,7 +84,7 @@ public class EmployeeController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new EmployeeLoginResponse(employee.getIdentityType().getValue(),employee.getEmpId(),employee.getCityId()));
+                    new EmployeeLoginResponse(employee.getIdentityType().getValue(), employee.getEmpId(), employee.getCityId()));
             logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -144,12 +145,13 @@ public class EmployeeController {
 
     /**
      * 获取导购信用金余额
+     *
      * @param userId
      * @param identityType
      * @return
      */
     @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO<SellerCreditMoney> getGuideCreditMoneyBalance(Long userId, Integer identityType){
+    public ResultDTO<SellerCreditMoney> getGuideCreditMoneyBalance(Long userId, Integer identityType) {
 
         logger.info("getGuideCreditMoneyBalance CALLED,获取导购信用金余额，入参 userId {},identityType{}", userId, identityType);
 
@@ -166,14 +168,14 @@ public class EmployeeController {
             return resultDTO;
         }
         Boolean active = appEmployeeService.existsSellerCreditByUserId(userId);
-        if (!active){
+        if (!active) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购没有开通信用额度",
                     null);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId,identityType);
+            SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerCreditMoney);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -187,11 +189,11 @@ public class EmployeeController {
     }
 
     /**
-     * @title   员工修改密码
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 员工修改密码
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/2
      */
@@ -252,16 +254,16 @@ public class EmployeeController {
     }
 
     /**
-     * @title   获取装饰公司钱包充值记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取装饰公司钱包充值记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/8
      */
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType){
+    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType) {
 
         logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{}", userId, identityType);
 
@@ -293,16 +295,16 @@ public class EmployeeController {
     }
 
     /**
-     * @title   获取装饰公司钱包消费记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取装饰公司钱包消费记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType){
+    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType) {
 
         logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{}", userId, identityType);
 

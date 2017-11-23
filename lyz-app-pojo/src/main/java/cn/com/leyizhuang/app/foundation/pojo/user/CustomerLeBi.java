@@ -15,15 +15,11 @@ import lombok.*;
 @AllArgsConstructor
 public class CustomerLeBi {
 
-    private Long id;
-
-    private Long cusId;
-
-    private Integer quantity;
-
-    private Double rebate;
-
     public static final Double ratio = 10.00;
+    private Long id;
+    private Long cusId;
+    private Integer quantity;
+    private Double rebate;
 
     public CustomerLeBi(Integer quantity, Double rebate) {
         this.quantity = quantity;

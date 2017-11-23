@@ -127,9 +127,9 @@
                 $.each(origin, function () {
                     data[this.name] = this.value;
                 });
-                var reslist=$("#role").select2("data");
-                var roleIds=[];
-                $.each(reslist,function() {
+                var reslist = $("#role").select2("data");
+                var roleIds = [];
+                $.each(reslist, function () {
                     roleIds.push(this.id);
                 });
                 data["roleIdsStr"] = roleIds;
@@ -137,7 +137,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
 
-                    var url = '/rest/user/'+data.id;
+                    var url = '/rest/user/' + data.id;
 
                     data.headImageUri = $('#headImageUri').attr("src");
                     data.status = (undefined === data.status) ? false : data.status;
@@ -198,7 +198,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="loginName" type="text" class="form-control" id="loginName" placeholder="登录名称" value="${user.loginName}" readonly >
+                                    <input name="loginName" type="text" class="form-control" id="loginName"
+                                           placeholder="登录名称" value="${user.loginName}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -224,9 +225,13 @@
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="选择用户性别（如不愿透露，可选“保密”）"></i>
                                 </label>
-                                <select class="form-control select" name="sex" id="sex" data-live-search="true" >
-                                    <option value="MALE" <#if user?? && user.sex?? && user.sex=="MALE" > selected</#if>>男</option>
-                                    <option value="FEMALE" <#if user?? && user.sex?? && user.sex=="FEMALE" > selected</#if>>女</option>
+                                <select class="form-control select" name="sex" id="sex" data-live-search="true">
+                                    <option value="MALE" <#if user?? && user.sex?? && user.sex=="MALE" > selected</#if>>
+                                        男
+                                    </option>
+                                    <option value="FEMALE" <#if user?? && user.sex?? && user.sex=="FEMALE" >
+                                            selected</#if>>女
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -239,8 +244,12 @@
                                 </label>
                                 <select id="userType" name="userType" class="form-control select"
                                         data-live-search="true">
-                                    <option value=2  <#if user?? && user.userType?? && user.userType==2 > selected</#if>>普通用户</option>
-                                    <option value=1 <#if user?? && user.userType?? && user.userType==1 > selected</#if>>超级管理员</option>
+                                    <option value=2  <#if user?? && user.userType?? && user.userType==2 >
+                                            selected</#if>>普通用户
+                                    </option>
+                                    <option value=1 <#if user?? && user.userType?? && user.userType==1 > selected</#if>>
+                                        超级管理员
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -255,7 +264,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="password" type="text" class="form-control" id="password" placeholder="填写新密码；如不修改，请不填">
+                                    <input name="password" type="text" class="form-control" id="password"
+                                           placeholder="填写新密码；如不修改，请不填">
                                 </div>
                             </div>
                         </div>
@@ -267,7 +277,8 @@
                                             data-placeholder="请为用户分配角色" style="width: 100%;" id="role" name="role">
                                     <#if roleList??>
                                         <#list roleList as item>
-                                            <option value="${item.id}" <#if roleIds?? && roleIds?seq_contains(item.id)>selected</#if> > ${item.name}</option>
+                                            <option value="${item.id}"
+                                                    <#if roleIds?? && roleIds?seq_contains(item.id)>selected</#if>> ${item.name}</option>
                                         </#list>
                                     </#if>
                                     </select>
@@ -281,7 +292,9 @@
                                 <div class="form-group" style="margin-left: 2%">
                                     <label for="status">是否启用</label>
                                     <br>
-                                    <input name="status" class="switch" id="status" type="checkbox"  data-on-text="启用" data-off-text="停用"<#if user?? && user.status?? && user.status==true > checked </#if> />
+                                    <input name="status" class="switch" id="status" type="checkbox" data-on-text="启用"
+                                           data-off-text="停用"<#if user?? && user.status?? && user.status==true >
+                                           checked </#if>/>
                                 </div>
                             </div>
                         </div>

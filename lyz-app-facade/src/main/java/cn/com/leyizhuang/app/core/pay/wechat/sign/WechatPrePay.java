@@ -15,6 +15,7 @@ import java.util.TreeMap;
 /**
  * Created with IntelliJ IDEA.
  * 微信支付调用接口之前的签名设置
+ *
  * @author Jerry.Ren
  * Date: 2017/11/8.
  * Time: 16:55.

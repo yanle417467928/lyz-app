@@ -19,6 +19,6 @@ public class PlatformFreemarkerConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        configuration.setSharedVariable("shiro",new ShiroTags());
+        configuration.setSharedVariable("shiro", new ShiroTags());
     }
 }

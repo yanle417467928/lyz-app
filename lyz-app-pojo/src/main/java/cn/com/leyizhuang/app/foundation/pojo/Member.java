@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/3/24.
+ * Created on 2017/3/24.
  * <section>会员信息主表</section>
  */
 @Getter

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  **/
 @Controller
 @RequestMapping("/views/admin/role")
-public class AppAdminRoleViewController extends BaseController{
+public class AppAdminRoleViewController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppAdminRoleViewController.class);
 
@@ -35,10 +35,11 @@ public class AppAdminRoleViewController extends BaseController{
 
     /**
      * 新增资源页面跳转
+     *
      * @return
      */
     @GetMapping(value = "/add")
-    public String add(Model model){
+    public String add(Model model) {
         logger.info("新增角色");
         return "/views/role/role_add";
     }
@@ -53,7 +54,7 @@ public class AppAdminRoleViewController extends BaseController{
                 error404();
                 return "/error/404";
             } else {
-                map.addAttribute("role",role);
+                map.addAttribute("role", role);
             }
         }
         return "/views/role/role_edit";

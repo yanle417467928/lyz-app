@@ -12,33 +12,33 @@ import java.util.List;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @ControllerAdvice(basePackages = "cn.com.leyizhuang.app.web.controller.views")
 public class AppAdminViewControllerAdvice {
 
-   /* @Autowired
-    private AppAdminMenuService menuService;
+    /* @Autowired
+     private AppAdminMenuService menuService;
 
-    @ModelAttribute(value = "IndexMenuVOList")
-    public List<AppAdminMenuVO> menuVOList() {
-        return menuService.loadAdminMenuTree();
-    }
+     @ModelAttribute(value = "IndexMenuVOList")
+     public List<AppAdminMenuVO> menuVOList() {
+         return menuService.loadAdminMenuTree();
+     }
 
-    @ModelAttribute(value = "selectedMenu")
-    public AppAdminMenuDO selectedMenu(Long menuId) {
-        if (null == menuId) {
-            return null;
-        } else {
-            System.out.println(menuService.queryById(menuId).toString());
-            return menuService.queryById(menuId);
-        }
-    }
+     @ModelAttribute(value = "selectedMenu")
+     public AppAdminMenuDO selectedMenu(Long menuId) {
+         if (null == menuId) {
+             return null;
+         } else {
+             System.out.println(menuService.queryById(menuId).toString());
+             return menuService.queryById(menuId);
+         }
+     }
 
-    @ModelAttribute(value = "parentMenuId")
-    public Long parentMenu(Long parentMenuId) {
-        return parentMenuId;
-    }*/
+     @ModelAttribute(value = "parentMenuId")
+     public Long parentMenu(Long parentMenuId) {
+         return parentMenuId;
+     }*/
     @Autowired
     private ResourceService resourceService;
 
@@ -63,6 +63,7 @@ public class AppAdminViewControllerAdvice {
 
     /**
      * 获取当前登录用户对象
+     *
      * @return {ShiroUser}
      */
     public ShiroUser getShiroUser() {

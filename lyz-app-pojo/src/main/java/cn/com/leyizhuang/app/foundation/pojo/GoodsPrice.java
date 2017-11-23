@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 商品价格表
  *
  * @author Richard
- *         Created on 2017-07-12 17:26
+ * Created on 2017-07-12 17:26
  **/
 @Getter
 @Setter

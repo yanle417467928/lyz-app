@@ -27,12 +27,12 @@ public class DenyOrderController {
     @Autowired
     private OperationReasonsService operationReasonsServiceImpl;
 
-    /**  
-     * @title   获取拒签退货原因列表
-     * @descripe
+    /**
      * @param
-     * @return 
-     * @throws 
+     * @return
+     * @throws
+     * @title 获取拒签退货原因列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/13
      */

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author Richard
- *         Created on 2017/5/8.
+ * Created on 2017/5/8.
  */
 @Controller
 @RequestMapping(value = AppAdminIndexViewController.PRE_URL, produces = "text/html;charset=utf-8")

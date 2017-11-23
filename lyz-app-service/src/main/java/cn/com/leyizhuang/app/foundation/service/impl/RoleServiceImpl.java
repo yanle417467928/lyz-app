@@ -27,24 +27,21 @@ import java.util.*;
 public class RoleServiceImpl implements RoleService {
 
     private UserRoleDAO userRoleDAO;
+    private RoleDAO roleDAO;
+    @Autowired
+    private RoleResourceService roleResourceService;
+    @Autowired
+    private ResourceService resourceService;
 
     @Autowired
     public void setUserRoleDAO(UserRoleDAO userRoleDAO) {
         this.userRoleDAO = userRoleDAO;
     }
 
-    private RoleDAO roleDAO;
-
     @Autowired
     public void setRoleDAO(RoleDAO roleDAO) {
         this.roleDAO = roleDAO;
     }
-
-    @Autowired
-    private RoleResourceService roleResourceService;
-
-    @Autowired
-    private ResourceService resourceService;
 
     @Override
     public Map<String, Set<String>> selectResourceMapByUserId(Long userId) {
@@ -92,7 +89,7 @@ public class RoleServiceImpl implements RoleService {
     public void updateRoleResource(Long id, String[] resourceIds) {
         RoleResource roleResource = new RoleResource();
 
-        List<Long> parentIdList =resourceService.queryParentIdsByIds(resourceIds);
+        List<Long> parentIdList = resourceService.queryParentIdsByIds(resourceIds);
         roleResourceService.deleteByRoleId(id);
         for (String resourceId : resourceIds) {
             if (Long.parseLong(resourceId) > 0) {
@@ -141,7 +138,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<Role> findByStatus(Boolean status) {
-        if(null != status){
+        if (null != status) {
             return roleDAO.findByStatus(status);
         }
         return null;

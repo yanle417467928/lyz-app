@@ -34,10 +34,8 @@ import java.util.Map;
 @RequestMapping("/")
 public class UserLoginController extends BaseController {
 
-    private Logger logger = LoggerFactory.getLogger(UserLoginController.class);
-
     protected Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-
+    private Logger logger = LoggerFactory.getLogger(UserLoginController.class);
     @Autowired
     private UserService userService;
 
@@ -143,7 +141,7 @@ public class UserLoginController extends BaseController {
             if (null != savedRequest) {
                 url = savedRequest.getRequestUrl();
             }*/
-			/*
+            /*
 			  我们平常用的获取上一个请求的方式，在Session不一致的情况下是获取不到的
 			  String url = (String) request.getAttribute(WebUtils.FORWARD_REQUEST_URI_ATTRIBUTE);
 			 */
@@ -196,7 +194,7 @@ public class UserLoginController extends BaseController {
      */
     @GetMapping("/logout")
     public String logout() {
-        logger.info("登出系统,user:{}",getShiroUser().getLoginName());
+        logger.info("登出系统,user:{}", getShiroUser().getLoginName());
         shiroDbRealm.removeUserCache(getShiroUser());
         Subject subject = SecurityUtils.getSubject();
         subject.logout();

@@ -52,17 +52,17 @@ public class FitmentCompanyServiceImpl extends BaseServiceImpl<FitmentCompanyDO>
 
     @Override
     public List<FitmentCompanyDO> queryListByFrozen(Boolean frozen) {
-        if (null == frozen ){
+        if (null == frozen) {
             frozen = true;
         }
         return this.fitmentCompanyDAO.queryListByFrozen(frozen);
     }
 
-    private FitmentCompanyDO transform(FitmentCompanyDTO fitmentCompanyDTO){
+    private FitmentCompanyDO transform(FitmentCompanyDTO fitmentCompanyDTO) {
         FitmentCompanyDO fitmentCompanyDO = null;
         if (null != fitmentCompanyDTO) {
             fitmentCompanyDO = new FitmentCompanyDO();
-            if (null != fitmentCompanyDTO && fitmentCompanyDTO.getId() != 0){
+            if (null != fitmentCompanyDTO && fitmentCompanyDTO.getId() != 0) {
                 fitmentCompanyDO.setId(fitmentCompanyDTO.getId());
             }
             fitmentCompanyDO.setName(fitmentCompanyDTO.getName());

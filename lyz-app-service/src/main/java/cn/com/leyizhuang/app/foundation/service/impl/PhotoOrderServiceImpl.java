@@ -20,7 +20,7 @@ public class PhotoOrderServiceImpl implements PhotoOrderService {
 
     @Override
     public PhotoOrderDO save(PhotoOrderDO photoOrderDO) {
-        if (null != photoOrderDO){
+        if (null != photoOrderDO) {
             this.photoOrderDAO.save(photoOrderDO);
         }
         return photoOrderDO;

@@ -16,12 +16,14 @@ public interface OrderDeliveryInfoDetailsService {
 
     List<OrderDeliveryInfoDetails> queryListByOrderNumber(String orderNumber);
 
-    LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo,String orderNumber);
+    LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
 
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);
+
     //获取出货单详情
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
+
     //获取推送的物流消息
     List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime ,Integer identityType);
 }

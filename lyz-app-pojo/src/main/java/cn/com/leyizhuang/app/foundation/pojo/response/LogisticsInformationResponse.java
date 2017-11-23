@@ -31,7 +31,7 @@ public class LogisticsInformationResponse {
      */
     private String warehouseName;
     /**
-     *物流信息
+     * 物流信息
      */
     private List<LogisticsDetailResponse> logisticsDetail;
 }

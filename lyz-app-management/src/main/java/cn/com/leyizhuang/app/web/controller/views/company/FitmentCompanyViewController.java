@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2017/9/19
  */
 @Controller
-@RequestMapping(value = FitmentCompanyViewController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = FitmentCompanyViewController.PRE_URL, produces = "application/json;charset=utf-8")
 public class FitmentCompanyViewController extends BaseController {
     protected final static String PRE_URL = "/view/company";
     private final Logger logger = LoggerFactory.getLogger(FitmentCompanyViewController.class);
@@ -43,7 +43,7 @@ public class FitmentCompanyViewController extends BaseController {
                 return "/error/404";
             } else {
                 FitmentCompanyVO decorationCompanyVO = FitmentCompanyVO.transform(fitmentCompanyDO);
-                map.addAttribute("decorationCompanyVO",decorationCompanyVO);
+                map.addAttribute("decorationCompanyVO", decorationCompanyVO);
             }
         }
         return "/views/company/dec_company_edit";

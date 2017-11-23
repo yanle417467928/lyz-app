@@ -21,7 +21,7 @@ public class RoleResourceServiceImpl implements RoleResourceService {
 
     @Override
     public Set<Long> findResouceIdSetByRoleId(Long roleId) {
-        if (null != roleId){
+        if (null != roleId) {
             return roleResourceDAO.findResouceIdSetByRoleId(roleId);
         }
         return null;
@@ -30,7 +30,7 @@ public class RoleResourceServiceImpl implements RoleResourceService {
     @Override
     @Transactional
     public void deleteByRoleId(Long id) {
-        if(null != id){
+        if (null != id) {
             roleResourceDAO.deleteByRoleId(id);
         }
     }
@@ -38,7 +38,7 @@ public class RoleResourceServiceImpl implements RoleResourceService {
     @Override
     @Transactional
     public void save(RoleResource roleResource) {
-        if (null != roleResource){
+        if (null != roleResource) {
             roleResourceDAO.save(roleResource);
         }
     }

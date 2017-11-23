@@ -7,17 +7,17 @@
         *
         FROM gds_goods_evaluation
         WHERE
-         GID = #{gid}
+        GID = #{gid}
         ORDER BY EVALUATION_TIME DESC
     </select>
 
     <select id="getEvaluationQuantityByGid" resultType="java.lang.Integer">
-      SELECT
+        SELECT
         COUNT(*)
-      FROM
+        FROM
         gds_goods_evaluation
-      WHERE
-	    GID = #{gid}
+        WHERE
+        GID = #{gid}
     </select>
 
 

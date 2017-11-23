@@ -23,15 +23,15 @@ public class HelloController {
     @Autowired
     private DiscoveryClient client;
 
-    @RequestMapping(value = "/hello",method= RequestMethod.GET)
-    public String index(){
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String index() {
         ServiceInstance instance = client.getLocalServiceInstance();
-        logger.info("/hello,host:"+instance.getHost()+",service_id:"+instance.getServiceId() );
+        logger.info("/hello,host:" + instance.getHost() + ",service_id:" + instance.getServiceId());
         return "hello world";
     }
 
     @PostMapping(value = "/user/{name}")
-    public User addUser(@PathVariable(value = "name") String name){
+    public User addUser(@PathVariable(value = "name") String name) {
         User user = new User();
         user.setLoginName(name);
         user.setLoginName(name);

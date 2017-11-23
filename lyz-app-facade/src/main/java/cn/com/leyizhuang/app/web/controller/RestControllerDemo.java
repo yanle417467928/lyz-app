@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 猫酷测试接口
  *
  * @author Richard
- *         Created on 2017-09-14 13:12
+ * Created on 2017-09-14 13:12
  **/
 @RestController
 public class RestControllerDemo {

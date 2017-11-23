@@ -27,11 +27,11 @@ public class ArrearsAuditController {
     private ArrearsAuditService arrearsAuditServiceImpl;
 
     /**
-     * @title 获取待审核欠款申请列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取待审核欠款申请列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/16
      */

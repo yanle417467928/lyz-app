@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * @author Richard
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @RestController
 @RequestMapping(value = AppAdminResourceRestController.PRE_URL, produces = "application/json;charset=utf8")
@@ -42,19 +42,19 @@ public class AppAdminResourceRestController extends BaseRestController {
         Integer page = (offset / size) + 1;
         PageInfo<ResourceVO> resourcePage = resourceService.queryPageVO(page, size);
         List<ResourceVO> resourceList = resourcePage.getList();
-        return new GridDataVO<ResourceVO>().transform(resourceList,resourcePage.getTotal());
+        return new GridDataVO<ResourceVO>().transform(resourceList, resourcePage.getTotal());
     }
 
     @PostMapping
     public ResultDTO<?> restResourcePost(Resource resource, BindingResult result) {
-        if(!result.hasErrors()){
+        if (!result.hasErrors()) {
             resource.setCreateTime(new Date());
-            if(resource.getPid() == null){
+            if (resource.getPid() == null) {
                 resource.setPid(0L);
             }
             resourceService.save(resource);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
-        }else{
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
             return actFor400(result);
         }
     }
@@ -71,7 +71,7 @@ public class AppAdminResourceRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,resource);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, resource);
         }
     }
 
@@ -91,7 +91,7 @@ public class AppAdminResourceRestController extends BaseRestController {
             for (Long id : ids) {
                 Long childrenNumber = resourceService.countByPId(id);
                 if (childrenNumber > 0L) {
-                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "资源id{"+id+"}下还有挂靠的子资源,不能删除！", null);
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "资源id{" + id + "}下还有挂靠的子资源,不能删除！", null);
                 } else {
                     this.resourceService.batchRemove(Arrays.asList(id));
                 }

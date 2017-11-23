@@ -36,42 +36,43 @@ public class LeBiVariationLogController {
 
     /**
      * 根据乐币变动类型查看明细
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @param showType 查看类型
-     * @return  乐币变动明细列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param showType     查看类型
+     * @return 乐币变动明细列表
      */
-    @RequestMapping(value = "/list" ,method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> queryListByCusIDAndLeBiVariationType(Long userID,Integer identityType,Integer showType){
+    @RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> queryListByCusIDAndLeBiVariationType(Long userID, Integer identityType, Integer showType) {
         ResultDTO<Object> resultDTO;
         logger.info("queryListByCusIDAndLeBiVariationType CALLED,查看乐币变动明细列表，入参 userID:{},identityType:{},showType:{}", userID, identityType, showType);
-        if (null == userID){
+        if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == showType){
+        if (null == showType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更类型不能为空", null);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 6){
+        if (identityType != 6) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只有顾客可以查看乐币变动明细", null);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
             //查询对应查看类型的所有变动记录
-            List<CustomerLeBiVariationLog> customerLeBiVariationLogList = leBiVariationLogService.queryListBycusIDAndShowTypeType(userID,showType);
+            List<CustomerLeBiVariationLog> customerLeBiVariationLogList = leBiVariationLogService.queryListBycusIDAndShowTypeType(userID, showType);
             //创建返回list
             List<LeBiVariationLogResPonse> leBiVariationLogResPonseList = new ArrayList<>();
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for (CustomerLeBiVariationLog customerLeBiVariationLog : customerLeBiVariationLogList){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (CustomerLeBiVariationLog customerLeBiVariationLog : customerLeBiVariationLogList) {
                 //创建返回类
                 LeBiVariationLogResPonse leBiVariationLogResponse = new LeBiVariationLogResPonse();
                 //设值
@@ -94,17 +95,17 @@ public class LeBiVariationLogController {
                         leBiVariationLogResponse.setLeBiVariationType("订单使用");
                         break;
                 }
-                if (showType == 2){
+                if (showType == 2) {
                     leBiVariationLogResponse.setOrderNum(customerLeBiVariationLog.getOrderNum());
                 }
-                leBiVariationLogResponse.setTotalQuantity(appCustomerService.findLeBiQuantityByUserIdAndIdentityType(userID,identityType));
+                leBiVariationLogResponse.setTotalQuantity(appCustomerService.findLeBiQuantityByUserIdAndIdentityType(userID, identityType));
                 leBiVariationLogResPonseList.add(leBiVariationLogResponse);
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, leBiVariationLogResPonseList);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，查看乐币变动明细列表失败", null);
             logger.warn("queryListByCusIDAndLeBiVariationType EXCEPTION,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);

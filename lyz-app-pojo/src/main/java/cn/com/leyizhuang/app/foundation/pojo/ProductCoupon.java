@@ -19,7 +19,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCoupon implements Serializable{
+public class ProductCoupon implements Serializable {
 
     private static final long serialVersionUID = -7523497825553900797L;
 

@@ -17,6 +17,7 @@ import java.util.List;
 @Transactional
 public class MessageNotificationServiceImpl implements MessageNotificationService {
     private MessageNotificationDAO messageNotificationDAO;
+
     public MessageNotificationServiceImpl(MessageNotificationDAO messageNotificationDAO) {
         this.messageNotificationDAO = messageNotificationDAO;
     }

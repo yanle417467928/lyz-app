@@ -4,7 +4,7 @@ import cn.com.leyizhuang.common.core.exception.biz.BizException;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/18.
+ * Created on 2017/5/18.
  */
 public class ChangeMenuTypeException extends BizException {
 

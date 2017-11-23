@@ -92,10 +92,10 @@
     </div>
 </div>
 <script>
-    $(function() {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/user/page/grid', 'get', true, function(params) {
+    $(function () {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/user/page/grid', 'get', true, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -111,38 +111,38 @@
             title: '登录名',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'name',
             title: '姓名',
             align: 'center'
-        },{
+        }, {
             field: 'createTime',
             title: '创建时间',
             align: 'center',
-            formatter: function(value) {
-            return formatDateTime(value);
-        }
-        },{
+            formatter: function (value) {
+                return formatDateTime(value);
+            }
+        }, {
             field: 'sex',
             align: 'center',
             title: '性别',
-            formatter: function(value) {
+            formatter: function (value) {
                 if ("MALE" === value) {
                     return '<span class="label label-success">男</span>'
-                } else if("FEMALE"==value) {
+                } else if ("FEMALE" == value) {
                     return '<span class="label label-danger">女</span>'
-                }else{
+                } else {
                     return '<span class="label label-default">-</span>'
                 }
             },
-        },/*{
+        }, /*{
             field: 'age',
             align: 'center',
             title: '年龄'
@@ -179,17 +179,17 @@
                 align: 'center',
                 title: '角色',
                 sortable: true,
-                formatter : function(value, row) {
+                formatter: function (value, row) {
                     var roles = [];
-                    for(var p in value) {
+                    for (var p in value) {
                         roles.push(value[p].name);
                     }
-                    return(roles.join('\n'));
+                    return (roles.join('\n'));
                 }
-            },{
+            }, {
                 field: 'userType',
                 title: '用户类型',
-                formatter: function(value) {
+                formatter: function (value) {
                     if (1 === value) {
                         return '<span class="label label-primary">管理员</span>'
                     } else {
@@ -197,16 +197,16 @@
                     }
                 },
                 align: 'center'
-            },{
+            }, {
                 field: 'status',
                 align: 'center',
                 title: '状态',
-                formatter: function(value) {
+                formatter: function (value) {
                     if (true === value) {
                         return '<span class="label label-primary">正常</span>'
-                    } else if(false === value) {
+                    } else if (false === value) {
                         return '<span class="label label-danger">停用</span>'
-                    }else{
+                    } else {
                         return '<span class="label label-danger">-</span>'
                     }
                 }
@@ -217,18 +217,18 @@
             $grid.add('/views/admin/user/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/user/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
 
-        $('#btn_delete').on('click', function() {
+        $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/user', 'delete');
         });
     });
 
     var $page = {
         information: {
-            show: function(id) {
+            show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -261,9 +261,9 @@
 
                                 if (null === data.sex) {
                                     data.sex = '-';
-                                }else if(data.sex ==="MALE"){
+                                } else if (data.sex === "MALE") {
                                     data.sex = '男';
-                                }else if(data.sex ==="FEMALE"){
+                                } else if (data.sex === "FEMALE") {
                                     data.sex = '女';
                                 }
                                 $('#sex').html(data.sex);
@@ -272,11 +272,11 @@
                                 }
                                 $('#age').html(data.age);
 
-                                if (data.userType===1) {
+                                if (data.userType === 1) {
                                     $('#userType').html("超级管理员");
-                                }else if(data.resourceType===2){
+                                } else if (data.resourceType === 2) {
                                     $('#userType').html("普通用户");
-                                }else{
+                                } else {
                                     $('#userType').html("-");
                                 }
                                 if (true === data.status) {
@@ -294,7 +294,7 @@
                     })
                 }
             },
-            close: function() {
+            close: function () {
                 $('#information').modal('hide');
             }
         }
@@ -307,12 +307,12 @@
         var d = dt.getDate();
         d = d < 10 ? ('0' + d) : d;
         var h = dt.getHours();
-        h=h < 10 ? ('0' + h) : h;
+        h = h < 10 ? ('0' + h) : h;
         var minute = dt.getMinutes();
         minute = minute < 10 ? ('0' + minute) : minute;
-        var second=dt.getSeconds();
-        second=second < 10 ? ('0' + second) : second;
-        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 </script>
 </body>

@@ -16,7 +16,7 @@ import java.util.List;
  * 城市API实现
  *
  * @author Richard
- *         Created on 2017-09-21 14:25
+ * Created on 2017-09-21 14:25
  **/
 @Service
 public class MaCityServiceImpl implements MaCityService {

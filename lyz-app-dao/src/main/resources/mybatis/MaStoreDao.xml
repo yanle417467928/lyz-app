@@ -3,23 +3,23 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaStoreDAO">
 
     <resultMap id="storeVOResultMap" type="StoreVO">
-        <id property="storeId" column="store_id"  jdbcType="BIGINT" />
-        <result property="storeName" column="store_name" />
-        <result property="storeCode" column="store_code" />
-        <result property="storeType" column="store_type" />
-        <result property="enable" column="enable" />
-        <result property="creatorType" column="creator_type" />
-        <result property="createTime" column="create_time" />
-        <result property="modifierType" column="modifier_type" />
-        <result property="modifyTime" column="modify_time" />
-        <result property="phone" column="phone" />
-        <result property="isDefault" column="is_default" />
-        <result property="cityCode" column="city_code" />
-        <result property="province" column="province" />
-        <result property="city" column="city" />
-        <result property="area" column="area" />
-        <result property="detailedAddress" column="detailed_address" />
-        <result property="isSelfDelivery" column="is_self_delivery" />
+        <id property="storeId" column="store_id" jdbcType="BIGINT"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="storeType" column="store_type"/>
+        <result property="enable" column="enable"/>
+        <result property="creatorType" column="creator_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifierType" column="modifier_type"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="phone" column="phone"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="area" column="area"/>
+        <result property="detailedAddress" column="detailed_address"/>
+        <result property="isSelfDelivery" column="is_self_delivery"/>
         <association property="cityId" javaType="CityVO">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -27,7 +27,7 @@
     </resultMap>
 
 
-    <select id="findAllVO"  resultMap="storeVOResultMap">
+    <select id="findAllVO" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -41,7 +41,7 @@
     </select>
 
 
-    <select id="findStoresVOById"   parameterType="java.lang.Long" resultMap="storeVOResultMap">
+    <select id="findStoresVOById" parameterType="java.lang.Long" resultMap="storeVOResultMap">
         SELECT
         s.*,
         c.name
@@ -51,18 +51,18 @@
         where s.store_id=#{storeId}
     </select>
 
-    <select id="findStoresListByCityId" parameterType="java.lang.Long"  resultType="StoreVO">
+    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
         SELECT
         s.store_id,
         s.store_name
         FROM
         st_store s
-        LEFT  JOIN  city c on s.city_code = c.code
+        LEFT JOIN city c on s.city_code = c.code
         WHERE c.city_id = #{cityId}
     </select>
 
 
-    <select id="queryStoreListByCityId"  parameterType="java.lang.Long"  resultMap="storeVOResultMap">
+    <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -73,11 +73,11 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        WHERE  c.city_id= #{cityId}
+        WHERE c.city_id= #{cityId}
     </select>
 
 
-    <select id="findStoresListByEnable"   resultMap="storeVOResultMap">
+    <select id="findStoresListByEnable" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -88,10 +88,10 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        WHERE  c.city_id= #{cityId} AND s.enable=#{enabled}
+        WHERE c.city_id= #{cityId} AND s.enable=#{enabled}
     </select>
 
-    <select id="findStoresListByStoreInfo"  parameterType="java.lang.String"  resultMap="storeVOResultMap">
+    <select id="findStoresListByStoreInfo" parameterType="java.lang.String" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -102,6 +102,6 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        WHERE s.store_name LIKE CONCAT('%',#{queryCusInfo},'%') OR  s.store_code LIKE CONCAT('%',#{queryCusInfo},'%')
+        WHERE s.store_name LIKE CONCAT('%',#{queryCusInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryCusInfo},'%')
     </select>
 </mapper>

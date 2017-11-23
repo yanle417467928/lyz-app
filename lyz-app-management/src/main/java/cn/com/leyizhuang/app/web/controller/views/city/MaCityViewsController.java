@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping(value= MaCityViewsController.PRE_URL,produces = "application/json;charset=utf-8")
+@RequestMapping(value = MaCityViewsController.PRE_URL, produces = "application/json;charset=utf-8")
 public class MaCityViewsController extends BaseController {
 
     protected final static String PRE_URL = "/views/admin/citys";
@@ -22,8 +22,8 @@ public class MaCityViewsController extends BaseController {
     private CityService cityService;
 
     @RequestMapping(value = "/list")
-    public String getCitysList(){
-         return "/views/city/city_page";
+    public String getCitysList() {
+        return "/views/city/city_page";
     }
 }
 

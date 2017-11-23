@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class CashCouponResponse implements Serializable{
+public class CashCouponResponse implements Serializable {
 
     private static final long serialVersionUID = -6163637571463895287L;
 

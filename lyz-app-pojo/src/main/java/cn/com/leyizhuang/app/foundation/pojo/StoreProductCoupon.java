@@ -22,7 +22,7 @@ public class StoreProductCoupon {
 
     private Long storeId;
 
-    private  Long gid;
+    private Long gid;
 
     private Integer quantity;
 

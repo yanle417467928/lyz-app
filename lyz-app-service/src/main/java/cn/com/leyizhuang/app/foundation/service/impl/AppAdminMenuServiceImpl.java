@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * AppMenuService实现类
  *
  * @author Richard
- *         Created on 2017-05-08 14:30
+ * Created on 2017-05-08 14:30
  **/
 @Service
 @Transactional
@@ -39,7 +39,7 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
 
     @Override
     public PageInfo<AppAdminMenuDO> queryPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
+        PageHelper.startPage(page, size);
         List<AppAdminMenuDO> menuDOList = menuDAO.queryList();
         return new PageInfo<>(menuDOList);
     }
@@ -49,7 +49,7 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
         List<AppAdminMenuVO> appAdminMenuListVO = new ArrayList<>();
         //获取所有的菜单DO
         List<AppAdminMenuDO> appAdminMenuDOList = menuDAO.queryList();
-        if (null != appAdminMenuDOList){
+        if (null != appAdminMenuDOList) {
             List<AppAdminMenuVO> allMenuVOList = AppAdminMenuVO.transform(appAdminMenuDOList);
             // 先筛选出所有的顶层菜单
             appAdminMenuListVO = allMenuVOList.stream().filter(menuVO -> 0 == menuVO.getParentId())
@@ -103,7 +103,7 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
 
     @Override
     public List<AppAdminMenuDO> queryByParentId(Long parentId) {
-        if(null != parentId){
+        if (null != parentId) {
             return menuDAO.queryByParentId(parentId);
         }
         return null;
@@ -116,7 +116,7 @@ public class AppAdminMenuServiceImpl extends BaseServiceImpl<AppAdminMenuDO> imp
 
     @Override
     public Long countByParentId(Long id) {
-        if (null == id){
+        if (null == id) {
             return 0L;
         }
         return menuDAO.countByParentId(id);

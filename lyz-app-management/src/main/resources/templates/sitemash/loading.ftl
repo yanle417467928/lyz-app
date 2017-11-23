@@ -3,6 +3,7 @@
         margin: 0px;
         /*background: black;*/
     }
+
     .loading {
         width: 100px;
         height: 100px;
@@ -15,6 +16,7 @@
         -ms-animation: 2s loading linear infinite;
         animation: 2s loadings linear infinite;
     }
+
     @-webkit-keyframes loadings {
         from {
             transform: rotate(0deg);
@@ -23,6 +25,7 @@
             transform: rotate(360deg);
         }
     }
+
     @-moz-keyframes loadings {
         from {
             transform: rotate(0deg);
@@ -31,6 +34,7 @@
             transform: rotate(360deg);
         }
     }
+
     @-ms-keyframes loadings {
         from {
             transform: rotate(0deg);
@@ -39,6 +43,7 @@
             transform: rotate(360deg);
         }
     }
+
     @keyframes loadings {
         from {
             transform: rotate(0deg);

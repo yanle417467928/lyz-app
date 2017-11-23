@@ -3,10 +3,9 @@ package cn.com.leyizhuang.app.core.constant;
 
 import cn.com.leyizhuang.app.core.config.InterfaceConfigure;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class ApplicationConstant {
 
+    public static final String FORBIDDEN_SELFT_TAKE_COMPANY_FLAG = "YR|LYZ";
     //从配置文件加载值的常量
     public static String imagePath;
     public static String alipayReturnUrl;

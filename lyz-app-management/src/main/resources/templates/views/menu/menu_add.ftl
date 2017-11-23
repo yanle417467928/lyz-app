@@ -2,8 +2,10 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -47,11 +49,13 @@
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="二级菜单选择指定父级菜单；一级菜单，请选择'无父级菜单'"></i>
                                 </label>
-                                <select id="parentId" name="parentId" class="form-control select" data-live-search="true">
+                                <select id="parentId" name="parentId" class="form-control select"
+                                        data-live-search="true">
                                     <option value="0">无父级菜单</option>
                                 <#if menuVOList?? && menuVOList?size gt 0>
                                     <#list menuVOList as item>
-                                        <option value="${(item.id!'0')?c}" data-icon="${item.iconStyle!'fa fa-circle-o'}"
+                                        <option value="${(item.id!'0')?c}"
+                                                data-icon="${item.iconStyle!'fa fa-circle-o'}"
                                                 <#if menuDO?? && menuDO.id?? && menuDO.id?c == (item.id!'0')?c>selected</#if>>
                                         ${item.title!'加载失败...'}
                                         </option>
@@ -87,7 +91,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="linkUri" type="text" class="form-control" id="linkUri" placeholder="链接地址"
+                                    <input name="linkUri" type="text" class="form-control" id="linkUri"
+                                           placeholder="链接地址"
                                            value="<#if menuDO??>${menuDO.linkUri!'加载失败...'}</#if>">
                                 </div>
                             </div>
@@ -101,7 +106,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="iconStyle" type="text" class="form-control" id="iconStyle" placeholder="图标样式"
+                                    <input name="iconStyle" type="text" class="form-control" id="iconStyle"
+                                           placeholder="图标样式"
                                            value="<#if menuDO??>${menuDO.iconStyle!''}</#if>">
                                 </div>
                             </div>
@@ -131,7 +137,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="sortId" type="number" class="form-control" id="sortId" placeholder="排序号"
+                                    <input name="sortId" type="number" class="form-control" id="sortId"
+                                           placeholder="排序号"
                                            value="<#if menuDO??>${(menuDO.sortId!'99999')?c}<#else>99999</#if>">
                                 </div>
                             </div>
@@ -156,7 +163,7 @@
     </div>
 </section>
 <script>
-    $(function() {
+    $(function () {
         if (!$global.validateMobile()) {
             $('.select').selectpicker();
         }
@@ -172,11 +179,11 @@
         $("#add_user").submit();
     }
 
-    function checkMenuType(menuType){
+    function checkMenuType(menuType) {
         if (menuType == "CHILD") {
             $('#parent_info').show()
 
-        }else if (menuType == "PARENT"){
+        } else if (menuType == "PARENT") {
             $('#parent_info').hide()
 
         }

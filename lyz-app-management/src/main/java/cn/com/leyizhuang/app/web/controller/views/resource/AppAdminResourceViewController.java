@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  **/
 @Controller
 @RequestMapping("/views/admin/resource")
-public class AppAdminResourceViewController extends BaseController{
+public class AppAdminResourceViewController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppAdminResourceViewController.class);
 
@@ -39,20 +39,22 @@ public class AppAdminResourceViewController extends BaseController{
 
     /**
      * 新增资源页面跳转
+     *
      * @return
      */
     @GetMapping(value = "/add")
-    public String add(Model model){
+    public String add(Model model) {
         logger.info("新增资源");
         List<Resource> resourceList = resourceService.queryByPid(0L);
-        model.addAttribute("resourceList",resourceList);
-        model.addAttribute("resourceTypeList",AppAdminResourceType.values());
+        model.addAttribute("resourceList", resourceList);
+        model.addAttribute("resourceTypeList", AppAdminResourceType.values());
         return "/views/resource/resource_add";
     }
 
 
     /**
-     *  编辑资源页面
+     * 编辑资源页面
+     *
      * @param map
      * @param id
      * @return
@@ -66,7 +68,7 @@ public class AppAdminResourceViewController extends BaseController{
                 error404();
                 return "/error/404";
             } else {
-                map.addAttribute("resource",resource);
+                map.addAttribute("resource", resource);
             }
         }
         List<Resource> resourceList = resourceService.queryByPid(0L);

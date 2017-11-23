@@ -17,7 +17,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCouponRequest implements Serializable{
+public class ProductCouponRequest implements Serializable {
 
     /**
      * 顾客ID

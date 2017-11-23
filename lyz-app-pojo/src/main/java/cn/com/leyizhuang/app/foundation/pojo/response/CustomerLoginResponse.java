@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @AllArgsConstructor
-public class CustomerLoginResponse implements Serializable{
+public class CustomerLoginResponse implements Serializable {
 
     //openId是否存在
     private Boolean isExist;

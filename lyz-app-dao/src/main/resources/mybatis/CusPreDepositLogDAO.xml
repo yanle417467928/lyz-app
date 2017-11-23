@@ -5,13 +5,13 @@
 
     <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse">
         SELECT
-          id, type, create_time, change_money, order_number
+        id, type, create_time, change_money, order_number
         FROM cus_pre_deposit_log
         WHERE cus_id = #{userId}
-          AND type in
-            <foreach collection="list" item="type" separator="," open="(" close=")">
-              #{type}
-            </foreach>
+        AND type in
+        <foreach collection="list" item="type" separator="," open="(" close=")">
+            #{type}
+        </foreach>
         ORDER BY create_time DESC
     </select>
 

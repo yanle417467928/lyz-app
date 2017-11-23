@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = MaShoppingGuideRestController.PRE_URL,produces = "application/json;charset=utf-8")
-public class MaShoppingGuideRestController extends  BaseRestController {
+@RequestMapping(value = MaShoppingGuideRestController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaShoppingGuideRestController extends BaseRestController {
 
-    protected static  final String  PRE_URL = "/rest/employees";
+    protected static final String PRE_URL = "/rest/employees";
 
     private final Logger logger = LoggerFactory.getLogger(MaShoppingGuideRestController.class);
 
@@ -26,12 +26,13 @@ public class MaShoppingGuideRestController extends  BaseRestController {
 
     /**
      * 根据门店ID查询导购
+     *
      * @param storeId
      * @return
      */
     @GetMapping(value = "/findGuidesListById/{storeId}")
-    public List<ShoppingGuideVO> findGuidesListById(@PathVariable("storeId") Long storeId){
-      return   maShoppingGuideService.findGuideListById(storeId);
+    public List<ShoppingGuideVO> findGuidesListById(@PathVariable("storeId") Long storeId) {
+        return maShoppingGuideService.findGuideListById(storeId);
     }
 
 }

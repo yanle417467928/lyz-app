@@ -3,8 +3,6 @@ package cn.com.leyizhuang.app.foundation.pojo.order;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
-import java.util.Date;
-
 /**
  * 订单物流相关信息
  *

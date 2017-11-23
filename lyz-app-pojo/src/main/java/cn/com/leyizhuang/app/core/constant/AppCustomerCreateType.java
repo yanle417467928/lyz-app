@@ -25,13 +25,14 @@ public enum AppCustomerCreateType {
         return value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
     public void setDescription(String description) {
         this.description = description;
     }

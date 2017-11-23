@@ -108,10 +108,11 @@ public class EvaluationController {
     }
 
     /**
-     *  订单商品评价
-     * @param orderGoodsEvaluationRequest   订单商品评价参数
-     * @param pictures  评价图片文件
-     * @return  图片地址
+     * 订单商品评价
+     *
+     * @param orderGoodsEvaluationRequest 订单商品评价参数
+     * @param pictures                    评价图片文件
+     * @return 图片地址
      */
     @PostMapping(value = "/goods/submit", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> orderEvaluationGoodsSubmit(OrderGoodsEvaluationRequest orderGoodsEvaluationRequest, @RequestParam(value = "pictures",
@@ -161,11 +162,11 @@ public class EvaluationController {
             goodsEvaluation.setOrderNumber(orderGoodsEvaluationRequest.getOrderNumber());
             goodsEvaluation.setCommentContent(orderGoodsEvaluationRequest.getEvaluationContent());
             goodsEvaluation.setGid(orderGoodsEvaluationRequest.getGoodsId());
-            if(AppIdentityType.getAppIdentityTypeByValue(orderGoodsEvaluationRequest.getIdentityType()).equals(AppIdentityType.CUSTOMER)){
+            if (AppIdentityType.getAppIdentityTypeByValue(orderGoodsEvaluationRequest.getIdentityType()).equals(AppIdentityType.CUSTOMER)) {
                 AppCustomer customer = customerService.findById(orderGoodsEvaluationRequest.getUserId());
                 goodsEvaluation.setEvaluationName(customer.getName());
                 goodsEvaluation.setPicUrl(customer.getPicUrl());
-            }else{
+            } else {
                 AppEmployee employee = employeeService.findById(orderGoodsEvaluationRequest.getUserId());
                 goodsEvaluation.setEvaluationName(employee.getName());
                 goodsEvaluation.setPicUrl(employee.getPicUrl());
@@ -187,15 +188,16 @@ public class EvaluationController {
 
     /**
      * 获取商品评价
-     * @param gid   商品id
-     * @return  商品评价List
+     *
+     * @param gid 商品id
+     * @return 商品评价List
      */
     @PostMapping(value = "/goods/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getGoodsEvaluationList(Long gid){
+    public ResultDTO<Object> getGoodsEvaluationList(Long gid) {
         logger.info("getGoodsEvaluationList CALLED,获取商品评价,入参 gid:{}, ", gid);
         ResultDTO<Object> resultDTO;
 
-        if (null == gid){
+        if (null == gid) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
             logger.info("getGoodsEvaluationList OUT,获取商品评价失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -206,7 +208,7 @@ public class EvaluationController {
             List<GoodsEvaluation> goodsEvaluationList = goodsEvaluationService.queryEvaluationListByGid(gid);
             //创建商品评价返回list
             List<GoodsEvaluationListResponse> goodsEvaluationListResponses = new ArrayList<>();
-            for (GoodsEvaluation goodsEvaluation : goodsEvaluationList){
+            for (GoodsEvaluation goodsEvaluation : goodsEvaluationList) {
                 GoodsEvaluationListResponse goodsEvaluationListResponse = new GoodsEvaluationListResponse();
                 goodsEvaluationListResponse.setCommentContent(goodsEvaluation.getCommentContent());
                 goodsEvaluationListResponse.setEvaluationName(goodsEvaluation.getEvaluationName());
@@ -225,7 +227,7 @@ public class EvaluationController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsEvaluationListResponses);
             logger.info("getGoodsEvaluationList OUT,获取商品评价成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取商品评价失败!", null);
             logger.warn("getGoodsEvaluationList EXCEPTION,获取商品评价失败，出参 resultDTO:{}", resultDTO);

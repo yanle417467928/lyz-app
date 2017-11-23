@@ -32,14 +32,14 @@
                     },
                     success: function (result) {
                         if (0 === result.code) {
-                            var frontHtml = result.content+ '<input type="hidden" id="roleId" value="">';
+                            var frontHtml = result.content + '<input type="hidden" id="roleId" value="">';
                             $("#authorityForm").empty().append(frontHtml);
                             $("#authorifyselect").treeMultiselect({searchable: true, hideSidePanel: true});
                             $("#roleId").val(roleId);
                             $("#AuthorityTitle").text("给 " + username + " 分配权限");
                             $("#grantAuthorityModal").modal('show');
                         }
-                        if(-1===result.code){
+                        if (-1 === result.code) {
                             $notify.danger(message);
                         }
 
@@ -261,8 +261,8 @@
         ]);
         $("#authoritysubmit").click(function () {
             var varArray = $("#authorifyselect").val();
-            if(null === varArray){
-                varArray= ['-1'];
+            if (null === varArray) {
+                varArray = ['-1'];
             }
             var roleId = $("#roleId").val();
             console.log(varArray);
@@ -348,9 +348,9 @@
 
                                 if (true === data.status) {
                                     data.status = '正常';
-                                }else if(false === data.status){
+                                } else if (false === data.status) {
                                     data.status = '停用';
-                                }else{
+                                } else {
                                     data.status = '-';
                                 }
                                 $('#status').html(data.status);

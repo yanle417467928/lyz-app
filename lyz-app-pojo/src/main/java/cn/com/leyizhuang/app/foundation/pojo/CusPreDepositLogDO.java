@@ -45,20 +45,20 @@ public class CusPreDepositLogDO {
     //商户订单号
     private String userOrderNumber;
 
-    public void setUserIdAndOperatorinfo(Long cusId, Long operatorId, AppIdentityType operatorType, String operatorIp){
+    public void setUserIdAndOperatorinfo(Long cusId, Long operatorId, AppIdentityType operatorType, String operatorIp) {
         this.cusId = cusId;
         this.operatorId = operatorId;
         this.operatorType = operatorType;
         this.operatorIp = operatorIp;
     }
 
-    public void setCreateTimeAndChangeMoneyAndType(LocalDateTime createTime, Double changeMoney, PreDepositChangeType type){
+    public void setCreateTimeAndChangeMoneyAndType(LocalDateTime createTime, Double changeMoney, PreDepositChangeType type) {
         this.createTime = createTime;
         this.changeMoney = changeMoney;
         this.type = type;
     }
 
-    public void setOrderNumberAndRemarksAndDetailReason(String orderNumber, String remarks, String detailReason){
+    public void setOrderNumberAndRemarksAndDetailReason(String orderNumber, String remarks, String detailReason) {
         this.orderNumber = orderNumber;
         this.remarks = remarks;
         this.detailReason = detailReason;

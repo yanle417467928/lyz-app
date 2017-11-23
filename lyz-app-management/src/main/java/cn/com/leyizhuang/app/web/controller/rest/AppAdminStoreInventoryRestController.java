@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/6.
+ * Created on 2017/5/6.
  */
 @RestController
 @RequestMapping(value = AppAdminStoreInventoryRestController.PRE_URL, produces = "application/json;charset=utf8")
@@ -32,7 +32,7 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
         size = getSize(size);
         Integer page = (offset / size) + 1;
         PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size);
-        return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(),storeInventoryPage.getTotal());
+        return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
     }
 
 

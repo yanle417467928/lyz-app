@@ -36,7 +36,7 @@ public interface AppStoreService {
 
     int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
 
-    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory);
+    int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory);
 
     void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
 
@@ -44,7 +44,7 @@ public interface AppStoreService {
 
     void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
 
-    void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long,Integer> storeInventory);
+    void unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory);
 
     List<StoreResponse> findStoreByCityId(Long cityId);
 

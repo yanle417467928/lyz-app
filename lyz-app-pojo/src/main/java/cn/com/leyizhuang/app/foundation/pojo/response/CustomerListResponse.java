@@ -43,7 +43,7 @@ public class CustomerListResponse implements Serializable {
     public CustomerListResponse() {
     }
 
-    public static CustomerListResponse transform(AppCustomer appCustomer){
+    public static CustomerListResponse transform(AppCustomer appCustomer) {
 
         CustomerListResponse customer = new CustomerListResponse();
 
@@ -57,7 +57,7 @@ public class CustomerListResponse implements Serializable {
         if (appCustomer.getCustomerType() != null) {
             customer.setCustomerType(appCustomer.getCustomerType().getValue());
         }
-        if (null != appCustomer.getCreateTime()){
+        if (null != appCustomer.getCreateTime()) {
             String time = appCustomer.getCreateTime()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             customer.setCreateTime(time);
@@ -65,14 +65,14 @@ public class CustomerListResponse implements Serializable {
         return customer;
     }
 
-    public static List<CustomerListResponse> transform(List<AppCustomer> appCustomerList){
+    public static List<CustomerListResponse> transform(List<AppCustomer> appCustomerList) {
 
         List<CustomerListResponse> customerListResponses;
 
-        if (appCustomerList.size() > 0 && !appCustomerList.isEmpty()){
+        if (appCustomerList.size() > 0 && !appCustomerList.isEmpty()) {
             customerListResponses = new ArrayList<>(appCustomerList.size());
             appCustomerList.forEach(appCustomer -> customerListResponses.add(transform(appCustomer)));
-        }else {
+        } else {
             customerListResponses = new ArrayList<>(0);
         }
 

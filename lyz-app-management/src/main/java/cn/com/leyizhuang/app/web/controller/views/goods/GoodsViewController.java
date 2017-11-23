@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2017/9/6
  */
 @Controller
-@RequestMapping(value = GoodsViewController.PRE_URL,produces = "application/json;charset=utf-8")
-public class GoodsViewController extends BaseController{
+@RequestMapping(value = GoodsViewController.PRE_URL, produces = "application/json;charset=utf-8")
+public class GoodsViewController extends BaseController {
     protected final static String PRE_URL = "/view/goods";
     private final Logger logger = LoggerFactory.getLogger(GoodsViewController.class);
 
@@ -29,11 +29,11 @@ public class GoodsViewController extends BaseController{
     private GoodsService goodsService;
 
     /**
-     * @title 去商品信息列表页面
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 去商品信息列表页面
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/9
      */
@@ -43,11 +43,11 @@ public class GoodsViewController extends BaseController{
     }
 
     /**
-     * @title   去编辑商品信息页面
-     * @descripe
      * @param id
      * @return
      * @throws
+     * @title 去编辑商品信息页面
+     * @descripe
      * @author GenerationRoad
      * @date 2017/9/9
      */
@@ -61,7 +61,7 @@ public class GoodsViewController extends BaseController{
                 return "/error/404";
             } else {
                 GoodsVO goodsVO = GoodsVO.transform(goodsDO);
-                map.addAttribute("goodsVO",goodsVO);
+                map.addAttribute("goodsVO", goodsVO);
             }
         }
         return "/views/goods/goods_edit";

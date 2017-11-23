@@ -1,7 +1,7 @@
 var $global = {
     ajaxEnable: true,
     timer: null,
-    validateMobile: function() {
+    validateMobile: function () {
         var userAgentInfo = navigator.userAgent;
         var Agents = ["Android", "iPhone",
             "SymbianOS", "Windows Phone"];
@@ -38,7 +38,7 @@ var $notify = {
             '</div>'
         });
     },
-    success: function(message, url, target) {
+    success: function (message, url, target) {
         this.notify({
             title: '成功',
             icon: 'icon fa fa-check',
@@ -47,7 +47,7 @@ var $notify = {
             target: target
         }, 'success');
     },
-    info: function(message, url, target) {
+    info: function (message, url, target) {
         this.notify({
             title: '提示',
             icon: 'icon fa fa-info',
@@ -56,7 +56,7 @@ var $notify = {
             target: target
         }, 'info');
     },
-    warning: function(message, url, target) {
+    warning: function (message, url, target) {
         this.notify({
             title: '警告',
             icon: 'icon fa fa-warning',
@@ -65,7 +65,7 @@ var $notify = {
             target: target
         }, 'warning');
     },
-    danger: function(message, url, target) {
+    danger: function (message, url, target) {
         this.notify({
             title: '错误',
             icon: 'icon fa fa-ban',
@@ -123,11 +123,11 @@ var $grid = {
                         clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
-                        if(-1 === result.code){
-                            if(null !== result.message){
+                        if (-1 === result.code) {
+                            if (null !== result.message) {
                                 $notify.success(result.message);
                             }
-                        }else{
+                        } else {
                             $notify.danger('网络异常，请稍后重试或联系管理员');
                         }
 
@@ -138,8 +138,8 @@ var $grid = {
                         $global.timer = null;
                         if (0 === result.code) {
                             container.bootstrapTable('refresh');
-                            if(null !== result.message){
-                            $notify.success(result.message);
+                            if (null !== result.message) {
+                                $notify.success(result.message);
                             }
                         } else {
                             $notify.danger(result.message);
@@ -200,16 +200,16 @@ var $grid = {
             columns: columns
         });
     },
-    getSelectedIds: function(container) {
+    getSelectedIds: function (container) {
         var ids = [];
         var selected = container.bootstrapTable('getSelections');
-        for (var i = 0; i < selected.length; i++ ) {
+        for (var i = 0; i < selected.length; i++) {
             var data = selected[i];
             ids.push(data.id);
         }
         return ids;
     },
-    getRowByUniqueId: function(container, uniqueId) {
+    getRowByUniqueId: function (container, uniqueId) {
         return container.bootstrapTable('getRowByUniqueId', uniqueId);
     }
 };
@@ -218,7 +218,7 @@ var $modal = {
     danger: function (title, content, method) {
         $('#dangerModalTitle').html(' ' + title);
         $('#dangerModalContent').html(' ' + content);
-        $('#dangerModalCheckBtn').one('click', function() {
+        $('#dangerModalCheckBtn').one('click', function () {
             $('#dangerModal').modal('hide');
             method();
         });
@@ -227,18 +227,18 @@ var $modal = {
 };
 
 var $loading = {
-    show: function() {
-        $('#loading').on('show.bs.modal', function(){
+    show: function () {
+        $('#loading').on('show.bs.modal', function () {
             var $this = $('#loading');
             var $modal_dialog = $this.find('.modal-dialog');
-            var m_top = ( $(window).height() - $modal_dialog.height() )/2;
+            var m_top = ( $(window).height() - $modal_dialog.height() ) / 2;
             $modal_dialog.css({'margin': m_top + 'px auto'});
         });
         $('#loading').modal({backdrop: 'static', keyboard: false});
         $('#loading').modal('show');
     },
-    close: function() {
-        setTimeout(function() {
+    close: function () {
+        setTimeout(function () {
             $('#loading').modal('hide');
         }, 500);
     }
@@ -255,7 +255,7 @@ $localDateTime.toString = function (value) {
 };
 
 var $http = $http || {};
-$http.ajax = function(url, method, data, fun) {
+$http.ajax = function (url, method, data, fun) {
     if (null === $global.timer) {
         $global.timer = setTimeout($loading.show, 2000);
         $.ajax({
@@ -263,13 +263,13 @@ $http.ajax = function(url, method, data, fun) {
             method: method,
             data: data,
             traditional: true,
-            error: function() {
+            error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
                 $global.timer = null;
                 $notify.danger('网络异常，请稍后重试或联系管理员');
             },
-            success: function(result) {
+            success: function (result) {
                 clearTimeout($global.timer);
                 $loading.close();
                 $global.timer = null;
@@ -278,17 +278,17 @@ $http.ajax = function(url, method, data, fun) {
         })
     }
 };
-$http.GET = function(url, data, fun) {
+$http.GET = function (url, data, fun) {
     this.ajax(url, 'GET', data, fun);
 };
-$http.POST = function(url, data, fun) {
+$http.POST = function (url, data, fun) {
     this.ajax(url, 'POST', data, fun);
 };
-$http.PUT = function(url, data, fun) {
+$http.PUT = function (url, data, fun) {
     data._method = 'PUT';
     this.ajax(url, 'PUT', data, fun);
 };
-$http.DELETE = function(url, data, fun) {
+$http.DELETE = function (url, data, fun) {
     data._method = 'DELETE';
     this.ajax(url, 'DELETE', data, fun);
 };

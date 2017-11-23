@@ -12,11 +12,12 @@
     </insert>
 
 
-    <select id="findByOutTradeNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+    <select id="findByOutTradeNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         SELECT out_trade_no, total_fee, trade_status, user_id, identity_type appIdentityType, payment_type
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
-          AND trade_status = #{tradeStatus}
+        AND trade_status = #{tradeStatus}
     </select>
 
     <update id="updateByTradeStatusIsWaitPay" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">

@@ -60,9 +60,10 @@ public class MaterialAuditSheet {
 
     /**
      * 转换为返回值类型
+     *
      * @return
      */
-    public MaterialAuditDetailsResponse getMaterialAuditDetailsResponse(){
+    public MaterialAuditDetailsResponse getMaterialAuditDetailsResponse() {
         MaterialAuditDetailsResponse materialAuditDetailsResponse = new MaterialAuditDetailsResponse();
         materialAuditDetailsResponse.setAuditNo(this.getAuditNo());
         materialAuditDetailsResponse.setDeliveryCity(this.getDeliveryCity());

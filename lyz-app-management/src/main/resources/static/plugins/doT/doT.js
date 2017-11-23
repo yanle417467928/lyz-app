@@ -9,53 +9,56 @@
             "'": "&#39;",
             "/": "&#47;"
         }
-          , b = /&(?!#?\w+;)|<|>|"|'|\//g;
+            , b = /&(?!#?\w+;)|<|>|"|'|\//g;
         return function () {
             return this ? this.replace(b, function (c) {
                 return a[c] || c
             }) : this
         }
     }
+
     function p(a, b, c) {
-        if (b == undefined ) {
+        if (b == undefined) {
             return "";
         }
-            return (typeof b === "string" ? b : b.toString()).replace(a.define || i, function (l, e, f, g) {
-                if (e.indexOf("def.") === 0) {
-                    e = e.substring(4)
-                }
-                if (!(e in c)) {
-                    if (f === ":") {
-                        a.defineParams && g.replace(a.defineParams, function (n, h, d) {
-                            c[e] = {
-                                arg: h,
-                                text: d
-                            }
-                        });
-                        e in c || (c[e] = g)
-                    } else {
-                        (new Function("def", "def['" + e + "']=" + g))(c)
-                    }
-                }
-                return "";
-            }).replace(a.use || i, function (l, e) {
-                if (a.useParams) {
-                    e = e.replace(a.useParams, function (g, n, h, d) {
-                        if (c[h] && c[h].arg && d) {
-                            g = (h + ":" + d).replace(/'|\\/g, "_");
-                            c.__exp = c.__exp || {};
-                            c.__exp[g] = c[h].text.replace(RegExp("(^|[^\\w$])" + c[h].arg + "([^\\w$])", "g"), "$1" + d + "$2");
-                            return n + "def.__exp['" + g + "']"
+        return (typeof b === "string" ? b : b.toString()).replace(a.define || i, function (l, e, f, g) {
+            if (e.indexOf("def.") === 0) {
+                e = e.substring(4)
+            }
+            if (!(e in c)) {
+                if (f === ":") {
+                    a.defineParams && g.replace(a.defineParams, function (n, h, d) {
+                        c[e] = {
+                            arg: h,
+                            text: d
                         }
-                    })
+                    });
+                    e in c || (c[e] = g)
+                } else {
+                    (new Function("def", "def['" + e + "']=" + g))(c)
                 }
-                var f = (new Function("def", "return " + e))(c);
-                return f ? p(a, f, c) : f
-            })
+            }
+            return "";
+        }).replace(a.use || i, function (l, e) {
+            if (a.useParams) {
+                e = e.replace(a.useParams, function (g, n, h, d) {
+                    if (c[h] && c[h].arg && d) {
+                        g = (h + ":" + d).replace(/'|\\/g, "_");
+                        c.__exp = c.__exp || {};
+                        c.__exp[g] = c[h].text.replace(RegExp("(^|[^\\w$])" + c[h].arg + "([^\\w$])", "g"), "$1" + d + "$2");
+                        return n + "def.__exp['" + g + "']"
+                    }
+                })
+            }
+            var f = (new Function("def", "return " + e))(c);
+            return f ? p(a, f, c) : f
+        })
     }
+
     function m(a) {
         return a.replace(/\\('|\\)/g, "$1").replace(/[\r\t\n]/g, " ")
     }
+
     var j = {
         version: "liuqiaoru",
         templateSettings: {
@@ -84,7 +87,7 @@
         } else {
             q = function () {
                 return this || (0,
-                eval)("this")
+                    eval)("this")
             }();
             q.doT = j
         }
@@ -102,7 +105,7 @@
             endencode: "||'').toString().encodeHTML();out+='"
         }
     }
-      , i = /$^/;
+        , i = /$^/;
     j.template = function (a, b, c) {
         b = b || j.templateSettings;
         var l = b.append ? r.append : r.split, e, f = 0, g;

@@ -8,6 +8,7 @@ import lombok.ToString;
 
 /**
  * 商店库存
+ *
  * @author liuh
  * create_time 2017-11-02 14:55:54
  */

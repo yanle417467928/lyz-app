@@ -18,24 +18,25 @@
         VALUES (#{name}, #{url}, #{description}, #{icon}, #{status}, #{resourceType}, #{createTime}, #{sortId}, #{pid})
     </insert>
 
-    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
+    <select id="queryById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
         SELECT *
         FROM admin_resource
         WHERE rs_id = #{id};
     </select>
     <select id="queryListVO" resultType="cn.com.leyizhuang.app.foundation.vo.ResourceVO">
         SELECT
-            r.rs_id         id,
-            r.NAME          resource_name,
-            r.DESCRIPTION   resource_description,
-            pr.rs_id        parent_resource_id,
-            pr.NAME         parent_resource_name,
-            pr.DESCRIPTION  parent_resource_description,
-            r.URL           url,
-            r.sort_id       sort_id,
-            r.ICON          icon,
-            r.STATUS        status,
-            r.RESOURCE_TYPE resource_type
+        r.rs_id id,
+        r.NAME resource_name,
+        r.DESCRIPTION resource_description,
+        pr.rs_id parent_resource_id,
+        pr.NAME parent_resource_name,
+        pr.DESCRIPTION parent_resource_description,
+        r.URL url,
+        r.sort_id sort_id,
+        r.ICON icon,
+        r.STATUS status,
+        r.RESOURCE_TYPE resource_type
         FROM admin_resource r LEFT JOIN admin_resource pr ON r.pid = pr.rs_id
     </select>
 
@@ -113,27 +114,28 @@
         </foreach>
     </delete>
 
-    <select id="selectByType" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
+    <select id="selectByType" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.Resource">
         SELECT *
         FROM admin_resource
         WHERE resource_type = #{type}
     </select>
     <select id="queryVOById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.ResourceVO">
         SELECT
-            r.rs_id         id,
-            r.name          resource_name,
-            r.DESCRIPTION   resource_description,
-            r.PID           parent_resource_id,
-            r1.name         parent_resource_name,
-            r1.DESCRIPTION  parent_resource_description,
-            r.URL           url,
-            r.sort_id       seq,
-            r.ICON          icon,
-            r.status        STATUS,
-            r.RESOURCE_TYPE resource_type
+        r.rs_id id,
+        r.name resource_name,
+        r.DESCRIPTION resource_description,
+        r.PID parent_resource_id,
+        r1.name parent_resource_name,
+        r1.DESCRIPTION parent_resource_description,
+        r.URL url,
+        r.sort_id seq,
+        r.ICON icon,
+        r.status STATUS,
+        r.RESOURCE_TYPE resource_type
         FROM
-            admin_resource r
-            LEFT JOIN admin_resource r1 ON r.pid = r1.rs_id
+        admin_resource r
+        LEFT JOIN admin_resource r1 ON r.pid = r1.rs_id
         WHERE r.rs_id = #{id}
     </select>
 

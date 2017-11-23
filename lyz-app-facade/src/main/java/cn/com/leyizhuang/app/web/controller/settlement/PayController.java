@@ -34,27 +34,28 @@ public class PayController {
 
     /**
      * 接受微信调用后返回参数的回调接口
+     *
      * @param request
      * @param response
      */
     @PostMapping(value = "/wechat/return/async", produces = "application/json;charset=UTF-8")
-    public void wechatReturnSync(HttpServletRequest request, HttpServletResponse response){
+    public void wechatReturnSync(HttpServletRequest request, HttpServletResponse response) {
 
-        logger.info("wechatReturnSync CALLED,接受微信调用后返回参数的回调接口，入参 request:{},response:{}",request,response);
+        logger.info("wechatReturnSync CALLED,接受微信调用后返回参数的回调接口，入参 request:{},response:{}", request, response);
 
         try {
             String result = WechatUtil.streamToString(request.getInputStream());
             Map resultMap = WechatUtil.doXMLParse(result);
 
             if (resultMap != null) {
-                if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())){
-                    if (WechatUtil.verifyNotify(resultMap)){
+                if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
+                    if (WechatUtil.verifyNotify(resultMap)) {
 
                         String outTradeNo = resultMap.get("out_trade_no").toString();
                         String totalFee = resultMap.get("total_fee").toString();
 
                         //判断是否是充值订单
-                        if (outTradeNo.contains("")){
+                        if (outTradeNo.contains("")) {
 
                         } else {
                             OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);

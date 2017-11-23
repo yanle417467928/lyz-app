@@ -31,11 +31,9 @@ import java.util.List;
 @RequestMapping(value = "/app/gift")
 public class OrderGiftController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
     @Autowired
     private GoodsPriceService goodsPriceService;
-
-    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-
 
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {

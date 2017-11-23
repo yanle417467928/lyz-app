@@ -23,10 +23,10 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = MaCustomerRestController.PRE_URL,produces = "application/json;charset=utf-8")
-public class MaCustomerRestController extends  BaseRestController {
+@RequestMapping(value = MaCustomerRestController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaCustomerRestController extends BaseRestController {
 
-    protected static  final String  PRE_URL = "/rest/customers";
+    protected static final String PRE_URL = "/rest/customers";
 
     private final Logger logger = LoggerFactory.getLogger(MaCustomerRestController.class);
 
@@ -35,22 +35,24 @@ public class MaCustomerRestController extends  BaseRestController {
 
     /**
      * 初始化顾客页面
+     *
      * @param offset
      * @param size
      * @param keywords
      * @return
      */
     @GetMapping(value = "/page/grid")
-     public GridDataVO<CustomerVO> restCustomersPageGird(Integer offset, Integer size, String keywords) {
+    public GridDataVO<CustomerVO> restCustomersPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPage = this.maCustomerService.queryPageVO(page,size);
+        PageInfo<CustomerVO> CustmersPage = this.maCustomerService.queryPageVO(page, size);
         List<CustomerVO> CustmersList = CustmersPage.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPage.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPage.getTotal());
     }
 
     /**
      * 查看顾客详细信息
+     *
      * @param cusId
      * @return
      */
@@ -62,12 +64,13 @@ public class MaCustomerRestController extends  BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null, customerVO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerVO);
         }
     }
 
     /**
      * 查询城市顾客
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -75,16 +78,17 @@ public class MaCustomerRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/citygrid/{cityId}")
-    public GridDataVO<CustomerVO> getCudByCityId(Integer offset, Integer size, String keywords,@PathVariable(value = "cityId") Long cityId) {
+    public GridDataVO<CustomerVO> getCudByCityId(Integer offset, Integer size, String keywords, @PathVariable(value = "cityId") Long cityId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CustomerVO> CustmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
         List<CustomerVO> CustmersList = CustmersPageByCityID.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPageByCityID.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByCityID.getTotal());
     }
 
     /**
      * 查询门店顾客
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -92,16 +96,17 @@ public class MaCustomerRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/storegrid/{storeId}")
-    public GridDataVO<CustomerVO> getCudByStoreId(Integer offset, Integer size, String keywords,@PathVariable(value = "storeId") Long storeId) {
+    public GridDataVO<CustomerVO> getCudByStoreId(Integer offset, Integer size, String keywords, @PathVariable(value = "storeId") Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CustomerVO> CustmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
         List<CustomerVO> CustmersList = CustmersPageByStoreId.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPageByStoreId.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByStoreId.getTotal());
     }
 
     /**
      * 查询该导购下的顾客
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -109,16 +114,17 @@ public class MaCustomerRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/guidegrid/{guideId}")
-    public GridDataVO<CustomerVO> getCudByGuideId(Integer offset, Integer size, String keywords,@PathVariable(value = "guideId") Long guideId) {
+    public GridDataVO<CustomerVO> getCudByGuideId(Integer offset, Integer size, String keywords, @PathVariable(value = "guideId") Long guideId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CustomerVO> CustmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
         List<CustomerVO> CustmersList = CustmersPageByGuideId.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPageByGuideId.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByGuideId.getTotal());
     }
 
     /**
      * 通过电话查询顾客
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -126,16 +132,17 @@ public class MaCustomerRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/phonegrid/{queryCusInfo}")
-    public GridDataVO<CustomerVO> getCudByPhone(Integer offset, Integer size, String keywords,@PathVariable(value = "queryCusInfo") Long queryCusInfo){
+    public GridDataVO<CustomerVO> getCudByPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") Long queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-      PageInfo<CustomerVO> CustmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
+        PageInfo<CustomerVO> CustmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
         List<CustomerVO> CustmersList = CustmersPageByPhone.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPageByPhone.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByPhone.getTotal());
     }
 
     /**
      * 通过姓名查询顾客
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -143,33 +150,34 @@ public class MaCustomerRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/Namegrid/{queryCusInfo}")
-    public GridDataVO<CustomerVO> getCudByName(Integer offset, Integer size, String keywords,@PathVariable(value = "queryCusInfo") String queryCusInfo){
+    public GridDataVO<CustomerVO> getCudByName(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") String queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CustomerVO> CustmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
         List<CustomerVO> CustmersList = CustmersPageByName.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList,CustmersPageByName.getTotal());
+        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByName.getTotal());
     }
 
     /**
      * 新增顾客信息
+     *
      * @param customer
      * @param result
      * @return
      */
     @PostMapping
-    public ResultDTO<Object>  restCustomerVOPost(@Valid Customer customer, BindingResult result, MultipartFile file) {
+    public ResultDTO<Object> restCustomerVOPost(@Valid Customer customer, BindingResult result, MultipartFile file) {
         if (!result.hasErrors()) {
-            if(null!=file){
-               String picUrl =  FileUploadOSSUtils.uploadProfilePhoto(file,"/profile/photo/");
-               customer.setPicUrl(picUrl);
-            }else{
+            if (null != file) {
+                String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "/profile/photo/");
+                customer.setPicUrl(picUrl);
+            } else {
                 customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
             }
             customer.setCreateTime(new Date());
             customer.setLight("GREEN");
             customer.setCreateType("Background add");
-            if(null!=customer.getSalesConsultId()){
+            if (null != customer.getSalesConsultId()) {
                 customer.setBindingTime(new Date());
             }
             this.maCustomerService.saveCustomer(customer);
@@ -184,13 +192,14 @@ public class MaCustomerRestController extends  BaseRestController {
 
     /**
      * 新增顾客检验电话号码是否存在
+     *
      * @param mobile
      * @return
      */
     @PostMapping(value = "/isExistPhoneNumber")
-    public ValidatorResultDTO isExistPhoneNumber(@RequestParam(value="mobile") Long mobile){
+    public ValidatorResultDTO isExistPhoneNumber(@RequestParam(value = "mobile") Long mobile) {
         Boolean result = this.maCustomerService.isExistPhoneNumber(mobile);
-        return  new ValidatorResultDTO(!result);
+        return new ValidatorResultDTO(!result);
     }
 
 }

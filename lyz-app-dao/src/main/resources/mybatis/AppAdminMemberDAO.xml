@@ -66,36 +66,36 @@
 
     <select id="queryMemberVOPage" resultType="AppAdminMemberVO">
         SELECT
-            m.ID            ID,
-            s.STORE_NAME    STORE_NAME,
-            sc.CONSULT_NAME SALES_CONSULT_NAME,
-            m.IDENTITY_TYPE IDENTITY_TYPE,
-            m.member_NAME   NAME,
-            m.BIRTHDAY      BIRTHDAY,
-            ma.MOBILE       MOBILE,
-            m.SEX           SEX,
-            ma.STATUS       STATUS
+        m.ID ID,
+        s.STORE_NAME STORE_NAME,
+        sc.CONSULT_NAME SALES_CONSULT_NAME,
+        m.IDENTITY_TYPE IDENTITY_TYPE,
+        m.member_NAME NAME,
+        m.BIRTHDAY BIRTHDAY,
+        ma.MOBILE MOBILE,
+        m.SEX SEX,
+        ma.STATUS STATUS
         FROM member m LEFT JOIN st_store s ON m.STORE_ID = s.ID
-            LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
-            LEFT JOIN member_auth ma ON m.id = ma.member_ID
+        LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
+        LEFT JOIN member_auth ma ON m.id = ma.member_ID
     </select>
 
     <select id="queryMemberVOById" resultType="AppAdminMemberVO">
         SELECT
-            m.ID            ID,
-            m.STORE_ID      STORE,
-            m.CONSULT_ID    SALES_CONSULT,
-            s.STORE_NAME    STORE_NAME,
-            sc.CONSULT_NAME SALES_CONSULT_NAME,
-            m.IDENTITY_TYPE IDENTITY_TYPE,
-            m.member_NAME   NAME,
-            DATE_FORMAT(m.BIRTHDAY,'%Y-%m-%d') BIRTHDAY,
-            ma.MOBILE       MOBILE,
-            m.SEX           SEX,
-            ma.STATUS       STATUS
+        m.ID ID,
+        m.STORE_ID STORE,
+        m.CONSULT_ID SALES_CONSULT,
+        s.STORE_NAME STORE_NAME,
+        sc.CONSULT_NAME SALES_CONSULT_NAME,
+        m.IDENTITY_TYPE IDENTITY_TYPE,
+        m.member_NAME NAME,
+        DATE_FORMAT(m.BIRTHDAY,'%Y-%m-%d') BIRTHDAY,
+        ma.MOBILE MOBILE,
+        m.SEX SEX,
+        ma.STATUS STATUS
         FROM member m LEFT JOIN st_store s ON m.STORE_ID = s.ID
-            LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
-            LEFT JOIN member_auth ma ON m.id = ma.member_ID
+        LEFT JOIN sales_consult sc ON m.CONSULT_ID = sc.ID
+        LEFT JOIN member_auth ma ON m.id = ma.member_ID
         WHERE m.ID = #{id};
     </select>
 
@@ -174,15 +174,15 @@
 
     <select id="queryById" parameterType="java.lang.Long" resultMap="memberAllFields">
         SELECT
-            m.*,
-            auth.MOBILE   MOBILE,
-            auth.EMAIL    EMAIL,
-            auth.`STATUS` `STATUS`
+        m.*,
+        auth.MOBILE MOBILE,
+        auth.EMAIL EMAIL,
+        auth.`STATUS` `STATUS`
         FROM
-            member m
-            LEFT JOIN member_AUTH auth ON auth.member_ID = m.ID
+        member m
+        LEFT JOIN member_AUTH auth ON auth.member_ID = m.ID
         WHERE
-            m.ID = #{id};
+        m.ID = #{id};
     </select>
     <!--<select id="queryAuthById" parameterType="java.lang.Long" resultMap="memberAuth">
         SELECT
@@ -200,11 +200,11 @@
 
     <select id="queryList" resultMap="memberAllFields">
         SELECT
-            m.*,
-            ma.MOBILE,
-            ma.STATUS
+        m.*,
+        ma.MOBILE,
+        ma.STATUS
         FROM member m LEFT JOIN member_auth ma
-                ON m.id = ma.member_ID
+        ON m.id = ma.member_ID
     </select>
 
 

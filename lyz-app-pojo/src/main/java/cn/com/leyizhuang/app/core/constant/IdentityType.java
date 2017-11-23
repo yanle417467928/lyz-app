@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.core.constant;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/3/24.
+ * Created on 2017/3/24.
  */
 public enum IdentityType {
 
@@ -13,6 +13,7 @@ public enum IdentityType {
     IdentityType(String value) {
         this.value = value;
     }
+
     public String getValue() {
         return value;
     }

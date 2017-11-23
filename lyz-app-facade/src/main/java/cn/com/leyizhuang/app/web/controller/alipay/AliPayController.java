@@ -53,18 +53,17 @@ public class AliPayController {
     private AppStoreService appStoreServiceImpl;
 
 
-
-    /**  
-     * @title   支付宝充值预存款
-     * @descripe
+    /**
      * @param
-     * @return 
-     * @throws 
+     * @return
+     * @throws
+     * @title 支付宝充值预存款
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/20
      */
     @RequestMapping(value = "/recharge/pay", method = RequestMethod.POST)
-    public ResultDTO<Object> PreDepositRecharge(Long userId, Integer identityType, Double money, Long cityId){
+    public ResultDTO<Object> PreDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
 
         logger.info("PreDepositRecharge CALLED,支付宝充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
@@ -130,13 +129,13 @@ public class AliPayController {
     }
 
     @RequestMapping(value = "/return/async")
-    public String AlipayReturnAsync(HttpServletRequest request){
+    public String AlipayReturnAsync(HttpServletRequest request) {
 
         try {
             //获取支付宝POST过来反馈信息
-            Map<String,String> params = new HashMap<String,String>();
+            Map<String, String> params = new HashMap<String, String>();
             Map requestParams = request.getParameterMap();
-            for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+            for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
                 String name = (String) iter.next();
                 String[] values = (String[]) requestParams.get(name);
                 String valueStr = "";
@@ -175,10 +174,10 @@ public class AliPayController {
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
 
                             //充值加预存款和日志
-                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)){
+                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
                                 this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
                             } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
-                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)){
+                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
                                 this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
                             }
                             return "success";
@@ -188,7 +187,7 @@ public class AliPayController {
                     this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
                 }
             }
-        }catch (AlipayApiException e){
+        } catch (AlipayApiException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

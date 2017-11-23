@@ -27,12 +27,12 @@ public class PaymentMethodController {
     @Autowired
     private PaymentMethodService paymentMethodServiceImpl;
 
-    /**  
-     * @title   获取配送员收款方式
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取配送员收款方式
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
      * @author GenerationRoad
      * @date 2017/11/15
      */

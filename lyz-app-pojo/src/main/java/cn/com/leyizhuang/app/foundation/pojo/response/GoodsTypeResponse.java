@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class GoodsTypeResponse implements Serializable{
+public class GoodsTypeResponse implements Serializable {
 
     private Long typeId;
 

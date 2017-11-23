@@ -11,9 +11,11 @@
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
 
 
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css" />
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
-   <#-- <script type="text/javascript" src="/javascript/fileinput_locale_zh.js"></script>-->
+    <link type="text/css" rel="stylesheet"
+          href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css"/>
+    <script type="text/javascript"
+            src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
+<#-- <script type="text/javascript" src="/javascript/fileinput_locale_zh.js"></script>-->
 
 
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
@@ -95,7 +97,7 @@
                             },
                             remote: {
                                 type: 'POST',
-                                url:  '/rest/customers/isExistPhoneNumber',
+                                url: '/rest/customers/isExistPhoneNumber',
                                 message: '该电话已被使用',
                                 delay: 500,
                                 data: function () {
@@ -112,7 +114,7 @@
                 var $form = $(e.target);
                 var origin = $form.serializeArray();
                 var data = {};
-                var formData = new FormData($( "#customer_add" )[0]);
+                var formData = new FormData($("#customer_add")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     var url = '/rest/customers';
@@ -217,32 +219,32 @@
                                     <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                        data-content="选择用户性别（如不愿透露，可选“保密”）"></i>
                                 </label>
-                                <select class="form-control select" name="sex" id="sex" >
+                                <select class="form-control select" name="sex" id="sex">
                                     <option value="MALE">男</option>
                                     <option value="FEMALE">女</option>
                                     <option value="SECRET">保密</option>
                                 </select>
                             </div>
-    <#--                        <div class="col-xs-6 col-md-6">
-                                <div class="form-group">
-                                    <label for="description">
-                                        顾客头像
-                                    </label>
-                                    <div class="form-inline">
-                                        <span class="input-group-addon form-control"><i class="fa fa-pencil"></i></span>
-                                        <input name="picUrltext" type="text" class="form-input form-control" id="picUrltext"
-                                               value="www.baidu.com" >
-                                    </div>
-                                </div>
-                            </div>-->
-<#--                            <div class="col-xs-6 col-md-6">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <div class="input-group">
-                                        <input name="picUrl" type="file" style="display:inline;width: 10%" class="form-control" id="picUrl">
-                                    </div>
-                                </div>
-                            </div>-->
+                        <#--                        <div class="col-xs-6 col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="description">
+                                                            顾客头像
+                                                        </label>
+                                                        <div class="form-inline">
+                                                            <span class="input-group-addon form-control"><i class="fa fa-pencil"></i></span>
+                                                            <input name="picUrltext" type="text" class="form-input form-control" id="picUrltext"
+                                                                   value="www.baidu.com" >
+                                                        </div>
+                                                    </div>
+                                                </div>-->
+                        <#--                            <div class="col-xs-6 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>&nbsp;</label>
+                                                            <div class="input-group">
+                                                                <input name="picUrl" type="file" style="display:inline;width: 10%" class="form-control" id="picUrl">
+                                                            </div>
+                                                        </div>
+                                                    </div>-->
                         </div>
                     </div>
 
@@ -253,7 +255,7 @@
                                 <label>
                                     顾客类型
                                 </label>
-                                <select class="form-control select" name="customerType" id="customerType" >
+                                <select class="form-control select" name="customerType" id="customerType">
                                     <option value="MEMBER">会员</option>
                                     <option value="RETAIL">零售</option>
                                 </select>
@@ -267,7 +269,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="birthday" type="text" class="form-control datepicker" id="birthday"
-                                           readonly   placeholder="出生日期">
+                                           readonly placeholder="出生日期">
                                 </div>
                             </div>
                         </div>
@@ -279,7 +281,8 @@
                                 <label>
                                     归属城市
                                 </label>
-                                <select name="cityId" id="cityId" class="form-control select"   onchange="findStoreByCity(this.value);" >
+                                <select name="cityId" id="cityId" class="form-control select"
+                                        onchange="findStoreByCity(this.value);">
                                 </select>
                             </div>
                         </div>
@@ -288,7 +291,7 @@
                                 <label for="title">
                                     归属门店
                                 </label>
-                                <select name="storeId" id="storeId" class="form-control select"   onchange="findGuide()">
+                                <select name="storeId" id="storeId" class="form-control select" onchange="findGuide()">
                                 </select>
                             </div>
                         </div>
@@ -300,19 +303,19 @@
                                 <label for="description">
                                     归属导购
                                 </label>
-                                <select name="salesConsultId" id="guideId" class="form-control select" >
+                                <select name="salesConsultId" id="guideId" class="form-control select">
                                 </select>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                            <label>
-                                是否货到付款
-                            </label>
-                            <select class="form-control select" name="isCashOnDelivery" id="isCashOnDelivery" >
-                                <option value="true">是</option>
-                                <option value="false">否</option>
-                            </select>
+                                <label>
+                                    是否货到付款
+                                </label>
+                                <select class="form-control select" name="isCashOnDelivery" id="isCashOnDelivery">
+                                    <option value="true">是</option>
+                                    <option value="false">否</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -324,7 +327,7 @@
                                     顾客头像
                                 </label>
                                 <div class="form-inline">
-                                    <input name="file" type="file"  class="form-control" id="file">
+                                    <input name="file" type="file" class="form-control" id="file">
                                 </div>
                             </div>
                         </div>
@@ -333,28 +336,28 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                    <div class="form-group">
-                                        <label for="status">是否启用</label>
-                                        <br>
-                                        <input name="status" class="switch" id="status" type="checkbox" checked
-                                               data-on-text="启用" data-off-text="停用"/>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="status">是否启用</label>
+                                    <br>
+                                    <input name="status" class="switch" id="status" type="checkbox" checked
+                                           data-on-text="启用" data-off-text="停用"/>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xs-12 col-md-8"></div>
-                        <div class="col-xs-12 col-md-2">
-                            <button type="submit" class="btn btn-primary footer-btn">
-                                <i class="fa fa-check"></i> 保存
-                            </button>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-8"></div>
+                            <div class="col-xs-12 col-md-2">
+                                <button type="submit" class="btn btn-primary footer-btn">
+                                    <i class="fa fa-check"></i> 保存
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                    <i class="fa fa-close"></i> 取消
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-xs-12 col-md-2">
-                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                                <i class="fa fa-close"></i> 取消
-                            </button>
-                        </div>
-                    </div>
                 </form>
             </div>
         </div>
@@ -385,22 +388,22 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" +item.name + "</option>";
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 })
                 $("#cityId").append(city);
                 $('#cityId').selectpicker('refresh');
                 findStoreByCity(1);
             }
         });
-      initFileInput("file", "/api/OrderApi/ImportOrder");
+        initFileInput("file", "/api/OrderApi/ImportOrder");
     });
 
 
-    function  findStoreByCity(cityId){
+    function findStoreByCity(cityId) {
         $("#storeId").empty()
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/'+cityId,
+            url: '/rest/stores/findStoresListByCityId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -411,7 +414,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" +item.storeName + "</option>";
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 })
                 $("#storeId").append(store);
                 $('#storeId').selectpicker('refresh');
@@ -420,15 +423,15 @@
         });
     }
 
-    function findGuide(){
-        var storeId= $("#storeId").val();
-        if(null==storeId){
-            return false ;
+    function findGuide() {
+        var storeId = $("#storeId").val();
+        if (null == storeId) {
+            return false;
         }
         $("#guideId").empty();
-        var guide ;
+        var guide;
         $.ajax({
-            url: '/rest/employees/findGuidesListById/'+storeId,
+            url: '/rest/employees/findGuidesListById/' + storeId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -439,7 +442,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    guide += "<option value=" + item.empId + ">" +item.name + "</option>";
+                    guide += "<option value=" + item.empId + ">" + item.name + "</option>";
                 })
                 $("#guideId").append(guide);
                 $('#guideId').selectpicker('refresh');
@@ -448,20 +451,19 @@
     }
 
 
-
-    function initFileInput(ctrlName,uploadUrl) {
+    function initFileInput(ctrlName, uploadUrl) {
         var control = $('#' + ctrlName);
         control.fileinput({
             language: 'zh', //设置语言
-           /* uploadUrl:"/rest/customers", //上传的地址*/
+            /* uploadUrl:"/rest/customers", //上传的地址*/
             allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
             //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
             uploadAsync: true, //默认异步上传
-            showUpload:false, //是否显示上传按钮
-            showRemove :true, //显示移除按钮
-            showPreview :false, //是否显示预览
-            showCaption:true,//是否显示标题
-            browseClass:"btn btn-primary", //按钮样式
+            showUpload: false, //是否显示上传按钮
+            showRemove: true, //显示移除按钮
+            showPreview: false, //是否显示预览
+            showCaption: true,//是否显示标题
+            browseClass: "btn btn-primary", //按钮样式
             dropZoneEnabled: false,//是否显示拖拽区域
             //minImageWidth: 50, //图片的最小宽度
             //minImageHeight: 50,//图片的最小高度
@@ -469,13 +471,13 @@
             //maxImageHeight: 1000,//图片的最大高度
             //maxFileSize:0,//单位为kb，如果为0表示不限制文件大小
             //minFileCount: 0,
-            maxFileCount:1, //表示允许同时上传的最大文件个数
-            enctype:'multipart/form-data',
-            validateInitialCount:true,
+            maxFileCount: 1, //表示允许同时上传的最大文件个数
+            enctype: 'multipart/form-data',
+            validateInitialCount: true,
             previewFileIcon: "<iclass='glyphicon glyphicon-king'></i>",
             msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
-        }).on("fileuploaded", function (event, data, previewId, index){
-            if(data.response) {
+        }).on("fileuploaded", function (event, data, previewId, index) {
+            if (data.response) {
                 alert('处理成功');
             }
         });

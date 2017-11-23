@@ -13,10 +13,13 @@ import java.util.List;
 public interface MaterialAuditGoodsInfoDAO {
     //新增物料审核单商品信息
     void addMaterialAuditGoodsInfo(MaterialAuditGoodsInfo materialAuditGoodsInfo);
+
     //修改物料审核单商品信息
     void modifyMaterialAuditGoodsInfo(MaterialAuditGoodsInfo materialAuditGoodsInfo);
+
     //根据物料审核单头id查找对应所有商品
     List<MaterialAuditGoodsInfo> queryListByAuditHeaderID(Long auditHeaderID);
+
     //根据物料审核单头id查询对应所有商品数量总和
     int querySumQtyByAuditHeaderID(@Param("auditHeaderID") Long auditHeaderID);
 

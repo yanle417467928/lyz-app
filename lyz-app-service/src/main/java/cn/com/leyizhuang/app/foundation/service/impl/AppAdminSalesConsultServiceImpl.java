@@ -19,10 +19,11 @@ import java.util.List;
  **/
 @Service
 public class AppAdminSalesConsultServiceImpl extends BaseServiceImpl<SalesConsult> implements AppAdminSalesConsultService {
+    private AppAdminSalesConsultDAO salesConsultDAO;
+
     public AppAdminSalesConsultServiceImpl(BaseDAO<SalesConsult> baseDAO) {
         super(baseDAO);
     }
-    private AppAdminSalesConsultDAO salesConsultDAO;
 
     @Autowired
     public void setSalesConsultDAO(AppAdminSalesConsultDAO salesConsultDAO) {
@@ -36,7 +37,7 @@ public class AppAdminSalesConsultServiceImpl extends BaseServiceImpl<SalesConsul
 
     @Override
     public List<SalesConsult> findByStoreId(Long storeId) {
-        if (null != storeId){
+        if (null != storeId) {
             return salesConsultDAO.findByStoreId(storeId);
         }
         return null;
@@ -44,7 +45,7 @@ public class AppAdminSalesConsultServiceImpl extends BaseServiceImpl<SalesConsul
 
     @Override
     public SalesConsult findByConsultId(Long consultId) {
-        if (null != consultId){
+        if (null != consultId) {
             return salesConsultDAO.findByConsultId(consultId);
         }
         return null;

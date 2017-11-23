@@ -90,7 +90,7 @@ public class MaterialListServiceImpl implements MaterialListService {
 
     @Override
     public Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
-        if (null != userId && null != identityType && null != goodsId ) {
+        if (null != userId && null != identityType && null != goodsId) {
             return materialListDAO.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(userId,
                     identityType, goodsId);
         }
@@ -108,7 +108,7 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-            return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId,identityType);
+            return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, identityType);
         }
         return null;
     }
@@ -116,7 +116,7 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-            return materialListDAO.findMaterialListByUserIdAndTypeAndIsCouponId(userId,identityType);
+            return materialListDAO.findMaterialListByUserIdAndTypeAndIsCouponId(userId, identityType);
         }
         return null;
     }

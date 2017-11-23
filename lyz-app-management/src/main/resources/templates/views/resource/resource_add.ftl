@@ -303,7 +303,8 @@
                                 <div class="form-group">
                                     <label for="status">是否启用</label>
                                     <br>
-                                    <input name="status" class="switch" id="status" type="checkbox" checked data-on-text="启用" data-off-text="停用"/>
+                                    <input name="status" class="switch" id="status" type="checkbox" checked
+                                           data-on-text="启用" data-off-text="停用"/>
                                 </div>
                             </div>
                         </div>

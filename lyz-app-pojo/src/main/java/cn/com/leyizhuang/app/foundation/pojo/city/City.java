@@ -15,12 +15,12 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class  City {
+public class City {
 
     private Long cityId;
 
     /**
-     *  城市名称（唯一）
+     * 城市名称（唯一）
      */
     private String name;
 

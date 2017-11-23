@@ -10,7 +10,7 @@ import java.util.Map;
  * 城市API
  *
  * @author Richard
- *         Created on 2017-09-21 14:25
+ * Created on 2017-09-21 14:25
  **/
 public interface CityService {
 

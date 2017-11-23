@@ -5,7 +5,6 @@ import lombok.*;
 import java.util.Date;
 
 /**
- *
  * @author caiyu
  * @date 2017/11/16
  */

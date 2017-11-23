@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public enum MaterialListType {
 
-    NORMAL("正常"),AUDIT_TRANSFORM("料单审核转化"),COUPON_TRANSFORM("产品券转化");
+    NORMAL("正常"), AUDIT_TRANSFORM("料单审核转化"), COUPON_TRANSFORM("产品券转化");
 
     private String value;
 
@@ -21,16 +21,16 @@ public enum MaterialListType {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public static MaterialListType getMaterialListTypeByValue(String value){
-        for(MaterialListType materialList : MaterialListType.values()){
-            if(Objects.equals(value, materialList.getValue())){
+    public static MaterialListType getMaterialListTypeByValue(String value) {
+        for (MaterialListType materialList : MaterialListType.values()) {
+            if (Objects.equals(value, materialList.getValue())) {
                 return materialList;
             }
         }
         return null;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

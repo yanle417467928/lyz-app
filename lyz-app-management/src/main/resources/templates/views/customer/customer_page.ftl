@@ -32,19 +32,24 @@
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
-                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"   onchange="findStoreByCity(this.value);">
+                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                            onchange="findStoreByCity(this.value);">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="diyCode" id="diyCode"  class="form-control select"  style="width:auto;"  onchange="findGuide();">
-                        <option value="-1" >选择门店</option>
+                    <select name="diyCode" id="diyCode" class="form-control select" style="width:auto;"
+                            onchange="findGuide();">
+                        <option value="-1">选择门店</option>
                     </select>
-                    <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"   onchange="findCusByGuide()">
-                        <option value="-1" >选择导购</option>
+                    <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"
+                            onchange="findCusByGuide()">
+                        <option value="-1">选择导购</option>
                     </select>
-                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"  placeholder="请输入要查找的姓名或电话..">
-                        <button type="button" name="search" id="search-btn" class="btn btn-flat"  onclick="return findCusByNameOrPhone()">
-                            <i class="fa fa-search"></i>
-                        </button>
+                    <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                           placeholder="请输入要查找的姓名或电话..">
+                    <button type="button" name="search" id="search-btn" class="btn btn-flat"
+                            onclick="return findCusByNameOrPhone()">
+                        <i class="fa fa-search"></i>
+                    </button>
                 </div>
 
                 <div class="box-body table-reponsive">
@@ -82,7 +87,7 @@
                             <b>顾客电话</b> <a class="pull-right" id="mobile"></a>
                         </li>
                         <li class="list-group-item" style="height: 100px;">
-                            <b>顾客头像</b> <a class="pull-right" id="picUrl"  ></a>
+                            <b>顾客头像</b> <a class="pull-right" id="picUrl"></a>
                         </li>
                         <li class="list-group-item">
                             <b>出生日期</b> <a class="pull-right" id="birthday"></a>
@@ -135,36 +140,36 @@
 </div>
 <script>
 
-       $(function(){
-           var city = "";
-           $.ajax({
-               url: '/rest/citys/findCitylist',
-               method: 'GET',
-               error: function () {
-                   clearTimeout($global.timer);
-                   $loading.close();
-                   $global.timer = null;
-                   $notify.danger('网络异常，请稍后重试或联系管理员');
-               },
-               success: function (result) {
-                   clearTimeout($global.timer);
-                   $.each(result, function (i, item) {
-                       city += "<option value=" + item.cityId + ">" +item.name + "</option>";
-                   })
-                   $("#cityCode").append(city);
-               }
+    $(function () {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                })
+                $("#cityCode").append(city);
+            }
         });
-       });
+    });
 
 
-    $(function() {
+    $(function () {
         initDateGird('/rest/customers/page/grid');
     });
 
-    function initDateGird(url){
-        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function(params) {
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -180,25 +185,25 @@
             title: '顾客姓名',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.cusId);
                 }
             },
-            formatter: function(value) {
+            formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        },{
+        }, {
             field: 'mobile',
             title: '顾客电话',
             align: 'center'
-        },{
+        }, {
             field: 'store.storeName',
             title: '归属门店',
             align: 'center',
-            formatter: function(value,row,index){
-                if (null === value||""==value) {
+            formatter: function (value, row, index) {
+                if (null === value || "" == value) {
                     return '-'
-                }else {
+                } else {
                     return value;
                 }
             }
@@ -206,16 +211,16 @@
             field: 'status',
             title: '是否生效',
             align: 'center',
-            formatter: function(value,row,index){
+            formatter: function (value, row, index) {
                 if (true === value) {
                     return '是'
-                }else if(false === value){
+                } else if (false === value) {
                     return '否'
                 } else {
                     return '-';
                 }
             }
-        },{
+        }, {
             field: 'light',
             title: '顾客灯号',
             align: 'center'
@@ -246,7 +251,8 @@
                             clearTimeout($global.timer);
                             $loading.close();
 
-                            if (0 === result.code) { $global.timer = null;
+                            if (0 === result.code) {
+                                $global.timer = null;
                                 var data = result.content;
                                 $('#menuTitle').html(" 顾客详情");
 
@@ -270,48 +276,48 @@
                                 }
                                 $('#mobile').html(data.mobile);
 
-                                if (null === data.picUrl||''==data.picUrl) {
+                                if (null === data.picUrl || '' == data.picUrl) {
                                     $('#picUrl').html('-');
-                                }else{
-                                    $('#picUrl').html('<img  src="'+data.picUrl+'"'+' class="img-rounded" style="height: 80px;width: 80px;" >');
+                                } else {
+                                    $('#picUrl').html('<img  src="' + data.picUrl + '"' + ' class="img-rounded" style="height: 80px;width: 80px;" >');
                                 }
 
 
                                 if (null === data.birthday) {
                                     $('#birthday').html('-');
-                                }else{
+                                } else {
                                     $('#birthday').html(formatDateTime(data.birthday));
                                 }
 
 
-                                if (null==data.city) {
+                                if (null == data.city) {
                                     $('#cityName').html('-');
-                                }else{
-                                    if(null==data.city.name){
+                                } else {
+                                    if (null == data.city.name) {
                                         $('#cityName').html('-');
-                                    }else{
+                                    } else {
                                         $('#cityName').html(data.city.name);
                                     }
                                 }
 
 
-                                if (null==data.store) {
+                                if (null == data.store) {
                                     $('#storeName').html('-');
-                                }else{
-                                    if(null==data.store.storeName){
+                                } else {
+                                    if (null == data.store.storeName) {
                                         $('#storeName').html('-');
-                                    }else{
+                                    } else {
                                         $('#storeName').html(data.store.storeName);
                                     }
                                 }
 
 
-                                if (null==data.salesConsultId) {
+                                if (null == data.salesConsultId) {
                                     $('#salesConsultName').html('-');
-                                }else{
-                                    if(null === data.salesConsultId.name){
+                                } else {
+                                    if (null === data.salesConsultId.name) {
                                         $('#salesConsultName').html('-');
-                                    }else{
+                                    } else {
                                         $('#salesConsultName').html(data.salesConsultId.name);
                                     }
                                 }
@@ -319,20 +325,20 @@
 
                                 if ('MALE' === data.sex) {
                                     data.sex = '男性';
-                                }else if('FEMALE'===data.sex){
-                                    data.sex='女性';
-                                }else if('SECRET'===data.sex){
-                                    data.sex='保密';
-                                }else {
-                                    data.sex='-';
+                                } else if ('FEMALE' === data.sex) {
+                                    data.sex = '女性';
+                                } else if ('SECRET' === data.sex) {
+                                    data.sex = '保密';
+                                } else {
+                                    data.sex = '-';
                                 }
                                 $('#sex').html(data.sex);
 
                                 if (true === data.isCashOnDelivery) {
                                     data.isCashOnDelivery = '是';
-                                }else if(false === data.isCashOnDelivery){
+                                } else if (false === data.isCashOnDelivery) {
                                     data.isCashOnDelivery = '否';
-                                }else{
+                                } else {
                                     data.isCashOnDelivery = '-';
                                 }
                                 $('#isCashOnDelivery').html(data.isCashOnDelivery);
@@ -344,46 +350,46 @@
 
                                 if ('MEMBER' === data.customerType) {
                                     data.customerType = '会员';
-                                }else if('RETAIL' === data.customerType){
+                                } else if ('RETAIL' === data.customerType) {
                                     data.customerType = '零售';
-                                }else{
+                                } else {
                                     data.customerType = '-';
                                 }
                                 $('#customerType').html(data.customerType);
 
                                 if ('APP_REGISTRY' === data.createType) {
                                     data.createType = 'APP';
-                                }else{
+                                } else {
                                     data.createType = '-';
                                 }
                                 $('#createType').html(data.createType);
 
                                 if (null === data.lastSignTime) {
                                     $('#lastSignTime').html('-');
-                                }else{
+                                } else {
                                     $('#lastSignTime').html(formatDateTime(data.lastSignTime));
                                 }
 
 
                                 if (null === data.bindingTime) {
                                     $('#bindingTime').html('-');
-                                }else{
+                                } else {
                                     $('#bindingTime').html(formatDateTime(data.bindingTime));
                                 }
 
 
                                 if (null === data.createTime) {
                                     $('#createTime').html('-');
-                                }else{
+                                } else {
                                     $('#createTime').html(formatDateTime(data.createTime));
                                 }
 
 
                                 if (true === data.status) {
                                     data.status = '正常';
-                                }else if(false === data.status){
+                                } else if (false === data.status) {
                                     data.status = '停用';
-                                }else{
+                                } else {
                                     data.status = '-';
                                 }
                                 $('#status').html(data.status);
@@ -411,135 +417,134 @@
         var d = dt.getDate();
         d = d < 10 ? ('0' + d) : d;
         var h = dt.getHours();
-        h=h < 10 ? ('0' + h) : h;
+        h = h < 10 ? ('0' + h) : h;
         var minute = dt.getMinutes();
         minute = minute < 10 ? ('0' + minute) : minute;
-        var second=dt.getSeconds();
-        second=second < 10 ? ('0' + second) : second;
-        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
 
-       function  findStoreByCity(cityId){
-           $("#queryCusInfo").val('');
-           initSelect("#diyCode","选择门店")
-           initSelect("#guideCode","选择导购")
-           var store;
-           $.ajax({
-               url: '/rest/stores/findStoresListByCityId/'+cityId,
-               method: 'GET',
-               error: function () {
-                   clearTimeout($global.timer);
-                   $loading.close();
-                   $global.timer = null;
-                   $notify.danger('网络异常，请稍后重试或联系管理员');
-               },
-               success: function (result) {
-                   clearTimeout($global.timer);
-                   $.each(result, function (i, item) {
-                       store += "<option value=" + item.storeId + ">" +item.storeName + "</option>";
-                   })
-                   $("#diyCode").append(store);
-                   findCusByCityId(cityId);
-               }
-           });
-       }
-
-
-       function findCusByCityId(cityId){
-           $("#dataGrid").bootstrapTable('destroy');
-           if(cityId==-1){
-               initDateGird('/rest/customers/page/grid');
-           }else{
-               initDateGird('/rest/customers/page/citygrid/'+cityId);
-           }
-       }
-
-       function findCusByStoreId(storeId,cityId){
-           $("#dataGrid").bootstrapTable('destroy');
-           if(storeId==-1){
-               initDateGird('/rest/customers/page/citygrid/'+cityId);
-           }else{
-               initDateGird('/rest/customers/page/storegrid/'+storeId);
-           }
-       }
-
-       function findGuide(){
-           $("#queryCusInfo").val('');
-           var storeId= $("#diyCode").val();
-           var cityId = $("#cityCode").val();
-           initSelect("#guideCode","选择导购")
-           var guide;
-           $.ajax({
-               url: '/rest/employees/findGuidesListById/'+storeId,
-               method: 'GET',
-               error: function () {
-                   clearTimeout($global.timer);
-                   $loading.close();
-                   $global.timer = null;
-                   $notify.danger('网络异常，请稍后重试或联系管理员');
-               },
-               success: function (result) {
-                   clearTimeout($global.timer);
-                   $.each(result, function (i, item) {
-                       guide += "<option value=" + item.empId + ">" +item.name + "</option>";
-                   })
-                   $("#guideCode").append(guide);
-                   findCusByStoreId(storeId,cityId);
-               }
-           });
-       }
-
-
-       function findCusByGuide(){
-           $("#queryCusInfo").val('');
-           $("#dataGrid").bootstrapTable('destroy');
-           var guideId =$("#guideCode").val();
-           var storeId =$("#diyCode").val();
-           if(guideId==-1){
-               initDateGird('/rest/customers/page/storegrid/'+storeId);
-           }else{
-               initDateGird('/rest/customers/page/guidegrid/'+guideId);
-           }
-       }
-
-
-       function findCusByNameOrPhone(){
-           var queryCusInfo =$("#queryCusInfo").val();
-           if(null==queryCusInfo||""==queryCusInfo) {
-               $('#cityCode').val("-1");
-               initSelect("#diyCode","选择门店");
-               initSelect("#guideCode","选择导购");
-               $("#dataGrid").bootstrapTable('destroy');
-               initDateGird('/rest/customers/page/grid');
-               return false;
-           }
-           var isNumber = checkNumber(queryCusInfo);
-           $("#dataGrid").bootstrapTable('destroy');
-           $('#cityCode').val("-1");
-           initSelect("#diyCode","选择门店");
-           initSelect("#guideCode" ,"选择导购");
-           if(isNumber){
-                initDateGird('/rest/customers/page/phonegrid/'+queryCusInfo);
-          }else{
-                initDateGird('/rest/customers/page/Namegrid/'+queryCusInfo);
+    function findStoreByCity(cityId) {
+        $("#queryCusInfo").val('');
+        initSelect("#diyCode", "选择门店")
+        initSelect("#guideCode", "选择导购")
+        var store;
+        $.ajax({
+            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#diyCode").append(store);
+                findCusByCityId(cityId);
             }
-           }
+        });
+    }
 
 
+    function findCusByCityId(cityId) {
+        $("#dataGrid").bootstrapTable('destroy');
+        if (cityId == -1) {
+            initDateGird('/rest/customers/page/grid');
+        } else {
+            initDateGird('/rest/customers/page/citygrid/' + cityId);
+        }
+    }
 
-       function checkNumber(theObj) {
-           var reg = /^[0-9]*[1-9][0-9]*$/;
-           if (reg.test(theObj)) {
-               return true;
-           }
-           return false;
-       }
+    function findCusByStoreId(storeId, cityId) {
+        $("#dataGrid").bootstrapTable('destroy');
+        if (storeId == -1) {
+            initDateGird('/rest/customers/page/citygrid/' + cityId);
+        } else {
+            initDateGird('/rest/customers/page/storegrid/' + storeId);
+        }
+    }
 
-       function initSelect(select,optionName){
-           $(select).empty();
-           var selectOption = "<option value=-1>"+optionName+"</option>";
-           $(select).append(selectOption);
-       }
+    function findGuide() {
+        $("#queryCusInfo").val('');
+        var storeId = $("#diyCode").val();
+        var cityId = $("#cityCode").val();
+        initSelect("#guideCode", "选择导购")
+        var guide;
+        $.ajax({
+            url: '/rest/employees/findGuidesListById/' + storeId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    guide += "<option value=" + item.empId + ">" + item.name + "</option>";
+                })
+                $("#guideCode").append(guide);
+                findCusByStoreId(storeId, cityId);
+            }
+        });
+    }
+
+
+    function findCusByGuide() {
+        $("#queryCusInfo").val('');
+        $("#dataGrid").bootstrapTable('destroy');
+        var guideId = $("#guideCode").val();
+        var storeId = $("#diyCode").val();
+        if (guideId == -1) {
+            initDateGird('/rest/customers/page/storegrid/' + storeId);
+        } else {
+            initDateGird('/rest/customers/page/guidegrid/' + guideId);
+        }
+    }
+
+
+    function findCusByNameOrPhone() {
+        var queryCusInfo = $("#queryCusInfo").val();
+        if (null == queryCusInfo || "" == queryCusInfo) {
+            $('#cityCode').val("-1");
+            initSelect("#diyCode", "选择门店");
+            initSelect("#guideCode", "选择导购");
+            $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/customers/page/grid');
+            return false;
+        }
+        var isNumber = checkNumber(queryCusInfo);
+        $("#dataGrid").bootstrapTable('destroy');
+        $('#cityCode').val("-1");
+        initSelect("#diyCode", "选择门店");
+        initSelect("#guideCode", "选择导购");
+        if (isNumber) {
+            initDateGird('/rest/customers/page/phonegrid/' + queryCusInfo);
+        } else {
+            initDateGird('/rest/customers/page/Namegrid/' + queryCusInfo);
+        }
+    }
+
+
+    function checkNumber(theObj) {
+        var reg = /^[0-9]*[1-9][0-9]*$/;
+        if (reg.test(theObj)) {
+            return true;
+        }
+        return false;
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
+    }
 </script>
 </body>

@@ -123,10 +123,10 @@ public class CommonServiceImpl implements CommonService {
     @Transactional
     @Override
     public void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate) {
-        if ((null != materialListSave && materialListSave.size() > 0) || (null != materialListUpdate && materialListUpdate.size() > 0)){
+        if ((null != materialListSave && materialListSave.size() > 0) || (null != materialListUpdate && materialListUpdate.size() > 0)) {
             materialListService.batchSave(materialListSave);
-            for (MaterialListDO materialListDO : materialListUpdate){
-                materialListService.modifyQty(materialListDO.getId(),materialListDO.getQty());
+            for (MaterialListDO materialListDO : materialListUpdate) {
+                materialListService.modifyQty(materialListDO.getId(), materialListDO.getQty());
             }
         }
     }

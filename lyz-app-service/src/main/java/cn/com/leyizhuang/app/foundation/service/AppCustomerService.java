@@ -52,7 +52,7 @@ public interface AppCustomerService {
 
     Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
-    CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId,Double goodsMoney);
+    CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney);
 
     void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
@@ -68,17 +68,17 @@ public interface AppCustomerService {
 
     int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
 
-    int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon);
+    int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon);
 
-    int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
+    int lockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long, Integer> cashCoupon);
 
     void unlockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit);
 
     void unlockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
 
-    void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long,Integer> productCoupon);
+    void unlockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon);
 
-    void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long,Integer> cashCoupon);
+    void unlockCustomerCashCouponByUserIdAndCashCoupons(Long userId, Map<Long, Integer> cashCoupon);
 
     AppCustomer findStoreSellerByCustomerId(Long userId);
 
@@ -88,5 +88,5 @@ public interface AppCustomerService {
 
     void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
 
-    List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId,Double totalOrderAmount);
+    List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId, Double totalOrderAmount);
 }

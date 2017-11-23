@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
@@ -29,14 +30,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void save(AppEmployee appEmployee) {
-        if(null != appEmployee){
+        if (null != appEmployee) {
             employeeDAO.save(appEmployee);
         }
     }
 
     @Override
     public AppEmployee findByLoginName(String loginName) {
-        if(null != loginName && !"".equalsIgnoreCase(loginName)){
+        if (null != loginName && !"".equalsIgnoreCase(loginName)) {
             return employeeDAO.findByLoginName(loginName);
         }
         return null;
@@ -44,7 +45,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public AppEmployee findByMobile(String mobile) {
-        if(null != mobile && !"".equalsIgnoreCase(mobile)){
+        if (null != mobile && !"".equalsIgnoreCase(mobile)) {
             return employeeDAO.findByMobile(mobile);
         }
         return null;
@@ -53,14 +54,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void update(AppEmployee newEmployee) {
-        if(null != newEmployee && null != newEmployee.getEmpId()){
+        if (null != newEmployee && null != newEmployee.getEmpId()) {
             employeeDAO.update(newEmployee);
         }
     }
 
     @Override
     public AppEmployee findByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return employeeDAO.findByUserId(userId);
         }
         return null;
@@ -68,7 +69,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public AppEmployee findById(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return employeeDAO.findById(userId);
         }
         return null;
@@ -76,7 +77,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public AppEmployee findByIdAndStatusIsTrue(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return employeeDAO.findByIdAndStatusIsTrue(userId);
         }
         return null;
@@ -84,7 +85,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType == 2){
+        if (null != userId && null != identityType && identityType == 2) {
             List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);
             return EmployeeListResponse.transform(appEmployeeList);
         }
@@ -92,16 +93,25 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    public List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType) {
+        if (StringUtils.isNotBlank(keywords) && null != userId && null != identityType && identityType == 2) {
+            List<AppEmployee> appCustomerList = employeeDAO.searchBySalesConsultIdAndKeywords(userId, keywords);
+            return EmployeeListResponse.transform(appCustomerList);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
     public void modifyEmployeeInformation(UserSetInformationReq userInformation) {
-        if (null != userInformation){
+        if (null != userInformation) {
 //            employeeDAO.update(transform(userInformation));
         }
     }
 
     @Override
     public SellerCreditMoney findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType && identityType == 0){
+        if (null != userId && null != identityType && identityType == 0) {
             return employeeDAO.findCreditMoneyBalanceByUserId(userId);
         }
         return null;
@@ -109,8 +119,8 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType){
-            return employeeDAO.findEmployeeInfoByUserIdAndIdentityType(userId,identityType);
+        if (null != userId && null != identityType) {
+            return employeeDAO.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }
@@ -119,14 +129,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Transactional
     public void modifyEmployeeMobileByUserId(Long userId, String mobile) {
         if (null != userId) {
-            employeeDAO.updateEmployeeMobileByUserId(userId,mobile);
+            employeeDAO.updateEmployeeMobileByUserId(userId, mobile);
         }
     }
 
     @Override
     public Boolean existsSellerCreditByUserId(Long userId) {
         if (null != userId) {
-           return employeeDAO.existsSellerCreditByUserId(userId);
+            return employeeDAO.existsSellerCreditByUserId(userId);
         }
         return false;
     }
@@ -134,22 +144,22 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
-        if (null != userId && null != guideCredit){
-            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId,guideCredit);
+        if (null != userId && null != guideCredit) {
+            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId, guideCredit);
         }
         return 0;
     }
 
     @Override
     public void updateByLoginName(AppEmployee appEmployee) {
-        if(null != appEmployee && null != appEmployee.getEmpId()){
+        if (null != appEmployee && null != appEmployee.getEmpId()) {
             employeeDAO.updateByLoginName(appEmployee);
         }
     }
 
     @Override
     public void deleteByLoginName(String loginName) {
-        if(null != loginName){
+        if (null != loginName) {
             employeeDAO.deleteByLoginName(loginName);
         }
     }
@@ -157,8 +167,8 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional
     public void unlockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
-        if (null != userId && null != guideCredit){
-            employeeDAO.unlockGuideCreditByUserIdAndGuideCredit(userId,guideCredit);
+        if (null != userId && null != guideCredit) {
+            employeeDAO.unlockGuideCreditByUserIdAndGuideCredit(userId, guideCredit);
         }
     }
 

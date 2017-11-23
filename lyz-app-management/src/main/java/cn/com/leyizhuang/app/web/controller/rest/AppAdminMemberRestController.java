@@ -29,36 +29,35 @@ import java.util.Map;
  * App后台管理会员列表数据控制器
  *
  * @author Richard
- *         Created on 2017-05-09 10:32
+ * Created on 2017-05-09 10:32
  **/
 @RestController
 @RequestMapping(value = AppAdminMemberRestController.PRE_URL, produces = "application/json;charset=utf8")
-public class AppAdminMemberRestController extends BaseRestController{
+public class AppAdminMemberRestController extends BaseRestController {
     public final static String PRE_URL = "/rest/member";
 
     private final Logger LOG = LoggerFactory.getLogger(AppAdminMemberRestController.class);
 
 
     private AppAdminMemberService memberService;
+    private AppAdminMemberAuthService memberAuthService;
+    private AppAdminSalesConsultService salesConsultService;
+    private AppStoreService storeService;
+
     @Autowired
     public void setMemberService(AppAdminMemberService memberService) {
         this.memberService = memberService;
     }
 
-    private AppAdminMemberAuthService memberAuthService;
     @Autowired
     public void setMemberAuthService(AppAdminMemberAuthService memberAuthService) {
         this.memberAuthService = memberAuthService;
     }
 
-    private AppAdminSalesConsultService salesConsultService;
-
     @Autowired
     public void setSalesConsultService(AppAdminSalesConsultService salesConsultService) {
         this.salesConsultService = salesConsultService;
     }
-
-    private AppStoreService storeService;
 
     @Autowired
     public void setStoreService(AppStoreService storeService) {
@@ -67,6 +66,7 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 会员列表
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -82,11 +82,12 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 会员详情
+     *
      * @param id 会员id
      * @return MemberVO
      */
     @GetMapping(value = "/{id}")
-    public ResultDTO<AppAdminMemberVO> restMemberIdGet(@PathVariable(value = "id")Long id) {
+    public ResultDTO<AppAdminMemberVO> restMemberIdGet(@PathVariable(value = "id") Long id) {
         AppAdminMemberVO memberVO = memberService.queryMemberVOById(id);
         if (null == memberVO) {
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -95,26 +96,29 @@ public class AppAdminMemberRestController extends BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, memberVO);
         }
     }
+
     /**
      * 手机号码验证
+     *
      * @param mobile
      * @param id
      * @return
      */
     @PostMapping(value = "/validator/mobile/{id}")
-    public ValidatorResultDTO employeeValidatorMobileByIdPost(@RequestParam String mobile,@PathVariable Long id) {
+    public ValidatorResultDTO employeeValidatorMobileByIdPost(@RequestParam String mobile, @PathVariable Long id) {
         Boolean result;
-        if (null != id){
-             result = memberAuthService.existsByMobileAndIdNot(mobile,id);
+        if (null != id) {
+            result = memberAuthService.existsByMobileAndIdNot(mobile, id);
 
-        }else{
-             result = memberAuthService.existsByMobile(mobile);
+        } else {
+            result = memberAuthService.existsByMobile(mobile);
         }
         return new ValidatorResultDTO(!result);
     }
 
     /**
      * 手机号码验证
+     *
      * @param mobile
      * @return
      */
@@ -127,8 +131,9 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 管理员新增会员
+     *
      * @param memberVO 会员信息
-     * @param result 处理结果
+     * @param result   处理结果
      * @return 处理结果
      */
     @PostMapping
@@ -136,7 +141,7 @@ public class AppAdminMemberRestController extends BaseRestController{
         if (!result.hasErrors()) {
             memberService.saveMemberInfo(memberVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }else {
+        } else {
             List<ObjectError> allErrors = result.getAllErrors();
             LOG.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
@@ -146,6 +151,7 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 管理员修改会员信息
+     *
      * @param memberVO
      * @param result
      * @return
@@ -155,7 +161,7 @@ public class AppAdminMemberRestController extends BaseRestController{
         if (!result.hasErrors()) {
             memberService.modifyMemberInfo(memberVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }else {
+        } else {
             List<ObjectError> allErrors = result.getAllErrors();
             LOG.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
@@ -165,26 +171,28 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 管理员修改会员密码
+     *
      * @param id
      * @param password
      * @return
      */
     @PostMapping(value = "/revise/password")
     public ResultDTO<String> restEmployeePasswordPost(@RequestParam Long id, @RequestParam String password) {
-        memberAuthService.modifyMemberPassword(id,password);
+        memberAuthService.modifyMemberPassword(id, password);
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 
     /**
      * 新增会员页面改变门店触发的事件
+     *
      * @param storeId 导购所属门店ID
      * @return 异步请求的数据
      */
     @PostMapping(value = "/change/store")
-    public Map<String,Object> restMemberChangeStore(Long storeId) {
+    public Map<String, Object> restMemberChangeStore(Long storeId) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<SalesConsult> salesConsultList = new ArrayList<>();
-        if (null != storeId){
+        if (null != storeId) {
             salesConsultList = salesConsultService.findByStoreId(storeId);
         }
         map.put("code", 0);
@@ -194,21 +202,22 @@ public class AppAdminMemberRestController extends BaseRestController{
 
     /**
      * 新增会员改变导购触发的事件
+     *
      * @param consultId
      * @return
      */
     @PostMapping(value = "/change/consult")
-    public Map<String,Object> restMemberChangeSalesConsult(Long consultId) {
+    public Map<String, Object> restMemberChangeSalesConsult(Long consultId) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<AppStore> allAppStoreList = new ArrayList<>();
-        if (null != consultId){
+        if (null != consultId) {
             allAppStoreList = storeService.findAll();
         }
         SalesConsult consult = salesConsultService.findByConsultId(consultId);
         Long storeId = consult.getAscriptionStoreId();
         map.put("code", 0);
         map.put("all_store_list", allAppStoreList);
-        map.put("storeId",storeId);
+        map.put("storeId", storeId);
         return map;
     }
 }

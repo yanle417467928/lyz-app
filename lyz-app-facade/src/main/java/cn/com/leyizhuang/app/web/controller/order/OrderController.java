@@ -220,13 +220,11 @@ public class OrderController {
             Double orderDiscount = 0.00;
             //运费暂时还没出算法
             Double freight = 0.00;
-            Double upstairsFee = 0.00;
             Double totalOrderAmount = 0.00;
             List<Long> goodsIds = new ArrayList<Long>();
             List<Long> giftIds = new ArrayList<>();
             List<OrderGoodsSimpleResponse> goodsInfo = null;
             List<OrderGoodsSimpleResponse> giftsInfo = null;
-            List<OrderUsableProductCouponResponse> productCouponResponseList = null;
             List<CashCouponResponse> cashCouponResponseList = null;
             Map<String, Object> goodsSettlement = new HashMap<>();
 
@@ -247,7 +245,6 @@ public class OrderController {
                 goodsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
                 //获取赠品信息
                 giftsInfo = goodsServiceImpl.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
-
                 //正品的数量和标识这里需要判断库存的特殊处理（所以不能和赠品的集合加在一起循环）
                 int goodsTotalQty = 0;
                 for (int i = 0; i < goodsInfo.size(); i++) {
@@ -280,21 +277,17 @@ public class OrderController {
                         }
                     }
                 }
-                //计算订单金额小计
-                //TODO 根据促销减去订单折扣
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
                 //计算顾客乐币
                 CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
-
-                //TODO... 根据促销减去产品券商品。
-//                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
-                cashCouponResponseList = appCustomerService.findCashCouponByCustomerId(userId);
-
+                //计算订单金额小计
+                //TODO 根据促销减去订单折扣, 加运费
+                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //计算可用的优惠券
+                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
                 //查询顾客预存款
                 Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
-
+                //赠品的数量和标识
                 if (giftsInfo != null) {
-                    //赠品的数量和标识
                     for (int i = 0; i < giftsInfo.size(); i++) {
                         for (int j = 0; j < goodsList.size(); j++) {
                             if (giftsInfo.get(i).getId().equals(goodsList.get(j).getId())) {
@@ -316,10 +309,8 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", memberDiscount * 10);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
-//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("lebi", leBi);
-//                goodsSettlement.put("productCouponList", productCouponResponseList);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
             }
@@ -378,12 +369,8 @@ public class OrderController {
                 totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
                 //计算顾客乐币
                 CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
-
-                //TODO... 根据促销减去产品券商品。
                 //现金券还需要传入订单金额判断是否满减
-//                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(customerId, goodsIds);
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
-
                 //查询导购预存款和信用金
                 SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
                 Double creditMoney = sellerCreditMoney.getAvailableBalance();
@@ -412,10 +399,8 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", memberDiscount * 10);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
-//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("lebi", leBi);
-//                goodsSettlement.put("productCouponList", productCouponResponseList);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
@@ -495,7 +480,6 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", totalPrice / 100);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", totalPrice / 1000);
-//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
@@ -527,11 +511,6 @@ public class OrderController {
         logger.info("reEnterOrderByCashCoupon CALLED,通过现金券来重新计算确认订单，入参 usedCouponRequest:{}", usedCouponRequest);
 
         ResultDTO resultDTO;
-//        if (usedCouponRequest.getCouponsList().isEmpty()) {
-//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "所选现金券不能为空", null);
-//            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
-//            return resultDTO;
-//        }
         if (null == usedCouponRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
@@ -563,7 +542,7 @@ public class OrderController {
         Double totalOrderAmount = usedCouponRequest.getTotalOrderAmount();
         //如果顾客没有选券，直接返回传入的数值不必再计算
         if (usedCouponRequest.getCouponsList().isEmpty()) {
-            returnMap.put("lebi", usedCouponRequest.getLeBi());
+            returnMap.put("leBi", usedCouponRequest.getLeBi());
             returnMap.put("totalOrderAmount", totalOrderAmount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
@@ -600,11 +579,14 @@ public class OrderController {
                             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                             return resultDTO;
                         }
+                    }else{
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该" + cashCoupon.getTitle() + "产品券已过期！", null);
+                        logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
                     }
                 }
                 //计算顾客乐币
                 leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
-
             }
             returnMap.put("lebi", leBi);
             returnMap.put("totalOrderAmount", totalOrderAmount);
@@ -962,7 +944,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatus(orderBaseInfo.getStatus());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1175,7 +1157,7 @@ public class OrderController {
             return resultDTO;
         }
     }
-
+    @Deprecated
     private Double calculationCashCouponsDiscount(List<GoodsIdQtyParam> cashCouponsList, Long userId) {
 
         Double cashCouponDiscount = 0.00;

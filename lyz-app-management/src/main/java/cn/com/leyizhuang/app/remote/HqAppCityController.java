@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 @RequestMapping(value = "/remote/city")
 public class HqAppCityController {
     private static final Logger logger = LoggerFactory.getLogger(HqAppCityController.class);
-    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Resource
     private CityService cityService;
 

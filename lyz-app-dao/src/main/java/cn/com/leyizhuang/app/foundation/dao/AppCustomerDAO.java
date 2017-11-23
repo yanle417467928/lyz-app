@@ -63,31 +63,31 @@ public interface AppCustomerDAO {
 
     void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
 
-    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
+    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
 
     int updateProductCouponByUserIdAndProductCoupons(
-            @Param("userId") Long userId,@Param("gid") Long goodsId,@Param("qty") Integer qty);
+            @Param("userId") Long userId, @Param("gid") Long goodsId, @Param("qty") Integer qty);
 
     int updateCashCouponByUserIdAndCashCoupons(
-            @Param("userId") Long userId,@Param("gid") Long goodsId,@Param("qty") Integer qty);
+            @Param("userId") Long userId, @Param("gid") Long goodsId, @Param("qty") Integer qty);
 
-    void updateDepositByUserId(@Param("userId") Long userId,@Param("deposit") Double customerDeposit);
+    void updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
 
-    void updateLeBiByUserIdAndQuantity(@Param("userId") Long userId,@Param("qty") Integer qty);
+    void updateLeBiByUserIdAndQuantity(@Param("userId") Long userId, @Param("qty") Integer qty);
 
     void updateProductCouponByUserIdAndGoodsIdAndProductCoupons(
-            @Param("userId") Long userId,@Param("gid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
     void updateCashCouponByUserIdAndGoodsIdAndCashCoupons(
-            @Param("userId") Long userId,@Param("ccid") Long index,@Param("qty") Integer integer);
+            @Param("userId") Long userId, @Param("ccid") Long index, @Param("qty") Integer integer);
 
     AppCustomer findStoreSellerByCustomerId(@Param("userId") Long userId);
 
     CashCouponResponse findCashCouponByCcIdAndUserIdAndQty(
-            @Param("ccId") Long id,@Param("cusId") Long userId,@Param("qty") Integer qty);
+            @Param("ccId") Long id, @Param("cusId") Long userId, @Param("qty") Integer qty);
 
     CustomerPreDeposit findByCusId(Long cusId);
 
     List<CashCouponResponse> findCashCouponUseableByCustomerId(@Param("userId") Long customerId,
-                                                               @Param("amount") Double totalOrderAmount);
+                                                               @Param("totalAmount") Double totalOrderAmount);
 }

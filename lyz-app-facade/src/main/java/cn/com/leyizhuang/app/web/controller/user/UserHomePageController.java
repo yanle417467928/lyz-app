@@ -59,6 +59,7 @@ public class UserHomePageController {
 
     @Resource
     private GoodsService goodsServiceImpl;
+
     /**
      * 个人主页的信息
      *
@@ -233,6 +234,46 @@ public class UserHomePageController {
     }
 
     /**
+     * 经理搜索工人
+     * @param userId    用户id
+     * @param identityType  用户类型
+     * @param keywords  搜索条件
+     * @return  返回工人列表
+     */
+    @PostMapping(value = "/search/employee", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> searchDecorateEmployeeList(Long userId, Integer identityType , String keywords){
+        logger.info("searchDecorateEmployeeList CALLED,搜索我的工人，入参 userId{},identityType{},keywords {}", userId, identityType, keywords);
+        ResultDTO<Object> resultDTO;
+        if (StringUtils.isBlank(keywords)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "搜索关键词不能为空！", null);
+            logger.info("searchDecorateEmployeeList OUT,搜索我的工人失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id{userId}不能为空！", null);
+            logger.info("searchDecorateEmployeeList OUT,搜索我的工人失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("searchDecorateEmployeeList OUT,搜索我的工人失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<EmployeeListResponse> appEmployeeList = employeeService.searchBySalesConsultIdAndKeywords(userId, keywords, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
+            logger.info("getDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索我的工人失败", null);
+            logger.warn("searchDecorateEmployeeList EXCEPTION,搜索我的工人失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * 获取用户默认收货地址
      *
      * @param userId       用户id
@@ -274,6 +315,7 @@ public class UserHomePageController {
 
     /**
      * 顾客选择门店自提
+     *
      * @param simpleRequest
      * @return
      */
@@ -299,7 +341,7 @@ public class UserHomePageController {
                 logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if(simpleRequest.getIdentityType() == 0 && null == simpleRequest.getCustomerId()){
+            if (simpleRequest.getIdentityType() == 0 && null == simpleRequest.getCustomerId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单客户身份不能为空", null);
                 logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -363,13 +405,13 @@ public class UserHomePageController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
                     logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                }else {
+                } else {
                     Long cityId = customer.getCityId();
                     if (null != cityId) {
                         storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                     }
                 }
-            }else {
+            } else {
                 AppEmployee employee = employeeService.findById(userId);
                 Long storeId = employee.getStoreId();
 
@@ -420,7 +462,7 @@ public class UserHomePageController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeResponse);
                     logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                }else {
+                } else {
                     Long cityId = employee.getCityId();
                     storeList = StoreResponse.transform(appStoreService.findStoreListByCityId(cityId));
                 }
@@ -429,7 +471,7 @@ public class UserHomePageController {
                     storeList.size() > 0 ? storeList : null);
             logger.info("getUserDeliveryTypeBySelfTake OUT,顾客选择门店自提成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客选择门店自提失败!", null);
             logger.warn("getUserDeliveryTypeBySelfTake EXCEPTION,顾客选择门店自提失败，出参 resultDTO:{}", resultDTO);

@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author CrazyApeDX
- *         Created on 2017/5/16.
+ * Created on 2017/5/16.
  */
 public abstract class BaseRestController extends BaseController {
 
