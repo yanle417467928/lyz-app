@@ -102,21 +102,29 @@ public class OrderDeliveryInfoDetailsController {
         }
 
         try {
+            //定义时间格式
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Calendar c = Calendar.getInstance();
+            //计算7天前时间
             c.add(Calendar.DATE, - 7);
+            //获取7天前的时间
             Date monday = c.getTime();
-            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.getLogisticsMessageByUserId(userID,monday);
+            //查询推送的物流细信息
+            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.getLogisticsMessageByUserId(userID,monday,identityType);
+            //创建返回list
             List<LogisticsMessageResponse> logisticsMessageResponseList = new ArrayList<>();
             for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList){
+                //创建返回类
                 LogisticsMessageResponse logisticsMessageResponse = new LogisticsMessageResponse();
+                //设置
                 logisticsMessageResponse.setCreateTime(sdf.format(orderDeliveryInfoDetails.getCreateTime()));
+                logisticsMessageResponse.setOrderNumber(orderDeliveryInfoDetails.getOrderNo());
                 if ("已封车".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())){
                     logisticsMessageResponse.setMessage("您的订单 "+orderDeliveryInfoDetails.getOrderNo()+"  商家已发货！");
                 }else if ("确认到货".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())){
                     logisticsMessageResponse.setMessage("您的订单 "+orderDeliveryInfoDetails.getOrderNo()+"  商家已确认到货！");
                 }
-
+                //讲返回类加入返回list中
                 logisticsMessageResponseList.add(logisticsMessageResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsMessageResponseList);

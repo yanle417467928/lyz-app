@@ -23,5 +23,5 @@ public interface OrderDeliveryInfoDetailsService {
     //获取出货单详情
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
     //获取推送的物流消息
-    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime);
+    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime ,Integer identityType);
 }
