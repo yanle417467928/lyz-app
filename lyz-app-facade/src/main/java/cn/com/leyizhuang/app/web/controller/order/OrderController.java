@@ -115,7 +115,9 @@ public class OrderController {
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
             OrderBaseInfo tempOrder = new OrderBaseInfo();
+
             String orderNumber = OrderUtils.generateOrderNumber(1L);
+
 
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
