@@ -230,11 +230,11 @@ public class OrderController {
                         }
                     }
                 }
-                //计算顾客乐币
-                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣, 加运费
                 totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //计算顾客乐币
+                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算可用的优惠券
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
                 //查询顾客预存款
@@ -263,7 +263,7 @@ public class OrderController {
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                goodsSettlement.put("lebi", leBi);
+                goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
             }
@@ -353,7 +353,7 @@ public class OrderController {
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                goodsSettlement.put("lebi", leBi);
+                goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
@@ -501,7 +501,7 @@ public class OrderController {
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
         }
         List<GoodsIdQtyParam> cashCouponsList = usedCouponRequest.getCouponsList();
-        CustomerLeBi leBi = usedCouponRequest.getLeBi();
+        CustomerLeBi leBi = null;
         try {
             //只有顾客和导购身份可进来
             if (identityType == 6 || identityType == 0) {
@@ -541,7 +541,7 @@ public class OrderController {
                 //计算顾客乐币
                 leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
             }
-            returnMap.put("lebi", leBi);
+            returnMap.put("leBi", leBi);
             returnMap.put("totalOrderAmount", totalOrderAmount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
