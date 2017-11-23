@@ -47,8 +47,11 @@ public class UserSetInformationReq {
      * 生日
      */
     private String birthday;
-    //所属城市
-//    private String cityName;
+    /**
+     * 所属城市
+     */
+    @Deprecated
+    private String cityName;
     /**
      * 所属门店
      */
