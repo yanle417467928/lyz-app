@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * APP顾客创建类型
  *
@@ -36,7 +38,7 @@ public enum AppCustomerCreateType {
 
     public static AppCustomerCreateType getAppCustomerCreateTypeByValue(String value) {
         for (AppCustomerCreateType appCustomerCreateType : AppCustomerCreateType.values()) {
-            if (value == appCustomerCreateType.getValue()) {
+            if (Objects.equals(value, appCustomerCreateType.getValue())) {
                 return appCustomerCreateType;
             }
         }

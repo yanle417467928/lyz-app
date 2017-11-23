@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * 导购类型
  *
@@ -30,7 +32,7 @@ public enum AppSellerType {
 
     public static AppSellerType getAppSellerTypeByValue(String value){
         for(AppSellerType sellerType : AppSellerType.values()){
-            if(value == sellerType.getValue()){
+            if(Objects.equals(value, sellerType.getValue())){
                 return sellerType;
             }
         }

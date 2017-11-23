@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * 门店类型枚举
  *
@@ -29,7 +31,7 @@ public enum StoreType {
 
     public static StoreType getStorerTypeByValue(String value){
         for(StoreType storeType : StoreType.values()){
-            if(value == storeType.getValue()){
+            if(Objects.equals(value, storeType.getValue())){
                 return storeType;
             }
         }

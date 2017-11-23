@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.Objects;
+
 /**
  * @author CrazyApeDX
  * Created on 2017/3/24.
@@ -26,7 +28,7 @@ public enum AppOrderType {
 
     public static AppOrderType getAppOrderTypeByValue(String value) {
         for (AppOrderType orderType : AppOrderType.values()) {
-            if (value == orderType.getValue()) {
+            if (Objects.equals(value, orderType.getValue())) {
                 return orderType;
             }
         }

@@ -117,6 +117,7 @@ public class OrderController {
             OrderBaseInfo tempOrder = new OrderBaseInfo();
             String orderNumber = OrderUtils.generateOrderNumber(1L);
 
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {
             e.printStackTrace();
