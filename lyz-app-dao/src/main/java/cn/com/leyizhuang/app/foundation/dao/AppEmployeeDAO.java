@@ -35,6 +35,8 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
+    List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,@Param("keywords") String keywords);
+
     SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
