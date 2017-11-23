@@ -536,7 +536,7 @@ public class OrderController {
         //优惠券折扣
         Double cashCouponDiscount = 0.00;
         //返回数据的容器
-        Map<String, Object> returnMap = new HashMap(2);
+        Map<String, Object> returnMap = new HashMap(3);
         Long userId = usedCouponRequest.getUserId();
         Integer identityType = usedCouponRequest.getIdentityType();
         Double totalOrderAmount = usedCouponRequest.getTotalOrderAmount();
@@ -580,7 +580,7 @@ public class OrderController {
                             return resultDTO;
                         }
                     }else{
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该" + cashCoupon.getTitle() + "产品券已过期！", null);
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到产品券或者该产品券已过期！", null);
                         logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }
@@ -590,6 +590,7 @@ public class OrderController {
             }
             returnMap.put("leBi", leBi);
             returnMap.put("totalOrderAmount", totalOrderAmount);
+            returnMap.put("couponDiscount",cashCouponDiscount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
