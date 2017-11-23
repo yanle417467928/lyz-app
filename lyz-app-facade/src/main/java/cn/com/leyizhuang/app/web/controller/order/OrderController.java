@@ -237,7 +237,7 @@ public class OrderController {
                 CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
 
                 //TODO... 根据促销减去产品券商品。
-                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
+//                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(userId, goodsIds);
                 cashCouponResponseList = appCustomerService.findCashCouponByCustomerId(userId);
 
                 //查询顾客预存款
@@ -266,10 +266,10 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", memberDiscount * 10);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
-                goodsSettlement.put("upstairsFee", 100.00);
+//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("lebi", leBi);
-                goodsSettlement.put("productCouponList", productCouponResponseList);
+//                goodsSettlement.put("productCouponList", productCouponResponseList);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
             }
@@ -331,8 +331,8 @@ public class OrderController {
 
                 //TODO... 根据促销减去产品券商品。
                 //现金券还需要传入订单金额判断是否满减
-                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(customerId, goodsIds);
-                cashCouponResponseList = appCustomerService.findCashCouponByCustomerId(customerId);
+//                productCouponResponseList = productCouponService.findProductCouponByCustomerIdAndGoodsId(customerId, goodsIds);
+                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId,totalOrderAmount);
 
                 //查询导购预存款和信用金
                 SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
@@ -362,10 +362,10 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", memberDiscount * 10);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
-                goodsSettlement.put("upstairsFee", 100.00);
+//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("lebi", leBi);
-                goodsSettlement.put("productCouponList", productCouponResponseList);
+//                goodsSettlement.put("productCouponList", productCouponResponseList);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
@@ -445,7 +445,7 @@ public class OrderController {
                 goodsSettlement.put("orderDiscount", totalPrice / 100);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", totalPrice / 1000);
-                goodsSettlement.put("upstairsFee", 100.00);
+//                goodsSettlement.put("upstairsFee", 100.00);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
@@ -538,13 +538,14 @@ public class OrderController {
                     CashCouponResponse cashCoupon = appCustomerService.findCashCouponByCcIdAndUserIdAndQty(
                             aCashCouponsList.getId(), userId, aCashCouponsList.getQty());
                     if (null != cashCoupon) {
-                        //如果当前小计满足第一张券的满减条件就减去优惠券的折扣
+                        //如果当前小计满足第一张券的满减条件就减去优惠券的折扣,循环判断
                         if (totalOrderAmount >= cashCoupon.getCondition()) {
                             Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
                             cashCouponDiscount = CountUtil.add(cashCouponDiscount, couponDiscount);
                             totalOrderAmount = CountUtil.sub(totalOrderAmount, couponDiscount);
                             index++;
                         }else {
+                            //直到如有使用过多的券，返回最多可使用index张券
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您最多使用"+index+"张优惠券", null);
                             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                             return resultDTO;
@@ -575,8 +576,8 @@ public class OrderController {
      * @param usedCouponRequest 使用产品券变更金额所需判断参数
      * @return
      */
-    @PostMapping(value = "/reEnter/pcp", produces = "application/json;charset=UTF-8")
     @Deprecated
+    @PostMapping(value = "/reEnter/pcp", produces = "application/json;charset=UTF-8")
     public ResultDTO reEnterOrderByProductCoupon(@RequestBody UsedCouponRequest usedCouponRequest) {
         logger.info("reEnterOrderByProductCoupon CALLED,通过产品券来重新计算确认订单，入参 usedCashCouponReq:{}", usedCouponRequest);
 

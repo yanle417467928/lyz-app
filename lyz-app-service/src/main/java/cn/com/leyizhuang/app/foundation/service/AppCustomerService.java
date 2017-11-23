@@ -88,4 +88,5 @@ public interface AppCustomerService {
 
     void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
 
+    List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId,Double totalOrderAmount);
 }

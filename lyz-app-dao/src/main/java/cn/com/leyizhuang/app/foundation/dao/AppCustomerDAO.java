@@ -88,4 +88,6 @@ public interface AppCustomerDAO {
 
     CustomerPreDeposit findByCusId(Long cusId);
 
+    List<CashCouponResponse> findCashCouponUseableByCustomerId(@Param("userId") Long customerId,
+                                                               @Param("amount") Double totalOrderAmount);
 }

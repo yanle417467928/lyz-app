@@ -340,6 +340,9 @@
         AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
     </select>
 
+    <select id="findCashCouponUseableByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
+
+    </select>
 
     <select id="findByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
         SELECT *
