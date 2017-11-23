@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -50,25 +51,25 @@ public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    @Autowired
+    @Resource
     private AppCustomerService appCustomerService;
 
-    @Autowired
+    @Resource
     private AppEmployeeService appEmployeeService;
 
-    @Autowired
+    @Resource
     private AppStoreService appStoreService;
 
-    @Autowired
+    @Resource
     private CityService cityService;
 
-    @Autowired
+    @Resource
     private GoodsService goodsServiceImpl;
 
-    @Autowired
+    @Resource
     private AppOrderService appOrderService;
 
-    @Autowired
+    @Resource
     private ProductCouponService productCouponService;
 
 
@@ -149,6 +150,10 @@ public class OrderController {
                 logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            AppStore userStore = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(),orderParam.getIdentityType());
+            tempOrder.setStoreId(userStore.getStoreId());
+            tempOrder.setStoreCode(userStore.getStoreCode());
+            tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
             switch (orderParam.getIdentityType()) {
                 case 0:
                     tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
@@ -161,6 +166,7 @@ public class OrderController {
                 case 2:
                     tempOrder.setOrderSubjectType(AppOrderSubjectType.FIT);
                     tempOrder.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    //tempOrder.setFitOrderInfo();
                     break;
                 default:
                     break;

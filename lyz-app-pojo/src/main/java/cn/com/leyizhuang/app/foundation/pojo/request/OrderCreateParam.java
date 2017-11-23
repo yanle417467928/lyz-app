@@ -49,6 +49,10 @@ public class OrderCreateParam implements Serializable {
      */
     private Integer leBiQuantity;
     /**
+     * 物料审核单号
+     */
+    private String auditNo;
+    /**
      * 现金券id
      */
     private List<Long> cashCouponIds;

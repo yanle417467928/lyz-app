@@ -61,6 +61,15 @@ public class OrderBaseInfo {
     private AppDeliveryType deliveryType;
 
     /**
+     * 下单人门店(装饰公司)编码
+     */
+    private String storeCode;
+
+    /**
+     * 下单人门店(装饰公司)id
+     */
+    private Long storeId;
+    /**
      * 订单下单主体类型，装饰公司、门店
      */
     private AppOrderSubjectType orderSubjectType;
@@ -70,15 +79,61 @@ public class OrderBaseInfo {
      */
     private AppIdentityType creatorIdentityType;
 
-    /**
-     * 装饰公司订单主体信息
-     */
-    private FitOrderSubjectInfo fitOrderInfo;
 
     /**
-     * 门店订单主体信息
+     * 门店组织全编码
      */
-    private StoreOrderSubjectInfo storeOrderInfo;
+    private String storeStructureCode;
+
+    /**
+     * 下单人id
+     */
+    private Long creatorIdStore;
+
+    /**
+     * 下单人姓名
+     */
+    private String creatorNameStore;
+
+    /**
+     * 下单人手机
+     */
+    private String creatorPhoneStore;
+
+    /**
+     * 导购id
+     */
+    private Long salesConsultId;
+
+    /**
+     * 导购姓名
+     */
+    private String salesConsultName;
+
+    /**
+     * 导购手机
+     */
+    private String salesConsultPhone;
+
+    /**
+     *  顾客id
+     */
+    private Long customerId;
+
+    /**
+     * 顾客姓名
+     */
+    private String customerName;
+
+    /**
+     *  顾客手机
+     */
+    private String customerPhone;
+
+    /**
+     * 审核单号
+     */
+    private String auditNo;
 
     /**
      * 商品总金额
