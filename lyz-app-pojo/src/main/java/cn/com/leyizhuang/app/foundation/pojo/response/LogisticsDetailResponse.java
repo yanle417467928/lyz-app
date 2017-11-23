@@ -12,10 +12,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogisticsDetailResponse {
-
+    /**
+     * 提示语
+     */
     private String describe;
-
+    /**
+     * 物流状态
+     */
     private String logisticsType;
-
+    /**
+     * 执行时间
+     */
     private String createTime;
 }

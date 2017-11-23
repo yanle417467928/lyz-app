@@ -477,11 +477,11 @@ public class OrderController {
         logger.info("reEnterOrderByCashCoupon CALLED,通过现金券来重新计算确认订单，入参 usedCouponRequest:{}", usedCouponRequest);
 
         ResultDTO resultDTO;
-        if (usedCouponRequest.getCouponsList().isEmpty()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "所选现金券不能为空", null);
-            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
+//        if (usedCouponRequest.getCouponsList().isEmpty()) {
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "所选现金券不能为空", null);
+//            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+//        }
         if (null == usedCouponRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
@@ -492,24 +492,72 @@ public class OrderController {
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if(null == usedCouponRequest.getTotalOrderAmount()){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单小计不能为空", null);
+            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if(null == usedCouponRequest.getLeBi()){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客乐币不能为空", null);
+            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        //计算张数
+        int index = 0;
+        //优惠券折扣
+        Double cashCouponDiscount = 0.00;
+        //返回数据的容器
+        Map<String,Object> returnMap = new HashMap(2);
         Long userId = usedCouponRequest.getUserId();
         Integer identityType = usedCouponRequest.getIdentityType();
+        Double totalOrderAmount = usedCouponRequest.getTotalOrderAmount();
+        //如果顾客没有选券，直接返回传入的数值不必再计算
+        if (usedCouponRequest.getCouponsList().isEmpty()){
+            returnMap.put("lebi",usedCouponRequest.getLeBi());
+            returnMap.put("totalOrderAmount",totalOrderAmount);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
+            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
+        }
         List<GoodsIdQtyParam> cashCouponsList = usedCouponRequest.getCouponsList();
-        Double cashCouponDiscount = 0.00;
+        CustomerLeBi leBi = usedCouponRequest.getLeBi();
         try {
-            if (identityType == 6) {
-                cashCouponDiscount = calculationCashCouponsDiscount(cashCouponsList, userId);
-            }
-            if (identityType == 0) {
-                if (null == usedCouponRequest.getCustomerId()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单顾客id不能为空", null);
-                    logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+            //只有顾客和导购身份可进来
+            if (identityType == 6 ||identityType == 0) {
+                if (identityType == 0){
+                    //导购代下单顾客身份不能空
+                    if (null == usedCouponRequest.getCustomerId()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单顾客id不能为空", null);
+                        logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                    userId = usedCouponRequest.getCustomerId();
                 }
-                Long cusId = usedCouponRequest.getCustomerId();
-                cashCouponDiscount = calculationCashCouponsDiscount(cashCouponsList, cusId);
+                //遍历产品券列表
+                for (GoodsIdQtyParam aCashCouponsList : cashCouponsList) {
+                    //根据券ID 去查产品券
+                    CashCouponResponse cashCoupon = appCustomerService.findCashCouponByCcIdAndUserIdAndQty(
+                            aCashCouponsList.getId(), userId, aCashCouponsList.getQty());
+                    if (null != cashCoupon) {
+                        //如果当前小计满足第一张券的满减条件就减去优惠券的折扣
+                        if (totalOrderAmount >= cashCoupon.getCondition()) {
+                            Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
+                            cashCouponDiscount = CountUtil.add(cashCouponDiscount, couponDiscount);
+                            totalOrderAmount = CountUtil.sub(totalOrderAmount, couponDiscount);
+                            index++;
+                        }else {
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您最多使用"+index+"张优惠券", null);
+                            logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    }
+                }
+                //计算顾客乐币
+                leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
+
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cashCouponDiscount);
+            returnMap.put("lebi",leBi);
+            returnMap.put("totalOrderAmount",totalOrderAmount);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -528,6 +576,7 @@ public class OrderController {
      * @return
      */
     @PostMapping(value = "/reEnter/pcp", produces = "application/json;charset=UTF-8")
+    @Deprecated
     public ResultDTO reEnterOrderByProductCoupon(@RequestBody UsedCouponRequest usedCouponRequest) {
         logger.info("reEnterOrderByProductCoupon CALLED,通过产品券来重新计算确认订单，入参 usedCashCouponReq:{}", usedCouponRequest);
 

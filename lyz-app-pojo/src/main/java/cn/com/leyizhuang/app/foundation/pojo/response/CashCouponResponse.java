@@ -24,6 +24,8 @@ public class CashCouponResponse implements Serializable{
 
     private Double denomination;
 
+    private Double condition;
+
     private Date effectiveStartTime;
 
     private Date effectiveEndTime;

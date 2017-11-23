@@ -10,6 +10,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -35,6 +36,7 @@ public class OrderDeliveryInfoDetailsController {
      * @param orderNumber 订单号
      * @return 订单详情
      */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getOrderDelicery(String orderNumber) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderDelicery CALLED,获取物流详情，入参 orderNumber:{}", orderNumber);
