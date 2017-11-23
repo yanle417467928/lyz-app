@@ -944,7 +944,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
