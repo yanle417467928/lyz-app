@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -36,10 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单相关接口
@@ -77,11 +74,16 @@ public class OrderController {
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam) {
-        logger.info("createOrder CALLED,去支付生成订单,入参 userId:{},identityType:{},customerId:{},goodsInfo:{}," +
-                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}",
+        logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},goodsInfo:{}," +
+                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", orderParam.getCityId(),
                 orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getGoodsInfo(),
                 orderParam.getDeliveryInfo(), orderParam.getLeBiQuantity(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
         ResultDTO<Object> resultDTO;
+        if (null == orderParam.getCityId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         if (null == orderParam.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
@@ -103,6 +105,13 @@ public class OrderController {
             return resultDTO;
         }
 
+        //判断创单人身份是否合法
+        if (!(orderParam.getIdentityType() == 0 || orderParam.getIdentityType() == 6 || orderParam.getIdentityType() == 2)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "创单人身份不合法!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
@@ -113,11 +122,49 @@ public class OrderController {
             DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
             List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
-
             OrderBaseInfo tempOrder = new OrderBaseInfo();
 
-            String orderNumber = OrderUtils.generateOrderNumber(1L);
+            //*********************** 开始创建订单 **************************
 
+            //设置订单创建时间
+            Calendar calendar = Calendar.getInstance();
+            tempOrder.setCreateTime(calendar.getTime());
+            //设置订单过期时间
+            calendar.add(Calendar.MINUTE, ApplicationConstant.ORDER_EFFECTIVE_MINUTE);
+            tempOrder.setEffectiveEndTime(calendar.getTime());
+            //设置订单状态
+            tempOrder.setStatus(AppOrderStatus.UNPAID);
+            //设置订单类型 买券、出货
+            tempOrder.setOrderType(AppOrderType.SHIPMENT);
+            //生成并设置订单号
+            String orderNumber = OrderUtils.generateOrderNumber(orderParam.getCityId());
+            tempOrder.setOrderNumber(orderNumber);
+            //设置订单配送方式
+            if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_DELIVERY.getValue())) {
+                tempOrder.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+            } else if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
+                tempOrder.setDeliveryType(AppDeliveryType.SELF_TAKE);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送方式不合法!", "");
+                logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            switch (orderParam.getIdentityType()) {
+                case 0:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.SELLER);
+                    break;
+                case 6:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+                    break;
+                case 2:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.FIT);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    break;
+                default:
+                    break;
+            }
 
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -897,7 +944,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -971,7 +1018,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1030,7 +1077,7 @@ public class OrderController {
                 //设值
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
-                orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值

@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.core.constant.AppOrderType;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.*;
 import lombok.*;
 
 import java.util.Date;
@@ -45,7 +43,7 @@ public class OrderBaseInfo {
     /**
      * 订单头状态
      */
-    private String status;
+    private AppOrderStatus status;
 
     /**
      * 订单物流状态
@@ -65,12 +63,12 @@ public class OrderBaseInfo {
     /**
      * 订单下单主体类型，装饰公司、门店
      */
-    private String orderSubjectType;
+    private AppOrderSubjectType orderSubjectType;
 
     /**
      * 下单人身份类型
      */
-    private String creatorIdentityType;
+    private AppIdentityType creatorIdentityType;
 
     /**
      * 装饰公司订单主体信息

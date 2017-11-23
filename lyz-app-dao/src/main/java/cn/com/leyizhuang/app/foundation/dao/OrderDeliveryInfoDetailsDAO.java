@@ -23,6 +23,8 @@ public interface OrderDeliveryInfoDetailsDAO {
 
     LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(@Param("operatorNo") String operatorNo, @Param("orderNumber") String orderNumber);
 
+    OrderDeliveryInfoDetails queryByOrderNumberAndOperatorNumber(@Param("orderNumber") String orderNumber,@Param("operatorNumber") String operatorNumber);
+
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(@Param("operatorNo") String operatorNo);
 

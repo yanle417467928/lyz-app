@@ -21,6 +21,10 @@ public class OrderCreateParam implements Serializable {
     private static final long serialVersionUID = 2270780578977688132L;
 
     /**
+     * 城市id
+     */
+    private Long cityId;
+    /**
      * 用户id
      */
     private Long userId;
