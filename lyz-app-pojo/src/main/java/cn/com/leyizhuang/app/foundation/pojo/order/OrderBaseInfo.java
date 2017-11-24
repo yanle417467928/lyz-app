@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.core.constant.AppOrderType;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.*;
 import lombok.*;
 
 import java.util.Date;
@@ -45,7 +43,7 @@ public class OrderBaseInfo {
     /**
      * 订单头状态
      */
-    private String status;
+    private AppOrderStatus status;
 
     /**
      * 订单物流状态
@@ -63,24 +61,79 @@ public class OrderBaseInfo {
     private AppDeliveryType deliveryType;
 
     /**
+     * 下单人门店(装饰公司)编码
+     */
+    private String storeCode;
+
+    /**
+     * 下单人门店(装饰公司)id
+     */
+    private Long storeId;
+    /**
      * 订单下单主体类型，装饰公司、门店
      */
-    private String orderSubjectType;
+    private AppOrderSubjectType orderSubjectType;
 
     /**
      * 下单人身份类型
      */
-    private String creatorIdentityType;
+    private AppIdentityType creatorIdentityType;
+
 
     /**
-     * 装饰公司订单主体信息
+     * 门店组织全编码
      */
-    private FitOrderSubjectInfo fitOrderInfo;
+    private String storeStructureCode;
 
     /**
-     * 门店订单主体信息
+     * 下单人id
      */
-    private StoreOrderSubjectInfo storeOrderInfo;
+    private Long creatorIdStore;
+
+    /**
+     * 下单人姓名
+     */
+    private String creatorNameStore;
+
+    /**
+     * 下单人手机
+     */
+    private String creatorPhoneStore;
+
+    /**
+     * 导购id
+     */
+    private Long salesConsultId;
+
+    /**
+     * 导购姓名
+     */
+    private String salesConsultName;
+
+    /**
+     * 导购手机
+     */
+    private String salesConsultPhone;
+
+    /**
+     *  顾客id
+     */
+    private Long customerId;
+
+    /**
+     * 顾客姓名
+     */
+    private String customerName;
+
+    /**
+     *  顾客手机
+     */
+    private String customerPhone;
+
+    /**
+     * 审核单号
+     */
+    private String auditNo;
 
     /**
      * 商品总金额

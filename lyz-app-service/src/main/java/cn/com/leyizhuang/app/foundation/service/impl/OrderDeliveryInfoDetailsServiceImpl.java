@@ -37,6 +37,11 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
+    public OrderDeliveryInfoDetails queryByOrderNumberAndOperatorNumber(String orderNumber, String operatorNumber) {
+        return orderDeliveryInfoDetailsDAO.queryByOrderNumberAndOperatorNumber(orderNumber, operatorNumber);
+    }
+
+    @Override
     public List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo) {
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
         return waitDeliveryResponseList;

@@ -91,11 +91,16 @@ public class ApplicationConstant {
     }
 
 
+    /**
+     * 不允许门店自提的公司标识
+     */
+    public static final String FORBIDDEN_SELF_TAKE_COMPANY_FLAG = "YR|LYZ";
 
-    public static final String FORBIDDEN_SELFT_TAKE_COMPANY_FLAG = "YR|LYZ";
+    /**
+     * 订单有效时间,按分钟计算
+     */
 
-
-    public static final int CHANGE_SELLER_DATE = 60;
+    public static final int ORDER_EFFECTIVE_MINUTE = 60;
 
 
 

@@ -18,6 +18,8 @@ public interface OrderDeliveryInfoDetailsService {
 
     LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
 
+    OrderDeliveryInfoDetails queryByOrderNumberAndOperatorNumber(String orderNumber,String operatorNumber);
+
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFund">
+        INSERT INTO ord_arrears_audit
+        (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,
+        real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,
+        return_money,remarks,create_time)
+        VALUES
+        (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},
+        #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},
+        {returnMoney},#{remarks},#{createTime})
+    </insert>
+
+</mapper>

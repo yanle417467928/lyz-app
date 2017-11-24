@@ -171,7 +171,7 @@ public class EvaluationController {
                 goodsEvaluation.setEvaluationName(employee.getName());
                 goodsEvaluation.setPicUrl(employee.getPicUrl());
             }
-            goodsEvaluation.setEvaluationPictures(pictureUrls.toString());
+            goodsEvaluation.setEvaluationPictures(org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(),"[]"));
             goodsEvaluation.setIsShow(Boolean.TRUE);
             orderEvaluationService.addOrderGoodsEvaluation(goodsEvaluation);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

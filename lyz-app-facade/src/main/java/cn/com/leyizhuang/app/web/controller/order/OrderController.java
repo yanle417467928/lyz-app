@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -34,12 +34,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单相关接口
@@ -53,35 +51,40 @@ public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    @Autowired
+    @Resource
     private AppCustomerService appCustomerService;
 
-    @Autowired
+    @Resource
     private AppEmployeeService appEmployeeService;
 
-    @Autowired
+    @Resource
     private AppStoreService appStoreService;
 
-    @Autowired
+    @Resource
     private CityService cityService;
 
-    @Autowired
+    @Resource
     private GoodsService goodsServiceImpl;
 
-    @Autowired
+    @Resource
     private AppOrderService appOrderService;
 
-    @Autowired
+    @Resource
     private ProductCouponService productCouponService;
 
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam) {
-        logger.info("createOrder CALLED,去支付生成订单,入参 userId:{},identityType:{},customerId:{},goodsInfo:{}," +
-                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}",
+        logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},goodsInfo:{}," +
+                        " deliveryInfo:{},leBiQuantity:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", orderParam.getCityId(),
                 orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getGoodsInfo(),
                 orderParam.getDeliveryInfo(), orderParam.getLeBiQuantity(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
         ResultDTO<Object> resultDTO;
+        if (null == orderParam.getCityId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         if (null == orderParam.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
@@ -103,6 +106,13 @@ public class OrderController {
             return resultDTO;
         }
 
+        //判断创单人身份是否合法
+        if (!(orderParam.getIdentityType() == 0 || orderParam.getIdentityType() == 6 || orderParam.getIdentityType() == 2)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "创单人身份不合法!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
@@ -113,11 +123,54 @@ public class OrderController {
             DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
             List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
-
             OrderBaseInfo tempOrder = new OrderBaseInfo();
 
-            String orderNumber = OrderUtils.generateOrderNumber(1L);
+            //*********************** 开始创建订单 **************************
 
+            //设置订单创建时间
+            Calendar calendar = Calendar.getInstance();
+            tempOrder.setCreateTime(calendar.getTime());
+            //设置订单过期时间
+            calendar.add(Calendar.MINUTE, ApplicationConstant.ORDER_EFFECTIVE_MINUTE);
+            tempOrder.setEffectiveEndTime(calendar.getTime());
+            //设置订单状态
+            tempOrder.setStatus(AppOrderStatus.UNPAID);
+            //设置订单类型 买券、出货
+            tempOrder.setOrderType(AppOrderType.SHIPMENT);
+            //生成并设置订单号
+            String orderNumber = OrderUtils.generateOrderNumber(orderParam.getCityId());
+            tempOrder.setOrderNumber(orderNumber);
+            //设置订单配送方式
+            if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_DELIVERY.getValue())) {
+                tempOrder.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+            } else if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
+                tempOrder.setDeliveryType(AppDeliveryType.SELF_TAKE);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送方式不合法!", "");
+                logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppStore userStore = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(),orderParam.getIdentityType());
+            tempOrder.setStoreId(userStore.getStoreId());
+            tempOrder.setStoreCode(userStore.getStoreCode());
+            tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
+            switch (orderParam.getIdentityType()) {
+                case 0:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.SELLER);
+                    break;
+                case 6:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+                    break;
+                case 2:
+                    tempOrder.setOrderSubjectType(AppOrderSubjectType.FIT);
+                    tempOrder.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    //tempOrder.setFitOrderInfo();
+                    break;
+                default:
+                    break;
+            }
 
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -230,11 +283,11 @@ public class OrderController {
                         }
                     }
                 }
-                //计算顾客乐币
-                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣, 加运费
                 totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //计算顾客乐币
+                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算可用的优惠券
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
                 //查询顾客预存款
@@ -263,7 +316,7 @@ public class OrderController {
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                goodsSettlement.put("lebi", leBi);
+                goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
             }
@@ -353,7 +406,7 @@ public class OrderController {
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                goodsSettlement.put("lebi", leBi);
+                goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
@@ -489,7 +542,7 @@ public class OrderController {
         //优惠券折扣
         Double cashCouponDiscount = 0.00;
         //返回数据的容器
-        Map<String, Object> returnMap = new HashMap(2);
+        Map<String, Object> returnMap = new HashMap(3);
         Long userId = usedCouponRequest.getUserId();
         Integer identityType = usedCouponRequest.getIdentityType();
         Double totalOrderAmount = usedCouponRequest.getTotalOrderAmount();
@@ -501,7 +554,7 @@ public class OrderController {
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
         }
         List<GoodsIdQtyParam> cashCouponsList = usedCouponRequest.getCouponsList();
-        CustomerLeBi leBi = usedCouponRequest.getLeBi();
+        CustomerLeBi leBi = null;
         try {
             //只有顾客和导购身份可进来
             if (identityType == 6 || identityType == 0) {
@@ -533,7 +586,7 @@ public class OrderController {
                             return resultDTO;
                         }
                     }else{
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该" + cashCoupon.getTitle() + "产品券已过期！", null);
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到产品券或者该产品券已过期！", null);
                         logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }
@@ -541,8 +594,9 @@ public class OrderController {
                 //计算顾客乐币
                 leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
             }
-            returnMap.put("lebi", leBi);
+            returnMap.put("leBi", leBi);
             returnMap.put("totalOrderAmount", totalOrderAmount);
+            returnMap.put("couponDiscount",cashCouponDiscount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -897,7 +951,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -971,7 +1025,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1030,7 +1084,7 @@ public class OrderController {
                 //设值
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
-                orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getValue());
                 orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值

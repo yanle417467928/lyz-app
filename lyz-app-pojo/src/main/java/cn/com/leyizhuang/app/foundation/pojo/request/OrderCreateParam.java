@@ -21,6 +21,10 @@ public class OrderCreateParam implements Serializable {
     private static final long serialVersionUID = 2270780578977688132L;
 
     /**
+     * 城市id
+     */
+    private Long cityId;
+    /**
      * 用户id
      */
     private Long userId;
@@ -44,6 +48,10 @@ public class OrderCreateParam implements Serializable {
      * 乐币数量
      */
     private Integer leBiQuantity;
+    /**
+     * 物料审核单号
+     */
+    private String auditNo;
     /**
      * 现金券id
      */
