@@ -23,9 +23,9 @@ import com.alipay.api.response.AlipayTradeAppPayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +38,7 @@ import java.util.Map;
  * @author GenerationRoad
  * @date 2017/11/16
  */
-@RestController
+@Controller
 @RequestMapping(value = "/app/alipay")
 public class AliPayController {
     private static final Logger logger = LoggerFactory.getLogger(AliPayController.class);
@@ -62,10 +62,10 @@ public class AliPayController {
      * @author GenerationRoad
      * @date 2017/11/20
      */
-    @RequestMapping(value = "/recharge/pay", method = RequestMethod.POST)
+    @PostMapping(value = "/recharge/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> PreDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
 
-        logger.info("PreDepositRecharge CALLED,支付宝充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
+        logger.info("PreDepositRecharge CALLED,支付宝充值预存款，入参 userId:{} identityType:{} money:{} cityId:{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
