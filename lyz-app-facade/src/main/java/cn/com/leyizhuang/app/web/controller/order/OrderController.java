@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -150,23 +149,43 @@ public class OrderController {
                 logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            AppStore userStore = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(),orderParam.getIdentityType());
+            //设置下单人所在门店信息
+            AppStore userStore = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(), orderParam.getIdentityType());
             tempOrder.setStoreId(userStore.getStoreId());
             tempOrder.setStoreCode(userStore.getStoreCode());
             tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
+
             switch (orderParam.getIdentityType()) {
+                //导购代下单
                 case 0:
                     tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
                     tempOrder.setCreatorIdentityType(AppIdentityType.SELLER);
+                    AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
+                    tempOrder.setSalesConsultId(employee.getEmpId());
+                    tempOrder.setSalesConsultName(employee.getName());
+                    tempOrder.setSalesConsultPhone(employee.getMobile());
+                    AppCustomer customer = appCustomerService.findById(orderParam.getCustomerId());
+                    tempOrder.setCustomerId(customer.getCusId());
+                    tempOrder.setCustomerName(customer.getName());
+                    tempOrder.setCustomerPhone(customer.getMobile());
                     break;
+                //顾客下单
                 case 6:
                     tempOrder.setOrderSubjectType(AppOrderSubjectType.STORE);
                     tempOrder.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+                    AppCustomer appCustomer  = appCustomerService.findById(orderParam.getUserId());
+                    if (null != appCustomer.getSalesConsultId()){
+                        AppEmployee seller = appEmployeeService.findById(appCustomer.getSalesConsultId());
+                        tempOrder.setSalesConsultId(seller.getEmpId());
+                        tempOrder.setSalesConsultName(seller.getName());
+                        tempOrder.setSalesConsultPhone(seller.getMobile());
+                    }
+
                     break;
+                //装饰公司经理下单
                 case 2:
                     tempOrder.setOrderSubjectType(AppOrderSubjectType.FIT);
                     tempOrder.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
-                    //tempOrder.setFitOrderInfo();
                     break;
                 default:
                     break;
@@ -585,7 +604,7 @@ public class OrderController {
                             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                             return resultDTO;
                         }
-                    }else{
+                    } else {
                         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到产品券或者该产品券已过期！", null);
                         logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
@@ -596,7 +615,7 @@ public class OrderController {
             }
             returnMap.put("leBi", leBi);
             returnMap.put("totalOrderAmount", totalOrderAmount);
-            returnMap.put("couponDiscount",cashCouponDiscount);
+            returnMap.put("couponDiscount", cashCouponDiscount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1164,6 +1183,7 @@ public class OrderController {
             return resultDTO;
         }
     }
+
     @Deprecated
     private Double calculationCashCouponsDiscount(List<GoodsIdQtyParam> cashCouponsList, Long userId) {
 
