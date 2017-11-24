@@ -20,15 +20,21 @@ import java.util.List;
 public class ProductCouponRequest implements Serializable {
 
     /**
-     * 顾客ID
+     * 用户ID
      */
     private Long userId;
     /**
      * 身份类型
      */
     private Integer identityType;
+
     /**
-     * 使用的产品券ID和数量
+     * 顾客id
+     */
+    private Long cusId;
+
+    /**
+     * 使用的产品券商品id和数量
      */
     private List<GoodsIdQtyParam> productCouponList;
 }

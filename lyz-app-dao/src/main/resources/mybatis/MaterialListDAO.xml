@@ -37,7 +37,7 @@
     </delete>
 
     <select id="findByUserIdAndIdentityType"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT DISTINCT m.id,m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
             m.qty,m.audit_no,m.coupon_id
@@ -118,7 +118,7 @@
     </select>
 
     <select id="findMaterialListByUserIdAndTypeAndAuditIsNotNull"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
         SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
         m.qty, p.retail_price,m.audit_no,m.coupon_id
         FROM material_list m
@@ -133,7 +133,7 @@
     </select>
 
     <select id="findMaterialListByUserIdAndTypeAndIsCouponId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
         SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
         m.qty,m.audit_no,m.coupon_id
         FROM material_list m

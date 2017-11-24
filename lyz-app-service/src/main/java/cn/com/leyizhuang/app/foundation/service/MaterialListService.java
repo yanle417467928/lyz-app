@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface MaterialListService {
 
     void deleteMaterialList(List<Long> ids);
 
-    List<MaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType);
+    List<NormalMaterialListResponse> findByUserIdAndIdentityType(Long userId, Integer identityType);
 
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId);
 
@@ -32,7 +32,7 @@ public interface MaterialListService {
 
     Boolean existOtherMaterialListByUserIdAndIdentityType(Long userID, Integer identityType);
 
-    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType appIdentityTypeByValue);
+    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType appIdentityTypeByValue);
 
-    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType appIdentityType);
+    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType appIdentityType);
 }

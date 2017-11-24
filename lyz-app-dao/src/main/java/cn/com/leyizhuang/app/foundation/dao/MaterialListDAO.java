@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +24,7 @@ public interface MaterialListDAO {
 
     void batchDelete(List<Long> ids);
 
-    List<MaterialListResponse> findByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
+    List<NormalMaterialListResponse> findByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
             AppIdentityType identityType, @Param(value = "goodsId") Long goodsId);
@@ -44,9 +44,9 @@ public interface MaterialListDAO {
     Boolean existOtherMaterialListByUserIdAndIdentityType(@Param("userId") Long userID,
                                                           @Param("identityType") AppIdentityType appIdentityTypeByValue);
 
-    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
-                                                                                @Param("identityType") AppIdentityType identityType);
+    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
+                                                                                      @Param("identityType") AppIdentityType identityType);
 
-    List<MaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
-                                                                            @Param("identityType") AppIdentityType identityType);
+    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
+                                                                                  @Param("identityType") AppIdentityType identityType);
 }

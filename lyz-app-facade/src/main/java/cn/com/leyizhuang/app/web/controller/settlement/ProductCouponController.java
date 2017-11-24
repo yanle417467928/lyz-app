@@ -96,10 +96,10 @@ public class ProductCouponController {
     }
 
     /**
-     * 顾客点击使用产品券通过加入下料清单
+     * 顾客产品券转入下料清单
      *
-     * @param productCouponRequest
-     * @return
+     * @param productCouponRequest 请求参数
+     * @return 是否加入成功
      */
     @PostMapping(value = "/transform/materialList", produces = "application/json;charset=UTF-8")
     public ResultDTO productCouponTransformMaterialList(@RequestBody ProductCouponRequest productCouponRequest) {

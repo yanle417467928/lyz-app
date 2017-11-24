@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +16,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MaterialAuditGoPayResponse {
-    //物料单编号
+    /**
+     * 物料单编号
+     */
     private String auditNo;
-    //物料单商品list
-    private List<MaterialListResponse> goodsList;
-    //提交人姓名
+    /**
+     * 提交人姓名
+     */
     private String worker;
+    /**
+     * 物料单商品list
+     */
+    private List<NormalMaterialListResponse> goodsList;
+
 
 }

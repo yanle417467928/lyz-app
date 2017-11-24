@@ -7,7 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.MaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -245,16 +245,16 @@ public class MaterialListController {
             logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+        List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
         //创建返回对象
         MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
-        List<MaterialListResponse> listResponses = null;
-        Map<String, Object> returnMap = new HashMap<>(2);
+        List<NormalMaterialListResponse> listResponses = null;
+        Map<String, Object> returnMap = new HashMap<>(3);
         AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
         if (identityType == 2) {
             //查询的是所有的商品下料清单（这个集合对象中的料单号和类型是一样的）
-            List<MaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
+            List<NormalMaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
 
             if (materialListDOS != null) {
 
@@ -275,14 +275,14 @@ public class MaterialListController {
         if (identityType == 6 || identityType == 0) {
             listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId, appIdentityType);
             if (listResponses != null) {
-                for (MaterialListResponse materialListResponse : listResponses) {
-                    materialListResponse.setRetailPrice(0.00);
+                for (NormalMaterialListResponse normalMaterialListResponse : listResponses) {
+                    normalMaterialListResponse.setRetailPrice(0.00);
                 }
             }
         }
         returnMap.put("couponListRes",listResponses);
         returnMap.put("auditListRes", materialAuditGoPayResponse);
-        returnMap.put("materialListRes", materialListResponses);
+        returnMap.put("materialListRes", normalMaterialListRespons);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
