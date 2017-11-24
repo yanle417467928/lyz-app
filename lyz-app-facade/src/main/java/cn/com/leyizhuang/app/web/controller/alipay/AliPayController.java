@@ -23,9 +23,9 @@ import com.alipay.api.response.AlipayTradeAppPayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +38,7 @@ import java.util.Map;
  * @author GenerationRoad
  * @date 2017/11/16
  */
-@Controller
+@RestController
 @RequestMapping(value = "/app/alipay")
 public class AliPayController {
     private static final Logger logger = LoggerFactory.getLogger(AliPayController.class);
