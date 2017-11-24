@@ -12,7 +12,7 @@
     </sql>
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         <result column="ord_no" property="orderNumber" jdbcType="VARCHAR"/>
-        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="status" property="status" javaType="cn.com.leyizhuang.app.core.constant.AppOrderStatus"/>
         <result column="effective_end_time" property="effectiveEndTime" jdbcType="TIMESTAMP"/>
         <result column="delivery_type" property="deliveryType"
                 javaType="cn.com.leyizhuang.app.core.constant.AppDeliveryType"/>

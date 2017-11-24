@@ -73,6 +73,7 @@ public class HqAppCityController {
                     city.setEnable(hqAppCityDTO.getEnable());
                     city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
                     cityService.save(city);
+                    logger.warn("addCity EXCEPTION,城市存储同步成功！",city);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else {
                     logger.warn("addCity OUT,同步存储城市信息失败，出参 resultDTO:{}", "该城市已存在");
@@ -80,7 +81,7 @@ public class HqAppCityController {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("addCity EXCEPTION,城市同步失败，出参 e:{}", e);
+                logger.warn("addCity EXCEPTION,城市存储同步成功，出参 e:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，城市同步失败", null);
             }
         }

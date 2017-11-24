@@ -961,7 +961,7 @@ public class OrderController {
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     goodsImgList.add(goodsServiceImpl.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
                 }
-                if ("待付款".equals(orderBaseInfo.getStatus())) {
+                if ("待付款".equals(orderBaseInfo.getStatus().getDescription())) {
                     //计算剩余过期失效时间
                     Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
                     //设置
@@ -970,7 +970,7 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1044,8 +1044,8 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
-                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getValue());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
@@ -1103,7 +1103,7 @@ public class OrderController {
                 //设值
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
-                orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值

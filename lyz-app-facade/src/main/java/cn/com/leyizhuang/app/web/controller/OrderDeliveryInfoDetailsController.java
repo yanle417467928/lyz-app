@@ -128,7 +128,7 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsMessageResponse.setOrderNumber(orderDeliveryInfoDetails.getOrderNo());
                 if ("已封车".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())) {
                     logisticsMessageResponse.setMessage("您的订单 " + orderDeliveryInfoDetails.getOrderNo() + "  商家已发货！");
-                } else if ("确认到货".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())) {
+                } else if ("已签收".equals(orderDeliveryInfoDetails.getLogisticStatus().getDescription())) {
                     logisticsMessageResponse.setMessage("您的订单 " + orderDeliveryInfoDetails.getOrderNo() + "  商家已确认到货！");
                 }
                 //讲返回类加入返回list中
