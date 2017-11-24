@@ -174,12 +174,6 @@ public class MaCustomerRestController extends BaseRestController {
             } else {
                 customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
             }
-            customer.setCreateTime(new Date());
-            customer.setLight("GREEN");
-            customer.setCreateType("Background add");
-            if (null != customer.getSalesConsultId()) {
-                customer.setBindingTime(new Date());
-            }
             this.maCustomerService.saveCustomer(customer);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
@@ -192,7 +186,6 @@ public class MaCustomerRestController extends BaseRestController {
 
     /**
      * 新增顾客检验电话号码是否存在
-     *
      * @param mobile
      * @return
      */

@@ -31,5 +31,4 @@ public class GoodsBrand {
     public GoodsBrand() {
     }
 
-
 }

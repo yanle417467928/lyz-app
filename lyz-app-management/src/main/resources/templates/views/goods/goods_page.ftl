@@ -29,9 +29,9 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="btn-group">
-                <#--<button id="btn_add" type="button" class="btn btn-default">-->
-                <#--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增-->
-                <#--</button>-->
+                    <#--<button id="btn_add" type="button" class="btn btn-default">-->
+                        <#--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增-->
+                    <#--</button>-->
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
@@ -98,10 +98,10 @@
     </div>
 </div>
 <script>
-    $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/goods/page/grid', 'get', true, function (params) {
+    $(function() {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/goods/page/grid', 'get', true, function(params) {
             return {
-                offset: params.offset,
+                offset: params.offset ,
                 size: params.limit,
                 keywords: params.search
             }
@@ -117,18 +117,18 @@
             title: '商品名称',
             align: 'center',
             events: {
-                'click .scan': function (e, value, row) {
+                'click .scan': function(e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function (value) {
+            formatter: function(value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        }, {
+        },{
             field: 'goodsCode',
             title: '商品编码',
             align: 'center'
-        }, {
+        },{
             field: 'createTime',
             title: '创建时间',
             align: 'center'
@@ -181,11 +181,12 @@
             $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
         });
 
-        $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/view/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        $('#btn_edit').on('click', function() {
+            $grid.modify($('#dataGrid'), '/views/admin/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+
         });
 
-        $('#btn_delete').on('click', function () {
+        $('#btn_delete').on('click', function() {
             $grid.remove($('#dataGrid'), '/rest/goods', 'delete');
         });
     });
@@ -198,6 +199,10 @@
                     if (0 === result.code) {
                         var data = result.content;
                         $('#goodsTitle').html("商品详情");
+                        if (null === data.id) {
+                            data.id = '-';
+                        }
+                        $('#id').html(data.id);
 
                         if (null === data.goodsName) {
                             data.goodsName = '-';

@@ -68,9 +68,9 @@ public class GoodsVO {
             goodsVO.setCategoryId(goodsDO.getCId());
             goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
             return goodsVO;
-        } else {
-            return null;
-        }
+    } else {
+        return null;
+    }
     }
 
     public static final List<GoodsVO> transform(List<GoodsDO> goodsDOList) {

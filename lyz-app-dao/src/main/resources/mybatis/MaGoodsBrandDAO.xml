@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGoodsBrandDAO">
+
+
+    <select id="findAllGoodsBrand"  resultType="GoodsBrand">
+        SELECT
+           *
+        FROM
+        gds_goods_brand
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+
+
+    <select id="findGoodsBrandById"  parameterType="java.lang.Long" resultType="GoodsBrand">
+    select
+    *
+    FROM gds_goods_brand g
+    where
+    g.brd_id=#{pid}
+    ORDER
+        BY
+        sort_id
+        ASC
+</select>
+
+    <select id="findGoodsBrandByName"  parameterType="java.lang.String" resultType="GoodsBrand">
+        select
+        *
+        FROM gds_goods_brand g
+        where
+        g.brand_name LIKE CONCAT('%',#{queryCusInfo},'%')
+             ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+
+    <insert id="save" parameterType="GoodsBrand">
+    INSERT
+    INTO
+        gds_goods_brand (brand_name,brand_code,sort_id)
+      VALUES
+        (#{brandName},#{brandCode},#{sortId})
+
+    </insert>
+
+
+
+    <select id="isExistBrandName" parameterType="java.lang.String"  resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_brand
+        WHERE brand_name = #{brandName})
+             ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+
+    <select id="queryGoodsBrandVOById"  parameterType="java.lang.Long" resultType="GoodsBrand">
+        select
+        *
+        FROM gds_goods_brand g
+        where
+        g.brd_id = #{brdId}
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+
+    <update id="update" parameterType="GoodsBrand">
+        UPDATE
+        gds_goods_brand
+        <set>
+            <if test="null != brandName">
+                brand_name = #{brandName},
+            </if>
+            <if test="null != brandCode">
+                brand_code = #{brandCode},
+            </if>
+            <if test="null != sortId">
+                sort_id = #{sortId},
+            </if>
+        </set>
+        WHERE brd_id = #{brdId}
+    </update>
+ </mapper>

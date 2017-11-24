@@ -109,6 +109,9 @@ public class GoodsVO {
             goodsVO.setGoodsName(goodsDO.getSkuName());
             goodsVO.setGoodsCode(goodsDO.getSku());
             goodsVO.setBrandId(goodsDO.getBrdId());
+            goodsVO.setBrandTitle(goodsDO.getBrdName());
+            goodsVO.setUnitName(goodsDO.getGoodsUnit());
+            goodsVO.setCategoryTitle(goodsDO.getCategoryName());
             return goodsVO;
         } else {
             return null;

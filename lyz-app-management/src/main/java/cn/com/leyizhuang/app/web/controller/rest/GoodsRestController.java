@@ -24,7 +24,7 @@ import java.util.List;
  * @date 2017/9/6
  */
 @RestController
-@RequestMapping(value = GoodsRestController.PRE_URL, produces = "application/json;charset=utf-8")
+@RequestMapping(value = GoodsRestController.PRE_URL,produces = "application/json;charset=utf-8")
 public class GoodsRestController extends BaseRestController {
     protected final static String PRE_URL = "/rest/goods";
 
@@ -34,6 +34,8 @@ public class GoodsRestController extends BaseRestController {
     private GoodsService goodsService;
 
     /**
+     * @title 商品信息分页查询
+     * @descripe
      * @param
      * @return
      * @throws
@@ -43,17 +45,18 @@ public class GoodsRestController extends BaseRestController {
      * @date 2017/9/8
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<GoodsVO> restGoodsPageGird(Integer offset, Integer size, String keywords) {
+    public GridDataVO<GoodsVO> restGoodsPageGird(Integer offset, Integer size, String keywords){
         size = getSize(size);
         Integer page = getPage(offset, size);
-
         PageInfo<GoodsDO> goodsDOPage = this.goodsService.queryPage(page, size);
         List<GoodsDO> goodsDOList = goodsDOPage.getList();
         List<GoodsVO> goodsVOList = GoodsVO.transform(goodsDOList);
-        return new GridDataVO<GoodsVO>().transform(goodsVOList, goodsDOPage.getTotal());
+        return new GridDataVO<GoodsVO>().transform(goodsVOList,goodsDOPage.getTotal());
     }
 
     /**
+     * @title   根据ID查询商品信息
+     * @descripe
      * @param id
      * @return
      * @throws
@@ -76,6 +79,8 @@ public class GoodsRestController extends BaseRestController {
     }
 
     /**
+     * @title   根据ID删除商品
+     * @descripe
      * @param ids
      * @return
      * @throws
@@ -91,6 +96,8 @@ public class GoodsRestController extends BaseRestController {
     }
 
     /**
+     * @title   编辑商品信息
+     * @descripe
      * @param goodsDTO
      * @return
      * @throws

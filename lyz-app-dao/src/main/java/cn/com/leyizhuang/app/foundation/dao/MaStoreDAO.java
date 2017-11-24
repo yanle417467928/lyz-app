@@ -20,4 +20,6 @@ public interface MaStoreDAO {
     List<StoreVO> findStoresListByEnable(@Param("enabled") Boolean enabled, @Param("cityId") Long cityId);
 
     List<StoreVO> findStoresListByStoreInfo(String queryStoreInfo);
+
+    void update( @Param("storeId") Long storeId,@Param("isSelfDelivery") Boolean isSelfDelivery);
 }

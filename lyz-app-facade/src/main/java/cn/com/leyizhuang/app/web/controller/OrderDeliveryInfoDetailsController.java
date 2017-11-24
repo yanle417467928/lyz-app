@@ -196,6 +196,7 @@ public class OrderDeliveryInfoDetailsController {
             deliveryInfoDetails.setOperatorNo(orderDeliveryInfoDetails.getOperatorNo());
             deliveryInfoDetails.setTaskNo(orderDeliveryInfoDetails.getTaskNo());
             deliveryInfoDetails.setWarehouseNo(orderDeliveryInfoDetails.getWarehouseNo());
+            deliveryInfoDetails.setPicture("");
             orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getOrderLogisticsResponse OUT,配送员修改物流状态成功，出参 resultDTO:{}", resultDTO);

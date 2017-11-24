@@ -34,7 +34,7 @@ public class GoodsDO {
     //商品规格
     private String goodsSpecification;
 
-    //单位名称
+    //单位单位
     private String goodsUnit;
 
     //产品分类id
@@ -56,7 +56,7 @@ public class GoodsDO {
     private String typeName;
 
     //是否首页推荐
-    private Boolean isRecommendIndex;
+    private Boolean isIndexRecommend;
 
     //是否热销
     private Boolean isHot;
@@ -72,5 +72,29 @@ public class GoodsDO {
 
     //创建时间
     private Date createTime;
+
+    //商品公司标识
+    private String companyFlag;
+
+    //产品档次
+    private String productGrade;
+
+    //搜索关键字
+    private String searchKeyword;
+
+    //商品详情
+    private String goodsDetial;
+
+    //物料状态
+    private Boolean materialsEnable;
+
+    //物理分类
+    private String physicalClassify;
+
+    //物料条码
+    private String materialsCode;
+
+    //物料名称
+    private String materials_name;
 
 }

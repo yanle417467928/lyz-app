@@ -213,9 +213,9 @@
             align: 'center',
             formatter: function (value, row, index) {
                 if (true === value) {
-                    return '是'
-                } else if (false === value) {
-                    return '否'
+                    return '<span class="label label-primary">是</span>';
+                }else if(false === value){
+                    return '<span class="label label-danger">否</span>';
                 } else {
                     return '-';
                 }
@@ -343,8 +343,17 @@
                                 }
                                 $('#isCashOnDelivery').html(data.isCashOnDelivery);
 
-                                if (null === data.light) {
-                                    data.light = '-';
+
+                                if ('绿灯' === data.light) {
+                                    data.light = '<span class="label label-success">绿灯</span>';
+                                }else if('红灯' === data.light){
+                                    data.light = '<span class="label label-danger">红灯</span>';
+                                } else if('黄灯' === data.light){
+                                    data.light = '<span class="label label-warning">黄灯</span>';
+                                } else if('熄灯' === data.light) {
+                                    data.light = '<span class="label label-deafult">熄灯</span>';
+                                }else{
+                                    data.light = '<span class="label label-danger">-</span>';
                                 }
                                 $('#light').html(data.light);
 
@@ -386,9 +395,11 @@
 
 
                                 if (true === data.status) {
-                                    data.status = '正常';
-                                } else if (false === data.status) {
-                                    data.status = '停用';
+                                    data.status = '<span class="label label-primary">是</span>';
+                                }else if(false === data.status){
+                                    data.status = '<span class="label label-danger">否</span>';
+                                }else{
+                                    data.status = '<span class="label label-danger">-</span>';
                                 } else {
                                     data.status = '-';
                                 }

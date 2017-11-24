@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGoodsCategoryDAO">
+
+
+    <select id="findAllGoodsCategory"  resultType="GoodsCategoryDO">
+        SELECT
+           *
+        FROM
+        gds_goods_category
+        ORDER BY
+        sort_id
+        ASC
+    </select>
+
+
+    <select id="findGoodsCategorySelection"  resultType="GoodsCategoryDO">
+       select cid,category_name
+       FROM gds_goods_category ggc
+       where ggc.cid
+       in
+       (select distinct p_cid FROM gds_goods_category g where g.p_cid is not null and  g.p_cid !='')
+       ORDER BY
+        sort_id
+        ASC
+    </select>
+
+    <select id="findGoodsCategoryByPid"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
+        select
+        *
+        FROM gds_goods_category g
+        where
+        g.p_cid=#{pid}
+        ORDER BY
+        sort_id
+        ASC
+    </select>
+
+    <select id="findGoodsCategoryByPcode"  parameterType="java.lang.String" resultType="GoodsCategoryDO">
+        select
+        *
+        FROM gds_goods_category g
+        where
+        g.category_name LIKE CONCAT('%',#{queryCusInfo},'%')
+        ORDER BY
+        sort_id
+        ASC
+    </select>
+
+
+    <insert id="save" parameterType="GoodsCategoryDO">
+    INSERT
+    INTO
+        gds_goods_category (category_name,category_code,p_cid,p_category_code,sort_id)
+      VALUES
+        (#{categoryName},#{categoryCode},#{pCid},#{pCategoryCode},#{sortId})
+
+    </insert>
+
+
+
+    <select id="isExistCategoryName" parameterType="java.lang.String"  resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_category
+        WHERE category_name = #{categoryName})
+    </select>
+
+
+    <select id="queryGoodsCategoryVOById"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
+        select
+        *
+        FROM gds_goods_category g
+        where
+        g.cid = #{goodsCategoryId}
+    </select>
+
+
+    <update id="update" parameterType="GoodsCategoryDO">
+        UPDATE
+        gds_goods_category
+        <set>
+            <if test="null != categoryName">
+                category_name = #{categoryName},
+            </if>
+            <if test="null != pCid">
+                p_cid = #{pCid},
+            </if>
+            <if test="null != pCategoryCode">
+                p_category_code = #{pCategoryCode},
+            </if>
+            <if test="null != categoryCode">
+                category_code = #{categoryCode},
+            </if>
+            <if test="null != sortId">
+                sort_id = #{sortId},
+            </if>
+        </set>
+        WHERE cid = #{cid}
+    </update>
+ </mapper>

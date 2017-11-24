@@ -98,6 +98,41 @@
                 field: 'cityId',
                 title: '城市ID',
                 align: 'center',
+                visible:false
+            },{
+            field: 'code',
+            title: '城市编码',
+            align: 'center'
+        }, {
+            field: 'name',
+            title: '城市名称',
+            align: 'center',
+            events: {
+                'click .scan': function(e, value, row) {
+                    $page.information.show(row.cityId);
+                }
+            },
+            formatter: function(value) {
+                return '<a class="scan" href="#">' + value + '</a>';
+            }
+        },{
+            field: 'structureTitle',
+            title: '所属分公司',
+            align: 'center'
+        },{
+            field: 'enable',
+            title: '是否生效',
+            align: 'center',
+                formatter: function(value,row,index){
+                if(true==value){
+                    return '<span class="label label-primary">是</span>';
+                }else if(false==value){
+                    return '<span class="label label-danger">否</span>';
+                }else {
+                    return '<span class="label label-danger">-</span>';
+                }
+            }
+        },
                 visible: false
             }, {
                 field: 'code',
@@ -211,6 +246,11 @@
                                 $('#structureTitle').html(data.structureTitle);
 
                                 if (true === data.enable) {
+                                    $('#enable').html('<span class="label label-primary">是</span>');
+                                }else if(false === data.enable){
+                                    $('#enable').html('<span class="label label-primary">否</span>');
+                                }else{
+                                    $('#enable').html('-');
                                     data.enable = '是';
                                 } else if (false === data.enable) {
                                     data.enable = '否';

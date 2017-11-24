@@ -11,6 +11,9 @@
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
 
 
+    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css" />
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/locales/zh.js"></script>
     <link type="text/css" rel="stylesheet"
           href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css"/>
     <script type="text/javascript"
@@ -97,7 +100,7 @@
                             },
                             remote: {
                                 type: 'POST',
-                                url: '/rest/customers/isExistPhoneNumber',
+                                url:  '/rest/customers/isExistPhoneNumber',
                                 message: '该电话已被使用',
                                 delay: 500,
                                 data: function () {
@@ -255,7 +258,7 @@
                                 <label>
                                     顾客类型
                                 </label>
-                                <select class="form-control select" name="customerType" id="customerType">
+                                <select class="form-control select" name="customerType" id="customerType" >
                                     <option value="MEMBER">会员</option>
                                     <option value="RETAIL">零售</option>
                                 </select>
@@ -269,7 +272,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="birthday" type="text" class="form-control datepicker" id="birthday"
-                                           readonly placeholder="出生日期">
+                                           readonly   placeholder="出生日期">
                                 </div>
                             </div>
                         </div>
@@ -281,8 +284,7 @@
                                 <label>
                                     归属城市
                                 </label>
-                                <select name="cityId" id="cityId" class="form-control select"
-                                        onchange="findStoreByCity(this.value);">
+                                <select name="cityId" id="cityId" class="form-control select"   onchange="findStoreByCity(this.value);" >
                                 </select>
                             </div>
                         </div>
@@ -291,7 +293,7 @@
                                 <label for="title">
                                     归属门店
                                 </label>
-                                <select name="storeId" id="storeId" class="form-control select" onchange="findGuide()">
+                                <select name="storeId" id="storeId" class="form-control select"   onchange="findGuide()">
                                 </select>
                             </div>
                         </div>
@@ -303,19 +305,19 @@
                                 <label for="description">
                                     归属导购
                                 </label>
-                                <select name="salesConsultId" id="guideId" class="form-control select">
+                                <select name="salesConsultId" id="guideId" class="form-control select" >
                                 </select>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label>
-                                    是否货到付款
-                                </label>
-                                <select class="form-control select" name="isCashOnDelivery" id="isCashOnDelivery">
-                                    <option value="true">是</option>
-                                    <option value="false">否</option>
-                                </select>
+                            <label>
+                                是否货到付款
+                            </label>
+                            <select class="form-control select" name="isCashOnDelivery" id="isCashOnDelivery" >
+                                <option value="true">是</option>
+                                <option value="false">否</option>
+                            </select>
                             </div>
                         </div>
                     </div>
@@ -327,7 +329,8 @@
                                     顾客头像
                                 </label>
                                 <div class="form-inline">
-                                    <input name="file" type="file" class="form-control" id="file">
+                                    <input name="file" type="file"  class="form-control"  id="file">
+
                                 </div>
                             </div>
                         </div>
@@ -336,28 +339,28 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <div class="form-group">
-                                    <label for="status">是否启用</label>
-                                    <br>
-                                    <input name="status" class="switch" id="status" type="checkbox" checked
-                                           data-on-text="启用" data-off-text="停用"/>
-                                </div>
-                            </div>
+                                    <div class="form-group">
+                                        <label for="status">是否启用</label>
+                                        <br>
+                                        <input name="status" class="switch" id="status" type="checkbox" checked
+                                               data-on-text="启用" data-off-text="停用"/>
+                                    </div>
                         </div>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-xs-12 col-md-8"></div>
-                            <div class="col-xs-12 col-md-2">
-                                <button type="submit" class="btn btn-primary footer-btn">
-                                    <i class="fa fa-check"></i> 保存
-                                </button>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
-                                <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                                    <i class="fa fa-close"></i> 取消
-                                </button>
-                            </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-8"></div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="submit" class="btn btn-primary footer-btn">
+                                <i class="fa fa-check"></i> 保存
+                            </button>
                         </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                <i class="fa fa-close"></i> 取消
+                            </button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>

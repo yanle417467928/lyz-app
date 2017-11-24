@@ -1,12 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAudit;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderTempInfo;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
+import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,15 @@ public class OrderArriveController {
 
     @Autowired
     private ArrearsAuditService arrearsAuditServiceImpl;
+
+    @Autowired
+    private OrderAgencyFundService orderAgencyFundServiceImpl;
+
+    @Autowired
+    private AppEmployeeService appEmployeeServiceImpl;
+
+    @Autowired
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
 
     /**
      * @title   配送员确认订单送达
@@ -121,13 +130,13 @@ public class OrderArriveController {
             if (ownManey > 0){
                 if (ownManey > collectionAmount){//欠款金额 > 收款金额
                     //创建欠款审核
-                    OrderArrearsAudit orderArrearsAudit = new OrderArrearsAudit();
-                    orderArrearsAudit.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
-                    orderArrearsAudit.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
+                    OrderArrearsAuditDO orderArrearsAuditDO = new OrderArrearsAuditDO();
+                    orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
+                    orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerphone());
-                    orderArrearsAudit.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
-                    orderArrearsAudit.setArrearsAuditInfo(paymentMethod, collectionAmount, "", ArrearsAuditStatus.AUDITING);
-
+                    orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
+                    orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, collectionAmount, remarks, ArrearsAuditStatus.AUDITING);
+                    this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核正在审核中", null);
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
@@ -135,22 +144,48 @@ public class OrderArriveController {
                 } else { //欠款金额 <= 收款金额
                     //创建收款记录
                     OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                    paymentDetails.setConstructor("实际货币", paymentMethod, orderNo, ownManey);
+                    paymentDetails.setConstructor(orderTempInfo.getOrderId(),"实际货币", paymentMethod, orderNo, ownManey, "");
+                    this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                     collectionAmount = CountUtil.sub(collectionAmount, ownManey);
+                    //修改订单欠款为0
+                    OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setOrderNumber(orderNo);
+                    orderBillingDetails.setArrearage(0D);
+                    this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
                 }
             }
 
             //判断是否有代收款
             if (collectionAmount > 0){
                 //生成代收款记录
-
+                OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
+                orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
+                orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
+                        orderTempInfo.getSellerName(), orderTempInfo.getSellerphone());
+                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount + ownManey, collectionAmount, remarks);
+                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
 
+            //上传图片
+            String picture = "";
+            for (int i = 0; i < files.length; i++) {
+                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
+                picture += ",";
+            }
 
+            //生成订单物流详情
+            AppEmployee appEmployee = this.appEmployeeServiceImpl.findDeliveryClerkNoByUserId(userId);
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+            orderDeliveryInfoDetails.setDeliveryInfo(orderNo,LogisticStatus.CONFIRM_ARRIVAL, "送达收货","送达",appEmployee.getDeliveryClerkNo(),picture,"","");
+            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
-
-
+            //修改订单状态
+            OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+            orderBaseInfo.setOrderNumber(orderNo);
+            orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+            orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
+            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("confirmOrderArrive OUT,配送员确认订单送达成功，出参 resultDTO:{}", resultDTO);

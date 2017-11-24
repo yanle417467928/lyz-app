@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MaStoreServiceImp implements MaStoreService {
+public class MaStoreServiceImpl implements MaStoreService {
 
     @Autowired
     private MaStoreDAO mastoreDAO;
@@ -61,5 +61,12 @@ public class MaStoreServiceImp implements MaStoreService {
         PageHelper.startPage(page, size);
         List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByStoreInfo(queryStoreInfo);
         return new PageInfo<>(pageStoreList);
+    }
+
+    @Override
+    public void update(Long storeId,Boolean  isSelfDelivery ){
+        if (null != storeId && null != isSelfDelivery) {
+            mastoreDAO.update(storeId,isSelfDelivery);
+        }
     }
 }

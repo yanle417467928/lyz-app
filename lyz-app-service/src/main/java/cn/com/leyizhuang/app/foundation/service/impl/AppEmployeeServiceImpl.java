@@ -176,4 +176,9 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public List<SellerResponse> findSellerByStoreIdAndIdentityType(Long storeId, AppIdentityType type) {
         return this.employeeDAO.findSellerByStoreIdAndIdentityType(storeId, type);
     }
+
+    @Override
+    public AppEmployee findDeliveryClerkNoByUserId(Long userId) {
+        return this.employeeDAO.findDeliveryClerkNoByUserId(userId);
+    }
 }

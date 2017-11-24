@@ -248,6 +248,7 @@ public class MaterialListController {
         List<MaterialListResponse> materialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
         //创建返回对象
         MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
+        List<MaterialListResponse> listResponses = null;
         Map<String, Object> returnMap = new HashMap<>(2);
         AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
@@ -272,14 +273,14 @@ public class MaterialListController {
             }
         }
         if (identityType == 6 || identityType == 0) {
-            List<MaterialListResponse> listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId, appIdentityType);
+            listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId, appIdentityType);
             if (listResponses != null) {
                 for (MaterialListResponse materialListResponse : listResponses) {
                     materialListResponse.setRetailPrice(0.00);
                 }
-                materialAuditGoPayResponse.setGoodsList(listResponses);
             }
         }
+        returnMap.put("couponListRes",listResponses);
         returnMap.put("auditListRes", materialAuditGoPayResponse);
         returnMap.put("materialListRes", materialListResponses);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
