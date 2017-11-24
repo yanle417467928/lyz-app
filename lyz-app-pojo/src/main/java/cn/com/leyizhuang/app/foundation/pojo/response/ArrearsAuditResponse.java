@@ -25,7 +25,7 @@ public class ArrearsAuditResponse {
     //导购姓名
     private String sellerName;
     //导购电话
-    private String sellerphone;
+    private String sellerPhone;
     //配送地址
     private String distributionAddress;
     //配送时间

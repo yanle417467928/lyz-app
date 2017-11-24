@@ -88,7 +88,7 @@ public class OrderArriveController {
         try{
             //根据订单号查询订单信息
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
-            if (null == orderTempInfo || orderTempInfo.getOrderStatus().equals(AppOrderStatus.PENDING_RECEIVE.getValue())){
+            if (null == orderTempInfo || !(orderTempInfo.getOrderStatus().equals(AppOrderStatus.PENDING_RECEIVE.getValue()))){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息错误！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -105,7 +105,7 @@ public class OrderArriveController {
 
             //验证取货码是否正确
             String pickCode = orderTempInfo.getPickUpCode();
-            if (null == pickCode || pickCode.equalsIgnoreCase(pickUpCode)){
+            if (null == pickCode || !(pickCode.equalsIgnoreCase(pickUpCode))){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取货码输入错误！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -132,13 +132,13 @@ public class OrderArriveController {
                     //创建欠款审核
                     OrderArrearsAuditDO orderArrearsAuditDO = new OrderArrearsAuditDO();
                     orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
-                    orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
-                            orderTempInfo.getSellerName(), orderTempInfo.getSellerphone());
+                    orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),orderTempInfo.getSellerId(),
+                            orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
                     orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, collectionAmount, remarks, ArrearsAuditStatus.AUDITING);
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核正在审核中", null);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else { //欠款金额 <= 收款金额
@@ -162,7 +162,7 @@ public class OrderArriveController {
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
-                        orderTempInfo.getSellerName(), orderTempInfo.getSellerphone());
+                        orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                 orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount + ownManey, collectionAmount, remarks);
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
@@ -175,9 +175,13 @@ public class OrderArriveController {
             }
 
             //生成订单物流详情
-            AppEmployee appEmployee = this.appEmployeeServiceImpl.findDeliveryClerkNoByUserId(userId);
+           /* AppEmployee appEmployee = this.appEmployeeServiceImpl.findDeliveryClerkNoByUserId(userId);
+            String deliveryClerkNo = "";
+            if (null != appEmployee && null != appEmployee.getDeliveryClerkNo()){
+                deliveryClerkNo = appEmployee.getDeliveryClerkNo();
+            }*/
             OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-            orderDeliveryInfoDetails.setDeliveryInfo(orderNo,LogisticStatus.CONFIRM_ARRIVAL, "送达收货","送达",appEmployee.getDeliveryClerkNo(),picture,"","");
+            orderDeliveryInfoDetails.setDeliveryInfo(orderNo,LogisticStatus.CONFIRM_ARRIVAL, "确认到货！","送达",orderTempInfo.getOperatorNo(),picture,"","");
             this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
             //修改订单状态

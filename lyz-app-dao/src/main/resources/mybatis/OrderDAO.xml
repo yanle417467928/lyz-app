@@ -196,12 +196,13 @@
     </select>
 
     <select id="getOrderInfoByOrderNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderTempInfo">
-        SELECT ob.ord_no orderNo, ob.pick_up_code pickUpCode, ob.status orderStatus, ob.delivery_type deliveryType
+        SELECT ob.ord_no orderNo, ob.pick_up_code pickUpCode, ob.status orderStatus, ob.delivery_type deliveryType,
           od.collection_amount collectionAmount, od.own_money ownMoney, ob.customer_name customerName,
-          ob.customer_phone customerPhone, ob.sales_consult_name sellerName, ob.sales_consult_phone sellerphone,
-          ob.shipping_address shippingAddress, ob.oid orderId
+          ob.customer_phone customerPhone, ob.sales_consult_name sellerName, ob.sales_consult_phone sellerPhone,
+          ol.shipping_address shippingAddress, ob.oid orderId, ol.delivery_clerk_no operatorNo, ob.sales_consult_id sellerId
         FROM ord_base_info ob
         LEFT JOIN ord_billing_details od ON od.ord_no = ob.ord_no
+        LEFT JOIN ord_logistics_info ol ON ol.ord_no = ob.ord_no
         WHERE ob.ord_no = #{orderNo}
 
     </select>

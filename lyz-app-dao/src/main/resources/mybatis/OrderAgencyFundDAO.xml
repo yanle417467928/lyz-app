@@ -3,14 +3,14 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderAgencyFundDAO">
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFundDO">
-        INSERT INTO ord_arrears_audit
+        INSERT INTO ord_agency_fund
         (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,
         real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,
-        return_money,remarks,create_time)
+        return_money,remarks,create_time,seller_id)
         VALUES
         (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},
         #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},
-        {returnMoney},#{remarks},#{createTime})
+        #{returnMoney},#{remarks},#{createTime},#{sellerId})
     </insert>
 
 </mapper>

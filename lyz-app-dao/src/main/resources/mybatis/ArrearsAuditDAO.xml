@@ -4,7 +4,7 @@
 
     <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
         SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
-        seller_name sellerName, seller_phone sellerphone, distribution_address distributionAddress,
+        seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
         distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
         payment_method paymentMethod, status, order_money
         FROM ord_arrears_audit
@@ -18,9 +18,9 @@
 
     <select id="findByUserIdAndOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
         SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
-        seller_name sellerName, seller_phone sellerphone, distribution_address distributionAddress,
+        seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
         distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
-        payment_method paymentMethod, status, order_money
+        payment_method paymentMethod, status, order_money orderMoney
         FROM ord_arrears_audit
         WHERE user_id = #{userId}
         AND ord_no = #{orderNo}
@@ -35,11 +35,11 @@
         INSERT INTO ord_arrears_audit
         (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,order_money,
         real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,distribution_address,
-        distribution_time,remarks,status,create_time)
+        distribution_time,remarks,status,create_time,seller_id)
         VALUES
         (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},#{orderMoney},
         #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},#{distributionAddress},
-        #{distributionTime},#{remarks},#{status},#{createTime})
+        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId})
     </insert>
 
 </mapper>

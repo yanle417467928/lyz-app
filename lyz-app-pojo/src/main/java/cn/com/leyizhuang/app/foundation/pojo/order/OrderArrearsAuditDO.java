@@ -25,6 +25,8 @@ public class OrderArrearsAuditDO {
     private String customerName;
     //会员电话
     private String customerPhone;
+    //导购id
+    private Long sellerId;
     //导购姓名
     private String sellerName;
     //导购电话
@@ -58,10 +60,11 @@ public class OrderArrearsAuditDO {
     //修改时间
     private LocalDateTime updateTime;
 
-    public void setCustomerAndSeller(String customerName, String customerPhone, String sellerName,
+    public void setCustomerAndSeller(String customerName, String customerPhone, Long sellerId, String sellerName,
                                      String sellerphone){
         this.customerName = customerName;
         this.customerPhone = customerPhone;
+        this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.sellerphone = sellerphone;
     }
