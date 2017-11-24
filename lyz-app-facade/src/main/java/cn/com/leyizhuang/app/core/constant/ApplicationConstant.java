@@ -90,7 +90,6 @@ public class ApplicationConstant {
         InterfaceConfigure.EBS_WS_URL = ebsUrl;
     }
 
-
     /**
      * 不允许门店自提的公司标识
      */
@@ -102,7 +101,9 @@ public class ApplicationConstant {
 
     public static final int ORDER_EFFECTIVE_MINUTE = 60;
 
-
-
+    /**
+     * 变更导购时间（天）
+     */
+    public static final int CHANGE_SELLER_DATE = 60;
 
 }
