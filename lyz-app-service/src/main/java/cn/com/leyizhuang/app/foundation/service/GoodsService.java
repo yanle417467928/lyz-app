@@ -64,4 +64,22 @@ public interface GoodsService {
     Boolean existGoodsBrandByGoodsIdAndBrandName(Long id, String brandName);
 
     List<String> findCompanyFlagListById(List<Long> goodsIdList);
+
+    /**
+     * HQ同步添加商品
+     * @param goodsDO   商品类
+     */
+    void saveSynchronize(GoodsDO goodsDO);
+
+    /**
+     * HQ同步修改商品
+     * @param goodsDO   商品类
+     */
+    void modifySynchronize(GoodsDO goodsDO);
+
+    /**
+     * HQ同步删除商品
+     * @param sku   物料编码
+     */
+    void deleteSynchronize(String sku);
 }

@@ -67,6 +67,104 @@
         WHERE sku = #{sku}
     </select>
 
+    <insert id="saveSynchronize" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        INSERT INTO gds_goods
+        (create_time, brd_id, brand_name, cid, category_name, gtid, type_name, sku, sku_name, cover_image_uri,
+        rotation_image_uri, goods_specification, goods_unit, is_index_recommend, is_hot, is_new, is_color_mixing,
+        sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detial, search_keyword,
+        product_grade, materials_name)
+        VALUES
+        (#{createTime}, #{brdId}, #{brdName}, #{cId}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
+        #{coverImageUri}, #{rotationImageUri}, #{goodsSpecification}, #{goodsUnit}, #{isIndexRecommend}, #{isHot},
+        #{isNew}, #{isColorMixing} , #{sortId}, #{companyFlag}, #{materialsCode}, #{physicalClassify}, #{materialsEnable},
+        #{goodsDetial}, #{searchKeyword}, #{productGrade}, #{materialsName})
+    </insert>
+
+
+    <update id="modifySynchronize" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        UPDATE gds_goods
+        <set>
+            <if test="null != createTime">
+                create_time = #{createTime},
+            </if>
+            <if test="null != brdId">
+                brd_id = #{brdId},
+            </if>
+            <if test="null != brdName">
+                brand_name = #{brdName},
+            </if>
+            <if test="null != cId">
+                cid = #{cId},
+            </if>
+            <if test="null != categoryName">
+                category_name = #{categoryName},
+            </if>
+            <if test="null != gtid">
+                gtid = #{gtid},
+            </if>
+            <if test="null != skuName">
+                sku_name = #{skuName},
+            </if>
+            <if test="null != coverImageUri">
+                coverImageUri = #{coverImageUri},
+            </if>
+            <if test="null != rotationImageUri">
+                rotation_image_uri = #{rotationImageUri},
+            </if>
+            <if test="null != goodsSpecification">
+                goods_specification = #{goodsSpecification},
+            </if>
+            <if test="null != goodsUnit">
+                goods_unit = #{goodsUnit},
+            </if>
+            <if test="null != isIndexRecommend">
+                is_index_recommend = #{isIndexRecommend},
+            </if>
+            <if test="null != isHot">
+                is_hot = #{isHot},
+            </if>
+            <if test="null != isNew">
+                is_new = #{isNew},
+            </if>
+            <if test="null != isColorMixing">
+                is_color_mixing = #{isColorMixing},
+            </if>
+            <if test="null != sortId">
+                sort_id = #{sortId},
+            </if>
+            <if test="null != companyFlag">
+                company_flag = #{companyFlag},
+            </if>
+            <if test="null != materialsCode">
+                materials_code = #{materialsCode},
+            </if>
+            <if test="null != physicalClassify">
+                physical_classify = #{physicalClassify},
+            </if>
+            <if test="null != materialsEnable">
+                materials_enable = #{materialsEnable},
+            </if>
+            <if test="null != goodsDetial">
+                goods_detial = #{goodsDetial},
+            </if>
+            <if test="null != searchKeyword">
+                search_keyword = #{searchKeyword},
+            </if>
+            <if test="null != productGrade">
+                product_grade = #{productGrade},
+            </if>
+            <if test="null != materialsName">
+                materials_name = #{materialsName},
+            </if>
+        </set>
+        WHERE sku = #{sku}
+    </update>
+
+    <delete id="deleteSynchronize" parameterType="java.lang.String">
+        DELETE FROM gds_goods
+        WHERE sku = #{sku}
+    </delete>
+
     <delete id="batchRemove" parameterType="java.util.List">
         DELETE FROM gds_goods WHERE gid IN
         <foreach collection="list" item="id" open="(" close=")" separator=",">

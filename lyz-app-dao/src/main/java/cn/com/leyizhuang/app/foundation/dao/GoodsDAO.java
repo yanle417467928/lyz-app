@@ -98,4 +98,22 @@ public interface GoodsDAO {
     Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id, @Param("brandName") String brandName);
 
     List<String> findCompanyFlagListById(@Param(value = "list") List<Long> goodsIdList);
+
+    /**
+     * HQ同步添加商品
+     * @param goodsDO   商品类
+     */
+    void saveSynchronize(GoodsDO goodsDO);
+
+    /**
+     * HQ同步修改商品
+     * @param goodsDO   商品类
+     */
+    void modifySynchronize(GoodsDO goodsDO);
+
+    /**
+     * HQ同步删除商品
+     * @param sku   物料编码
+     */
+    void deleteSynchronize(@Param("sku") String sku);
 }

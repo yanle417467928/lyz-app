@@ -268,6 +268,25 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return null;
     }
 
+    @Override
+    public void saveSynchronize(GoodsDO goodsDO) {
+        if (goodsDO != null){
+            goodsDAO.saveSynchronize(goodsDO);
+        }
+    }
+
+    @Override
+    public void modifySynchronize(GoodsDO goodsDO) {
+        if (goodsDO != null){
+            goodsDAO.modifySynchronize(goodsDO);
+        }
+    }
+
+    @Override
+    public void deleteSynchronize(String sku) {
+       goodsDAO.deleteSynchronize(sku);
+    }
+
     /**
      * @param
      * @return
