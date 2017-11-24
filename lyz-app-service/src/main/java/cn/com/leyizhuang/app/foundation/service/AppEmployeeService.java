@@ -57,4 +57,6 @@ public interface AppEmployeeService {
 
     List<SellerResponse> findSellerByStoreIdAndIdentityType(Long storeId, AppIdentityType type);
 
+    AppEmployee findDeliveryClerkNoByUserId(Long userId);
+
 }

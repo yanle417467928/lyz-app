@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderAgencyFund {
+public class OrderAgencyFundDO {
 
     private Long id;
     //配送员ID

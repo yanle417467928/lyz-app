@@ -107,4 +107,22 @@ public class AppOrderServiceImpl implements AppOrderService {
     public OrderTempInfo getOrderInfoByOrderNo(String orderNo) {
         return this.orderDAO.getOrderInfoByOrderNo(orderNo);
     }
+
+    @Override
+    public OrderBillingPaymentDetails savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails) {
+        this.orderDAO.savePaymentDetails(orderBillingPaymentDetails);
+        return orderBillingPaymentDetails;
+    }
+
+    @Override
+    public OrderBillingDetails updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails) {
+        this.orderDAO.updateOwnMoneyByOrderNo(orderBillingDetails);
+        return orderBillingDetails;
+    }
+
+    @Override
+    public OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo) {
+        this.orderDAO.updateOrderStatusByOrderNo(orderBaseInfo);
+        return orderBaseInfo;
+    }
 }

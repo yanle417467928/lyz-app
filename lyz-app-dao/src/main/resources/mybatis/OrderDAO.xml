@@ -199,12 +199,41 @@
         SELECT ob.ord_no orderNo, ob.pick_up_code pickUpCode, ob.status orderStatus, ob.delivery_type deliveryType
           od.collection_amount collectionAmount, od.own_money ownMoney, ob.customer_name customerName,
           ob.customer_phone customerPhone, ob.sales_consult_name sellerName, ob.sales_consult_phone sellerphone,
-          ob.shipping_address shippingAddress
-
+          ob.shipping_address shippingAddress, ob.oid orderId
         FROM ord_base_info ob
         LEFT JOIN ord_billing_details od ON od.ord_no = ob.ord_no
         WHERE ob.ord_no = #{orderNo}
 
     </select>
+    
+    <insert id="savePaymentDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+        INSERT INTO ord_billing_payment_details
+        (oid,ord_no,currency_type,pay_time,pay_type,amount,reply_code,receipt_number)
+        VALUES
+        (#{orderId},#{orderNumber},#{currencyType},#{payTime},#{payType},#{amount},#{replyCode},#{},)
+    </insert>
+
+    <update id="updateOwnMoneyByOrderNo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+        UPDATE ord_billing_details
+        <set>
+            <if test="null != arrearage">
+                own_money = #{arrearage},
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber}
+    </update>
+
+    <update id="updateOrderStatusByOrderNo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        UPDATE ord_base_info
+        <set>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != deliveryStatus">
+                delivery_status = #{deliveryStatus},
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber}
+    </update>
 
 </mapper>

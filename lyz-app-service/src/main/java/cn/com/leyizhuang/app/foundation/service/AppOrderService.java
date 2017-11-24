@@ -57,4 +57,11 @@ public interface AppOrderService {
     List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber);
 
     OrderTempInfo getOrderInfoByOrderNo(String orderNo);
+
+    OrderBillingPaymentDetails savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails);
+
+    OrderBillingDetails updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails);
+
+    OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo);
+
 }

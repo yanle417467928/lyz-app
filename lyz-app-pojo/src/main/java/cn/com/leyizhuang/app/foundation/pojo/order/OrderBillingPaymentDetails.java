@@ -18,7 +18,8 @@ import java.util.Date;
 public class OrderBillingPaymentDetails {
 
     private Long id;
-
+    //订单id
+    private Long orderId;
     //货币类型:虚拟货币、实际货币
     private String currencyType;
 
@@ -39,13 +40,17 @@ public class OrderBillingPaymentDetails {
 
     //第三方支付接口回复码
     private String replyCode;
+    //收款单号
+    private String receiptNumber;
 
-    public void setConstructor(String currencyType, String payType, String orderNumber,
-                               Double amount){
+    public void setConstructor(Long orderId, String currencyType, String payType, String orderNumber,
+                               Double amount, String receiptNumber){
+        this.orderId = orderId;
         this.amount = amount;
         this.currencyType = currencyType;
         this.orderNumber = orderNumber;
         this.payType = payType;
         this.payTime = new Date();
+        this.receiptNumber = receiptNumber;
     }
 }
