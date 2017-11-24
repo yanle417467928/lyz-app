@@ -20,7 +20,7 @@ public class ProductCouponResponse implements Serializable {
 
     private static final long serialVersionUID = -210446196520449249L;
 
-    private Long id;
+    private Long  goodsId;
 
     private String goodsName;
 

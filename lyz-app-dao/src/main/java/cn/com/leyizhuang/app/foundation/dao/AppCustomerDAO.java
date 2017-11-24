@@ -90,4 +90,8 @@ public interface AppCustomerDAO {
 
     List<CashCouponResponse> findCashCouponUseableByCustomerId(@Param("userId") Long customerId,
                                                                @Param("totalAmount") Double totalOrderAmount);
+
+    List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(@Param(value = "sellerId") Long sellerId,
+                                                                         @Param(value = "cusId") Long cusId);
+
 }

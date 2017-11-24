@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -134,7 +135,8 @@ public class CustomerController {
                 return resultDTO;
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
-            if (phoneUser != null) { //如果电话号码已经存在
+            //如果电话号码已经存在
+            if (phoneUser != null) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
@@ -296,15 +298,15 @@ public class CustomerController {
         }
     }
 
+
     /**
-     * 顾客产品券列表
-     *
-     * @param userId       顾客id
-     * @param identityType 身份类型
-     * @return ResultDTO
+     * @param userId       用户id
+     * @param identityType 用户身份类型
+     * @param cusId        顾客id
+     * @return
      */
     @PostMapping(value = "/productCoupon/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> customerProductCoupon(Long userId, String identityType) {
+    public ResultDTO<Object> customerProductCoupon(Long userId, Integer identityType, Long cusId) {
         logger.info("customerProductCoupon CALLED,获取顾客可用产品券，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
@@ -314,15 +316,32 @@ public class CustomerController {
                 logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
-            if (null != productCouponList && productCouponList.size() > 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
-
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            if (identityType == 0 && cusId == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (identityType == 6) {
+                List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else if (identityType == 0) {
+                List<ProductCouponResponse> productCouponResponseList = customerService.
+                        findProductCouponBySellerIdAndCustomerId(userId,cusId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不合法,获取产品券列表失败", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客可用产品券失败", null);
             logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);

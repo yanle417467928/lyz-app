@@ -310,6 +310,14 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    public List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId) {
+        if (null != sellerId && null != cusId){
+            return  customerDAO.findProductCouponBySellerIdAndCustomerId(sellerId,cusId);
+        }
+        return null;
+    }
+
+    @Override
     public CustomerPreDeposit findByCusId(Long cusId) {
         return this.customerDAO.findByCusId(cusId);
     }
