@@ -88,7 +88,7 @@ public class AliPayController {
             return resultDTO;
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(money);
-        String outTradeNo = "CZ_" + OrderUtils.generateRechargeNumber(cityId);
+        String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
         String subject = "预存款充值";
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc, subject,
                 Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "支付宝", "");

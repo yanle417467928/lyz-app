@@ -30,9 +30,9 @@ public class WechatPrePay {
         parameterMap.put("nonce_str", WechatUtil.getNonceStr());
 
         if (sn.contains("XN")) {
-            parameterMap.put("body", "乐易装交易线上支付");
+            parameterMap.put("body", "乐易装线上支付交易");
         } else {
-            parameterMap.put("body", "乐易装电子钱包充值");
+            parameterMap.put("body", "乐易装预存款充值");
         }
 
         parameterMap.put("out_trade_no", sn);
@@ -52,7 +52,7 @@ public class WechatPrePay {
         String requestXML = WechatUtil.getRequestXml(parameterMap);
         String result = WechatUtil.httpsRequest("https://api.mch.weixin.qq.com/pay/unifiedorder", "POST", requestXML);
         //微信根据参数返回一个xml文件，解析成Map,完成第二次参数配置
-        Map<String, String> map = null;
+        Map map = null;
         SortedMap<String, Object> secondSignMap = null;
         try {
             map = WechatUtil.doXMLParse(result);

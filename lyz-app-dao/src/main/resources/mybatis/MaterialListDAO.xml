@@ -7,7 +7,7 @@
         qty,audit_no,material_list_type,coupon_id)
         VALUES
         (#{userId}, #{identityType}, #{gid}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri},
-        #{goodsUnit}, #{qty}),#{auditNo},#{materialListType},#{couponId};
+        #{goodsUnit}, #{qty},#{auditNo},#{materialListType},#{couponId});
     </insert>
 
     <insert id="batchSave" parameterType="java.util.List">

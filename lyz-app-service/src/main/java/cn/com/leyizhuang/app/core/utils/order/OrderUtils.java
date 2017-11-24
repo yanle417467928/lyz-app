@@ -80,7 +80,7 @@ public class OrderUtils {
                 Random random = new Random();
                 String randomNumber = random.nextInt(900000) + 100000 + "";
                 orderNumber += randomNumber;
-                return orderNumber;
+                return "CZ_" + orderNumber;
             } else {
                 return null;
             }
