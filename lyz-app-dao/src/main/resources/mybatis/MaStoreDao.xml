@@ -104,4 +104,15 @@
         LEFT JOIN city c ON s.city_code = c.code
         WHERE s.store_name LIKE CONCAT('%',#{queryCusInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryCusInfo},'%')
     </select>
+    
+    <update id="update">
+        UPDATE
+          st_store
+        <set>
+          <if test="null != isSelfDelivery">
+             is_self_delivery = #{isSelfDelivery},
+          </if>
+        </set>
+        WHERE store_id = #{storeId}
+    </update>
 </mapper>

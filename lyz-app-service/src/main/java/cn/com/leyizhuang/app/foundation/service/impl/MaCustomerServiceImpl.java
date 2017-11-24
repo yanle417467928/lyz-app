@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -147,8 +148,14 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public void saveCustomer(Customer customer) {
-        if (null != customer) {
+    public void saveCustomer(Customer customer){
+        if(null!=customer){
+            customer.setCreateTime(new Date());
+            customer.setLight("GREEN");
+            customer.setCreateType("Background add");
+            if(null!=customer.getSalesConsultId()){
+                customer.setBindingTime(new Date());
+            }
             maCustomerDAO.save(customer);
         }
     }

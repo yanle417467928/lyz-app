@@ -9,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class MaStoreRestController extends BaseRestController {
     private final Logger logger = LoggerFactory.getLogger(MaStoreRestController.class);
 
     @Autowired
-    private MaStoreService MaStoreService;
+    private MaStoreService maStoreService;
 
     /**
      * 初始门店页面
@@ -36,7 +37,7 @@ public class MaStoreRestController extends BaseRestController {
     public GridDataVO<StoreVO> restStoresPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.MaStoreService.queryPageVO(page, size);
+        PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size);
         List<StoreVO> PageAllStoresList = storePage.getList();
         return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
     }
@@ -48,7 +49,7 @@ public class MaStoreRestController extends BaseRestController {
      */
     @GetMapping(value = "/findStorelist")
     public List<StoreVO> findStoresList() {
-        List<StoreVO> AllStoresList = this.MaStoreService.findStoreList();
+        List<StoreVO> AllStoresList = this.maStoreService.findStoreList();
         return AllStoresList;
     }
 
@@ -60,7 +61,7 @@ public class MaStoreRestController extends BaseRestController {
      */
     @GetMapping(value = "/findStoresListByCityId/{cityId}")
     public List<StoreVO> findStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
-        List<StoreVO> storesList = this.MaStoreService.findStoresListByCityId(cityId);
+        List<StoreVO> storesList = this.maStoreService.findStoresListByCityId(cityId);
         return storesList;
     }
 
@@ -72,7 +73,7 @@ public class MaStoreRestController extends BaseRestController {
      */
     @GetMapping(value = "/{storeId}")
     public ResultDTO<StoreVO> restStoreIdGet(@PathVariable(value = "storeId") Long storeId) {
-        StoreVO storeVO = this.MaStoreService.queryStoreVOById(storeId);
+        StoreVO storeVO = this.maStoreService.queryStoreVOById(storeId);
         if (null == storeVO) {
             logger.warn("查找门店失败：Role(id = {}) == null", storeId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -96,7 +97,7 @@ public class MaStoreRestController extends BaseRestController {
     public GridDataVO<StoreVO> findStoresListByCity(@PathVariable(value = "cityId") Long cityId, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.MaStoreService.queryStoreListByCityId(page, size, cityId);
+        PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId);
         List<StoreVO> PageAllStoresList = storePage.getList();
         return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
     }
@@ -115,7 +116,7 @@ public class MaStoreRestController extends BaseRestController {
     public GridDataVO<StoreVO> findStoresListByEnable(@RequestParam("enabled") Boolean enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.MaStoreService.findStoresListByEnable(page, size, enabled, cityId);
+        PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByEnable(page, size, enabled, cityId);
         List<StoreVO> PageAllStoresList = storePage.getList();
         return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
     }
@@ -134,9 +135,22 @@ public class MaStoreRestController extends BaseRestController {
     public GridDataVO<StoreVO> findStoresListByStoreInfo(@PathVariable(value = "queryStoreInfo") String queryStoreInfo, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.MaStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo);
+        PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo);
         List<StoreVO> PageAllStoresList = storePage.getList();
         return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
     }
 
+    /**
+     * 更新门店信息
+     *
+     * @param storeId
+     * @param isSelfDelivery
+     * @param
+     * @return
+     */
+    @PutMapping(value = "/{storeId}")
+    public ResultDTO<?> updateStoreById(@PathVariable(value = "storeId") Long storeId, @RequestParam(value = "isSelfDelivery") Boolean isSelfDelivery) {
+            maStoreService.update(storeId, isSelfDelivery);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+    }
 }

@@ -20,29 +20,31 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2017/9/6
  */
 @Controller
-@RequestMapping(value = GoodsViewController.PRE_URL, produces = "application/json;charset=utf-8")
-public class GoodsViewController extends BaseController {
-    protected final static String PRE_URL = "/view/goods";
+@RequestMapping(value = GoodsViewController.PRE_URL,produces = "application/json;charset=utf-8")
+public class GoodsViewController extends BaseController{
+    protected final static String PRE_URL = "/views/admin/goods";
     private final Logger logger = LoggerFactory.getLogger(GoodsViewController.class);
 
     @Autowired
     private GoodsService goodsService;
 
     /**
+     * @title 去商品信息列表页面
+     * @descripe
      * @param
      * @return
      * @throws
-     * @title 去商品信息列表页面
-     * @descripe
      * @author GenerationRoad
      * @date 2017/9/9
      */
-    @GetMapping(value = "/page")
+    @GetMapping(value = "/list")
     public String storePage(HttpServletRequest request, ModelMap map) {
         return "/views/goods/goods_page";
     }
 
     /**
+     * @title   去编辑商品信息页面
+     * @descripe
      * @param id
      * @return
      * @throws
@@ -61,7 +63,7 @@ public class GoodsViewController extends BaseController {
                 return "/error/404";
             } else {
                 GoodsVO goodsVO = GoodsVO.transform(goodsDO);
-                map.addAttribute("goodsVO", goodsVO);
+                map.addAttribute("goodsVO",goodsVO);
             }
         }
         return "/views/goods/goods_edit";

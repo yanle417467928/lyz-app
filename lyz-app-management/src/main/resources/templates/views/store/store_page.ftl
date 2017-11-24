@@ -29,8 +29,10 @@
         <div class=" col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            data-live-search="true" onchange="findStoreByCity(this.value);">
+                    <button id="btn_edit" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+                    </button>
+                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findStoreByCity(this.value);">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
@@ -119,7 +121,17 @@
 </div>
 <script>
 
-    $(function () {
+
+    $(function() {
+        initDateGird('/rest/stores/page/grid');
+        findCitySelection();
+        $('#btn_edit').on('click', function () {
+            modify($('#dataGrid'), '/views/admin/stores/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+    });
+
+
+    function findCitySelection(){
         var city = "";
         $.ajax({
             url: '/rest/citys/findCitylist',
@@ -138,12 +150,7 @@
                 $("#cityCode").append(city);
             }
         });
-    });
-
-
-    $(function () {
-        initDateGird('/rest/stores/page/grid');
-    });
+    }
 
     function initDateGird(url) {
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
@@ -184,19 +191,41 @@
             field: 'enable',
             title: '是否生效',
             align: 'center',
-            formatter: function (value, row, index) {
+            formatter: function(value,row,index){
                 if (true === value) {
-                    return '是'
-                } else if (false === value) {
-                    return '否'
+                    return '<span class="label label-primary">是</span>';
+                }else if(false === value){
+                    return '<span class="label label-danger">否</span>';
                 } else {
-                    return '-';
+                    return '<span class="label label-danger">-</span>';
                 }
             }
-        },
-        ]);
+        }]);
     }
 
+    function modify(container, url) {
+        var selected = this.getSelectedIds(container);
+        var length = selected.length;
+        if (length === 0) {
+            $notify.warning('请在点击按钮前选中一条数据');
+        } else if (length > 1) {
+            $notify.warning('您每次只能选择一条数据进行修改');
+        } else {
+            var id = selected[0];
+            url = url.replace('{id}', id);
+            window.location.href = url;
+        }
+    }
+
+    function getSelectedIds(container){
+        var ids = [];
+        var selected = container.bootstrapTable('getSelections');
+        for (var i = 0; i < selected.length; i++ ) {
+            var data = selected[i];
+            ids.push(data.storeId);
+        }
+        return ids;
+    }
 
     var $page = {
         information: {
@@ -250,11 +279,11 @@
                                 $('#isDefault').html(data.isDefault);
 
                                 if (true === data.enable) {
-                                    data.enable = '是';
-                                } else if (false === data.enable) {
-                                    data.enable = '否';
-                                } else {
-                                    data.enable = '-';
+                                    data.enable = '<span class="label label-primary">是</span>';
+                                }else if(false === data.enable){
+                                    data.enable = '<span class="label label-danger">否</span>';
+                                }else{
+                                    data.enable  = '<span class="label label-danger">-</span>';
                                 }
                                 $('#enable').html(data.enable);
 

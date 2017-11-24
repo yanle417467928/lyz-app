@@ -19,5 +19,7 @@ public interface MaStoreService {
 
     PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size, Boolean enabled, Long cityId);
 
-    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size, String queryStoreInfo);
+    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo);
+
+     void update(Long storeId,Boolean  isSelfDelivery );
 }
