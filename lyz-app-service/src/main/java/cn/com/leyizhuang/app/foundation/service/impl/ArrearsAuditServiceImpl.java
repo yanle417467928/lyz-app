@@ -29,7 +29,7 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
 
     @Override
     public List<ArrearsAuditResponse> findByUserIdAndOrderNo(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList) {
-        return null;
+        return this.arrearsAuditDAO.findByUserIdAndOrderNo(userId, orderNo, arrearsAuditStatusList);
     }
 
     @Override

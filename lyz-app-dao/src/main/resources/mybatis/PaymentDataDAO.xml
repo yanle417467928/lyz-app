@@ -12,7 +12,7 @@
     </insert>
 
 
-    <select id="findByOutTradeNo" parameterType="java.lang.String"
+    <select id="findByOutTradeNoAndTradeStatus" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         SELECT out_trade_no, total_fee, trade_status, user_id, identity_type appIdentityType, payment_type
         FROM payment_data

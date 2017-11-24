@@ -133,41 +133,6 @@
                 }
             }
         },
-                visible: false
-            }, {
-                field: 'code',
-                title: '城市编码',
-                align: 'center'
-            }, {
-                field: 'name',
-                title: '城市名称',
-                align: 'center',
-                events: {
-                    'click .scan': function (e, value, row) {
-                        $page.information.show(row.cityId);
-                    }
-                },
-                formatter: function (value) {
-                    return '<a class="scan" href="#">' + value + '</a>';
-                }
-            }, {
-                field: 'structureTitle',
-                title: '所属分公司',
-                align: 'center'
-            }, {
-                field: 'enable',
-                title: '是否生效',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    if (true == value) {
-                        return '是';
-                    } else if (false == value) {
-                        return '否';
-                    } else {
-                        return '-';
-                    }
-                }
-            },
         ]);
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
@@ -249,13 +214,8 @@
                                     $('#enable').html('<span class="label label-primary">是</span>');
                                 }else if(false === data.enable){
                                     $('#enable').html('<span class="label label-primary">否</span>');
-                                }else{
+                                }else {
                                     $('#enable').html('-');
-                                    data.enable = '是';
-                                } else if (false === data.enable) {
-                                    data.enable = '否';
-                                } else {
-                                    data.enable = '-';
                                 }
                                 $('#enable').html(data.enable);
 
@@ -264,7 +224,6 @@
                                 } else {
                                     $('#enableFalseTime').html(formatDateTime(data.enableFalseTime));
                                 }
-
 
                                 $('#information').modal();
                             } else {

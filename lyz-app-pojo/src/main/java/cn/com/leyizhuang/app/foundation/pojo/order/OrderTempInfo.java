@@ -32,11 +32,15 @@ public class OrderTempInfo {
     private String customerName;
     //会员电话
     private String customerPhone;
+    //导购id
+    private Long sellerId;
     //导购姓名
     private String sellerName;
     //导购电话
-    private String sellerphone;
+    private String sellerPhone;
     //配送地址
     private String shippingAddress;
+    //操作人(配送员)编号
+    private String operatorNo;
 
 }
