@@ -48,4 +48,11 @@ public interface OrderDAO {
     List<GiftListResponseGoods> getOrderGoodsDetails(@Param("orderNumber") String orderNumber);
 
     OrderTempInfo getOrderInfoByOrderNo(String orderNo);
+
+    void savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails);
+
+    void updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails);
+
+    void updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo);
+
 }

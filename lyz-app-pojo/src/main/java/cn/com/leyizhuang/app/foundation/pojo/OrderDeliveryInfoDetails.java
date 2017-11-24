@@ -48,4 +48,21 @@ public class OrderDeliveryInfoDetails {
      * 物流操作单号
      */
     private String taskNo;
+    /**
+     * 图片
+     */
+    private String picture;
+
+    public void setDeliveryInfo(String orderNo,LogisticStatus logisticStatus,String description,
+                                String operationType,String operatorNo,String picture,String warehouseNo,String taskNo){
+        this.orderNo = orderNo;
+        this.logisticStatus = logisticStatus;
+        this.description = description;
+        this.operationType = operationType;
+        this.operatorNo = operatorNo;
+        this.picture = picture;
+        this.createTime = new Date();
+        this.warehouseNo = warehouseNo;
+        this.taskNo = taskNo;
+    }
 }

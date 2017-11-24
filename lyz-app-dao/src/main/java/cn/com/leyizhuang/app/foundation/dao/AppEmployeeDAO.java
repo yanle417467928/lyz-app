@@ -55,4 +55,7 @@ public interface AppEmployeeDAO {
     void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
 
     List<SellerResponse> findSellerByStoreIdAndIdentityType(@Param("storeId") Long storeId, @Param("type") AppIdentityType type);
+
+    AppEmployee findDeliveryClerkNoByUserId(Long userId);
+
 }

@@ -27,10 +27,10 @@
     <insert id="addOrderDeliveryInfoDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         INSERT INTO ord_delivery_info_details
-        (order_no, logistic_status, create_time, description, operation_type, operator_no, warehouse_no, task_no)
+        (order_no, logistic_status, create_time, description, operation_type, operator_no, warehouse_no, task_no, picture)
         VALUES
         (#{orderNo}, #{logisticStatus},#{createTime}, #{description}, #{operationType},#{operatorNo}, #{warehouseNo},
-        #{taskNo})
+        #{taskNo},#{picture})
     </insert>
 
     <select id="getDeliveryByOperatorNoAndOrderNumber" parameterType="java.lang.String"

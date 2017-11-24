@@ -14,6 +14,8 @@ import lombok.*;
 @NoArgsConstructor
 public class OrderTempInfo {
 
+    //订单id
+    private Long orderId;
     //订单号
     private String orderNo;
     //取货码

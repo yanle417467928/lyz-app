@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 
@@ -14,5 +15,7 @@ public interface ArrearsAuditService {
     List<ArrearsAuditResponse> findByUserId(Long userId, List<ArrearsAuditStatus> arrearsAuditStatusList);
 
     List<ArrearsAuditResponse> findByUserIdAndOrderNo(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList);
+
+    OrderArrearsAuditDO save(OrderArrearsAuditDO orderArrearsAuditDO);
 
 }

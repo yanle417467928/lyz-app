@@ -48,7 +48,7 @@ public class OrderBaseInfo {
     /**
      * 订单物流状态
      */
-    private String deliveryStatus;
+    private LogisticStatus deliveryStatus;
 
     /**
      * 提货码
