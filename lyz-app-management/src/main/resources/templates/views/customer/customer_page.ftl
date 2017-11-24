@@ -223,7 +223,20 @@
         }, {
             field: 'light',
             title: '顾客灯号',
-            align: 'center'
+            align: 'center',
+            formatter: function (value, row, index) {
+                if ('绿灯' === value) {
+                    return '<span class="label label-success">绿灯</span>';
+                } else if ('红灯' === value) {
+                    return '<span class="label label-danger">红灯</span>';
+                } else if ('黄灯' === value) {
+                    return '<span class="label label-warning">黄灯</span>';
+                } else if ('熄灯' === value) {
+                    return '<span class="label label-deafult">熄灯</span>';
+                } else {
+                    return '<span class="label label-danger">-</span>';
+                }
+            }
         },
         ]);
         $('#btn_add').on('click', function () {
@@ -400,8 +413,6 @@
                                     data.status = '<span class="label label-danger">否</span>';
                                 }else{
                                     data.status = '<span class="label label-danger">-</span>';
-                                } else {
-                                    data.status = '-';
                                 }
                                 $('#status').html(data.status);
 
