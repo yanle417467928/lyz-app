@@ -400,4 +400,17 @@
             g.sku
     </select>
 
+    <select id="findProductCouponCustomerBySellerId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer">
+        SELECT DISTINCT
+            c.cus_id,
+            cc.name,
+            cc.mobile
+        FROM cus_customer_product_coupon c LEFT JOIN cus_customer cc ON cc.cus_id = c.cus_id
+        WHERE c.seller_id = #{sellerId}
+              AND c.is_used IS FALSE
+              AND c.effective_start_time &lt; NOW()
+              AND c.effective_end_time &gt; NOW()
+    </select>
+
 </mapper>

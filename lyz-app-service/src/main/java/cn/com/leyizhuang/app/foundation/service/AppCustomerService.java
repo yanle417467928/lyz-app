@@ -3,10 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -91,4 +88,6 @@ public interface AppCustomerService {
     List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId, Double totalOrderAmount);
 
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId);
+
+    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
 }

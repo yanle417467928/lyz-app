@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
-import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -28,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Richard
@@ -52,7 +52,7 @@ public class CustomerController {
     @Resource
     private CommonService commonService;
 
-    @Autowired
+    @Resource
     private CusPreDepositLogService cusPreDepositLogServiceImpl;
 
     @Resource
@@ -213,7 +213,8 @@ public class CustomerController {
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {//如果填写了推荐导购电话
+            //如果填写了推荐导购电话
+            if (null != guidePhone && !"".equalsIgnoreCase(guidePhone)) {
                 AppEmployee seller = employeeService.findByMobile(guidePhone);
                 if (seller == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购不存在！",
@@ -221,7 +222,7 @@ public class CustomerController {
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                if (seller.getCityId() != customer.getCityId()) {
+                if (!Objects.equals(seller.getCityId(), customer.getCityId())) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "不能绑定其他城市的导购！", null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -303,7 +304,7 @@ public class CustomerController {
      * @param userId       用户id
      * @param identityType 用户身份类型
      * @param cusId        顾客id
-     * @return
+     * @return 顾客产品券列表
      */
     @PostMapping(value = "/productCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerProductCoupon(Long userId, Integer identityType, Long cusId) {
@@ -350,12 +351,14 @@ public class CustomerController {
         }
     }
 
+
+
     /**
      * 顾客获取账户余额
      *
-     * @param userId
-     * @param identityType
-     * @return
+     * @param userId 用户id
+     * @param identityType 用户身份
+     * @return 用户预存款余额
      */
     @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType) {
@@ -391,9 +394,9 @@ public class CustomerController {
     /**
      * 顾客获取乐币数量
      *
-     * @param userId
-     * @param identityType
-     * @return
+     * @param userId 用户id
+     * @param identityType 身份类型
+     * @return 用户乐币数量
      */
     @PostMapping(value = "/lebi/quantity", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerLeBiQuantity(Long userId, Integer identityType) {
@@ -429,9 +432,9 @@ public class CustomerController {
     /**
      * 顾客签到增加乐币
      *
-     * @param userId
-     * @param identityType
-     * @return
+     * @param userId 用户id
+     * @param identityType 用户身份类型
+     * @return 签到是否成功
      */
     @PostMapping(value = "/sign", produces = "application/json;charset=UTF-8")
     public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType) {

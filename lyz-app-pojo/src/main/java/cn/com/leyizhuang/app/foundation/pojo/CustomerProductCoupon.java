@@ -1,10 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.ProductCouponGetType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,47 +16,81 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCoupon implements Serializable {
+@ToString
+public class CustomerProductCoupon implements Serializable {
 
     private static final long serialVersionUID = -7523497825553900797L;
 
     private Long id;
 
-    //用户id
+    /**
+     * 用户id
+     */
     private Long customerId;
 
-    //商品Id
+    /**
+     * 商品Id
+     */
     private Long goodsId;
 
-    //数量
+    /**
+     *  数量
+     */
     private Integer quantity;
 
-    //产品券获取途径
+    /**
+     * 产品券获取途径
+     */
     private ProductCouponGetType getType;
 
-    //获取时间
+    /**
+     * 获取时间
+     */
     private Date getTime;
 
-    //生效开始时间
+    /**
+     *  生效开始时间
+     */
     private Date effectiveStartTime;
 
-    //生效结束时间
+    /**
+     * 生效结束时间
+     */
     private Date effectiveEndTime;
 
-    //是否使用
+    /**
+     * 是否使用
+     */
     private Boolean isUsed;
 
-    //使用时间
+    /**
+     * 使用时间
+     */
     private Date useTime;
 
-    //使用订单号
+    /**
+     * 使用订单号
+     */
     private String useOrderNumber;
 
-    //产生券的相关订单号
+    /**
+     * 产生券的相关订单号
+     */
     private String getOrderNumber;
 
-    //购买价格
+    /**
+     *  购买价格
+     */
     private Double buyPrice;
 
+    /**
+     * 购买门店id
+     */
+    private Long storeId;
+
+    /**
+     * 购买时归属导购id
+     */
+    private Long sellerId;
 
 }

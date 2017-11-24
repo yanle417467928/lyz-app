@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -94,4 +95,5 @@ public interface AppCustomerDAO {
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(@Param(value = "sellerId") Long sellerId,
                                                                          @Param(value = "cusId") Long cusId);
 
+    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
 }

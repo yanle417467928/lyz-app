@@ -479,4 +479,38 @@ public class UserHomePageController {
             return resultDTO;
         }
     }
+
+    @PostMapping(value = "/get/productCoupon/customer", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> sellerGetProductCouponCustomer(Long userId, Integer identityType) {
+        logger.info("sellerGetProductCouponCustomer CALLED,导购获取未提货客户列表,入参 userId {},identityType{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("sellerGetProductCouponCustomer OUT,导购获取未提货客户列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不能为空！", null);
+            logger.info("sellerGetProductCouponCustomer OUT,导购获取未提货客户列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            if (identityType == 0) {
+                List<ProductCouponCustomer> customerList = customerService.findProductCouponCustomerBySellerId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerList);
+                logger.info("sellerGetProductCouponCustomer OUT,导购获取未提货客户成功,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不合法,获取未提货客户列表失败",
+                        null);
+                logger.info("sellerGetProductCouponCustomer OUT,导购获取未提货客户列表失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取未提货客户列表失败", null);
+            logger.warn("sellerGetProductCouponCustomer EXCEPTION,导购获取未提货客户列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }
