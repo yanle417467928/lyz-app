@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
@@ -117,6 +118,38 @@ public class MaterialListServiceImpl implements MaterialListService {
     public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
             return materialListDAO.findMaterialListByUserIdAndTypeAndIsCouponId(userId, identityType);
+        }
+        return null;
+    }
+
+    @Override
+    public MaterialListDO findCouponTransformByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+        if (null != userId && null != identityType && null != goodsId) {
+            return materialListDAO.findCouponTransformByUserIdAndIdentityTypeAndGoodsId(userId, identityType,goodsId);
+        }
+        return null;
+    }
+
+    @Override
+    public MaterialListDO findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(Long userId, Long cusId, AppIdentityType identityType, Long goodsId) {
+        if (null != userId && null != cusId && null != identityType && null != goodsId) {
+            return materialListDAO.findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(userId,cusId, identityType,goodsId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, Long cusId, AppIdentityType identityType) {
+        if (null != userId && null != identityType && null != cusId) {
+            return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,cusId, identityType);
+        }
+        return null;
+    }
+
+    @Override
+    public List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType) {
+            return materialListDAO.findCoutomerMaterialListByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }

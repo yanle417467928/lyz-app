@@ -56,30 +56,38 @@ public class PayController {
     @Resource
     private AppOrderService appOrderService;
 
-
+    /**
+     * 微信充值预存款
+     * @param req
+     * @param userId
+     * @param identityType
+     * @param money
+     * @param cityId
+     * @return
+     */
     @RequestMapping(value = "wechat/recharge", method = RequestMethod.POST)
-    public ResultDTO<Object> PreDepositRecharge(HttpServletRequest req,Long userId, Integer identityType, Double money, Long cityId) {
+    public ResultDTO<Object> wechatPreDepositRecharge(HttpServletRequest req,Long userId, Integer identityType, Double money, Long cityId) {
 
-        logger.info("PreDepositRecharge CALLED,支付宝充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
+        logger.info("wechatPreDepositRecharge CALLED,微信充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatPreDepositRecharge OUT,微信充值预存款，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatPreDepositRecharge OUT,微信充值预存款，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == money && money <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatPreDepositRecharge OUT,微信充值预存款，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == cityId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市信息不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatPreDepositRecharge OUT,微信充值预存款，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(money);
@@ -88,18 +96,18 @@ public class PayController {
         String subject = "预存款充值";
 
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc, subject,
-                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "支付宝", "");
+                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "微信支付", "");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         try {
             SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo,new BigDecimal(totlefeeParse),req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,secondSignMap);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款成功，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatPreDepositRecharge OUT,支付宝充值预存款成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,支付宝充值预存款失败!", null);
-            logger.warn("PreDepositRecharge EXCEPTION,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信充值预存款!", null);
+            logger.warn("wechatPreDepositRecharge EXCEPTION,微信充值预存款，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

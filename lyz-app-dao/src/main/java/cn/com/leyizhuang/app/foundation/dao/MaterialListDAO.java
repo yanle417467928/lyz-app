@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -49,4 +50,20 @@ public interface MaterialListDAO {
 
     List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
                                                                                   @Param("identityType") AppIdentityType identityType);
+
+    MaterialListDO findCouponTransformByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId,
+                                                                        @Param("identityType") AppIdentityType appIdentityTypeByValue,
+                                                                        @Param("goodsId") Long goodsId);
+
+    MaterialListDO findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId,
+                                                                                @Param("cusId") Long cusId,
+                                                                                @Param("identityType") AppIdentityType appIdentityTypeByValue,
+                                                                                @Param("goodsId") Long goodsId);
+
+    List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(@Param("userId") Long userId,
+                                                                             @Param("cusId") Long cusId,
+                                                                             @Param("identityType") AppIdentityType identityType);
+
+    List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                                                     @Param("identityType") AppIdentityType identityType);
 }

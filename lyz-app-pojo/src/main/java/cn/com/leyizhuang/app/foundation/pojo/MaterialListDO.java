@@ -17,35 +17,63 @@ import lombok.ToString;
 @ToString
 public class MaterialListDO {
     private Long id;
-    //用户id
+    /**
+     * /用户id
+     */
     private Long userId;
-    //身份类型
+    /**
+     * /身份类型
+     */
     private AppIdentityType identityType;
-    //商品id
+    /**
+     * 代下单顾客Id
+     */
+    private Long cusId;
+    /**
+     * 商品id
+     */
     private Long gid;
-    //商品编码
+    /**
+     * /商品编码
+     */
     private String sku;
-    //商品名称
+    /**
+     * /商品名称
+     */
     private String skuName;
-    //商品规格
+    /**
+     * /商品规格
+     */
     private String goodsSpecification;
-    //封面图片路径
+    /**
+     * 封面图片路径
+     */
     private String coverImageUri;
-    //商品单位
+    /**
+     * 商品单位
+     */
     private String goodsUnit;
-    //商品数量
+    /**
+     * 商品数量
+     */
     private Integer qty;
-    //物料审核单号
+    /**
+     * 物料审核单号
+     */
     private String auditNo;
-    //加入类型
+    /**
+     * 加入类型
+     */
     private MaterialListType materialListType;
-    //产品券id（从产品券转化的商品）
-    private Long couponId;
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MaterialListDO that = (MaterialListDO) o;
 

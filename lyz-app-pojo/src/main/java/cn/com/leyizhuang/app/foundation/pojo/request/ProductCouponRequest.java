@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.UsedMoreProductCoupon;
 import lombok.*;
 
 import java.io.Serializable;
@@ -32,9 +33,12 @@ public class ProductCouponRequest implements Serializable {
      * 顾客id
      */
     private Long cusId;
-
+    /**
+     * 剩余总量
+     */
+    private Integer totalQty;
     /**
      * 使用的产品券商品id和数量
      */
-    private List<GoodsIdQtyParam> productCouponList;
+    private List<UsedMoreProductCoupon> productCouponList;
 }

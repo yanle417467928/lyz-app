@@ -331,7 +331,7 @@ public class OrderController {
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", memberDiscount * 10);
+                goodsSettlement.put("orderDiscount", totalPrice / 100);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
@@ -421,7 +421,7 @@ public class OrderController {
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", memberDiscount * 10);
+                goodsSettlement.put("orderDiscount", totalPrice / 100);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", memberDiscount / 10);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);

@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.ProductCouponRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.UsedMoreProductCoupon;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
@@ -104,8 +105,9 @@ public class ProductCouponController {
     @PostMapping(value = "/transform/materialList", produces = "application/json;charset=UTF-8")
     public ResultDTO productCouponTransformMaterialList(@RequestBody ProductCouponRequest productCouponRequest) {
 
-        ResultDTO<Object> resultDTO;
         logger.info("productCouponTransformMaterialList CALLED,顾客点击使用产品券通过加入下料清单，入参 productCouponRequest:{}", productCouponRequest);
+
+        ResultDTO<Object> resultDTO;
         if (null == productCouponRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
@@ -124,23 +126,40 @@ public class ProductCouponController {
 
         Long userId = productCouponRequest.getUserId();
         Integer identityType = productCouponRequest.getIdentityType();
-        List<GoodsIdQtyParam> requestList = productCouponRequest.getProductCouponList();
+        List<UsedMoreProductCoupon> requestList = productCouponRequest.getProductCouponList();
 
+        Long cusId = 0L;
         try {
-
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
-
+            //如果是代下单顾客Id不可为空
             if (identityType == 6 || identityType == 0) {
+                if (identityType == 0) {
+                    if (null == productCouponRequest.getCusId()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单顾客Id不能为空！", null);
+                        logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                    cusId = productCouponRequest.getCusId();
+                }
                 //从页面传过来的数组中有券ID 和数量查询出商品ID和数量装入Map
-                for (GoodsIdQtyParam goodsIdQtyParam : requestList) {
-                    Long couponId = goodsIdQtyParam.getId();
-                    Integer qty = goodsIdQtyParam.getQty();
-                    Long goodsId = productCouponServiceImpl.findGoodsIdByUserIdAndProductCouponId(userId, couponId);
+                for (UsedMoreProductCoupon goodsIdQtyParam : requestList) {
+
+                    Long goodsId = goodsIdQtyParam.getGid();
+                    int qty = goodsIdQtyParam.getQty();
+                    int totalQty = goodsIdQtyParam.getTotalQty();
                     GoodsDO goodsDO = goodsService.findGoodsById(goodsId);
                     if (null != goodsDO) {
-                        MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
-                                AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
+                        //查询下料清单中是否有重复产品券
+                        MaterialListDO materialListDO = null;
+                        if (identityType == 6) {
+                            materialListDO = materialListServiceImpl.findCouponTransformByUserIdAndIdentityTypeAndGoodsId(userId,
+                                    AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
+                        } else {
+                            materialListDO = materialListServiceImpl.findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(userId,
+                                    cusId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
+                        }
+                        //没有就新增
                         if (null == materialListDO) {
                             MaterialListDO materialListDOTemp = new MaterialListDO();
                             materialListDOTemp.setUserId(userId);
@@ -152,32 +171,37 @@ public class ProductCouponController {
                             materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
                             materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                             materialListDOTemp.setMaterialListType(MaterialListType.COUPON_TRANSFORM);
-                            materialListDOTemp.setCouponId(couponId);
                             if (null != goodsDO.getCoverImageUri()) {
                                 String uri[] = goodsDO.getCoverImageUri().split(",");
                                 materialListDOTemp.setCoverImageUri(uri[0]);
                             }
+                            if (identityType == 0) {
+                                materialListDOTemp.setCusId(cusId);
+                            }
                             materialListSave.add(materialListDOTemp);
                         } else {
-                            //暂时做法：发现已加入的产品券做不处理
-//                            materialListDO.setQty(materialListDO.getQty() + qty);
-//                            materialListUpdate.add(materialListDO);
+                            //先判断顾客使用产品券有没有超过剩余的总量：传入使用的数量 + 数据库清单中同商品Id的数量 < 剩余总量
+                            if ((materialListDO.getQty() + qty) > totalQty) {
+                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "使用产品券超过剩余数量!", null);
+                                logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                                return resultDTO;
+                            }
+                            //如果没超过剩余数量，就继续加
+                            materialListDO.setQty(materialListDO.getQty() + qty);
+                            materialListUpdate.add(materialListDO);
                         }
                     } else {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + couponId + "" +
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + goodsId + "" +
                                 "的产品券对应商品不存在!", null);
+                        logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
                     }
                 }
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户类型不能使用产品券", null);
-                logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             }
             commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客点击使用产品券通过加入下料清单失败", null);

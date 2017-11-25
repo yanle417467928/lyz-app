@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditGoPayResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -99,21 +100,11 @@ public class MaterialListController {
                     MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                             AppIdentityType.getAppIdentityTypeByValue(identityType), entry.getKey());
                     if (null == materialListDO) {
-                        MaterialListDO materialListDOTemp = new MaterialListDO();
+                        MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                         materialListDOTemp.setUserId(userId);
                         materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                        materialListDOTemp.setGid(goodsDO.getGid());
-                        materialListDOTemp.setSku(goodsDO.getSku());
                         materialListDOTemp.setQty(entry.getValue());
-                        materialListDOTemp.setSkuName(goodsDO.getSkuName());
-                        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                        materialListDOTemp.setCouponId(0L);
-                        if (null != goodsDO.getCoverImageUri()) {
-                            String uri[] = goodsDO.getCoverImageUri().split(",");
-                            materialListDOTemp.setCoverImageUri(uri[0]);
-                        }
                         materialListSave.add(materialListDOTemp);
                     } else {
                         materialListDO.setQty(materialListDO.getQty() + entry.getValue());
@@ -232,7 +223,7 @@ public class MaterialListController {
      * @date 2017/10/25
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getMaterialList(Long userId, Integer identityType) {
+    public ResultDTO<Object> getMaterialList(Long userId,Long cusId, Integer identityType) {
         logger.info("getMaterialList CALLED,获取下料清单列表，入参 userId:{} identityType:{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -245,10 +236,11 @@ public class MaterialListController {
             logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        //所有用户返回自己的商品
         List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
         //创建返回对象
         MaterialAuditGoPayResponse materialAuditGoPayResponse = new MaterialAuditGoPayResponse();
-        List<NormalMaterialListResponse> listResponses = null;
+        List<CouponMaterialListResponse> listResponses = null;
         Map<String, Object> returnMap = new HashMap<>(3);
         AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
@@ -257,7 +249,6 @@ public class MaterialListController {
             List<NormalMaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
 
             if (materialListDOS != null) {
-
                 //只需得到一个料单对象中料单编号
                 MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                         appIdentityType, materialListDOS.get(0).getGoodsId());
@@ -273,10 +264,19 @@ public class MaterialListController {
             }
         }
         if (identityType == 6 || identityType == 0) {
-            listResponses = materialListServiceImpl.findMaterialListByUserIdAndTypeAndIsCouponId(userId, appIdentityType);
+            if (identityType == 0){
+                if (null == cusId){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "代下单顾客Id不能为空！", null);
+                    logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                listResponses = materialListServiceImpl.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,cusId,appIdentityType);
+            }else {
+                listResponses = materialListServiceImpl.findCoutomerMaterialListByUserIdAndIdentityType(userId, appIdentityType);
+            }
             if (listResponses != null) {
-                for (NormalMaterialListResponse normalMaterialListResponse : listResponses) {
-                    normalMaterialListResponse.setRetailPrice(0.00);
+                for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
+                    couponMaterialListResponse.setRetailPrice(0.00);
                 }
             }
         }
@@ -436,20 +436,11 @@ public class MaterialListController {
                     MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                             AppIdentityType.getAppIdentityTypeByValue(identityType), param.getId());
                     if (null == materialListDO) {
-                        MaterialListDO materialListDOTemp = new MaterialListDO();
+                        MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                         materialListDOTemp.setUserId(userId);
                         materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                        materialListDOTemp.setGid(goodsDO.getGid());
-                        materialListDOTemp.setSku(goodsDO.getSku());
                         materialListDOTemp.setQty(param.getQty());
-                        materialListDOTemp.setSkuName(goodsDO.getSkuName());
-                        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
-                        if (null != goodsDO.getCoverImageUri()) {
-                            String uri[] = goodsDO.getCoverImageUri().split(",");
-                            materialListDOTemp.setCoverImageUri(uri[0]);
-                        }
                         materialListSave.add(materialListDOTemp);
                     } else {
                         materialListDO.setQty(param.getQty());
@@ -548,20 +539,11 @@ public class MaterialListController {
                     MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                             AppIdentityType.getAppIdentityTypeByValue(identityType), goodsDO.getGid());
                     if (null == materialListDO) {
-                        MaterialListDO materialListDOTemp = new MaterialListDO();
+                        MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                         materialListDOTemp.setUserId(userId);
                         materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                        materialListDOTemp.setGid(goodsDO.getGid());
-                        materialListDOTemp.setSku(goodsDO.getSku());
                         materialListDOTemp.setQty(entry.getValue());
-                        materialListDOTemp.setSkuName(goodsDO.getSkuName());
-                        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                        if (null != goodsDO.getCoverImageUri()) {
-                            String uri[] = goodsDO.getCoverImageUri().split(",");
-                            materialListDOTemp.setCoverImageUri(uri[0]);
-                        }
                         materialListSave.add(materialListDOTemp);
                     } else {
                         materialListDO.setQty(materialListDO.getQty() + entry.getValue());
@@ -585,5 +567,17 @@ public class MaterialListController {
         }
     }
 
-
+    private MaterialListDO transformRepeat(GoodsDO goodsDO){
+        MaterialListDO materialListDOTemp = new MaterialListDO();
+        materialListDOTemp.setGid(goodsDO.getGid());
+        materialListDOTemp.setSku(goodsDO.getSku());
+        materialListDOTemp.setSkuName(goodsDO.getSkuName());
+        materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
+        materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+        if (null != goodsDO.getCoverImageUri()) {
+            String uri[] = goodsDO.getCoverImageUri().split(",");
+            materialListDOTemp.setCoverImageUri(uri[0]);
+        }
+        return materialListDOTemp;
+    }
 }

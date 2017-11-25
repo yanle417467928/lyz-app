@@ -553,7 +553,6 @@ public class MaterialAuditSheetController {
         materialListDO.setSkuName(materialAuditGoodsInfo.getSkuName());
         materialListDO.setAuditNo(auditNo);
         materialListDO.setMaterialListType(MaterialListType.AUDIT_TRANSFORM);
-        materialListDO.setCouponId(0L);
 
         return materialListDO;
 
