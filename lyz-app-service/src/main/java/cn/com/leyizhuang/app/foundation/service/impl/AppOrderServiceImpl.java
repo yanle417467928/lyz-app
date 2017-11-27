@@ -50,8 +50,8 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType) {
-        return orderDAO.getOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    public List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus) {
+        return orderDAO.getOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType),showStatus);
     }
 
     @Override

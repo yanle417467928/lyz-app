@@ -39,6 +39,18 @@
             ord_base_info AS obi
             WHERE
             obi.customer_id = #{userID}
+            <if test="null != showStatus and showStatus == 1">
+            AND obi.`status` = 'UNPAID';
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` = 'PENDING_RECEIVE';
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED';
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED';
+            </if>
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             SELECT
@@ -50,6 +62,18 @@
             ord_base_info AS obi
             WHERE
             obi.manager_id = #{userID}
+            <if test="null != showStatus and showStatus == 1">
+                AND obi.`status` = 'UNPAID';
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` = 'PENDING_RECEIVE';
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED';
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED';
+            </if>
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
@@ -61,6 +85,18 @@
             ord_base_info AS obi
             WHERE
             obi.sales_consult_id = #{userID}
+            <if test="null != showStatus and showStatus == 1">
+                AND obi.`status` = 'UNPAID';
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` = 'PENDING_RECEIVE';
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED';
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED';
+            </if>
         </if>
     </select>
 
