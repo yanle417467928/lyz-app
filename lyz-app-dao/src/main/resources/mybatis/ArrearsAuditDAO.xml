@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO">
 
-    <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
+    <select id="findByUserIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
         SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
         seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
         distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
-        payment_method paymentMethod, status, order_money
+        payment_method paymentMethod, status, order_money orderMoney
         FROM ord_arrears_audit
         WHERE user_id = #{userId}
         AND status IN
@@ -16,7 +16,7 @@
         ORDER BY create_time desc
     </select>
 
-    <select id="findByUserIdAndOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
+    <select id="findByUserIdAndOrderNoAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
         SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
         seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
         distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
@@ -41,5 +41,20 @@
         #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},#{distributionAddress},
         #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId})
     </insert>
+
+    <select id="findBySellerIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">
+        SELECT oa.id, oa.ord_no orderNumber, oa.customer_name customerName, oa.customer_phone customerPhone,
+        oa.agency_money agencyMoney, oa.real_money realMoney, oa.create_time createTime,
+        oa.payment_method paymentMethod, oa.status, oa.order_money orderMoney,
+        e.name deliveryName, e.mobile deliveryPhone
+        FROM ord_arrears_audit oa
+        LEFT JOIN emp_employee e ON e.emp_id = oa.user_id
+        WHERE oa.seller_id = #{sellerId}
+        AND oa.status IN
+        <foreach collection="list" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+        ORDER BY oa.create_time desc
+    </select>
 
 </mapper>

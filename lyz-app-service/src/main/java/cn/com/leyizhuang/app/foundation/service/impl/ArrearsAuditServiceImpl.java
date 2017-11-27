@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +24,23 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     private ArrearsAuditDAO arrearsAuditDAO;
 
     @Override
-    public List<ArrearsAuditResponse> findByUserId(Long userId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
-        return this.arrearsAuditDAO.findByUserId(userId, arrearsAuditStatusList);
+    public List<ArrearsAuditResponse> findByUserIdAndStatus(Long userId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
+        return this.arrearsAuditDAO.findByUserIdAndStatus(userId, arrearsAuditStatusList);
     }
 
     @Override
-    public List<ArrearsAuditResponse> findByUserIdAndOrderNo(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList) {
-        return this.arrearsAuditDAO.findByUserIdAndOrderNo(userId, orderNo, arrearsAuditStatusList);
+    public List<ArrearsAuditResponse> findByUserIdAndOrderNoAndStatus(Long userId, String orderNo, List<ArrearsAuditStatus> arrearsAuditStatusList) {
+        return this.arrearsAuditDAO.findByUserIdAndOrderNoAndStatus(userId, orderNo, arrearsAuditStatusList);
     }
 
     @Override
     public OrderArrearsAuditDO save(OrderArrearsAuditDO orderArrearsAuditDO) {
         this.arrearsAuditDAO.save(orderArrearsAuditDO);
         return orderArrearsAuditDO;
+    }
+
+    @Override
+    public List<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
+        return this.arrearsAuditDAO.findBySellerIdAndStatus(sellerId, arrearsAuditStatusList);
     }
 }

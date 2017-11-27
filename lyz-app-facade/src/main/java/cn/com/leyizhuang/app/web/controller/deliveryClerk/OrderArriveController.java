@@ -96,7 +96,7 @@ public class OrderArriveController {
             //查询是否有欠款待审核
             List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
             arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
-            List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndOrderNo(userId, orderNo, arrearsAuditStatusList);
+            List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndOrderNoAndStatus(userId, orderNo, arrearsAuditStatusList);
             if (null != arrearsAuditResponseList && arrearsAuditResponseList.size() > 0){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "你有欠款审核还在审核中，请不要重复提交！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);

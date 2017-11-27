@@ -13,4 +13,13 @@
         #{returnMoney},#{remarks},#{createTime},#{sellerId})
     </insert>
 
+
+    <select id="findByUserId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse">
+        SELECT id, ord_no orderNumber,customer_name customerName, customer_phone customerPhone,
+        seller_name sellerName, seller_phone sellerPhone, agency_money agencyMoney, real_money realMoney,
+        return_money returnMoney, create_time createTime, payment_method paymentMethod
+        FROM ord_agency_fund
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
