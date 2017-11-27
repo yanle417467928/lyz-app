@@ -410,7 +410,12 @@ public class MaterialListController {
         }
         goodsIdQtyParam = this.materialListServiceImpl.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(
                 userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
+        //方便前端数据对应
+        Map<Long, Integer> goodsQty = new HashMap<>(1);
+        if (goodsIdQtyParam != null) {
+            goodsQty.put(goodsIdQtyParam.getId(), goodsIdQtyParam.getQty());
+        }
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsQty);
         logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
