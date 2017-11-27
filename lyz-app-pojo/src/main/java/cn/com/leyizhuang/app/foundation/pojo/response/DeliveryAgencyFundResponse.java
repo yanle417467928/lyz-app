@@ -28,8 +28,6 @@ public class DeliveryAgencyFundResponse {
     private Double agencyMoney;
     //实收金额
     private Double realMoney;
-    //应退门店金额
-    private Double returnMoney;
     //收款方式
     private String paymentMethod;
     //代收时间

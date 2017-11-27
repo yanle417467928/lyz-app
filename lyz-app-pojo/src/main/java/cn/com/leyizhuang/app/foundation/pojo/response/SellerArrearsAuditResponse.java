@@ -26,12 +26,10 @@ public class SellerArrearsAuditResponse {
     private String deliveryPhone;
     //申请时间
     private String createTime;
-    //代收金额
-    private Double agencyMoney;
     //订单欠款
     private Double orderMoney;
-    //实收金额
-    private Double realMoney;
+    //欠款金额
+    private Double arrearsMoney;
     //收款方式
     private String paymentMethod;
     //状态

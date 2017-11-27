@@ -7,7 +7,7 @@
         SELECT
         l.id, l.type, l.create_time, l.change_money, l.order_number
         FROM st_pre_deposit_log l
-        LEFT JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
+        INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
         WHERE
         l.type in
         <foreach collection="list" item="type" separator="," open="(" close=")">

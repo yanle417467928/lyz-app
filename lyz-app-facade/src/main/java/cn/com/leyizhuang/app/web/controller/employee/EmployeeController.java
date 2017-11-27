@@ -3,12 +3,12 @@ package cn.com.leyizhuang.app.web.controller.employee;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeLoginResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.StoreCreditMoneyLogService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
+import cn.com.leyizhuang.app.foundation.service.StoreSubventionLogService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
@@ -42,6 +42,12 @@ public class EmployeeController {
 
     @Autowired
     private StorePreDepositLogService storePreDepositLogServiceImpl;
+
+    @Autowired
+    private StoreCreditMoneyLogService storeCreditMoneyLogServiceImpl;
+
+    @Autowired
+    private StoreSubventionLogService storeSubventionLogServiceImpl;
 
     /**
      * App 员工登录接口
@@ -330,6 +336,86 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取装饰公司钱包消费记录失败", null);
             logger.warn("getStoreConsumptionPreDepositLog EXCEPTION, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取装饰公司信用金变更记录
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/27
+     */
+    @PostMapping(value = "/creditMoney/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreCreditMoneyLog(Long userId, Integer identityType) {
+
+        logger.info("getStoreCreditMoneyLog CALLED, 获取装饰公司信用金变更记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 2) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<StoreCreditMoneyLogResponse> storeCreditMoneyLogResponseList = this.storeCreditMoneyLogServiceImpl.findByUserId(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeCreditMoneyLogResponseList);
+            logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取装饰公司信用金变更记录失败", null);
+            logger.warn("getStoreCreditMoneyLog EXCEPTION, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**  
+     * @title   获取装饰公司现金返利变更记录
+     * @descripe
+     * @param
+     * @return 
+     * @throws 
+     * @author GenerationRoad
+     * @date 2017/11/27
+     */
+    @PostMapping(value = "/subvention/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreSubventionLog(Long userId, Integer identityType) {
+
+        logger.info("getStoreSubventionLog CALLED, 获取装饰公司现金返利变更记录，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreSubventionLog OUT, 获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 2) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getStoreSubventionLog OUT, 获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<StoreSubventionLogResponse> storeSubventionLogResponseList = this.storeSubventionLogServiceImpl.findByUserId(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSubventionLogResponseList);
+            logger.info("getStoreSubventionLog OUT, 获取装饰公司现金返利变更记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取装饰公司现金返利变更记录失败", null);
+            logger.warn("getStoreSubventionLog EXCEPTION, 获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

@@ -1,12 +1,18 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.common.core.constant.StoreCreditChangeType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 门店信用金变更日志
  * @author GenerationRoad
  * @date 2017/11/27
  */
+@Getter
+@Setter
+@ToString
 public class StoreCreditMoneyLogResponse {
     private Long id;
     //生成时间

@@ -49,7 +49,7 @@ public class SellerArrearsAuditController {
             return resultDTO;
         }
         if (null == identityType && identityType != 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
             logger.info("getArrearsAuditListBySeller OUT,导购获取待审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -80,7 +80,7 @@ public class SellerArrearsAuditController {
             return resultDTO;
         }
         if (null == identityType && identityType != 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
             logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -91,5 +91,62 @@ public class SellerArrearsAuditController {
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
         logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
+    }
+
+    /**  
+     * @title   导购审批欠款申请
+     * @descripe
+     * @param 
+     * @return 
+     * @throws 
+     * @author GenerationRoad
+     * @date 2017/11/27
+     */
+    @PostMapping(value = "/audit", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> audit(Long userId, Integer identityType, Long arrearsAuditId, Boolean result) {
+        logger.info("audit CALLED,导购审批欠款申请，入参 userId:{} identityType:{} arrearsAuditId:{} result:{}", userId, identityType, arrearsAuditId, result);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType && identityType != 0) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                        null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            if (null == arrearsAuditId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "审核单id不能为空！",
+                        null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == result) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "审核结果不能为空！",
+                        null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            if (result) {
+
+            }else {
+
+            }
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("audit OUT,导购审批欠款申请成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购审批欠款申请失败!", null);
+            logger.warn("audit EXCEPTION,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 }

@@ -142,17 +142,19 @@ public class OrderArriveController {
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else { //欠款金额 <= 收款金额
-                    //创建收款记录
-                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                    paymentDetails.setConstructor(orderTempInfo.getOrderId(),"实际货币", paymentMethod, orderNo, ownManey, "");
-                    this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+                    if (ownManey > 0) {
+                        //创建收款记录
+                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                        paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", paymentMethod, orderNo, ownManey, "");
+                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
-                    collectionAmount = CountUtil.sub(collectionAmount, ownManey);
-                    //修改订单欠款为0
-                    OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-                    orderBillingDetails.setOrderNumber(orderNo);
-                    orderBillingDetails.setArrearage(0D);
-                    this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                        collectionAmount = CountUtil.sub(collectionAmount, ownManey);
+                        //修改订单欠款为0
+                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails.setOrderNumber(orderNo);
+                        orderBillingDetails.setArrearage(0D);
+                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                    }
                 }
             }
 

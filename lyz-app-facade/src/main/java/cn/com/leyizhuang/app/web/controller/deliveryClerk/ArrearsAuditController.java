@@ -47,7 +47,7 @@ public class ArrearsAuditController {
             return resultDTO;
         }
         if (null == identityType && identityType != 1) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
             logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

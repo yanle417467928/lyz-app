@@ -44,7 +44,7 @@
 
     <select id="findBySellerIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">
         SELECT oa.id, oa.ord_no orderNumber, oa.customer_name customerName, oa.customer_phone customerPhone,
-        oa.agency_money agencyMoney, oa.real_money realMoney, oa.create_time createTime,
+        (oa.order_money - oa.real_money) arrearsMoney, oa.create_time createTime,
         oa.payment_method paymentMethod, oa.status, oa.order_money orderMoney,
         e.name deliveryName, e.mobile deliveryPhone
         FROM ord_arrears_audit oa
