@@ -107,6 +107,14 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
+    public Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType) {
+            return materialListDAO.existOtherMaterialCouponByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        }
+        return null;
+    }
+
+    @Override
     public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
             return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, identityType);
@@ -139,17 +147,17 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, Long cusId, AppIdentityType identityType) {
-        if (null != userId && null != identityType && null != cusId) {
-            return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,cusId, identityType);
+    public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType ) {
+            return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId, identityType);
         }
         return null;
     }
 
     @Override
-    public List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+    public List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-            return materialListDAO.findCoutomerMaterialListByUserIdAndIdentityType(userId, identityType);
+            return materialListDAO.findCustomerMaterialListByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }

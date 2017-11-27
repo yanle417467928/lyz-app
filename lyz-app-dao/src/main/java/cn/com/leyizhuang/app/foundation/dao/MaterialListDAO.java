@@ -61,9 +61,11 @@ public interface MaterialListDAO {
                                                                                 @Param("goodsId") Long goodsId);
 
     List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(@Param("userId") Long userId,
-                                                                             @Param("cusId") Long cusId,
                                                                              @Param("identityType") AppIdentityType identityType);
 
-    List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
+    List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
                                                                                      @Param("identityType") AppIdentityType identityType);
+
+    Boolean existOtherMaterialCouponByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                            @Param("identityType") AppIdentityType identityType);
 }

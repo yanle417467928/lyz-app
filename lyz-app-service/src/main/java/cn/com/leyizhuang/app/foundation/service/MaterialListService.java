@@ -43,7 +43,9 @@ public interface MaterialListService {
 
     MaterialListDO findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(Long userId, Long cusId, AppIdentityType appIdentityTypeByValue, Long goodsId);
 
-    List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, Long cusId, AppIdentityType appIdentityType);
+    List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
 
-    List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
+    List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
+
+    Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Integer identityType);
 }
