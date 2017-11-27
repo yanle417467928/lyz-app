@@ -337,19 +337,21 @@ public class MaterialListController {
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
             for (MaterialListDO materialList : materialListDOList) {
-                MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
-                        AppIdentityType.getAppIdentityTypeByValue(identityType), materialList.getGid());
-                if (null == materialListDO) {
-                    materialList.setUserId(userId);
-                    materialList.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                    if (null != materialList.getCoverImageUri()) {
-                        String uri[] = materialList.getCoverImageUri().split(",");
-                        materialList.setCoverImageUri(uri[0]);
+                GoodsDO goodsDO = goodsService.findGoodsById(materialList.getId());
+                if (null != goodsDO) {
+                    MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                            AppIdentityType.getAppIdentityTypeByValue(identityType), materialList.getGid());
+                    if (null == materialListDO) {
+                        MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
+                        materialListDOTemp.setUserId(userId);
+                        materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                        materialListDOTemp.setQty(materialList.getQty());
+                        materialListSave.add(materialListDOTemp);
+                    } else {
+                        materialListDO.setQty(materialListDO.getQty() + materialList.getQty());
+                        materialListUpdate.add(materialListDO);
                     }
-                    materialListSave.add(materialList);
-                } else {
-                    materialListDO.setQty(materialListDO.getQty() + materialList.getQty());
-                    materialListUpdate.add(materialListDO);
                 }
             }
             commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
