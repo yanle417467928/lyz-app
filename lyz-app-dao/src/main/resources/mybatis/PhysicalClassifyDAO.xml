@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.PhysicalClassifyDAO">
+
+
+    <insert id="saveSynchronize" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify">
+        INSERT INTO physical_classify
+        (hq_id, physical_classify_name, parent_category_id)
+        VALUES
+        (#{hqId}, #{physicalClassifyName}, #{parentCategoryId})
+    </insert>
+
+    <update id="modifySynchronize" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify">
+        UPDATE physical_classify
+        <set>
+            <if test="null != physicalClassifyName">
+                physical_classify_name = #{physicalClassifyName},
+            </if>
+            <if test="null != parentCategoryId">
+                parent_category_id = #{parentCategoryId},
+            </if>
+        </set>
+        WHERE hq_id = #{hqId}
+    </update>
+
+    <delete id="deleteSynchronize" parameterType="java.lang.Long">
+        DELETE FROM physical_classify
+        WHERE hq_id = #{hqId}
+    </delete>
+
+    <select id="findByHqId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify">
+        SELECT *
+        FROM physical_classify
+        WHERE hq_id = #{hqId}
+    </select>
+
+</mapper>

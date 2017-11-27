@@ -98,7 +98,7 @@ public class  GoodsDO {
     /**
      * 物理分类
      */
-    private String physicalClassify;
+    private Long physicalClassify;
     /**
      * 物料状态（是否启用）
      */
