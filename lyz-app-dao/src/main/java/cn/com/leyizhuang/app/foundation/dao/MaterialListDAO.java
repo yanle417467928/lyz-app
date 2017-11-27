@@ -30,7 +30,9 @@ public interface MaterialListDAO {
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
             AppIdentityType identityType, @Param(value = "goodsId") Long goodsId);
 
-    List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+    MaterialListDO findAuditListByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
+            AppIdentityType identityType, @Param(value = "goodsId") Long goodsId);
+
 
     List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 
@@ -47,9 +49,6 @@ public interface MaterialListDAO {
 
     List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
                                                                                       @Param("identityType") AppIdentityType identityType);
-
-    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
-                                                                                  @Param("identityType") AppIdentityType identityType);
 
     MaterialListDO findCouponTransformByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId,
                                                                         @Param("identityType") AppIdentityType appIdentityTypeByValue,

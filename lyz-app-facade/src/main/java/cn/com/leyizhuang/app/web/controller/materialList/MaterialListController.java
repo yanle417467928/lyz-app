@@ -254,7 +254,7 @@ public class MaterialListController {
 
             if (!materialListDOS.isEmpty()) {
                 //只需得到一个料单对象中料单编号
-                MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                MaterialListDO materialListDO = materialListServiceImpl.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId,
                         appIdentityType, materialListDOS.get(0).getGoodsId());
                 String auditNo = materialListDO.getAuditNo();
                 //可以得到一个审核料单
@@ -396,14 +396,14 @@ public class MaterialListController {
             return resultDTO;
         }
         GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
+        Map<Long, Integer> goodsQty = new HashMap<>(1);
         if (identityType == 2) {
-            MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+            MaterialListDO materialListDO = materialListServiceImpl.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId,
                     AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
             if (materialListDO != null) {
-                goodsIdQtyParam.setId(materialListDO.getId());
-                goodsIdQtyParam.setQty(materialListDO.getQty());
-
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
+                //方便前端数据对应
+                goodsQty.put(materialListDO.getId(), materialListDO.getQty());
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsQty);
                 logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -411,7 +411,6 @@ public class MaterialListController {
         goodsIdQtyParam = this.materialListServiceImpl.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(
                 userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
         //方便前端数据对应
-        Map<Long, Integer> goodsQty = new HashMap<>(1);
         if (goodsIdQtyParam != null) {
             goodsQty.put(goodsIdQtyParam.getId(), goodsIdQtyParam.getQty());
         }

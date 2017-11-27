@@ -47,6 +47,7 @@
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
+            AND m.cus_id IS NULL
             AND m.material_list_type = 'NORMAL'
             ORDER BY m.id DESC
         </if>
@@ -60,6 +61,7 @@
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
+            AND m.cus_id IS NULL
             AND m.material_list_type = 'NORMAL'
             ORDER BY m.id DESC
         </if>
@@ -73,18 +75,21 @@
         WHERE user_id = #{userId}
         AND identity_type = #{identityType}
         AND gid = #{goodsId}
-        AND material_list_type = 'AUDIT_TRANSFORM'
-        AND audit_no IS NOT NULL
+        AND audit_no IS NULL
+        AND cus_id IS NULL
+        AND material_list_type = 'NORMAL'
     </select>
 
-
-    <select id="findMaterialListByUserIdAndIdentityType"
+    <select id="findAuditListByUserIdAndIdentityTypeAndGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT *
         FROM
         material_list
         WHERE user_id = #{userId}
         AND identity_type = #{identityType}
+        AND gid = #{goodsId}
+        AND material_list_type = 'AUDIT_TRANSFORM'
+        AND audit_no IS NOT NULL
     </select>
 
     <select id="findMaterialListGoodsIdsByUserIdAndIdentityType" resultType="java.lang.Long">
@@ -140,16 +145,6 @@
         AND m.audit_no IS NOT NULL
     </select>
 
-    <select id="findMaterialListByUserIdAndTypeAndIsCouponId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
-        SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
-        m.qty
-        FROM material_list m
-        WHERE m.user_id = #{userId}
-        AND m.identity_type = #{identityType}
-        AND m.material_list_type = 'COUPON_TRANSFORM'
-    </select>
-
     <select id="findCouponTransformByUserIdAndIdentityTypeAndGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT *
@@ -157,6 +152,7 @@
         WHERE m.user_id = #{userId}
           AND m.identity_type = #{identityType}
           AND m.gid = #{goodsId}
+        AND cus_id IS NULL
           AND m.material_list_type = 'COUPON_TRANSFORM'
     </select>
 
