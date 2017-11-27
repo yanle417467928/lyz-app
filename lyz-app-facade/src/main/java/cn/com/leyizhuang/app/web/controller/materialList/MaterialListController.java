@@ -6,9 +6,9 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialCustomerCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialWorkerAuditResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -395,11 +395,23 @@ public class MaterialListController {
             logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
+        if (identityType == 2) {
+            MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                    AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
+            if (materialListDO != null) {
+                goodsIdQtyParam.setId(materialListDO.getId());
+                goodsIdQtyParam.setQty(materialListDO.getQty());
 
-        Map<Long, Integer> goodsQty = this.materialListServiceImpl.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
+                logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        }
+        goodsIdQtyParam = this.materialListServiceImpl.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(
                 userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsQty);
-        logger.info("getUsableProductCoupon OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
+        logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 

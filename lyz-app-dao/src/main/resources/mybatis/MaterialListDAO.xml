@@ -103,12 +103,14 @@
     </delete>
 
 
-    <select id="findGoodsQtyByUserIdAndIdentityTypeAndGoodsId" resultType="java.util.HashMap">
+    <select id="findGoodsQtyByUserIdAndIdentityTypeAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam">
         SELECT
-        gid goodsId,
-        qty
-        FROM material_list
-        WHERE user_id = #{userId} AND identity_type = #{identityType} AND gid = #{goodsId}
+        m.gid id,
+        m.qty
+        FROM material_list m
+        WHERE m.user_id = #{userId} AND m.identity_type = #{identityType} AND m.gid = #{goodsId}
+        AND m.audit_no IS NULL AND m.cus_id IS NULL AND m.material_list_type = 'NORMAL'
     </select>
 
     <select id="existOtherMaterialListByUserIdAndIdentityType" resultType="java.lang.Boolean">

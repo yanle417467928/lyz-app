@@ -2,13 +2,13 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -38,9 +38,9 @@ public interface MaterialListDAO {
                                                              @Param(value = "identityType") AppIdentityType identityType,
                                                              @Param(value = "deleteGoodsIds") List<Long> deleteGoodsIds);
 
-    Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
-                                                                     @Param(value = "identityType") AppIdentityType identityType,
-                                                                     @Param(value = "goodsId") Long goodsId);
+    GoodsIdQtyParam findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
+                                                                  @Param(value = "identityType") AppIdentityType identityType,
+                                                                  @Param(value = "goodsId") Long goodsId);
 
     Boolean existOtherMaterialListByUserIdAndIdentityType(@Param("userId") Long userID,
                                                           @Param("identityType") AppIdentityType appIdentityTypeByValue);

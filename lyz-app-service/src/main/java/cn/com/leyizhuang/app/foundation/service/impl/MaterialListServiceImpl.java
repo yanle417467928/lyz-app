@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -90,7 +90,7 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+    public GoodsIdQtyParam findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
         if (null != userId && null != identityType && null != goodsId) {
             return materialListDAO.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(userId,
                     identityType, goodsId);
