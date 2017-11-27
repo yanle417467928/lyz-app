@@ -107,9 +107,9 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Integer identityType) {
-        if (null != userId && null != identityType) {
-            return materialListDAO.existOtherMaterialCouponByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    public Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Long cusId, Integer identityType) {
+        if (null != userId && null != identityType && null != cusId) {
+            return materialListDAO.existOtherMaterialCouponByUserIdAndIdentityType(userId, cusId, AppIdentityType.getAppIdentityTypeByValue(identityType));
         }
         return null;
     }

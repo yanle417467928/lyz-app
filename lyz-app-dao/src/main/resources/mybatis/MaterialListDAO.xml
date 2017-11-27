@@ -118,7 +118,9 @@
 
     <select id="existOtherMaterialCouponByUserIdAndIdentityType" resultType="java.lang.Boolean">
         SELECT EXISTS
-        (SELECT 'X' FROM material_list WHERE user_id = #{userId} AND identity_type = #{identityType} AND cus_id IS NOT NULL )
+        (SELECT 'X' FROM material_list WHERE user_id = #{userId} AND identity_type = #{identityType} AND cus_id IS NOT
+        NULL
+        AND cus_id != #{cusId})
     </select>
 
     <select id="findMaterialListByUserIdAndTypeAndAuditIsNotNull"
