@@ -70,20 +70,22 @@ public class OrderUtils {
     public static String generateRechargeNumber(Long cityId) {
         if (null != cityId) {
             City city = cityService.findById(cityId);
+            StringBuilder orderNumberTemp = new StringBuilder();
+            orderNumberTemp.append("CZ_");
             if (null != city && null != city.getBriefSpell()) {
                 String orderNumber = city.getBriefSpell();
-                Calendar calendar = Calendar.getInstance();
-                Date date = calendar.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-                String timeStamp = sdf.format(date);
-                orderNumber += timeStamp;
-                Random random = new Random();
-                String randomNumber = random.nextInt(900000) + 100000 + "";
-                orderNumber += randomNumber;
-                return "CZ_" + orderNumber;
+                orderNumberTemp.append(orderNumber);
             } else {
-                return null;
+                orderNumberTemp.append("MR");
             }
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            orderNumberTemp.append(timeStamp);
+            Random random = new Random();
+            orderNumberTemp.append(random.nextInt(900000) + 100000);
+            return orderNumberTemp.toString();
         }
         return null;
     }
