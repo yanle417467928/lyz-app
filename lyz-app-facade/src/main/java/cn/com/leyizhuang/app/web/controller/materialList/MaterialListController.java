@@ -88,10 +88,10 @@ public class MaterialListController {
                 logger.info("addMaterialList OUT,单或多个商品加入下料清单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            Map<Long, Integer> goodsMap = new HashMap();
+            Map<Long, Integer> goodsMap = new HashMap<Long, Integer>();
             String[] param = params.split(",");
             for (String s : param) {
-                String goodsParam[] = s.split("-");
+                String[] goodsParam = s.split("-");
                 goodsMap.put(Long.parseLong(goodsParam[0]), Integer.parseInt(goodsParam[1]));
             }
             List<MaterialListDO> materialListSave = new ArrayList<>();
@@ -326,7 +326,6 @@ public class MaterialListController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
                 return resultDTO;
             }
-            Map<Long, Integer> goodsMap = new HashMap();
             List<MaterialListDO> materialListDOList = this.appOrderServiceImpl.getGoodsInfoByOrderNumber(orderNumber);
             if (null == materialListDOList || materialListDOList.size() == 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无此订单信息！",
@@ -337,21 +336,16 @@ public class MaterialListController {
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
             for (MaterialListDO materialList : materialListDOList) {
-                GoodsDO goodsDO = goodsService.findGoodsById(materialList.getId());
-                if (null != goodsDO) {
-                    MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
-                            AppIdentityType.getAppIdentityTypeByValue(identityType), materialList.getGid());
-                    if (null == materialListDO) {
-                        MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
-                        materialListDOTemp.setUserId(userId);
-                        materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                        materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                        materialListDOTemp.setQty(materialList.getQty());
-                        materialListSave.add(materialListDOTemp);
-                    } else {
-                        materialListDO.setQty(materialListDO.getQty() + materialList.getQty());
-                        materialListUpdate.add(materialListDO);
-                    }
+                MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                        AppIdentityType.getAppIdentityTypeByValue(identityType), materialList.getGid());
+                if (null == materialListDO) {
+                    materialList.setUserId(userId);
+                    materialList.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    materialList.setMaterialListType(MaterialListType.NORMAL);
+                    materialListSave.add(materialList);
+                } else {
+                    materialListDO.setQty(materialListDO.getQty() + materialList.getQty());
+                    materialListUpdate.add(materialListDO);
                 }
             }
             commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
