@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
@@ -42,5 +43,10 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     @Override
     public List<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
         return this.arrearsAuditDAO.findBySellerIdAndStatus(sellerId, arrearsAuditStatusList);
+    }
+
+    @Override
+    public List<ArrearageListResponse> findArrearsListByUserId(Long userID) {
+        return arrearsAuditDAO.findArrearsListByUserId(userID);
     }
 }
