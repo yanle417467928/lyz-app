@@ -48,7 +48,7 @@
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
             AND m.cus_id IS NULL
-            AND m.material_list_type = 'NORMAL'
+            AND (m.material_list_type = 'NORMAL' OR m.material_list_type IS NULL )
             ORDER BY m.id DESC
         </if>
         <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
@@ -62,7 +62,7 @@
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
             AND m.cus_id IS NULL
-            AND m.material_list_type = 'NORMAL'
+            AND (m.material_list_type = 'NORMAL' OR m.material_list_type IS NULL )
             ORDER BY m.id DESC
         </if>
     </select>
@@ -77,7 +77,7 @@
         AND gid = #{goodsId}
         AND audit_no IS NULL
         AND cus_id IS NULL
-        AND material_list_type = 'NORMAL'
+              AND (material_list_type = 'NORMAL' OR material_list_type IS NULL)
     </select>
 
     <select id="findAuditListByUserIdAndIdentityTypeAndGoodsId"
@@ -115,7 +115,8 @@
         m.qty
         FROM material_list m
         WHERE m.user_id = #{userId} AND m.identity_type = #{identityType} AND m.gid = #{goodsId}
-        AND m.audit_no IS NULL AND m.cus_id IS NULL AND m.material_list_type = 'NORMAL'
+              AND m.audit_no IS NULL AND m.cus_id IS NULL AND
+              (m.material_list_type = 'NORMAL' OR m.material_list_type IS NULL)
     </select>
 
     <select id="existOtherMaterialListByUserIdAndIdentityType" resultType="java.lang.Boolean">
