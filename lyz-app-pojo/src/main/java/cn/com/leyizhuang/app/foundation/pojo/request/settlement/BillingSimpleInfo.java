@@ -22,6 +22,18 @@ public class BillingSimpleInfo implements Serializable {
     private static final long serialVersionUID = 8532606023597121783L;
 
     /**
+     * 订单折扣（促销立减金额）
+     */
+    private Double orderDiscount;
+    /**
+     * 乐币数量
+     */
+    private Integer leBiQuantity;
+    /**
+     * 运费
+     */
+    private Double freight;
+    /**
      * 顾客预存款
      */
     private Double cusPreDeposit;

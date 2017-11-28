@@ -2,6 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -29,4 +32,23 @@ public interface CommonService {
 
 
     void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
+
+    /**
+     *  创建订单基础信息 OrderBaseInfo
+     *
+     * @param cityId 城市id
+     * @param userId 用户id
+     * @param identityType 用户身份类型
+     * @param customerId 顾客id
+     * @param deliveryType 配送方式
+     * @return OrderBaseInfo 订单基础信息
+     */
+    OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType);
+
+    /**
+     * 生成订单物流信息 OrderLogisticInfo
+     * @param deliverySimpleInfo 页面填写的物流相关信息
+     * @return OrderLogisticInfo 订单物流信息
+     */
+    OrderLogisticsInfo createOrderLogisticInfo(DeliverySimpleInfo deliverySimpleInfo);
 }

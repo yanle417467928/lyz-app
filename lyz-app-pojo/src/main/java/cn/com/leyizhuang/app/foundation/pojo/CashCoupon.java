@@ -23,28 +23,44 @@ public class CashCoupon implements Serializable {
 
     private Long id;
 
-    //创建时间
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
-    //面额
+    /**
+     *  面额
+     */
     private Double denomination;
 
-    //有效期开始时间
+    /**
+     * 有效期开始时间
+     */
     private Date effectiveStartTime;
 
-    //有效期结束时间
+    /**
+     * 有效期结束时间
+     */
     private Date effectiveEndTime;
 
-    //使用说明
+    /**
+     * 使用说明
+     */
     private String description;
 
-    //初始数量
+    /**
+     * 初始数量
+     */
     private Integer initialQuantity;
 
-    //剩余数量
+    /**
+     *  剩余数量
+     */
     private Integer remainingQuantity;
 
-    //优惠券标题
+    /**
+     * 优惠券标题
+     */
     private String title;
 
 }

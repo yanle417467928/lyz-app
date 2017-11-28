@@ -5,9 +5,11 @@ import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -82,4 +84,6 @@ public interface GoodsService {
      * @param sku   物料编码
      */
     void deleteSynchronize(String sku);
+
+    List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(Long userId, Integer identityType, Set<Long> goodsIdSet);
 }

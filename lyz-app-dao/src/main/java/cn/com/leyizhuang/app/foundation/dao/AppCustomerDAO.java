@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer;
@@ -96,4 +97,6 @@ public interface AppCustomerDAO {
                                                                          @Param(value = "cusId") Long cusId);
 
     List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
+
+    CustomerCashCoupon findCashCouponByCcid(@Param(value = "id") Long id);
 }

@@ -413,4 +413,28 @@
               AND c.effective_end_time &gt; NOW()
     </select>
 
+
+    <select id="findCashCouponByCcid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        SELECT
+            id,
+            cus_id,
+            ccid,
+            qty,
+            is_used,
+            use_time,
+            use_ord_no use_order_number,
+            get_time,
+            `condition`,
+            denomination,
+            effective_start_time,
+            effective_end_time,
+            descripttion,
+            title,
+            status,
+            down_time
+        FROM cus_customer_cash_coupon
+        WHERE ccid = #{id};
+    </select>
+
 </mapper>

@@ -70,14 +70,17 @@
     <insert id="saveSynchronize" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         INSERT INTO gds_goods
         (create_time, brd_id, brand_name, cid, category_name, gtid, type_name, sku, sku_name, cover_image_uri,
-        rotation_image_uri, goods_specification, goods_unit, is_index_recommend, is_hot, is_new, is_color_mixing,
-        sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detial, search_keyword,
-        product_grade, materials_name)
+         rotation_image_uri, goods_specification, goods_unit, is_index_recommend, is_hot, is_new, is_color_mixing,
+         sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detial, search_keyword,
+         product_grade, materials_name)
         VALUES
-        (#{createTime}, #{brdId}, #{brdName}, #{cId}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
-        #{coverImageUri}, #{rotationImageUri}, #{goodsSpecification}, #{goodsUnit}, #{isIndexRecommend}, #{isHot},
-        #{isNew}, #{isColorMixing} , #{sortId}, #{companyFlag}, #{materialsCode}, #{physicalClassify}, #{materialsEnable},
-        #{goodsDetial}, #{searchKeyword}, #{productGrade}, #{materialsName})
+            (#{createTime}, #{brdId}, #{brdName}, #{cId}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
+                            #{coverImageUri}, #{rotationImageUri}, #{goodsSpecification}, #{goodsUnit},
+                                                                   #{isIndexRecommend}, #{isHot},
+                                                                   #{isNew}, #{isColorMixing}, #{sortId},
+                                                                   #{companyFlag}, #{materialsCode},
+                                                                   #{physicalClassify}, #{materialsEnable},
+             #{goodsDetial}, #{searchKeyword}, #{productGrade}, #{materialsName})
     </insert>
 
 
@@ -235,216 +238,216 @@
     <select id="findGoodsListByCategoryCodeAndCustomerIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-        g.cover_image_uri,
-        g.sku_name goods_name,
-        g.gid id,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
-        c.cus_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            c.cus_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
     </select>
 
     <select id="findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-        g.cover_image_uri,
-        g.sku_name goods_name,
-        g.gid id,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE e.emp_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+              AND gc.p_category_code = #{categoryCode}
     </select>
 
     <select id="findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
-        DISTINCT
-        gc.cid category_id,
-        gc.category_name
+            DISTINCT
+            gc.cid category_id,
+            gc.category_name
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
-        c.cus_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            c.cus_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY gc.sort_id
     </select>
 
     <select id="findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
         SELECT
-        DISTINCT
-        gc.cid category_id,
-        gc.category_name
+            DISTINCT
+            gc.cid category_id,
+            gc.category_name
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
-        e.emp_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            e.emp_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY gc.sort_id
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
-        DISTINCT
-        g.brd_id brand_id,
-        g.brand_name brand_name
+            DISTINCT
+            g.brd_id     brand_id,
+            g.brand_name brand_name
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
-        c.cus_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            c.cus_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY b.sort_id
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
-        DISTINCT
-        g.brd_id brand_id,
-        g.brand_name brand_name
+            DISTINCT
+            g.brd_id     brand_id,
+            g.brand_name brand_name
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
-        e.emp_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            e.emp_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY b.sort_id
     </select>
 
     <select id="findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
         SELECT
-        DISTINCT
-        t.gtid type_id,
-        t.type_name
+            DISTINCT
+            t.gtid type_id,
+            t.type_name
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_type t ON g.gtid = t.gtid
         WHERE
-        c.cus_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            c.cus_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY t.sort_id
     </select>
 
     <select id="findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
         SELECT
-        DISTINCT
-        t.gtid type_id,
-        t.type_name
+            DISTINCT
+            t.gtid type_id,
+            t.type_name
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            INNER JOIN gds_goods_type t ON g.gtid = t.gtid
         WHERE
-        e.emp_id = #{userId}
-        AND gc.p_category_code = #{categoryCode}
+            e.emp_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
         ORDER BY t.sort_id
     </select>
 
     <select id="findGoodsListByIsHotAndCustomerIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-        g.cover_image_uri,
-        g.sku_name goods_name,
-        g.gid id,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
-        c.cus_id = #{userId}
-        AND g.is_hot = 1
+            c.cus_id = #{userId}
+            AND g.is_hot = 1
     </select>
 
     <select id="findGoodsListByIsHotAndEmployeeIdAndIdentityType" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
         SELECT
-        g.cover_image_uri,
-        g.sku_name goods_name,
-        g.gid id,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
-        e.emp_id = #{userId}
-        AND g.is_hot = 1
+            e.emp_id = #{userId}
+            AND g.is_hot = 1
     </select>
 
     <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
@@ -508,117 +511,117 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         SELECT
-        g.cover_image_uri,
-        g.sku_name goods_name,
-        g.gid id,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        gds_goods_often_buy acg
-        INNER JOIN gds_goods g ON g.gid = acg.gid
-        INNER JOIN gds_goods_price p ON p.gid = g.gid
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            gds_goods_often_buy acg
+            INNER JOIN gds_goods g ON g.gid = acg.gid
+            INNER JOIN gds_goods_price p ON p.gid = g.gid
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE
-        acg.user_id = #{userId}
-        AND acg.identity_type = #{type,
+            acg.user_id = #{userId}
+            AND acg.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </select>
 
     <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
-        COVER_IMAGE_URI,
-        ROTATION_IMAGE_URI
+            COVER_IMAGE_URI,
+            ROTATION_IMAGE_URI
         FROM
-        gds_goods
+            gds_goods
         WHERE
-        gid = #{goodsId}
+            gid = #{goodsId}
     </select>
 
     <select id="searchByCustomerIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
-        g.gid id,
-        g.sku_name goods_name,
-        g.cover_image_uri,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.gid      id,
+            g.sku_name goods_name,
+            g.cover_image_uri,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
+            cus_customer c
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
-        c.cus_id = #{userId}
-        AND (
-        g.sku_name LIKE concat('%', #{keywords}, '%')
-        OR g.sku LIKE concat('%', #{keywords}, '%')
-        )
+            c.cus_id = #{userId}
+            AND (
+                g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%')
+            )
     </select>
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
         SELECT
-        g.gid id,
-        g.sku_name goods_name,
-        g.cover_image_uri,
-        g.goods_specification,
-        g.goods_unit,
-        p.vip_price,
-        p.retail_price,
-        g.cid category_id,
-        g.brd_id brand_id,
-        g.gtid type_id
+            g.gid      id,
+            g.sku_name goods_name,
+            g.cover_image_uri,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
         FROM
-        emp_employee e
-        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        INNER JOIN gds_goods g ON p.gid = g.gid
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+                                            AND p.start_time &lt; NOW()
+                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
-        e.emp_id = #{userId}
-        AND (
-        g.sku_name LIKE concat('%', #{keywords}, '%')
-        OR g.sku LIKE concat('%', #{keywords}, '%')
-        )
+            e.emp_id = #{userId}
+            AND (
+                g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%')
+            )
     </select>
 
     <insert id="saveCollectGoodsByUserIdAndGoodsIdAndIdentityType">
         INSERT INTO gds_goods_collect (
-        user_id, gid, identity_type)
-        SELECT
-        #{userId},
-        #{goodsId},
-        #{type,
+            user_id, gid, identity_type)
+            SELECT
+                #{userId},
+                #{goodsId},
+                #{type,
     javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
     typeHandler=org.apache.ibatis.type.EnumTypeHandler}
-        FROM dual
-        WHERE NOT EXISTS(
-        SELECT 'X'
-        FROM gds_goods_collect acc
-        WHERE acc.user_id = #{userId}
-        AND acc.gid = #{goodsId}
-        AND acc.identity_type = #{type,
+            FROM dual
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM gds_goods_collect acc
+                    WHERE acc.user_id = #{userId}
+                          AND acc.gid = #{goodsId}
+                          AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
-        )
+            )
     </insert>
 
     <delete id="deleteCollectGoodsByUserIdAndGoodsIdAndIdentityType">
         DELETE FROM gds_goods_collect
         WHERE user_id = #{userId}
-        AND gid = #{goodsId}
-        AND identity_type = #{type,
+              AND gid = #{goodsId}
+              AND identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
     </delete>
@@ -654,34 +657,34 @@
     <select id="findGoodsById" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
-        gid,
-        sku,
-        sku_name,
-        cover_image_uri,
-        goods_specification,
-        goods_unit
+            gid,
+            sku,
+            sku_name,
+            cover_image_uri,
+            goods_specification,
+            goods_unit
         FROM gds_goods
         WHERE gid = #{gid}
     </select>
 
     <select id="findGoodsPriceByProductCouponIdAndUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT
-        p.gid,
-        p.retail_price,
-        p.vip_price,
-        p.wholesale_price
+            p.gid,
+            p.retail_price,
+            p.vip_price,
+            p.wholesale_price
         FROM cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
         WHERE c.cus_id = #{cusId}
-        AND pcp.id = #{pcId}
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        AND pcp.effective_start_time &lt; NOW()
-        AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
-        AND pcp.is_used = FALSE
-        AND PCP.gid = P.gid
-        AND pcp.quantity >= #{qty};
+              AND pcp.id = #{pcId}
+              AND p.start_time &lt; NOW()
+              AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+              AND pcp.effective_start_time &lt; NOW()
+              AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
+              AND pcp.is_used = FALSE
+              AND PCP.gid = P.gid
+              AND pcp.quantity >= #{qty};
     </select>
 
     <select id="getGoodsPriceByCustomerAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
@@ -843,15 +846,37 @@
 
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
         SELECT EXISTS(
-        SELECT 'X'
-        FROM gds_goods
-        WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName}, '%'))
+                SELECT 'X'
+                FROM gds_goods
+                WHERE gid = #{gId} AND brand_name LIKE concat('%', #{brandName}, '%'))
     </select>
 
     <select id="findCompanyFlagListById" resultType="java.lang.String">
         SELECT DISTINCT company_flag FROM gds_goods WHERE gid in
         <foreach collection="list" item="type" separator="," open="(" close=")">
             #{type}
+        </foreach>
+    </select>
+
+    <select id="findOrderGoodsVOListByCustomerIdAndGoodsIds"
+            resultType="cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO">
+        SELECT
+        g.gid,
+        g.sku,
+        g.sku_name,
+        gp.retail_price,
+        gp.vip_price,
+        gp.wholesale_price,
+        g.company_flag,
+        gp.price_line_id
+        FROM cus_customer c INNER JOIN gds_goods_price gp ON C.store_id = gp.store_id
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        where c.cus_id = #{userId}
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND g.gid in
+        <foreach collection="set" item="item" separator="," open="(" close=")">
+            #{item}
         </foreach>
     </select>
 </mapper>

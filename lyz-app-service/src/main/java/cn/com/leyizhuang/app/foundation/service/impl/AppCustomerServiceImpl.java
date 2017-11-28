@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -146,10 +148,10 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     public CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney) {
         if (null != userId && null != goodsMoney) {
             Integer qty = customerDAO.findLeBiQuantityByUserId(userId);
-            Double rebate = CountUtil.div(qty, CustomerLeBi.ratio);
+            Double rebate = CountUtil.div(qty, AppConstant.RMB_TO_LEBI_RATIO);
             if (rebate >= goodsMoney) {
                 rebate = goodsMoney;
-                qty = (int) CountUtil.mul(goodsMoney, CustomerLeBi.ratio);
+                qty = (int) CountUtil.mul(goodsMoney, AppConstant.RMB_TO_LEBI_RATIO);
             }
             return new CustomerLeBi(qty, rebate);
         }
@@ -321,6 +323,15 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
         }
         return null;
     }
+
+    @Override
+    public CustomerCashCoupon findCashCouponByCcid(Long id) {
+        if (null != id){
+            return customerDAO.findCashCouponByCcid(id);
+        }
+        return null;
+    }
+
 
     @Override
     public CustomerPreDeposit findByCusId(Long cusId) {

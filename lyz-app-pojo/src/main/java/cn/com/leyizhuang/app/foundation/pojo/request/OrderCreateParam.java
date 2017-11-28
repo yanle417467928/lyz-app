@@ -40,14 +40,22 @@ public class OrderCreateParam implements Serializable {
      * 商品信息
      */
     private String goodsInfo;
+
+    /**
+     * 产品券商品信息
+     */
+    private String productCouponInfo;
+
+    /**
+     * 促销明细信息
+     */
+    private String promotionInfo;
+
     /**
      * 配送信息
      */
     private String deliveryInfo;
-    /**
-     * 乐币数量
-     */
-    private Integer leBiQuantity;
+
     /**
      * 物料审核单号
      */
@@ -56,10 +64,7 @@ public class OrderCreateParam implements Serializable {
      * 现金券id
      */
     private List<Long> cashCouponIds;
-    /**
-     * 产品券信息
-     */
-    private String productCouponInfo;
+
     /**
      * 账单信息
      */

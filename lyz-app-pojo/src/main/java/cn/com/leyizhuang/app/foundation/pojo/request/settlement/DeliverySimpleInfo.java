@@ -33,7 +33,7 @@ public class DeliverySimpleInfo implements Serializable {
     /**
      *  预约门店id
      */
-    private String bookingStoreId;
+    private Long bookingStoreId;
     /**
      * 预约门店名称
      */
@@ -72,9 +72,14 @@ public class DeliverySimpleInfo implements Serializable {
      *  收货详细地址
      */
     private String detailedAddress;
+
     /**
-     * 配送时间
+     * 配送时间段
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date deliveryTime;
+    private String deliveryTime;
+
+    /**
+     * 是否业主收货
+     */
+    private Boolean  isOwnerReceiving;
 }

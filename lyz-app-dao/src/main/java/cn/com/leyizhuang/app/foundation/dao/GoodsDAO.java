@@ -4,10 +4,12 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -116,4 +118,7 @@ public interface GoodsDAO {
      * @param sku   物料编码
      */
     void deleteSynchronize(@Param("sku") String sku);
+
+    List<OrderGoodsVO> findOrderGoodsVOListByCustomerIdAndGoodsIds(@Param(value = "userId") Long userId,
+                                                                   @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
 }

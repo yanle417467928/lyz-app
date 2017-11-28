@@ -90,16 +90,7 @@ public class ApplicationConstant {
         InterfaceConfigure.EBS_WS_URL = ebsUrl;
     }
 
-    /**
-     * 不允许门店自提的公司标识
-     */
-    public static final String FORBIDDEN_SELF_TAKE_COMPANY_FLAG = "YR|LYZ";
 
-    /**
-     * 订单有效时间,按分钟计算
-     */
-
-    public static final int ORDER_EFFECTIVE_MINUTE = 60;
 
     /**
      * 变更导购时间（天）

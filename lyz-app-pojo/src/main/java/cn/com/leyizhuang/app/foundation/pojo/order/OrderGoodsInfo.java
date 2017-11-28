@@ -17,37 +17,100 @@ public class OrderGoodsInfo {
 
     private Long id;
 
-    //订单号
+    /**
+     * 订单id
+     */
+    private Long oid;
+    /**
+     * 订单号
+     */
     private String orderNumber;
 
-    //商品编码
+    /**
+     * 商品编码
+     */
     private String sku;
 
-    //零售价
+    /**
+     * 商品名称
+     */
+    private String skuName;
+    /**
+     * 零售价
+     */
     private Double retailPrice;
 
-    //会员价
+    /**
+     * 会员价
+     */
+
     private Double VIPPrice;
 
-    //经销价
+    /**
+     * 经销价
+     */
     private Double wholesalePrice;
 
-    //分摊价
+    /**
+     * 促销id
+     */
+    private String promotionId;
+
+    /**
+     * 是否参与分摊
+     */
+    private Boolean isPriceShare;
+
+    /**
+     * 分摊金额
+     */
     private Double sharePrice;
 
-    //订单数量
+    /**
+     * 退货金额
+     */
+    private Double returnPrice;
+
+    /**
+     * 是否可以退货
+     */
+    private Boolean isReturnable;
+    /**
+     * 退货优先级
+     */
+    private Integer returnPriority;
+    /**
+     *  订单数量
+     */
     private Integer orderQuantity;
 
-    //出货数量
-    private Integer outboundQuantity;
+    /**
+     * 出货数量
+     */
+    private Integer shippingQuantity;
 
-    //已退货数量
+    /**
+     * 已退货数量
+     */
     private Integer returnQuantity;
 
-    //可退数量
+    /**
+     * 可退数量
+     */
     private Integer returnableQuantity;
 
-    //是否赠品
+    /**
+     * 是否赠品
+     */
     private Boolean isGift;
 
+    /**
+     * 价目表行id
+     */
+    private Long priceItemId;
+
+    /**
+     * 公司编码
+     */
+    private String companyFlag;
 }

@@ -7,12 +7,14 @@ import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -285,6 +287,16 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Override
     public void deleteSynchronize(String sku) {
        goodsDAO.deleteSynchronize(sku);
+    }
+
+    @Override
+    public List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(Long userId, Integer identityType, Set<Long> goodsIdSet) {
+        if (null != userId && null != identityType && null != goodsIdSet && goodsIdSet.size()>0){
+            if (identityType == AppIdentityType.CUSTOMER.getValue()){
+                return goodsDAO.findOrderGoodsVOListByCustomerIdAndGoodsIds(userId,goodsIdSet);
+            }
+        }
+        return null;
     }
 
     /**

@@ -88,17 +88,17 @@ public class OrderBaseInfo {
     /**
      * 下单人id
      */
-    private Long creatorIdStore;
+    private Long creatorId;
 
     /**
      * 下单人姓名
      */
-    private String creatorNameStore;
+    private String creatorName;
 
     /**
      * 下单人手机
      */
-    private String creatorPhoneStore;
+    private String creatorPhone;
 
     /**
      * 导购id

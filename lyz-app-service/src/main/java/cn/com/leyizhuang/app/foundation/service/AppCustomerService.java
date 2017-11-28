@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -90,4 +91,6 @@ public interface AppCustomerService {
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId);
 
     List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
+
+    CustomerCashCoupon findCashCouponByCcid(Long id);
 }

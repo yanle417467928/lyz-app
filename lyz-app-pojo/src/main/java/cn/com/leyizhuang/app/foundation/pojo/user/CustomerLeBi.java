@@ -15,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 public class CustomerLeBi {
 
-    public static final Double ratio = 10.00;
+
     private Long id;
     private Long cusId;
     private Integer quantity;
