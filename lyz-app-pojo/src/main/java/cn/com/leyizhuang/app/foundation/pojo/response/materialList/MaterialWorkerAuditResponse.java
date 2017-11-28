@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.response;
+package cn.com.leyizhuang.app.foundation.pojo.response.materialList;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialAuditGoPayResponse {
+public class MaterialWorkerAuditResponse {
     /**
      * 物料单编号
      */

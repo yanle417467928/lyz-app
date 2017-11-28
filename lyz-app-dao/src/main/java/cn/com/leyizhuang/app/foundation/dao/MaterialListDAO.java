@@ -2,13 +2,13 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -30,7 +30,9 @@ public interface MaterialListDAO {
     MaterialListDO findByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
             AppIdentityType identityType, @Param(value = "goodsId") Long goodsId);
 
-    List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
+    MaterialListDO findAuditListByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId, @Param(value = "identityType")
+            AppIdentityType identityType, @Param(value = "goodsId") Long goodsId);
+
 
     List<Long> findMaterialListGoodsIdsByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 
@@ -38,18 +40,15 @@ public interface MaterialListDAO {
                                                              @Param(value = "identityType") AppIdentityType identityType,
                                                              @Param(value = "deleteGoodsIds") List<Long> deleteGoodsIds);
 
-    Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
-                                                                     @Param(value = "identityType") AppIdentityType identityType,
-                                                                     @Param(value = "goodsId") Long goodsId);
+    GoodsIdQtyParam findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(@Param(value = "userId") Long userId,
+                                                                  @Param(value = "identityType") AppIdentityType identityType,
+                                                                  @Param(value = "goodsId") Long goodsId);
 
     Boolean existOtherMaterialListByUserIdAndIdentityType(@Param("userId") Long userID,
                                                           @Param("identityType") AppIdentityType appIdentityTypeByValue);
 
     List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(@Param("userId") Long userId,
                                                                                       @Param("identityType") AppIdentityType identityType);
-
-    List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(@Param("userId") Long userId,
-                                                                                  @Param("identityType") AppIdentityType identityType);
 
     MaterialListDO findCouponTransformByUserIdAndIdentityTypeAndGoodsId(@Param("userId") Long userId,
                                                                         @Param("identityType") AppIdentityType appIdentityTypeByValue,
@@ -61,9 +60,12 @@ public interface MaterialListDAO {
                                                                                 @Param("goodsId") Long goodsId);
 
     List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(@Param("userId") Long userId,
-                                                                             @Param("cusId") Long cusId,
                                                                              @Param("identityType") AppIdentityType identityType);
 
-    List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
+    List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
                                                                                      @Param("identityType") AppIdentityType identityType);
+
+    Boolean existOtherMaterialCouponByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                            @Param("cusId") Long cusId,
+                                                            @Param("identityType") AppIdentityType identityType);
 }

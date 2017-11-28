@@ -46,14 +46,14 @@ public class ArrearsAuditController {
             logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType && identityType != 6) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+        if (null == identityType && identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
             logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
         arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
-        List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserId(userId, arrearsAuditStatusList);
+        List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndStatus(userId, arrearsAuditStatusList);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
         logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

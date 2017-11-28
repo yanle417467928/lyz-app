@@ -96,7 +96,7 @@ public class OrderArriveController {
             //查询是否有欠款待审核
             List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
             arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
-            List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndOrderNo(userId, orderNo, arrearsAuditStatusList);
+            List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndOrderNoAndStatus(userId, orderNo, arrearsAuditStatusList);
             if (null != arrearsAuditResponseList && arrearsAuditResponseList.size() > 0){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "你有欠款审核还在审核中，请不要重复提交！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
@@ -142,17 +142,19 @@ public class OrderArriveController {
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else { //欠款金额 <= 收款金额
-                    //创建收款记录
-                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                    paymentDetails.setConstructor(orderTempInfo.getOrderId(),"实际货币", paymentMethod, orderNo, ownManey, "");
-                    this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+                    if (ownManey > 0) {
+                        //创建收款记录
+                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                        paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", paymentMethod, orderNo, ownManey, "");
+                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
-                    collectionAmount = CountUtil.sub(collectionAmount, ownManey);
-                    //修改订单欠款为0
-                    OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-                    orderBillingDetails.setOrderNumber(orderNo);
-                    orderBillingDetails.setArrearage(0D);
-                    this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                        collectionAmount = CountUtil.sub(collectionAmount, ownManey);
+                        //修改订单欠款为0
+                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails.setOrderNumber(orderNo);
+                        orderBillingDetails.setArrearage(0D);
+                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                    }
                 }
             }
 

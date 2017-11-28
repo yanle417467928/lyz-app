@@ -1028,7 +1028,7 @@ public class OrderController {
      * @return 订单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderList(Long userID, Integer identityType) {
+    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}", userID, identityType);
         if (null == userID) {
@@ -1043,7 +1043,7 @@ public class OrderController {
         }
         try {
             //获取用户所有订单列表
-            List<OrderBaseInfo> orderBaseInfoList = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType);
+            List<OrderBaseInfo> orderBaseInfoList = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType, showStatus);
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
             //循环遍历订单列表

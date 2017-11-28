@@ -2,10 +2,13 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.OrderAgencyFundDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFundDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse;
 import cn.com.leyizhuang.app.foundation.service.OrderAgencyFundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -23,5 +26,10 @@ public class OrderAgencyFundServiceImpl implements OrderAgencyFundService {
     public OrderAgencyFundDO save(OrderAgencyFundDO orderAgencyFundDO) {
         this.orderAgencyFundDAO.save(orderAgencyFundDO);
         return orderAgencyFundDO;
+    }
+
+    @Override
+    public List<DeliveryAgencyFundResponse> findByUserId(Long userId) {
+        return this.orderAgencyFundDAO.findByUserId(userId);
     }
 }

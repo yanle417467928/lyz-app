@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 public class HqAppGoodsController {
     private static final Logger logger = LoggerFactory.getLogger(HqAppGoodsController.class);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     @Resource
     private GoodsService goodsService;
 
@@ -67,7 +66,7 @@ public class HqAppGoodsController {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getBrdName());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品品牌不能为空！", null);
         }
-        if (StringUtils.isBlank(hqAppGoodsDTO.getPhysicalClassify())) {
+        if (null == hqAppGoodsDTO.getPhysicalClassify()) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getPhysicalClassify());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物理分类不能为空！", null);
         }
@@ -203,7 +202,7 @@ public class HqAppGoodsController {
                 if (!StringUtils.isBlank(hqAppGoodsDTO.getMaterialsCode())){
                     goodsDO.setMaterialsCode(hqAppGoodsDTO.getMaterialsCode());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getPhysicalClassify())){
+                if (null != hqAppGoodsDTO.getPhysicalClassify()){
                     goodsDO.setPhysicalClassify(hqAppGoodsDTO.getPhysicalClassify());
                 }
                 if (null != hqAppGoodsDTO.getMaterialsEnable()){

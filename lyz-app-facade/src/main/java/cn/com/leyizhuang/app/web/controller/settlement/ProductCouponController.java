@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.ProductCouponRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.UsedMoreProductCoupon;
@@ -141,6 +140,13 @@ public class ProductCouponController {
                         return resultDTO;
                     }
                     cusId = productCouponRequest.getCusId();
+                    //导购下料清单中不能有两种顾客的产品券
+                    Boolean isOther = materialListServiceImpl.existOtherMaterialCouponByUserIdAndIdentityType(userId, cusId, identityType);
+                    if (isOther) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在其他顾客的产品券", null);
+                        logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 }
                 //从页面传过来的数组中有券ID 和数量查询出商品ID和数量装入Map
                 for (UsedMoreProductCoupon goodsIdQtyParam : requestList) {

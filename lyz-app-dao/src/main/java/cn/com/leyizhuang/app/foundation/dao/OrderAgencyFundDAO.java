@@ -1,7 +1,11 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFundDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -12,5 +16,6 @@ public interface OrderAgencyFundDAO {
 
     void save(OrderAgencyFundDO orderAgencyFundDO);
 
+    List<DeliveryAgencyFundResponse> findByUserId(@Param("userId") Long userId);
 
 }

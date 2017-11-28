@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -63,11 +63,10 @@ public class MaterialListServiceImpl implements MaterialListService {
         }
         return null;
     }
-
     @Override
-    public List<MaterialListDO> findMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
-        if (null != userId && null != identityType) {
-            return materialListDAO.findMaterialListByUserIdAndIdentityType(userId, identityType);
+    public MaterialListDO findAuditListByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+        if (null != userId && null != identityType && null != goodsId) {
+            return materialListDAO.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId, identityType, goodsId);
         }
         return null;
     }
@@ -90,7 +89,7 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public Map<Long, Integer> findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
+    public GoodsIdQtyParam findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
         if (null != userId && null != identityType && null != goodsId) {
             return materialListDAO.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(userId,
                     identityType, goodsId);
@@ -107,17 +106,17 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
-        if (null != userId && null != identityType) {
-            return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, identityType);
+    public Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Long cusId, Integer identityType) {
+        if (null != userId && null != identityType && null != cusId) {
+            return materialListDAO.existOtherMaterialCouponByUserIdAndIdentityType(userId, cusId, AppIdentityType.getAppIdentityTypeByValue(identityType));
         }
         return null;
     }
 
     @Override
-    public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndIsCouponId(Long userId, AppIdentityType identityType) {
+    public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-            return materialListDAO.findMaterialListByUserIdAndTypeAndIsCouponId(userId, identityType);
+            return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, identityType);
         }
         return null;
     }
@@ -139,17 +138,17 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
-    public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, Long cusId, AppIdentityType identityType) {
-        if (null != userId && null != identityType && null != cusId) {
-            return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,cusId, identityType);
+    public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType ) {
+            return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId, identityType);
         }
         return null;
     }
 
     @Override
-    public List<CouponMaterialListResponse> findCoutomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+    public List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-            return materialListDAO.findCoutomerMaterialListByUserIdAndIdentityType(userId, identityType);
+            return materialListDAO.findCustomerMaterialListByUserIdAndIdentityType(userId, identityType);
         }
         return null;
     }

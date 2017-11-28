@@ -26,7 +26,7 @@ public interface AppOrderService {
     Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty);
 
     //用户获取我的订单列表
-    List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType);
+    List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus);
 
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(String orderNumber);
