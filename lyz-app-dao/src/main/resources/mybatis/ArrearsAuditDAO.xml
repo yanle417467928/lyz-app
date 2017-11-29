@@ -59,14 +59,15 @@
 
     <select id="findArrearsListByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
-            obi.customer_name customerName,
-            obi.ord_no orderNumber,
-            obd.arrearage arrearageMoney
+            customer_name customerName,
+            ord_no orderNumber,
+            order_money arrearageMoney
         FROM
-            ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        WHERE obi.sales_consult_id = #{userID}
-        AND obd.arrearage != 0
+            ord_arrears_audit
+        WHERE
+            seller_id = #{userID}
+        AND `status` = 'AUDIT_PASSED'
+        AND (whether_repayments = 0 OR whether_repayments IS NULL );
     </select>
 
 </mapper>

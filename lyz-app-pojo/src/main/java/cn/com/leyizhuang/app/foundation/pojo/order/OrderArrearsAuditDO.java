@@ -17,48 +17,99 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OrderArrearsAuditDO {
     private Long id;
-    //配送员ID
+    /**
+     * 配送员ID
+     */
     private Long userId;
-    //订单编号
+    /**
+     * 订单编号
+     */
     private String orderNumber;
-    //会员姓名
+    /**
+     * 会员姓名
+     */
     private String customerName;
-    //会员电话
+    /**
+     * 会员电话
+     */
     private String customerPhone;
-    //导购id
+    /**
+     * 导购id
+     */
     private Long sellerId;
-    //导购姓名
+    /**
+     * 导购姓名
+     */
     private String sellerName;
-    //导购电话
+    /**
+     * 导购电话
+     */
     private String sellerphone;
-    //配送地址
+    /**
+     * 配送地址
+     */
     private String distributionAddress;
-    //配送时间
+    /**
+     * 配送时间
+     */
     private LocalDateTime distributionTime;
-    //代收金额
+    /**
+     * 代收金额
+     */
     private Double agencyMoney;
-    //订单欠款
+    /**
+     * 订单欠款
+     */
     private Double orderMoney;
-    //实收金额
+    /**
+     * 实收金额
+     */
     private Double realMoney;
-    //收款方式
+    /**
+     * 收款方式
+     */
     private String paymentMethod;
-    //状态
+    /**
+     * 状态
+     */
     private ArrearsAuditStatus status;
-    //实收现金金额
+    /**
+     * 实收现金金额
+     */
     private Double cashMoney;
-    //实收pos金额
+    /**
+     * 实收pos金额
+     */
     private Double posMoney;
-    //实收支付宝金额
+    /**
+     * 实收支付宝金额
+     */
     private Double alipayMoney;
-    //实收微信金额
+    /**
+     * 实收微信金额
+     */
     private Double wechatMoney;
-    //remarks
+    /**
+     * 备注
+     */
     private String remarks;
-    //创建时间
+    /**
+     * 创建时间
+     */
     private LocalDateTime createTime;
-    //修改时间
+    /**
+     * 修改时间
+     */
     private LocalDateTime updateTime;
+    /**
+     * 是否还款
+     */
+    private Boolean whetherRepayments = false;
+    /**
+     * 还款时间
+     */
+    private LocalDateTime repaymentTime;
+
 
     public void setCustomerAndSeller(String customerName, String customerPhone, Long sellerId, String sellerName,
                                      String sellerphone){
