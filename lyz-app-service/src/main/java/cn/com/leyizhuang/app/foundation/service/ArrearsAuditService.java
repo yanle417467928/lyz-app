@@ -28,4 +28,16 @@ public interface ArrearsAuditService {
      * @return  欠款列表
      */
     List<ArrearageListResponse> findArrearsListByUserId(Long userID);
+
+    OrderArrearsAuditDO findById(Long id);
+
+    void updateStatusById(OrderArrearsAuditDO orderArrearsAuditDO);
+
+    /**
+     * 根据导购id和订单号查询欠款
+     * @param userID    用户id
+     * @param orderNumber   订单号
+     * @return  返回欠款信息
+     */
+    OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(Long userID,String orderNumber);
 }

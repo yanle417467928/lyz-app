@@ -45,9 +45,6 @@ public class OrderArriveController {
     private OrderAgencyFundService orderAgencyFundServiceImpl;
 
     @Autowired
-    private AppEmployeeService appEmployeeServiceImpl;
-
-    @Autowired
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
 
     /**
@@ -125,7 +122,12 @@ public class OrderArriveController {
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-
+            //上传图片
+            String picture = "";
+            for (int i = 0; i < files.length; i++) {
+                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
+                picture += ",";
+            }
             //判断订单是否有欠款
             if (ownManey > 0){
                 if (ownManey > collectionAmount){//欠款金额 > 收款金额
@@ -136,6 +138,7 @@ public class OrderArriveController {
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
                     orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, collectionAmount, remarks, ArrearsAuditStatus.AUDITING);
+                    orderArrearsAuditDO.setPicture(picture);
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
@@ -148,7 +151,6 @@ public class OrderArriveController {
                         paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", paymentMethod, orderNo, ownManey, "");
                         this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
-                        collectionAmount = CountUtil.sub(collectionAmount, ownManey);
                         //修改订单欠款为0
                         OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
                         orderBillingDetails.setOrderNumber(orderNo);
@@ -165,15 +167,8 @@ public class OrderArriveController {
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount + ownManey, collectionAmount, remarks);
+                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, collectionAmount - ownManey, remarks);
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
-            }
-
-            //上传图片
-            String picture = "";
-            for (int i = 0; i < files.length; i++) {
-                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
-                picture += ",";
             }
 
             //生成订单物流详情

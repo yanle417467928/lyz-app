@@ -35,11 +35,11 @@
         INSERT INTO ord_arrears_audit
         (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,order_money,
         real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,distribution_address,
-        distribution_time,remarks,status,create_time,seller_id)
+        distribution_time,remarks,status,create_time,seller_id,picture)
         VALUES
         (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},#{orderMoney},
         #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},#{distributionAddress},
-        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId})
+        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId},#{picture})
     </insert>
 
     <select id="findBySellerIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">
@@ -59,14 +59,54 @@
 
     <select id="findArrearsListByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
-            obi.customer_name customerName,
-            obi.ord_no orderNumber,
-            obd.arrearage arrearageMoney
+            customer_name customerName,
+            ord_no orderNumber,
+            order_money arrearageMoney
         FROM
-            ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        WHERE obi.sales_consult_id = #{userID}
-        AND obd.arrearage != 0
+            ord_arrears_audit
+        WHERE
+            seller_id = #{userID}
+        AND `status` = 'AUDIT_PASSED'
+        AND (whether_repayments = 0 OR whether_repayments IS NULL );
     </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+        SELECT * FROM ord_arrears_audit WHERE id = #{id}
+    </select>
+
+    <update id="updateStatusById" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+        UPDATE ord_arrears_audit
+        <set>
+            <if test="null != status">
+                status = #{status}
+            </if>
+            <if test="null != updateTime">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findArrearsByUserIdAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
+        SELECT
+            *
+        FROM
+            ord_arrears_audit
+        WHERE
+            seller_id = #{userID}
+        AND ord_no = #{orderNumber}
+        AND `status` = 'AUDIT_PASSED'
+        AND (whether_repayments = 0 OR whether_repayments IS NULL );
+    </select>
+
+    <update id="updateStatusAndrRepaymentTimeByOrderNumber">
+        UPDATE ord_arrears_audit
+        SET whether_repayments = 1,
+            repayment_time = #{repaymentTime}
+        WHERE
+            ord_no = #{orderNumber}
+        AND `status` = 'AUDIT_PASSED'
+
+    </update>
 
 </mapper>

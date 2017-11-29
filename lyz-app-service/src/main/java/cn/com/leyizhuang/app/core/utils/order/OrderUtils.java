@@ -90,6 +90,29 @@ public class OrderUtils {
         return null;
     }
 
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 生成还款单号
+     * @descripe
+     * @author GenerationRoad
+     * @date 2017/11/22
+     */
+    public static String repaymentNumber(String orderNumber) {
+            StringBuilder orderNumberTemp = new StringBuilder();
+            String ordNo = orderNumber.replaceAll("_XN","_HK");
+
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            orderNumberTemp.append(timeStamp);
+            Random random = new Random();
+            orderNumberTemp.append(random.nextInt(900000) + 100000);
+            return orderNumberTemp.toString();
+    }
+
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);
