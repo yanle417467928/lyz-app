@@ -24,10 +24,18 @@ public class WechatUtil {
 
     /**
      * 微信参数配置
+     * API_KEY 第二代商户平台密钥还是以前的：BA7BE39E2620A8F12F975CD6E555CA5D
+     *
      */
     public static final String API_KEY = "BA7BE39E2620A8F12F975CD6E555CA5D";
-    public static final String APPID = "wx6ea338a1c0fc1978";
-    public static final String MCH_ID = "1446016602";
+    /**
+     * 开发平台第二代APP应用ID：wxa4e8a82e226587dd
+     */
+    public static final String APPID = "wxa4e8a82e226587dd";
+    /**
+     * 第二代商户平台ID :1492546942
+     */
+    public static final String MCH_ID = "1492546942";
 
     /**
      * 随机字符串生成
