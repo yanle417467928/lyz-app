@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -89,7 +89,7 @@ public class SettlementController {
         try {
             //商品id数组转化成list
             List<Long> goodsIdList = Arrays.asList(goodsIds);
-            String[] forbiddenSelfTakeCompany = ApplicationConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("|");
+            String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("|");
             List<String> forbiddenSelfTakeCompanyList = Arrays.asList(forbiddenSelfTakeCompany);
             List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIdList);
             SelfTakeStoreResponse response = new SelfTakeStoreResponse();
