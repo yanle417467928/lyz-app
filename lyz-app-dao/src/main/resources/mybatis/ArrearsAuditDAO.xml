@@ -87,4 +87,26 @@
         WHERE id = #{id}
     </update>
 
+    <select id="findArrearsByUserIdAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
+        SELECT
+            *
+        FROM
+            ord_arrears_audit
+        WHERE
+            seller_id = #{userID}
+        AND ord_no = #{orderNumber}
+        AND `status` = 'AUDIT_PASSED'
+        AND (whether_repayments = 0 OR whether_repayments IS NULL );
+    </select>
+
+    <update id="updateStatusAndrRepaymentTimeByOrderNumber">
+        UPDATE ord_arrears_audit
+        SET whether_repayments = 1,
+            repayment_time = #{repaymentTime}
+        WHERE
+            ord_no = #{orderNumber}
+        AND `status` = 'AUDIT_PASSED'
+
+    </update>
+
 </mapper>

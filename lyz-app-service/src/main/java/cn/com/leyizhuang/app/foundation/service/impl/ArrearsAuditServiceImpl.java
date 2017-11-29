@@ -59,4 +59,9 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     public void updateStatusById(OrderArrearsAuditDO orderArrearsAuditDO) {
         this.arrearsAuditDAO.updateStatusById(orderArrearsAuditDO);
     }
+
+    @Override
+    public OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(Long userID, String orderNumber) {
+        return arrearsAuditDAO.findArrearsByUserIdAndOrderNumber(userID,orderNumber);
+    }
 }

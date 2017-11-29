@@ -64,4 +64,6 @@ public interface AppOrderService {
 
     OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo);
 
+    void saveOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber,String receiptNumber);
+
 }

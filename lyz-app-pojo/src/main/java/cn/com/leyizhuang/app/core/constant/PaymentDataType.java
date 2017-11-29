@@ -6,7 +6,7 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum PaymentDataType {
     ST_PRE_DEPOSIT("门店预存款充值"), CUS_PRE_DEPOSIT("客户预存款充值"),
-    DEC_PRE_DEPOSIT("装饰公司预存款充值"), ORDER("订单支付");
+    DEC_PRE_DEPOSIT("装饰公司预存款充值"), ORDER("订单支付"), REPAYMENT("欠款还款");
 
 
     private final String value;

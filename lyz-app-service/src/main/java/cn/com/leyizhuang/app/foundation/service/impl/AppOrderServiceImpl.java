@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
+import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
@@ -11,7 +12,10 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +37,9 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Autowired
     private OrderDAO orderDAO;
+
+    @Autowired
+    private ArrearsAuditDAO arrearsAuditDAO;
 
     @Override
     public int lockUserExpendOfOrder(OrderLockExpendRequest lockExpendRequest) {
@@ -124,5 +131,27 @@ public class AppOrderServiceImpl implements AppOrderService {
     public OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo) {
         this.orderDAO.updateOrderStatusByOrderNo(orderBaseInfo);
         return orderBaseInfo;
+    }
+
+    @Override
+    @Transactional
+    public void saveOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber,String receiptNumber) {
+        OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
+        OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
+        if (null != orderBaseInfo){
+            orderBillingPaymentDetails.setOrderId(orderBaseInfo.getId());
+        }
+        orderBillingPaymentDetails.setOrderNumber(orderNumber);
+        Date repaymentTime = new Date();
+        orderBillingPaymentDetails.setPayTime(repaymentTime);
+        orderBillingPaymentDetails.setPayType("支付宝");
+        orderBillingPaymentDetails.setCurrencyType("实际货币");
+        orderBillingPaymentDetails.setAmount(money);
+        orderBillingPaymentDetails.setReplyCode(replyNumber);
+        orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
+        //保存还款记录
+        orderDAO.savePaymentDetails(orderBillingPaymentDetails);
+        //导购欠款还款后修改欠款审核表
+        arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime,orderNumber);
     }
 }
