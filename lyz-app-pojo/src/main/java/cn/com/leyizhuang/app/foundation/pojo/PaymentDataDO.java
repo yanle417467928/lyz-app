@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.constant.PaymentDataType;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * 第三方支付信息类
  * @author GenerationRoad
@@ -49,17 +51,23 @@ public class PaymentDataDO {
     private String paymentMethod;
     //备注
     private String remarks;
+    //创建时间
+    private LocalDateTime createTime;
 
     public PaymentDataDO(Long userId, String outTradeNo, Integer paymentType, String notifyUrl, String subject,
                          Double totalFee, PaymentDataStatus tradeStatus, String paymentMethod, String remarks) {
         this.userId = userId;
         this.outTradeNo = outTradeNo;
-        if (null != paymentType && paymentType == 0) {
-            this.paymentType = PaymentDataType.ST_PRE_DEPOSIT;
-        } else if (null != paymentType && paymentType == 2) {
-            this.paymentType = PaymentDataType.DEC_PRE_DEPOSIT;
-        } else if (null != paymentType && paymentType == 6) {
-            this.paymentType = PaymentDataType.CUS_PRE_DEPOSIT;
+        if (outTradeNo.contains("CZ_")) {
+            if (null != paymentType && paymentType == 0) {
+                this.paymentType = PaymentDataType.ST_PRE_DEPOSIT;
+            } else if (null != paymentType && paymentType == 2) {
+                this.paymentType = PaymentDataType.DEC_PRE_DEPOSIT;
+            } else if (null != paymentType && paymentType == 6) {
+                this.paymentType = PaymentDataType.CUS_PRE_DEPOSIT;
+            }
+        } else {
+            this.paymentType = PaymentDataType.ORDER;
         }
         this.appIdentityType = AppIdentityType.getAppIdentityTypeByValue(paymentType);
         this.notifyUrl = notifyUrl;
@@ -68,5 +76,6 @@ public class PaymentDataDO {
         this.tradeStatus = tradeStatus;
         this.paymentMethod = paymentMethod;
         this.remarks = remarks;
+        this.createTime = LocalDateTime.now();
     }
 }

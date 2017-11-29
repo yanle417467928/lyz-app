@@ -10,4 +10,31 @@
         #{createTime});
     </insert>
 
+    <select id="findByUserIdAndIdentityTypeAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse">
+        SELECT id, photos, create_time, status
+        FROM photo_order
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND status IN
+        <foreach collection="list" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+        ORDER BY create_time desc
+    </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderDetailsResponse">
+        SELECT p.id, p.photos, p.create_time, p.status, p.remark, d.receiver deliveryName,
+        d.receiver_phone deliveryPhone, CONCAT_WS('',d.delivery_city,d.delivery_county,
+        d.delivery_street,d.residence_name,d.detailed_address) detailedAddress
+        FROM  photo_order p
+        LEFT JOIN delivery_address d ON d.id = p.delivery_id
+        WHERE p.id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE photo_order
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
 </mapper>
