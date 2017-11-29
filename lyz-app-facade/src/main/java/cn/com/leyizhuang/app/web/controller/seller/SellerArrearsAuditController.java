@@ -5,7 +5,6 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
@@ -151,20 +150,27 @@ public class SellerArrearsAuditController {
                 return resultDTO;
             }
             OrderArrearsAuditDO orderArrearsAuditDO = this.arrearsAuditServiceImpl.findById(arrearsAuditId);
-            if (null == orderArrearsAuditDO || !(orderArrearsAuditDO.getStatus().equals(ArrearsAuditStatus.AUDITING.getValue()))){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "审核结果不能为空！",
+            if (null == orderArrearsAuditDO || !(orderArrearsAuditDO.getStatus().equals(ArrearsAuditStatus.AUDITING))){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
+                        null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            String orderNo = orderArrearsAuditDO.getOrderNumber();
+            OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
+            if (null == orderTempInfo){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息错误！",
                         null);
                 logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (result) {
-                String orderNo = orderArrearsAuditDO.getOrderNumber();
+
                 Double collectionAmount = null == orderArrearsAuditDO.getRealMoney() ? 0D : orderArrearsAuditDO.getRealMoney();
-                OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
                 Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
                 //生成代收款记录
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
-                orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
+                orderAgencyFundDO.setOrderInfo(orderArrearsAuditDO.getUserId(), orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                 orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
