@@ -30,4 +30,8 @@ public interface ArrearsAuditDAO {
      * @return  欠款列表
      */
     List<ArrearageListResponse> findArrearsListByUserId(@Param("userID") Long userID);
+
+    OrderArrearsAuditDO findById(Long id);
+
+    void updateStatusById(OrderArrearsAuditDO orderArrearsAuditDO);
 }

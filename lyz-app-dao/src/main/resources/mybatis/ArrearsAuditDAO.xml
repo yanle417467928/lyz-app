@@ -70,4 +70,21 @@
         AND (whether_repayments = 0 OR whether_repayments IS NULL );
     </select>
 
+    <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+        SELECT * FROM ord_arrears_audit WHERE id = #{id}
+    </select>
+
+    <update id="updateStatusById" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+        UPDATE ord_arrears_audit
+        <set>
+            <if test="null != status">
+                status = #{status}
+            </if>
+            <if test="null != updateTime">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
 </mapper>

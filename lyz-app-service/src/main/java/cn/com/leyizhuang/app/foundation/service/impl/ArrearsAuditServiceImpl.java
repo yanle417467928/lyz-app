@@ -49,4 +49,14 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     public List<ArrearageListResponse> findArrearsListByUserId(Long userID) {
         return arrearsAuditDAO.findArrearsListByUserId(userID);
     }
+
+    @Override
+    public OrderArrearsAuditDO findById(Long id) {
+        return this.arrearsAuditDAO.findById(id);
+    }
+
+    @Override
+    public void updateStatusById(OrderArrearsAuditDO orderArrearsAuditDO) {
+        this.arrearsAuditDAO.updateStatusById(orderArrearsAuditDO);
+    }
 }

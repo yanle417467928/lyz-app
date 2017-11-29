@@ -28,4 +28,9 @@ public interface ArrearsAuditService {
      * @return  欠款列表
      */
     List<ArrearageListResponse> findArrearsListByUserId(Long userID);
+
+    OrderArrearsAuditDO findById(Long id);
+
+    void updateStatusById(OrderArrearsAuditDO orderArrearsAuditDO);
+
 }

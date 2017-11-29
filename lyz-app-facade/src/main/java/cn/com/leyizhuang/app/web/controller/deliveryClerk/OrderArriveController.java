@@ -45,9 +45,6 @@ public class OrderArriveController {
     private OrderAgencyFundService orderAgencyFundServiceImpl;
 
     @Autowired
-    private AppEmployeeService appEmployeeServiceImpl;
-
-    @Autowired
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
 
     /**
@@ -148,7 +145,6 @@ public class OrderArriveController {
                         paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", paymentMethod, orderNo, ownManey, "");
                         this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
-                        collectionAmount = CountUtil.sub(collectionAmount, ownManey);
                         //修改订单欠款为0
                         OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
                         orderBillingDetails.setOrderNumber(orderNo);
@@ -165,7 +161,7 @@ public class OrderArriveController {
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount + ownManey, collectionAmount, remarks);
+                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, collectionAmount - ownManey, remarks);
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
 

@@ -1,12 +1,20 @@
 package cn.com.leyizhuang.app.web.controller.seller;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
+import cn.com.leyizhuang.app.foundation.service.OrderAgencyFundService;
+import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +38,15 @@ public class SellerArrearsAuditController {
 
     @Autowired
     private ArrearsAuditService arrearsAuditServiceImpl;
+
+    @Autowired
+    private AppOrderService appOrderServiceImpl;
+
+    @Autowired
+    private OrderAgencyFundService orderAgencyFundServiceImpl;
+
+    @Autowired
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
 
 
     /**
@@ -132,11 +150,56 @@ public class SellerArrearsAuditController {
                 logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-
+            OrderArrearsAuditDO orderArrearsAuditDO = this.arrearsAuditServiceImpl.findById(arrearsAuditId);
+            if (null == orderArrearsAuditDO || !(orderArrearsAuditDO.getStatus().equals(ArrearsAuditStatus.AUDITING.getValue()))){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "审核结果不能为空！",
+                        null);
+                logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             if (result) {
+                String orderNo = orderArrearsAuditDO.getOrderNumber();
+                Double collectionAmount = null == orderArrearsAuditDO.getRealMoney() ? 0D : orderArrearsAuditDO.getRealMoney();
+                OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
+                Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
+                //生成代收款记录
+                OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
+                orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
+                orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
+                        orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
+                orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
+                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
 
+                //创建收款记录
+                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
+                this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+
+                //修改订单欠款
+                OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                orderBillingDetails.setOrderNumber(orderNo);
+                orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
+                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+
+                //生成订单物流详情
+                OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！","送达",orderTempInfo.getOperatorNo(),"","","");
+                this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+
+                //修改订单状态
+                OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+                orderBaseInfo.setOrderNumber(orderNo);
+                orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
+                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+
+                orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
+                orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
+                this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
             }else {
-
+                orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
+                orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
+                this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
