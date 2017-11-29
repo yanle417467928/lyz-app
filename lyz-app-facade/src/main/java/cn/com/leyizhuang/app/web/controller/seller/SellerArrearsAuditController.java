@@ -183,7 +183,7 @@ public class SellerArrearsAuditController {
 
                 //生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！","送达",orderTempInfo.getOperatorNo(),"","","");
+                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！","送达",orderTempInfo.getOperatorNo(),orderArrearsAuditDO.getPicture(),"","");
                 this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
                 //修改订单状态

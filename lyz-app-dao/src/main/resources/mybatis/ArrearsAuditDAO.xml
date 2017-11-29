@@ -35,11 +35,11 @@
         INSERT INTO ord_arrears_audit
         (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,order_money,
         real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,distribution_address,
-        distribution_time,remarks,status,create_time,seller_id)
+        distribution_time,remarks,status,create_time,seller_id,picture)
         VALUES
         (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},#{orderMoney},
         #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},#{distributionAddress},
-        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId})
+        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId},#{picture})
     </insert>
 
     <select id="findBySellerIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">

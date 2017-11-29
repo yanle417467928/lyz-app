@@ -110,6 +110,9 @@ public class OrderArrearsAuditDO {
      */
     private LocalDateTime repaymentTime;
 
+    //图片
+    private String picture;
+
 
     public void setCustomerAndSeller(String customerName, String customerPhone, Long sellerId, String sellerName,
                                      String sellerphone){
