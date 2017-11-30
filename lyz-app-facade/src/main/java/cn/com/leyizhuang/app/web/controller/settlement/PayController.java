@@ -208,14 +208,14 @@ public class PayController {
                     if (WechatUtil.verifyNotify(resultMap)) {
                         //返回响应成功的讯息
                         response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
-                        //取出map中的参数，订单号？官方文档并没有
+                        //取出map中的参数，订单号
                         String outTradeNo = resultMap.get("out_trade_no").toString();
-                        //微信交易号？官方文档并没有
-                        String tradeNo = resultMap.get("trade_no").toString();
-                        //订单金额？官方文档并没有
+                        //微信交易号
+                        String tradeNo = resultMap.get("transaction_id").toString();
+                        //订单金额
                         String totalFee = resultMap.get("total_fee").toString();
-                        //微信交易状态？官方文档并没有
-                        String tradeStatus = resultMap.get("trade_status").toString();
+                        //微信交易状态
+                        String tradeStatus = resultMap.get("result_code").toString();
 
                         //判断是否是充值订单
                         if (outTradeNo.contains("")) {
@@ -226,7 +226,7 @@ public class PayController {
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
                         if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
-                            if ("TRADE_FINISHED".equals(tradeStatus) || "TRADE_SUCCESS".equals(tradeStatus)) {
+                            if ("SUCCESS".equals(tradeStatus) || "TRADE_SUCCESS".equals(tradeStatus)) {
                                 if (paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);

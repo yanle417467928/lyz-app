@@ -90,7 +90,7 @@ deploy:
       url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
-      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
+      url: http://119.23.149.7:9999/app/pay/wechat/return/async
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
@@ -127,7 +127,7 @@ deploy:
       url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
-      url: http://test.leyizhuang.com.cn/app/pay/wechat/return/async
+      url: http://119.23.149.7:9999/app/pay/wechat/return/async
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
