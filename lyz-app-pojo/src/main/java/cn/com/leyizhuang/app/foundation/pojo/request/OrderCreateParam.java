@@ -37,6 +37,10 @@ public class OrderCreateParam implements Serializable {
      */
     private Long customerId;
     /**
+     * 备注信息
+     */
+    private String remark;
+    /**
      * 商品信息
      */
     private String goodsInfo;

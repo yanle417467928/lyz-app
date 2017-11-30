@@ -34,21 +34,21 @@
     <select id="findSubventionBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
         SELECT sb.balance
         FROM emp_employee e
-        INNER JOIN st_subvention sb ON sb.store_id = e.store_id
+            INNER JOIN st_subvention sb ON sb.store_id = e.store_id
         WHERE e.emp_id = #{userId}
     </select>
 
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
         SELECT scm.credit_limit_available balance
         FROM emp_employee e
-        INNER JOIN st_credit_money scm ON scm.store_id = e.store_id
+            INNER JOIN st_credit_money scm ON scm.store_id = e.store_id
         WHERE e.emp_id = #{userId};
     </select>
 
     <select id="findPreDepositBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
         SELECT pd.balance
         FROM emp_employee e
-        INNER JOIN st_pre_deposit pd ON pd.store_id = e.store_id
+            INNER JOIN st_pre_deposit pd ON pd.store_id = e.store_id
         WHERE e.emp_id = #{userId};
     </select>
 
@@ -56,104 +56,106 @@
         UPDATE st_pre_deposit
         SET balance = balance - #{deposit}
         WHERE balance >= #{deposit} AND store_id =
-        (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+                                        (SELECT store_id
+                                         FROM emp_employee
+                                         WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreCreditByUserIdAndCredit">
         UPDATE
-        st_credit_money
+            st_credit_money
         SET credit_limit_available = credit_limit_available - #{credit}
         WHERE credit_limit_available >= #{credit}
-        AND store_id = (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              AND store_id = (SELECT store_id
+                              FROM emp_employee
+                              WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreSubventionByUserIdAndSubvention">
         UPDATE st_subvention
         SET balance = balance - #{subvention}
         WHERE balance >= #{subvention}
-        AND store_id = (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              AND store_id = (SELECT store_id
+                              FROM emp_employee
+                              WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory">
         UPDATE st_inventory
         SET available_ity = available_ity - #{qty}
         WHERE available_ity >= #{qty}
-        AND gid = #{gid}
-        AND store_id = (SELECT emp_employee.store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              AND gid = #{gid}
+              AND store_id = (SELECT emp_employee.store_id
+                              FROM emp_employee
+                              WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreInventoryByCustomerIdAndGoodsIdAndInventory">
         UPDATE st_inventory
         SET available_ity = available_ity - #{qty}
         WHERE available_ity >= #{qty}
-        AND gid = #{gid}
-        AND store_id = (SELECT cus_customer.store_id
-        FROM cus_customer
-        WHERE cus_id = #{userId})
+              AND gid = #{gid}
+              AND store_id = (SELECT cus_customer.store_id
+                              FROM cus_customer
+                              WHERE cus_id = #{userId})
     </update>
 
     <update id="updateStoreDepositByUserId">
         UPDATE st_pre_deposit
         SET balance = balance + #{deposit}
         WHERE store_id =
-        (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              (SELECT store_id
+               FROM emp_employee
+               WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreCreditByUserId">
         UPDATE
-        st_credit_money
+            st_credit_money
         SET credit_limit_available = credit_limit_available + #{credit}
         WHERE
-        store_id = (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+            store_id = (SELECT store_id
+                        FROM emp_employee
+                        WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreSubventionByUserId">
         UPDATE st_subvention
         SET balance = balance + #{subvention}
         WHERE
-        AND store_id = ( SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
+            store_id = (SELECT store_id
+                        FROM emp_employee
+                        WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreInventoryByEmployeeIdAndGoodsId">
         UPDATE st_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND store_id = (SELECT emp_employee.store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+            gid = #{gid}
+            AND store_id = (SELECT emp_employee.store_id
+                            FROM emp_employee
+                            WHERE emp_id = #{userId})
     </update>
 
     <update id="updateStoreInventoryByCustomerIdAndGoodsId">
         UPDATE st_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND store_id = (SELECT cus_customer.store_id
-        FROM cus_customer
-        WHERE cus_id = #{userId})
+            gid = #{gid}
+            AND store_id = (SELECT cus_customer.store_id
+                            FROM cus_customer
+                            WHERE cus_id = #{userId})
     </update>
 
     <insert id="saveStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         INSERT INTO st_store
         (CREATOR_TYPE, CREATE_TIME, MODIFIER_TYPE, MODIFY_TIME, CITY_CODE, STORE_NAME, STORE_CODE,
-        IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILED_ADDRESS, ENABLE, IS_SELF_DELIVERY)
+         IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILED_ADDRESS, ENABLE, IS_SELF_DELIVERY)
         VALUES
-        (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityCode}, #{storeName},
-        #{storeCode}, #{isDefault}, #{storeType}, #{phone}, #{province}, #{city}, #{area},
-        #{detailedAddress}, #{enable}, #{isSelfDelivery})
+            (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityCode}, #{storeName},
+                             #{storeCode}, #{isDefault}, #{storeType}, #{phone}, #{province}, #{city}, #{area},
+             #{detailedAddress}, #{enable}, #{isSelfDelivery})
     </insert>
 
     <update id="modifyStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
@@ -217,17 +219,17 @@
     </delete>
     <select id="existGoodsStoreInventory" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 1
-        FROM st_inventory
-        WHERE
-        available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid});
+                      FROM st_inventory
+                      WHERE
+                          available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid});
     </select>
 
     <select id="findStoreByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
         SELECT
-        s.store_id,
-        s.store_name
+            s.store_id,
+            s.store_name
         FROM st_store s
-        LEFT JOIN city c ON c.code = s.city_code
+            LEFT JOIN city c ON c.code = s.city_code
         WHERE c.city_id = #{cityId};
     </select>
 
@@ -242,13 +244,13 @@
     <select id="findStorePreDepositByEmpId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
         SELECT
-        store_id,
-        balance
+            store_id,
+            balance
         FROM st_pre_deposit
         WHERE store_id =
-        (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              (SELECT store_id
+               FROM emp_employee
+               WHERE emp_id = #{userId})
     </select>
 
     <select id="findAppStoreByEmpId" parameterType="java.lang.Long"
@@ -256,34 +258,34 @@
         SELECT *
         FROM st_store
         WHERE store_id =
-        (SELECT store_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              (SELECT store_id
+               FROM emp_employee
+               WHERE emp_id = #{userId})
     </select>
 
     <insert id="saveStorePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
         INSERT INTO st_pre_deposit
         (store_id, balance)
         VALUES
-        (storeId, balance)
+            (storeId, balance)
     </insert>
     <select id="findAppStoreCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         SELECT *
         FROM st_store
         WHERE store_id = (
-        SELECT cus_customer.store_id
-        FROM cus_customer
-        WHERE cus_id = #{userId}
+            SELECT cus_customer.store_id
+            FROM cus_customer
+            WHERE cus_id = #{userId}
         )
     </select>
 
     <select id="findSelfTakePermittedStoreByCityId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore">
         SELECT
-        store_id,
-        store_name,
-        detailed_address
+            store_id,
+            store_name,
+            detailed_address
         FROM st_store
         WHERE city_id = #{cityId} AND is_self_delivery IS TRUE;
     </select>
@@ -292,11 +294,52 @@
     <select id="findStoreByCityIdAndNotStoreType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">
         SELECT
-        s.store_id,
-        s.store_name
+            s.store_id,
+            s.store_name
         FROM st_store s
-        LEFT JOIN city c ON c.code = s.city_code
+            LEFT JOIN city c ON c.code = s.city_code
         WHERE c.city_id = #{cityId} AND s.store_type != #{storeType};
     </select>
+
+    <update id="updateStoreInventoryByStoreIdAndGoodsIdAndInventory">
+        UPDATE st_inventory
+        SET available_ity = available_ity - #{inventory}
+        WHERE
+            --  available_ity >= #{qty}
+            gid = #{goodsId}
+            AND store_id = #{storeId}
+            AND last_update_time = #{version}
+    </update>
+
+    <select id="findStoreInventoryByStoreIdAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
+        SELECT
+            id,
+            city_id,
+            city_name,
+            city_code,
+            store_id,
+            store_name,
+            store_code,
+            gid,
+            sku,
+            sku_name,
+            available_ity,
+            real_ity,
+            last_update_time
+        FROM st_inventory
+        WHERE store_id = #{storeId} AND gid = #{goodsId}
+    </select>
+
+    <insert id="addStoreInventoryAvailableQtyChangeLog" parameterType=
+            "cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog">
+        INSERT INTO st_inventory_available_qty_change_log (id, city_id, city_name, store_id, store_name, store_code, gid, sku, sku_name,
+                                                           change_time, change_qty, after_change_qty, reference_number, change_type,
+                                                           change_type_desc)
+        VALUES
+            (#{cityId}, #{cityName}, #{storeId}, #{storeName}, #{storeCode}, #{gid}, #{sku}, #{skuName}, #{changeTime},
+                        #{changeQty}, #{after_change_qty},
+             #{referenceNumber}, #{changeType}, #{changeTypeDesc})
+    </insert>
 
 </mapper>

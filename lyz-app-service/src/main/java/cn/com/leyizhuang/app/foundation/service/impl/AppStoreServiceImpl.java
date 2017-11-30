@@ -7,6 +7,8 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -253,5 +256,29 @@ public class AppStoreServiceImpl implements AppStoreService {
             return storeDAO.findSelfTakePermittedStoreByCityId(cityId);
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Date version) {
+        if (null != storeId && null != goodsId && null != inventory) {
+            return storeDAO.updateStoreInventoryByStoreIdAndGoodsIdAndInventory(storeId, goodsId, inventory,version);
+        }
+        return null;
+    }
+
+    @Override
+    public StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId) {
+        if (null != bookingStoreId && null != goodsId){
+            return storeDAO.findStoreInventoryByStoreIdAndGoodsId(bookingStoreId,goodsId);
+        }
+            return null;
+    }
+
+    @Override
+    public void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log) {
+        if (null != log){
+            storeDAO.addStoreInventoryAvailableQtyChangeLog(log);
+        }
     }
 }

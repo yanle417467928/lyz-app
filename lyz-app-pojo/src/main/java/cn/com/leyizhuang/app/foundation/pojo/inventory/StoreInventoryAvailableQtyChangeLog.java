@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
+import cn.com.leyizhuang.app.core.constant.StoreInventoryAvailableQtyChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,26 +10,22 @@ import java.util.Date;
 
 
 /**
- * 商店库存
+ * 门店库存 可用量变更日志
  *
- * @author liuh
+ * @author Richard
  * create_time 2017-11-02 14:55:54
  */
 
 @ToString
 @Getter
 @Setter
-public class StoreInventory extends BaseDO {
+public class StoreInventoryAvailableQtyChangeLog{
 
     private Long id;
     /**
      * 城市id
-      */
+     */
     private Long cityId;
-    /**
-     * 城市编码
-      */
-    private String cityCode;
     /**
      * 城市名称
      */
@@ -38,16 +35,16 @@ public class StoreInventory extends BaseDO {
      */
     private Long storeId;
     /**
-     * 门店编码
-     */
-    private String storeCode;
-    /**
      * 门店名称
      */
     private String storeName;
     /**
+     * 门店编码
+     */
+    private String storeCode;
+    /**
      * 商品id
-      */
+     */
     private Long gid;
     /**
      * 商品编码
@@ -55,19 +52,33 @@ public class StoreInventory extends BaseDO {
     private String sku;
     /**
      * 商品名称
-     */
+      */
     private String skuName;
     /**
-     * 可售门店库存
+     * 变更时间
      */
-    private Integer availableIty;
+    private Date changeTime;
     /**
-     * 真实门店库存
+     * 变更数量
      */
-    private Integer realIty;
+    private Integer changeQty;
+    /**
+     * 相关单号
+     */
+    private String referenceNumber;
+    /**
+     * 变更后数量
+     */
+    private Integer afterChangeQty;
+    /**
+     * 变更类型
+     */
+    private StoreInventoryAvailableQtyChangeType changeType;
 
     /**
-     * 上次修改时间
+     * 变更类型描述
      */
-    private Date lastUpdateTime;
+    private String changeTypeDesc;
+
+
 }

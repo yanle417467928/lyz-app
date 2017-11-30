@@ -93,4 +93,6 @@ public interface AppCustomerService {
     List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
 
     CustomerCashCoupon findCashCouponByCcid(Long id);
+
+    Integer lockCustomerCashCouponById(Long id,String orderNumber);
 }

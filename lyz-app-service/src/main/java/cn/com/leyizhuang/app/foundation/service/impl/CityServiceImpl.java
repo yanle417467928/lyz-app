@@ -4,9 +4,12 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +106,23 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     public List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId) {
         if (null != cityId) {
             return cityDAO.findCityDeliveryTimeByCityId(cityId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Date version) {
+        if (null != cityId && null != goodsId && null != inventory){
+            return cityDAO.updateCityInventoryByCityIdAndGoodsIdAndInventory(cityId,goodsId,inventory,version);
+        }
+        return null;
+    }
+
+    @Override
+    public CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId) {
+        if (null != cityId && null != goodsId){
+            return cityDAO.findCityInventoryByCityIdAndGoodsId(cityId,goodsId);
         }
         return null;
     }

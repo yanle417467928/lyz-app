@@ -15,15 +15,15 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class QrCodeResponse implements Serializable {
+public class VerifyCodeResponse implements Serializable {
 
 
     private String smsCode;
 
-    public QrCodeResponse() {
+    public VerifyCodeResponse() {
     }
 
-    public QrCodeResponse(String smsCode) {
+    public VerifyCodeResponse(String smsCode) {
         this.smsCode = smsCode;
     }
 

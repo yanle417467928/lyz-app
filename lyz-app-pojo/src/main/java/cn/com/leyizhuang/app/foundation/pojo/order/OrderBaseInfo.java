@@ -116,7 +116,7 @@ public class OrderBaseInfo {
     private String salesConsultPhone;
 
     /**
-     *  顾客id
+     * 顾客id
      */
     private Long customerId;
 
@@ -126,7 +126,7 @@ public class OrderBaseInfo {
     private String customerName;
 
     /**
-     *  顾客手机
+     * 顾客手机
      */
     private String customerPhone;
 
@@ -149,5 +149,10 @@ public class OrderBaseInfo {
      * 线上支付方式
      */
     private OnlinePayType onlinePayType;
+
+    /**
+     * 订单备注
+     */
+    private String remark;
 
 }

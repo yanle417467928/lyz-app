@@ -23,47 +23,47 @@
         INSERT INTO city
         (NAME, SPELL, CODE, STRUCTURE_ID, STRUCTURE_TITLE, ENABLE, ENABLE_FALSE_TIME)
         VALUES
-        (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
+            (#{name}, #{spell}, #{number}, #{structureId}, #{structureTitle}, #{enable}, #{enableFalseTime})
     </insert>
 
     <update id="updateCityInventoryByCustomerIdAndIdentityTypeAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity - #{qty}
         WHERE available_ity >= #{qty}
-        AND gid = #{gid}
-        AND city_id = (SELECT cus_customer.city_id
-        FROM cus_customer
-        WHERE cus_id = #{userId})
+              AND gid = #{gid}
+              AND city_id = (SELECT cus_customer.city_id
+                             FROM cus_customer
+                             WHERE cus_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByCustomerIdAndGoodsIdAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND city_id = (SELECT cus_customer.city_id
-        FROM cus_customer
-        WHERE cus_id = #{userId})
+            gid = #{gid}
+            AND city_id = (SELECT cus_customer.city_id
+                           FROM cus_customer
+                           WHERE cus_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByEmployeeIdAndIdentityTypeAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity - #{qty}
         WHERE available_ity >= #{qty}
-        AND gid = #{gid}
-        AND city_id = (SELECT emp_employee.city_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+              AND gid = #{gid}
+              AND city_id = (SELECT emp_employee.city_id
+                             FROM emp_employee
+                             WHERE emp_id = #{userId})
     </update>
 
     <update id="updateCityInventoryByEmployeeIdAndGoodsIdAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND city_id = (SELECT emp_employee.city_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
+            gid = #{gid}
+            AND city_id = (SELECT emp_employee.city_id
+                           FROM emp_employee
+                           WHERE emp_id = #{userId})
     </update>
 
     <update id="modifyCity" parameterType="cn.com.leyizhuang.app.foundation.pojo.city.City">
@@ -98,8 +98,8 @@
 
     <select id="existGoodsCityInventory" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 'X'
-        FROM city_inventory
-        WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid});
+                      FROM city_inventory
+                      WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid});
     </select>
 
     <select id="findCityDeliveryTimeByCityId" parameterType="java.lang.Long" resultType=
@@ -108,6 +108,33 @@
         FROM city_delivery_time
         WHERE cityId = #{cityId}
         ORDER BY start_hour
+    </select>
+
+    <update id="updateCityInventoryByCityIdAndGoodsIdAndInventory">
+        UPDATE city_inventory
+        SET available_ity = available_ity - #{inventory}
+        WHERE
+            -- available_ity >= #{inventory}
+            gid = #{goodsId}
+            AND city_id = #{cityId}
+            AND last_update_time = #{version}
+    </update>
+
+    <select id="findCityInventoryByCityIdAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        SELECT
+            id,
+            city_id,
+            city_code,
+            city_name,
+            gid,
+            sku,
+            sku_name,
+            available_ity,
+            create_time,
+            last_update_time
+        FROM city_inventory
+        WHERE city_id = #{cityId} AND gid = #{goodsId}
     </select>
 
 </mapper>

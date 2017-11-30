@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import lombok.*;
 
 import java.util.Date;
@@ -18,39 +19,42 @@ import java.util.Date;
 public class OrderBillingPaymentDetails {
 
     private Long id;
-    //订单id
-    private Long orderId;
-    //货币类型:虚拟货币、实际货币
-    private String currencyType;
-
-    //支付时间
-    private Date payTime;
 
     /**
-     * 支付类型: 导购信用额度、信用金、现金返利、门店预存款、
-     * 会员预存款、支付宝、微信、银联、POS、现金
+     * 创建时间
      */
-    private String payType;
+    private Date createTime;
+    /**
+     * 订单id
+     */
+    private Long orderId;
 
-    //关联单号
+    /**
+     * 支付时间
+     */
+    private Date payTime;
+    /**
+     * 支付类型:
+     *   支付宝、微信、银联、POS、现金、其它
+     */
+    private OrderBillingPaymentType payType;
+    /**
+     * 关联单号
+     */
     private String orderNumber;
 
-    //金额
+    /**
+     * 金额
+     */
     private Double amount;
 
-    //第三方支付接口回复码
+    /**
+     * 第三方支付接口回复码
+     */
     private String replyCode;
-    //收款单号
+    /**
+     * 收款单号
+     */
     private String receiptNumber;
 
-    public void setConstructor(Long orderId, String currencyType, String payType, String orderNumber,
-                               Double amount, String receiptNumber){
-        this.orderId = orderId;
-        this.amount = amount;
-        this.currencyType = currencyType;
-        this.orderNumber = orderNumber;
-        this.payType = payType;
-        this.payTime = new Date();
-        this.receiptNumber = receiptNumber;
-    }
 }

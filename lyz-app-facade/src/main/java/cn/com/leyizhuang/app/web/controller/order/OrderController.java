@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
@@ -62,8 +60,6 @@ public class OrderController {
     @Resource
     private AppStoreService appStoreService;
 
-    @Resource
-    private CityService cityService;
 
     @Resource
     private GoodsService goodsService;
@@ -77,12 +73,15 @@ public class OrderController {
     @Resource
     private CommonService commonService;
 
+    @Resource
+    private CityService cityService;
+
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam) {
-        logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},goodsInfo:{}," +
+        logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},remark:{},goodsInfo:{}," +
                         " deliveryInfo:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", orderParam.getCityId(),
-                orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getGoodsInfo(),
+                orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getRemark(), orderParam.getGoodsInfo(),
                 orderParam.getDeliveryInfo(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
         ResultDTO<Object> resultDTO;
         if (null == orderParam.getCityId()) {
@@ -139,7 +138,7 @@ public class OrderController {
 
             //***** 创建订单基础信息 *****
             OrderBaseInfo orderBaseInfo = commonService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
-                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType());
+                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
 
             //***** 创建订单物流信息 *****
             OrderLogisticsInfo logisticsInfo = commonService.createOrderLogisticInfo(deliverySimpleInfo);
@@ -227,67 +226,19 @@ public class OrderController {
 
             //********* 处理订单账务相关信息 *********
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-
+            orderBillingDetails.setCreateTime(Calendar.getInstance().getTime());
             orderBillingDetails.setOrderAmount(goodsTotalPrice);
             orderBillingDetails.setMemberDiscount(memberDiscount);
             orderBillingDetails.setPromotionDiscount(promotionDiscount);
-            orderBillingDetails.setFreight(billing.getFreight());
-            orderBillingDetails.setLebiQuantity(billing.getLeBiQuantity());
-            if (null != billing.getLeBiQuantity()) {
-                orderBillingDetails.setLebiCashDiscount(billing.getLeBiQuantity() / AppConstant.RMB_TO_LEBI_RATIO);
-            }
-            //计算并设置优惠券减少金额
-            if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue() ||
-                    orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
-                Double cashCouponDiscount = 0D;
-                if (null != orderParam.getCashCouponIds() && orderParam.getCashCouponIds().size() > 0) {
-                    for (Long id : orderParam.getCashCouponIds()) {
-                        CustomerCashCoupon cashCoupon = appCustomerService.findCashCouponByCcid(id);
-                        if (null != cashCoupon) {
-                            if (cashCoupon.getStatus() && !cashCoupon.getIsUsed() && cashCoupon.getEffectiveStartTime().before(new Date()) &&
-                                    (cashCoupon.getEffectiveEndTime().after(new Date()) || cashCoupon.getEffectiveEndTime() == null)) {
-                                cashCouponDiscount += cashCoupon.getDenomination();
-                            }
-                        } else {
-                            throw new RuntimeException("优惠券不存在！");
-                        }
-                    }
-                }
-                orderBillingDetails.setCashCouponDiscount(cashCouponDiscount);
-            }
-            //设置顾客预存款
-            if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
-                Double cusPreDeposit = 0D;
-                if (null != billing.getCusPreDeposit()) {
-                    cusPreDeposit = billing.getCusPreDeposit();
-                }
-                orderBillingDetails.setCusPreDeposit(cusPreDeposit);
-            }
-            //设置门店预存款
-            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue() ||
-                    orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
-                Double stPreDeposit = 0D;
-                if (null != billing.getStPreDeposit()) {
-                    stPreDeposit = billing.getStPreDeposit();
-                }
-                orderBillingDetails.setStPreDeposit(stPreDeposit);
-            }
-            //设置导购信用额度
-            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
-                Double empCreditMoney = 0D;
-                if (null != billing.getEmpCreditMoney()) {
-                    empCreditMoney = billing.getEmpCreditMoney();
-                }
-                orderBillingDetails.setEmpCreditMoney(empCreditMoney);
-            }
-            //设置门店信用额度
-            if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
-                Double stCreditMoney = 0D;
-                if (null != billing.getStoreCreditMoney()) {
-                    stCreditMoney = billing.getStoreCreditMoney();
-                }
-                orderBillingDetails.setEmpCreditMoney(stCreditMoney);
-            }
+            orderBillingDetails.setIsOwnerReceiving(logisticsInfo.getIsOwnerReceiving());
+            orderBillingDetails = commonService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
+                    billing, orderParam.getCashCouponIds());
+            //******** 处理账单支付明细信息 *********
+
+            //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
+            commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
+                    orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber());
+
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (IOException e) {

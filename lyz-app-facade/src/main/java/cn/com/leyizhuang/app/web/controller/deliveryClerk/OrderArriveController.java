@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -145,8 +147,9 @@ public class OrderArriveController {
                 } else { //欠款金额 <= 收款金额
                     if (ownManey > 0) {
                         //创建收款记录
-                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                        paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", paymentMethod, orderNo, ownManey, "");
+                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),orderTempInfo.getOrderId(),
+                                Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentMethod), orderNo, ownManey, "","");
+
                         this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                         //修改订单欠款为0

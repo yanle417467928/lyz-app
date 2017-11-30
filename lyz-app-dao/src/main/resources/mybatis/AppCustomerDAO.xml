@@ -437,4 +437,15 @@
         WHERE ccid = #{id};
     </select>
 
+    <update id="updateCustomerCashCouponById">
+        UPDATE cus_customer_cash_coupon
+        SET is_used    = TRUE,
+            use_time   = now(),
+            use_ord_no = #{orderNumber}
+        WHERE id = #{id}
+              AND status = TRUE
+              AND is_used = FALSE
+              AND now() BETWEEN effective_start_time AND effective_end_time
+    </update>
+
 </mapper>
