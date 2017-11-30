@@ -1,14 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.alipay;
 
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.constant.PaymentDataType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +53,12 @@ public class AliPayController {
 
     @Autowired
     private AppStoreService appStoreServiceImpl;
+
+    @Autowired
+    private ArrearsAuditService arrearsAuditService;
+
+    @Autowired
+    private AppOrderService appOrderService;
 
 
     /**
@@ -171,14 +179,22 @@ public class AliPayController {
                         if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
 
-                            //充值加预存款和日志
-                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
-                                this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
-                            } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
-                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
-                                this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                            if (out_trade_no.contains("CZ_")) {
+                                //充值加预存款和日志
+                                if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
+                                    this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
+                                        || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
+                                    this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                }
+                            }
+                            if (out_trade_no.contains("_HK")){
+                                String orderNumber = out_trade_no.replaceAll("_HK","_XN");
+                                Double money = paymentDataDO.getTotalFee();
+                                appOrderService.saveOrderBillingPaymentDetails(orderNumber,money,trade_no,out_trade_no);
                             }
                             return "success";
                         }
@@ -194,4 +210,92 @@ public class AliPayController {
         }
         return "fail";
     }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 支付宝欠款还款
+     * @descripe
+     * @author GenerationRoad
+     * @date 2017/11/20
+     */
+    @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> AliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
+
+        logger.info("AliPayDebtRepayments CALLED,支付宝欠款还款，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不能为空！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
+        if (null == orderArrearsAuditDO) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为查询到此欠款记录！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
+        String outTradeNo = orderNumber.replaceAll("_XN","_HK");
+        String subject = "欠款还款";
+        PaymentDataDO paymentDataDO = new PaymentDataDO();
+        paymentDataDO.setUserId(userId);
+        paymentDataDO.setOutTradeNo(outTradeNo);
+        if (outTradeNo.contains("_HK")) {
+            paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
+        }
+        paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+        paymentDataDO.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        paymentDataDO.setSubject(subject);
+        paymentDataDO.setTotalFee(Double.parseDouble(totlefee));
+        paymentDataDO.setTradeStatus(PaymentDataStatus.WAIT_PAY);
+        paymentDataDO.setPaymentMethod("支付宝");
+        paymentDataDO.setCreateTime(LocalDateTime.now());
+        this.paymentDataServiceImpl.save(paymentDataDO);
+
+        //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
+        //appId 非空，应用ID
+        //privateKey 非空，私钥
+        AlipayClient alipayClient = new DefaultAlipayClient(
+                AlipayConfig.serverUrl, AlipayConfig.appId,
+                AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
+                AlipayConfig.aliPublicKey, AlipayConfig.signType);
+        //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+        //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+        model.setSubject(subject);
+        model.setOutTradeNo(outTradeNo);
+        model.setTimeoutExpress("30m");
+        model.setTotalAmount(totlefee);
+        model.setProductCode(AlipayConfig.productCode);
+        request.setBizModel(model);
+        request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        try {
+            //这里和普通的接口调用不同，使用的是sdkExecute
+            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+//            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,支付宝欠款还款失败!", null);
+            logger.warn("AliPayDebtRepayments EXCEPTION,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }

@@ -17,6 +17,8 @@ import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -358,6 +360,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
      * @date 2017/11/21
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();

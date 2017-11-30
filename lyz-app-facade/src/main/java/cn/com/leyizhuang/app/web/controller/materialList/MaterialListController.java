@@ -342,6 +342,10 @@ public class MaterialListController {
                     materialList.setUserId(userId);
                     materialList.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                     materialList.setMaterialListType(MaterialListType.NORMAL);
+                    if (null != materialList.getCoverImageUri()) {
+                        String uri[] = materialList.getCoverImageUri().split(",");
+                        materialList.setCoverImageUri(uri[0]);
+                    }
                     materialListSave.add(materialList);
                 } else {
                     materialListDO.setQty(materialListDO.getQty() + materialList.getQty());

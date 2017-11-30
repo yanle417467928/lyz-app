@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.web.controller.order;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderDetailsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse;
 import cn.com.leyizhuang.app.foundation.service.PhotoOrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -109,4 +113,158 @@ public class PhotoOrderController {
         }
     }
 
+    /**
+     * @title   获取未处理拍照下单列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/28
+     */
+    @PostMapping(value = "/pending/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPhotoOrderOfPending(Long userId, Integer identityType) {
+        logger.info("getPhotoOrderOfPending CALLED,获取未处理拍照下单列表，入参 userId:{} identityType:{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
+        photoOrderStatuses.add(PhotoOrderStatus.PENDING);
+        List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList);
+        logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * @title   获取已处理拍照下单列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/28
+     */
+    @PostMapping(value = "/handled/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPhotoOrderOfHandled(Long userId, Integer identityType) {
+        logger.info("getPhotoOrderOfHandled CALLED,获取已处理拍照下单列表，入参 userId:{} identityType:{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
+        photoOrderStatuses.add(PhotoOrderStatus.PLACORDER);
+        photoOrderStatuses.add(PhotoOrderStatus.PAYED);
+        photoOrderStatuses.add(PhotoOrderStatus.FINISH);
+        List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList);
+        logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * @title   获取拍照下单详情
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/28
+     */
+    @PostMapping(value = "/details", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPhotoOrderDetails(Long userId, Integer identityType, Long id) {
+        logger.info("getPhotoOrderDetails CALLED,获取拍照下单详情，入参 userId:{} identityType:{} id:{}", userId, identityType, id);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getPhotoOrderDetails OUT,获取拍照下单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getPhotoOrderDetails OUT,获取拍照下单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == id) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "拍照下单详情ID不能为空！", null);
+            logger.info("getPhotoOrderDetails OUT,获取拍照下单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        PhotoOrderDetailsResponse photoOrderDetailsResponse = this.photoOrderServiceImpl.findById(id);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderDetailsResponse);
+        logger.info("getPhotoOrderDetails OUT,获取拍照下单详情成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+
+    /**
+     * @title   取消拍照下单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/11/28
+     */
+    @PostMapping(value = "/cancel", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> cancelPhotoOrder(Long userId, Integer identityType, Long id) {
+        logger.info("cancelPhotoOrder CALLED,取消拍照下单，入参 userId:{} identityType:{} id:{} ", userId, identityType, id);
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                        null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == id) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "拍照下单详情ID不能为空！", null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            PhotoOrderDetailsResponse photoOrderDetailsResponse = this.photoOrderServiceImpl.findById(id);
+            if (null != photoOrderDetailsResponse && photoOrderDetailsResponse.getStatus().equals(PhotoOrderStatus.PENDING.getValue())) {
+                this.photoOrderServiceImpl.updateStatus(id, PhotoOrderStatus.CANCEL);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else if (null != photoOrderDetailsResponse && photoOrderDetailsResponse.getStatus().equals(PhotoOrderStatus.CANCEL.getValue())){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已取消,请勿重复操作！", null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已下单，不能取消！", null);
+                logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消拍照下单失败!", null);
+            logger.warn("cancelPhotoOrder EXCEPTION,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }
