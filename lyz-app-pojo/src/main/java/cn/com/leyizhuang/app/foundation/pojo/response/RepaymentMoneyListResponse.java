@@ -17,10 +17,6 @@ public class RepaymentMoneyListResponse {
      */
     private String repaymentTime;
     /**
-     * 还款描述
-     */
-    private String repaymentDescribe;
-    /**
      * 还款金额
      */
     private Double repaymentMoney;

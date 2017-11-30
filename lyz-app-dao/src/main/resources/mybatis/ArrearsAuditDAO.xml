@@ -109,4 +109,15 @@
 
     </update>
 
+    <select id="getRepaymentMondyList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse">
+        SELECT
+            obpd.pay_time repaymentTime,
+            obpd.amount repaymentMoney
+        FROM
+            ord_arrears_audit AS oaa
+        INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no
+        WHERE oaa.seller_id = #{userID}
+        AND oaa.whether_repayments = 1
+    </select>
+
 </mapper>

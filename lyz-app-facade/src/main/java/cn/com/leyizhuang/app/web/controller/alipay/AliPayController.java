@@ -220,7 +220,7 @@ public class AliPayController {
      * @author GenerationRoad
      * @date 2017/11/20
      */
-    @PostMapping(value = "/recharge/pay", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> AliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
 
         logger.info("AliPayDebtRepayments CALLED,支付宝欠款还款，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);

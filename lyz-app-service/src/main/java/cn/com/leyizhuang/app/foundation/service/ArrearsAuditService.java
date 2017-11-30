@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 
@@ -20,12 +21,13 @@ public interface ArrearsAuditService {
 
     OrderArrearsAuditDO save(OrderArrearsAuditDO orderArrearsAuditDO);
 
-    List<SellerArrearsAuditResponse>findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList);
+    List<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList);
 
     /**
      * 查询欠款单
-     * @param userID    用户id
-     * @return  欠款列表
+     *
+     * @param userID 用户id
+     * @return 欠款列表
      */
     List<ArrearageListResponse> findArrearsListByUserId(Long userID);
 
@@ -35,9 +37,18 @@ public interface ArrearsAuditService {
 
     /**
      * 根据导购id和订单号查询欠款
-     * @param userID    用户id
-     * @param orderNumber   订单号
-     * @return  返回欠款信息
+     *
+     * @param userID      用户id
+     * @param orderNumber 订单号
+     * @return 返回欠款信息
      */
-    OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(Long userID,String orderNumber);
+    OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(Long userID, String orderNumber);
+
+    /**
+     * 获取还款记录
+     *
+     * @param userID 用户id
+     * @return 返回还款记录列表
+     */
+    List<RepaymentMoneyListResponse> getRepaymentMondyList(Long userID);
 }

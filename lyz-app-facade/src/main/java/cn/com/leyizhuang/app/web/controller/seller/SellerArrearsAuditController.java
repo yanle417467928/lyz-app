@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
@@ -232,7 +233,7 @@ public class SellerArrearsAuditController {
         ResultDTO<Object> resultDTO;
 
             if (null == userID) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
                 logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -260,6 +261,49 @@ public class SellerArrearsAuditController {
                 logger.warn("{}", e);
                 return resultDTO;
             }
-
     }
+
+    /**
+     * 导购查询还款记录
+     * @param userID    用户id
+     * @param identityType  用户类型
+     * @return  返回还款记录列表
+     */
+    @PostMapping(value = "/repayment/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getRepaymentMondyList(Long userID, Integer identityType){
+        logger.info("getRepaymentMondyList CALLED,导购查询还款记录，入参 userId:{} identityType:{}", userID, identityType);
+        ResultDTO<Object> resultDTO;
+
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 0){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = arrearsAuditServiceImpl.getRepaymentMondyList(userID);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, repaymentMoneyListResponseList);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购查询还款记录失败!", null);
+            logger.warn("getRepaymentMondyList EXCEPTION,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }

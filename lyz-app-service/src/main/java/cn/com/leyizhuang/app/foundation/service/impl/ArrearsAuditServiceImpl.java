@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
@@ -63,5 +64,10 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     @Override
     public OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(Long userID, String orderNumber) {
         return arrearsAuditDAO.findArrearsByUserIdAndOrderNumber(userID,orderNumber);
+    }
+
+    @Override
+    public List<RepaymentMoneyListResponse> getRepaymentMondyList(Long userID) {
+        return arrearsAuditDAO.getRepaymentMondyList(userID);
     }
 }
