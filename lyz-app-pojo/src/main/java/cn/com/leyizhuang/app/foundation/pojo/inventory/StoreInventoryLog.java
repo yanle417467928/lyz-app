@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-
 
 /**
  * 商店库存
@@ -18,56 +16,30 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class StoreInventory extends BaseDO {
+public class StoreInventoryLog extends BaseDO {
 
     private Long id;
-    /**
-     * 城市id
-      */
+    // 城市id
     private Long cityId;
-    /**
-     * 城市编码
-      */
+    // 城市编码
     private String cityCode;
-    /**
-     * 城市名称
-     */
+    // 城市名称
     private String cityName;
-    /**
-     * 门店id
-     */
+    // 门店id
     private Long storeId;
-    /**
-     * 门店编码
-     */
+    // 门店编码
     private String storeCode;
-    /**
-     * 门店名称
-     */
+    // 门店名称
     private String storeName;
-    /**
-     * 商品id
-      */
+    // 商品id
     private Long gid;
-    /**
-     * 商品编码
-     */
+    // 商品编码
     private String sku;
-    /**
-     * 商品名称
-     */
+    // 商品名称
     private String skuName;
-    /**
-     * 可售门店库存
-     */
+    // 可售门店库存
     private Integer availableIty;
-    /**
-     * 真实门店库存
-     */
+    // 真实门店库存
     private Integer realIty;
 
-    /**
-     * 上次修改时间
-     */
-    private Date lastUpdateTime;
 }

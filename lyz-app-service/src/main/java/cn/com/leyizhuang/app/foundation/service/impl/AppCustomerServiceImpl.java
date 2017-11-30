@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -31,7 +32,7 @@ import java.util.Map;
  * Created on 2017-09-19 11:23
  **/
 @Service
-public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.service.AppCustomerService {
+public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Resource
     private AppCustomerDAO customerDAO;
@@ -328,6 +329,15 @@ public class AppCustomerServiceImpl implements cn.com.leyizhuang.app.foundation.
     public CustomerCashCoupon findCashCouponByCcid(Long id) {
         if (null != id){
             return customerDAO.findCashCouponByCcid(id);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public Integer lockCustomerCashCouponById(Long id,String orderNumber) {
+        if (null != id){
+            return customerDAO.updateCustomerCashCouponById(id,orderNumber);
         }
         return null;
     }

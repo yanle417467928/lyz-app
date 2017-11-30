@@ -3,11 +3,14 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,4 +83,21 @@ public interface AppStoreDAO {
     AppStore findAppStoreCusId(@Param(value = "userId") Long userId);
 
     List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId);
+
+    /**
+     * 变更指定门店下指定产品的库存
+     *
+     * @param storeId   门店id
+     * @param goodsId   商品id
+     * @param inventory 变更量
+     * @return 影响行数
+     */
+    Integer updateStoreInventoryByStoreIdAndGoodsIdAndInventory(@Param(value = "storeId") Long storeId,
+                                                                @Param(value = "goodsId") Long goodsId,
+                                                                @Param(value = "inventory") Integer inventory,
+                                                                @Param(value = "version") Date version);
+
+    StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
+
+    void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 }

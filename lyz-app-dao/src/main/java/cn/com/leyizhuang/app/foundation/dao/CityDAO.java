@@ -2,9 +2,11 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,4 +44,11 @@ public interface CityDAO {
     Boolean existGoodsCityInventory(@Param("cityId") Long cityId, @Param("gid") Long gid, @Param("qty") Integer qty);
 
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
+
+    Integer updateCityInventoryByCityIdAndGoodsIdAndInventory(@Param(value = "cityId") Long cityId,
+                                                              @Param(value = "goodsId") Long goodsId,
+                                                              @Param(value = "inventory") Integer inventory,
+                                                              @Param(value = "version") Date version);
+
+    CityInventory findCityInventoryByCityIdAndGoodsId(@Param(value = "cityId") Long cityId, @Param(value = "goodsId") Long goodsId);
 }

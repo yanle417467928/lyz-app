@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.CityDeliveryTimeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.impl.CityServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -33,7 +34,7 @@ public class CityController {
     private static final Logger logger = LoggerFactory.getLogger(CityController.class);
 
     @Resource
-    private CityServiceImpl cityService;
+    private CityService cityService;
 
     @Resource
     private GoodsService goodsService;

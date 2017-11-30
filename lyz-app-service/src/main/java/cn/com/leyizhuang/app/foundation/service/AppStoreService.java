@@ -3,10 +3,13 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -66,4 +69,10 @@ public interface AppStoreService {
     AppStore findStoreByUserIdAndIdentityType(Long userId, Integer identityType);
 
     List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId);
+
+    Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Date version);
+
+    StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
+
+    void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 }

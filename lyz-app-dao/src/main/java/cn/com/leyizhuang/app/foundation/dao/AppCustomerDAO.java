@@ -99,4 +99,7 @@ public interface AppCustomerDAO {
     List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
 
     CustomerCashCoupon findCashCouponByCcid(@Param(value = "id") Long id);
+
+    Integer updateCustomerCashCouponById(@Param(value = "id") Long id,
+                                         @Param(value = "orderNumber") String orderNumber);
 }
