@@ -195,6 +195,9 @@ public class AliPayController {
                             return "success";
                         }
                     }
+                }
+                if (null != paymentDataDOList) {
+                    PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_FAIL);
                     this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
                 }
