@@ -79,7 +79,7 @@
                                                                    #{isIndexRecommend}, #{isHot},
                                                                    #{isNew}, #{isColorMixing}, #{sortId},
                                                                    #{companyFlag}, #{materialsCode},
-                                                                   #{physicalClassify}, #{materialsEnable},
+                                                                   #{goodsPhysicalClassify}, #{materialsEnable},
              #{goodsDetial}, #{searchKeyword}, #{productGrade}, #{materialsName})
     </insert>
 
@@ -141,8 +141,8 @@
             <if test="null != materialsCode">
                 materials_code = #{materialsCode},
             </if>
-            <if test="null != physicalClassify">
-                physical_classify = #{physicalClassify},
+            <if test="null != goodsPhysicalClassify">
+                physical_classify = #{goodsPhysicalClassify},
             </if>
             <if test="null != materialsEnable">
                 materials_enable = #{materialsEnable},

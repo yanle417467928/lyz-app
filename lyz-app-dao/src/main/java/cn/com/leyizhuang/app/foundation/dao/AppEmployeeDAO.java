@@ -58,4 +58,9 @@ public interface AppEmployeeDAO {
 
     AppEmployee findDeliveryClerkNoByUserId(Long userId);
 
+    /**
+     * 查询导购二维码
+     */
+    String getQrCodeByUserID(@Param("userID") Long userID);
+
 }

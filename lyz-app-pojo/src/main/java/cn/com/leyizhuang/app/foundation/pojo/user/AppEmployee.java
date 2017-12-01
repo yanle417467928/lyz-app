@@ -73,6 +73,11 @@ public class AppEmployee {
     //注册时间
     private LocalDateTime createTime;
 
+    /**
+     * 二维码
+     */
+    private String qrCode;
+
     public AppEmployee() {
     }
 

@@ -181,4 +181,9 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public AppEmployee findDeliveryClerkNoByUserId(Long userId) {
         return this.employeeDAO.findDeliveryClerkNoByUserId(userId);
     }
+
+    @Override
+    public String getQrCodeByUserID(Long userID) {
+        return employeeDAO.getQrCodeByUserID(userID);
+    }
 }

@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPhysicalClassify;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -8,18 +8,18 @@ import org.springframework.stereotype.Repository;
  * Created by caiyu on 2017/11/27.
  */
 @Repository
-public interface PhysicalClassifyDAO {
+public interface GoodsPhysicalClassifyDAO {
     /**
      * 同步添加商品分类信息
-     * @param physicalClassify  商品分类
+     * @param goodsPhysicalClassify  商品分类
      */
-    void saveSynchronize(PhysicalClassify physicalClassify);
+    void saveSynchronize(GoodsPhysicalClassify goodsPhysicalClassify);
 
     /**
      * 同步修改商品分类信息
-     * @param physicalClassify 商品分类
+     * @param goodsPhysicalClassify 商品分类
      */
-    void modifySynchronize(PhysicalClassify physicalClassify);
+    void modifySynchronize(GoodsPhysicalClassify goodsPhysicalClassify);
 
     /**
      * 同步删除商品分类信息
@@ -32,7 +32,7 @@ public interface PhysicalClassifyDAO {
      * @param hqId  Hq分类id
      * @return 分类信息
      */
-    PhysicalClassify findByHqId(@Param("hqId") Long hqId);
+    GoodsPhysicalClassify findByHqId(@Param("hqId") Long hqId);
 
 
 }
