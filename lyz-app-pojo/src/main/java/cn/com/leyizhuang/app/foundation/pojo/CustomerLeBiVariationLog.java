@@ -17,16 +17,28 @@ import java.util.Date;
 public class CustomerLeBiVariationLog {
 
     private Long id;
-    //顾客id
+    /**
+     * 顾客id
+     */
     private Long cusID;
-    //变动时间
+    /**
+     * 变动时间
+     */
     private Date variationTime;
-    //变动类型
+    /**
+     * 变动类型
+     */
     private LeBiVariationType leBiVariationType;
-    //变动数量
+    /**
+     * 变动数量
+     */
     private int variationQuantity;
-    //变动后乐币数量
+    /**
+     * 变动后乐币数量
+     */
     private int afterVariationQuantity;
-    //乐币使用订单号
+    /**
+     * 乐币使用订单号
+     */
     private String orderNum;
 }

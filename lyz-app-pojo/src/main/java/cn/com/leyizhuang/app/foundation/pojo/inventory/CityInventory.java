@@ -27,11 +27,11 @@ public class CityInventory {
     /**
      * 城市编码
      */
-    private String city_code;
+    private String cityCode;
     /**
      * 城市名称
      */
-    private String city_name;
+    private String cityName;
     /**
      * 商品id
      */
@@ -43,7 +43,7 @@ public class CityInventory {
     /**
      * 商品名称
      */
-    private String sku_name;
+    private String skuName;
     /**
      * 可售库存
      */

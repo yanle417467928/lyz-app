@@ -204,8 +204,9 @@
         SET
             quantity = quantity - #{qty}
         WHERE
-            quantity >= #{qty}
-            AND cus_id = #{userId}
+            -- quantity >= #{qty}
+            cus_id = #{userId}
+            AND last_update_time = #{version}
     </update>
 
     <update id="updateCustomerMobileByUserId">
@@ -447,5 +448,17 @@
               AND is_used = FALSE
               AND now() BETWEEN effective_start_time AND effective_end_time
     </update>
+
+    <select id="findCustomerLebiByCustomerId" parameterType="java.lang.Long" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
+        SELECT
+            id,
+            create_time,
+            cus_id,
+            quantity,
+            last_update_time
+        FROM cus_lb
+        WHERE cus_id = #{customerId}
+    </select>
 
 </mapper>

@@ -2,9 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
 import cn.com.leyizhuang.app.core.constant.StoreInventoryAvailableQtyChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
@@ -19,6 +17,8 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class StoreInventoryAvailableQtyChangeLog{
 
     private Long id;
@@ -63,10 +63,6 @@ public class StoreInventoryAvailableQtyChangeLog{
      */
     private Integer changeQty;
     /**
-     * 相关单号
-     */
-    private String referenceNumber;
-    /**
      * 变更后数量
      */
     private Integer afterChangeQty;
@@ -79,6 +75,10 @@ public class StoreInventoryAvailableQtyChangeLog{
      * 变更类型描述
      */
     private String changeTypeDesc;
+    /**
+     * 相关单号
+     */
+    private String referenceNumber;
 
 
 }

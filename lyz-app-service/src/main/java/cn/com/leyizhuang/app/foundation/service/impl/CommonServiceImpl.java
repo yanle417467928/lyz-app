@@ -7,8 +7,10 @@ import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
@@ -388,7 +390,7 @@ public class CommonServiceImpl implements CommonService {
             if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
                     identityType.equals(AppIdentityType.SELLER.getValue())) {
                 for (Map.Entry<Long, Integer> entry : inventoryCheckMap.entrySet()) {
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         StoreInventory storeInventory = storeService.findStoreInventoryByStoreIdAndGoodsId(deliverySimpleInfo.getBookingStoreId(), entry.getKey());
                         if (null != storeInventory) {
                             if (storeInventory.getAvailableIty() < entry.getValue()) {
@@ -401,22 +403,22 @@ public class CommonServiceImpl implements CommonService {
                                 log.setCityId(storeInventory.getCityId());
                                 log.setCityName(storeInventory.getCityName());
                                 log.setStoreId(storeInventory.getStoreId());
-                                log.setStoreName(storeInventory.getCityName());
+                                log.setStoreName(storeInventory.getStoreName());
                                 log.setStoreCode(storeInventory.getStoreCode());
                                 log.setGid(storeInventory.getGid());
                                 log.setSku(storeInventory.getSku());
                                 log.setSkuName(storeInventory.getSkuName());
                                 log.setChangeQty(entry.getValue());
-                                log.setAfterChangeQty(storeInventory.getRealIty() - entry.getValue());
+                                log.setAfterChangeQty(storeInventory.getAvailableIty() - entry.getValue());
                                 log.setChangeTime(Calendar.getInstance().getTime());
                                 log.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER);
                                 log.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.getDescription());
                                 log.setReferenceNumber(orderNumber);
                                 storeService.addStoreInventoryAvailableQtyChangeLog(log);
                                 break;
-                            }else {
-                                if (1==1){
-
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
                                 }
                             }
                         } else {
@@ -427,15 +429,29 @@ public class CommonServiceImpl implements CommonService {
             }
         } else if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_DELIVERY.getValue())) {
             for (Map.Entry<Long, Integer> entry : inventoryCheckMap.entrySet()) {
-                for (int i = 0; i < 3; i++) {
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(cityId, entry.getKey());
                     if (null != cityInventory) {
                         if (cityInventory.getAvailableIty() < entry.getValue()) {
                             throw new LockCityInventoryException("该城市下id为" + entry.getKey() + "的商品库存不足!");
                         }
-                        Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(cityId, entry.getKey(), entry.getValue(),cityInventory.getLastUpdateTime());
-                        if (affectLine == 0) {
-                            throw new LockCityInventoryException("该城市下id为" + entry.getKey() + "的商品库存不足!");
+                        Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(cityId, entry.getKey(), entry.getValue(), cityInventory.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                            log.setCityId(cityInventory.getCityId());
+                            log.setCityName(cityInventory.getCityName());
+                            log.setGid(cityInventory.getGid());
+                            log.setSku(cityInventory.getSku());
+                            log.setSkuName(cityInventory.getSkuName());
+                            log.setChangeQty(entry.getValue());
+                            log.setAfterChangeQty(cityInventory.getAvailableIty() - entry.getValue());
+                            log.setChangeTime(Calendar.getInstance().getTime());
+                            log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
+                            log.setReferenceNumber(orderNumber);
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
                         }
                     } else {
                         throw new LockCityInventoryException("该城市下没有找到id为" + entry.getKey() + "的商品库存信息!");
@@ -462,11 +478,33 @@ public class CommonServiceImpl implements CommonService {
                 } else {
                     customerId = customerId;
                 }
-                Integer affectLine = customerService.lockCustomerLebiByUserIdAndQty(customerId,
-                        billingDetails.getLebiQuantity());
-                if (affectLine == 0) {
-                    throw new LockCustomerLebiException("该客户的乐币数量不足!");
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    CustomerLeBi customerLeBi = customerService.findCustomerLebiByCustomerId(customerId);
+                    if (null != customerLeBi) {
+                        if (customerLeBi.getQuantity() < billingDetails.getLebiQuantity()) {
+                            throw new LockCustomerLebiException("该客户的乐币数量不足！");
+                        }
+                        Integer affectLine = customerService.lockCustomerLebiByUserIdAndQty(customerId,
+                                billingDetails.getLebiQuantity(),customerLeBi.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            CustomerLeBiVariationLog log = new CustomerLeBiVariationLog();
+                            log.setCusID(customerId);
+                            log.setVariationTime(Calendar.getInstance().getTime());
+                            log.setVariationQuantity(billingDetails.getLebiQuantity());
+                            log.setAfterVariationQuantity(customerLeBi.getQuantity()-billingDetails.getLebiQuantity());
+                            log.setOrderNum(orderNumber);
+                            log.setLeBiVariationType(LeBiVariationType.ORDER);
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockCustomerLebiException("没有找到该客户的乐币账户!");
+                    }
+
                 }
+
             }
         }
         //扣减客户预存款

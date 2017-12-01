@@ -210,10 +210,10 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    @Transactional
-    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Date version) {
         if (null != userId && null != lebiQty) {
-            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId, lebiQty);
+            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId, lebiQty,version);
         }
         return 0;
     }
@@ -340,6 +340,14 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public Integer lockCustomerCashCouponById(Long id,String orderNumber) {
         if (null != id){
             return customerDAO.updateCustomerCashCouponById(id,orderNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public CustomerLeBi findCustomerLebiByCustomerId(Long customerId) {
+        if (null != customerId){
+            return customerDAO.findCustomerLebiByCustomerId(customerId);
         }
         return null;
     }

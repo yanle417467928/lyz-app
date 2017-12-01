@@ -57,7 +57,7 @@ public interface AppCustomerDAO {
 
     void updateCustomerMobileByUserId(@Param("userId") Long userId, @Param("mobile") String mobile);
 
-    int updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId, @Param("qty") Integer quantity);
+    int updateLeBiQuantityByUserIdAndQty(@Param("userId") Long userId, @Param("qty") Integer quantity, @Param(value = "version") Date version);
 
     void saveLeBi(CustomerLeBi leBi);
 
@@ -102,4 +102,6 @@ public interface AppCustomerDAO {
 
     Integer updateCustomerCashCouponById(@Param(value = "id") Long id,
                                          @Param(value = "orderNumber") String orderNumber);
+
+    CustomerLeBi findCustomerLebiByCustomerId(Long customerId);
 }

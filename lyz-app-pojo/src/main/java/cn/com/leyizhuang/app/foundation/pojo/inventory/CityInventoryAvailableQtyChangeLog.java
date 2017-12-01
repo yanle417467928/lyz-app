@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
+import cn.com.leyizhuang.app.core.constant.CityInventoryAvailableQtyChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +17,7 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class CityInventoryAvailQtyChangeLog {
+public class CityInventoryAvailableQtyChangeLog {
 
     private Long id;
     /**
@@ -27,7 +28,7 @@ public class CityInventoryAvailQtyChangeLog {
     /**
      * 城市名称
      */
-    private String city_name;
+    private String cityName;
     /**
      * 商品id
      */
@@ -39,7 +40,7 @@ public class CityInventoryAvailQtyChangeLog {
     /**
      * 商品名称
       */
-    private String sku_name;
+    private String skuName;
     /**
      * 变更时间
      */
@@ -52,4 +53,19 @@ public class CityInventoryAvailQtyChangeLog {
      * 变更后数量
      */
     private Integer afterChangeQty;
+
+    /**
+     * 修改类型
+     */
+    private CityInventoryAvailableQtyChangeType changeType;
+
+    /**
+     * 修改类型描述
+     */
+    private CityInventoryAvailableQtyChangeType changeTypeDesc;
+
+    /**
+     * 相关单号
+     */
+    private String referenceNumber;
 }

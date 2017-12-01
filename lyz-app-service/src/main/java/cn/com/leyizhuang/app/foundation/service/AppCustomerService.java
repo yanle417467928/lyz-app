@@ -64,7 +64,7 @@ public interface AppCustomerService {
 
     int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit);
 
-    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty);
+    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Date version);
 
     int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon);
 
@@ -95,4 +95,6 @@ public interface AppCustomerService {
     CustomerCashCoupon findCashCouponByCcid(Long id);
 
     Integer lockCustomerCashCouponById(Long id,String orderNumber);
+
+    CustomerLeBi findCustomerLebiByCustomerId(Long customerId);
 }

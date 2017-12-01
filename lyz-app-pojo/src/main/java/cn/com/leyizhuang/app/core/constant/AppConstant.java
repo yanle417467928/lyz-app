@@ -27,4 +27,9 @@ public class AppConstant {
      * RMB对乐币比率
      */
     public static final Double RMB_TO_LEBI_RATIO = 10.00;
+
+    /**
+     * 乐观锁重试次数
+     */
+    public static final int OPTIMISTIC_LOCK_RETRY_TIME = 3;
 }
