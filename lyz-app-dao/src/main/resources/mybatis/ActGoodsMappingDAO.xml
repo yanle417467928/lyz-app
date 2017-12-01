@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActGoodsMappingDAO">
+
+    <sql id="ALL_FIELDS">
+         id, act_id, act_code, gid, sku, goods_titile, qty
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO">
+        INSERT INTO act_goods_mapping (
+            act_id, act_code, gid, sku, goods_titile, qty
+        )
+        VALUES
+        (
+        #{actId,jdbcType=BIGINT}, #{actCode,jdbcType=VARCHAR},
+      #{gid,jdbcType=BIGINT}, #{sku,jdbcType=VARCHAR}, #{goodsTitile,jdbcType=VARCHAR},
+      #{qty,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO">
+        UPDATE act_goods_mapping
+        <set>
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="actCode != null" >
+                act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gid != null" >
+                gid = #{gid,jdbcType=BIGINT},
+            </if>
+            <if test="sku != null" >
+                sku = #{sku,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsTitile != null" >
+                goods_titile = #{goodsTitile,jdbcType=VARCHAR},
+            </if>
+            <if test="qty != null" >
+                qty = #{qty,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_goods_mapping WHERE ID = #{id}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_goods_mapping
+    </select>
+
+</mapper>
