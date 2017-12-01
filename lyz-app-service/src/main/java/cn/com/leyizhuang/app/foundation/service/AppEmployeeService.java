@@ -59,4 +59,9 @@ public interface AppEmployeeService {
 
     AppEmployee findDeliveryClerkNoByUserId(Long userId);
 
+    /**
+     * 查询导购二维码
+     */
+    String getQrCodeByUserID(Long userID);
+
 }

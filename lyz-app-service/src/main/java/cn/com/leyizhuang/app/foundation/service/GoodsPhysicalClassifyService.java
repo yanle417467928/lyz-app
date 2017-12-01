@@ -1,24 +1,24 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPhysicalClassify;
 
 /**
  * Created by caiyu on 2017/11/27.
  */
-public interface PhysicalClassifyService {
+public interface GoodsPhysicalClassifyService {
     /**
      * 同步添加商品分类信息
      *
-     * @param physicalClassify 商品分类
+     * @param goodsPhysicalClassify 商品分类
      */
-    void saveSynchronize(PhysicalClassify physicalClassify);
+    void saveSynchronize(GoodsPhysicalClassify goodsPhysicalClassify);
 
     /**
      * 同步修改商品分类信息
      *
-     * @param physicalClassify 商品分类
+     * @param goodsPhysicalClassify 商品分类
      */
-    void modifySynchronize(PhysicalClassify physicalClassify);
+    void modifySynchronize(GoodsPhysicalClassify goodsPhysicalClassify);
 
     /**
      * 同步删除商品分类信息
@@ -33,5 +33,5 @@ public interface PhysicalClassifyService {
      * @param hqId Hq分类id
      * @return 分类信息
      */
-    PhysicalClassify findByHqId(Long hqId);
+    GoodsPhysicalClassify findByHqId(Long hqId);
 }

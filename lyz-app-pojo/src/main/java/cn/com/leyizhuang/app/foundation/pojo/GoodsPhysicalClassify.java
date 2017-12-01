@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhysicalClassify {
+public class GoodsPhysicalClassify {
     //自增id
     private Long id;
     //HQid

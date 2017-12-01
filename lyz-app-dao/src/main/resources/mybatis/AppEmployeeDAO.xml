@@ -254,5 +254,15 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         WHERE emp_id = #{userId}
     </select>
 
+    <select id="getQrCodeByUserID" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+            qr_code qrCode,
+        FROM
+            emp_employee
+        WHERE
+            identity_type = 'SELLER'
+        AND emp_id = #{userID}
+
+    </select>
 
 </mapper>

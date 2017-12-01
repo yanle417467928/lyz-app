@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.PhysicalClassify;
-import cn.com.leyizhuang.app.foundation.service.PhysicalClassifyService;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPhysicalClassify;
+import cn.com.leyizhuang.app.foundation.service.GoodsPhysicalClassifyService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppPhysicalClassifyDTO;
+import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppGoodsPhysicalClassifyDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,51 +19,51 @@ import javax.annotation.Resource;
  * Created by caiyu on 2017/11/27.
  */
 @RestController
-@RequestMapping(value = "/remote/physical/classify")
-public class HqAppPhysicalClassifyController {
-    private static final Logger logger = LoggerFactory.getLogger(HqAppPhysicalClassifyController.class);
+@RequestMapping(value = "/remote/goods/physical/classify")
+public class HqAppGoodsPhysicalClassifyController {
+    private static final Logger logger = LoggerFactory.getLogger(HqAppGoodsPhysicalClassifyController.class);
     @Resource
-    private PhysicalClassifyService physicalClassifyService;
+    private GoodsPhysicalClassifyService goodsPhysicalClassifyService;
 
     /**
      * 同步添加商品物理分类信息
-     * @param hqAppPhysicalClassifyDTO  同步传输类
+     * @param hqAppGoodsPhysicalClassifyDTO  同步传输类
      * @return  成功或失败
      */
     @PostMapping(value = "/save")
-    public ResultDTO<String> addPhusicalClassify(HqAppPhysicalClassifyDTO hqAppPhysicalClassifyDTO){
-        logger.warn("addPhusicalClassify CALLED,同步添加商品物理分类信息，入参 hqAppPhysicalClassifyDTO:{}", hqAppPhysicalClassifyDTO);
+    public ResultDTO<String> addPhusicalClassify(HqAppGoodsPhysicalClassifyDTO hqAppGoodsPhysicalClassifyDTO){
+        logger.warn("addPhusicalClassify CALLED,同步添加商品物理分类信息，入参 hqAppGoodsPhysicalClassifyDTO:{}", hqAppGoodsPhysicalClassifyDTO);
 
-        if (null == hqAppPhysicalClassifyDTO){
+        if (null == hqAppGoodsPhysicalClassifyDTO){
             logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息失败，商品分类传输对象为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品分类传输对象为空！", null);
         }
-        if (null == hqAppPhysicalClassifyDTO.getHqId()){
+        if (null == hqAppGoodsPhysicalClassifyDTO.getHqId()){
             logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息失败，hq分类id为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "hq分类id为空！", null);
         }
-        if (StringUtils.isBlank(hqAppPhysicalClassifyDTO.getPhysicalClassifyName())){
+        if (StringUtils.isBlank(hqAppGoodsPhysicalClassifyDTO.getPhysicalClassifyName())){
             logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息失败，分类名称为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "分类名称为空！", null);
         }
-        if (null == hqAppPhysicalClassifyDTO.getParentCategoryId()){
+        if (null == hqAppGoodsPhysicalClassifyDTO.getParentCategoryId()){
             logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息失败，父分类id为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "父分类id为空！", null);
         }
 
         try {
-            PhysicalClassify physical = physicalClassifyService.findByHqId(hqAppPhysicalClassifyDTO.getHqId());
+            GoodsPhysicalClassify physical = goodsPhysicalClassifyService.findByHqId(hqAppGoodsPhysicalClassifyDTO.getHqId());
             if (null != physical){
                 logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息失败，该hq分类id已存在！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该hq分类id已存在！", null);
             }
-            PhysicalClassify physicalClassify = new PhysicalClassify();
-            physicalClassify.setHqId(hqAppPhysicalClassifyDTO.getHqId());
-            physicalClassify.setParentCategoryId(hqAppPhysicalClassifyDTO.getParentCategoryId());
-            physicalClassify.setPhysicalClassifyName(hqAppPhysicalClassifyDTO.getPhysicalClassifyName());
+            GoodsPhysicalClassify goodsPhysicalClassify = new GoodsPhysicalClassify();
+            goodsPhysicalClassify.setHqId(hqAppGoodsPhysicalClassifyDTO.getHqId());
+            goodsPhysicalClassify.setParentCategoryId(hqAppGoodsPhysicalClassifyDTO.getParentCategoryId());
+            goodsPhysicalClassify.setPhysicalClassifyName(hqAppGoodsPhysicalClassifyDTO.getPhysicalClassifyName());
 
-            physicalClassifyService.saveSynchronize(physicalClassify);
-            logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息成功！",physicalClassify);
+            goodsPhysicalClassifyService.saveSynchronize(goodsPhysicalClassify);
+            logger.warn("addPhusicalClassify OUT,同步添加商品物理分类信息成功！", goodsPhysicalClassify);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         }catch (Exception e){
             e.printStackTrace();
@@ -74,28 +74,28 @@ public class HqAppPhysicalClassifyController {
 
     /**
      * 同步修改商品物理分类信息
-     * @param hqAppPhysicalClassifyDTO  同步传输类
+     * @param hqAppGoodsPhysicalClassifyDTO  同步传输类
      * @return  成功或失败
      */
     @PostMapping(value = "/update")
-    public ResultDTO<String> updatePhusicalClassify(HqAppPhysicalClassifyDTO hqAppPhysicalClassifyDTO){
-        logger.warn("updatePhusicalClassify CALLED,同步修改商品物理分类信息，入参 hqAppPhysicalClassifyDTO:{}", hqAppPhysicalClassifyDTO);
+    public ResultDTO<String> updatePhusicalClassify(HqAppGoodsPhysicalClassifyDTO hqAppGoodsPhysicalClassifyDTO){
+        logger.warn("updatePhusicalClassify CALLED,同步修改商品物理分类信息，入参 hqAppGoodsPhysicalClassifyDTO:{}", hqAppGoodsPhysicalClassifyDTO);
 
-        if (null == hqAppPhysicalClassifyDTO){
+        if (null == hqAppGoodsPhysicalClassifyDTO){
             logger.warn("updatePhusicalClassify OUT,同步修改商品物理分类信息失败，商品分类传输对象为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品分类传输对象为空！", null);
         }
 
         try {
-            PhysicalClassify physical = physicalClassifyService.findByHqId(hqAppPhysicalClassifyDTO.getHqId());
+            GoodsPhysicalClassify physical = goodsPhysicalClassifyService.findByHqId(hqAppGoodsPhysicalClassifyDTO.getHqId());
             if (null == physical){
                 logger.warn("updatePhusicalClassify OUT,同步修改商品物理分类信息失败，该hq分类id不存在！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该hq分类id不存在！", null);
             }else {
-                physical.setPhysicalClassifyName(hqAppPhysicalClassifyDTO.getPhysicalClassifyName());
-                physical.setParentCategoryId(hqAppPhysicalClassifyDTO.getParentCategoryId());
+                physical.setPhysicalClassifyName(hqAppGoodsPhysicalClassifyDTO.getPhysicalClassifyName());
+                physical.setParentCategoryId(hqAppGoodsPhysicalClassifyDTO.getParentCategoryId());
 
-                physicalClassifyService.modifySynchronize(physical);
+                goodsPhysicalClassifyService.modifySynchronize(physical);
                 logger.warn("updatePhusicalClassify OUT,同步修改商品物理分类信息成功！",physical);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             }
