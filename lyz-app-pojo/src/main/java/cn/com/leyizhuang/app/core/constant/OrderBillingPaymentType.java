@@ -10,7 +10,7 @@ import java.util.Objects;
  **/
 public enum OrderBillingPaymentType {
 
-    APIPAY("APIPAY", "支付宝"),
+    ALIPAY("ALIPAY", "支付宝"),
     WE_CHAT("WE_CHAT", "微信"),
     UNION_PAY("UNION_PAY", "银联"),
     POS("POS", "POS"),

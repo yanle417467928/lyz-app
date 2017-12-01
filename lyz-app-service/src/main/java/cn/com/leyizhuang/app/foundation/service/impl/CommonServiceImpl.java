@@ -485,13 +485,13 @@ public class CommonServiceImpl implements CommonService {
                             throw new LockCustomerLebiException("该客户的乐币数量不足！");
                         }
                         Integer affectLine = customerService.lockCustomerLebiByUserIdAndQty(customerId,
-                                billingDetails.getLebiQuantity(),customerLeBi.getLastUpdateTime());
+                                billingDetails.getLebiQuantity(), customerLeBi.getLastUpdateTime());
                         if (affectLine > 0) {
                             CustomerLeBiVariationLog log = new CustomerLeBiVariationLog();
                             log.setCusID(customerId);
                             log.setVariationTime(Calendar.getInstance().getTime());
                             log.setVariationQuantity(billingDetails.getLebiQuantity());
-                            log.setAfterVariationQuantity(customerLeBi.getQuantity()-billingDetails.getLebiQuantity());
+                            log.setAfterVariationQuantity(customerLeBi.getQuantity() - billingDetails.getLebiQuantity());
                             log.setOrderNum(orderNumber);
                             log.setLeBiVariationType(LeBiVariationType.ORDER);
                         } else {
@@ -509,11 +509,27 @@ public class CommonServiceImpl implements CommonService {
         }
         //扣减客户预存款
         if (identityType == AppIdentityType.CUSTOMER.getValue()) {
-            Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
-                    userId, billingDetails.getCusPreDeposit());
-            if (affectLine == 0) {
-                throw new LockCustomerPreDepositException("该客户预存款余额不足!");
+            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                CustomerPreDeposit preDeposit = customerService.findByCusId(customerId);
+                if (null != preDeposit) {
+                    if (preDeposit.getBalance() < billingDetails.getCusPreDeposit()) {
+                        throw new LockCustomerPreDepositException("该客户预存款余额不足!");
+                    }
+                    Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
+                            userId, billingDetails.getCusPreDeposit());
+                    if (affectLine > 0) {
+
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        }
+                    }
+                } else {
+                    throw new LockCustomerPreDepositException("没有找到该客户的预存款信息");
+                }
             }
+
+
         }
         //扣减门店预存款
         if (identityType == AppIdentityType.SELLER.getValue() ||

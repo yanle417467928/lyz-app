@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.seller;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -178,8 +180,10 @@ public class SellerArrearsAuditController {
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
 
                 //创建收款记录
-                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
+                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
+                        orderTempInfo.getOrderId(),Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
+                        orderNo,collectionAmount,null,null);
+                //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
                 this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                 //修改订单欠款

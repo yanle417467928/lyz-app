@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
@@ -144,8 +145,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setOrderNumber(orderNumber);
         Date repaymentTime = new Date();
         orderBillingPaymentDetails.setPayTime(repaymentTime);
-        orderBillingPaymentDetails.setPayType("支付宝");
-        orderBillingPaymentDetails.setCurrencyType("实际货币");
+        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.APIPAY);
+        //orderBillingPaymentDetails.setCurrencyType("实际货币");
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);
         orderBillingPaymentDetails.setReceiptNumber(receiptNumber);

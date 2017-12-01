@@ -818,7 +818,7 @@ public class OrderController {
             if (null != lockExpendRequest.getLebiQty() && identityType == 6) {
 
                 int result = appCustomerService.lockCustomerLebiByUserIdAndQty(
-                        userId, lockExpendRequest.getLebiQty());
+                        userId, lockExpendRequest.getLebiQty(),Calendar.getInstance().getTime());
                 if (result == 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客乐币剩余数量不足!", null);
                     logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，顾客乐币剩余数量不足 出参 resultDTO:{}", resultDTO);
