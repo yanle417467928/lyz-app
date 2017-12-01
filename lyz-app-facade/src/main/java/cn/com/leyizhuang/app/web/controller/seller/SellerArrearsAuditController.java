@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -297,7 +298,17 @@ public class SellerArrearsAuditController {
         }
 
         try {
-            List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = arrearsAuditServiceImpl.getRepaymentMondyList(userID);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            List<OrderBillingPaymentDetails> orderBillingPaymentDetailsList = arrearsAuditServiceImpl.getRepaymentMondyList(userID);
+
+            List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = new ArrayList<>();
+            for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList){
+                RepaymentMoneyListResponse repaymentMoneyListResponse = new RepaymentMoneyListResponse();
+                repaymentMoneyListResponse.setRepaymentTime(sdf.format(orderBillingPaymentDetails.getPayTime()));
+                repaymentMoneyListResponse.setRepaymentMoney(orderBillingPaymentDetails.getAmount());
+
+                repaymentMoneyListResponseList.add(repaymentMoneyListResponse);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, repaymentMoneyListResponseList);
             logger.info("getRepaymentMondyList OUT,导购查询还款记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
