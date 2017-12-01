@@ -17,7 +17,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSim
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -354,7 +353,7 @@ public class OrderController {
                 //TODO 根据促销减去订单折扣, 加运费
                 totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
                 //计算顾客乐币
-                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
+                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算可用的优惠券
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
                 //查询顾客预存款
@@ -441,7 +440,7 @@ public class OrderController {
                 //TODO 根据促销减去订单折扣
                 totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
                 //计算顾客乐币
-                CustomerLeBi leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
+                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
                 //现金券还需要传入订单金额判断是否满减
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
                 //查询导购预存款和信用金
@@ -621,7 +620,7 @@ public class OrderController {
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
         }
         List<GoodsIdQtyParam> cashCouponsList = usedCouponRequest.getCouponsList();
-        CustomerLeBi leBi = null;
+        Map<String, Object> leBi = null;
         try {
             //只有顾客和导购身份可进来
             if (identityType == 6 || identityType == 0) {

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -145,7 +144,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setOrderNumber(orderNumber);
         Date repaymentTime = new Date();
         orderBillingPaymentDetails.setPayTime(repaymentTime);
-        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.APIPAY);
+        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
         //orderBillingPaymentDetails.setCurrencyType("实际货币");
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);

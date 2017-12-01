@@ -50,7 +50,7 @@ public interface AppCustomerService {
 
     Integer findLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 
-    CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney);
+    Map<String, Object> findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney);
 
     void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
 

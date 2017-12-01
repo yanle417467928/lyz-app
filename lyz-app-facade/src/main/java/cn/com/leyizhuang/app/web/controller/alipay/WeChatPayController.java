@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.settlement;
+package cn.com.leyizhuang.app.web.controller.alipay;
 
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
@@ -42,9 +42,9 @@ import java.util.SortedMap;
  */
 @RestController
 @RequestMapping("/app/pay")
-public class PayController {
+public class WeChatPayController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PayController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WeChatPayController.class);
 
     @Resource
     private PaymentDataService paymentDataServiceImpl;
@@ -130,15 +130,16 @@ public class PayController {
 
     /**
      * 微信充值预存款
-     * @param req 请求对象
-     * @param userId 用户id
+     *
+     * @param req          请求对象
+     * @param userId       用户id
      * @param identityType 用户身份类型
-     * @param money 支付金额
-     * @param cityId 用户所在城市Id
+     * @param money        支付金额
+     * @param cityId       用户所在城市Id
      * @return 微信支付请求签名
      */
     @RequestMapping(value = "/wechat/recharge", method = RequestMethod.POST)
-    public ResultDTO<Object> wechatPreDepositRecharge(HttpServletRequest req,Long userId, Integer identityType, Double money, Long cityId) {
+    public ResultDTO<Object> wechatPreDepositRecharge(HttpServletRequest req, Long userId, Integer identityType, Double money, Long cityId) {
 
         logger.info("wechatPreDepositRecharge CALLED,微信充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
@@ -163,7 +164,7 @@ public class PayController {
             return resultDTO;
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(money);
-        Double  totlefeeParse = Double.parseDouble(totlefee);
+        Double totlefeeParse = Double.parseDouble(totlefee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
         String subject = "预存款充值";
 
@@ -172,11 +173,11 @@ public class PayController {
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo,new BigDecimal(totlefeeParse),req);
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, new BigDecimal(totlefeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
             logger.info("wechatPreDepositRecharge OUT,微信充值预存款成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信充值预存款!", null);
             logger.warn("wechatPreDepositRecharge EXCEPTION,微信充值预存款失败，出参 resultDTO:{}", resultDTO);
@@ -188,7 +189,7 @@ public class PayController {
     /**
      * 接受微信调用后返回参数的回调接口
      *
-     * @param request 请求对象
+     * @param request  请求对象
      * @param response 响应对象
      */
     @PostMapping(value = "/wechat/return/async", produces = "application/json;charset=UTF-8")
@@ -218,7 +219,8 @@ public class PayController {
                         String tradeStatus = resultMap.get("result_code").toString();
 
                         //判断是否是充值订单
-                        if (outTradeNo.contains("")) {
+                        if (outTradeNo.contains("CX")) {
+
 
                         } else {
                             OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
@@ -234,10 +236,10 @@ public class PayController {
 
                                     //充值加预存款和日志
                                     if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
-                                        this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                        this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.WECHAT_RECHARGE);
                                     } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
                                             || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
-                                        this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                        this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.WECHAT_RECHARGE);
                                     }
                                 }
                             }
