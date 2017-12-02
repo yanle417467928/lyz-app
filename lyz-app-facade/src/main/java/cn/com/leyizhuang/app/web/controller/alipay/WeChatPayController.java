@@ -1,17 +1,17 @@
 package cn.com.leyizhuang.app.web.controller.alipay;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.constant.PaymentDataType;
 import cn.com.leyizhuang.app.core.pay.wechat.sign.WechatPrePay;
 import cn.com.leyizhuang.app.core.pay.wechat.util.WechatUtil;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -57,6 +58,9 @@ public class WeChatPayController {
 
     @Resource
     private AppOrderService appOrderService;
+
+    @Resource
+    private ArrearsAuditService arrearsAuditService;
 
     /**
      * 微信支付订单
@@ -187,6 +191,73 @@ public class WeChatPayController {
     }
 
     /**
+     *  微信欠款还款
+     * @param userId
+     * @param identityType
+     * @param orderNumber
+     * @return
+     */
+    @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> wechatDebtRepayments(HttpServletRequest req, Long userId, Integer identityType, String orderNumber) {
+
+        logger.info("wechatDebtRepayments CALLED,微信欠款还款，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不能为空！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
+        if (null == orderArrearsAuditDO) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为查询到此欠款记录！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
+        Double totlefeeParse = Double.parseDouble(totlefee);
+        String outTradeNo = orderNumber.replaceAll("_XN","_HK");
+        String subject = "微信欠款还款";
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO();
+        paymentDataDO.setUserId(userId);
+        paymentDataDO.setOutTradeNo(outTradeNo);
+        if (outTradeNo.contains("_HK")) {
+            paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
+        }
+        paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+        paymentDataDO.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        paymentDataDO.setSubject(subject);
+        paymentDataDO.setTotalFee(Double.parseDouble(totlefee));
+        paymentDataDO.setTradeStatus(PaymentDataStatus.WAIT_PAY);
+        paymentDataDO.setPaymentMethod("支付宝");
+        paymentDataDO.setCreateTime(LocalDateTime.now());
+        this.paymentDataServiceImpl.save(paymentDataDO);
+
+        try {
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, new BigDecimal(totlefeeParse), req);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信欠款还款失败!", null);
+            logger.warn("wechatDebtRepayments EXCEPTION,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * 接受微信调用后返回参数的回调接口
      *
      * @param request  请求对象
@@ -217,12 +288,17 @@ public class WeChatPayController {
                         String totalFee = resultMap.get("total_fee").toString();
                         //微信交易状态
                         String tradeStatus = resultMap.get("result_code").toString();
+                        //转换金额为Double
+                        Double totlefeeParse = Double.parseDouble(totalFee);
 
                         //判断是否是充值订单
                         if (outTradeNo.contains("CX")) {
 
 
-                        } else {
+                        }else if (outTradeNo.contains("_HK")){
+                            String orderNumber = outTradeNo.replaceAll("_HK","_XN");
+                            appOrderService.saveOrderBillingPaymentDetails(orderNumber,totlefeeParse,tradeNo,outTradeNo);
+                        }else {
                             OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
                         }
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
