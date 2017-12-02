@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.alipay;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
-import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
-import cn.com.leyizhuang.app.core.constant.PaymentDataType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.pay.wechat.sign.WechatPrePay;
 import cn.com.leyizhuang.app.core.pay.wechat.util.WechatUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -311,10 +308,10 @@ public class WeChatPayController {
 
                                     //充值加预存款和日志
                                     if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
-                                        this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.WECHAT_RECHARGE);
+                                        this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
                                     } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
                                             || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
-                                        this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.WECHAT_RECHARGE);
+                                        this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.WECHAT_RECHARGE);
                                     }
                                 }
                             }

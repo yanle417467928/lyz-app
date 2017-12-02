@@ -1,5 +1,8 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 顾客预存款变更类型
  *
@@ -39,6 +42,22 @@ public enum CustomerPreDepositChangeType {
 
     public String getDescription() {
         return description;
+    }
+
+    public static List<CustomerPreDepositChangeType> getRechargeType(){
+        List<CustomerPreDepositChangeType> rechargeList = new ArrayList<>();
+        rechargeList.add(ALIPAY_RECHARGE);
+        rechargeList.add(WECHAT_RECHARGE);
+        rechargeList.add(UNIONPAY_RECHARGE);
+        return rechargeList;
+    }
+
+    public static List<CustomerPreDepositChangeType> getConsumptionType(){
+        List<CustomerPreDepositChangeType> consumptionList = new ArrayList<>();
+        consumptionList.add(PLACE_ORDER);
+        consumptionList.add(RETURN_ORDER);
+        consumptionList.add(CANCEL_ORDER);
+        return consumptionList;
     }
 
 

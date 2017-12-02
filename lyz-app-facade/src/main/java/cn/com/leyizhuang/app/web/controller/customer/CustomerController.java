@@ -508,7 +508,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
+            List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getRechargeType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
@@ -549,7 +549,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
+            List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getConsumptionType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
