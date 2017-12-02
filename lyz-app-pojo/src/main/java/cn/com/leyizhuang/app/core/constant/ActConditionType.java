@@ -7,8 +7,8 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum ActConditionType {
 
-    FQTY("数量","数量"),
-    FAMO("金额","金额");
+    FQTY("FQTY","数量"),
+    FAMO("FAMO","金额");
 
     private final String value;
     private final String description;
