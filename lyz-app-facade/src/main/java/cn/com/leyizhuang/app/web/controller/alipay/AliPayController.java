@@ -220,7 +220,7 @@ public class AliPayController {
      * @date 2017/11/20
      */
     @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> AliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
+    public ResultDTO<Object> aliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
 
         logger.info("AliPayDebtRepayments CALLED,支付宝欠款还款，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);
         ResultDTO<Object> resultDTO;
@@ -247,7 +247,7 @@ public class AliPayController {
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
         String outTradeNo = orderNumber.replaceAll("_XN","_HK");
-        String subject = "欠款还款";
+        String subject = "支付宝欠款还款";
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);

@@ -109,10 +109,9 @@
 
     </update>
 
-    <select id="getRepaymentMondyList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse">
+    <select id="getRepaymentMondyList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         SELECT
-            obpd.pay_time repaymentTime,
-            obpd.amount repaymentMoney
+            obpd.*
         FROM
             ord_arrears_audit AS oaa
         INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no

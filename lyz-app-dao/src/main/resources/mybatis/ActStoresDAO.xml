@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActStoresDAO">
+
+    <sql id="ALL_FIELDS">
+        id, act_id, act_code, store_id, store_code, store_title
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO">
+        INSERT INTO act_stores (
+          act_id, act_code, store_id, store_code, store_title
+        )
+        VALUES
+        (
+        #{actId,jdbcType=BIGINT}, #{actCode,jdbcType=VARCHAR},
+      #{storeId,jdbcType=BIGINT}, #{storeCode,jdbcType=VARCHAR}, #{storeTitle,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO">
+        UPDATE act_stores
+        <set>
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="actCode != null" >
+                act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null" >
+                store_id = #{storeId,jdbcType=BIGINT},
+            </if>
+            <if test="storeCode != null" >
+                store_code = #{storeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="storeTitle != null" >
+                store_title = #{storeTitle,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_stores WHERE ID = #{id}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_stores
+    </select>
+
+</mapper>

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,15 +146,18 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public CustomerLeBi findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney) {
+    public Map<String, Object> findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney) {
         if (null != userId && null != goodsMoney) {
+            Map<String, Object> lbMap = new HashMap<>(2);
             Integer qty = customerDAO.findLeBiQuantityByUserId(userId);
             Double rebate = CountUtil.div(qty, AppConstant.RMB_TO_LEBI_RATIO);
             if (rebate >= goodsMoney) {
                 rebate = goodsMoney;
                 qty = (int) CountUtil.mul(goodsMoney, AppConstant.RMB_TO_LEBI_RATIO);
             }
-            return new CustomerLeBi(qty, rebate);
+            lbMap.put("quantity", qty);
+            lbMap.put("rebate", rebate);
+            return lbMap;
         }
         return null;
     }

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActLadderDAO">
+
+    <sql id="ALL_FIELDS">
+        id, act_id, act_code, min_qty, max_qty, min_amount, max_amount, sub_amount, fixed_amount,
+    discount
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActLadderDO">
+        INSERT INTO act_ladder (
+          act_id, act_code, min_qty, max_qty, min_amount, max_amount, sub_amount, fixed_amount,
+    discount
+        )
+        VALUES
+        (
+        #{actId,jdbcType=BIGINT}, #{actCode,jdbcType=VARCHAR},
+      #{minQty,jdbcType=INTEGER}, #{maxQty,jdbcType=INTEGER}, #{minAmount,jdbcType=DECIMAL},
+      #{maxAmount,jdbcType=DECIMAL}, #{subAmount,jdbcType=DECIMAL}, #{fixedAmount,jdbcType=DECIMAL},
+      #{discount,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActLadderDO">
+        UPDATE act_ladder
+        <set>
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="actCode != null" >
+                act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+            <if test="minQty != null" >
+                min_qty = #{minQty,jdbcType=INTEGER},
+            </if>
+            <if test="maxQty != null" >
+                max_qty = #{maxQty,jdbcType=INTEGER},
+            </if>
+            <if test="minAmount != null" >
+                min_amount = #{minAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="maxAmount != null" >
+                max_amount = #{maxAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="subAmount != null" >
+                sub_amount = #{subAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="fixedAmount != null" >
+                fixed_amount = #{fixedAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="discount != null" >
+                discount = #{discount,jdbcType=BIGINT},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActLadderDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_ladder WHERE ID = #{id}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActLadderDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_ladder
+    </select>
+
+</mapper>

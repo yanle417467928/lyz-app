@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 
@@ -50,5 +50,5 @@ public interface ArrearsAuditService {
      * @param userID 用户id
      * @return 返回还款记录列表
      */
-    List<RepaymentMoneyListResponse> getRepaymentMondyList(Long userID);
+    List<OrderBillingPaymentDetails> getRepaymentMondyList(Long userID);
 }

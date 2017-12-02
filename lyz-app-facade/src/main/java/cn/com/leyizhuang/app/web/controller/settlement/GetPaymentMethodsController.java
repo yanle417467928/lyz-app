@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -10,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * 支付功能调用
@@ -94,7 +95,7 @@ public class GetPaymentMethodsController {
             return resultDTO;
         }
         try {
-            CustomerLeBi customerLeBi = appCustomerServiceImpl.findLeBiByUserIdAndGoodsMoney(userId, goodsMoney);
+            Map<String, Object> customerLeBi = appCustomerServiceImpl.findLeBiByUserIdAndGoodsMoney(userId, goodsMoney);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerLeBi);
             logger.info("paymentMethodsOfLeBiRebate OUT,乐币折扣商品金额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

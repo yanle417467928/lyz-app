@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.activity.ActGiftDetailsDAO">
+
+    <sql id="ALL_FIELDS">
+        id, gift_id, gift_sku, gift_title, gift_price, gift_fixed_qty, act_id, act_code,
+    pro_coupon_id, pro_coupon_qty, cash_coupon_id, cash_coupon_qty
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
+        INSERT INTO act_gift_details (
+          gift_id, gift_sku,
+      gift_title, gift_price, gift_fixed_qty,
+      act_id, act_code, pro_coupon_id,
+      pro_coupon_qty, cash_coupon_id, cash_coupon_qty
+        )
+        VALUES
+        (
+        #{giftId,jdbcType=BIGINT}, #{giftSku,jdbcType=VARCHAR},
+      #{giftTitle,jdbcType=VARCHAR}, #{giftPrice,jdbcType=DECIMAL}, #{giftFixedQty,jdbcType=INTEGER},
+      #{actId,jdbcType=BIGINT}, #{actCode,jdbcType=VARCHAR}, #{proCouponId,jdbcType=BIGINT},
+      #{proCouponQty,jdbcType=INTEGER}, #{cashCouponId,jdbcType=BIGINT}, #{cashCouponQty,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
+        UPDATE act_gift_details
+        <set>
+            <if test="giftId != null" >
+                gift_id = #{giftId,jdbcType=BIGINT},
+            </if>
+            <if test="giftSku != null" >
+                gift_sku = #{giftSku,jdbcType=VARCHAR},
+            </if>
+            <if test="giftTitle != null" >
+                gift_title = #{giftTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="giftPrice != null" >
+                gift_price = #{giftPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="giftFixedQty != null" >
+                gift_fixed_qty = #{giftFixedQty,jdbcType=INTEGER},
+            </if>
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="actCode != null" >
+                act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+            <if test="proCouponId != null" >
+                pro_coupon_id = #{proCouponId,jdbcType=BIGINT},
+            </if>
+            <if test="proCouponQty != null" >
+                pro_coupon_qty = #{proCouponQty,jdbcType=INTEGER},
+            </if>
+            <if test="cashCouponId != null" >
+                cash_coupon_id = #{cashCouponId,jdbcType=BIGINT},
+            </if>
+            <if test="cashCouponQty != null" >
+                cash_coupon_qty = #{cashCouponQty,jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_gift_details WHERE ID = #{id}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_gift_details
+    </select>
+
+</mapper>

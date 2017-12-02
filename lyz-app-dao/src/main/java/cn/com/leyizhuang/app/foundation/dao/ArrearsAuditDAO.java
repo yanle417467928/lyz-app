@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import org.apache.ibatis.annotations.Param;
@@ -57,5 +57,5 @@ public interface ArrearsAuditDAO {
      * @param userID    用户id
      * @return  返回还款记录列表
      */
-    List<RepaymentMoneyListResponse> getRepaymentMondyList(@Param("userID") Long userID);
+    List<OrderBillingPaymentDetails> getRepaymentMondyList(@Param("userID") Long userID);
 }

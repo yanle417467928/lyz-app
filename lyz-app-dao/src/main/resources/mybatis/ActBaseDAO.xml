@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActBaseDAO">
+
+    <sql id="ALL_FIELDS">
+        id, create_time, title, begin_time, end_time, city_id, city_name, store_ids, act_target,
+    base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
+    full_number
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        INSERT INTO act_base (
+         create_time, title, begin_time, end_time, city_id, city_name, store_ids, act_target,
+    base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
+    full_number
+        )
+        VALUES
+        (
+         #{createTime,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR},
+      #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{cityId,jdbcType=BIGINT},
+      #{cityName,jdbcType=VARCHAR}, #{storeIds,jdbcType=VARCHAR}, #{actTarget,jdbcType=VARCHAR},
+      #{baseType,jdbcType=VARCHAR}, #{promotionType,jdbcType=VARCHAR}, #{conditionType,jdbcType=VARCHAR},
+      #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
+      #{fullNumber,jdbcType=INTEGER}, #{storeNames,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        UPDATE act_base
+        <set>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null" >
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null" >
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cityId != null" >
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="cityName != null" >
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeIds != null" >
+                store_ids = #{storeIds,jdbcType=VARCHAR},
+            </if>
+            <if test="actTarget != null" >
+                act_target = #{actTarget,jdbcType=VARCHAR},
+            </if>
+            <if test="baseType != null" >
+                base_type = #{baseType,jdbcType=VARCHAR},
+            </if>
+            <if test="promotionType != null" >
+                promotion_type = #{promotionType,jdbcType=VARCHAR},
+            </if>
+            <if test="conditionType != null" >
+                condition_type = #{conditionType,jdbcType=VARCHAR},
+            </if>
+            <if test="isDouble != null" >
+                is_double = #{isDouble,jdbcType=BIT},
+            </if>
+            <if test="giftChooseNumber != null" >
+                gift_choose_number = #{giftChooseNumber,jdbcType=INTEGER},
+            </if>
+            <if test="fullAmount != null" >
+                full_amount = #{fullAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="fullNumber != null" >
+                full_number = #{fullNumber,jdbcType=INTEGER},
+            </if>
+            <if test="storeNames != null" >
+                store_names = #{storeNames,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base WHERE ID = #{id}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base
+    </select>
+
+</mapper>

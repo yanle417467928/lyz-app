@@ -30,8 +30,9 @@ public class CustomerLeBi {
      */
     private Integer quantity;
     /**
-     * 订单可以使用乐币抵扣金额(注:这个字段不作持久化)
+     * (废弃字段)订单可以使用乐币抵扣金额(注:这个字段不作持久化)
      */
+    @Deprecated
     private Double rebate;
     /**
      * 创建时间
@@ -42,8 +43,4 @@ public class CustomerLeBi {
      */
     private Date lastUpdateTime;
 
-    public CustomerLeBi(Integer quantity, Double rebate) {
-        this.quantity = quantity;
-        this.rebate = rebate;
-    }
 }

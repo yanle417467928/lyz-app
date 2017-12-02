@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.activity;
 
+import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.*;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActBaseDO implements Serializable{
+public class ActBaseDO extends BaseDO{
 
     private static final long serialVersionUID;
 

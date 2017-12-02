@@ -260,7 +260,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </select>
 
     <select id="getQrCodeByUserID" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT qr_code qrCode,
+        SELECT
+            qr_code qrCode
         FROM
             emp_employee
         WHERE
