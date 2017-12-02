@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
-import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
@@ -26,11 +23,13 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
+import cn.com.leyizhuang.app.core.constant.StoreSubventionChangeType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -384,7 +383,9 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void reduceInventoryAndMoney(DeliverySimpleInfo deliverySimpleInfo, Map<Long, Integer> inventoryCheckMap, Long cityId,
                                         Integer identityType, Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails,
-                                        String orderNumber) {
+                                        String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
+            LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
+            LockStoreSubventionException, SystemBusyException{
         //扣减商品库存
         if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
             if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
@@ -448,6 +449,7 @@ public class CommonServiceImpl implements CommonService {
                             log.setChangeTime(Calendar.getInstance().getTime());
                             log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
                             log.setReferenceNumber(orderNumber);
+                            cityService.addCityInventoryAvailableQtyChangeLog(log);
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
@@ -463,37 +465,49 @@ public class CommonServiceImpl implements CommonService {
         //扣减优惠券及乐币
         if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
                 identityType.equals(AppIdentityType.SELLER.getValue())) {
+            Long customerIdTemp;
+            if (identityType.equals(AppIdentityType.CUSTOMER.getValue())) {
+                customerIdTemp = userId;
+            } else {
+                customerIdTemp = customerId;
+            }
             if (null != cashCouponIds && cashCouponIds.size() > 0) {
                 for (Long id : cashCouponIds) {
                     Integer affectLine = customerService.lockCustomerCashCouponById(id, orderNumber);
-                    if (affectLine == 0) {
+                    if (affectLine > 0) {
+                        CustomerCashCouponChangeLog log = new CustomerCashCouponChangeLog();
+                        log.setCusId(customerIdTemp);
+                        log.setCouponId(id);
+                        log.setChangeType(CustomerCashCouponChangeType.PLACE_ORDER);
+                        log.setChangeTypeDesc(CustomerCashCouponChangeType.PLACE_ORDER.getDescription());
+                        log.setUseTime(Calendar.getInstance().getTime());
+                        log.setOperatorId(userId);
+                        log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        log.setOperatorIp(ipAddress);
+                        customerService.addCustomerCashCouponChangeLog(log);
+                    } else {
                         throw new LockCustomerCashCouponException("该客户id为" + id + "的优惠券已使用或已失效!");
                     }
                 }
             }
-            if (billingDetails.getLebiQuantity() > 0) {
-                Long customerIdTemp;
-                if (identityType.equals(AppIdentityType.CUSTOMER.getValue())) {
-                    customerId = userId;
-                } else {
-                    customerId = customerId;
-                }
+            if (null != billingDetails.getLebiQuantity() && billingDetails.getLebiQuantity() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                    CustomerLeBi customerLeBi = customerService.findCustomerLebiByCustomerId(customerId);
+                    CustomerLeBi customerLeBi = customerService.findCustomerLebiByCustomerId(customerIdTemp);
                     if (null != customerLeBi) {
                         if (customerLeBi.getQuantity() < billingDetails.getLebiQuantity()) {
                             throw new LockCustomerLebiException("该客户的乐币数量不足！");
                         }
-                        Integer affectLine = customerService.lockCustomerLebiByUserIdAndQty(customerId,
+                        Integer affectLine = customerService.lockCustomerLebiByUserIdAndQty(customerIdTemp,
                                 billingDetails.getLebiQuantity(), customerLeBi.getLastUpdateTime());
                         if (affectLine > 0) {
                             CustomerLeBiVariationLog log = new CustomerLeBiVariationLog();
-                            log.setCusID(customerId);
+                            log.setCusID(customerIdTemp);
                             log.setVariationTime(Calendar.getInstance().getTime());
                             log.setVariationQuantity(billingDetails.getLebiQuantity());
                             log.setAfterVariationQuantity(customerLeBi.getQuantity() - billingDetails.getLebiQuantity());
                             log.setOrderNum(orderNumber);
                             log.setLeBiVariationType(LeBiVariationType.ORDER);
+                            customerService.addCustomerLeBiVariationLog(log);
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
@@ -502,65 +516,187 @@ public class CommonServiceImpl implements CommonService {
                     } else {
                         throw new LockCustomerLebiException("没有找到该客户的乐币账户!");
                     }
-
                 }
-
             }
         }
         //扣减客户预存款
         if (identityType == AppIdentityType.CUSTOMER.getValue()) {
-            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                CustomerPreDeposit preDeposit = customerService.findByCusId(customerId);
-                if (null != preDeposit) {
-                    if (preDeposit.getBalance() < billingDetails.getCusPreDeposit()) {
-                        throw new LockCustomerPreDepositException("该客户预存款余额不足!");
-                    }
-                    Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
-                            userId, billingDetails.getCusPreDeposit());
-                    if (affectLine > 0) {
-
-                    } else {
-                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+            if (null != billingDetails.getCusPreDeposit() && billingDetails.getCusPreDeposit() > 0) {
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    CustomerPreDeposit preDeposit = customerService.findByCusId(customerId);
+                    if (null != preDeposit) {
+                        if (preDeposit.getBalance() < billingDetails.getCusPreDeposit()) {
+                            throw new LockCustomerPreDepositException("该客户预存款余额不足!");
                         }
+                        Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
+                                userId, billingDetails.getCusPreDeposit(), preDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                            cusPreDepositLogDO.setCusId(customerId);
+                            cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                            cusPreDepositLogDO.setChangeMoney(billingDetails.getCusPreDeposit());
+                            cusPreDepositLogDO.setBalance(preDeposit.getBalance() - billingDetails.getCusPreDeposit());
+                            cusPreDepositLogDO.setOrderNumber(orderNumber);
+                            cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.PLACE_ORDER);
+                            cusPreDepositLogDO.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                            cusPreDepositLogDO.setOperatorId(userId);
+                            cusPreDepositLogDO.setOperatorIp(ipAddress);
+                            customerService.addCusPreDepositLog(cusPreDepositLogDO);
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockCustomerPreDepositException("没有找到该客户的预存款信息");
                     }
-                } else {
-                    throw new LockCustomerPreDepositException("没有找到该客户的预存款信息");
                 }
             }
-
-
         }
         //扣减门店预存款
         if (identityType == AppIdentityType.SELLER.getValue() ||
                 (identityType == AppIdentityType.DECORATE_MANAGER.getValue())) {
-            int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
-                    userId, billingDetails.getStPreDeposit());
-            if (affectLine == 0) {
-                throw new LockStorePreDepositException("用户所属门店预存款余额不足!");
+            if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > 0) {
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(userId);
+                    if (null != preDeposit) {
+                        if (preDeposit.getBalance() < billingDetails.getStPreDeposit()) {
+                            throw new LockStorePreDepositException("导购所属门店预存款余额不足!");
+                        }
+                        int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
+                                userId, billingDetails.getStPreDeposit());
+                        if (affectLine > 0) {
+                            StPreDepositLogDO log = new StPreDepositLogDO();
+                            log.setStoreId(preDeposit.getStoreId());
+                            log.setChangeMoney(billingDetails.getStPreDeposit());
+                            log.setBalance(preDeposit.getBalance() - billingDetails.getStPreDeposit());
+                            log.setCreateTime(LocalDateTime.now());
+                            log.setOrderNumber(orderNumber);
+                            log.setOperatorId(userId);
+                            log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                            log.setOperatorIp(ipAddress);
+                            log.setChangeType(StorePreDepositChangeType.PLACE_ORDER);
+                            storeService.addStPreDepositLog(log);
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
+                    }
+                }
             }
-
         }
         //扣减导购信用额度
         if (identityType == AppIdentityType.SELLER.getValue()) {
-            int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
-                    userId, billingDetails.getEmpCreditMoney());
-            if (affectLine == 0) {
-                throw new LockEmpCreditMoneyException("导购信用额度不足!");
+            if (null != billingDetails.getEmpCreditMoney() && billingDetails.getEmpCreditMoney() > 0) {
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
+                    if (null != empCreditMoney) {
+                        if (empCreditMoney.getCreditLimitAvailable() < billingDetails.getEmpCreditMoney()) {
+                            throw new LockEmpCreditMoneyException("导购信用额度不足!");
+                        }
+                        int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
+                                userId, billingDetails.getEmpCreditMoney());
+                        if (affectLine > 0) {
+                            EmpCreditMoneyChangeLog log = new EmpCreditMoneyChangeLog();
+                            log.setEmpId(userId);
+                            log.setTempCreditLimitChangeAmount(0D);
+                            log.setTempCreditLimitAfterChange(empCreditMoney.getTempCreditLimit());
+                            log.setCreditLimitAvailableChangeAmount(billingDetails.getEmpCreditMoney());
+                            log.setCreditLimitAvailableAfterChange(empCreditMoney.getCreditLimitAvailable() - billingDetails.getEmpCreditMoney());
+                            log.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
+                            log.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getValue());
+                            log.setCreateTime(Calendar.getInstance().getTime());
+                            log.setOperatorId(userId);
+                            log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                            log.setOperatorIp(ipAddress);
+                            log.setReferenceNumber(orderNumber);
+                            employeeService.addEmpCreditMoneyChangeLog(log);
+                            throw new LockEmpCreditMoneyException("导购信用额度不足!");
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockEmpCreditMoneyException("没有找到该导购信用额度信息!");
+                    }
+                }
             }
         }
         //扣减门店信用金及现金返利
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
-            int affectLine = storeService.lockStoreCreditByUserIdAndCredit(
-                    userId, billingDetails.getStoreCreditMoney());
-            if (affectLine == 0) {
-                throw new LockStoreCreditMoneyException("用户所属门店信用额度余额不足!");
+            if (null != billingDetails.getStoreCreditMoney() && billingDetails.getStoreCreditMoney() > 0) {
+                for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    StoreCreditMoney storeCreditMoney = storeService.findStoreCreditMoneyByEmpId(userId);
+                    if (null != storeCreditMoney) {
+                        if (storeCreditMoney.getCreditLimitAvailable() < billingDetails.getStoreCreditMoney()) {
+                            throw new LockStoreCreditMoneyException("该门店（装饰公司）信用额度不足!");
+                        }
+                        int affectLine = storeService.lockStoreCreditByUserIdAndCredit(
+                                userId, billingDetails.getStoreCreditMoney());
+                        if (affectLine > 0) {
+                            StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
+                            log.setStoreId(storeCreditMoney.getStoreId());
+                            log.setChangeAmount(billingDetails.getStoreCreditMoney());
+                            log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() - billingDetails.getStoreCreditMoney());
+                            log.setCreateTime(Calendar.getInstance().getTime());
+                            log.setChangeType(StoreCreditMoneyChangeType.PLACE_ORDER);
+                            log.setChangeTypeDesc(StoreCreditMoneyChangeType.PLACE_ORDER.getDescription());
+                            log.setOperatorId(userId);
+                            log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                            log.setOperatorIp(ipAddress);
+                            log.setReferenceNumber(orderNumber);
+                            storeService.addStoreCreditMoneyChangeLog(log);
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockStoreCreditMoneyException("没有找到该门店（装饰公司）信用额度信息!");
+                    }
+                }
+
             }
-            int result = storeService.lockStoreSubventionByUserIdAndSubvention(
-                    userId, billingDetails.getStoreSubvention());
-            if (result == 0) {
-                throw new LockStoreSubventionException("用户所属门店现金返利余额不足!");
+            if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
+                if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
+                    for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                        StoreSubvention subvention = storeService.findStoreSubventionByEmpId(userId);
+                        if (null != subvention) {
+                            if (subvention.getBalance() < billingDetails.getStoreSubvention()) {
+                                throw new LockStoreSubventionException("该门店现金返利余额不足！");
+                            }
+                            int affectLine = storeService.lockStoreSubventionByUserIdAndSubvention(
+                                    userId, billingDetails.getStoreSubvention());
+                            if (affectLine > 0) {
+                                StoreSubventionChangeLog log = new StoreSubventionChangeLog();
+                                log.setStoreId(subvention.getStoreId());
+                                log.setChangeAmount(billingDetails.getStoreSubvention());
+                                log.setBalance(subvention.getBalance() - billingDetails.getStoreSubvention());
+                                log.setCreateTime(Calendar.getInstance().getTime());
+                                log.setChangeType(StoreSubventionChangeType.PLACE_ORDER);
+                                log.setChangeTypeDesc(StoreSubventionChangeType.PLACE_ORDER.getDescription());
+                                log.setOperatorId(userId);
+                                log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                                log.setOperatorIp(ipAddress);
+                                log.setReferenceNumber(orderNumber);
+                                storeService.addStoreSubventionChangeLog(log);
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
+                            }
+                        } else {
+                            throw new LockStoreSubventionException("该门店现金返利余额不足!");
+                        }
+                    }
+                }
             }
+
+
         }
     }
 }

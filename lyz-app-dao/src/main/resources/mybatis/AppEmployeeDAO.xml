@@ -4,17 +4,17 @@
 
     <insert id="save" parameterType="AppEmployee">
         INSERT INTO emp_employee (login_name, name, password, salt, identity_type, mobile, birthday,
-        status, sex, pic_url, city_id, store_id, manager_id, create_time
+                                  status, sex, pic_url, city_id, store_id, manager_id, create_time
         ) VALUES (
-        #{loginName}, #{name}, #{password}, #{salt},
-        #{identityType,
+            #{loginName}, #{name}, #{password}, #{salt},
+                          #{identityType,
 javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{mobile}, #{birthday}, #{status},
-        #{sex,
+                          #{mobile}, #{birthday}, #{status},
+                          #{sex,
 javaType=cn.com.leyizhuang.app.core.constant.SexType,
 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{picUrl}, #{cityId}, #{storeId},#{managerId},#{createTime}
+                          #{picUrl}, #{cityId}, #{storeId}, #{managerId}, #{createTime}
         )
     </insert>
     <select id="findByLoginName" parameterType="java.lang.String" resultType="AppEmployee">
@@ -75,8 +75,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         SELECT *
         FROM emp_employee
         WHERE emp_id = (SELECT c.sales_consult_id
-        FROM cus_customer c
-        WHERE c.cus_id = #{userId})
+                        FROM cus_customer c
+                        WHERE c.cus_id = #{userId})
     </select>
     <select id="findById" parameterType="java.lang.Long" resultType="AppEmployee">
         SELECT *
@@ -87,34 +87,34 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     <select id="findByIdAndStatusIsTrue" parameterType="java.lang.Long" resultType="AppEmployee">
         SELECT *
         FROM emp_employee
-        WHERE emp_id = #{userId} AND status is true
+        WHERE emp_id = #{userId} AND status IS TRUE
     </select>
 
     <select id="findDecorateEmployeeListByManagerId" parameterType="java.lang.Long"
             resultType="AppEmployee">
         SELECT
-        e.emp_id,
-        e.name,
-        e.mobile,
-        e.pic_url,
-        e.create_time
+            e.emp_id,
+            e.name,
+            e.mobile,
+            e.pic_url,
+            e.create_time
         FROM emp_employee e
         WHERE e.identity_type = 'DECORATE_EMPLOYEE'
-        AND e.manager_id = #{userId}
+              AND e.manager_id = #{userId}
     </select>
 
     <select id="searchBySalesConsultIdAndKeywords"
             resultType="AppEmployee">
         SELECT
-        e.emp_id,
-        e.name,
-        e.mobile,
-        e.pic_url,
-        e.create_time
+            e.emp_id,
+            e.name,
+            e.mobile,
+            e.pic_url,
+            e.create_time
         FROM emp_employee e
         WHERE e.identity_type = 'DECORATE_EMPLOYEE'
-        AND e.manager_id = #{userId}
-        AND (
+              AND e.manager_id = #{userId}
+              AND (
                   e.name LIKE concat('%', #{keywords}, '%')
                   OR e.mobile LIKE concat('%', #{keywords}, '%')
               )
@@ -123,9 +123,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney">
         SELECT
-        credit_limit limitBalance,
-        credit_limit_available availableBalance,
-        temp_credit_limit tempBalance
+            credit_limit           limitBalance,
+            credit_limit_available availableBalance,
+            temp_credit_limit      tempBalance
         FROM emp_credit_money
         WHERE guide_id = #{userId}
     </select>
@@ -161,25 +161,27 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <update id="updateEmployeeMobileByUserId">
         UPDATE
-        emp_employee
+            emp_employee
         SET
-        mobile = #{mobile}
+            mobile = #{mobile}
         WHERE
-        emp_id = #{userId}
+            emp_id = #{userId}
     </update>
 
     <select id="existsSellerCreditByUserId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
-        SELECT emp_credit_money.is_active FROM emp_credit_money WHERE guide_id = #{userId}
+        SELECT emp_credit_money.is_active
+        FROM emp_credit_money
+        WHERE guide_id = #{userId}
     </select>
 
     <update id="lockGuideCreditByUserIdAndGuideCredit">
         UPDATE
-        emp_credit_money
+            emp_credit_money
         SET
-        credit_limit_available = credit_limit_available - #{credit}
+            credit_limit_available = credit_limit_available - #{credit}
         WHERE
-        credit_limit_available >= #{credit}
-        AND guide_id = #{userId}
+            credit_limit_available >= #{credit}
+            AND guide_id = #{userId}
     </update>
 
     <update id="updateByLoginName" parameterType="AppEmployee">
@@ -234,35 +236,60 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <update id="unlockGuideCreditByUserIdAndGuideCredit">
         UPDATE
-        emp_credit_money
+            emp_credit_money
         SET
-        credit_limit_available = credit_limit_available + #{credit}
+            credit_limit_available = credit_limit_available + #{credit}
         WHERE
-        guide_id = #{userId}
+            guide_id = #{userId}
     </update>
 
     <select id="findSellerByStoreIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse">
-        SELECT emp_id sellerId, name sellerName
+        SELECT
+            emp_id sellerId,
+            name   sellerName
         FROM emp_employee
         WHERE store_id = #{storeId} AND identity_type = #{type}
     </select>
 
-    <select id="findDeliveryClerkNoByUserId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+    <select id="findDeliveryClerkNoByUserId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
         SELECT delivery_clerk_no
         FROM emp_employee
         WHERE emp_id = #{userId}
     </select>
 
     <select id="getQrCodeByUserID" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
-            qr_code qrCode,
+        SELECT qr_code qrCode,
         FROM
             emp_employee
         WHERE
             identity_type = 'SELLER'
-        AND emp_id = #{userID}
+            AND emp_id = #{userID}
 
     </select>
+
+    <select id="findEmpCreditMoneyByEmpId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney">
+        SELECT
+            create_time,
+            emp_id,
+            credit_limit,
+            is_active,
+            temp_credit_limit,
+            credit_limit_available
+        FROM emp_credit_money
+        WHERE emp_id = #{empId}
+    </select>
+
+    <insert id="addEmpCreditMoneyChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog">
+        INSERT INTO emp_credit_money_change_log (emp_id, create_time, temp_credit_limit_change_amount, temp_credit_limit_after_change, credit_limit_available_change_amount, credit_limit_available_after_change,
+                                                 reference_number, change_type, change_type_desc, operator_id, operator_type, operator_ip)
+        VALUES (#{empId}, #{createTime}, #{tempCreditLimitChangeAmount}, #{tempCreditLimitAfterChange},
+                          #{creditLimitAvailableChangeAmount}, #{creditLimitAvailableAfterChange},
+                          #{referenceNumber}, #{changeType}, #{changeTypeDesc}, #{operatorId}, #{operatorType},
+                #{operatorIp})
+    </insert>
 
 </mapper>

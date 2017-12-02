@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,5 +126,13 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
             return cityDAO.findCityInventoryByCityIdAndGoodsId(cityId,goodsId);
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log) {
+        if (null != log){
+            cityDAO.addCityInventoryAvailableQtyChangeLog(log);
+        }
     }
 }

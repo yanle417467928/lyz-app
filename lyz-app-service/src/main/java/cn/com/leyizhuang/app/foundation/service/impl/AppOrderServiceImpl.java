@@ -145,7 +145,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setOrderNumber(orderNumber);
         Date repaymentTime = new Date();
         orderBillingPaymentDetails.setPayTime(repaymentTime);
-        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.APIPAY);
+        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
         //orderBillingPaymentDetails.setCurrencyType("实际货币");
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);

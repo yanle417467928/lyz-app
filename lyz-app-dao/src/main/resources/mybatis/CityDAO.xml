@@ -136,5 +136,13 @@
         FROM city_inventory
         WHERE city_id = #{cityId} AND gid = #{goodsId}
     </select>
+    <insert id="addCityInventoryAvailableQtyChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog">
+        INSERT INTO city_inventory_available_qty_change_log
+        (city_id, city_name, gid, sku, sku_name, change_time, change_qty, after_change_qty, change_type,
+         change_type_desc, reference_number)
+        VALUES (#{cityId}, #{cityName}, #{gid}, #{sku}, #{skuName}, #{changeTime}, #{changeQty}, #{afterChangeQty},
+                           #{changeType}, #{changeTypeDesc}, #{referenceNumber})
+    </insert>
 
 </mapper>

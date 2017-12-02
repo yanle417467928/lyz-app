@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +24,7 @@ public class PreDepositLogResponse {
     //变更类型
     private String type;
 
-    public void setType(PreDepositChangeType type) {
+    public void setType(CustomerPreDepositChangeType type) {
         this.type = type.getValue();
     }
 

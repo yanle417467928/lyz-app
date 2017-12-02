@@ -62,7 +62,7 @@ Step 1: Load the following assets in your header.
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 <!-- if using RTL (Right-To-Left) orientation, load the RTL CSS file after fileinput.css by uncommenting below -->
-<!-- link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/css/fileinput-rtl.min.css" media="all" rel="stylesheet" type="text/css" /-->
+type
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <!-- piexif.min.js is only needed for restoring exif data in resized images and when you 
     wish to resize images before upload. This must be loaded before fileinput.min.js -->

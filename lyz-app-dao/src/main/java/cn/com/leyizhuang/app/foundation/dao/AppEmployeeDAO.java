@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
@@ -63,4 +65,7 @@ public interface AppEmployeeDAO {
      */
     String getQrCodeByUserID(@Param("userID") Long userID);
 
+    EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId);
+
+    void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log);
 }

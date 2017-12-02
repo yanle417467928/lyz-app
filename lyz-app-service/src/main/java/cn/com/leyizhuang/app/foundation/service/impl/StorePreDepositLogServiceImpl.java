@@ -1,10 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.dao.StorePreDepositLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     private StorePreDepositLogDAO storePreDepositLogDAO;
 
     @Override
-    public List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<PreDepositChangeType> typeList) {
+    public List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList) {
         return this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
     }
 

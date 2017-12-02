@@ -7,7 +7,9 @@ import java.util.Date;
 
 /**
  * 乐币变动明细
- * Created by caiyu on 2017/11/8.
+ *
+ * @author caiyu
+ * @date 2017/11/8
  */
 @Getter
 @Setter
@@ -29,6 +31,10 @@ public class CustomerLeBiVariationLog {
      * 变动类型
      */
     private LeBiVariationType leBiVariationType;
+    /**
+     * 变动类型说明
+     */
+    private String variationTypeDesc;
     /**
      * 变动数量
      */

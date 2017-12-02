@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
-import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  * Created on 2017-05-08 14:38
  **/
 @Repository
-public interface AppAdminStoreInventoryDAO extends BaseDAO<StoreInventory> {
+public interface AppAdminStoreInventoryDAO {
 
     List<StoreInventory> queryByStoreId(Long storeId);
 

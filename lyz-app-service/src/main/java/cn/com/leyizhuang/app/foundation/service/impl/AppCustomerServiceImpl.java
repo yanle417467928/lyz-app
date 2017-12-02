@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
-import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -13,11 +12,9 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -202,9 +199,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     @Transactional
-    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
+    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Date version) {
         if (null != userId && null != customerDeposit) {
-            return customerDAO.updateDepositByUserIdAndDeposit(userId, customerDeposit);
+            return customerDAO.updateDepositByUserIdAndDeposit(userId, customerDeposit,version);
         }
         return 0;
     }
@@ -352,6 +349,30 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public void addCustomerCashCouponChangeLog(CustomerCashCouponChangeLog log) {
+        if (null != log){
+            customerDAO.addCustomerCashCouponChangeLog(log);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addCustomerLeBiVariationLog(CustomerLeBiVariationLog log) {
+        if (null != log){
+            customerDAO.addCustomerLeBiVariationLog(log);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addCusPreDepositLog(CusPreDepositLogDO cusPreDepositLogDO) {
+        if (null != cusPreDepositLogDO){
+            customerDAO.addCusPreDepositLog(cusPreDepositLogDO);
+        }
+    }
+
 
     @Override
     public CustomerPreDeposit findByCusId(Long cusId) {
@@ -369,7 +390,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
      */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type) {
+    public void preDepositRecharge(PaymentDataDO paymentDataDO, CustomerPreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();
         CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(userId);
@@ -385,7 +406,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);
         log.setUserIdAndOperatorinfo(userId, userId, paymentDataDO.getAppIdentityType(), "");
         log.setOrderNumber(paymentDataDO.getOutTradeNo());
-        log.setUserOrderNumber(paymentDataDO.getTradeNo());
+        log.setMerchantOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), money));
         this.cusPreDepositLogServiceImpl.save(log);
     }

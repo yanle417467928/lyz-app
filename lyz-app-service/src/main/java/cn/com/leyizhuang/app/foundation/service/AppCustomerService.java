@@ -1,14 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 
 import java.util.Date;
 import java.util.List;
@@ -62,7 +61,7 @@ public interface AppCustomerService {
 
     void updateLastSignTimeByCustomerId(Long cusId, Date date);
 
-    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit);
+    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Date version);
 
     int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Date version);
 
@@ -84,7 +83,7 @@ public interface AppCustomerService {
 
     CustomerPreDeposit findByCusId(Long cusId);
 
-    void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
+    void preDepositRecharge(PaymentDataDO paymentDataDO, CustomerPreDepositChangeType type);
 
     List<CashCouponResponse> findCashCouponUseableByCustomerId(Long customerId, Double totalOrderAmount);
 
@@ -97,4 +96,10 @@ public interface AppCustomerService {
     Integer lockCustomerCashCouponById(Long id,String orderNumber);
 
     CustomerLeBi findCustomerLebiByCustomerId(Long customerId);
+
+    void addCustomerCashCouponChangeLog(CustomerCashCouponChangeLog log);
+
+    void addCustomerLeBiVariationLog(CustomerLeBiVariationLog log);
+
+    void addCusPreDepositLog(CusPreDepositLogDO cusPreDepositLogDO);
 }

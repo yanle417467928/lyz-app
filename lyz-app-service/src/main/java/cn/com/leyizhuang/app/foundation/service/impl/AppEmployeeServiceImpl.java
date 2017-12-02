@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
@@ -185,5 +187,21 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public String getQrCodeByUserID(Long userID) {
         return employeeDAO.getQrCodeByUserID(userID);
+    }
+
+    @Override
+    public EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId) {
+        if (null != empId){
+            return employeeDAO.findEmpCreditMoneyByEmpId(empId);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log) {
+        if (null !=log){
+            employeeDAO.addEmpCreditMoneyChangeLog(log);
+        }
     }
 }

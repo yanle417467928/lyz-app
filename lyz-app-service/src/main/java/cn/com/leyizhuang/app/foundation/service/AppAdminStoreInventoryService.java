@@ -11,7 +11,7 @@ import com.github.pagehelper.PageInfo;
  * @author Richard
  * Created on 2017-07-12 15:01
  **/
-public interface AppAdminStoreInventoryService extends BaseService<StoreInventory> {
+public interface AppAdminStoreInventoryService{
     PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size);
 
 

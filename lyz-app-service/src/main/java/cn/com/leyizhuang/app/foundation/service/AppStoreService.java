@@ -1,13 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 
 import java.util.Date;
 import java.util.List;
@@ -61,7 +60,7 @@ public interface AppStoreService {
 
     AppStore findByStoreCode(String storeCode);
 
-    void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type);
+    void preDepositRecharge(PaymentDataDO paymentDataDO, StorePreDepositChangeType type);
 
     List<StoreResponse> findStoreByCityIdAndNotStoreType(Long cityId, StoreType storeType);
 
@@ -75,4 +74,16 @@ public interface AppStoreService {
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
 
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
+
+    StorePreDeposit findStorePreDepositByEmpId(Long userId);
+
+    StoreCreditMoney findStoreCreditMoneyByEmpId(Long empId);
+
+    StoreSubvention findStoreSubventionByEmpId(Long userId);
+
+    void addStPreDepositLog(StPreDepositLogDO log);
+
+    void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log);
+
+    void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 }
