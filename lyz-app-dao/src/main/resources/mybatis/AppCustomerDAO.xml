@@ -486,7 +486,7 @@
         VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc}, #{cusId},
                                #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
                 #{detailReason}, #{transferTime}, #{merchantOrderNumber}
-                #{})
+                )
     </insert>
 
 </mapper>
