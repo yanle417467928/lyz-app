@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderReturnBaseInfoDAO">
+
+
+    <select id="queryByReturnNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        SELECT
+        *
+        FROM ord_return_base_info
+        WHERE
+        return_no = #{returnNo}
+    </select>
+
+
+    <insert id="saveOrderReturnBaseInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        INSERT INTO ord_return_base_info
+        (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
+        creator_identityType, creator_phone, cus_id, cus_name, cus_type, reason_info, ord_type, return_status)
+        VALUES
+        (#{orderId}, #{orderNo}, #{orderTime}, #{returnTime}, #{returnNo}, #{returnType}, #{returnPrice}, #{remarksInfo},
+        #{creatorId}, #{creatorIdentityType}, #{creatorPhone}, #{customerId}, #{customerName}, #{customerType},
+         #{reasonInfo}, #{orderType}, #{returnStatus})
+    </insert>
+
+    <update id="modifyOrderReturnBaseInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        UPDATE ord_return_base_info
+        <set>
+            <if test="null != orderId">
+                oid = #{orderId},
+            </if>
+            <if test="null != orderNo">
+                ord_no = #{orderNo},
+            </if>
+            <if test="null != orderTime">
+                order_time = #{orderTime},
+            </if>
+            <if test="null != returnTime">
+                return_time = #{returnTime},
+            </if>
+            <if test="null != returnNo">
+                return_no = #{returnNo},
+            </if>
+            <if test="null != returnType">
+                return_type = #{returnType},
+            </if>
+            <if test="null != returnPrice">
+                return_price = #{returnPrice},
+            </if>
+            <if test="null != remarksInfo">
+                remarks_info = #{remarksInfo},
+            </if>
+            <if test="null != creatorId">
+                creator_id = #{creatorId},
+            </if>
+            <if test="null != creatorIdentityType">
+                creator_identityType = #{creatorIdentityType},
+            </if>
+            <if test="null != creatorPhone">
+                creator_phone = #{creatorPhone},
+            </if>
+            <if test="null != customerId">
+                cus_id = #{customerId},
+            </if>
+            <if test="null != customerName">
+                cus_name = #{customerName},
+            </if>
+            <if test="null != customerType">
+                cus_type = #{customerType},
+            </if>
+            <if test="null != reasonInfo">
+                reason_info = #{reasonInfo},
+            </if>
+            <if test="null != orderType">
+                ord_type = #{orderType},
+            </if>
+            <if test="null != returnStatus">
+                return_status = #{returnStatus},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
