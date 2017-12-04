@@ -18,6 +18,7 @@
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
         AND trade_status = #{tradeStatus}
+        ORDER BY id DESC
     </select>
 
     <update id="updateByTradeStatusIsWaitPay" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">

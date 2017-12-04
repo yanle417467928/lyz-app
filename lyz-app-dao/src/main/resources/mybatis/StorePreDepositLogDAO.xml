@@ -5,11 +5,11 @@
 
     <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse">
         SELECT
-        l.id, l.type, l.create_time, l.change_money, l.order_number
+        l.id, l.change_type type, l.create_time, l.change_money, l.order_number
         FROM st_pre_deposit_log l
         INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
         WHERE
-        l.type in
+        l.change_type in
         <foreach collection="list" item="type" separator="," open="(" close=")">
             #{type}
         </foreach>
@@ -17,8 +17,8 @@
     </select>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
-        INSERT INTO cus_pre_deposit_log
-        (create_time, change_money, remarks, type, store_id, operator_id, operator_type,
+        INSERT INTO st_pre_deposit_log
+        (create_time, change_money, remarks, change_type, store_id, operator_id, operator_type,
         operator_ip, order_number, balance, detail_reason, transfer_time, user_order_number)
         VALUES
         (createTime, changeMoney, remarks, type, storeId, operatorId, operatorType,

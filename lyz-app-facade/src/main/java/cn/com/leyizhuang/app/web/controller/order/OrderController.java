@@ -2,15 +2,13 @@ package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -24,9 +22,7 @@ import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,9 +141,9 @@ public class OrderController {
             //***** 创建订单基础信息 *****
             OrderBaseInfo orderBaseInfo = commonService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
-
+            orderBaseInfo.setOrderType(AppOrderType.SHIPMENT);
             //***** 创建订单物流信息 *****
-            OrderLogisticsInfo logisticsInfo = commonService.createOrderLogisticInfo(deliverySimpleInfo);
+            OrderLogisticsInfo orderLogisticsInfo = commonService.createOrderLogisticInfo(deliverySimpleInfo);
 
             //***** 创建订单商品信息 *****
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
@@ -177,7 +173,11 @@ public class OrderController {
             }
             for (OrderGoodsVO goodsVO : goodsVOList) {
                 if (hasPriceGoodsIdSet.contains(goodsVO.getGid())) {
-                    throw new RuntimeException("商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!");
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!",
+                            null);
+                    logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                    //throw new RuntimeException("商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!");
                 } else {
                     hasPriceGoodsIdSet.add(goodsVO.getGid());
                 }
@@ -227,7 +227,11 @@ public class OrderController {
                         ids.append(id).append(",");
                     }
                 }
-                throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为 '" + ids + "'的商品在当前门店下没有找到价格!",
+                        null);
+                logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+                //throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
             }
 
             //********* 处理订单账务相关信息 *********
@@ -236,45 +240,50 @@ public class OrderController {
             orderBillingDetails.setOrderAmount(goodsTotalPrice);
             orderBillingDetails.setMemberDiscount(memberDiscount);
             orderBillingDetails.setPromotionDiscount(promotionDiscount);
-            orderBillingDetails.setIsOwnerReceiving(logisticsInfo.getIsOwnerReceiving());
+            orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
             orderBillingDetails = commonService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, orderParam.getCashCouponIds());
             //******** 处理账单支付明细信息 *********
-
+            List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
             commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
 
+            //******* 持久化订单相关实体信息  *******
+            commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CreateOrderResponse(orderBaseInfo.getOrderNumber(),
+                    orderBillingDetails.getAmountPayable()));
+            logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
+                LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
+                LockStoreSubventionException | SystemBusyException e) {
             e.printStackTrace();
-        } catch (LockCustomerCashCouponException e) {
-            e.printStackTrace();
-        } catch (LockCustomerLebiException e) {
-            e.printStackTrace();
-        } catch (LockCustomerPreDepositException e) {
-            e.printStackTrace();
-        } catch (LockEmpCreditMoneyException e){
-            e.printStackTrace();
-        }
-
-
-
-        catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+            logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
         } catch (IOException e) {
             e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单参数转换异常!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }catch (OrderSaveException e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单创建异常!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
         }
-
-        return null;
-
-        //先核对页面订单信息
-        //锁定库存
-        //掉用支付接口
-        //减扣库存
+        catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 
     /**

@@ -66,4 +66,13 @@ public interface AppOrderService {
 
     void saveOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber,String receiptNumber);
 
+    void saveOrderBaseInfo(OrderBaseInfo orderBaseInfo);
+
+    void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+
+    void saveOrderGoodsInfo(OrderGoodsInfo goodsInfo);
+
+    void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
+
+    void saveOrderBillingPaymentDetail(OrderBillingPaymentDetails paymentDetail);
 }

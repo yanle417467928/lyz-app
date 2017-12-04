@@ -69,26 +69,26 @@ public class AliPayController {
     @PostMapping(value = "/recharge/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> PreDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
 
-        logger.info("PreDepositRecharge CALLED,支付宝充值预存款，入参 userId:{} identityType:{} money:{} cityId:{}", userId, identityType, money, cityId);
+        logger.info("PreDepositRecharge CALLED,支付宝充值预存款提交数据，入参 userId:{} identityType:{} money:{} cityId:{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == money && money <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == cityId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市信息不能为空！", null);
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(money);
@@ -121,20 +121,20 @@ public class AliPayController {
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
 //            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
-            logger.info("PreDepositRecharge OUT,支付宝充值预存款成功，出参 resultDTO:{}", resultDTO);
+            logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (AlipayApiException e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,支付宝充值预存款失败!", null);
-            logger.warn("PreDepositRecharge EXCEPTION,支付宝充值预存款失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,支付宝充值预存款提交数据失败!", null);
+            logger.warn("PreDepositRecharge EXCEPTION,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
     }
 
     @RequestMapping(value = "/return/async")
-    public String AlipayReturnAsync(HttpServletRequest request) {
-
+    public String alipayReturnAsync(HttpServletRequest request) {
+        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 request:{}", request);
         try {
             //获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();
@@ -168,8 +168,10 @@ public class AliPayController {
                 trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
                 total_fee = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"), "UTF-8");
 
+                logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 out_trade_no:{} trade_no:{} trade_status:{} total_fee:{}",
+                        out_trade_no,trade_no,trade_status,total_fee);
                 List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
-                if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
+                if (null != paymentDataDOList) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
                         if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
@@ -177,7 +179,8 @@ public class AliPayController {
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
 
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
-
+                            logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 paymentDataDO:{}",
+                                    paymentDataDO);
                             if (out_trade_no.contains("CZ_")) {
                                 //充值加预存款和日志
                                 if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
@@ -192,18 +195,22 @@ public class AliPayController {
                                 Double money = paymentDataDO.getTotalFee();
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber,money,trade_no,out_trade_no);
                             }
+                            logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                             return "success";
                         }
                     }
-                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_FAIL);
-                    this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
+                        paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_FAIL);
+                        this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
                 }
             }
         } catch (AlipayApiException e) {
             e.printStackTrace();
+            logger.warn("{}", e);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            logger.warn("{}", e);
         }
+        logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "fail");
         return "fail";
     }
 

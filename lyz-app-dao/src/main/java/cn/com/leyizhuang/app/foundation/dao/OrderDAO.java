@@ -55,4 +55,13 @@ public interface OrderDAO {
 
     void updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo);
 
+    void saveOrderBaseInfo(OrderBaseInfo orderBaseInfo);
+
+    void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+
+    void saveOrderGoodsInfo(OrderGoodsInfo goodsInfo);
+
+    void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
+
+    void saveOrderBillingPaymentDetail(OrderBillingPaymentDetails paymentDetail);
 }

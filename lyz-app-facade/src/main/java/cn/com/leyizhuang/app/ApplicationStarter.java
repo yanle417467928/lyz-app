@@ -31,7 +31,8 @@ public class ApplicationStarter {
         registrationBean.setFilter(jwtTokenFilter);
         registrationBean.addUrlPatterns("/*");
         registrationBean.addInitParameter("excludedPages", "/app/employee/login,/app/customer/login," +
-                "/app/customer/registry,/app/city/list,/app/employee/password/modify,/app/sms/verifyCode/send");
+                "/app/customer/registry,/app/city/list,/app/employee/password/modify,/app/sms/verifyCode/send," +
+                "/app/alipay/return/async");
         return registrationBean;
     }
 }
