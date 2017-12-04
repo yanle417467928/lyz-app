@@ -1,14 +1,24 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyStore;
 import java.util.*;
 
 /**
@@ -161,6 +171,70 @@ public class WechatUtil {
             System.out.println("https请求异常：{}" + e);
         }
         return null;
+    }
+
+    /**
+     * 微信退款ssl请求
+     *
+     * @param url  请求路径
+     * @param body 请求参数主体（xml格式字符串）
+     * @return 微信返回信息
+     * @throws Exception 异常
+     * @author Jerry.Ren
+     */
+    public static String refundBySslPost(String url, String body) throws Exception {
+        String result = "";
+        //商户id
+        //指定读取证书格式为PKCS12
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        //读取本机存放的PKCS12证书文件
+        FileInputStream instream = new FileInputStream(new File(""));
+        try {
+            //指定PKCS12的密码(商户ID)
+            keyStore.load(instream, MCH_ID.toCharArray());
+        } finally {
+            instream.close();
+        }
+        SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, MCH_ID.toCharArray()).build();
+        //指定TLS版本
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new String[]{"TLSv1"},
+                null, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        //设置httpclient的SSLSocketFactory
+        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        try {
+            HttpPost httppost = new HttpPost(url);
+            StringEntity reqEntity = new StringEntity(body, "UTF-8");
+            httppost.setEntity(reqEntity);
+            //System.out.println("Executing request: " + httppost.getRequestLine());
+            CloseableHttpResponse response = null;
+            try {
+                response = httpclient.execute(httppost);
+                result = EntityUtils.toString(response.getEntity(), "UTF-8");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("请求失败: {}" + e);
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    if (response != null) {
+                        response.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("请求失败: {}" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     /**

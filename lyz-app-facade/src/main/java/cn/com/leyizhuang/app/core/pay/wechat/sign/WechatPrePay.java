@@ -22,6 +22,14 @@ import java.util.TreeMap;
  */
 
 public class WechatPrePay {
+    /**
+     * 微信下单参数签名
+     *
+     * @param sn          订单号
+     * @param totalAmount 订单金额
+     * @param request
+     * @return 签名证书
+     */
     public static Map<String, Object> wechatSign(String sn, BigDecimal totalAmount, HttpServletRequest request) {
         //设置相关参数
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
@@ -73,5 +81,59 @@ public class WechatPrePay {
         }
         //页面可根据此Map参数调用微信支付页面
         return secondSignMap;
+    }
+
+    /**
+     * 微信退款参数签名
+     *
+     * @param sn         商户原订单号
+     * @param rn         商户退单号
+     * @param totalfee   订单总金额，单位为分，只能为整。
+     * @param refoundfee 退款金额
+     * @param request    请求对象
+     * @return 证书
+     */
+    public static Map<String, Object> wechatRefundSign(String sn, String rn, BigDecimal totalfee, BigDecimal refoundfee, HttpServletRequest request) {
+
+        //设置相关参数
+        SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
+        //基础参数：appid,商户号,随机字符串
+        parameterMap.put("appid", WechatUtil.APPID);
+        parameterMap.put("mch_id", WechatUtil.MCH_ID);
+        parameterMap.put("nonce_str", WechatUtil.getNonceStr());
+        //商户原单号,商户退单号
+        parameterMap.put("out_trade_no", sn);
+        parameterMap.put("out_refund_no", rn);
+
+        DecimalFormat df = new DecimalFormat("0");
+        BigDecimal total = totalfee.multiply(new BigDecimal(100));
+        BigDecimal refound = refoundfee.multiply(new BigDecimal(100));
+        //金额：支付总金额和退单金额
+        parameterMap.put("total_fee", df.format(total));
+        parameterMap.put("total_fee", df.format(refound));
+        //签名
+        String sign = WechatUtil.createSign("UTF-8", parameterMap);
+        parameterMap.put("sign", sign);
+
+        //装Map参数转化成xml文件，微信接受XML类型
+        String requestXML = WechatUtil.getRequestXml(parameterMap);
+        //这里需要传入微信商户本地证书
+        String result = null;
+        try {
+            //TODO 微信退款需要下载商户证书
+            result = WechatUtil.refundBySslPost("https://api.mch.weixin.qq.com/secapi/pay/refund", requestXML);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //微信根据参数返回一个xml文件，解析成Map
+        Map map = null;
+        SortedMap<String, Object> secondSignMap = null;
+        try {
+            map = WechatUtil.doXMLParse(result);
+        } catch (JDOMException | IOException e) {
+            e.printStackTrace();
+        }
+        //返回信息中包含微信退款成功失败信息
+        return map;
     }
 }
