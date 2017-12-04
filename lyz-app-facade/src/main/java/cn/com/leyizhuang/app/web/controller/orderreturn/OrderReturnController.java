@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.returnorder;
+package cn.com.leyizhuang.app.web.controller.orderreturn;
 
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -20,9 +20,9 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/app/return")
-public class ReturnController {
+public class OrderReturnController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReturnController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderReturnController.class);
 
     @Resource
     private AppOrderService appOrderService;
