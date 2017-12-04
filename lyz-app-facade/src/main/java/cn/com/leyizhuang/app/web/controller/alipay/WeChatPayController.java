@@ -254,6 +254,73 @@ public class WeChatPayController {
     }
 
     /**
+     * 微信退款接口
+     *
+     * @param userId
+     * @param identityType
+     * @param money
+     * @return
+     */
+    @PostMapping(value = "/wechat/refund", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> wechatReturnMoney(HttpServletRequest req, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
+
+
+        logger.info("wechatReturnMoney CALLED,微信退款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == money || money <= 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
+            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
+        if (totlefee == null) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
+            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+//        if (!totlefee.equals(money)) {
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
+//            logger.info("wechatReturnMoney OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+//        }
+        String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
+        Double totlefeeParse = Double.parseDouble(totlefeeFormat);
+        String subject = "微信退款";
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc, subject,
+                totlefeeParse, PaymentDataStatus.WAIT_PAY, "微信退款", "微信退款");
+        this.paymentDataServiceImpl.save(paymentDataDO);
+
+        try {
+//            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatRefundSign(orderNo,refundNo, new BigDecimal(totlefeeParse), req);
+
+            //TODO 需要退单表
+
+
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
+//            logger.info("wechatReturnMoney OUT,微信退款成功，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信支付订单失败!", null);
+            logger.warn("wechatReturnMoney EXCEPTION,微信退款失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * 接受微信调用后返回参数的回调接口
      *
      * @param request  请求对象
@@ -336,70 +403,4 @@ public class WeChatPayController {
         }
     }
 
-    /**
-     * 微信退款接口
-     *
-     * @param userId
-     * @param identityType
-     * @param money
-     * @return
-     */
-    @PostMapping(value = "/wechat/refund", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> wechatReturnMoney(HttpServletRequest req, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
-
-
-        logger.info("wechatReturnMoney CALLED,微信退款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType);
-        ResultDTO<Object> resultDTO;
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == money || money <= 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
-            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
-        if (totlefee == null) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
-            logger.info("wechatReturnMoney OUT,微信退款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-//        if (!totlefee.equals(money)) {
-//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
-//            logger.info("wechatReturnMoney OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
-//            return resultDTO;
-//        }
-        String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
-        Double totlefeeParse = Double.parseDouble(totlefeeFormat);
-        String subject = "微信退款";
-
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc, subject,
-                totlefeeParse, PaymentDataStatus.WAIT_PAY, "微信退款", "微信退款");
-        this.paymentDataServiceImpl.save(paymentDataDO);
-
-        try {
-//            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatRefundSign(orderNo,refundNo, new BigDecimal(totlefeeParse), req);
-
-            //TODO 需要退单表
-
-
-//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
-//            logger.info("wechatReturnMoney OUT,微信退款成功，出参 resultDTO:{}", resultDTO);
-//            return resultDTO;
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信支付订单失败!", null);
-            logger.warn("wechatReturnMoney EXCEPTION,微信退款失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-        }
-    }
 }
