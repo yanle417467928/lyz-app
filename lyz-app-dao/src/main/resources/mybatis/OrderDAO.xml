@@ -240,7 +240,7 @@
             ob.status              orderStatus,
             ob.delivery_type       deliveryType,
             od.collection_amount   collectionAmount,
-            od.own_money           ownMoney,
+            od.arrearage           ownMoney,
             ob.customer_name       customerName,
             ob.customer_phone      customerPhone,
             ob.sales_consult_name  sellerName,
@@ -270,7 +270,7 @@
         UPDATE ord_billing_details
         <set>
             <if test="null != arrearage">
-                own_money = #{arrearage},
+                arrearage = #{arrearage},
             </if>
         </set>
         WHERE ord_no = #{orderNumber}
