@@ -1,6 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCouponChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer;
@@ -65,7 +68,7 @@ public interface AppCustomerDAO {
 
     void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
 
-    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
+    int updateDepositByUserIdAndDeposit(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param(value = "version") Date version);
 
     int updateProductCouponByUserIdAndProductCoupons(
             @Param("userId") Long userId, @Param("gid") Long goodsId, @Param("qty") Integer qty);
@@ -104,4 +107,10 @@ public interface AppCustomerDAO {
                                          @Param(value = "orderNumber") String orderNumber);
 
     CustomerLeBi findCustomerLebiByCustomerId(Long customerId);
+
+    void addCustomerCashCouponChangeLog(CustomerCashCouponChangeLog log);
+
+    void addCustomerLeBiVariationLog(CustomerLeBiVariationLog log);
+
+    void addCusPreDepositLog(CusPreDepositLogDO cusPreDepositLogDO);
 }

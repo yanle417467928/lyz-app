@@ -20,14 +20,11 @@ import java.util.List;
  * Created on 2017-07-12 15:06
  **/
 @Service
-public class AppAdminStoreInventoryServiceImpl extends BaseServiceImpl<StoreInventory> implements AppAdminStoreInventoryService {
+public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventoryService {
 
     @Autowired
     private AppAdminStoreInventoryDAO storeInventoryDAO;
 
-    public AppAdminStoreInventoryServiceImpl(BaseDAO<StoreInventory> baseDAO) {
-        super(baseDAO);
-    }
 
     @Override
     public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size) {

@@ -1,19 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -208,7 +205,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    public void preDepositRecharge(PaymentDataDO paymentDataDO, PreDepositChangeType type) {
+    public void preDepositRecharge(PaymentDataDO paymentDataDO, StorePreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();
         StorePreDeposit storePreDeposit = this.storeDAO.findStorePreDepositByEmpId(userId);
@@ -225,7 +222,7 @@ public class AppStoreServiceImpl implements AppStoreService {
         log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);
         log.setUserIdAndOperatorinfo(storePreDeposit.getStoreId(), userId, paymentDataDO.getAppIdentityType(), "");
         log.setOrderNumber(paymentDataDO.getOutTradeNo());
-        log.setUserOrderNumber(paymentDataDO.getTradeNo());
+        log.setMerchantOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(storePreDeposit.getBalance(), money));
         this.storePreDepositLogServiceImpl.save(log);
     }
@@ -262,23 +259,69 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Transactional
     public Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Date version) {
         if (null != storeId && null != goodsId && null != inventory) {
-            return storeDAO.updateStoreInventoryByStoreIdAndGoodsIdAndInventory(storeId, goodsId, inventory,version);
+            return storeDAO.updateStoreInventoryByStoreIdAndGoodsIdAndInventory(storeId, goodsId, inventory, version);
         }
         return null;
     }
 
     @Override
     public StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId) {
-        if (null != bookingStoreId && null != goodsId){
-            return storeDAO.findStoreInventoryByStoreIdAndGoodsId(bookingStoreId,goodsId);
+        if (null != bookingStoreId && null != goodsId) {
+            return storeDAO.findStoreInventoryByStoreIdAndGoodsId(bookingStoreId, goodsId);
         }
-            return null;
+        return null;
     }
 
     @Override
+    @Transactional
     public void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log) {
-        if (null != log){
+        if (null != log) {
             storeDAO.addStoreInventoryAvailableQtyChangeLog(log);
+        }
+    }
+
+    @Override
+    public StorePreDeposit findStorePreDepositByEmpId(Long userId) {
+        if (null != userId) {
+            return storeDAO.findStorePreDepositByEmpId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public StoreCreditMoney findStoreCreditMoneyByEmpId(Long empId) {
+        if (null != empId) {
+            return storeDAO.findStoreCreditMoneyByEmpId(empId);
+        }
+        return null;
+    }
+
+    @Override
+    public StoreSubvention findStoreSubventionByEmpId(Long userId) {
+        if (null != userId) {
+            return storeDAO.findStoreSubventionByEmpId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public void addStPreDepositLog(StPreDepositLogDO log) {
+        if (null != log){
+            storeDAO.addStPreDepositLog(log);
+        }
+    }
+
+    @Override
+    public void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log) {
+        if (null != log){
+            storeDAO.addStoreCreditMoneyChangeLog(log);
+        }
+    }
+
+    @Override
+    public void addStoreSubventionChangeLog(StoreSubventionChangeLog log) {
+        if (null != log){
+            storeDAO.addStoreSubventionChangeLog(log);
         }
     }
 }

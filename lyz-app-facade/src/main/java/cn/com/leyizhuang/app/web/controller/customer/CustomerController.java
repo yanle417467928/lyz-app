@@ -12,12 +12,10 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -510,7 +508,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
+            List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getRechargeType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
@@ -551,7 +549,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
+            List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getConsumptionType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);

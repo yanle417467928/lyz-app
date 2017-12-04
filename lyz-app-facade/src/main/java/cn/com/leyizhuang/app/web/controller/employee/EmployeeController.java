@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -10,7 +11,6 @@ import cn.com.leyizhuang.app.foundation.service.StoreCreditMoneyLogService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.StoreSubventionLogService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -286,7 +286,7 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getRechargeType();
+            List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录成功，出参 resultDTO:{}", resultDTO);
@@ -327,7 +327,7 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            List<PreDepositChangeType> preDepositChangeTypeList = PreDepositChangeType.getConsumptionType();
+            List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录成功，出参 resultDTO:{}", resultDTO);

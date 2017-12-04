@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
-import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,16 +17,16 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class StoreInventory extends BaseDO {
+public class StoreInventory {
 
     private Long id;
     /**
      * 城市id
-      */
+     */
     private Long cityId;
     /**
      * 城市编码
-      */
+     */
     private String cityCode;
     /**
      * 城市名称
@@ -47,7 +46,7 @@ public class StoreInventory extends BaseDO {
     private String storeName;
     /**
      * 商品id
-      */
+     */
     private Long gid;
     /**
      * 商品编码
@@ -70,4 +69,9 @@ public class StoreInventory extends BaseDO {
      * 上次修改时间
      */
     private Date lastUpdateTime;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }

@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.StoreType;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
@@ -100,4 +99,14 @@ public interface AppStoreDAO {
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
 
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
+
+    StoreCreditMoney findStoreCreditMoneyByEmpId(Long empId);
+
+    StoreSubvention findStoreSubventionByEmpId(Long userId);
+
+    void addStPreDepositLog(StPreDepositLogDO log);
+
+    void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log);
+
+    void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 }

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderReturnDAO">
+
+
+    <select id="queryByReturnNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        SELECT
+        *
+        FROM ord_return_base_info
+        WHERE
+        return_no = #{returnNo}
+    </select>
+
+
+    <insert id="saveOrderReturnBaseInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        INSERT INTO ord_return_base_info
+        (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
+        creator_identityType, creator_phone, cus_id, cus_name, cus_type, reason_info, ord_type, return_status)
+        VALUES
+        (#{orderId}, #{orderNo}, #{orderTime}, #{returnTime}, #{returnNo}, #{returnType}, #{returnPrice}, #{remarksInfo},
+        #{creatorId}, #{creatorIdentityType}, #{creatorPhone}, #{customerId}, #{customerName}, #{customerType},
+         #{reasonInfo}, #{orderType}, #{returnStatus})
+    </insert>
+
+    <update id="modifyOrderReturnBaseInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo">
+        UPDATE ord_return_base_info
+        <set>
+            <if test="null != orderId">
+                oid = #{orderId},
+            </if>
+            <if test="null != orderNo">
+                ord_no = #{orderNo},
+            </if>
+            <if test="null != orderTime">
+                order_time = #{orderTime},
+            </if>
+            <if test="null != returnTime">
+                return_time = #{returnTime},
+            </if>
+            <if test="null != returnNo">
+                return_no = #{returnNo},
+            </if>
+            <if test="null != returnType">
+                return_type = #{returnType},
+            </if>
+            <if test="null != returnPrice">
+                return_price = #{returnPrice},
+            </if>
+            <if test="null != remarksInfo">
+                remarks_info = #{remarksInfo},
+            </if>
+            <if test="null != creatorId">
+                creator_id = #{creatorId},
+            </if>
+            <if test="null != creatorIdentityType">
+                creator_identityType = #{creatorIdentityType},
+            </if>
+            <if test="null != creatorPhone">
+                creator_phone = #{creatorPhone},
+            </if>
+            <if test="null != customerId">
+                cus_id = #{customerId},
+            </if>
+            <if test="null != customerName">
+                cus_name = #{customerName},
+            </if>
+            <if test="null != customerType">
+                cus_type = #{customerType},
+            </if>
+            <if test="null != reasonInfo">
+                reason_info = #{reasonInfo},
+            </if>
+            <if test="null != orderType">
+                ord_type = #{orderType},
+            </if>
+            <if test="null != returnStatus">
+                return_status = #{returnStatus},
+            </if>
+        </set>
+        WHERE roid = #{roid}
+    </update>
+
+    <insert id="saveOrderReturnBilling"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBilling">
+        INSERT INTO ord_return_billing
+        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash)
+        VALUES
+        (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention}, #{onlinePay},
+        #{cash})
+    </insert>
+
+    <insert id="saveOrderReturnBillingDetail"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBillingDetail">
+        INSERT INTO ord_return_billing_detail
+        (roid, return_pay_type, return_money, into_amount_time, currency_type, reply_code, refund_number)
+        VALUES
+        (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{currencyType}, #{replyCode}, #{refundNumber})
+    </insert>
+
+    <insert id="saveOrderReturnCashCoupon"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnCashCoupon">
+        INSERT INTO ord_return_cash_coupon
+        (ord_no, roid, ccid, is_return)
+        VALUES
+        (#{orderNo}, #{roid}, #{ccid}, #{isReturn})
+    </insert>
+
+    <insert id="saveOrderReturnProductCoupon"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnProductCoupon">
+        INSERT INTO ord_return_cash_coupon
+        (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return)
+        VALUES
+        (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn})
+    </insert>
+
+    <insert id="saveOrderReturnGoodsInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnGoodsInfo">
+        INSERT INTO ord_return_goods_info
+        (roid, return_no, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty)
+        VALUES
+        (#{roid}, #{returnNo}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
+         #{returnPrice}, #{returnQty})
+    </insert>
+
+
+</mapper>

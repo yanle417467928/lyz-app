@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
@@ -22,7 +24,9 @@ import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -77,12 +82,14 @@ public class OrderController {
 
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> createOrder(OrderCreateParam orderParam) {
+    public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
         logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},remark:{},goodsInfo:{}," +
                         " deliveryInfo:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", orderParam.getCityId(),
                 orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getRemark(), orderParam.getGoodsInfo(),
                 orderParam.getDeliveryInfo(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
         ResultDTO<Object> resultDTO;
+        //获取客户端ip地址
+        String ipAddress = IpUtils.getIpAddress(request);
         if (null == orderParam.getCityId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
@@ -236,10 +243,28 @@ public class OrderController {
 
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
             commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
-                    orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber());
+                    orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
 
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException e) {
+            e.printStackTrace();
+        } catch (LockCustomerCashCouponException e) {
+            e.printStackTrace();
+        } catch (LockCustomerLebiException e) {
+            e.printStackTrace();
+        } catch (LockCustomerPreDepositException e) {
+            e.printStackTrace();
+        } catch (LockEmpCreditMoneyException e){
+            e.printStackTrace();
+        }
+
+
+
+        catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -766,7 +791,7 @@ public class OrderController {
             if (null != lockExpendRequest.getCustomerDeposit() && identityType == 6) {
 
                 int result = appCustomerService.lockCustomerDepositByUserIdAndDeposit(
-                        userId, lockExpendRequest.getCustomerDeposit());
+                        userId, lockExpendRequest.getCustomerDeposit(), new Date());
                 if (result == 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "客户预存款余额不足!", null);
                     logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败,客户预存款余额不足，出参 resultDTO:{}", resultDTO);
@@ -817,7 +842,7 @@ public class OrderController {
             if (null != lockExpendRequest.getLebiQty() && identityType == 6) {
 
                 int result = appCustomerService.lockCustomerLebiByUserIdAndQty(
-                        userId, lockExpendRequest.getLebiQty(),Calendar.getInstance().getTime());
+                        userId, lockExpendRequest.getLebiQty(), Calendar.getInstance().getTime());
                 if (result == 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客乐币剩余数量不足!", null);
                     logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，顾客乐币剩余数量不足 出参 resultDTO:{}", resultDTO);

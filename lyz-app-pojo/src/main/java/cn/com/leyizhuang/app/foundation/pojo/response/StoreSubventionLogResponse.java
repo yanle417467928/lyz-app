@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 
-import cn.com.leyizhuang.common.core.constant.StoreSubventionChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreSubventionChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

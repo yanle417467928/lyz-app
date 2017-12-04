@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.common.core.constant.StoreCreditChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreCreditMoneyChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +22,7 @@ public class StoreCreditMoneyLogResponse {
     //变更类型
     private String type;
 
-    public void setType(StoreCreditChangeType type) {
+    public void setType(StoreCreditMoneyChangeType type) {
         this.type = type.getValue();
     }
 }

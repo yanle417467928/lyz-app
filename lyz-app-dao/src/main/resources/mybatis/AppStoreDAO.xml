@@ -267,7 +267,7 @@
         INSERT INTO st_pre_deposit
         (store_id, balance)
         VALUES
-            (storeId, balance)
+            (#{storeId}, #{balance})
     </insert>
     <select id="findAppStoreCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
@@ -333,7 +333,7 @@
 
     <insert id="addStoreInventoryAvailableQtyChangeLog" parameterType=
             "cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog">
-        INSERT INTO st_inventory_available_qty_change_log (id, city_id, city_name, store_id, store_name, store_code, gid, sku, sku_name,
+        INSERT INTO st_inventory_available_qty_change_log (city_id, city_name, store_id, store_name, store_code, gid, sku, sku_name,
                                                            change_time, change_qty, after_change_qty, reference_number, change_type,
                                                            change_type_desc)
         VALUES
@@ -341,5 +341,57 @@
                         #{changeQty}, #{after_change_qty},
              #{referenceNumber}, #{changeType}, #{changeTypeDesc})
     </insert>
+    <select id="findStoreCreditMoneyByEmpId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney">
+        SELECT
+            id,
+            create_time,
+            last_update_time,
+            store_id,
+            credit_limit,
+            credit_limit_available
+        FROM st_credit_money
+        WHERE store_id = (SELECT emp_employee.store_id
+                          FROM emp_employee
+                          WHERE emp_id = #{empId})
+    </select>
 
+    <select id="findStoreSubventionByEmpId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.StoreSubvention">
+        SELECT
+            id,
+            create_time,
+            last_update_time,
+            store_id,
+            balance
+        FROM st_subvention
+        WHERE store_id = (SELECT emp_employee.store_id
+                          FROM emp_employee
+                          WHERE emp_id = #{userId})
+    </select>
+
+    <insert id="addStPreDepositLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
+        INSERT INTO st_pre_deposit_log (create_time, change_money, remarks, change_type, store_id, operator_id, operator_type, operator_ip,
+                                        order_number, balance, detail_reason, transfer_time, merchant_order_number)
+        VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{orderNumber}, #{changeType}, #{storeId}, #{operatorId},
+                               #{operatorType}, #{operatorIp},
+                               #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+    </insert>
+    <insert id="addStoreCreditMoneyChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog">
+        INSERT INTO st_credit_money_change_log (store_id, create_time, change_amount, credit_limit_available_after_change, reference_number, change_type, change_type_desc,
+                                                operator_id, operator_type, operator_ip, remark)
+        VALUES (#{storeId}, #{createTime}, #{changeAmount},
+                            #{creditLimitAvailableAfterChange}, #{referenceNumber}, #{changeType}, #{changeTypeDesc},
+                            #{operatorId}, #{operatorType}, #{operatorIp}, #{remark})
+    </insert>
+
+    <insert id="addStoreSubventionChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.StoreSubventionChangeLog">
+        INSERT INTO st_subvention_change_log (store_id, create_time, change_amount, balance, reference_number, change_type, change_type_desc,
+                                              operator_id, operator_type, operator_ip, remark)
+        VALUES (#{storeId}, #{createTime}, #{changeAmount},
+                            #{balance}, #{referenceNumber}, #{changeType}, #{changeTypeDesc}, #{operatorId},
+                            #{operatorType}, #{operatorIp}, #{remark})
+    </insert>
 </mapper>

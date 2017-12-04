@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
@@ -59,5 +60,7 @@ public interface CommonService {
     OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType, BillingSimpleInfo billing, List<Long> cashCouponIds);
 
     void reduceInventoryAndMoney(DeliverySimpleInfo deliverySimpleInfo, Map<Long, Integer> inventoryCheckMap, Long cityId, Integer identityType,
-                                 Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails,String orderNumber);
+                                 Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails, String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
+            LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
+            LockStoreSubventionException, SystemBusyException;
 }

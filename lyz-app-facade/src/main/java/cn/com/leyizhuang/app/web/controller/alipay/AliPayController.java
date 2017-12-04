@@ -1,17 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.alipay;
 
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
-import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
-import cn.com.leyizhuang.app.core.constant.PaymentDataType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import cn.com.leyizhuang.common.core.constant.PreDepositChangeType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.alipay.api.AlipayApiException;
@@ -185,10 +181,10 @@ public class AliPayController {
                             if (out_trade_no.contains("CZ_")) {
                                 //充值加预存款和日志
                                 if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
-                                    this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                    this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.ALIPAY_RECHARGE);
                                 } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
                                         || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
-                                    this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, PreDepositChangeType.ALIPAY_RECHARGE);
+                                    this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
                                 }
                             }
                             if (out_trade_no.contains("_HK")){
@@ -221,7 +217,7 @@ public class AliPayController {
      * @date 2017/11/20
      */
     @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> AliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
+    public ResultDTO<Object> aliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
 
         logger.info("AliPayDebtRepayments CALLED,支付宝欠款还款，入参 userId:{} identityType:{} orderNumber:{}", userId, identityType, orderNumber);
         ResultDTO<Object> resultDTO;
@@ -248,7 +244,7 @@ public class AliPayController {
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
         String outTradeNo = orderNumber.replaceAll("_XN","_HK");
-        String subject = "欠款还款";
+        String subject = "支付宝欠款还款";
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);

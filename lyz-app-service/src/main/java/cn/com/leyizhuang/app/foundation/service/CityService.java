@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 
 import java.util.Date;
 import java.util.List;
@@ -37,4 +38,6 @@ public interface CityService {
     Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Date version);
 
     CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId);
+
+    void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log);
 }
