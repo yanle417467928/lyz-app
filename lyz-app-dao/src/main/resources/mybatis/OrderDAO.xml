@@ -3,12 +3,12 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
     <sql id="All_FIELD">
-        OID,ORDER_NO,ORDER_TYPE,CREATE_TIME,EFFECTIVE_END_TIME,STATUS,DELIVERY_STATUS,PICK_UP_CODE,DELIVERT_TYPE,
-        ORDER_SUBJECT_TYPE,CREATOR_IDENTITY_TYPE,COMPANY_CODE,COMPANY_STRUCTURE_CODE,CREATOR_ID_FIT,CREATOR_NAME_FIT,
-        CREATOR_PHONE_FIT,EMPLOYEE_ID,EMPLOYEE_NAME,MANAGER_ID,MANAGER_NAME,AUDITOR_ID,AUDITOR_NAME,AUDITOR_PHONE,
-        AUDITING_TIME,STORE_CODE,STORE_STRUCTURE_CODE,CREATOR_ID_STORE,CREATOR_NAME_STORE,CREATOR_PHONE_STORE,
-        SALES_CONSULT_ID,SALES_CONSULT_NAME,SALES_CONSULT_PHONE,CUSTOMER_ID,CUSTOMER_NAME,CUSTOMER_PHONE,
-        TOTAL_GOODS_PRICE,IS_EVALUATED
+        OID, ORDER_NO, ORDER_TYPE, CREATE_TIME, EFFECTIVE_END_TIME, STATUS, DELIVERY_STATUS, PICK_UP_CODE, DELIVERT_TYPE,
+        ORDER_SUBJECT_TYPE, CREATOR_IDENTITY_TYPE, COMPANY_CODE, COMPANY_STRUCTURE_CODE, CREATOR_ID_FIT, CREATOR_NAME_FIT,
+        CREATOR_PHONE_FIT, EMPLOYEE_ID, EMPLOYEE_NAME, MANAGER_ID, MANAGER_NAME, AUDITOR_ID, AUDITOR_NAME, AUDITOR_PHONE,
+        AUDITING_TIME, STORE_CODE, STORE_STRUCTURE_CODE, CREATOR_ID_STORE, CREATOR_NAME_STORE, CREATOR_PHONE_STORE,
+        SALES_CONSULT_ID, SALES_CONSULT_NAME, SALES_CONSULT_PHONE, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_PHONE,
+        TOTAL_GOODS_PRICE, IS_EVALUATED
     </sql>
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         <result column="ord_no" property="orderNumber" jdbcType="VARCHAR"/>
@@ -20,12 +20,18 @@
 
     <select id="getGoodsInfoByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
-        SELECT DISTINCT g.gid, g.sku, g.sku_name, g.goods_specification, g.cover_image_uri, g.goods_unit,
-        og.order_qty qty
+        SELECT DISTINCT
+            g.gid,
+            g.sku,
+            g.sku_name,
+            g.goods_specification,
+            g.cover_image_uri,
+            g.goods_unit,
+            og.order_qty qty
         FROM ord_goods_info og
-        LEFT JOIN gds_goods g ON g.sku = og.sku
+            LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
-        AND (og.is_gift IS NULL OR og.is_gift = false)
+              AND (og.is_gift IS NULL OR og.is_gift = FALSE)
     </select>
 
     <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
@@ -40,7 +46,7 @@
             WHERE
             obi.customer_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
-            AND obi.`status` = 'UNPAID';
+                AND obi.`status` = 'UNPAID';
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` = 'PENDING_RECEIVE';
@@ -61,7 +67,7 @@
             FROM
             ord_base_info AS obi
             WHERE
-            obi.manager_id = #{userID}
+            obi.creator_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID';
             </if>
@@ -126,7 +132,7 @@
             ord_base_info AS obi
             INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             WHERE
-            obi.manager_id = #{userID}
+            obi.creator_id = #{userID}
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
             concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
@@ -149,28 +155,26 @@
     </select>
 
     <select id="getOrderGoodsInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
-        SELECT
-        *
+        SELECT *
         FROM
-        ord_goods_info
+            ord_goods_info
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="getAmountPayableByOrderNumber" resultType="java.lang.Double">
-        SELECT
-        amount_payable
+        SELECT amount_payable
         FROM
-        ord_billing_details
+            ord_billing_details
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="querySumQtyByOrderNumber" resultType="java.lang.Integer">
         SELECT sum(order_qty)
         FROM ord_goods_info
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="findByOrderName" parameterType="java.lang.String"
@@ -185,72 +189,84 @@
 
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-        SELECT
-        *
+        SELECT *
         FROM
-        ord_base_info
+            ord_base_info
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="getOrderLogistice" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
-        SELECT
-        *
+        SELECT *
         FROM
-        ord_logistics_info
+            ord_logistics_info
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="getOrderBillingDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
-        SELECT
-        *
+        SELECT *
         FROM
-        ord_billing_details
+            ord_billing_details
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
-        ogi.order_qty qty,
-        ogi.retail_price,
-        ogi.is_gift,
-        gg.sku_name,
-        gg.gid goodsId,
-        gg.goods_specification,
-        gg.cover_image_uri ,
-        gg.goods_unit
+            ogi.order_qty qty,
+            ogi.retail_price,
+            ogi.is_gift,
+            gg.sku_name,
+            gg.gid        goodsId,
+            gg.goods_specification,
+            gg.cover_image_uri,
+            gg.goods_unit
         FROM
-        ord_goods_info AS ogi
-        INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
+            ord_goods_info AS ogi
+            INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
         WHERE
-        ogi.ord_no = #{orderNumber}
+            ogi.ord_no = #{orderNumber}
     </select>
 
-    <select id="getOrderInfoByOrderNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderTempInfo">
-        SELECT ob.ord_no orderNo, ob.pick_up_code pickUpCode, ob.status orderStatus, ob.delivery_type deliveryType,
-          od.collection_amount collectionAmount, od.own_money ownMoney, ob.customer_name customerName,
-          ob.customer_phone customerPhone, ob.sales_consult_name sellerName, ob.sales_consult_phone sellerPhone,
-          ol.shipping_address shippingAddress, ob.oid orderId, ol.delivery_clerk_no operatorNo, ob.sales_consult_id sellerId
+    <select id="getOrderInfoByOrderNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderTempInfo">
+        SELECT
+            ob.ord_no              orderNo,
+            ob.pick_up_code        pickUpCode,
+            ob.status              orderStatus,
+            ob.delivery_type       deliveryType,
+            od.collection_amount   collectionAmount,
+            od.own_money           ownMoney,
+            ob.customer_name       customerName,
+            ob.customer_phone      customerPhone,
+            ob.sales_consult_name  sellerName,
+            ob.sales_consult_phone sellerPhone,
+            ol.shipping_address    shippingAddress,
+            ob.oid                 orderId,
+            ol.delivery_clerk_no   operatorNo,
+            ob.sales_consult_id    sellerId
         FROM ord_base_info ob
-        LEFT JOIN ord_billing_details od ON od.ord_no = ob.ord_no
-        LEFT JOIN ord_logistics_info ol ON ol.ord_no = ob.ord_no
+            LEFT JOIN ord_billing_details od ON od.ord_no = ob.ord_no
+            LEFT JOIN ord_logistics_info ol ON ol.ord_no = ob.ord_no
         WHERE ob.ord_no = #{orderNo}
 
     </select>
-    
-    <insert id="savePaymentDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+
+    <insert id="savePaymentDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
-        (oid,ord_no,currency_type,pay_time,pay_type,amount,reply_code,receipt_number)
+        (oid, ord_no, currency_type, pay_time, pay_type, amount, reply_code, receipt_number)
         VALUES
-        (#{orderId},#{orderNumber},#{currencyType},#{payTime},#{payType},#{amount},#{replyCode},#{receiptNumber})
+            (#{orderId}, #{orderNumber}, #{currencyType}, #{payTime}, #{payType}, #{amount}, #{replyCode},
+             #{receiptNumber})
     </insert>
 
-    <update id="updateOwnMoneyByOrderNo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+    <update id="updateOwnMoneyByOrderNo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
         UPDATE ord_billing_details
         <set>
             <if test="null != arrearage">
@@ -273,4 +289,72 @@
         WHERE ord_no = #{orderNumber}
     </update>
 
+    <insert id="saveOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo"
+            useGeneratedKeys="true" keyProperty="oid">
+        INSERT INTO ord_base_info (ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code,
+                                   delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
+                                   store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
+                                   customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, online_pay_type, audit_no,
+                                   remark)
+        VALUES (#{orderNumber}, #{orderType}, #{createTime}, #{effectiveEndTime}, #{status}, #{deliveryStatus},
+                                #{pickUpCode}, #{deliveryType},
+                                #{orderSubjectType}, #{creatorIdentityType}, #{creatorId}, #{creatorName},
+                                                                                           #{creatorPhone}, #{storeId},
+                                                                                           #{storeCode},
+                                                                                           #{storeStructureCode},
+                                                                                           #{salesConsultId},
+                                                                                           #{salesConsultName},
+                                                                                           #{salesConsultPhone},
+                                                                                           #{customerId},
+                                                                                           #{customerName},
+                #{customerPhone}, #{totalGoodsPrice}, #{isEvaluated},
+                #{onlinePayType}, #{auditNo}, #{remark})
+    </insert>
+
+    <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
+        INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
+                                        delivery_clerk_no, delivery_clerk_id, delivery_clerk_name, warehouse, is_owner_receiving, receiver,
+                                        receiver_phone, shipping_address, residence_name, delivery_city, delivery_county, delivery_street,
+                                        detailed_address)
+        VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
+                        #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
+                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving},
+                #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
+                #{deliveryStreet}, #{detailedAddress})
+    </insert>
+    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        INSERT INTO ord_goods_info (oid, ord_no, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id, is_price_share,
+                                    share_price, return_price, is_returnable, return_priority, order_qty, shipping_qty, return_qty,
+                                    returnable_qty, is_gift, price_item_id, company_flag)
+        VALUES
+            (#{oid}, #{orderNumber}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice}, #{wholesalePrice}, #{promotionId},
+                     #{isPriceShare}, #{sharePrice},
+                     #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity}, #{shippingQuantity},
+             #{returnQuantity}, #{returnableQuantity}, #{isGift},
+             #{priceItemId}, #{companyFlag}
+            )
+    </insert>
+
+    <insert id="saveOrderBillingDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+        INSERT INTO ord_billing_details (create_time, oid, ord_no, order_amount, member_discount, promotion_discount, freight, upstairs_fee,
+                                         lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
+                                         online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
+                                         st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving)
+        VALUES
+            (#{createTime}, #{oid}, #{orderNumber}, #{orderAmount}, #{memberDiscount}, #{promotionDiscount}, #{freight},
+                            #{upstairsFee}, #{lebiQuantity}, #{lebiCashDiscount}, #{cashCouponDiscount},
+                #{productCouponDiscount}, #{cusPreDeposit},
+                #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
+                #{storeSubvention}, #{orderAmountSubtotal},
+                #{amount_payable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}
+            )
+    </insert>
+
+    <insert id="saveOrderBillingPaymentDetail"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+        INSERT INTO ord_billing_payment_details (oid, ord_no, creatr_time, pay_time, pay_type, amount, reply_code, receipt_number)
+        VALUES (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
+                #{receiptNumber})
+    </insert>
 </mapper>

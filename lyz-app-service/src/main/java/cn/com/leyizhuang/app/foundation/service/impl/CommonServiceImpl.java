@@ -12,9 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -23,7 +21,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
-import cn.com.leyizhuang.app.core.constant.StoreSubventionChangeType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +62,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Resource
     private CityService cityService;
+
+    @Resource
+    private AppOrderService orderService;
 
 
     @Override
@@ -385,7 +385,7 @@ public class CommonServiceImpl implements CommonService {
                                         Integer identityType, Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails,
                                         String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
             LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
-            LockStoreSubventionException, SystemBusyException{
+            LockStoreSubventionException, SystemBusyException {
         //扣减商品库存
         if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
             if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
@@ -697,6 +697,39 @@ public class CommonServiceImpl implements CommonService {
             }
 
 
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+                                      OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) {
+        if (null != orderBaseInfo) {
+            orderService.saveOrderBaseInfo(orderBaseInfo);
+            if (null != orderBaseInfo.getId()) {
+                if (null != orderLogisticsInfo) {
+                    orderLogisticsInfo.setOid(orderBaseInfo.getId());
+                    orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
+                }
+                if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        goodsInfo.setOid(orderBaseInfo.getId());
+                        orderService.saveOrderGoodsInfo(goodsInfo);
+                    }
+                }
+                if (null != orderBillingDetails) {
+                    orderBillingDetails.setOid(orderBaseInfo.getId());
+                    orderService.saveOrderBillingDetails(orderBillingDetails);
+                }
+                if (null != paymentDetails && !paymentDetails.isEmpty()) {
+                    for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
+                        paymentDetail.setOrderId(orderBaseInfo.getId());
+                        orderService.saveOrderBillingPaymentDetail(paymentDetail);
+                    }
+                }
+            } else {
+                throw new OrderSaveException("订单主键生成失败!");
+            }
         }
     }
 }

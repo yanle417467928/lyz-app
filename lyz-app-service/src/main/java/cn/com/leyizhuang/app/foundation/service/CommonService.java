@@ -3,9 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -63,4 +61,6 @@ public interface CommonService {
                                  Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails, String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
             LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
             LockStoreSubventionException, SystemBusyException;
+
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) throws OrderSaveException;
 }

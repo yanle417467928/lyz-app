@@ -154,4 +154,41 @@ public class AppOrderServiceImpl implements AppOrderService {
         //导购欠款还款后修改欠款审核表
         arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime,orderNumber);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderBaseInfo(OrderBaseInfo orderBaseInfo) {
+        if (null != orderBaseInfo){
+            orderDAO.saveOrderBaseInfo(orderBaseInfo);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo) {
+        if (null != orderLogisticsInfo){
+            orderDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
+        }
+    }
+
+    @Override
+    public void saveOrderGoodsInfo(OrderGoodsInfo goodsInfo) {
+        if (null != goodsInfo){
+            orderDAO.saveOrderGoodsInfo(goodsInfo);
+        }
+    }
+
+    @Override
+    public void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails) {
+        if (null != orderBillingDetails){
+            orderDAO.saveOrderBillingDetails(orderBillingDetails);
+        }
+    }
+
+    @Override
+    public void saveOrderBillingPaymentDetail(OrderBillingPaymentDetails paymentDetail) {
+        if (null != paymentDetail){
+            orderDAO.saveOrderBillingPaymentDetail(paymentDetail);
+        }
+    }
 }
