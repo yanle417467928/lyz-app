@@ -16,7 +16,7 @@ public class OrderReturnProductCoupon {
     /**
      * 订单号
      */
-    private String ordNo;
+    private String orderNo;
     /**
      * 退单id
      */

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderReturnBaseInfoDAO">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderReturnDAO">
 
 
     <select id="queryByReturnNo"
@@ -80,7 +80,50 @@
                 return_status = #{returnStatus},
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE roid = #{roid}
     </update>
+
+    <insert id="saveOrderReturnBilling"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBilling">
+        INSERT INTO ord_return_billing
+        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash)
+        VALUES
+        (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention}, #{onlinePay},
+        #{cash})
+    </insert>
+
+    <insert id="saveOrderReturnBillingDetail"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBillingDetail">
+        INSERT INTO ord_return_billing_detail
+        (roid, return_pay_type, return_money, into_amount_time, currency_type, reply_code, refund_number)
+        VALUES
+        (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{currencyType}, #{replyCode}, #{refundNumber})
+    </insert>
+
+    <insert id="saveOrderReturnCashCoupon"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnCashCoupon">
+        INSERT INTO ord_return_cash_coupon
+        (ord_no, roid, ccid, is_return)
+        VALUES
+        (#{orderNo}, #{roid}, #{ccid}, #{isReturn})
+    </insert>
+
+    <insert id="saveOrderReturnProductCoupon"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnProductCoupon">
+        INSERT INTO ord_return_cash_coupon
+        (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return)
+        VALUES
+        (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn})
+    </insert>
+
+    <insert id="saveOrderReturnGoodsInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnGoodsInfo">
+        INSERT INTO ord_return_goods_info
+        (roid, return_no, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty)
+        VALUES
+        (#{roid}, #{returnNo}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
+         #{returnPrice}, #{returnQty})
+    </insert>
+
 
 </mapper>

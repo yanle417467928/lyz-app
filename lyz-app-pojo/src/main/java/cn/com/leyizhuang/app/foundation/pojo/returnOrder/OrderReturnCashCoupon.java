@@ -20,7 +20,7 @@ public class OrderReturnCashCoupon {
     /**
      * 订单号
      */
-    private String ordNo;
+    private String orderNo;
     /**
      * 现金券id
      */

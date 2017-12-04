@@ -22,10 +22,6 @@ public class OrderReturnBilling {
      */
     private String returnNo;
     /**
-     * 退现金
-     */
-    private Double cash;
-    /**
      * 退预存款
      */
     private Double preDeposit;
@@ -49,4 +45,8 @@ public class OrderReturnBilling {
      * 线上支付金额
      */
     private Double onlinePay;
+    /**
+     * 退现金
+     */
+    private Double cash;
 }
