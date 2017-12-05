@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActBaseDO extends BaseDO{
+public class ActBaseDO{
 
     private static final long serialVersionUID;
 
@@ -69,6 +69,9 @@ public class ActBaseDO extends BaseDO{
 
     // 满足数量
     private Integer fullNumber;
+
+    // 排序号
+    private Integer sortId;
 
     /**
      * 获取最终促销类型

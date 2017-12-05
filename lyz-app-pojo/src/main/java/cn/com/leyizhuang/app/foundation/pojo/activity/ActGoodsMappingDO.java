@@ -36,7 +36,7 @@ public class ActGoodsMappingDO implements Serializable {
     private String sku;
 
     // 商品标题
-    private String title;
+    private String goodsTitile;
 
     // 商品数量
     private Integer qty;

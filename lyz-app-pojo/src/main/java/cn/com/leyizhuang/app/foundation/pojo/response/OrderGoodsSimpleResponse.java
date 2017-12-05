@@ -22,6 +22,9 @@ public class OrderGoodsSimpleResponse implements Serializable {
     //商品ID
     private Long id;
 
+    // sku
+    private String sku;
+
     //商品名称
     private String goodsName;
 

@@ -56,4 +56,31 @@
         FROM act_goods_mapping
     </select>
 
+    <select id="queryListByActId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_goods_mapping
+        WHERE actId = #{actId}
+    </select>
+
+    <select id="querySkusByActId" resultType="java.lang.String">
+        SELECT
+        sku
+        FROM act_goods_mapping
+        WHERE actId = #{actId}
+    </select>
+
+    <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into act_goods_mapping (act_id, act_code, gid, sku, goods_titile, qty)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            ( #{item.actId,jdbcType=BIGINT}, #{item.actCode,jdbcType=VARCHAR},
+            #{item.gid,jdbcType=BIGINT}, #{item.sku,jdbcType=VARCHAR}, #{item.goodsTitile,jdbcType=VARCHAR},
+            #{item.qty,jdbcType=INTEGER})
+        </foreach>
+    </insert>
 </mapper>
