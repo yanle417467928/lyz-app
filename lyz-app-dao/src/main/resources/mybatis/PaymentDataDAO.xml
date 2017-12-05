@@ -32,7 +32,7 @@
             </if>
         </set>
         WHERE out_trade_no = #{outTradeNo}
-        AND id = {id}
+        AND id = #{id}
         AND trade_status = 'WAIT_PAY'
     </update>
 
