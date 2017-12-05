@@ -483,8 +483,8 @@ public class OrderController {
                 //现金券还需要传入订单金额判断是否满减
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
                 //查询导购预存款和信用金
-                SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
-                Double creditMoney = sellerCreditMoney.getAvailableBalance();
+                SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+                Double creditMoney = sellerCreditMoneyResponse.getAvailableBalance();
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 

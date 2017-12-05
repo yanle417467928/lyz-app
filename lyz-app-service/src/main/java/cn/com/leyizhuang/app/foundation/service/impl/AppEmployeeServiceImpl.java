@@ -8,7 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +113,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public SellerCreditMoney findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public SellerCreditMoneyResponse findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType && identityType == 0) {
             return employeeDAO.findCreditMoneyBalanceByUserId(userId);
         }

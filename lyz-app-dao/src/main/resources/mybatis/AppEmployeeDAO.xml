@@ -121,7 +121,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </select>
 
     <select id="findCreditMoneyBalanceByUserId" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse">
         SELECT
             credit_limit           limitBalance,
             credit_limit_available availableBalance,

@@ -7,7 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 
@@ -40,7 +40,7 @@ public interface AppEmployeeService {
 
     List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType);
 
-    SellerCreditMoney findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
+    SellerCreditMoneyResponse findCreditMoneyBalanceByUserIdAndIdentityType(Long userId, Integer identityType);
 
     void modifyEmployeeInformation(UserSetInformationReq userInformation);
 

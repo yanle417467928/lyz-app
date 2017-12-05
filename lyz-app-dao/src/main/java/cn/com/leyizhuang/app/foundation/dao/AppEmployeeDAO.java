@@ -4,7 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
@@ -40,7 +40,7 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId, @Param("keywords") String keywords);
 
-    SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
+    SellerCreditMoneyResponse findCreditMoneyBalanceByUserId(Long userId);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
             @Param("userId") Long userId, @Param("type") Integer identityType);
