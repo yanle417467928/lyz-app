@@ -869,7 +869,7 @@
         gp.wholesale_price,
         g.company_flag,
         gp.price_line_id
-        FROM cus_customer c INNER JOIN gds_goods_price gp ON C.store_id = gp.store_id
+        FROM cus_customer c INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
         INNER JOIN gds_goods g ON gp.gid = g.gid
         where c.cus_id = #{userId}
         AND gp.start_time &lt; NOW()
