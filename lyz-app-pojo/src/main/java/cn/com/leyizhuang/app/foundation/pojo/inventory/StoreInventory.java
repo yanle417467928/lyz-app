@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -68,7 +69,7 @@ public class StoreInventory {
     /**
      * 上次修改时间
      */
-    private Date lastUpdateTime;
+    private Timestamp lastUpdateTime;
 
     /**
      * 创建时间

@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
-    List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,@Param("keywords") String keywords);
+    List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId, @Param("keywords") String keywords);
 
     SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
 
@@ -48,7 +49,8 @@ public interface AppEmployeeDAO {
 
     Boolean existsSellerCreditByUserId(Long userId);
 
-    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
+    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit,
+                                              @Param(value = "version") Timestamp version);
 
     void updateByLoginName(AppEmployee appEmployee);
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -144,10 +145,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    @Transactional
-    public int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit, Timestamp version) {
         if (null != userId && null != guideCredit) {
-            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId, guideCredit);
+            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId, guideCredit,version);
         }
         return 0;
     }

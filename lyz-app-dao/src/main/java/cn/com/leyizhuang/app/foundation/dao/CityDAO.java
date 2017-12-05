@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public interface CityDAO {
     Integer updateCityInventoryByCityIdAndGoodsIdAndInventory(@Param(value = "cityId") Long cityId,
                                                               @Param(value = "goodsId") Long goodsId,
                                                               @Param(value = "inventory") Integer inventory,
-                                                              @Param(value = "version") Date version);
+                                                              @Param(value = "version") Timestamp version);
 
     CityInventory findCityInventoryByCityIdAndGoodsId(@Param(value = "cityId") Long cityId, @Param(value = "goodsId") Long goodsId);
 

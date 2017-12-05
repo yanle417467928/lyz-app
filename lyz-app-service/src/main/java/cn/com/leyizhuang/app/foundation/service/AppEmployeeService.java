@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -49,7 +50,7 @@ public interface AppEmployeeService {
 
     Boolean existsSellerCreditByUserId(Long userId);
 
-    int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit);
+    int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit, Timestamp version);
 
     void updateByLoginName(AppEmployee appEmployee);
 

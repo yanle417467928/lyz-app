@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.user;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -41,6 +42,6 @@ public class CustomerLeBi {
     /**
      * 上次更新时间
      */
-    private Date lastUpdateTime;
+    private Timestamp lastUpdateTime;
 
 }

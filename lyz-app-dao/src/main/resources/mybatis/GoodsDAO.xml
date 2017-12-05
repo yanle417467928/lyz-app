@@ -875,7 +875,7 @@
         AND gp.start_time &lt; NOW()
         AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
         AND g.gid in
-        <foreach collection="set" item="item" separator="," open="(" close=")">
+        <foreach collection="goodsIdSet" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>

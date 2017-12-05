@@ -8,7 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQt
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +32,11 @@ public interface AppStoreService {
 
     Double findPreDepositBalanceByUserId(Long userId);
 
-    int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
+    int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit, Timestamp version);
 
-    int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit);
+    int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit, Timestamp version);
 
-    int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);
+    int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention, Timestamp version);
 
     int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory);
 
@@ -69,7 +69,7 @@ public interface AppStoreService {
 
     List<SelfTakeStore> findSelfTakePermittedStoreByCityId(Long cityId);
 
-    Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Date version);
+    Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Timestamp version);
 
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
 

@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -33,11 +34,14 @@ public interface AppStoreDAO {
 
     Double findPreDepositBalanceByUserId(Long userId);
 
-    int updateStoreDepositByUserIdAndStoreDeposit(@Param("userId") Long userId, @Param("deposit") Double storeDeposit);
+    int updateStoreDepositByUserIdAndStoreDeposit(@Param("userId") Long userId, @Param("deposit") Double storeDeposit,
+                                                  @Param(value = "version") Timestamp version);
 
-    int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId, @Param("credit") Double storeCredit);
+    int updateStoreCreditByUserIdAndCredit(@Param("userId") Long userId, @Param("credit") Double storeCredit,
+                                           @Param(value = "version") Timestamp version);
 
-    int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId, @Param("subvention") Double storeSubvention);
+    int updateStoreSubventionByUserIdAndSubvention(@Param("userId") Long userId, @Param("subvention") Double storeSubvention,
+                                                   @Param(value = "version") Timestamp version);
 
     int updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory(
             @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);

@@ -180,8 +180,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         SET
             credit_limit_available = credit_limit_available - #{credit}
         WHERE
-            credit_limit_available >= #{credit}
-            AND guide_id = #{userId}
+            emp_id = #{userId}
+            AND last_update_time = #{version}
     </update>
 
     <update id="updateByLoginName" parameterType="AppEmployee">
@@ -260,8 +260,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </select>
 
     <select id="getQrCodeByUserID" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
-            qr_code qrCode
+        SELECT qr_code qrCode
         FROM
             emp_employee
         WHERE
