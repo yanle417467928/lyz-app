@@ -366,7 +366,7 @@ public class WeChatPayController {
                         if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单
-                            if (outTradeNo.contains("CX")) {
+                            if (outTradeNo.contains("_CZ")) {
 
                                 appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
 

@@ -71,13 +71,14 @@ public class OrderUtils {
         if (null != cityId) {
             City city = cityService.findById(cityId);
             StringBuilder orderNumberTemp = new StringBuilder();
-            orderNumberTemp.append("CZ_");
+
             if (null != city && null != city.getBriefSpell()) {
                 String orderNumber = city.getBriefSpell();
                 orderNumberTemp.append(orderNumber);
             } else {
                 orderNumberTemp.append("MR");
             }
+            orderNumberTemp.append("_CZ");
             Calendar calendar = Calendar.getInstance();
             Date date = calendar.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");

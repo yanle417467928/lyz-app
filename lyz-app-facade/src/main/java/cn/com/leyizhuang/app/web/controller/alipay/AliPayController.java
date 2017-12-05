@@ -188,7 +188,7 @@ public class AliPayController {
                             this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 paymentDataDO:{}",
                                     paymentDataDO);
-                            if (out_trade_no.contains("CZ_")) {
+                            if (out_trade_no.contains("_CZ")) {
                                 //充值加预存款和日志
                                 if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
                                     this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.ALIPAY_RECHARGE);
