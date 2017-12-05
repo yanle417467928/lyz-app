@@ -172,13 +172,13 @@ public class AliPayController {
                         out_trade_no,trade_no,trade_status,total_fee);
 
                 List<PaymentDataDO> paymentDataList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.TRADE_SUCCESS);
-                if (null != paymentDataList) {
+                if (null != paymentDataList && paymentDataList.size() > 0) {
                     logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                     return "success";
                 }
 
                 List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
-                if (null != paymentDataDOList) {
+                if (null != paymentDataDOList && paymentDataList.size() > 0) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
                         if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
@@ -206,8 +206,6 @@ public class AliPayController {
                             return "success";
                         }
                     }
-                        paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_FAIL);
-                        this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
                 }
             }
         } catch (AlipayApiException e) {
