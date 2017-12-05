@@ -35,7 +35,7 @@ public class OrderBillingDetails {
     /**
      * 订单商品总金额
      */
-    private Double orderAmount;
+    private Double totalGoodsPrice;
     /**
      * 会员折扣
      */

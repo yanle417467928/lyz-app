@@ -263,7 +263,6 @@
         UPDATE cus_pre_deposit
         SET balance = balance - #{deposit}
         WHERE
-            -- balance >= #{deposit}
             cus_id = #{userId}
             AND last_update_time = #{version}
     </update>
@@ -485,8 +484,7 @@
                                          detail_reason, transfer_time, merchant_order_number)
         VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc}, #{cusId},
                                #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
-                #{detailReason}, #{transferTime}, #{merchantOrderNumber}
-                )
+                #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
 
 </mapper>

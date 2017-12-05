@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public interface CityService {
 
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 
-    Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Date version);
+    Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Timestamp version);
 
     CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId);
 

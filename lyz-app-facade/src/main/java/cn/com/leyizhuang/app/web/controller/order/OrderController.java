@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -139,11 +138,14 @@ public class OrderController {
             //*********************** 开始创建订单 **************************
 
             //***** 创建订单基础信息 *****
-            OrderBaseInfo orderBaseInfo = commonService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
+            OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
             orderBaseInfo.setOrderType(AppOrderType.SHIPMENT);
+
+
             //***** 创建订单物流信息 *****
-            OrderLogisticsInfo orderLogisticsInfo = commonService.createOrderLogisticInfo(deliverySimpleInfo);
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
+            orderLogisticsInfo.setOrdNo(orderBaseInfo.getOrderNumber());
 
             //***** 创建订单商品信息 *****
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
@@ -197,6 +199,7 @@ public class OrderController {
                     memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
                 }
                 OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
+                goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
                 goodsInfo.setIsGift(Boolean.FALSE);
                 goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
                 goodsInfo.setVIPPrice(goodsVO.getVipPrice());
@@ -236,13 +239,16 @@ public class OrderController {
 
             //********* 处理订单账务相关信息 *********
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
             orderBillingDetails.setCreateTime(Calendar.getInstance().getTime());
-            orderBillingDetails.setOrderAmount(goodsTotalPrice);
+            orderBillingDetails.setTotalGoodsPrice(goodsTotalPrice);
             orderBillingDetails.setMemberDiscount(memberDiscount);
             orderBillingDetails.setPromotionDiscount(promotionDiscount);
             orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
-            orderBillingDetails = commonService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
+            orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, orderParam.getCashCouponIds());
+            orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
             //******** 处理账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
@@ -270,14 +276,13 @@ public class OrderController {
             logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
-        }catch (OrderSaveException e){
+        } catch (OrderSaveException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单创建异常!", null);
             logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
             logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -478,8 +483,8 @@ public class OrderController {
                 //现金券还需要传入订单金额判断是否满减
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
                 //查询导购预存款和信用金
-                SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
-                Double creditMoney = sellerCreditMoney.getAvailableBalance();
+                SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+                Double creditMoney = sellerCreditMoneyResponse.getAvailableBalance();
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
@@ -771,9 +776,9 @@ public class OrderController {
      * @param lockExpendRequest
      * @return
      */
-    @Transactional
-    @PostMapping(value = "/lock", produces = "application/json;charset=UTF-8")
-    public ResultDTO lockOrder(OrderLockExpendRequest lockExpendRequest) {
+    /*@Transactional
+    @PostMapping(value = "/lock", produces = "application/json;charset=UTF-8")*/
+   /* public ResultDTO lockOrder(OrderLockExpendRequest lockExpendRequest) {
 
         logger.info("lockOrder CALLED,用户锁定订单相关款项和库存，入参 lockExpendRequest:{}", lockExpendRequest);
 
@@ -910,7 +915,7 @@ public class OrderController {
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "用户锁定订单相关款项和库存成功！", null);
         logger.info("lockOrder OUT,用户锁定订单相关款项和库存成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
-    }
+    }*/
 
     /**
      * 用户释放订单相关款项和库存

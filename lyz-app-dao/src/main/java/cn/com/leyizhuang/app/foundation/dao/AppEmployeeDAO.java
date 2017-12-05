@@ -4,12 +4,13 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -37,9 +38,9 @@ public interface AppEmployeeDAO {
 
     List<AppEmployee> findDecorateEmployeeListByManagerId(Long userId);
 
-    List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId,@Param("keywords") String keywords);
+    List<AppEmployee> searchBySalesConsultIdAndKeywords(@Param("userId") Long userId, @Param("keywords") String keywords);
 
-    SellerCreditMoney findCreditMoneyBalanceByUserId(Long userId);
+    SellerCreditMoneyResponse findCreditMoneyBalanceByUserId(Long userId);
 
     EmployeeHomePageResponse findEmployeeInfoByUserIdAndIdentityType(
             @Param("userId") Long userId, @Param("type") Integer identityType);
@@ -48,7 +49,8 @@ public interface AppEmployeeDAO {
 
     Boolean existsSellerCreditByUserId(Long userId);
 
-    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
+    int lockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit,
+                                              @Param(value = "version") Timestamp version);
 
     void updateByLoginName(AppEmployee appEmployee);
 

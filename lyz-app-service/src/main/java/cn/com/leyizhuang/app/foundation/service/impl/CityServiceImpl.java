@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +113,8 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     }
 
     @Override
-    @Transactional
-    public Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Date version) {
+    @Transactional(rollbackFor = Exception.class)
+    public Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Timestamp version) {
         if (null != cityId && null != goodsId && null != inventory){
             return cityDAO.updateCityInventoryByCityIdAndGoodsIdAndInventory(cityId,goodsId,inventory,version);
         }
@@ -129,7 +130,7 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log) {
         if (null != log){
             cityDAO.addCityInventoryAvailableQtyChangeLog(log);

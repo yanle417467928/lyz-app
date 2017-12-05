@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +62,9 @@ public interface AppCustomerService {
 
     void updateLastSignTimeByCustomerId(Long cusId, Date date);
 
-    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Date version);
+    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Timestamp version);
 
-    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Date version);
+    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Timestamp version);
 
     int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon);
 

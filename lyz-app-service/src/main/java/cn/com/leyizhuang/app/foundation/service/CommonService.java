@@ -4,7 +4,6 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -35,32 +34,12 @@ public interface CommonService {
 
     void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
 
-    /**
-     * 创建订单基础信息 OrderBaseInfo
-     *
-     * @param cityId       城市id
-     * @param userId       用户id
-     * @param identityType 用户身份类型
-     * @param customerId   顾客id
-     * @param deliveryType 配送方式
-     * @return OrderBaseInfo 订单基础信息
-     */
-    OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark);
-
-    /**
-     * 生成订单物流信息 OrderLogisticInfo
-     *
-     * @param deliverySimpleInfo 页面填写的物流相关信息
-     * @return OrderLogisticInfo 订单物流信息
-     */
-    OrderLogisticsInfo createOrderLogisticInfo(DeliverySimpleInfo deliverySimpleInfo);
-
-    OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType, BillingSimpleInfo billing, List<Long> cashCouponIds);
-
     void reduceInventoryAndMoney(DeliverySimpleInfo deliverySimpleInfo, Map<Long, Integer> inventoryCheckMap, Long cityId, Integer identityType,
                                  Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails, String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
             LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
             LockStoreSubventionException, SystemBusyException;
 
-    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) throws OrderSaveException;
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
+            throws OrderSaveException;
 }

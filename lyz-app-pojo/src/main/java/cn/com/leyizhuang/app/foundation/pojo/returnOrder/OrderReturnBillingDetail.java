@@ -43,4 +43,9 @@ public class OrderReturnBillingDetail {
      * 退款单据号
      */
     private String refundNumber;
+
+    public OrderReturnBillingDetail(String tradeNo, Date now) {
+        this.replyCode = tradeNo;
+        this.intoAmountTime = now;
+    }
 }

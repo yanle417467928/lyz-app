@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.user;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -25,7 +26,7 @@ public class CustomerPreDeposit {
     /**
      * 上次更新时间
      */
-    private Date lastUpdateTime;
+    private Timestamp lastUpdateTime;
     /**
      * 顾客id
      */

@@ -55,29 +55,30 @@
     <update id="updateStoreDepositByUserIdAndStoreDeposit">
         UPDATE st_pre_deposit
         SET balance = balance - #{deposit}
-        WHERE balance >= #{deposit} AND store_id =
-                                        (SELECT store_id
-                                         FROM emp_employee
-                                         WHERE emp_id = #{userId})
+        WHERE store_id =
+              (SELECT store_id
+               FROM emp_employee
+               WHERE emp_id = #{userId})
+              AND last_update_time = #{version}
     </update>
 
     <update id="updateStoreCreditByUserIdAndCredit">
         UPDATE
             st_credit_money
         SET credit_limit_available = credit_limit_available - #{credit}
-        WHERE credit_limit_available >= #{credit}
-              AND store_id = (SELECT store_id
-                              FROM emp_employee
-                              WHERE emp_id = #{userId})
+        WHERE store_id = (SELECT store_id
+                          FROM emp_employee
+                          WHERE emp_id = #{userId})
+              AND last_update_time = #{version}
     </update>
 
     <update id="updateStoreSubventionByUserIdAndSubvention">
         UPDATE st_subvention
         SET balance = balance - #{subvention}
-        WHERE balance >= #{subvention}
-              AND store_id = (SELECT store_id
-                              FROM emp_employee
-                              WHERE emp_id = #{userId})
+        WHERE store_id = (SELECT store_id
+                          FROM emp_employee
+                          WHERE emp_id = #{userId})
+              AND last_update_time = #{version}
     </update>
 
     <update id="updateStoreInventoryByEmployeeIdAndGoodsIdAndInventory">
@@ -305,7 +306,6 @@
         UPDATE st_inventory
         SET available_ity = available_ity - #{inventory}
         WHERE
-            --  available_ity >= #{qty}
             gid = #{goodsId}
             AND store_id = #{storeId}
             AND last_update_time = #{version}

@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,28 +85,28 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
-    public int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit, Timestamp version) {
         if (null != userId && null != storeDeposit) {
-            return storeDAO.updateStoreDepositByUserIdAndStoreDeposit(userId, storeDeposit);
+            return storeDAO.updateStoreDepositByUserIdAndStoreDeposit(userId, storeDeposit, version);
         }
         return 0;
     }
 
     @Override
-    @Transactional
-    public int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit, Timestamp version) {
         if (null != userId && null != storeCredit) {
-            return storeDAO.updateStoreCreditByUserIdAndCredit(userId, storeCredit);
+            return storeDAO.updateStoreCreditByUserIdAndCredit(userId, storeCredit, version);
         }
         return 0;
     }
 
     @Override
-    @Transactional
-    public int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention, Timestamp version) {
         if (null != userId && null != storeSubvention) {
-            return storeDAO.updateStoreSubventionByUserIdAndSubvention(userId, storeSubvention);
+            return storeDAO.updateStoreSubventionByUserIdAndSubvention(userId, storeSubvention, version);
         }
         return 0;
     }
@@ -256,8 +256,8 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
-    public Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Date version) {
+    @Transactional(rollbackFor = Exception.class)
+    public Integer lockStoreInventoryByStoreIdAndGoodsIdAndInventory(Long storeId, Long goodsId, Integer inventory, Timestamp version) {
         if (null != storeId && null != goodsId && null != inventory) {
             return storeDAO.updateStoreInventoryByStoreIdAndGoodsIdAndInventory(storeId, goodsId, inventory, version);
         }
@@ -273,7 +273,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log) {
         if (null != log) {
             storeDAO.addStoreInventoryAvailableQtyChangeLog(log);
@@ -305,22 +305,25 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addStPreDepositLog(StPreDepositLogDO log) {
-        if (null != log){
+        if (null != log) {
             storeDAO.addStPreDepositLog(log);
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log) {
-        if (null != log){
+        if (null != log) {
             storeDAO.addStoreCreditMoneyChangeLog(log);
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addStoreSubventionChangeLog(StoreSubventionChangeLog log) {
-        if (null != log){
+        if (null != log) {
             storeDAO.addStoreSubventionChangeLog(log);
         }
     }

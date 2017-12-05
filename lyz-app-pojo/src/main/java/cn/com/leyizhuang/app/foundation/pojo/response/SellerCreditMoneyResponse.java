@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,7 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class SellerCreditMoney extends BaseDO {
+public class SellerCreditMoneyResponse {
 
 
     //导购固定额度creditLimit

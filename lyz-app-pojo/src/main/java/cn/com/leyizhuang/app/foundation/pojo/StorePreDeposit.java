@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -36,5 +37,5 @@ public class StorePreDeposit {
     /**
      * 上次更新时间
      */
-    private Date lastUpdateTime;
+    private Timestamp lastUpdateTime;
 }

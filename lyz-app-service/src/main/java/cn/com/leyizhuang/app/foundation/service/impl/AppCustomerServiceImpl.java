@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -202,19 +203,19 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    @Transactional
-    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Date version) {
+    @Transactional(rollbackFor = Exception.class)
+    public int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit, Timestamp version) {
         if (null != userId && null != customerDeposit) {
-            return customerDAO.updateDepositByUserIdAndDeposit(userId, customerDeposit,version);
+            return customerDAO.updateDepositByUserIdAndDeposit(userId, customerDeposit, version);
         }
         return 0;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Date version) {
+    public int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty, Timestamp version) {
         if (null != userId && null != lebiQty) {
-            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId, lebiQty,version);
+            return customerDAO.updateLeBiQuantityByUserIdAndQty(userId, lebiQty, version);
         }
         return 0;
     }
@@ -314,15 +315,15 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId) {
-        if (null != sellerId && null != cusId){
-            return  customerDAO.findProductCouponBySellerIdAndCustomerId(sellerId,cusId);
+        if (null != sellerId && null != cusId) {
+            return customerDAO.findProductCouponBySellerIdAndCustomerId(sellerId, cusId);
         }
         return null;
     }
 
     @Override
     public List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return customerDAO.findProductCouponCustomerBySellerId(userId);
         }
         return null;
@@ -330,33 +331,33 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public CustomerCashCoupon findCashCouponByCcid(Long id) {
-        if (null != id){
+        if (null != id) {
             return customerDAO.findCashCouponByCcid(id);
         }
         return null;
     }
 
     @Override
-    @Transactional
-    public Integer lockCustomerCashCouponById(Long id,String orderNumber) {
-        if (null != id){
-            return customerDAO.updateCustomerCashCouponById(id,orderNumber);
+    @Transactional(rollbackFor = Exception.class)
+    public Integer lockCustomerCashCouponById(Long id, String orderNumber) {
+        if (null != id) {
+            return customerDAO.updateCustomerCashCouponById(id, orderNumber);
         }
         return null;
     }
 
     @Override
     public CustomerLeBi findCustomerLebiByCustomerId(Long customerId) {
-        if (null != customerId){
+        if (null != customerId) {
             return customerDAO.findCustomerLebiByCustomerId(customerId);
         }
         return null;
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addCustomerCashCouponChangeLog(CustomerCashCouponChangeLog log) {
-        if (null != log){
+        if (null != log) {
             customerDAO.addCustomerCashCouponChangeLog(log);
         }
     }
@@ -364,7 +365,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCustomerLeBiVariationLog(CustomerLeBiVariationLog log) {
-        if (null != log){
+        if (null != log) {
             customerDAO.addCustomerLeBiVariationLog(log);
         }
     }
@@ -372,7 +373,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCusPreDepositLog(CusPreDepositLogDO cusPreDepositLogDO) {
-        if (null != cusPreDepositLogDO){
+        if (null != cusPreDepositLogDO) {
             customerDAO.addCusPreDepositLog(cusPreDepositLogDO);
         }
     }

@@ -157,11 +157,11 @@ public class EmployeeController {
      * @return
      */
     @PostMapping(value = "/creditMoney/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO<SellerCreditMoney> getGuideCreditMoneyBalance(Long userId, Integer identityType) {
+    public ResultDTO<SellerCreditMoneyResponse> getGuideCreditMoneyBalance(Long userId, Integer identityType) {
 
         logger.info("getGuideCreditMoneyBalance CALLED,获取导购信用金余额，入参 userId {},identityType{}", userId, identityType);
 
-        ResultDTO<SellerCreditMoney> resultDTO;
+        ResultDTO<SellerCreditMoneyResponse> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
@@ -181,8 +181,8 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            SellerCreditMoney sellerCreditMoney = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerCreditMoney);
+            SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, sellerCreditMoneyResponse);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -381,12 +381,12 @@ public class EmployeeController {
         }
     }
 
-    /**  
+    /**
      * @title   获取装饰公司现金返利变更记录
      * @descripe
      * @param
-     * @return 
-     * @throws 
+     * @return
+     * @throws
      * @author GenerationRoad
      * @date 2017/11/27
      */

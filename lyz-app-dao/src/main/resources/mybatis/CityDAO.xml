@@ -114,7 +114,6 @@
         UPDATE city_inventory
         SET available_ity = available_ity - #{inventory}
         WHERE
-            -- available_ity >= #{inventory}
             gid = #{goodsId}
             AND city_id = #{cityId}
             AND last_update_time = #{version}

@@ -396,25 +396,20 @@ public class MaterialListController {
             return resultDTO;
         }
         GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
-        Map<Long, Integer> goodsQty = new HashMap<>(1);
         if (identityType == 2) {
             MaterialListDO materialListDO = materialListServiceImpl.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId,
                     AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
             if (materialListDO != null) {
-                //方便前端数据对应
-                goodsQty.put(materialListDO.getId(), materialListDO.getQty());
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsQty);
+                goodsIdQtyParam.setId(materialListDO.getId());
+                goodsIdQtyParam.setQty(materialListDO.getQty());
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
                 logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
         }
         goodsIdQtyParam = this.materialListServiceImpl.findGoodsQtyByUserIdAndIdentityTypeAndGoodsId(
                 userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
-        //方便前端数据对应
-        if (goodsIdQtyParam != null) {
-            goodsQty.put(goodsIdQtyParam.getId(), goodsIdQtyParam.getQty());
-        }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsQty);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsIdQtyParam);
         logger.info("getMaterialListSingleGoodsQty OUT,获取下料清单单品数量成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }

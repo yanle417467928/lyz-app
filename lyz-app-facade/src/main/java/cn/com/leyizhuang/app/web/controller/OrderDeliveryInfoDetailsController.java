@@ -95,16 +95,16 @@ public class OrderDeliveryInfoDetailsController {
     @RequestMapping(value = "/message", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getOrderLogisticsMessage(Long userID, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getOrderLogisticsResponse CALLED,用户获取物流推送信息，入参 userID:{}, identityType:{}", userID, identityType);
+        logger.info("getOrderLogisticsMessage CALLED,用户获取物流推送信息，入参 userID:{}, identityType:{}", userID, identityType);
 
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getOrderLogisticsResponse OUT,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderLogisticsMessage OUT,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
-            logger.info("getOrderLogisticsResponse OUT,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderLogisticsMessage OUT,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
@@ -117,7 +117,8 @@ public class OrderDeliveryInfoDetailsController {
             //获取7天前的时间
             Date monday = c.getTime();
             //查询推送的物流细信息
-            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.getLogisticsMessageByUserId(userID, monday, identityType);
+            List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.
+                    getLogisticsMessageByUserId(userID, monday, identityType);
             //创建返回list
             List<LogisticsMessageResponse> logisticsMessageResponseList = new ArrayList<>();
             for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList) {
@@ -135,12 +136,12 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsMessageResponseList.add(logisticsMessageResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsMessageResponseList);
-            logger.info("getOrderLogisticsResponse OUT,用户获取物流推送信息成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderLogisticsMessage OUT,用户获取物流推送信息成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取物流推送信息失败", null);
-            logger.warn("getOrderLogisticsResponse EXCEPTION,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getOrderLogisticsMessage EXCEPTION,用户获取物流推送信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
