@@ -153,14 +153,14 @@ public class AliPayController {
             }
             //切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
             //boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-//            boolean flag = AlipaySignature.rsaCheckV1(params, AlipayConfig.aliPublicKey, AlipayConfig.charset, AlipayConfig.signType);
+            boolean flag = AlipaySignature.rsaCheckV1(params, AlipayConfig.aliPublicKey, AlipayConfig.charset, AlipayConfig.signType);
 
             String out_trade_no = null;
             String trade_no = null;
             String trade_status = null;
             String total_fee = null;
 
-            if (true) {
+            if (flag) {
                 out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
                 // 支付宝交易号
                 trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
@@ -208,11 +208,10 @@ public class AliPayController {
                     }
                 }
             }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            logger.warn("{}", e);
         }
-        //catch (AlipayApiException e) {
-//            e.printStackTrace();
-//            logger.warn("{}", e);
-//        }
         catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             logger.warn("{}", e);
