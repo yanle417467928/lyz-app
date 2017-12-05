@@ -170,6 +170,13 @@ public class AliPayController {
 
                 logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 out_trade_no:{} trade_no:{} trade_status:{} total_fee:{}",
                         out_trade_no,trade_no,trade_status,total_fee);
+
+                List<PaymentDataDO> paymentDataList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.TRADE_SUCCESS);
+                if (null != paymentDataList) {
+                    logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
+                    return "success";
+                }
+
                 List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
                 if (null != paymentDataDOList) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
@@ -206,7 +213,8 @@ public class AliPayController {
         } catch (AlipayApiException e) {
             e.printStackTrace();
             logger.warn("{}", e);
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             logger.warn("{}", e);
         }
