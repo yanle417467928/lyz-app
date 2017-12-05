@@ -45,43 +45,43 @@ public class PhotoOrderController {
      * @date 2017/10/24
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> photoOrder(Long userId, Integer identityType, @RequestParam(value = "myfiles", required = false) MultipartFile[] files,
+    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, @RequestParam(value = "myfiles", required = false) MultipartFile[] files,
                                         Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId) {
-        logger.info("photoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{} files:{} deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, files, deliveryId, isOwnerReceiving, remark, customerId);
+        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{} files:{} deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, files, deliveryId, isOwnerReceiving, remark, customerId);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == identityType) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
                         null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == files || files.length == 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == deliveryId) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址不能为空！",
                         null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null == isOwnerReceiving) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否主家收货不能为空！",
                         null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (0 == identityType && null == customerId) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "客户信息不能为空！",
                         null);
-                logger.info("photoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             String photos = "";
@@ -102,12 +102,12 @@ public class PhotoOrderController {
 
             this.photoOrderServiceImpl.save(photoOrderDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("photoOrder OUT,拍照下单提交成功，出参 resultDTO:{}", resultDTO);
+            logger.info("submitPhotoOrder OUT,拍照下单提交成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,拍照下单提交失败!", null);
-            logger.warn("photoOrder EXCEPTION,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("submitPhotoOrder EXCEPTION,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
