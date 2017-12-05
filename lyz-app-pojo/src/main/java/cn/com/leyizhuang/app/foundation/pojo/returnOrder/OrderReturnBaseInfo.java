@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnOrder;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppOrderReturnStatus;
 import lombok.*;
 
 import java.util.Date;
@@ -83,6 +84,6 @@ public class OrderReturnBaseInfo {
     /**
      * 退货物流状态
      */
-    private String returnStatus;
+    private AppOrderReturnStatus returnStatus;
 
 }

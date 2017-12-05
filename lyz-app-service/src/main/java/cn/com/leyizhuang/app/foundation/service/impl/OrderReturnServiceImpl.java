@@ -53,4 +53,11 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     public void saveOrderReturnGoodsInfo(OrderReturnGoodsInfo orderReturnGoodsInfo) {
         orderReturnDAO.saveOrderReturnGoodsInfo(orderReturnGoodsInfo);
     }
+
+    @Override
+    public void modifyOrderReturnBillingDetail(OrderReturnBillingDetail orderReturnBillingDetail) {
+        if (orderReturnBillingDetail != null) {
+            orderReturnDAO.modifyOrderReturnBillingDetail(orderReturnBillingDetail);
+        }
+    }
 }
