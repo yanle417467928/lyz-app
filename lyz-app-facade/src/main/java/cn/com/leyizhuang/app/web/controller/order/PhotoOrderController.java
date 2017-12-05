@@ -86,6 +86,7 @@ public class PhotoOrderController {
             }
             String photos = "";
             for (int i = 0; i < files.length; i++) {
+                logger.info("photoOrder OUT,拍照下单提交图片数量，出参 length:{}", files.length);
                 photos += FileUploadOSSUtils.uploadProfilePhoto(files[i], "order/photo");
                 photos += ",";
             }

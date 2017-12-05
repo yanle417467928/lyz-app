@@ -120,7 +120,7 @@
             ord_base_info AS obi
             INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
             WHERE
-            obi.manager_id = #{userID}
+            obi.creator_id = #{userID}
             AND
             obi.create_time >= #{createTime}
             AND
