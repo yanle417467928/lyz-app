@@ -56,4 +56,5 @@ public interface OrderReturnService {
      */
     void saveOrderReturnGoodsInfo(OrderReturnGoodsInfo orderReturnGoodsInfo);
 
+    void modifyOrderReturnBillingDetail(OrderReturnBillingDetail orderReturnBillingDetail);
 }

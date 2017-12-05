@@ -125,5 +125,30 @@
          #{returnPrice}, #{returnQty})
     </insert>
 
+    <update id="modifyOrderReturnBillingDetail"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBillingDetail">
+        UPDATE ord_return_billing_detail
+        <set>
+            <if test="null != returnPayType">
+                return_pay_type = #{returnPayType},
+            </if>
+            <if test="null != returnMoney">
+                return_money = #{returnMoney},
+            </if>
+            <if test="null != intoAmountTime">
+                into_amount_time = #{intoAmountTime},
+            </if>
+            <if test="null != currencyType">
+                currency_type = #{currencyType},
+            </if>
+            <if test="null != replyCode">
+                reply_code = #{replyCode},
+            </if>
+            <if test="null != refundNumber">
+                refund_number = #{refundNumber}
+            </if>
+        </set>
+        WHERE roid = #{roid}
+    </update>
 
 </mapper>

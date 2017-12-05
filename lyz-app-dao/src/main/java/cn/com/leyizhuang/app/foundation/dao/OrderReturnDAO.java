@@ -58,4 +58,5 @@ public interface OrderReturnDAO {
      */
     void saveOrderReturnGoodsInfo(OrderReturnGoodsInfo orderReturnGoodsInfo);
 
+    void modifyOrderReturnBillingDetail(OrderReturnBillingDetail orderReturnBillingDetail);
 }
