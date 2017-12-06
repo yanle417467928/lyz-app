@@ -282,7 +282,7 @@ public class UserHomePageController {
      */
     @PostMapping(value = "/deliveryAddress/default", produces = "application/json;charset=UTF-8")
     public ResultDTO getUserDefaultDeliveryAddress(Long userId, Integer identityType) {
-        logger.info("getUserDefaultDeliveryAddress CALLED,获取用户默认收货地址，入参 userId {},identityType", userId, identityType);
+        logger.info("getUserDefaultDeliveryAddress CALLED,获取用户默认收货地址，入参 userId {},identityType{}", userId, identityType);
         ResultDTO resultDTO;
         try {
             if (null == userId) {
