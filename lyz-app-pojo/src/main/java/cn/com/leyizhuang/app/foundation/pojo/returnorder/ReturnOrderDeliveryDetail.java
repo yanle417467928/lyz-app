@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.returnOrder;
+package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderReturnDeliveryDetail {
+public class ReturnOrderDeliveryDetail {
     private Long id;
     /**
      * 退单id
