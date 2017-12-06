@@ -1,7 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Created by caiyu on 2017/12/4.
@@ -55,5 +58,13 @@ public interface ReturnOrderService {
      * @param returnOrderGoodsInfo  退单商品
      */
     void saveReturnOrderGoodsInfo(ReturnOrderGoodsInfo returnOrderGoodsInfo);
+
+    void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail orderReturnBillingDetail);
+
+    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer showStatus);
+
+    List<ReturnOrderGoodsInfo> findReturnOrderGoodsInfoByOrderNumber(String returnNo);
+
+    List<GiftListResponseGoods> getReturnOrderGoodsDetails(String returnNumber);
 
 }

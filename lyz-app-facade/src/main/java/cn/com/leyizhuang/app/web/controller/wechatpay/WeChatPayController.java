@@ -9,7 +9,6 @@ import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -303,7 +301,7 @@ public class WeChatPayController {
 
                     //修改退单状态
                     ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
-                    returnOrderBaseInfo.setReturnStatus(AppOrderReturnStatus.FINISHED);
+                    returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
                     returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
                     //修改退货单金额明细流水单号和时间
 //                    returnOrderService.modifyOrderReturnBillingDetail(new ReturnOrderBillingDetail(tradeNo, Calendar.getInstance().getTime()));

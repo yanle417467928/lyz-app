@@ -1,8 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Created by caiyu on 2017/12/4.
@@ -57,5 +61,15 @@ public interface ReturnOrderDAO {
      * @param returnOrderGoodsInfo  退单商品
      */
     void saveReturnOrderGoodsInfo(ReturnOrderGoodsInfo returnOrderGoodsInfo);
+
+    void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail returnOrderBillingDetail);
+
+    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(@Param("userId") Long userId,
+                                                                         @Param("identityType") AppIdentityType identityType,
+                                                                         @Param("status") Integer showStatus);
+
+    List<ReturnOrderGoodsInfo> findReturnOrderGoodsInfoByOrderNumber(String returnNo);
+
+    List<GiftListResponseGoods> getReturnOrderGoodsDetails(String returnNo);
 
 }

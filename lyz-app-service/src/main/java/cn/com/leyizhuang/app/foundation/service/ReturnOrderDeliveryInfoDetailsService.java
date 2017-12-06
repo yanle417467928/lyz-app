@@ -8,5 +8,5 @@ package cn.com.leyizhuang.app.foundation.service;
  * Time: 14:00.
  */
 
-public interface OrderReturnDeliveryInfoDetailsService {
+public interface ReturnOrderDeliveryInfoDetailsService {
 }

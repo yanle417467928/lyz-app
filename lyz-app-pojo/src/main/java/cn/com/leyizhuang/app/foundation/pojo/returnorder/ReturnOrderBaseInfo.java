@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderReturnStatus;
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import lombok.*;
 
@@ -81,6 +81,6 @@ public class ReturnOrderBaseInfo {
     /**
      * 退货物流状态
      */
-    private AppOrderReturnStatus returnStatus;
+    private AppReturnOrderStatus returnStatus;
 
 }

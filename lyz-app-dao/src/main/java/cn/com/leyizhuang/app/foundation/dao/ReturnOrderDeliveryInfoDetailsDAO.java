@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  * Time: 11:53.
  */
 @Repository
-public interface OrderReturnDeliveryInfoDetailsDAO {
+public interface ReturnOrderDeliveryInfoDetailsDAO {
 }

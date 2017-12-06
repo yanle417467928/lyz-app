@@ -1,57 +1,63 @@
-package cn.com.leyizhuang.app.web.controller.orderreturn;
+package cn.com.leyizhuang.app.web.controller.returnorder;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderReturnStatus;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
-import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.ReturnOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Jerry.Ren
- *         Notes: 退货单接口
- *         Created with IntelliJ IDEA.
- *         Date: 2017/12/4.
- *         Time: 9:34.
+ * Notes: 退货单接口
+ * Created with IntelliJ IDEA.
+ * Date: 2017/12/4.
+ * Time: 9:34.
  */
 
 @RestController
 @RequestMapping("/app/return")
-public class OrderReturnController {
+public class ReturnOrderController {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderReturnController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReturnOrderController.class);
 
 
     @Autowired
     private ReturnOrderService returnOrderService;
 
     @Autowired
+    @Resource
+    private ReturnOrderService appReturnOrderService;
+
+    @Resource
     private AppOrderService appOrderService;
 
     @Autowired
@@ -59,6 +65,10 @@ public class OrderReturnController {
 
     @Autowired
     private AppEmployeeService employeeService;
+    @Resource
+    private GoodsService goodsService;
+    @Resource
+    private AppStoreService appStoreService;
 
     /**
      * 取消订单
@@ -206,7 +216,7 @@ public class OrderReturnController {
                 returnOrderBaseInfo.setReasonInfo(reasonInfo);
                 returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
                 //TODO 需要更改为枚举状态
-                returnOrderBaseInfo.setReturnStatus(AppOrderReturnStatus.FINISHED);
+                returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
                 //保存退单头信息
                 returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
                 //获取退单头id
@@ -240,14 +250,14 @@ public class OrderReturnController {
     /**
      * 获取用户退货单列表
      *
-     * @param userId
-     * @param identityType
-     * @return
+     * @param userId 用户id
+     * @param identityType 用户身份
+     * @return 退货单列表
      */
-    @RequestMapping(value = "/list")
-    public ResultDTO getReturnOrderList(Long userId, Integer identityType) {
+    @RequestMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO getReturnOrderList(Long userId, Integer identityType, Integer showStatus) {
 
-        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}", userId, identityType);
+        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{}", userId, identityType, showStatus);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -260,9 +270,129 @@ public class OrderReturnController {
             logger.info("getReturnOrderList OUT,获取用户退货单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-//        List<ReturnOrderBaseInfo> baseInfos = appOrderReturnService.findOrderReturnListByUserIdAndIdentityType(userId,identityType);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        logger.info("getOrderLogisticsResponse OUT,配送员修改物流状态成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
+        try {
+            //查询所有退单表
+            List<ReturnOrderBaseInfo> baseInfo = appReturnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, showStatus);
+
+            //创建一个返回对象list
+            List<OrderListResponse> orderListResponses = new ArrayList<>();
+
+            for (ReturnOrderBaseInfo returnBaseInfo : baseInfo) {
+                //创建有个存放图片地址的list
+                List<String> goodsImgList = new ArrayList<>();
+                //创建一个返回类（借用订单返回对象）
+                OrderListResponse orderListResponse = new OrderListResponse();
+                //获取订单商品
+                List<ReturnOrderGoodsInfo> returnGoodsInfoList = appReturnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                //遍历订单商品
+                int count = 0;
+                for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
+                    goodsImgList.add(goodsService.queryBySku(returnGoodsInfo.getSku()).getCoverImageUri());
+                    count = count + returnGoodsInfo.getReturnQty();
+                }
+                // TODO 是否要加上参加促销的标题？
+                orderListResponse.setOrderNo(returnBaseInfo.getReturnNo());
+                orderListResponse.setStatus(returnBaseInfo.getReturnStatus().getDescription());
+                orderListResponse.setCount(count);
+                orderListResponse.setPrice(returnBaseInfo.getReturnPrice());
+                orderListResponse.setGoodsImgList(goodsImgList);
+                //添加到返回类list中
+                orderListResponses.add(orderListResponse);
+
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderListResponses);
+            logger.info("getReturnOrderList OUT,获取用户退货单列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取用户退货单列表失败", null);
+            logger.warn("getReturnOrderList EXCEPTION,获取用户退货单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
+
+    /**
+     * 查看退货单详情
+     *
+     * @param userId       身份id
+     * @param identityType 身份类型
+     * @param returnNumber 退单号
+     * @return 退单信息
+     */
+    @RequestMapping(value = "/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO getReturnOrderDetail(Long userId, Integer identityType, String returnNumber) {
+
+        logger.info("getReturnOrderDetail CALLED,查看退货单详情，入参 userID:{}, identityType:{}, returnNumber:{}", userId, identityType, returnNumber);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(returnNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退单号不能为空！", null);
+            logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //查退单
+            ReturnOrderBaseInfo returnBaseInfo = appReturnOrderService.queryByReturnNo(returnNumber);
+            ReturnOrderDetailResponse detailResponse = null;
+            if (returnBaseInfo != null) {
+
+                //获取原订单收货/自提门店地址
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(returnBaseInfo.getOrderNo());
+
+                detailResponse = new ReturnOrderDetailResponse();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                //设置基础信息
+                detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
+                detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
+                detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
+                detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
+                //取货方式（上门取货，送货到店）
+                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
+                    detailResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
+                    AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
+                    detailResponse.setBookingStorePhone(appStore.getPhone());
+                    detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                } else {
+                    detailResponse.setDeliveryTime(orderLogisticsInfo.getDeliveryTime());
+                    detailResponse.setReceiver(orderLogisticsInfo.getReceiver());
+                    detailResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
+                    detailResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                }
+                detailResponse.setGoodsList(appReturnOrderService.getReturnOrderGoodsDetails(returnNumber));
+                int count = 0;
+                Double totalReturnPrice = 0.00;
+                //获取订单商品
+                List<ReturnOrderGoodsInfo> returnGoodsInfoList = appReturnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                //遍历订单商品，算出总商品数量和退货商品总价
+                for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
+                    count = count + returnGoodsInfo.getReturnQty();
+                    totalReturnPrice = CountUtil.add(totalReturnPrice, CountUtil.mul(returnGoodsInfo.getReturnQty(), returnGoodsInfo.getReturnPrice()));
+                }
+                detailResponse.setReturnQty(count);
+                detailResponse.setTotalReturnPrice(totalReturnPrice);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, detailResponse);
+            logger.info("getReturnOrderDetail OUT,查看退货单详情成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，查看退货单详情失败", null);
+            logger.warn("getReturnOrderDetail EXCEPTION,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }

@@ -3,6 +3,16 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO">
 
 
+    <resultMap id="orderBaseInfo" type="cn.com.leyizhuang.app.foundation.pojo.returnOrder.ReturnOrderBaseInfo">
+
+        <result column="ord_no" property="returnNo" jdbcType="VARCHAR"/>
+        <result column="return_status" property="returnStatus"
+                javaType="cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus"/>
+        <result column="return_type" property="returnType" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
@@ -123,8 +133,8 @@
          #{returnPrice}, #{returnQty})
     </insert>
 
-    <update id="modifyOrderReturnBillingDetail"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.OrderReturnBillingDetail">
+    <update id="modifyReturnOrderBillingDetail"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
         UPDATE ord_return_billing_detail
         <set>
             <if test="null != returnPayType">
@@ -148,5 +158,57 @@
         </set>
         WHERE roid = #{roid}
     </update>
+
+    <select id="findReturnOrderListByUserIdAndIdentityType" resultType="returnBaseInfo">
+
+        SELECT
+        orbi.return_no,
+        orbi.return_status,
+        orbi.return_type
+        FROM ord_return_base_info orbi
+        WHERE
+        orbi.creator_id = #{userId}
+
+        <if test="null != status and status == 1">
+            AND orbi.return_status = 'RETURNING';
+        </if>
+        <if test="null != status and status == 2">
+            AND orbi.return_status = 'CANCELED';
+        </if>
+        <if test="null != status and status == 3">
+            AND orbi.return_status = 'PENDING_PICK_UP';
+        </if>
+        <if test="null != status and status == 4">
+            AND orbi.return_status = 'PENDING_REFUND';
+        </if>
+        <if test="null != status and status == 5">
+            AND orbi.return_status = 'FINISHED';
+        </if>
+    </select>
+
+    <select id="findReturnOrderGoodsInfoByOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.ReturnOrderGoodsInfo">
+        SELECT *
+        FROM ord_return_goods_info
+        WHERE return_no = #{returnNo};
+    </select>
+
+    <select id="getReturnOrderGoodsDetails" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+        SELECT
+            ogi.return_qty qty,
+            ogi.retail_price,
+            ogi.is_gift,
+            gg.sku_name,
+            gg.gid         goodsId,
+            gg.goods_specification,
+            gg.cover_image_uri,
+            gg.goods_unit
+        FROM
+            ord_return_goods_info AS ogi
+            INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
+        WHERE
+            ogi.return_no = #{orderNumber}
+    </select>
 
 </mapper>
