@@ -9,7 +9,7 @@
         VALUES
             (#{createTime}, #{userId}, #{appIdentityType}, #{outTradeNo}, #{tradeStatus}, #{paymentType},
                             #{paymentTypeDesc},
-                            #{totalFee}, #{onlinePayType}, #{notifyUrl}, #{notifyTime}, #{trade_no}, #{remarks})
+                            #{totalFee}, #{onlinePayType}, #{notifyUrl}, #{notifyTime}, #{tradeNo}, #{remarks})
     </insert>
 
 
