@@ -462,7 +462,7 @@ public class CustomerController {
 
             //记录变更明细日志
             CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
-            customerLeBiVariationLog.setCusID(userId);
+            customerLeBiVariationLog.setCusId(userId);
             customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
             customerLeBiVariationLog.setVariationQuantity(1);
             customerLeBiVariationLog.setVariationTime(new Date());
