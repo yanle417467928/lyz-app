@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.returnOrder;
+package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
 import lombok.*;
 
@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderReturnCashCoupon {
+public class ReturnOrderCashCoupon {
     private Long id;
     /**
      * 退单id

@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderReturnDeliveryInfoDetailsDAO">
 
     <select id="queryListByOrderReturnNumber"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnDeliveryDetail">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail">
         SELECT *
         FROM ord_return_delivery_detail
         WHERE
@@ -11,7 +11,7 @@
     </select>
 
     <insert id="save"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnDeliveryDetail">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail">
         INSERT INTO ord_return_delivery_detail
         (return_no, logistic_status, consignee_id, consignee_number, description, pick_up_address, pick_up_time,
          warehouse_no, task_no, picture)

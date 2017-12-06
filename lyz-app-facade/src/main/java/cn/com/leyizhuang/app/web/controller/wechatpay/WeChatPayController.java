@@ -8,8 +8,8 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBillingDetail;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -62,7 +62,7 @@ public class WeChatPayController {
     private ArrearsAuditService arrearsAuditService;
 
     @Resource
-    private OrderReturnService orderReturnService;
+    private ReturnOrderService returnOrderService;
 
     /**
      * 微信支付订单
@@ -302,11 +302,11 @@ public class WeChatPayController {
                     String tradeStatus = resultMap.get("result_code").toString();
 
                     //修改退单状态
-                    OrderReturnBaseInfo orderReturnBaseInfo = orderReturnService.queryByReturnNo(outRefundNo);
-                    orderReturnBaseInfo.setReturnStatus(AppOrderReturnStatus.FINISHED);
-                    orderReturnService.modifyOrderReturnBaseInfo(orderReturnBaseInfo);
+                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
+                    returnOrderBaseInfo.setReturnStatus(AppOrderReturnStatus.FINISHED);
+                    returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
                     //修改退货单金额明细流水单号和时间
-                    orderReturnService.modifyOrderReturnBillingDetail(new OrderReturnBillingDetail(tradeNo, Calendar.getInstance().getTime()));
+//                    returnOrderService.modifyOrderReturnBillingDetail(new ReturnOrderBillingDetail(tradeNo, Calendar.getInstance().getTime()));
 
                     List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
                     PaymentDataDO dataDO = paymentDataDOList.get(0);
