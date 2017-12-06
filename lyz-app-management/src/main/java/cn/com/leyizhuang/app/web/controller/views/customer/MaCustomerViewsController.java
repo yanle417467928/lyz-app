@@ -18,12 +18,12 @@ public class MaCustomerViewsController extends BaseController {
     private final Logger logger = LoggerFactory.getLogger(MaCustomerViewsController.class);
 
     @RequestMapping(value = "/list")
-    public String getCityList() {
+    public String getCustomerList() {
         return "/views/customer/customer_page";
     }
 
     @RequestMapping(value = "/add")
-    public String add(Model model) {
+    public String add() {
         logger.info("新增顾客");
         return "/views/customer/customer_add";
     }

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.StoreVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -17,9 +18,15 @@ public interface MaStoreDAO {
 
     List<StoreVO> queryStoreListByCityId(Long cityId);
 
-    List<StoreVO> findStoresListByEnable(@Param("enabled") Boolean enabled, @Param("cityId") Long cityId);
+    List<StoreVO> findStoresListByCondition(@Param("enabled") Boolean enabled, @Param("cityId") Long cityId);
 
     List<StoreVO> findStoresListByStoreInfo(String queryStoreInfo);
 
     void update( @Param("storeId") Long storeId,@Param("isSelfDelivery") Boolean isSelfDelivery);
+
+    List<StoreDO> queryDecorativeCompanyPageVO();
+
+    List<StoreDO> findDecorativeByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId);
+
+    List<StoreDO> findDecorativeByInfo(String queryDecorativeInfo);
 }

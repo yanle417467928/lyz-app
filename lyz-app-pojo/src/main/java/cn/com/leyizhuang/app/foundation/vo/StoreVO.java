@@ -30,7 +30,7 @@ public class StoreVO {
     private Date modifyTime;
 
     //门店所在城市编码
-    private String cityCode;
+    private CityVO cityCode;
 
     //门店名称
     private String storeName;
@@ -65,6 +65,6 @@ public class StoreVO {
     // 是否支持门店自提
     private Boolean isSelfDelivery;
 
-    //城市ID
-    private CityVO cityId;
+/*    //城市ID
+    private CityVO cityId;*/
 }

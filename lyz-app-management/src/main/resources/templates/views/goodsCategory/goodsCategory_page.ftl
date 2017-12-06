@@ -38,10 +38,13 @@
                     <select name="goodsCategoryCode" id="goodsCategoryCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findGoodsCategoryByPid(this.value);">
                         <option value="-1">选择父类分级</option>
                     </select>
-                    <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称..">
-                    <button type="button" name="search" id="search-btn" class="btn btn-flat "  onclick="return findGoodsCategoryByPcode()">
-                        <i class="fa fa-search"></i>
-                    </button>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称..">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findGoodsCategoryByPcode()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">

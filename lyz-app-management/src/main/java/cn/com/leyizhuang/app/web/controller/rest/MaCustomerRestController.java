@@ -45,9 +45,9 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> restCustomersPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPage = this.maCustomerService.queryPageVO(page, size);
-        List<CustomerVO> CustmersList = CustmersPage.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPage.getTotal());
+        PageInfo<CustomerVO> custmersPage = this.maCustomerService.queryPageVO(page, size);
+        List<CustomerVO> custmersList = custmersPage.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPage.getTotal());
     }
 
     /**
@@ -77,13 +77,13 @@ public class MaCustomerRestController extends BaseRestController {
      * @param cityId
      * @return
      */
-    @GetMapping(value = "/page/citygrid/{cityId}")
+    @GetMapping(value = "/page/cityGrid/{cityId}")
     public GridDataVO<CustomerVO> getCudByCityId(Integer offset, Integer size, String keywords, @PathVariable(value = "cityId") Long cityId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
-        List<CustomerVO> CustmersList = CustmersPageByCityID.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByCityID.getTotal());
+        PageInfo<CustomerVO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
+        List<CustomerVO> custmersList = custmersPageByCityID.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByCityID.getTotal());
     }
 
     /**
@@ -95,13 +95,13 @@ public class MaCustomerRestController extends BaseRestController {
      * @param storeId
      * @return
      */
-    @GetMapping(value = "/page/storegrid/{storeId}")
+    @GetMapping(value = "/page/storeGrid/{storeId}")
     public GridDataVO<CustomerVO> getCudByStoreId(Integer offset, Integer size, String keywords, @PathVariable(value = "storeId") Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
-        List<CustomerVO> CustmersList = CustmersPageByStoreId.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByStoreId.getTotal());
+        PageInfo<CustomerVO> custmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
+        List<CustomerVO> custmersList = custmersPageByStoreId.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByStoreId.getTotal());
     }
 
     /**
@@ -113,13 +113,13 @@ public class MaCustomerRestController extends BaseRestController {
      * @param guideId
      * @return
      */
-    @GetMapping(value = "/page/guidegrid/{guideId}")
+    @GetMapping(value = "/page/guideGrid/{guideId}")
     public GridDataVO<CustomerVO> getCudByGuideId(Integer offset, Integer size, String keywords, @PathVariable(value = "guideId") Long guideId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
-        List<CustomerVO> CustmersList = CustmersPageByGuideId.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByGuideId.getTotal());
+        PageInfo<CustomerVO> custmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
+        List<CustomerVO> custmersList = custmersPageByGuideId.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByGuideId.getTotal());
     }
 
     /**
@@ -131,13 +131,13 @@ public class MaCustomerRestController extends BaseRestController {
      * @param queryCusInfo
      * @return
      */
-    @GetMapping(value = "/page/phonegrid/{queryCusInfo}")
+    @GetMapping(value = "/page/phoneGrid/{queryCusInfo}")
     public GridDataVO<CustomerVO> getCudByPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") Long queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
-        List<CustomerVO> CustmersList = CustmersPageByPhone.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByPhone.getTotal());
+        PageInfo<CustomerVO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
+        List<CustomerVO> custmersList = custmersPageByPhone.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByPhone.getTotal());
     }
 
     /**
@@ -149,13 +149,13 @@ public class MaCustomerRestController extends BaseRestController {
      * @param queryCusInfo
      * @return
      */
-    @GetMapping(value = "/page/Namegrid/{queryCusInfo}")
+    @GetMapping(value = "/page/nameGrid/{queryCusInfo}")
     public GridDataVO<CustomerVO> getCudByName(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") String queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> CustmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
-        List<CustomerVO> CustmersList = CustmersPageByName.getList();
-        return new GridDataVO<CustomerVO>().transform(CustmersList, CustmersPageByName.getTotal());
+        PageInfo<CustomerVO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
+        List<CustomerVO> custmersList = custmersPageByName.getList();
+        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByName.getTotal());
     }
 
     /**

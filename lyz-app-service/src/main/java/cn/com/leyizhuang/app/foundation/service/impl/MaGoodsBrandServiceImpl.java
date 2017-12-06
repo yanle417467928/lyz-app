@@ -62,6 +62,11 @@ public class MaGoodsBrandServiceImpl implements MaGoodsBrandService {
         if (null!=goodsBrand){
             this.maGoodsBrandDAO.update(goodsBrand);
         }
+    }
 
+    @Override
+    public List<GoodsBrand> queryGoodsBrandList() {
+        List<GoodsBrand> pageGoodsBrandList = this.maGoodsBrandDAO.findAllGoodsBrand();
+        return pageGoodsBrandList;
     }
 }

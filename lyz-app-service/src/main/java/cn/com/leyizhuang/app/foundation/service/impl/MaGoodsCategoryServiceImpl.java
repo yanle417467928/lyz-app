@@ -71,6 +71,13 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
             GoodsCategoryDO goodsCategoryDO = GoodsCategoryDO.transform(goodsCategoryVO);
             this.maGoodsCategoryDAO.update(goodsCategoryDO);
         }
+    }
 
+
+    @Override
+    public List<GoodsCategoryVO> findEditGoodsCategory() {
+        List<GoodsCategoryDO> GoodsCategoryList = this.maGoodsCategoryDAO.findEditGoodsCategory();
+        List<GoodsCategoryVO> GoodsCategoryVOList = GoodsCategoryVO.transform(GoodsCategoryList);
+        return GoodsCategoryVOList;
     }
 }

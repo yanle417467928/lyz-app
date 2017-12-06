@@ -23,4 +23,6 @@ public interface MaGoodsCategoryService {
     GoodsCategoryVO queryGoodsCategoryVOById(Long goodsCategoryId);
 
     void  update(GoodsCategoryVO goodsCategoryVO);
+
+    List<GoodsCategoryVO> findEditGoodsCategory();
 }

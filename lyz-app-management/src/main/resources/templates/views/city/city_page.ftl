@@ -210,14 +210,13 @@
                                 }
                                 $('#structureTitle').html(data.structureTitle);
 
-                                if (true === data.enable) {
+                                if (true==data.enable) {
                                     $('#enable').html('<span class="label label-primary">是</span>');
-                                }else if(false === data.enable){
-                                    $('#enable').html('<span class="label label-primary">否</span>');
+                                }else if(false==data.enable){
+                                    $('#enable').html('<span class="label label-danger">否</span>');
                                 }else {
-                                    $('#enable').html('-');
+                                    $('#enable').html('<span class="label label-danger">-</span>');
                                 }
-                                $('#enable').html(data.enable);
 
                                 if (null === data.enableFalseTime) {
                                     $('#enableFalseTime').html('-');

@@ -19,4 +19,6 @@ public interface MaGoodsBrandService {
     GoodsBrand queryGoodsBrandVOById(Long goodsBrandId);
 
     void  update(GoodsBrand goodsBrand);
+
+    List<GoodsBrand> queryGoodsBrandList();
 }

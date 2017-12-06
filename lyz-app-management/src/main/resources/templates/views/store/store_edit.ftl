@@ -53,7 +53,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cityCode" type="text" class="form-control" id="cityCode" readonly
-                                           value="${store.cityCode}">
+                                           value="${store.storeCode}">
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cityName" type="text" class="form-control" id="cityName" readonly
-                                           value="${store.cityId.name}">
+                                           value="${store.cityCode.name}">
                                 </div>
                             </div>
                         </div>

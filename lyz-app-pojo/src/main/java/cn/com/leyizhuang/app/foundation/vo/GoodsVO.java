@@ -20,7 +20,6 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class GoodsVO {
-    private static final Logger LOG = LoggerFactory.getLogger(GoodsVO.class);
 
     //商品ID
     private Long gid;
@@ -58,30 +57,5 @@ public class GoodsVO {
     //零售价
     private Double retailPrice;
 
-
-    public static final GoodsVO transform(GoodsDO goodsDO) {
-        if (null != goodsDO) {
-            GoodsVO goodsVO = new GoodsVO();
-            goodsVO.setSkuName(goodsDO.getSkuName());
-            goodsVO.setSku(goodsDO.getSku());
-            goodsVO.setBrandId(goodsDO.getBrdId());
-            goodsVO.setCategoryId(goodsDO.getCId());
-            goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
-            return goodsVO;
-    } else {
-        return null;
-    }
-    }
-
-    public static final List<GoodsVO> transform(List<GoodsDO> goodsDOList) {
-        List<GoodsVO> goodsVOList;
-        if (null != goodsDOList && goodsDOList.size() > 0) {
-            goodsVOList = new ArrayList<>(goodsDOList.size());
-            goodsDOList.forEach(goodsDO -> goodsVOList.add(transform(goodsDO)));
-        } else {
-            goodsVOList = new ArrayList<>(0);
-        }
-        return goodsVOList;
-    }
 
 }

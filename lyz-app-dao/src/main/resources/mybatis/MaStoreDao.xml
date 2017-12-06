@@ -14,14 +14,39 @@
         <result property="modifyTime" column="modify_time"/>
         <result property="phone" column="phone"/>
         <result property="isDefault" column="is_default"/>
-        <result property="cityCode" column="city_code"/>
         <result property="province" column="province"/>
         <result property="city" column="city"/>
         <result property="area" column="area"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
-        <association property="cityId" javaType="CityVO">
+        <association property="cityCode" javaType="CityVO">
             <id property="cityId" column="city_id"/>
+            <result property="code" column="code"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+
+    <resultMap id="storeDOResultMap" type="StoreDO">
+        <id property="storeId" column="store_id" jdbcType="BIGINT"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="storeType" column="store_type"/>
+        <result property="enable" column="enable"/>
+        <result property="creatorType" column="creator_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifierType" column="modifier_type"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="phone" column="phone"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="area" column="area"/>
+        <result property="detailedAddress" column="detailed_address"/>
+        <result property="isSelfDelivery" column="is_self_delivery"/>
+        <association property="cityCode" javaType="CityVO">
+            <id property="cityId" column="city_id"/>
+            <result property="code" column="code"/>
             <result property="name" column="name"/>
         </association>
     </resultMap>
@@ -38,6 +63,9 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+        ORDER BY
+        create_time
+        DESC
     </select>
 
 
@@ -62,7 +90,7 @@
     </select>
 
 
-    <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
+   <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -77,7 +105,7 @@
     </select>
 
 
-    <select id="findStoresListByEnable" resultMap="storeVOResultMap">
+    <select id="findStoresListByCondition" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -88,7 +116,16 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        WHERE c.city_id= #{cityId} AND s.enable=#{enabled}
+        WHERE
+        1=1
+        <if test="null != cityId">
+        AND
+        c.city_id= #{cityId}
+        </if>
+        <if test="null != enabled">
+        AND
+         s.enable=#{enabled}
+        </if>
     </select>
 
     <select id="findStoresListByStoreInfo" parameterType="java.lang.String" resultMap="storeVOResultMap">
@@ -102,7 +139,7 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        WHERE s.store_name LIKE CONCAT('%',#{queryCusInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryCusInfo},'%')
+        WHERE s.store_name LIKE CONCAT('%',#{queryStoreInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryStoreInfo},'%')
     </select>
     
     <update id="update">
@@ -115,4 +152,63 @@
         </set>
         WHERE store_id = #{storeId}
     </update>
+
+    <select id="queryDecorativeCompanyPageVO" resultMap="storeDOResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_id,
+        c.name,
+        s.create_time
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+        s.store_type="ZS"
+        ORDER BY
+        create_time
+        DESC
+    </select>
+
+    <select id="findDecorativeByCondition" resultMap="storeDOResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+        s.store_type="ZS"
+        <if test="null != cityId">
+            AND
+            c.city_id= #{cityId}
+        </if>
+        <if test="null != enabled">
+            AND
+            s.enable=#{enabled}
+        </if>
+    </select>
+
+    <select id="findDecorativeByInfo" parameterType="java.lang.String" resultMap="storeDOResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+        s.store_type="ZS"
+        AND
+        (s.store_name LIKE CONCAT('%',#{queryDecorativeInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryDecorativeInfo},'%'))
+    </select>
+
 </mapper>

@@ -35,10 +35,13 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入品牌名称..">
-                    <button type="button" name="search" id="search-btn" class="btn btn-flat "  onclick="return findBrandByName()">
-                        <i class="fa fa-search"></i>
-                    </button>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入品牌名称..">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findBrandByName()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">

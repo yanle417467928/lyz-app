@@ -27,7 +27,7 @@ public class CustomerVO {
     //门店id
     private StoreVO store;
     //销售顾问id
-    private ShoppingGuideVO salesConsultId;
+    private EmployeeVO salesConsultId;
     //真实姓名
     private String name;
     //手机号码

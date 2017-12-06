@@ -52,7 +52,7 @@
     <select id="queryList" resultMap="goodsResult">
         SELECT *
         FROM gds_goods
-        ORDER BY create_time DESC
+        ORDER BY gid DESC
     </select>
 
     <select id="queryById" parameterType="java.lang.Long" resultMap="goodsResult">
@@ -879,4 +879,70 @@
             #{item}
         </foreach>
     </select>
+    
+    <select id="screenGoodsGrid" resultType="GoodsDO">
+        SELECT
+        *
+        FROM
+        gds_goods g
+        WHERE
+        1=1
+        <if test="null != brandCode ">
+            AND g.brd_id = #{brandCode}
+        </if>
+        <if test="null != categoryCode ">
+            AND g.physical_classify = #{categoryCode}
+        </if>
+        <if test="null != companyCode ">
+            AND g.company_flag = #{companyCode}
+        </if>
+    </select>
+
+
+    <update id="updateGoods" parameterType="GoodsDO">
+        UPDATE gds_goods
+        <set>
+            <if test="null != cid">
+                cid = #{cid},
+            </if>
+            <if test="null != categoryName">
+                category_name = #{categoryName},
+            </if>
+            <if test="null != skuName">
+                sku_name = #{skuName},
+            </if>
+            <if test="null != coverImageUri">
+                cover_image_uri = #{coverImageUri},
+            </if>
+            <if test="null != rotationImageUri">
+                rotation_image_uri = #{rotationImageUri},
+            </if>
+
+            <if test="null != isIndexRecommend">
+                is_index_recommend = #{isIndexRecommend},
+            </if>
+            <if test="null != isHot">
+                is_hot = #{isHot},
+            </if>
+            <if test="null != isColorMixing">
+                is_color_mixing = #{isColorMixing},
+            </if>
+            <if test="null != sortId">
+                sort_id = #{sortId},
+            </if>
+            <if test="null != goodsDetial">
+                goods_detial = #{goodsDetial},
+            </if>
+            <if test="null != searchKeyword">
+                search_keyword = #{searchKeyword},
+            </if>
+            <if test="null != productGrade">
+                product_grade = #{productGrade},
+            </if>
+        </set>
+        WHERE sku = #{sku}
+    </update>
+
+
+
 </mapper>

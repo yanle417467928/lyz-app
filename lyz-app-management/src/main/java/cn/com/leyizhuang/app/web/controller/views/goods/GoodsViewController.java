@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.vo.GoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class GoodsViewController extends BaseController{
                 error404();
                 return "/error/404";
             } else {
-                GoodsVO goodsVO = GoodsVO.transform(goodsDO);
+                MaGoodsVO goodsVO = MaGoodsVO.transform(goodsDO);
                 map.addAttribute("goodsVO",goodsVO);
             }
         }

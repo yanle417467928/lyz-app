@@ -41,16 +41,16 @@ public class MaGoodsCategoryRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<GoodsCategoryDO> goodsCategoryPage = this.maGoodsCategoryService.queryPageVO(page, size);
-        List<GoodsCategoryDO> PageAllGoodsCategoryList = goodsCategoryPage.getList();
-        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(PageAllGoodsCategoryList);
+        List<GoodsCategoryDO> pageAllGoodsCategoryList = goodsCategoryPage.getList();
+        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(pageAllGoodsCategoryList);
         return new GridDataVO<GoodsCategoryVO>().transform(pageGoodsCategoryVOList, goodsCategoryPage.getTotal());
     }
 
 
     @GetMapping(value = "/findGoodsCategorySelection")
     public  List<GoodsCategoryVO> findGoodsCategorySelection() {
-        List<GoodsCategoryVO> GoodsCategoryList = this.maGoodsCategoryService.findGoodsCategorySelection();
-        return GoodsCategoryList;
+        List<GoodsCategoryVO> goodsCategoryList = this.maGoodsCategoryService.findGoodsCategorySelection();
+        return goodsCategoryList;
     }
 
     @GetMapping(value = "/findGoodsCategoryByPid/{pid}")
@@ -58,8 +58,8 @@ public class MaGoodsCategoryRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<GoodsCategoryDO> goodsCategoryPage = this.maGoodsCategoryService.findGoodsCategoryByPid(pid,page, size);
-        List<GoodsCategoryDO> PageGoodsCategoryList = goodsCategoryPage.getList();
-        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(PageGoodsCategoryList);
+        List<GoodsCategoryDO> pageGoodsCategoryList = goodsCategoryPage.getList();
+        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(pageGoodsCategoryList);
         return new GridDataVO<GoodsCategoryVO>().transform(pageGoodsCategoryVOList, goodsCategoryPage.getTotal());
     }
 
@@ -70,8 +70,8 @@ public class MaGoodsCategoryRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<GoodsCategoryDO> goodsCategoryPage = this.maGoodsCategoryService.findGoodsCategoryByPcode(queryStoreInfo,page, size);
-        List<GoodsCategoryDO> PageGoodsCategoryList = goodsCategoryPage.getList();
-        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(PageGoodsCategoryList);
+        List<GoodsCategoryDO> pageGoodsCategoryList = goodsCategoryPage.getList();
+        List<GoodsCategoryVO> pageGoodsCategoryVOList = GoodsCategoryVO.transform(pageGoodsCategoryList);
         return new GridDataVO<GoodsCategoryVO>().transform(pageGoodsCategoryVOList, goodsCategoryPage.getTotal());
     }
 
@@ -104,6 +104,13 @@ public class MaGoodsCategoryRestController extends BaseRestController {
     public ValidatorResultDTO isExistCategoryName(@RequestParam(value="categoryName") String categoryName){
         Boolean result = this.maGoodsCategoryService.isExistCategoryName(categoryName);
         return  new ValidatorResultDTO(!result);
+    }
+
+
+    @GetMapping(value = "/findEditGoodsCategory")
+    public  List<GoodsCategoryVO> findEditGoodsCategory() {
+        List<GoodsCategoryVO> goodsCategoryList = this.maGoodsCategoryService.findEditGoodsCategory();
+        return goodsCategoryList;
     }
 
 

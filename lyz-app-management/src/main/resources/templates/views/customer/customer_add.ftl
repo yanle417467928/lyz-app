@@ -10,16 +10,9 @@
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
 
-
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css" />
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/locales/zh.js"></script>
-    <link type="text/css" rel="stylesheet"
-          href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css"/>
-    <script type="text/javascript"
-            src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
-<#-- <script type="text/javascript" src="/javascript/fileinput_locale_zh.js"></script>-->
-
+    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css" />
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
 
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -228,26 +221,6 @@
                                     <option value="SECRET">保密</option>
                                 </select>
                             </div>
-                        <#--                        <div class="col-xs-6 col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="description">
-                                                            顾客头像
-                                                        </label>
-                                                        <div class="form-inline">
-                                                            <span class="input-group-addon form-control"><i class="fa fa-pencil"></i></span>
-                                                            <input name="picUrltext" type="text" class="form-input form-control" id="picUrltext"
-                                                                   value="www.baidu.com" >
-                                                        </div>
-                                                    </div>
-                                                </div>-->
-                        <#--                            <div class="col-xs-6 col-md-6">
-                                                        <div class="form-group">
-                                                            <label>&nbsp;</label>
-                                                            <div class="input-group">
-                                                                <input name="picUrl" type="file" style="display:inline;width: 10%" class="form-control" id="picUrl">
-                                                            </div>
-                                                        </div>
-                                                    </div>-->
                         </div>
                     </div>
 
@@ -270,7 +243,7 @@
                                     出生日期
                                 </label>
                                 <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="birthday" type="text" class="form-control datepicker" id="birthday"
                                            readonly   placeholder="出生日期">
                                 </div>
@@ -378,29 +351,32 @@
             autoclose: true
         });
 
-        var city = "";
-        $.ajax({
-            url: '/rest/citys/findCitylist',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
-                $("#cityId").append(city);
-                $('#cityId').selectpicker('refresh');
-                findStoreByCity(1);
-            }
-        });
-        initFileInput("file", "/api/OrderApi/ImportOrder");
+        findCityList();
+        initFileInput("file");
     });
 
+     function findCityList() {
+         var city = "";
+         $.ajax({
+             url: '/rest/citys/findCitylist',
+             method: 'GET',
+             error: function () {
+                 clearTimeout($global.timer);
+                 $loading.close();
+                 $global.timer = null;
+                 $notify.danger('网络异常，请稍后重试或联系管理员');
+             },
+             success: function (result) {
+                 clearTimeout($global.timer);
+                 $.each(result, function (i, item) {
+                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                 })
+                 $("#cityId").append(city);
+                 $('#cityId').selectpicker('refresh');
+                 findStoreByCity(1);
+             }
+         });
+     }
 
     function findStoreByCity(cityId) {
         $("#storeId").empty()
@@ -454,7 +430,7 @@
     }
 
 
-    function initFileInput(ctrlName, uploadUrl) {
+    function initFileInput(ctrlName) {
         var control = $('#' + ctrlName);
         control.fileinput({
             language: 'zh', //设置语言

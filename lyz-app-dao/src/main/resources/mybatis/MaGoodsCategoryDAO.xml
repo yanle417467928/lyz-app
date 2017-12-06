@@ -97,4 +97,11 @@
         </set>
         WHERE cid = #{cid}
     </update>
+
+
+    <select id="findEditGoodsCategory"  resultType="GoodsCategoryDO">
+        select cid,category_name
+        FROM gds_goods_category
+        where p_cid is not null
+    </select>
  </mapper>

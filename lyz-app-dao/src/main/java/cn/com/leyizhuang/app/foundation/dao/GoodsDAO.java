@@ -119,6 +119,12 @@ public interface GoodsDAO {
      */
     void deleteSynchronize(@Param("sku") String sku);
 
-    List<OrderGoodsVO> findOrderGoodsVOListByCustomerIdAndGoodsIds(@Param(value = "userId") Long userId,
-                                                                   @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
+    List<OrderGoodsVO> findOrderGoodsVOListByCustomerIdAndGoodsIds(@Param(value = "userId") Long userId, @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
+
+    void updateGoods(GoodsDO goodsDO);
+
+    List<GoodsDO> queryGoodsPageByInfo(String queryGoodsInfo);
+
+    List<GoodsDO> screenGoodsGrid(@Param("brandCode")Long brandCode,@Param("categoryCode")String categoryCode,@Param("companyCode")String companyCode);
+
 }

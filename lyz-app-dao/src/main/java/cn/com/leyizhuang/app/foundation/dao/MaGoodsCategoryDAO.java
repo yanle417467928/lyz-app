@@ -22,4 +22,7 @@ public interface MaGoodsCategoryDAO {
     GoodsCategoryDO queryGoodsCategoryVOById(Long goodsCategoryId);
 
     void update(GoodsCategoryDO goodsCategoryDO);
+
+    List<GoodsCategoryDO> findEditGoodsCategory();
+
 }

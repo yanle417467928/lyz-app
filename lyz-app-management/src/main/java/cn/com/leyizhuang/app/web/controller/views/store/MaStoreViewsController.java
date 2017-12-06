@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MaStoreViewsController extends BaseController {
 
     @Autowired
-    private MaStoreService MaStoreService;
+    private MaStoreService maStoreService;
 
     private static final Logger logger = LoggerFactory.getLogger(AppAdminUserViewController.class);
 
@@ -31,7 +31,7 @@ public class MaStoreViewsController extends BaseController {
     @GetMapping(value = "/edit/{id}")
     public String storeEdit(Model model, @PathVariable(value = "id") Long storeId) {
         if (!storeId.equals(0L)) {
-            StoreVO storeVO = MaStoreService.queryStoreVOById(storeId);
+            StoreVO storeVO = maStoreService.queryStoreVOById(storeId);
             if (null == storeVO) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", storeId);
                 error404();

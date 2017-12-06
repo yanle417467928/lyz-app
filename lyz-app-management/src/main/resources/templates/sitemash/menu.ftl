@@ -23,7 +23,7 @@
                 </span>
             </div>
         </form>
-        <ul class="sidebar-menu">
+        <ul class="sidebar-menu" >
             <li class="header">操作菜单</li>
         <#if IndexMenuVOList?? && IndexMenuVOList?size gt 0>
             <#list IndexMenuVOList as item>

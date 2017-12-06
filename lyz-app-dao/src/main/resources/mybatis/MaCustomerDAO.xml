@@ -27,7 +27,7 @@
             <id property="cityId" column="city_id"/>
             <result property="name" column="city_name"/>
         </association>
-        <association property="salesConsultId" javaType="ShoppingGuideVO">
+        <association property="salesConsultId" javaType="EmployeeVO">
             <id property="empId" column="emp_id"/>
             <result property="name" column="emp_name"/>
         </association>

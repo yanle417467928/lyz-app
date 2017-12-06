@@ -26,7 +26,13 @@ public class MaGoodsBrandRestController extends  BaseRestController {
     @Autowired
     private MaGoodsBrandService maGoodsBrandService;
 
-
+    /**
+     * 查询所有商品品牌
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
     @GetMapping(value = "/page/grid")
     public GridDataVO<GoodsBrand> getGoodsBrandList(Integer offset, Integer size, String keywords) {
         size = getSize(size);
@@ -36,7 +42,11 @@ public class MaGoodsBrandRestController extends  BaseRestController {
         return new GridDataVO<GoodsBrand>().transform(pageAllGoodsBrandList, goodsBrandPage.getTotal());
     }
 
-
+    /**
+     * 根据品牌id查询商品品牌
+     * @param brdId
+     * @return
+     */
     @GetMapping(value = "/{brdId}")
     public ResultDTO<GoodsBrand> restGoodsBrandGet(@PathVariable(value = "brdId") Long brdId) {
         GoodsBrand goodsBrand = this.maGoodsBrandService.queryGoodsBrandVOById(brdId);
@@ -49,7 +59,14 @@ public class MaGoodsBrandRestController extends  BaseRestController {
         }
     }
 
-
+    /**
+     * 根据查询信息查询品牌
+     * @param queryStoreInfo
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
     @GetMapping(value = "/findBrandByName/{queryStoreInfo}")
     public  GridDataVO<GoodsBrand> findBrandByName(@PathVariable(value = "queryStoreInfo") String queryStoreInfo,Integer offset, Integer size, String keywords) {
         size = getSize(size);
@@ -60,13 +77,23 @@ public class MaGoodsBrandRestController extends  BaseRestController {
     }
 
 
+    /**
+     * 判断是否有该品牌
+     * @param brandName
+     * @return
+     */
     @PostMapping(value = "/isExistBrandName")
     public ValidatorResultDTO isExistBrandName(@RequestParam(value="brandName") String brandName){
         Boolean result = this.maGoodsBrandService.isExistBrandName(brandName);
         return  new ValidatorResultDTO(!result);
     }
 
-
+    /**
+     * 新增商品品牌
+     * @param goodsBrand
+     * @param result
+     * @return
+     */
     @PostMapping
     public ResultDTO<?> saveGoodsBrand(GoodsBrand goodsBrand, BindingResult result) {
         if (!result.hasErrors()) {
@@ -75,8 +102,16 @@ public class MaGoodsBrandRestController extends  BaseRestController {
         } else {
             return actFor400(result,"提交的数据有误");
         }
+
     }
 
+    /**
+     * 更新商品品牌
+     *
+     * @param goodsBrand
+     * @param result
+     * @return
+     */
     @PutMapping(value = "/{id}")
     public ResultDTO<String> updateGoodsBrand(GoodsBrand goodsBrand, BindingResult result) {
         if (!result.hasErrors()) {
@@ -89,6 +124,16 @@ public class MaGoodsBrandRestController extends  BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
                     errorMsgToHtml(allErrors), null);
         }
+    }
+
+    /**
+     * 下拉框获取所有品牌
+     * @return
+     */
+    @GetMapping(value = "/page/brandGrid")
+    public List<GoodsBrand> queryGoodsBrandList() {
+        List<GoodsBrand> pageAllGoodsBrandList = this.maGoodsBrandService.queryGoodsBrandList();
+        return pageAllGoodsBrandList;
     }
 
 }

@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
+import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
 import cn.com.leyizhuang.app.foundation.vo.StoreVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -50,9 +52,9 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public PageInfo<StoreVO> findStoresListByEnable(Integer page, Integer size, Boolean enabled, Long cityId) {
+    public PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, Boolean enabled, Long cityId) {
         PageHelper.startPage(page, size);
-        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByEnable(enabled, cityId);
+        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByCondition(enabled, cityId);
         return new PageInfo<>(pageStoreList);
     }
 
@@ -68,5 +70,35 @@ public class MaStoreServiceImpl implements MaStoreService {
         if (null != storeId && null != isSelfDelivery) {
             mastoreDAO.update(storeId,isSelfDelivery);
         }
+    }
+
+
+    @Override
+    public PageInfo<StoreDO> queryDecorativeCompanyPageVO(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<StoreDO> pageStoreList = this.mastoreDAO.queryDecorativeCompanyPageVO();
+        return new PageInfo<>(pageStoreList);
+    }
+
+
+    @Override
+    public PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId) {
+        PageHelper.startPage(page, size);
+        if("-1".equals(enabled)){
+            enabled=null;
+        }
+        if(-1==cityId){
+            cityId=null;
+        }
+        List<StoreDO> pageStoreList = this.mastoreDAO.findDecorativeByCondition(enabled, cityId);
+        return new PageInfo<>(pageStoreList);
+    }
+
+
+    @Override
+    public PageInfo<StoreDO> findDecorativeByInfo(Integer page, Integer size, String queryDecorativeInfo) {
+        PageHelper.startPage(page, size);
+        List<StoreDO> pageStoreList = this.mastoreDAO.findDecorativeByInfo(queryDecorativeInfo);
+        return new PageInfo<>(pageStoreList);
     }
 }
