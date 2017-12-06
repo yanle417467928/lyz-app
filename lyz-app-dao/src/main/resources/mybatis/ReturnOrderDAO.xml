@@ -127,9 +127,9 @@
     <insert id="saveReturnOrderGoodsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         INSERT INTO ord_return_goods_info
-        (roid, return_no, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty)
+        (roid, return_no, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty)
         VALUES
-        (#{roid}, #{returnNo}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
+        (#{roid}, #{returnNo}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
          #{returnPrice}, #{returnQty})
     </insert>
 
