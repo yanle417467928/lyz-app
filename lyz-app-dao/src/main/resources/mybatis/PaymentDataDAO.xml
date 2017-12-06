@@ -4,20 +4,28 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         INSERT INTO payment_data
-        (user_id, identity_type, notify_url,out_trade_no,payment_type,
-        payment_method,subject,total_fee,trade_status,remarks,create_time)
+        (create_time, user_id, identity_type, out_trade_no, trade_status, payment_type, payment_type_desc, total_fee,
+         online_pay_type, notify_url, notify_time, trade_no, remarks)
         VALUES
-        (#{userId},#{appIdentityType},#{notifyUrl},#{outTradeNo},#{paymentType},
-        #{paymentMethod},#{subject},#{totalFee},#{tradeStatus},#{remarks},#{createTime})
+            (#{createTime}, #{userId}, #{appIdentityType}, #{outTradeNo}, #{tradeStatus}, #{paymentType},
+                            #{paymentTypeDesc},
+                            #{totalFee}, #{onlinePayType}, #{notifyUrl}, #{notifyTime}, #{trade_no}, #{remarks})
     </insert>
 
 
     <select id="findByOutTradeNoAndTradeStatus"
             resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
-        SELECT id, out_trade_no, total_fee, trade_status, user_id, identity_type appIdentityType, payment_type
+        SELECT
+            id,
+            out_trade_no,
+            total_fee,
+            trade_status,
+            user_id,
+            identity_type appIdentityType,
+            payment_type
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
-        AND trade_status = #{tradeStatus}
+              AND trade_status = #{tradeStatus}
         ORDER BY id DESC
     </select>
 

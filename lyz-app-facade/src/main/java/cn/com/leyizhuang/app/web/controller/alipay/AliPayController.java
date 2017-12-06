@@ -27,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -79,31 +82,32 @@ public class AliPayController {
             logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totalFee = CountUtil.retainTwoDecimalPlaces(money);
-        String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc,
-                Double.parseDouble(totalFee), PaymentDataStatus.WAIT_PAY, OnlinePayType.ALIPAY, "");
-        this.paymentDataService.save(paymentDataDO);
-
-        //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
-        //appId 非空，应用ID
-        //privateKey 非空，私钥
-        AlipayClient alipayClient = new DefaultAlipayClient(
-                AlipayConfig.serverUrl, AlipayConfig.appId,
-                AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
-                AlipayConfig.aliPublicKey, AlipayConfig.signType);
-        //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
-        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
-        //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
-        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setSubject(paymentDataDO.getPaymentType().getDescription());
-        model.setOutTradeNo(outTradeNo);
-        model.setTimeoutExpress("30m");
-        model.setTotalAmount(totalFee);
-        model.setProductCode(AlipayConfig.productCode);
-        request.setBizModel(model);
-        request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
         try {
+            String totalFee = CountUtil.retainTwoDecimalPlaces(money);
+            String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
+            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc,
+                    Double.parseDouble(totalFee), PaymentDataStatus.WAIT_PAY, OnlinePayType.ALIPAY, "");
+            this.paymentDataService.save(paymentDataDO);
+
+            //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
+            //appId 非空，应用ID
+            //privateKey 非空，私钥
+            AlipayClient alipayClient = new DefaultAlipayClient(
+                    AlipayConfig.serverUrl, AlipayConfig.appId,
+                    AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
+                    AlipayConfig.aliPublicKey, AlipayConfig.signType);
+            //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+            AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+            model.setSubject(paymentDataDO.getPaymentType().getDescription());
+            model.setOutTradeNo(outTradeNo);
+            model.setTimeoutExpress("30m");
+            model.setTotalAmount(totalFee);
+            model.setProductCode(AlipayConfig.productCode);
+            request.setBizModel(model);
+            request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
 //            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
