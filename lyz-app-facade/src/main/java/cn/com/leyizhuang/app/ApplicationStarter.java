@@ -32,7 +32,7 @@ public class ApplicationStarter {
         registrationBean.addUrlPatterns("/*");
         registrationBean.addInitParameter("excludedPages", "/app/employee/login,/app/customer/login," +
                 "/app/customer/registry,/app/city/list,/app/employee/password/modify,/app/sms/verifyCode/send," +
-                "/app/alipay/return/async");
+                "/app/alipay/return/async,/app/pay/wechat/return/async");
         return registrationBean;
     }
 }
