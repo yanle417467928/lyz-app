@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.alipay;
+package cn.com.leyizhuang.app.web.controller.wechatpay;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.pay.wechat.sign.WechatPrePay;
