@@ -170,7 +170,7 @@ public class OrderReturnController {
                 Double returnPrice = 0.00;
                 //获取订单商品
                 List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
-                //添加保存退货商品
+                //创建退货商品实体类
                 ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getSharePrice());
@@ -184,8 +184,8 @@ public class OrderReturnController {
                     returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
                     returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
                     returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
-
-
+                    //保存退单商品信息
+                    returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 }
                 returnOrderBaseInfo.setReturnPrice(returnPrice);
 
