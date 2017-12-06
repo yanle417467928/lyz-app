@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO">
 
 
-    <resultMap id="orderBaseInfo" type="cn.com.leyizhuang.app.foundation.pojo.returnOrder.ReturnOrderBaseInfo">
+    <resultMap id="returnBaseInfo" type="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
 
         <result column="ord_no" property="returnNo" jdbcType="VARCHAR"/>
         <result column="return_status" property="returnStatus"
@@ -159,7 +159,7 @@
         WHERE roid = #{roid}
     </update>
 
-    <select id="findReturnOrderListByUserIdAndIdentityType" resultType="returnBaseInfo">
+    <select id="findReturnOrderListByUserIdAndIdentityType" resultMap="returnBaseInfo">
 
         SELECT
         orbi.return_no,
@@ -187,7 +187,7 @@
     </select>
 
     <select id="findReturnOrderGoodsInfoByOrderNumber"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.returnOrder.ReturnOrderGoodsInfo">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         SELECT *
         FROM ord_return_goods_info
         WHERE return_no = #{returnNo};
