@@ -19,11 +19,11 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -41,22 +41,31 @@ import java.util.Map;
 public class AliPayController {
     private static final Logger logger = LoggerFactory.getLogger(AliPayController.class);
 
-    @Autowired
+    @Resource
     private PaymentDataService paymentDataService;
 
-    @Autowired
+    @Resource
     private AppCustomerService appCustomerServiceImpl;
 
-    @Autowired
+    @Resource
     private AppStoreService appStoreServiceImpl;
 
-    @Autowired
+    @Resource
     private ArrearsAuditService arrearsAuditService;
 
-    @Autowired
+    @Resource
     private AppOrderService appOrderService;
 
 
+    /**
+     * 支付宝充值生成充值单
+     *
+     * @param userId       用户id
+     * @param identityType 身份类型
+     * @param money        金额
+     * @param cityId       城市id
+     * @return 支付宝客户端调取所需参数
+     */
     @PostMapping(value = "/recharge/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> preDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
 
@@ -110,7 +119,7 @@ public class AliPayController {
 
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-//            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+            // System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
             logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -193,7 +202,7 @@ public class AliPayController {
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-//            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+            //System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
             logger.info("orderAlipay OUT,订单支付宝支付信息提交成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -206,6 +215,12 @@ public class AliPayController {
         }
     }
 
+    /**
+     * 支付宝异步通知
+     *
+     * @param request 支付宝请求我方携带的参数
+     * @return 我方响应支付宝请求返回的结果
+     */
     @RequestMapping(value = "/return/async")
     public String alipayReturnAsync(HttpServletRequest request) {
         logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 request:{}", request);
