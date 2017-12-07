@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import lombok.*;
 
 /**
@@ -21,7 +22,7 @@ public class OrderCouponInfo {
     private String orderNumber;
 
     //券类型: 产品券、现金券
-    private String couponType;
+    private OrderCouponType couponType;
 
     //券id
     private Long couponId;

@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,4 +20,12 @@ public interface LeBiVariationLogDAO {
 
     //根据变动类型查看顾客乐币变动明细
     List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(@Param("cusId") Long cusID, @Param("showType") Integer showType);
+
+    /**
+     * 取消订单返回乐币
+     * @param quantity  返回后总数量
+     * @param lastUpdateTime    修改时间
+     * @param customerId    顾客id
+     */
+    void updateLeBiQtyByUserId(@Param("quantity") Integer quantity, @Param("lastUpdateTime")Date lastUpdateTime, @Param("customerId") Long customerId);
 }

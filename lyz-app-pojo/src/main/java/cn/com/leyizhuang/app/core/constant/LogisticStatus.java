@@ -32,10 +32,10 @@ public enum LogisticStatus {
         return description;
     }
 
-    public static AppIdentityType getAppIdentityTypeByValue(Integer value) {
-        for (AppIdentityType appIdentityType : AppIdentityType.values()) {
-            if (value == appIdentityType.getValue()) {
-                return appIdentityType;
+    public static LogisticStatus getLogisticStatusByValue(Integer value) {
+        for (LogisticStatus logisticStatus : LogisticStatus.values()) {
+            if (value == logisticStatus.getValue()) {
+                return logisticStatus;
             }
         }
         return null;

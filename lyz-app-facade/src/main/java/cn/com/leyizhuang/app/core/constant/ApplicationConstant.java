@@ -13,6 +13,7 @@ public class ApplicationConstant {
     public static String alipayReturnUrl;
     public static String alipayReturnUrlAsnyc;
     public static String wechatReturnUrlAsnyc;
+    public static String wechatApiClinetCert;
     public static String[] cdnHosts;
     public static String ossFolder;
     public static String ossBucket;
@@ -49,6 +50,14 @@ public class ApplicationConstant {
 
     public void setWechatReturnUrlAsnyc(String wechatReturnUrlAsnyc) {
         ApplicationConstant.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
+    }
+
+    public String getWechatApiClinetCert() {
+        return wechatApiClinetCert;
+    }
+
+    public void setWechatApiClinetCert(String wechatApiClinetCert) {
+        ApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
     }
 
     public String[] getCdnHosts() {

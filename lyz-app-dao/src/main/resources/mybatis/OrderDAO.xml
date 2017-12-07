@@ -57,6 +57,7 @@
             <if test="null != showStatus and showStatus == 4">
                 AND obi.`status` = 'CANCELED';
             </if>
+            ORDER BY obi.create_time DESC
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             SELECT
@@ -80,6 +81,7 @@
             <if test="null != showStatus and showStatus == 4">
                 AND obi.`status` = 'CANCELED';
             </if>
+            ORDER BY obi.create_time DESC
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
@@ -103,6 +105,7 @@
             <if test="null != showStatus and showStatus == 4">
                 AND obi.`status` = 'CANCELED';
             </if>
+            ORDER BY obi.create_time DESC
         </if>
     </select>
 

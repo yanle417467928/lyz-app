@@ -49,4 +49,8 @@ public class ReturnOrderBilling {
      * 退现金
      */
     private Double cash;
+    /**
+     * 使用乐币数量
+     */
+    private Double LeBiQuantity;
 }

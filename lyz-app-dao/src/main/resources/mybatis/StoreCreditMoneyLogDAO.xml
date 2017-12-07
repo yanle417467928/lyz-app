@@ -14,4 +14,14 @@
         ORDER BY l.create_time DESC
     </select>
 
+    <select id="findStoreCreditMoneyByUserId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney">
+        SELECT
+            scm.*
+        FROM
+            st_credit_money AS scm
+        INNER JOIN emp_employee AS ee ON scm.store_id = ee.store_id
+        WHERE
+            ee.emp_id = #{userId}
+    </select>
+
 </mapper>

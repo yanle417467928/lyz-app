@@ -44,7 +44,7 @@ public class StPreDepositLogDO {
      */
     private String changeTypeDesc;
     /**
-     * 客户id
+     * 门店id
      */
     private Long storeId;
     /**
