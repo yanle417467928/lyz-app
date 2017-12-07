@@ -362,6 +362,7 @@ public class WeChatPayController {
                         Double totlefeeParse = Double.parseDouble(totalFee);
 
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
+
                         if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单

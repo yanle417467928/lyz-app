@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.core.getui;
 
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
-import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppMsgInfo;
+import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import com.gexin.fastjson.JSONObject;
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
@@ -22,6 +22,8 @@ import java.util.List;
 
 /**
  * 消息推送工具类
+ *
+ * @author Richard
  */
 public class NoticeUtil {
 
@@ -40,10 +42,11 @@ public class NoticeUtil {
      */
     public static IPushResult pushMsgToAll(AppMsgInfo appMsgInfo) {
         if (StringUtils.isEmpty(appMsgInfo)) {
-            log.error("in NoticeUtil#pushMsgToUsers method,appMsgInfo is null");
+            log.error("方法 pushMsgToAll 参数 appMsgInfo不能为空!");
             return null;
         }
         System.setProperty("gexin_pushList_needDetails", "true");
+
         IGtPush push = new IGtPush(ApplicationConstant.GE_TUI_HOST, ApplicationConstant.APP_KEY, ApplicationConstant.MASTER_SECRET);
         AppMessage message = new AppMessage();
         // 通知透传模板
@@ -129,9 +132,12 @@ public class NoticeUtil {
         LinkTemplate template = new LinkTemplate();
         template.setAppId(ApplicationConstant.APP_ID);
         template.setAppkey(ApplicationConstant.APP_KEY);
-        // 设置通知栏标题与内容
-        template.setTitle(appMsgInfo.getTitle());//推送标题
-        template.setText(appMsgInfo.getContent());//推送内容
+
+        // ********** 设置通知栏标题与内容 *********
+        //推送标题
+        template.setTitle(appMsgInfo.getTitle());
+        //推送内容
+        template.setText(appMsgInfo.getContent());
         // 配置通知栏图标
         template.setLogo("");
         // 配置通知栏网络图标
@@ -140,7 +146,8 @@ public class NoticeUtil {
         template.setIsRing(true);
         template.setIsVibrate(true);
         template.setIsClearable(true);
-        template.setUrl(appMsgInfo.getLink());//推送url路径
+        //推送url路径
+        template.setUrl(appMsgInfo.getLink());
         return template;
     }
 
@@ -159,9 +166,10 @@ public class NoticeUtil {
 
         //简单模式APNPayload.SimpleMsg
         //  payload.setAlertMsg(new APNPayload.SimpleAlertMsg("hello"));
-        //自定义类型参数
-        payload.addCustomMsg("type", appMsgInfo.getSendSystemType());//推送类型1、全部，2android，3iOS，4用户Id
-        payload.addCustomMsg("link", appMsgInfo.getLink());//推送url路径
+        // 自定义类型参数,推送类型1、全部，2android，3iOS，4 用户Id
+        payload.addCustomMsg("type", appMsgInfo.getSendSystemType());
+        //推送url路径
+        payload.addCustomMsg("link", appMsgInfo.getLink());
 
         //字典模式使用APNPayload.DictionaryAlertMsg
         payload.setAlertMsg(getDictionaryAlertMsg(appMsgInfo));
@@ -177,12 +185,14 @@ public class NoticeUtil {
 
     private static APNPayload.DictionaryAlertMsg getDictionaryAlertMsg(AppMsgInfo appMsgInfo) {
         APNPayload.DictionaryAlertMsg alertMsg = new APNPayload.DictionaryAlertMsg();
-        alertMsg.setTitle(appMsgInfo.getTitle());//推送标题
-        alertMsg.setBody(appMsgInfo.getContent());//推送内容
+        //推送标题
+        alertMsg.setTitle(appMsgInfo.getTitle());
+        //推送内容
+        alertMsg.setBody(appMsgInfo.getContent());
         alertMsg.setActionLocKey("ActionLockey");
         alertMsg.setLocKey("LocKey");
         alertMsg.addLocArg("loc-args");
-        alertMsg.setLaunchImage("launch-image"); // iOS8.2以上版本支持 alertMsg.setTitle("Title");
+        alertMsg.setLaunchImage("launch-image");
         alertMsg.setTitleLocKey("TitleLocKey");
         alertMsg.addTitleLocArg("TitleLocArg");
         return alertMsg;
