@@ -9,10 +9,10 @@
             SELECT *
             FROM cus_lb_variation_log
             WHERE
-            CUS_ID = #{cusID}
+            cus_id = #{cusId}
             AND
-            (LE_BI_VARIATION_TYPE = 'SIGN'OR LE_BI_VARIATION_TYPE = 'ADMINISTRATORS_UPDATE')
-            ORDER BY VARIATION_TIME DESC
+            (le_bi_variation_type = 'SIGN'OR le_bi_variation_type = 'ADMINISTRATORS_UPDATE')
+            ORDER BY variation_time DESC
         </if>
         <if test="null != showType and showType == 2">
             SELECT *
@@ -20,9 +20,9 @@
             WHERE
             CUS_ID = #{cusId}
             AND
-            (LE_BI_VARIATION_TYPE = 'CANCEL_ORDER'OR LE_BI_VARIATION_TYPE = 'RETURN_ORDER'OR LE_BI_VARIATION_TYPE =
+            (le_bi_variation_type = 'CANCEL_ORDER'OR le_bi_variation_type = 'RETURN_ORDER'OR le_bi_variation_type =
             'ORDER' )
-            ORDER BY VARIATION_TIME DESC
+            ORDER BY variation_time DESC
         </if>
     </select>
 
@@ -30,8 +30,8 @@
         SELECT *
         FROM cus_lb_variation_log
         WHERE
-            CUS_ID = #{cusId}
-        ORDER BY VARIATION_TIME DESC
+            cus_id = #{cusId}
+        ORDER BY variation_time DESC
     </select>
 
     <insert id="addCustomerLeBiVariationLog"

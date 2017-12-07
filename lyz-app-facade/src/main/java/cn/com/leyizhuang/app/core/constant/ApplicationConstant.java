@@ -3,6 +3,9 @@ package cn.com.leyizhuang.app.core.constant;
 
 import cn.com.leyizhuang.app.core.config.InterfaceConfigure;
 
+/**
+ * @author Richard
+ */
 public class ApplicationConstant {
 
     //从配置文件加载值的常量
@@ -96,5 +99,14 @@ public class ApplicationConstant {
      * 变更导购时间（天）
      */
     public static final int CHANGE_SELLER_DATE = 60;
+
+    /**
+     * 个推相关参数
+     */
+    public static final String GE_TUI_HOST = "http://sdk.open.api.igexin.com/apiex.htm";
+    public static final String APP_ID = "I5pt99Lp5t7zrN98wU7Nt1";
+    public static final String APP_KEY = "IWMq9NbOTJ9dhJUYEg5KV5";
+    public static final String MASTER_SECRET = "T0qUSvYycU8TOZHeTWEGk1";
+
 
 }

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Created by caiyu on 2017/11/8.
+ *
+ * @author caiyu
+ * @date 2017/11/8
  */
 @Service
 public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
@@ -22,12 +24,12 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     }
 
     @Override
-    public List<CustomerLeBiVariationLog> queryListBycusID(Long cusID) {
-        return leBiVariationLogDAO.queryListBycusID(cusID);
+    public List<CustomerLeBiVariationLog> queryListBycusID(Long cusId) {
+        return leBiVariationLogDAO.queryListBycusID(cusId);
     }
 
     @Override
-    public List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusID, Integer showType) {
-        return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusID, showType);
+    public List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType) {
+        return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusId, showType);
     }
 }

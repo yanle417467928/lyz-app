@@ -259,7 +259,7 @@ public class OrderController {
             commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CreateOrderResponse(orderBaseInfo.getOrderNumber(),
-                    orderBillingDetails.getAmountPayable()));
+                    Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable()))));
             logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |

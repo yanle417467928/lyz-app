@@ -15,8 +15,8 @@ public interface LeBiVariationLogDAO {
     void addCustomerLeBiVariationLog(CustomerLeBiVariationLog customerLeBiVariationLog);
 
     //查看顾客乐币所有变动明细
-    List<CustomerLeBiVariationLog> queryListBycusID(@Param("cusID") Long cusID);
+    List<CustomerLeBiVariationLog> queryListBycusID(@Param("cusId") Long cusID);
 
     //根据变动类型查看顾客乐币变动明细
-    List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(@Param("cusID") Long cusID, @Param("showType") Integer showType);
+    List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(@Param("cusId") Long cusID, @Param("showType") Integer showType);
 }

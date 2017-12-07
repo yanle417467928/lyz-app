@@ -64,7 +64,7 @@ public class CustomerController {
      * @return resultDTO
      */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerLoginResponse> customerLogin(String openId, HttpServletResponse response) {
+    public ResultDTO<CustomerLoginResponse> customerLogin(String openId,String clientId,String deviceId, HttpServletResponse response) {
         logger.info("customerLogin CALLED,顾客登录，入参 openId:{}", openId);
         ResultDTO<CustomerLoginResponse> resultDTO;
         try {
