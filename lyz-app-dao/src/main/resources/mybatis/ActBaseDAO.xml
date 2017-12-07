@@ -3,25 +3,25 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActBaseDAO">
 
     <sql id="ALL_FIELDS">
-        id, create_time, title, begin_time, end_time, city_id, city_name, store_ids, act_target,
+        id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number
+    full_number,sort_id
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
         INSERT INTO act_base (
-         create_time, title, begin_time, end_time, city_id, city_name, store_ids, act_target,
+         create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number
+    full_number,sort_id
         )
         VALUES
         (
          #{createTime,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR},
       #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{cityId,jdbcType=BIGINT},
-      #{cityName,jdbcType=VARCHAR}, #{storeIds,jdbcType=VARCHAR}, #{actTarget,jdbcType=VARCHAR},
+      #{cityName,jdbcType=VARCHAR}, #{actTarget,jdbcType=VARCHAR},
       #{baseType,jdbcType=VARCHAR}, #{promotionType,jdbcType=VARCHAR}, #{conditionType,jdbcType=VARCHAR},
       #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
-      #{fullNumber,jdbcType=INTEGER}, #{storeNames,jdbcType=LONGVARCHAR}
+      #{fullNumber,jdbcType=INTEGER},#{sortId,jdbcType=INTEGER}
         )
     </insert>
 
@@ -46,9 +46,7 @@
             <if test="cityName != null" >
                 city_name = #{cityName,jdbcType=VARCHAR},
             </if>
-            <if test="storeIds != null" >
-                store_ids = #{storeIds,jdbcType=VARCHAR},
-            </if>
+
             <if test="actTarget != null" >
                 act_target = #{actTarget,jdbcType=VARCHAR},
             </if>
@@ -73,8 +71,8 @@
             <if test="fullNumber != null" >
                 full_number = #{fullNumber,jdbcType=INTEGER},
             </if>
-            <if test="storeNames != null" >
-                store_names = #{storeNames,jdbcType=LONGVARCHAR},
+            <if test="sortId != null" >
+                sort_id = #{sortId,jdbcType=INTEGER}
             </if>
         </set>
         WHERE
@@ -92,5 +90,39 @@
         <include refid="ALL_FIELDS"/>
         FROM act_base
     </select>
+
+    <select id="queryListBySkus" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base b
+        RIGHT JOIN
+        (SELECT  DISTINCT s.act_id from act_stores s RIGHT JOIN (SELECT DISTINCT act_id from act_goods_mapping where sku in (#{skus})) g on s.act_id = g.act_id
+        where s.store_id = #{storeId}) st
+        ON b.id = st.act_id
+        where
+        #{now} BETWEEN (beginTime,endTime)
+        and cityId = #{cityId}
+        AND  actTarget = #{actTarget}
+        ORDER BY b.sort_id
+    </select>
+
+    <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
+    <selectKey resultType="long" keyProperty="id" order="AFTER">
+        SELECT
+        LAST_INSERT_ID()
+    </selectKey>
+    insert into act_base (create_time, title, begin_time, end_time, city_id, city_name, act_target,
+    base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
+    full_number,sort_id)
+    values
+    <foreach collection="list" item="item" index="index" separator="," >
+        (#{item.createTime,jdbcType=TIMESTAMP}, #{item.title,jdbcType=VARCHAR},
+        #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.cityId,jdbcType=BIGINT},
+        #{item.cityName,jdbcType=VARCHAR}, #{item.actTarget,jdbcType=VARCHAR},
+        #{item.baseType,jdbcType=VARCHAR}, #{item.promotionType,jdbcType=VARCHAR}, #{item.conditionType,jdbcType=VARCHAR},
+        #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
+        #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
+    </foreach>
+</insert>
 
 </mapper>

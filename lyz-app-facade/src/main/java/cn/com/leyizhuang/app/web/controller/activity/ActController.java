@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.web.controller.activity;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.service.AppActService;
 import cn.com.leyizhuang.app.web.controller.order.OrderController;
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,12 @@ public class ActController {
         Map<String,Object> res = new HashMap<>();
 
         List<ActBaseDO> list = actService.queryList();
-
+        res.put("actList",list);
         return res;
+    }
+
+    @RequestMapping("/insert")
+    public void insertBatch(){
+        actService.insertBatch();
     }
 }

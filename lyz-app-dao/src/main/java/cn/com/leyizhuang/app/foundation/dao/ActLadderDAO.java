@@ -1,6 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActLadderDO;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * table： act_ladder
@@ -8,4 +11,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ActLadderDAO {
+
+    void save(ActLadderDO actBaseDO);
+
+    void update(ActLadderDO actBaseDO);
+
+    List<ActLadderDO> queryList();
+
+    ActLadderDO queryById();
 }

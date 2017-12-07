@@ -12,4 +12,6 @@ import java.util.List;
 public interface AppActService {
 
     List<ActBaseDO> queryList();
+
+    int insertBatch();
 }

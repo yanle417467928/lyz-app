@@ -46,6 +46,12 @@
         FROM act_sub_amount WHERE ID = #{id}
     </select>
 
+    <select id="queryByActId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActSubAmountDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_sub_amount WHERE act_id = #{id}
+    </select>
+
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActSubAmountDO">
         SELECT
         <include refid="ALL_FIELDS"/>
