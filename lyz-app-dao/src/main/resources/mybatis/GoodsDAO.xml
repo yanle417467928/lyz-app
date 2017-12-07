@@ -745,6 +745,7 @@
         SELECT
         g.gid id,
         g.sku_name goods_name,
+        g.sku sku,
         g.cover_image_uri,
         g.goods_specification,
         g.goods_unit,

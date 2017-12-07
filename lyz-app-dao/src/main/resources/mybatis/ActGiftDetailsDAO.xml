@@ -70,6 +70,12 @@
         FROM act_gift_details WHERE ID = #{id}
     </select>
 
+    <select id="queryByActId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_gift_details WHERE act_id = #{ActId}
+    </select>
+
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
         SELECT
         <include refid="ALL_FIELDS"/>

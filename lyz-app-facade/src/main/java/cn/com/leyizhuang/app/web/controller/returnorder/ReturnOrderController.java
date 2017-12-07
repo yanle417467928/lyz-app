@@ -3,9 +3,11 @@ package cn.com.leyizhuang.app.web.controller.returnorder;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse;
@@ -18,11 +20,14 @@ import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +61,6 @@ public class ReturnOrderController {
     @Autowired
     private ReturnOrderService returnOrderService;
 
-    @Autowired
-    @Resource
-    private ReturnOrderService appReturnOrderService;
-
     @Resource
     private AppOrderService appOrderService;
 
@@ -70,43 +71,30 @@ public class ReturnOrderController {
     private AppEmployeeService employeeService;
     @Resource
     private GoodsService goodsService;
-    @Resource
-    private AppStoreService appStoreService;
-
 
     @Autowired
     private OperationReasonsService operationReasonsServiceImpl;
 
-    /**
-     * @param
-     * @return
-     * @throws
-     * @title 获取退货订单原因列表
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/11/21
-     */
-    @PostMapping(value = "/returnReasons", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getReturnReasons(Long userId, Integer identityType) {
-        logger.info("getReturnReasons CALLED,获取退货订单原因列表，入参 userId:{} identityType:{}", userId, identityType);
-        ResultDTO<Object> resultDTO;
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("getReturnReasons OUT,获取退货订单原因列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-            logger.info("getReturnReasons OUT,获取退货订单原因列表失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
+    @Autowired
+    private LeBiVariationLogService leBiVariationLogService;
 
-        List<OperationReasonsResponse> operationReasonsServiceList = this.operationReasonsServiceImpl.findAllByType(OperationReasonType.RETURN);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, operationReasonsServiceList);
-        logger.info("getReturnReasons OUT,获取退货订单原因列表成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
-    }
+    @Autowired
+    private AppCustomerService appCustomerService;
 
+    @Autowired
+    private AppStoreService appStoreService;
+
+    @Autowired
+    private StorePreDepositLogService storePreDepositLogService;
+
+    @Autowired
+    private StoreCreditMoneyLogService storeCreditMoneyLogService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private ProductCouponService productCouponService;
 
     /**
      * 取消订单
@@ -143,7 +131,14 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
+            //获取订单头信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            //获取订单账目明细
+            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+            //获取退单号
+            String returnNumber = OrderUtils.getReturnNumber();
+            //创建退单头
+            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
             if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
                 logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
@@ -157,57 +152,8 @@ public class ReturnOrderController {
                 logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-
-            //获取订单账目明细
-            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-            //微信退款方法类
-            WeChatPayController wechat = new WeChatPayController();
-            //获取退单号
-            String returnNumber = OrderUtils.getReturnNumber();
-            //创建退单头
-            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
-
             if (null != orderBillingDetails) {
-                if ("ALIPAY".equals(orderBillingDetails.getOnlinePayType())) {
-
-                    //创建退单退款详情实体
-                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                    //TODO 退单id
-                    returnOrderBillingDetail.setRoid(null);
-                    returnOrderBillingDetail.setRefundNumber(returnNumber);
-                    //TODO 时间待定
-                    returnOrderBillingDetail.setIntoAmountTime(new Date());
-                    //TODO 第三方回复码
-                    returnOrderBillingDetail.setReplyCode("");
-                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OnlinePayType.ALIPAY);
-                } else if ("WE_CHAT".equals(orderBillingDetails.getOnlinePayType())) {
-                    wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    //创建退单退款详情实体
-                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                    //TODO 退单id
-                    returnOrderBillingDetail.setRoid(null);
-                    returnOrderBillingDetail.setRefundNumber(returnNumber);
-                    //TODO 时间待定
-                    returnOrderBillingDetail.setIntoAmountTime(new Date());
-                    //TODO 第三方回复码
-                    returnOrderBillingDetail.setReplyCode("");
-                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
-                } else if ("UNION_PAY".equals(orderBillingDetails.getOnlinePayAmount())) {
-                    //创建退单退款详情实体
-                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                    //TODO 退单id
-                    returnOrderBillingDetail.setRoid(null);
-                    returnOrderBillingDetail.setRefundNumber(returnNumber);
-                    //TODO 时间待定
-                    returnOrderBillingDetail.setIntoAmountTime(new Date());
-                    //TODO 第三方回复码
-                    returnOrderBillingDetail.setReplyCode("");
-                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OnlinePayType.UNION_PAY);
-                }
-
+                //记录退单头信息
                 returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
                 returnOrderBaseInfo.setOrderNo(orderNumber);
                 returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
@@ -222,21 +168,8 @@ public class ReturnOrderController {
                 ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getSharePrice());
-                    //TODO 退单id
-                    returnGoodsInfo.setRoid(null);
-                    returnGoodsInfo.setReturnNo(returnNumber);
-                    returnGoodsInfo.setSku(orderGoodsInfo.getSku());
-                    returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
-                    returnGoodsInfo.setRetailPrice(orderGoodsInfo.getRetailPrice());
-                    returnGoodsInfo.setVipPrice(orderGoodsInfo.getVIPPrice());
-                    returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
-                    returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
-                    returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
-                    //保存退单商品信息
-                    returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 }
                 returnOrderBaseInfo.setReturnPrice(returnPrice);
-
                 returnOrderBaseInfo.setRemarksInfo(remarksInfo);
                 returnOrderBaseInfo.setCreatorId(userId);
                 returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
@@ -259,6 +192,32 @@ public class ReturnOrderController {
                 returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
                 //获取退单头id
                 Long returnOrderId = returnOrderBaseInfo.getRoid();
+                //判断收货类型和订单状态
+                if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE) && orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
+                    //TODO 通知WMS
+
+                    //修改订单状态为取消中
+                    orderBaseInfo.setStatus(AppOrderStatus.CANCELING);
+                    appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消订单提交成功，等待确认！", null);
+                    logger.info("canselOrder OUT,取消订单提交成功！，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    //记录退单商品
+                    returnGoodsInfo.setRoid(returnOrderId);
+                    returnGoodsInfo.setReturnNo(returnNumber);
+                    returnGoodsInfo.setSku(orderGoodsInfo.getSku());
+                    returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
+                    returnGoodsInfo.setRetailPrice(orderGoodsInfo.getRetailPrice());
+                    returnGoodsInfo.setVipPrice(orderGoodsInfo.getVIPPrice());
+                    returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
+                    returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
+                    returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
+                    //保存退单商品信息
+                    returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
+                }
                 //创建退单退款总记录实体
                 ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
                 returnOrderBilling.setRoid(returnOrderId);
@@ -273,8 +232,234 @@ public class ReturnOrderController {
                 //添加保存退单退款总记录
                 returnOrderService.saveReturnOrderBilling(returnOrderBilling);
 
+                //********************************返还虚拟货币********************************
+                Date date = new Date();
+                if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                    //返回乐币
+                    if (orderBillingDetails.getLebiQuantity() != null) {
+                        //获取顾客当前乐币数量
+                        CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(userId);
+                        //返还乐币后顾客乐币数量
+                        Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
+                        //记录乐币日志
+                        CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
+                        leBiVariationLog.setCusId(userId);
+                        leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
+                        leBiVariationLog.setAfterVariationQuantity(lebiTotal);
+                        leBiVariationLog.setVariationTime(date);
+                        leBiVariationLog.setLeBiVariationType(LeBiVariationType.CANCEL_ORDER);
+                        leBiVariationLog.setVariationTypeDesc("取消订单");
+                        leBiVariationLog.setOrderNum(orderNumber);
+                        //更改顾客乐币数量
+                        leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, date, userId);
+                    }
+                    //返回顾客预存款
+                    if (orderBillingDetails.getCusPreDeposit() != null) {
+                        //获取顾客预存款
+                        CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(userId);
+                        //返还预存款后顾客预存款金额
+                        Double cusPreDeposit = (customerPreDeposit.getBalance() + orderBillingDetails.getCusPreDeposit());
+                        //记录预存款日志
+                        CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                        cusPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        cusPreDepositLogDO.setChangeMoney(orderBillingDetails.getCusPreDeposit());
+                        cusPreDepositLogDO.setOrderNumber(orderNumber);
+                        cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.CANCEL_ORDER);
+                        cusPreDepositLogDO.setChangeTypeDesc("取消订单返还");
+                        cusPreDepositLogDO.setCusId(userId);
+                        cusPreDepositLogDO.setOperatorId(userId);
+                        cusPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
+                        cusPreDepositLogDO.setBalance(cusPreDeposit);
+                        cusPreDepositLogDO.setDetailReason("取消订单");
+                        cusPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        cusPreDepositLogDO.setMerchantOrderNumber(null);
+                        appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
 
+                        //更改顾客预存款金额
+                        appCustomerService.unlockCustomerDepositByUserIdAndDeposit(userId, orderBillingDetails.getCusPreDeposit());
+                    }
+                }
+                if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                    //返回门店预存款
+                    if (orderBillingDetails.getStPreDeposit() != null) {
+                        //获取门店预存款
+                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
+                        //返还预存款后门店预存款金额
+                        Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
+                        //记录门店预存款变更日志
+                        StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                        stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
+                        stPreDepositLogDO.setRemarks("取消订单返还门店预存款");
+                        stPreDepositLogDO.setOrderNumber(orderNumber);
+                        stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                        stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                        stPreDepositLogDO.setOperatorId(userId);
+                        stPreDepositLogDO.setOperatorType(AppIdentityType.SELLER);
+                        stPreDepositLogDO.setBalance(stPreDeposit);
+                        stPreDepositLogDO.setDetailReason("取消订单");
+                        stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        //保存日志
+                        storePreDepositLogService.save(stPreDepositLogDO);
+                        //修改门店预存款
+                        storePreDepositLogService.updateStPreDepositByUserId(stPreDeposit, userId);
+                    }
+                    //返回导购信用额度
+                    if (orderBillingDetails.getEmpCreditMoney() != null) {
+                        //获取导购信用金
+                        EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);
+                        //返还信用金后导购信用金额度
+                        Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getEmpCreditMoney());
+                        //记录导购信用金变更日志
+                        EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                        empCreditMoneyChangeLog.setEmpId(userId);
+                        empCreditMoneyChangeLog.setCreateTime(date);
+                        empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                        empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                        empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                        empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.CANCEL_ORDER);
+                        empCreditMoneyChangeLog.setChangeTypeDesc("取消订单返还信用金");
+                        empCreditMoneyChangeLog.setOperatorId(userId);
+                        empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
+                        //保存日志
+                        appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                        //修改导购信用额度
+                        appEmployeeService.unlockGuideCreditByUserIdAndCredit(userId, orderBillingDetails.getEmpCreditMoney());
+                    }
+                }
+                if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
+                    //返回门店预存款
+                    if (orderBillingDetails.getStPreDeposit() != null) {
+                        //获取门店预存款
+                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
+                        //返还预存款后门店预存款金额
+                        Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
+                        //记录门店预存款变更日志
+                        StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                        stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
+                        stPreDepositLogDO.setRemarks("取消订单返还门店预存款");
+                        stPreDepositLogDO.setOrderNumber(orderNumber);
+                        stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                        stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                        stPreDepositLogDO.setOperatorId(userId);
+                        stPreDepositLogDO.setOperatorType(AppIdentityType.DECORATE_MANAGER);
+                        stPreDepositLogDO.setBalance(stPreDeposit);
+                        stPreDepositLogDO.setDetailReason("取消订单");
+                        stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                        //保存日志
+                        storePreDepositLogService.save(stPreDepositLogDO);
+                        //修改门店预存款
+                        storePreDepositLogService.updateStPreDepositByUserId(stPreDeposit, userId);
+                    }
+                    //返回门店信用金（装饰公司）
+                    if (orderBillingDetails.getStoreCreditMoney() != null) {
+                        //查询门店信用金
+                        StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(userId);
+                        //返还后门店信用金额度
+                        Double creditMoney = (storeCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getStoreCreditMoney());
+                        //记录门店信用金变更日志
+                        StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+                        storeCreditMoneyChangeLog.setStoreId(storeCreditMoney.getStoreId());
+                        storeCreditMoneyChangeLog.setCreateTime(date);
+                        storeCreditMoneyChangeLog.setChangeAmount(orderBillingDetails.getStoreCreditMoney());
+                        storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                        storeCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                        storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.CANCEL_ORDER);
+                        storeCreditMoneyChangeLog.setChangeTypeDesc("取消订单返还门店信用金");
+                        storeCreditMoneyChangeLog.setOperatorId(userId);
+                        storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.DECORATE_MANAGER);
+                        storeCreditMoneyChangeLog.setRemark("取消订单");
+                        //保存日志
+                        appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+                        //修改门店可用信用金
+                        appStoreService.unlockStoreCreditByUserIdAndCredit(userId, orderBillingDetails.getStoreCreditMoney());
+                    }
+                    //返回门店现金返利（装饰公司）
+                    if (orderBillingDetails.getStoreSubvention() != null) {
+                        //获取门店现金返利
+                        StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(userId);
+                        //返还后门店现金返利余额
+                        Double subvention = (storeSubvention.getBalance() + orderBillingDetails.getStoreSubvention());
+                        //记录门店现金返利变更日志
+                        StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
+                        storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
+                        storeSubventionChangeLog.setCreateTime(date);
+                        storeSubventionChangeLog.setChangeAmount(orderBillingDetails.getStoreSubvention());
+                        storeSubventionChangeLog.setBalance(subvention);
+                        storeSubventionChangeLog.setReferenceNumber(orderNumber);
+                        storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.CANCEL_ORDER);
+                        storeSubventionChangeLog.setChangeTypeDesc("取消订单返还门店现金返利");
+                        storeSubventionChangeLog.setOperatorId(userId);
+                        storeSubventionChangeLog.setOperatorType(AppIdentityType.DECORATE_MANAGER);
+                        storeSubventionChangeLog.setRemark("取消订单");
+                        //保存日志
+                        appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
+                        //修改门店现金返利
+                        appStoreService.unlockStoreSubventionByUserIdAndSubvention(userId, orderBillingDetails.getStoreSubvention());
+                    }
+                }
+                //*******************************退券*********************************
+                //获取订单使用产品券
+                List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(userId, OrderCouponType.PRODUCT_COUPON);
+                if (orderProductCouponList != null && orderProductCouponList.size() > 0) {
+                    for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
+                        //记录产品券变更日志
+
+                    }
+                }
+                //获取订单使用现金券
+                List<OrderCouponInfo> orderCashCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(userId, OrderCouponType.CASH_COUPON);
+                if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
+                    for (OrderCouponInfo orderCashCoupon : orderCashCouponList) {
+
+                    }
+                }
+                //********************************退第三方支付**************************
+                //如果是待收货、门店自提单则需要返回第三方支付金额
+                if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
+                    if ("ALIPAY".equals(orderBillingDetails.getOnlinePayType())) {
+
+                        //创建退单退款详情实体
+                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                        returnOrderBillingDetail.setRoid(returnOrderId);
+                        returnOrderBillingDetail.setRefundNumber(returnNumber);
+                        //TODO 时间待定
+                        returnOrderBillingDetail.setIntoAmountTime(new Date());
+                        //TODO 第三方回复码
+                        returnOrderBillingDetail.setReplyCode("");
+                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
+                        returnOrderBillingDetail.setReturnPayType(OnlinePayType.ALIPAY);
+                    } else if ("WE_CHAT".equals(orderBillingDetails.getOnlinePayType())) {
+                        //微信退款方法类
+                        WeChatPayController wechat = new WeChatPayController();
+                        wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
+                        //创建退单退款详情实体
+                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                        returnOrderBillingDetail.setRoid(returnOrderId);
+                        returnOrderBillingDetail.setRefundNumber(returnNumber);
+                        //TODO 时间待定
+                        returnOrderBillingDetail.setIntoAmountTime(new Date());
+                        //TODO 第三方回复码
+                        returnOrderBillingDetail.setReplyCode("");
+                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
+                        returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
+                    } else if ("UNION_PAY".equals(orderBillingDetails.getOnlinePayAmount())) {
+                        //创建退单退款详情实体
+                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                        returnOrderBillingDetail.setRoid(returnOrderId);
+                        returnOrderBillingDetail.setRefundNumber(returnNumber);
+                        //TODO 时间待定
+                        returnOrderBillingDetail.setIntoAmountTime(date);
+                        //TODO 第三方回复码
+                        returnOrderBillingDetail.setReplyCode("");
+                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
+                        returnOrderBillingDetail.setReturnPayType(OnlinePayType.UNION_PAY);
+                    }
+
+                }
             }
+
             return null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -310,7 +495,7 @@ public class ReturnOrderController {
         }
         try {
             //查询所有退单表
-            List<ReturnOrderBaseInfo> baseInfo = appReturnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, showStatus);
+            List<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, showStatus);
 
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
@@ -321,7 +506,7 @@ public class ReturnOrderController {
                 //创建一个返回类（借用订单返回对象）
                 OrderListResponse orderListResponse = new OrderListResponse();
                 //获取订单商品
-                List<ReturnOrderGoodsInfo> returnGoodsInfoList = appReturnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
                 //遍历订单商品
                 int count = 0;
                 for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
@@ -381,7 +566,7 @@ public class ReturnOrderController {
         }
         try {
             //查退单
-            ReturnOrderBaseInfo returnBaseInfo = appReturnOrderService.queryByReturnNo(returnNumber);
+            ReturnOrderBaseInfo returnBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
             ReturnOrderDetailResponse detailResponse = null;
             if (returnBaseInfo != null) {
 
@@ -408,11 +593,11 @@ public class ReturnOrderController {
                     detailResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
                     detailResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
                 }
-                detailResponse.setGoodsList(appReturnOrderService.getReturnOrderGoodsDetails(returnNumber));
+                detailResponse.setGoodsList(returnOrderService.getReturnOrderGoodsDetails(returnNumber));
                 int count = 0;
                 Double totalReturnPrice = 0.00;
                 //获取订单商品
-                List<ReturnOrderGoodsInfo> returnGoodsInfoList = appReturnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
                 //遍历订单商品，算出总商品数量和退货商品总价
                 for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
                     count = count + returnGoodsInfo.getReturnQty();
@@ -433,4 +618,33 @@ public class ReturnOrderController {
         }
     }
 
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取退货订单原因列表
+     * @descripe
+     * @author GenerationRoad
+     * @date 2017/11/21
+     */
+    @PostMapping(value = "/returnReasons", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getReturnReasons(Long userId, Integer identityType) {
+        logger.info("getReturnReasons CALLED,获取退货订单原因列表，入参 userId:{} identityType:{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getReturnReasons OUT,获取退货订单原因列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getReturnReasons OUT,获取退货订单原因列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        List<OperationReasonsResponse> operationReasonsServiceList = this.operationReasonsServiceImpl.findAllByType(OperationReasonType.RETURN);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, operationReasonsServiceList);
+        logger.info("getReturnReasons OUT,获取退货订单原因列表成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
 }

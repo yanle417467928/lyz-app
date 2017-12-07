@@ -223,7 +223,8 @@ public class AliPayController {
      */
     @RequestMapping(value = "/return/async")
     public String alipayReturnAsync(HttpServletRequest request) {
-        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 request:{}", request);
+
+        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，入参 request:{}", request);
         try {
             //获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();

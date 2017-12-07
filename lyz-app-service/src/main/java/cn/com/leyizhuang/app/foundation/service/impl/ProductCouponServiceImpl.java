@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +52,10 @@ public class ProductCouponServiceImpl implements ProductCouponService {
             return productCouponDAO.findGoodsIdByUserIdAndProductCouponId(userId, pcId);
         }
         return null;
+    }
+
+    @Override
+    public  List<OrderCouponInfo>  findOrderCouponByCouponTypeAndUserId(Long orderId, OrderCouponType couponType) {
+        return productCouponDAO.findOrderCouponByCouponTypeAndUserId(orderId,couponType);
     }
 }

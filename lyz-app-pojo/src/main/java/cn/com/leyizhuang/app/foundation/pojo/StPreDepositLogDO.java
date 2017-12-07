@@ -40,7 +40,11 @@ public class StPreDepositLogDO {
      */
     private StorePreDepositChangeType changeType;
     /**
-     * 客户id
+     * 变更类型描述
+     */
+    private String changeTypeDesc;
+    /**
+     * 门店id
      */
     private Long storeId;
     /**
