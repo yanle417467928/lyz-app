@@ -118,7 +118,7 @@ public class PaymentDataDO {
                          Double totalFee, PaymentDataStatus tradeStatus, OnlinePayType onlinePayType, String remarks) {
         this.userId = userId;
         this.outTradeNo = outTradeNo;
-        if (outTradeNo.contains("CZ_")) {
+        if (outTradeNo.contains("_CZ")) {
             if (null != identityType && identityType == 0) {
                 this.paymentType = PaymentDataType.ST_PRE_DEPOSIT;
             } else if (null != identityType && identityType == 2) {
