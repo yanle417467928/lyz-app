@@ -455,7 +455,7 @@ public class MaterialAuditSheetController {
      * @return 返回审核料单商品信息
      * @anther Jerry.Ren
      */
-    @RequestMapping(value = "/manager/transform/materialList")
+    @RequestMapping(value = "/manager/transform/materialList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> transformMaterialList(Long userID, String auditNo, Integer identityType) {
         ResultDTO<Object> resultDTO;
         logger.info("transformMaterialList CALLED,装饰公司项目经理审核通过加入下料清单，入参 userID:{},auditNo:{},identityType:{}", userID, auditNo, identityType);

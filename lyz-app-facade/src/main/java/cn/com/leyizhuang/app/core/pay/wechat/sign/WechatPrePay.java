@@ -114,7 +114,6 @@ public class WechatPrePay {
         //这里需要传入微信商户本地证书
         String result = null;
         try {
-            //TODO 微信退款需要下载商户证书
             result = WechatUtil.refundBySslPost("https://api.mch.weixin.qq.com/secapi/pay/refund", requestXML);
         } catch (Exception e) {
             e.printStackTrace();

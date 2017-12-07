@@ -90,6 +90,9 @@ deploy:
       url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
+      url: http://119.23.149.7:9999/app/pay/wechat/return/async
+    cert:
+      path: /cert/apiclient_cert.p12
       url: http://119.23.149.7:9999/app/wechatpay/return/async
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn

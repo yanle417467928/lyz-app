@@ -4,24 +4,14 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.OperationReasonsResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ReturnOrderDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
@@ -30,7 +20,6 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,44 +46,36 @@ public class ReturnOrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(ReturnOrderController.class);
 
-
-    @Autowired
+    @Resource
     private ReturnOrderService returnOrderService;
-
     @Resource
     private AppOrderService appOrderService;
-
-    @Autowired
+    @Resource
     private AppCustomerService customerService;
-
-    @Autowired
+    @Resource
     private AppEmployeeService employeeService;
     @Resource
     private GoodsService goodsService;
-
-    @Autowired
-    private OperationReasonsService operationReasonsServiceImpl;
-
-    @Autowired
-    private LeBiVariationLogService leBiVariationLogService;
-
-    @Autowired
-    private AppCustomerService appCustomerService;
-
-    @Autowired
+    @Resource
     private AppStoreService appStoreService;
-
-    @Autowired
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
+    @Resource
+    private OperationReasonsService operationReasonsServiceImpl;
+    @Resource
+    private DeliveryAddressService deliveryAddressService;
+    @Resource
     private StorePreDepositLogService storePreDepositLogService;
-
-    @Autowired
+    @Resource
     private StoreCreditMoneyLogService storeCreditMoneyLogService;
-
-    @Autowired
+    @Resource
     private AppEmployeeService appEmployeeService;
-
-    @Autowired
+    @Resource
+    private AppCustomerService appCustomerService;
+    @Resource
     private ProductCouponService productCouponService;
+    @Resource
+    private LeBiVariationLogService leBiVariationLogService;
 
     /**
      * 取消订单
@@ -106,28 +87,30 @@ public class ReturnOrderController {
      * @param remarksInfo  备注
      * @return 成功或失败
      */
-    public ResultDTO<Object> canselOrder(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, String orderNumber, String reasonInfo, String remarksInfo) {
-        logger.info("canselOrder CALLED,取消订单，入参 userId:{} identityType:{} orderNumber:{} reasonInfo:{} remarksInfo:{}",
+
+    public ResultDTO<Object> cancelOrder(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
+                                         String orderNumber, String reasonInfo, String remarksInfo) {
+        logger.info("cancelOrder CALLED,取消订单，入参 userId:{} identityType:{} orderNumber:{} reasonInfo:{} remarksInfo:{}",
                 userId, identityType, orderNumber, reasonInfo, remarksInfo);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (StringUtils.isBlank(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
-            logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (StringUtils.isBlank(reasonInfo)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取消原因不能为空！", null);
-            logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
@@ -141,15 +124,15 @@ public class ReturnOrderController {
             ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
             if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
-                logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (!orderBaseInfo.getDeliveryStatus().equals("RECEIVED") &&
-                    !orderBaseInfo.getDeliveryStatus().equals("ALREADY_POSITIONED") &&
-                    !orderBaseInfo.getDeliveryStatus().equals("PICKING_GOODS") &&
-                    !orderBaseInfo.getDeliveryStatus().equals("LOADING")) {
+            if (!"RECEIVED".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                    !"ALREADY_POSITIONED".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                    !"PICKING_GOODS".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                    !"LOADING".equals(orderBaseInfo.getDeliveryStatus().getDescription())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已配送或已签收不能取消订单！", null);
-                logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null != orderBillingDetails) {
@@ -464,7 +447,7 @@ public class ReturnOrderController {
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，取消订单失败", null);
-            logger.warn("canselOrder EXCEPTION,取消订单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("cancelOrder EXCEPTION,取消订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -477,7 +460,7 @@ public class ReturnOrderController {
      * @param identityType 用户身份
      * @return 退货单列表
      */
-    @RequestMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO getReturnOrderList(Long userId, Integer identityType, Integer showStatus) {
 
         logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{}", userId, identityType, showStatus);
@@ -543,7 +526,7 @@ public class ReturnOrderController {
      * @param returnNumber 退单号
      * @return 退单信息
      */
-    @RequestMapping(value = "/detail", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/detail", produces = "application/json;charset=UTF-8")
     public ResultDTO getReturnOrderDetail(Long userId, Integer identityType, String returnNumber) {
 
         logger.info("getReturnOrderDetail CALLED,查看退货单详情，入参 userID:{}, identityType:{}, returnNumber:{}", userId, identityType, returnNumber);
@@ -646,5 +629,220 @@ public class ReturnOrderController {
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, operationReasonsServiceList);
         logger.info("getReturnReasons OUT,获取退货订单原因列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
+    }
+
+    /**
+     * 用户取消退货单
+     *
+     * @param userId       用户id
+     * @param identityType 用户身份
+     * @param returnNumber 退单号
+     * @return 是否成功
+     */
+    @PostMapping(value = "/cancel", produces = "application/json;charset=UTF-8")
+    public ResultDTO cancelReturnOrder(Long userId, Integer identityType, String returnNumber) {
+
+        logger.info("cancelReturnOrder CALLED,用户取消退货单，入参 userID:{}, identityType:{}, returnNumber:{}", userId, identityType, returnNumber);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(returnNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退单号不能为空！", null);
+            logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //分别判断是普通退货单，还是买券退货，还是
+            ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+            //判断物流是否已取货，买券无判断
+            ReturnOrderDeliveryDetail returnOrderDeliveryDetail = returnOrderDeliveryDetailsService.getReturnLogisticStatusDetail(returnNumber);
+            if (ReturnLogisticStatus.PICKUP_COMPLETE.equals(returnOrderDeliveryDetail.getReturnLogisticStatus())) {
+                //TODO
+            }
+            return null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户取消退货单失败", null);
+            logger.warn("cancelReturnOrder EXCEPTION,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 用户点击退货获取可退商品列表
+     *
+     * @param userId       用户id
+     * @param identityType 用户身份
+     * @param orderNumber  订单
+     * @return 可退商品列表，订单门店
+     */
+    @PostMapping(value = "/goods/returnable", produces = "application/json;charset=UTF-8")
+    public ResultDTO getReturnOrderGoodsList(Long userId, Integer identityType, String orderNumber) {
+
+        logger.info("getReturnOrderGoodsList CALLED,用户点击退货获取可退商品列表，入参 userID:{}, identityType:{}, orderNumber:{}", userId, identityType, orderNumber);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getReturnOrderGoodsList OUT,用户点击退货获取可退商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getReturnOrderGoodsList OUT,用户点击退货获取可退商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("getReturnOrderGoodsList OUT,用户点击退货获取可退商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //产品券可退，促销商品必须退赠品，返回促销标题，现金券，乐币，不可退，如果是预存款和第三方支付，优先顺序？
+            //创建返回对象集合
+            List<ReturnOrderGoodsResponse> returnOrderGoodsList = null;
+            //获取订单商品数量促销信息
+            List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+            if (!orderGoodsInfoList.isEmpty()) {
+                returnOrderGoodsList = new ArrayList<>(orderGoodsInfoList.size());
+                //将订单商品信息设置到返回对象中
+                for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                    ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
+                    returnOrderGoodsResponse.setSku(goodsInfo.getSku());
+                    returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
+                    returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
+                    returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
+                    returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
+                    returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
+                    returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
+                    //TODO 查促销表的标题
+                    returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
+                    returnOrderGoodsResponse.setIsGift(goodsInfo.getIsGift());
+                    returnOrderGoodsList.add(returnOrderGoodsResponse);
+                }
+                //获取订单商品详细信息包含图片，
+                List<GiftListResponseGoods> giftListResponseGoods = appOrderService.getOrderGoodsDetails(orderNumber);
+                if (!giftListResponseGoods.isEmpty()) {
+                    for (ReturnOrderGoodsResponse returnOrderGoodsResponse : returnOrderGoodsList) {
+                        for (GiftListResponseGoods giftListResponseGood : giftListResponseGoods) {
+                            if (giftListResponseGood.getCoverImageUri().equals(returnOrderGoodsResponse.getCoverImageUri())) {
+                                returnOrderGoodsResponse.setCoverImageUri(giftListResponseGood.getCoverImageUri());
+                                break;
+                            }
+                        }
+                    }
+                }
+                //按照退货优先级排个序
+                returnOrderGoodsList.sort((o1, o2) -> o1.getReturnPriority().compareTo(o2.getReturnPriority()));
+            }
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    returnOrderGoodsList != null && returnOrderGoodsList.size() > 0 ? returnOrderGoodsList : null);
+            logger.info("getReturnOrderDetail OUT,用户点击退货获取可退商品列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户点击退货获取可退商品列表失败", null);
+            logger.warn("getReturnOrderGoodsList EXCEPTION,用户点击退货获取可退商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取用户退货方式和取货地址
+     *
+     * @param userId       用户id
+     * @param identityType 用户身份类型
+     * @param orderNumber  订单号
+     * @return 返回退货门店和退货地址
+     */
+    @PostMapping(value = "/delivery/address", produces = "application/json;charset=UTF-8")
+    public ResultDTO getReturnOrderDeliveryType(Long userId, Integer identityType, String orderNumber) {
+
+        logger.info("getReturnOrderDeliveryType CALLED,获取用户退货方式和取货地址，入参 userID:{}, identityType:{}, orderNumber:{}", userId, identityType, orderNumber);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            //获取原订单收货/自提门店地址
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+            //如果是门店自提，取货地址就取顾客默认地址
+            if (orderLogisticsInfo != null) {
+                if (StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())) {
+                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
+                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
+                    if (null == defaultDeliveryAddress) {
+                        defaultDeliveryAddress = deliveryAddressService.getTopDeliveryAddressByUserIdAndIdentityType
+                                (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    }
+                    orderLogisticsInfo = transform(orderLogisticsInfo, defaultDeliveryAddress);
+                    //如果是送货上门，退货到门店的地址就是订单门店地址
+                } else if (StringUtils.isBlank(orderLogisticsInfo.getBookingStoreAddress()) && identityType == 6) {
+                    OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                    //下订单的id 是否和当前顾客的ID一致
+                    if (null != orderBaseInfo && null != orderBaseInfo.getCreatorId()) {
+                        if (orderBaseInfo.getCreatorId().equals(userId)) {
+                            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                            orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
+                            orderLogisticsInfo.setBookingStoreName(store.getStoreName());
+                            orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
+                        }
+                    }
+                }
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderLogisticsInfo);
+            logger.info("getReturnOrderDetail OUT,用户点击退货获取可退商品列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取用户退货方式和取货地址失败", null);
+            logger.warn("getReturnOrderDeliveryType EXCEPTION,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    private OrderLogisticsInfo transform(OrderLogisticsInfo orderLogisticsInfo, DeliveryAddressResponse defaultDeliveryAddress) {
+        orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getDeliveryName());
+        orderLogisticsInfo.setReceiverPhone(defaultDeliveryAddress.getDeliveryPhone());
+        orderLogisticsInfo.setDeliveryCity(defaultDeliveryAddress.getDeliveryCity());
+        orderLogisticsInfo.setDeliveryCounty(defaultDeliveryAddress.getDeliveryCounty());
+        orderLogisticsInfo.setDeliveryStreet(defaultDeliveryAddress.getDeliveryStreet());
+        orderLogisticsInfo.setDetailedAddress(defaultDeliveryAddress.getDetailedAddress());
+        orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getVillageName());
+        String shippingAddress = defaultDeliveryAddress.getDeliveryCity() +
+                defaultDeliveryAddress.getDeliveryCounty() +
+                defaultDeliveryAddress.getDeliveryStreet() +
+                defaultDeliveryAddress.getDetailedAddress();
+        orderLogisticsInfo.setShippingAddress(shippingAddress);
+        return orderLogisticsInfo;
     }
 }
