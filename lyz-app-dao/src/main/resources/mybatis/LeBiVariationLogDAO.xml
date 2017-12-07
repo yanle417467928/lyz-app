@@ -18,7 +18,7 @@
             SELECT *
             FROM cus_lb_variation_log
             WHERE
-            CUS_ID = #{cusID}
+            CUS_ID = #{cusId}
             AND
             (LE_BI_VARIATION_TYPE = 'CANCEL_ORDER'OR LE_BI_VARIATION_TYPE = 'RETURN_ORDER'OR LE_BI_VARIATION_TYPE =
             'ORDER' )
@@ -30,16 +30,18 @@
         SELECT *
         FROM cus_lb_variation_log
         WHERE
-        CUS_ID = #{cusID}
+            CUS_ID = #{cusId}
         ORDER BY VARIATION_TIME DESC
     </select>
 
     <insert id="addCustomerLeBiVariationLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
         INSERT INTO cus_lb_variation_log
-        (CUS_ID, VARIATION_TIME, LE_BI_VARIATION_TYPE, VARIATION_QUANTITY, AFTER_VARIATION_QUANTITY, ORDER_NUM)
+        (cus_id, variation_time, le_bi_variation_type, variation_type_desc, variation_quantity, after_variation_quantity, order_num)
         VALUES
-        (#{cusID}, #{variationTime}, #{leBiVariationType}, #{variationQuantity}, #{afterVariationQuantity}, #{orderNum})
+            (#{cusId}, #{variationTime}, #{leBiVariationType}, #{variationTypeDesc}, #{variationQuantity},
+             #{afterVariationQuantity},
+             #{orderNum})
     </insert>
 
 </mapper>

@@ -338,7 +338,7 @@
                                                            change_type_desc)
         VALUES
             (#{cityId}, #{cityName}, #{storeId}, #{storeName}, #{storeCode}, #{gid}, #{sku}, #{skuName}, #{changeTime},
-                        #{changeQty}, #{after_change_qty},
+                        #{changeQty}, #{afterChangeQty},
              #{referenceNumber}, #{changeType}, #{changeTypeDesc})
     </insert>
     <select id="findStoreCreditMoneyByEmpId" parameterType="java.lang.Long"

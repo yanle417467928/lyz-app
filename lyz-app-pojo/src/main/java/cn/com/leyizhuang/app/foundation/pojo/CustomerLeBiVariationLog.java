@@ -22,7 +22,7 @@ public class CustomerLeBiVariationLog {
     /**
      * 顾客id
      */
-    private Long cusID;
+    private Long cusId;
     /**
      * 变动时间
      */

@@ -204,7 +204,6 @@
         SET
             quantity = quantity - #{qty}
         WHERE
-            -- quantity >= #{qty}
             cus_id = #{userId}
             AND last_update_time = #{version}
     </update>
