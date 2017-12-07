@@ -19,11 +19,11 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -41,33 +41,33 @@ import java.util.Map;
 public class AliPayController {
     private static final Logger logger = LoggerFactory.getLogger(AliPayController.class);
 
-    @Autowired
-    private PaymentDataService paymentDataServiceImpl;
+    @Resource
+    private PaymentDataService paymentDataService;
 
-    @Autowired
+    @Resource
     private AppCustomerService appCustomerServiceImpl;
 
-    @Autowired
+    @Resource
     private AppStoreService appStoreServiceImpl;
 
-    @Autowired
+    @Resource
     private ArrearsAuditService arrearsAuditService;
 
-    @Autowired
+    @Resource
     private AppOrderService appOrderService;
 
 
     /**
-     * @param
-     * @return
-     * @throws
-     * @title 支付宝充值预存款
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/11/20
+     * 支付宝充值生成充值单
+     *
+     * @param userId       用户id
+     * @param identityType 身份类型
+     * @param money        金额
+     * @param cityId       城市id
+     * @return 支付宝客户端调取所需参数
      */
     @PostMapping(value = "/recharge/pay", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> PreDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
+    public ResultDTO<Object> preDepositRecharge(Long userId, Integer identityType, Double money, Long cityId) {
 
         logger.info("PreDepositRecharge CALLED,支付宝充值预存款提交数据，入参 userId:{} identityType:{} money:{} cityId:{}", userId, identityType, money, cityId);
         ResultDTO<Object> resultDTO;
@@ -91,35 +91,35 @@ public class AliPayController {
             logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totlefee = CountUtil.retainTwoDecimalPlaces(money);
-        String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
-        String subject = "预存款充值";
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc, subject,
-                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "支付宝", "");
-        this.paymentDataServiceImpl.save(paymentDataDO);
-
-        //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
-        //appId 非空，应用ID
-        //privateKey 非空，私钥
-        AlipayClient alipayClient = new DefaultAlipayClient(
-                AlipayConfig.serverUrl, AlipayConfig.appId,
-                AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
-                AlipayConfig.aliPublicKey, AlipayConfig.signType);
-        //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
-        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
-        //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
-        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setSubject(subject);
-        model.setOutTradeNo(outTradeNo);
-        model.setTimeoutExpress("30m");
-        model.setTotalAmount(totlefee);
-        model.setProductCode(AlipayConfig.productCode);
-        request.setBizModel(model);
-        request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
         try {
+            String totalFee = CountUtil.retainTwoDecimalPlaces(money);
+            String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
+            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.alipayReturnUrlAsnyc,
+                    Double.parseDouble(totalFee), PaymentDataStatus.WAIT_PAY, OnlinePayType.ALIPAY, "");
+            this.paymentDataService.save(paymentDataDO);
+
+            //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
+            //appId 非空，应用ID
+            //privateKey 非空，私钥
+            AlipayClient alipayClient = new DefaultAlipayClient(
+                    AlipayConfig.serverUrl, AlipayConfig.appId,
+                    AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
+                    AlipayConfig.aliPublicKey, AlipayConfig.signType);
+            //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+            AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+            //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+            AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+            model.setSubject(paymentDataDO.getPaymentType().getDescription());
+            model.setOutTradeNo(outTradeNo);
+            model.setTimeoutExpress("30m");
+            model.setTotalAmount(totalFee);
+            model.setProductCode(AlipayConfig.productCode);
+            request.setBizModel(model);
+            request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-//            System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+            // System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
             logger.info("PreDepositRecharge OUT,支付宝充值预存款提交数据成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -132,6 +132,95 @@ public class AliPayController {
         }
     }
 
+    /**
+     * 订单支付宝支付信息提交
+     *
+     * @param userId        用户id
+     * @param identityType  身份类型
+     * @param payableAmount 金额
+     * @param orderNumber   订单号
+     * @return 支付宝客户端调用相关信息
+     */
+    @PostMapping(value = "/order/pay", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> orderAlipay(Long userId, Integer identityType, Double payableAmount, String orderNumber) {
+
+        logger.info("orderAlipay CALLED,订单支付宝支付信息提交,入参 userId:{}, identityType:{}, payableAmount:{}, orderNumber:{}",
+                userId, identityType, payableAmount, orderNumber);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("orderAlipay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("orderAlipay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!(null != payableAmount && payableAmount > 0)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额不正确！", null);
+            logger.info("orderAlipay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == orderNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("orderAlipay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        String totalFee = CountUtil.retainTwoDecimalPlaces(payableAmount);
+        PaymentDataDO paymentData = new PaymentDataDO();
+        paymentData.setUserId(userId);
+        paymentData.setOnlinePayType(OnlinePayType.ALIPAY);
+        paymentData.setPaymentType(PaymentDataType.ORDER);
+        paymentData.setPaymentTypeDesc(PaymentDataType.ORDER.getDescription());
+        paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+        paymentData.setCreateTime(LocalDateTime.now());
+        paymentData.setOutTradeNo(orderNumber);
+        paymentData.setTotalFee(Double.parseDouble(totalFee));
+        paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
+        paymentData.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        this.paymentDataService.save(paymentData);
+
+        //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
+        //appId 非空，应用ID
+        //privateKey 非空，私钥
+        AlipayClient alipayClient = new DefaultAlipayClient(
+                AlipayConfig.serverUrl, AlipayConfig.appId,
+                AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
+                AlipayConfig.aliPublicKey, AlipayConfig.signType);
+        //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+        AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
+        //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+        model.setSubject(paymentData.getPaymentType().getDescription());
+        model.setOutTradeNo(orderNumber);
+        model.setTimeoutExpress("30m");
+        model.setTotalAmount(totalFee);
+        model.setProductCode(AlipayConfig.productCode);
+        request.setBizModel(model);
+        request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        try {
+            //这里和普通的接口调用不同，使用的是sdkExecute
+            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+            //System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response.getBody());
+            logger.info("orderAlipay OUT,订单支付宝支付信息提交成功,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,支付宝充值预存款提交数据失败!", null);
+            logger.warn("orderAlipay EXCEPTION,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 支付宝异步通知
+     *
+     * @param request 支付宝请求我方携带的参数
+     * @return 我方响应支付宝请求返回的结果
+     */
     @RequestMapping(value = "/return/async")
     public String alipayReturnAsync(HttpServletRequest request) {
         logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 request:{}", request);
@@ -139,8 +228,8 @@ public class AliPayController {
             //获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();
             Map requestParams = request.getParameterMap();
-            for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
-                String name = (String) iter.next();
+            for (Iterator iterator = requestParams.keySet().iterator(); iterator.hasNext(); ) {
+                String name = (String) iterator.next();
                 String[] values = (String[]) requestParams.get(name);
                 String valueStr = "";
                 for (int i = 0; i < values.length; i++) {
@@ -169,15 +258,15 @@ public class AliPayController {
                 total_fee = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"), "UTF-8");
 
                 logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 out_trade_no:{} trade_no:{} trade_status:{} total_fee:{}",
-                        out_trade_no,trade_no,trade_status,total_fee);
+                        out_trade_no, trade_no, trade_status, total_fee);
 
-                List<PaymentDataDO> paymentDataList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.TRADE_SUCCESS);
+                List<PaymentDataDO> paymentDataList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.TRADE_SUCCESS);
                 if (null != paymentDataList && paymentDataList.size() > 0) {
                     logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                     return "success";
                 }
 
-                List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
+                List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
                 if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
                     PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                     if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
@@ -185,10 +274,10 @@ public class AliPayController {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
 
-                            this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
+                            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 paymentDataDO:{}",
                                     paymentDataDO);
-                            if (out_trade_no.contains("CZ_")) {
+                            if (out_trade_no.contains("_CZ")) {
                                 //充值加预存款和日志
                                 if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
                                     this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.ALIPAY_RECHARGE);
@@ -197,10 +286,10 @@ public class AliPayController {
                                     this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
                                 }
                             }
-                            if (out_trade_no.contains("_HK")){
-                                String orderNumber = out_trade_no.replaceAll("_HK","_XN");
+                            if (out_trade_no.contains("_HK")) {
+                                String orderNumber = out_trade_no.replaceAll("_HK", "_XN");
                                 Double money = paymentDataDO.getTotalFee();
-                                appOrderService.saveOrderBillingPaymentDetails(orderNumber,money,trade_no,out_trade_no);
+                                appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
                             }
                             logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                             return "success";
@@ -211,8 +300,7 @@ public class AliPayController {
         } catch (AlipayApiException e) {
             e.printStackTrace();
             logger.warn("{}", e);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             logger.warn("{}", e);
         }
@@ -255,9 +343,8 @@ public class AliPayController {
             logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
-        String outTradeNo = orderNumber.replaceAll("_XN","_HK");
-        String subject = "支付宝欠款还款";
+        String totalFee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
+        String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);
@@ -266,12 +353,13 @@ public class AliPayController {
         }
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
         paymentDataDO.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
-        paymentDataDO.setSubject(subject);
-        paymentDataDO.setTotalFee(Double.parseDouble(totlefee));
+        paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
+        paymentDataDO.setPaymentTypeDesc(PaymentDataType.REPAYMENT.getDescription());
+        paymentDataDO.setTotalFee(Double.parseDouble(totalFee));
         paymentDataDO.setTradeStatus(PaymentDataStatus.WAIT_PAY);
-        paymentDataDO.setPaymentMethod("支付宝");
+        paymentDataDO.setOnlinePayType(OnlinePayType.ALIPAY);
         paymentDataDO.setCreateTime(LocalDateTime.now());
-        this.paymentDataServiceImpl.save(paymentDataDO);
+        this.paymentDataService.save(paymentDataDO);
 
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
         //appId 非空，应用ID
@@ -284,10 +372,10 @@ public class AliPayController {
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setSubject(subject);
+        model.setSubject(paymentDataDO.getPaymentType().getDescription());
         model.setOutTradeNo(outTradeNo);
         model.setTimeoutExpress("30m");
-        model.setTotalAmount(totlefee);
+        model.setTotalAmount(totalFee);
         model.setProductCode(AlipayConfig.productCode);
         request.setBizModel(model);
         request.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);

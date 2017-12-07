@@ -14,12 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,18 +39,19 @@ public class PhotoOrderController {
 
 
     /**
-     * @param
-     * @return
-     * @throws
-     * @title 拍照下单
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/10/24
+     * @param userId           用户id
+     * @param identityType     用户身份
+     * @param deliveryId       收货人地址
+     * @param isOwnerReceiving 是否主家收货
+     * @param remark           备注
+     * @param customerId       顾客id
+     * @param request          http请求参数
+     * @return 下单结果
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, @RequestParam(value = "myfiles", required = false) MultipartFile[] files,
-                                        Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId) {
-        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{} files:{} deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, files, deliveryId, isOwnerReceiving, remark, customerId);
+    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, /*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
+                                              Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId, HttpServletRequest request) {
+        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, deliveryId, isOwnerReceiving, remark, customerId);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -58,11 +62,6 @@ public class PhotoOrderController {
             if (null == identityType) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
                         null);
-                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == files || files.length == 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
                 logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -84,11 +83,32 @@ public class PhotoOrderController {
                 logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            String photos = "";
-            for (int i = 0; i < files.length; i++) {
-                logger.info("photoOrder OUT,拍照下单提交图片数量，出参 length:{}", files.length);
-                photos += FileUploadOSSUtils.uploadProfilePhoto(files[i], "order/photo");
-                photos += ",";
+            StringBuilder photos = new StringBuilder();
+            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+                    request.getSession().getServletContext());
+            if (multipartResolver.isMultipart(request)) {
+                // 转换成多部分request
+                MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+                // 取得request中的所有文件名
+                Iterator<String> iter = multiRequest.getFileNames();
+                if (!iter.hasNext()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
+                    logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                while (iter.hasNext()) {
+                    // 取得上传文件
+                    MultipartFile f = multiRequest.getFile(iter.next());
+                    if (f != null) {
+                        // 取得当前上传文件的文件名称
+                        String myFileName = f.getOriginalFilename();
+                        // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
+                        if (!"".equals(myFileName.trim())) {
+                            // 定义上传路径
+                            photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
+                        }
+                    }
+                }
             }
             PhotoOrderDO photoOrderDO = new PhotoOrderDO();
             photoOrderDO.setCreateTime(LocalDateTime.now());
@@ -96,11 +116,10 @@ public class PhotoOrderController {
             photoOrderDO.setDeliveryId(deliveryId);
             photoOrderDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             photoOrderDO.setIsOwnerReceiving(isOwnerReceiving);
-            photoOrderDO.setPhotos(photos);
+            photoOrderDO.setPhotos(photos.toString());
             photoOrderDO.setRemark(remark);
             photoOrderDO.setStatus(PhotoOrderStatus.PENDING);
             photoOrderDO.setUserId(userId);
-
             this.photoOrderServiceImpl.save(photoOrderDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("submitPhotoOrder OUT,拍照下单提交成功，出参 resultDTO:{}", resultDTO);
@@ -115,11 +134,11 @@ public class PhotoOrderController {
     }
 
     /**
-     * @title   获取未处理拍照下单列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取未处理拍照下单列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/28
      */
@@ -146,11 +165,11 @@ public class PhotoOrderController {
     }
 
     /**
-     * @title   获取已处理拍照下单列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取已处理拍照下单列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/28
      */
@@ -179,11 +198,11 @@ public class PhotoOrderController {
     }
 
     /**
-     * @title   获取拍照下单详情
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取拍照下单详情
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/28
      */
@@ -214,11 +233,11 @@ public class PhotoOrderController {
 
 
     /**
-     * @title   取消拍照下单
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 取消拍照下单
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/28
      */
@@ -250,7 +269,7 @@ public class PhotoOrderController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("cancelPhotoOrder OUT,取消拍照下单成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else if (null != photoOrderDetailsResponse && photoOrderDetailsResponse.getStatus().equals(PhotoOrderStatus.CANCEL.getValue())){
+            } else if (null != photoOrderDetailsResponse && photoOrderDetailsResponse.getStatus().equals(PhotoOrderStatus.CANCEL.getValue())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已取消,请勿重复操作！", null);
                 logger.info("cancelPhotoOrder OUT,取消拍照下单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;

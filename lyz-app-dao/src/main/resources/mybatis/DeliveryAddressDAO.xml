@@ -24,47 +24,47 @@
     <select id="queryListByCustomerIdAndStatusIsTrue"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
-        id,
-        receiver delivery_name,
-        receiver_phone delivery_phone,
-        delivery_city delivery_city,
-        delivery_county delivery_county,
-        delivery_street delivery_street,
-        residence_name village_name,
-        detailed_address detailed_address,
-        is_default
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
         WHERE user_id = #{userId}
-        AND identity_type = 'CUSTOMER'
-        AND status IS TRUE
+              AND identity_type = 'CUSTOMER'
+              AND status IS TRUE
     </select>
     <select id="queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
-        id,
-        receiver delivery_name,
-        receiver_phone delivery_phone,
-        delivery_city delivery_city,
-        delivery_county delivery_county,
-        delivery_street delivery_street,
-        residence_name village_name,
-        detailed_address detailed_address,
-        is_default
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
         WHERE user_id = #{userId}
-        AND identity_type = #{identityType}
-        AND status IS TRUE
+              AND identity_type = #{identityType}
+              AND status IS TRUE
     </select>
     <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         INSERT INTO delivery_address
         (
-        user_id, identity_type, receiver, receiver_phone, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
-        DETAILED_ADDRESS, residence_name, STATUS, is_default)
+            user_id, identity_type, receiver, receiver_phone, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
+            DETAILED_ADDRESS, residence_name, STATUS, is_default)
         VALUES
-        (#{userId}, #{identityType}, #{receiver}, #{receiverPhone},
-        #{deliveryCity}, #{deliveryCounty},
-        #{deliveryStreet},
-        #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
+            (#{userId}, #{identityType}, #{receiver}, #{receiverPhone},
+                        #{deliveryCity}, #{deliveryCounty},
+                        #{deliveryStreet},
+                        #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
     </insert>
 
     <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
@@ -107,20 +107,20 @@
     <select id="getDefaultDeliveryAddressByUserIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
-        id,
-        receiver delivery_name,
-        receiver_phone delivery_phone,
-        delivery_city delivery_city,
-        delivery_county delivery_county,
-        delivery_street delivery_street,
-        residence_name village_name,
-        detailed_address detailed_address,
-        is_default
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
         WHERE user_id = #{userId}
-        AND identity_type = #{identityType}
-        AND is_default IS TRUE
-        AND status IS TRUE
+              AND identity_type = #{identityType}
+              AND is_default IS TRUE
+              AND status IS TRUE
         LIMIT 1
     </select>
 
@@ -133,17 +133,19 @@
     <select id="getTopDeliveryAddressByUserIdAndIdentityType" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
         SELECT
-        id,
-        receiver delivery_name,
-        receiver_phone delivery_phone,
-        delivery_city delivery_city,
-        delivery_county delivery_county,
-        delivery_street delivery_street,
-        residence_name village_name,
-        detailed_address detailed_address,
-        is_default
+            id,
+            receiver         delivery_name,
+            receiver_phone   delivery_phone,
+            delivery_city    delivery_city,
+            delivery_county  delivery_county,
+            delivery_street  delivery_street,
+            residence_name   village_name,
+            detailed_address detailed_address,
+            is_default
         FROM delivery_address
-        WHERE user_id = #{userId} AND identity_type = #{identityType}
+        WHERE user_id = #{userId}
+              AND identity_type = #{identityType}
+              AND status IS TRUE
         LIMIT 1
     </select>
 

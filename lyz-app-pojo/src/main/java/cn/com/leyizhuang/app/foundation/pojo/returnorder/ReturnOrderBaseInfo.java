@@ -1,21 +1,22 @@
-package cn.com.leyizhuang.app.foundation.pojo.returnOrder;
+package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderReturnStatus;
+import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
+import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import lombok.*;
 
 import java.util.Date;
 
 /**
- * 退单基础类
- * Created by caiyu on 2017/12/2.
+ * Created by caiyu on 2017/12/6.
  */
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderReturnBaseInfo {
+public class ReturnOrderBaseInfo {
     private Long roid;
     /**
      * 订单id
@@ -36,11 +37,11 @@ public class OrderReturnBaseInfo {
     /**
      * 退单号
      */
-    private Date returnNo;
+    private String returnNo;
     /**
-     * 退单类型（线上支付，货到付款）
+     * 退单类型（CANCEL_RETURN(1, "取消退货"), REFUSED_RETURN(2, "拒签退货"), NORMAL_RETURN(3, "正常退货")）
      */
-    private String returnType;
+    private ReturnOrderType returnType;
     /**
      * 退款金额
      */
@@ -70,20 +71,16 @@ public class OrderReturnBaseInfo {
      */
     private String customerName;
     /**
-     * 顾客类型（零售、会员）
-     */
-    private String customerType;
-    /**
      * 退货原因
      */
     private String reasonInfo;
     /**
      * 退货物流方式
      */
-    private String orderType;
+    private AppOrderType orderType;
     /**
      * 退货物流状态
      */
-    private AppOrderReturnStatus returnStatus;
+    private AppReturnOrderStatus returnStatus;
 
 }

@@ -1,5 +1,6 @@
-package cn.com.leyizhuang.app.foundation.pojo.returnOrder;
+package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import lombok.*;
 
 import java.util.Date;
@@ -13,16 +14,16 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderReturnBillingDetail {
+public class ReturnOrderBillingDetail {
     private Long id;
     /**
      * 退款单id
      */
     private Long roid;
     /**
-     * 退款类型（预存款，支付宝等）
+     * 退款类型（ ALIPAY(0, "支付宝"), WE_CHAT(1, "微信"), UNION_PAY(2, "银联"), NO(3, "无");）
      */
-    private String returnPayType;
+    private OnlinePayType returnPayType;
     /**
      * 退款金额
      */
@@ -32,10 +33,6 @@ public class OrderReturnBillingDetail {
      */
     private Date intoAmountTime;
     /**
-     * 币种
-     */
-    private String currencyType;
-    /**
      * 第三方回复码
      */
     private String replyCode;
@@ -44,7 +41,7 @@ public class OrderReturnBillingDetail {
      */
     private String refundNumber;
 
-    public OrderReturnBillingDetail(String tradeNo, Date now) {
+    public ReturnOrderBillingDetail(String tradeNo, Date now) {
         this.replyCode = tradeNo;
         this.intoAmountTime = now;
     }

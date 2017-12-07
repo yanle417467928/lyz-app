@@ -281,7 +281,7 @@ public class CommonServiceImpl implements CommonService {
                                 billingDetails.getLebiQuantity(), customerLeBi.getLastUpdateTime());
                         if (affectLine > 0) {
                             CustomerLeBiVariationLog log = new CustomerLeBiVariationLog();
-                            log.setCusID(customerIdTemp);
+                            log.setCusId(customerIdTemp);
                             log.setVariationTime(Calendar.getInstance().getTime());
                             log.setVariationQuantity(billingDetails.getLebiQuantity());
                             log.setAfterVariationQuantity(customerLeBi.getQuantity() - billingDetails.getLebiQuantity());

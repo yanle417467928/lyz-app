@@ -100,7 +100,8 @@ public interface AppStoreDAO {
                                                                 @Param(value = "inventory") Integer inventory,
                                                                 @Param(value = "version") Date version);
 
-    StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
+    StoreInventory findStoreInventoryByStoreIdAndGoodsId(@Param(value = "storeId") Long storeId,
+                                                         @Param(value = "goodsId") Long goodsId);
 
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 

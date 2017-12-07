@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.alipay;
+package cn.com.leyizhuang.app.web.controller.wechatpay;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.pay.wechat.sign.WechatPrePay;
@@ -8,8 +8,7 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnOrder.OrderReturnBillingDetail;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -62,7 +60,7 @@ public class WeChatPayController {
     private ArrearsAuditService arrearsAuditService;
 
     @Resource
-    private OrderReturnService orderReturnService;
+    private ReturnOrderService returnOrderService;
 
     /**
      * 微信支付订单
@@ -113,10 +111,10 @@ public class WeChatPayController {
         }
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
-        String subject = "微信订单支付";
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc, subject,
-                totlefeeParse, PaymentDataStatus.WAIT_PAY, "微信支付", "订单支付");
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
+                totlefeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         try {
@@ -172,10 +170,9 @@ public class WeChatPayController {
         String totlefee = CountUtil.retainTwoDecimalPlaces(money);
         Double totlefeeParse = Double.parseDouble(totlefee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
-        String subject = "预存款充值";
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc, subject,
-                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, "微信支付", "");
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
+                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         try {
@@ -193,7 +190,8 @@ public class WeChatPayController {
     }
 
     /**
-     *  微信欠款还款
+     * 微信欠款还款
+     *
      * @param userId
      * @param identityType
      * @param orderNumber
@@ -227,8 +225,7 @@ public class WeChatPayController {
         }
         String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
         Double totlefeeParse = Double.parseDouble(totlefee);
-        String outTradeNo = orderNumber.replaceAll("_XN","_HK");
-        String subject = "微信欠款还款";
+        String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
 
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
@@ -238,10 +235,11 @@ public class WeChatPayController {
         }
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
         paymentDataDO.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
-        paymentDataDO.setSubject(subject);
+        paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
+        paymentDataDO.setPaymentTypeDesc(PaymentDataType.REPAYMENT.getDescription());
         paymentDataDO.setTotalFee(Double.parseDouble(totlefee));
         paymentDataDO.setTradeStatus(PaymentDataStatus.WAIT_PAY);
-        paymentDataDO.setPaymentMethod("微信");
+        paymentDataDO.setOnlinePayType(OnlinePayType.WE_CHAT);
         paymentDataDO.setCreateTime(LocalDateTime.now());
         this.paymentDataServiceImpl.save(paymentDataDO);
 
@@ -275,8 +273,8 @@ public class WeChatPayController {
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "微信退款";
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null, subject,
-                money, PaymentDataStatus.WAIT_REFUND, "微信退款", "微信退款");
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
+                money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataServiceImpl.save(paymentDataDO);
 
         try {
@@ -302,11 +300,11 @@ public class WeChatPayController {
                     String tradeStatus = resultMap.get("result_code").toString();
 
                     //修改退单状态
-                    OrderReturnBaseInfo orderReturnBaseInfo = orderReturnService.queryByReturnNo(outRefundNo);
-                    orderReturnBaseInfo.setReturnStatus(AppOrderReturnStatus.FINISHED);
-                    orderReturnService.modifyOrderReturnBaseInfo(orderReturnBaseInfo);
+                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
+                    returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
+                    returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
                     //修改退货单金额明细流水单号和时间
-                    orderReturnService.modifyOrderReturnBillingDetail(new OrderReturnBillingDetail(tradeNo, Calendar.getInstance().getTime()));
+//                    returnOrderService.modifyOrderReturnBillingDetail(new ReturnOrderBillingDetail(tradeNo, Calendar.getInstance().getTime()));
 
                     List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
                     PaymentDataDO dataDO = paymentDataDOList.get(0);
@@ -366,7 +364,7 @@ public class WeChatPayController {
                         if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单
-                            if (outTradeNo.contains("CX")) {
+                            if (outTradeNo.contains("_CZ")) {
 
                                 appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
 

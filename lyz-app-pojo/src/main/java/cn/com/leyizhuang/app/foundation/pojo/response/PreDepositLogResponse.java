@@ -25,7 +25,7 @@ public class PreDepositLogResponse {
     private String type;
 
     public void setType(CustomerPreDepositChangeType type) {
-        this.type = type.getValue();
+        this.type = type.getDescription();
     }
 
 

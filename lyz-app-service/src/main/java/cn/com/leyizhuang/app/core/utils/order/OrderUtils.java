@@ -14,7 +14,7 @@ import java.util.Random;
  * 订单相关工具类
  *
  * @author Richard
- * Created on 2017-11-16 10:48
+ *         Created on 2017-11-16 10:48
  **/
 @Component
 public class OrderUtils {
@@ -71,13 +71,14 @@ public class OrderUtils {
         if (null != cityId) {
             City city = cityService.findById(cityId);
             StringBuilder orderNumberTemp = new StringBuilder();
-            orderNumberTemp.append("CZ_");
+
             if (null != city && null != city.getBriefSpell()) {
                 String orderNumber = city.getBriefSpell();
                 orderNumberTemp.append(orderNumber);
             } else {
                 orderNumberTemp.append("MR");
             }
+            orderNumberTemp.append("_CZ");
             Calendar calendar = Calendar.getInstance();
             Date date = calendar.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -94,23 +95,20 @@ public class OrderUtils {
      * @param
      * @return
      * @throws
-     * @title 生成还款单号
+     * @title 生成退货单号
      * @descripe
      * @author GenerationRoad
      * @date 2017/11/22
      */
-    public static String repaymentNumber(String orderNumber) {
-            StringBuilder orderNumberTemp = new StringBuilder();
-            String ordNo = orderNumber.replaceAll("_XN","_HK");
-
-            Calendar calendar = Calendar.getInstance();
-            Date date = calendar.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-            String timeStamp = sdf.format(date);
-            orderNumberTemp.append(timeStamp);
-            Random random = new Random();
-            orderNumberTemp.append(random.nextInt(900000) + 100000);
-            return orderNumberTemp.toString();
+    public static String getReturnNumber() {
+        StringBuilder orderReturnNumber = new StringBuilder();
+        orderReturnNumber.append("T");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String timeStamp = sdf.format(date);
+        orderReturnNumber.append(timeStamp);
+        return orderReturnNumber.toString();
     }
 
     public static void main(String[] args) {
