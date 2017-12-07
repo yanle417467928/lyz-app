@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -20,4 +20,17 @@ public interface StorePreDepositLogDAO {
 
     void save(StPreDepositLogDO stPreDepositLogDO);
 
+    /**
+     * 根据导购id查询门店预存款信息
+     * @param userId    用户id
+     * @return  门店预存款信息
+     */
+    StorePreDeposit findStoreByUserId(@Param("suerId") Long userId);
+
+    /**
+     * 修改门店预存款
+     * @param money 修改后金额
+     * @param userId    用户id
+     */
+    void updateStPreDepositByUserId(@Param("money") Double money,@Param("userId")Long userId);
 }

@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,5 +32,10 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     @Override
     public List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType) {
         return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusId, showType);
+    }
+
+    @Override
+    public void updateLeBiQtyByUserId(Integer quantity, Date lastUpdateTime, Long customerId) {
+        leBiVariationLogDAO.updateLeBiQtyByUserId(quantity,lastUpdateTime,customerId);
     }
 }

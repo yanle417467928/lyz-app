@@ -40,4 +40,14 @@
         AND ccpc.id = #{pcId}
     </select>
 
+    <select id="findOrderCouponByCouponTypeAndUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        SELECT
+            *
+        FROM
+            ord_coupon_info
+        WHERE
+            oid = #{orderId}
+        AND coupon_type = #{couponType}
+    </select>
+
 </mapper>

@@ -37,8 +37,11 @@ public enum AppOrderStatus {
     /**
      * 配送单:有  自提单:无  买券订单:无
      */
-    REJECTED("REJECTED", "拒签");
-
+    REJECTED("REJECTED", "拒签"),
+    /**
+     * 配送单:有  自提单:有  买券订单:无
+     */
+    CANCELING("CANCELING","取消中");
 
     private final String value;
     private final String description;

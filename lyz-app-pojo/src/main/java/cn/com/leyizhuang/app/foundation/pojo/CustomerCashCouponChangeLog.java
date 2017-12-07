@@ -36,6 +36,7 @@ public class CustomerCashCouponChangeLog {
     /**
      * 相关单号
      */
+    private String referenceNumber;
     /**
      * 变更类型
      */
