@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.CashCouponDAO">
+
+    <select id="findCashCouponByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
+         SELECT
+            ccc.*
+        FROM
+            cp_cash_coupon AS ccc
+        INNER JOIN ord_coupon_info AS oci ON ccc.ccid = oci.coupon_id
+        WHERE
+            oci.coupon_id = #{couponId}
+    </select>
+
+    <insert id="addCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO cp_cash_coupon
+        (create_time, condition, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity, title)
+        VALUES
+        (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title})
+    </insert>
+
+    <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        INSERT INTO cus_customer_cash_coupon
+        (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, condition, denomination,effective_start_time,
+         effective_end_time, descripttion, title)
+        VALUES
+        (#{cusId}, #{ccid}, #{qty}, #{getTime}, #{isUsed}, #{useTime}, #{useOrderNumber}, #{downTime}, #{status}, #{condition},
+         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title})
+    </insert>
+
+
+</mapper>
