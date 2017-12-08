@@ -10,8 +10,11 @@ import java.util.Objects;
  **/
 public enum AppDeliveryType {
 
-    SELF_TAKE("SELF_TAKE", "门店自提"), HOUSE_DELIVERY("HOUSE_DELIVERY", "送货上门");
+    //**************************正向配送方式******************************
+    SELF_TAKE("SELF_TAKE", "门店自提"), HOUSE_DELIVERY("HOUSE_DELIVERY", "送货上门"),
 
+    //**************************反向配送方式******************************
+    RETURN_STORE("SELF_DELIVERY", "退货到店"), HOUSE_PICK("HOUSE_PICK", "上门取货");
     private String value;
 
     private String description;
