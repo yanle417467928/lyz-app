@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ public interface ActGiftDetailsDAO {
 
     List<ActGiftDetailsDO> queryList();
 
-    ActGiftDetailsDO queryById(@PathParam("id") Long id);
+    ActGiftDetailsDO queryById(@Param("id") Long id);
 
-    List<ActGiftDetailsDO> queryByActId(@PathParam("ActId") Long ActId);
+    List<ActGiftDetailsDO> queryByActId(@Param("actId") Long actId);
 }

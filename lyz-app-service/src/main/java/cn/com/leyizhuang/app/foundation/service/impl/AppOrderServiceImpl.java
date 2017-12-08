@@ -303,7 +303,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 //写入创单人信息
                 tempOrder.setCreatorId(decoratorManager.getEmpId());
                 tempOrder.setCreatorName(decoratorManager.getName());
-                tempOrder.setCustomerPhone(decoratorManager.getMobile());
+                tempOrder.setCreatorPhone(decoratorManager.getMobile());
                 break;
             default:
                 break;

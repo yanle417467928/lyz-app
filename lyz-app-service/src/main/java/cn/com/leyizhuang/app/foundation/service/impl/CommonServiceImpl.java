@@ -521,5 +521,11 @@ public class CommonServiceImpl implements CommonService {
             }
         }
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleOrderRelevantBusinessAfterOnlinePay(String outTradeNo) {
+
+    }
 }
 

@@ -272,28 +272,30 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
 
     @Override
     public void saveSynchronize(GoodsDO goodsDO) {
-        if (goodsDO != null){
+        if (goodsDO != null) {
             goodsDAO.saveSynchronize(goodsDO);
         }
     }
 
     @Override
     public void modifySynchronize(GoodsDO goodsDO) {
-        if (goodsDO != null){
+        if (goodsDO != null) {
             goodsDAO.modifySynchronize(goodsDO);
         }
     }
 
     @Override
     public void deleteSynchronize(String sku) {
-       goodsDAO.deleteSynchronize(sku);
+        goodsDAO.deleteSynchronize(sku);
     }
 
     @Override
     public List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(Long userId, Integer identityType, Set<Long> goodsIdSet) {
-        if (null != userId && null != identityType && null != goodsIdSet && goodsIdSet.size()>0){
-            if (identityType == AppIdentityType.CUSTOMER.getValue()){
-                return goodsDAO.findOrderGoodsVOListByCustomerIdAndGoodsIds(userId,goodsIdSet);
+        if (null != userId && null != identityType && null != goodsIdSet && goodsIdSet.size() > 0) {
+            if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+                return goodsDAO.findOrderGoodsVOListByCustomerIdAndGoodsIds(userId, goodsIdSet);
+            } else if (identityType == AppIdentityType.SELLER.getValue() || identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                return goodsDAO.findOrderGoodsVOListByEmpIdAndGoodsIds(userId,goodsIdSet);
             }
         }
         return null;

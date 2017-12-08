@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.websocket.server.PathParam;
@@ -21,9 +22,9 @@ public interface ActGoodsMappingDAO {
 
     ActGoodsMappingDO queryById();
 
-    List<ActGoodsMappingDO> queryListByActId(@PathParam("actId") Long actId);
+    List<ActGoodsMappingDO> queryListByActId(@Param("actId") Long actId);
 
-    List<String> querySkusByActId(@PathParam("actId") Long actId);
+    List<String> querySkusByActId(@Param("actId") Long actId);
     /**
      * 批量插入
      * @param trainRecordList

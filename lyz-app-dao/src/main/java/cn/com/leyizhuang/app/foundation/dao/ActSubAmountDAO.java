@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActSubAmountDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,5 +20,5 @@ public interface ActSubAmountDAO {
 
     ActSubAmountDO queryById();
 
-    ActSubAmountDO queryByActId(Long ActId);
+    ActSubAmountDO queryByActId(@Param("actId") Long actId);
 }

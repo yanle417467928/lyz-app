@@ -42,4 +42,6 @@ public interface CommonService {
     void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
             throws OrderSaveException;
+
+    void handleOrderRelevantBusinessAfterOnlinePay(String out_trade_no);
 }
