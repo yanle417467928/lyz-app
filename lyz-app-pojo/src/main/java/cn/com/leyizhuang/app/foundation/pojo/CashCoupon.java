@@ -27,7 +27,10 @@ public class CashCoupon implements Serializable {
      * 创建时间
      */
     private Date createTime;
-
+    /**
+     * 满减条件
+     */
+    private Double condition;
     /**
      *  面额
      */
