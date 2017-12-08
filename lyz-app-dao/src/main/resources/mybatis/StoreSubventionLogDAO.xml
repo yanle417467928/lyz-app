@@ -3,12 +3,12 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.StoreSubventionLogDAO">
 
 
-    <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreCreditMoneyLogResponse">
+    <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreSubventionLogResponse">
         SELECT
             l.id,
-            l.change_type type,
+            l.change_type_desc type,
             l.create_time,
-            l.change_amount
+            l.change_amount    change_money
         FROM st_subvention_change_log l
             INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC

@@ -22,7 +22,4 @@ public class StoreCreditMoneyLogResponse {
     //变更类型
     private String type;
 
-    public void setType(StoreCreditMoneyChangeType type) {
-        this.type = type.getValue();
-    }
 }
