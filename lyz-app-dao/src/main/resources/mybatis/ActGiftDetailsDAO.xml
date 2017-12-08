@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.leyizhuang.app.foundation.dao.activity.ActGiftDetailsDAO">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActGiftDetailsDAO">
 
     <sql id="ALL_FIELDS">
         id, gift_id, gift_sku, gift_title, gift_price, gift_fixed_qty, act_id, act_code,
@@ -73,7 +73,7 @@
     <select id="queryByActId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM act_gift_details WHERE act_id = #{ActId}
+        FROM act_gift_details WHERE act_id = #{actId}
     </select>
 
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">

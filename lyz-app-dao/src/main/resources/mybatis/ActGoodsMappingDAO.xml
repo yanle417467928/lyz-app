@@ -60,14 +60,14 @@
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM act_goods_mapping
-        WHERE actId = #{actId}
+        WHERE act_id = #{actId}
     </select>
 
     <select id="querySkusByActId" resultType="java.lang.String">
         SELECT
         sku
         FROM act_goods_mapping
-        WHERE actId = #{actId}
+        WHERE act_id = #{actId}
     </select>
 
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">

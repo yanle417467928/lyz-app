@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.websocket.server.PathParam;
@@ -32,9 +33,17 @@ public interface ActBaseDAO{
      * @param storeId 门店id
      * @return
      */
-    List<ActBaseDO> queryListBySkus(@PathParam("skus") String skus,@PathParam("now") LocalDateTime now,
-                                    @PathParam("cityId") Long cityId,@PathParam("actTarget") String actTarget,
-                                    @PathParam("storeId") Long storeId);
+    List<ActBaseDO> queryListBySkus(@Param("skus") List<String> skus, @Param("now") LocalDateTime now,
+                                    @Param("cityId") Long cityId, @Param("actTarget") String actTarget,
+                                    @Param("storeId") Long storeId);
+
+    /**
+     * 返回id集合中过期的促销
+     * @param actIds
+     * @param now
+     * @return
+     */
+    List<ActBaseDO> queryListByActIdsAndEndTime(@Param("actIds") List<Long> actIds,@Param("now") LocalDateTime now);
 
     /**
      * 批量插入

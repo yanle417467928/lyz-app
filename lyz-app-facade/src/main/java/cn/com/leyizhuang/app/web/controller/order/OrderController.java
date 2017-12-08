@@ -76,6 +76,8 @@ public class OrderController {
     @Resource
     private CityService cityService;
 
+    @Resource
+    private AppActService actService;
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
@@ -408,7 +410,17 @@ public class OrderController {
                 }
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣, 加运费
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
+                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
                 Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算可用的优惠券
@@ -430,14 +442,17 @@ public class OrderController {
                     //合并商品和赠品集合
                     goodsInfo.addAll(giftsInfo);
                 }
+
+
+
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", memberDiscount / 10);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
@@ -495,7 +510,17 @@ public class OrderController {
                 }
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
+                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount<1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
                 Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
                 //现金券还需要传入订单金额判断是否满减
@@ -525,9 +550,9 @@ public class OrderController {
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", memberDiscount / 10);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
@@ -580,7 +605,17 @@ public class OrderController {
                     }
                 }
                 //计算订单金额小计
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
+                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount<1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
                 //获取门店预存款，信用金，现金返利。
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
@@ -606,14 +641,16 @@ public class OrderController {
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", totalPrice / 1000);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
                 goodsSettlement.put("storeSubvention", storeSubvention);
             }
+
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);

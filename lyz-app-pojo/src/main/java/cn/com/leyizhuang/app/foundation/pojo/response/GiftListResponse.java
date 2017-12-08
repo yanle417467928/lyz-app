@@ -18,6 +18,7 @@ public class GiftListResponse {
 
     List<GiftListResponseGoods> goodsList = new ArrayList<>();
 
-    List<Long> promotionIds = new ArrayList<>();
+
+    List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
 
 }
