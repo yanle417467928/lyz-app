@@ -69,13 +69,15 @@ public class OrderGiftController {
             }
 
             /******计算促销******/
-            List<OrderGoodsSimpleResponse> goodsInfo = null;
+            List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
             List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
             if(identityType == 6){
                 //获取商品信息
                 goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
             }else if(identityType == 0){
                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
+            }else if(identityType == 2){
+
             }
 
             //为返商品集合设置数量和赠品属性
