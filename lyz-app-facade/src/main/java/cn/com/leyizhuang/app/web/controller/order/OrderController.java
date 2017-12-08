@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.order;
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -1189,7 +1190,8 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
-                orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
+                orderDetailsResponse.setPayType(null == orderBaseInfo.getOnlinePayType() ?
+                        OnlinePayType.NO.getDescription() : orderBaseInfo.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {

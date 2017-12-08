@@ -117,5 +117,11 @@ public class ApplicationConstant {
     public static final String APP_KEY = "IWMq9NbOTJ9dhJUYEg5KV5";
     public static final String MASTER_SECRET = "T0qUSvYycU8TOZHeTWEGk1";
 
+    /**
+     * APP logo地址
+     */
+    public static final String APP_LOGO = "http://leyizhuang.oss-cn-shenzhen.aliyuncs.com/lyz-app/logo/Icon-256.png";
+
+
 
 }

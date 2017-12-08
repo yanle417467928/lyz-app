@@ -50,8 +50,10 @@ public class NoticeUtil {
         IGtPush push = new IGtPush(ApplicationConstant.GE_TUI_HOST, ApplicationConstant.APP_KEY, ApplicationConstant.MASTER_SECRET);
         AppMessage message = new AppMessage();
         // 通知透传模板
-        TransmissionTemplate template = getTransmissionTemplate(appMsgInfo);
-        message.setData(template);
+        //TransmissionTemplate template = getTransmissionTemplate(appMsgInfo);
+       //点击通知打开应用模板
+        LinkTemplate linkTemplate = getLinkTemplate(appMsgInfo);
+        message.setData(linkTemplate);
         message.setOffline(true);
         //离线有效时间，单位为毫秒，可选
         message.setOfflineExpireTime(24 * 1000 * 3600);
