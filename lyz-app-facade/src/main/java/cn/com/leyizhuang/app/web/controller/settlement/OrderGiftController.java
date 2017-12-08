@@ -4,7 +4,10 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
-import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.customer.CustomerController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +39,18 @@ public class OrderGiftController {
     @Autowired
     private GoodsPriceService goodsPriceService;
 
+    @Resource
+    private AppCustomerService appCustomerService;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private AppActService actService;
+
+    @Resource
+    private GoodsService goodsService;
+
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {
 
@@ -46,13 +62,36 @@ public class OrderGiftController {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
             List<GoodsSimpleInfo> goodsList = objectMapper.readValue(goodsArray, javaType1);
-            //TODO 计算促销
 
-            List<Long> promotionIdList = new ArrayList<>();
             List<Long> goodsIdList = new ArrayList<>();
             for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
                 goodsIdList.add(goodsSimpleInfo.getId());
             }
+
+            /******计算促销******/
+            List<OrderGoodsSimpleResponse> goodsInfo = null;
+            List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
+            if(identityType == 6){
+                //获取商品信息
+                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
+            }else if(identityType == 0){
+                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
+            }
+
+            //为返商品集合设置数量和赠品属性
+            Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
+            while (orderGoodsSimpleResponseiterator.hasNext()) {
+                OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
+                for (GoodsSimpleInfo info : goodsList) {
+                    if (info.getId().equals(goods.getId())) {
+                        goods.setGoodsQty(info.getNum());
+                        break;
+                    }
+                }
+            }
+            promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+            /******计算促销******/
+
             List<GiftListResponseGoods> responseGoodsList = new ArrayList<>();
             GiftListResponseGoods gift = new GiftListResponseGoods();
             gift.setIsGift(true);
@@ -90,10 +129,8 @@ public class OrderGiftController {
             }
 
             GiftListResponse giftListResponse = new GiftListResponse();
-            responseGoodsList.add(gift);
-            responseGoodsList.add(gift1);
             giftListResponse.setGoodsList(responseGoodsList);
-            giftListResponse.setPromotionIds(promotionIdList);
+            giftListResponse.setPromotionsGiftList(promotionsGiftList);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, giftListResponse);
             logger.info("materialListStepToGiftList OUT,确认商品计算工人订单总金额成功，出参 resultDTO:{}", resultDTO);
