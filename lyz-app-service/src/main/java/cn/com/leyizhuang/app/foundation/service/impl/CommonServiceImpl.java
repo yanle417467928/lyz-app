@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
@@ -13,10 +12,8 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQt
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -24,7 +21,6 @@ import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -163,7 +159,7 @@ public class CommonServiceImpl implements CommonService {
                                         String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
             LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
             LockStoreSubventionException, SystemBusyException {
-        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        //TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         //扣减商品库存
         if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
             if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
@@ -226,6 +222,7 @@ public class CommonServiceImpl implements CommonService {
                             log.setAfterChangeQty(cityInventory.getAvailableIty() - entry.getValue());
                             log.setChangeTime(Calendar.getInstance().getTime());
                             log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
+                            log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER.getDescription());
                             log.setReferenceNumber(orderNumber);
                             cityService.addCityInventoryAvailableQtyChangeLog(log);
                             break;
@@ -250,6 +247,7 @@ public class CommonServiceImpl implements CommonService {
             } else {
                 customerIdTemp = customerId;
             }
+            //扣减预存款
             if (null != cashCouponIds && cashCouponIds.size() > 0) {
                 for (Long id : cashCouponIds) {
                     Integer affectLine = customerService.lockCustomerCashCouponById(id, orderNumber);
@@ -270,6 +268,7 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
             }
+            //扣减乐币
             if (null != billingDetails.getLebiQuantity() && billingDetails.getLebiQuantity() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     CustomerLeBi customerLeBi = customerService.findCustomerLebiByCustomerId(customerIdTemp);
@@ -287,6 +286,7 @@ public class CommonServiceImpl implements CommonService {
                             log.setAfterVariationQuantity(customerLeBi.getQuantity() - billingDetails.getLebiQuantity());
                             log.setOrderNum(orderNumber);
                             log.setLeBiVariationType(LeBiVariationType.ORDER);
+                            log.setVariationTypeDesc(LeBiVariationType.ORDER.getDescription());
                             customerService.addCustomerLeBiVariationLog(log);
                             break;
                         } else {
@@ -319,6 +319,7 @@ public class CommonServiceImpl implements CommonService {
                             cusPreDepositLogDO.setBalance(preDeposit.getBalance() - billingDetails.getCusPreDeposit());
                             cusPreDepositLogDO.setOrderNumber(orderNumber);
                             cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.PLACE_ORDER);
+                            cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.PLACE_ORDER.getDescription());
                             cusPreDepositLogDO.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                             cusPreDepositLogDO.setOperatorId(userId);
                             cusPreDepositLogDO.setOperatorIp(ipAddress);
@@ -358,6 +359,7 @@ public class CommonServiceImpl implements CommonService {
                             log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                             log.setOperatorIp(ipAddress);
                             log.setChangeType(StorePreDepositChangeType.PLACE_ORDER);
+                            log.setChangeTypeDesc(StorePreDepositChangeType.PLACE_ORDER.getDescription());
                             storeService.addStPreDepositLog(log);
                             break;
                         } else {
@@ -411,6 +413,7 @@ public class CommonServiceImpl implements CommonService {
         }
         //扣减门店信用金及现金返利
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+            //扣减门店信用金
             if (null != billingDetails.getStoreCreditMoney() && billingDetails.getStoreCreditMoney() > 0) {
                 for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     StoreCreditMoney storeCreditMoney = storeService.findStoreCreditMoneyByEmpId(userId);
@@ -445,6 +448,7 @@ public class CommonServiceImpl implements CommonService {
                 }
 
             }
+            //扣减现金返利
             if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
                 if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
                     for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -516,6 +520,12 @@ public class CommonServiceImpl implements CommonService {
                 throw new OrderSaveException("订单主键生成失败!");
             }
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleOrderRelevantBusinessAfterOnlinePay(String outTradeNo) {
+
     }
 }
 

@@ -39,19 +39,16 @@ import java.util.SortedMap;
  * Time: 17:43.
  */
 @RestController
-@RequestMapping("/app/pay")
+@RequestMapping("/app/wechatpay")
 public class WeChatPayController {
 
     private static final Logger logger = LoggerFactory.getLogger(WeChatPayController.class);
 
     @Resource
-    private PaymentDataService paymentDataServiceImpl;
+    private PaymentDataService paymentDataService;
 
     @Resource
     private AppCustomerService appCustomerServiceImpl;
-
-    @Resource
-    private AppStoreService appStoreServiceImpl;
 
     @Resource
     private AppOrderService appOrderService;
@@ -68,64 +65,66 @@ public class WeChatPayController {
      * @param req          请求对象
      * @param userId       用户id
      * @param identityType 用户身份类型
-     * @param money        支付金额
-     * @param orderNo      订单号
+     * @param amountPayable        支付金额
+     * @param orderNumber      订单号
      * @return 微信支付请求签名
      */
-    @RequestMapping(value = "/wechat/online", method = RequestMethod.POST)
-    public ResultDTO<Object> wechatOnlinePayment(HttpServletRequest req, Long userId, Integer identityType, Double money, String orderNo) {
+    @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
+    public ResultDTO<Object> orderWechatPay(HttpServletRequest req, Long userId, Integer identityType, Double amountPayable, String orderNumber) {
 
-        logger.info("wechatOnlinePayment CALLED,微信支付订单，入参 userId:{} identityType:{} money{} orderNo{}", userId, identityType, money, orderNo);
+        logger.info("orderWechatPay CALLED,订单微信支付信息提交,入参 userId:{}, identityType:{}, money:{}, orderNumber:{}",
+                userId, identityType, amountPayable, orderNumber);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == money || money <= 0) {
+        if (null == amountPayable || amountPayable <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == orderNo) {
+        if (null == orderNumber) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单不能为空！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
-        if (totlefee == null) {
+        Double totalFee = appOrderService.getAmountPayableByOrderNumber(orderNumber);
+        if (totalFee == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!totlefee.equals(money)) {
+        if (!totalFee.equals(amountPayable)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
-            logger.info("wechatOnlinePayment OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
-        Double totlefeeParse = Double.parseDouble(totlefeeFormat);
+        String totalFeeFormat = CountUtil.retainTwoDecimalPlaces(totalFee);
+        Double totalFeeParse = Double.parseDouble(totalFeeFormat);
 
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
-                totlefeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
-        this.paymentDataServiceImpl.save(paymentDataDO);
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
+                totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
+        this.paymentDataService.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(orderNo, new BigDecimal(totlefeeParse), req);
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(orderNumber, paymentDataDO.getPaymentTypeDesc(),
+                    new BigDecimal(totalFeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
-            logger.info("wechatOnlinePayment OUT,微信支付订单成功，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWechatPay OUT,微信支付订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信支付订单失败!", null);
-            logger.warn("wechatOnlinePayment EXCEPTION,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("orderWechatPay EXCEPTION,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -142,7 +141,7 @@ public class WeChatPayController {
      * @param cityId       用户所在城市Id
      * @return 微信支付请求签名
      */
-    @RequestMapping(value = "/wechat/recharge", method = RequestMethod.POST)
+    @RequestMapping(value = "/recharge/pay", method = RequestMethod.POST)
     public ResultDTO<Object> wechatPreDepositRecharge(HttpServletRequest req, Long userId, Integer identityType, Double money, Long cityId) {
 
         logger.info("wechatPreDepositRecharge CALLED,微信充值预存款，入参 userId:{} identityType:{} money{} cityId{}", userId, identityType, money, cityId);
@@ -167,16 +166,17 @@ public class WeChatPayController {
             logger.info("wechatPreDepositRecharge OUT,微信充值预存款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totlefee = CountUtil.retainTwoDecimalPlaces(money);
-        Double totlefeeParse = Double.parseDouble(totlefee);
+        String totalFee = CountUtil.retainTwoDecimalPlaces(money);
+        Double totalFeeParse = Double.parseDouble(totalFee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
 
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
-                Double.parseDouble(totlefee), PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
-        this.paymentDataServiceImpl.save(paymentDataDO);
+                totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
+        this.paymentDataService.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, new BigDecimal(totlefeeParse), req);
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo,
+                    paymentDataDO.getPaymentTypeDesc(), new BigDecimal(totalFeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
             logger.info("wechatPreDepositRecharge OUT,微信充值预存款成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -241,10 +241,11 @@ public class WeChatPayController {
         paymentDataDO.setTradeStatus(PaymentDataStatus.WAIT_PAY);
         paymentDataDO.setOnlinePayType(OnlinePayType.WE_CHAT);
         paymentDataDO.setCreateTime(LocalDateTime.now());
-        this.paymentDataServiceImpl.save(paymentDataDO);
+        this.paymentDataService.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, new BigDecimal(totlefeeParse), req);
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, paymentDataDO.getPaymentTypeDesc(),
+                    new BigDecimal(totlefeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
             logger.info("wechatDebtRepayments OUT,微信欠款还款成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -275,7 +276,7 @@ public class WeChatPayController {
 
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
-        this.paymentDataServiceImpl.save(paymentDataDO);
+        this.paymentDataService.save(paymentDataDO);
 
         try {
             SortedMap<String, Object> resultMap = (SortedMap<String, Object>) WechatPrePay.wechatRefundSign(
@@ -306,15 +307,15 @@ public class WeChatPayController {
                     //修改退货单金额明细流水单号和时间
 //                    returnOrderService.modifyOrderReturnBillingDetail(new ReturnOrderBillingDetail(tradeNo, Calendar.getInstance().getTime()));
 
-                    List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
+                    List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
                     PaymentDataDO dataDO = paymentDataDOList.get(0);
                     dataDO.setTradeNo(tradeNo);
                     dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
-                    this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(dataDO);
+                    this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
                 } else {
                     PaymentDataDO paymentDataDO1 = new PaymentDataDO();
                     paymentDataDO1.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
-                    this.paymentDataServiceImpl.updateByTradeStatusIsWaitPay(paymentDataDO);
+                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                     response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
                 }
             } else {
@@ -332,7 +333,7 @@ public class WeChatPayController {
      * @param request  请求对象
      * @param response 响应对象
      */
-    @PostMapping(value = "/wechat/return/async", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/return/async", produces = "application/json;charset=UTF-8")
     public void wechatReturnSync(HttpServletRequest request, HttpServletResponse response) {
 
         logger.info("wechatReturnSync CALLED,接受微信调用后返回参数的回调接口，入参 request:{},response:{}", request, response);
@@ -360,7 +361,8 @@ public class WeChatPayController {
                         //转换金额为Double
                         Double totlefeeParse = Double.parseDouble(totalFee);
 
-                        List<PaymentDataDO> paymentDataDOList = this.paymentDataServiceImpl.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
+                        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
+
                         if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单

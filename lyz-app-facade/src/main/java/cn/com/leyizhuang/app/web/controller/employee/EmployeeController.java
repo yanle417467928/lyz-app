@@ -1,15 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSystemType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
+import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.request.EmployeeLoginParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.StoreCreditMoneyLogService;
-import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
-import cn.com.leyizhuang.app.foundation.service.StoreSubventionLogService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +50,9 @@ public class EmployeeController {
     @Autowired
     private StoreSubventionLogService storeSubventionLogServiceImpl;
 
+    @Resource
+    private AppUserDeviceService userDeviceService;
+
     /**
      * App 员工登录接口
      *
@@ -71,6 +75,21 @@ public class EmployeeController {
                 logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (null == loginParam.getSystemType() || "".equalsIgnoreCase(loginParam.getSystemType())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "systemType不允许为空！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == loginParam.getClientId() || "".equalsIgnoreCase(loginParam.getClientId())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "clientId不允许为空！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == loginParam.getDeviceId() || "".equalsIgnoreCase(loginParam.getDeviceId())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "deviceId不允许为空！", null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             AppEmployee employee = appEmployeeService.findByLoginName(loginParam.getName());
             if (employee == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！", null);
@@ -83,6 +102,15 @@ public class EmployeeController {
                     logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
+            }
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceId(loginParam.getClientId(), loginParam.getDeviceId());
+            if (null == device) {
+                device = new AppUserDevice(null, employee.getEmpId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(loginParam.getSystemType()),
+                        loginParam.getClientId(), loginParam.getDeviceId(), new Date(),new Date());
+                userDeviceService.addUserDevice(device);
+            }else{
+                device.setLastLoginTime(new Date());
+                userDeviceService.updateLastLoginTime(device);
             }
             //拼装accessToken
             String accessToken = JwtUtils.createJWT(String.valueOf(employee.getEmpId()), String.valueOf(employee.getLoginName()),

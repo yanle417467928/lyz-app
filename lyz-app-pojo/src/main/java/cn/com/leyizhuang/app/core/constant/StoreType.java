@@ -29,7 +29,7 @@ public enum StoreType {
         return description;
     }
 
-    public static StoreType getStorerTypeByValue(String value){
+    public static StoreType getStoreTypeByValue(String value){
         for(StoreType storeType : StoreType.values()){
             if(Objects.equals(value, storeType.getValue())){
                 return storeType;

@@ -103,22 +103,28 @@ public interface GoodsDAO {
 
     /**
      * HQ同步添加商品
-     * @param goodsDO   商品类
+     *
+     * @param goodsDO 商品类
      */
     void saveSynchronize(GoodsDO goodsDO);
 
     /**
      * HQ同步修改商品
-     * @param goodsDO   商品类
+     *
+     * @param goodsDO 商品类
      */
     void modifySynchronize(GoodsDO goodsDO);
 
     /**
      * HQ同步删除商品
-     * @param sku   物料编码
+     *
+     * @param sku 物料编码
      */
     void deleteSynchronize(@Param("sku") String sku);
 
     List<OrderGoodsVO> findOrderGoodsVOListByCustomerIdAndGoodsIds(@Param(value = "userId") Long userId,
                                                                    @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
+
+    List<OrderGoodsVO> findOrderGoodsVOListByEmpIdAndGoodsIds(@Param(value = "userId") Long userId,
+                                                              @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
 }

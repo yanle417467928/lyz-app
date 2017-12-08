@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.StoreCreditMoneyLogDAO;
+import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreCreditMoneyLogResponse;
 import cn.com.leyizhuang.app.foundation.service.StoreCreditMoneyLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,10 @@ public class StoreCreditMoneyLogServiceImpl implements StoreCreditMoneyLogServic
     @Override
     public List<StoreCreditMoneyLogResponse> findByUserId(Long userId) {
         return this.storeCreditMoneyLogDAO.findByUserId(userId);
+    }
+
+    @Override
+    public StoreCreditMoney findStoreCreditMoneyByUserId(Long userId) {
+        return this.storeCreditMoneyLogDAO.findStoreCreditMoneyByUserId(userId);
     }
 }

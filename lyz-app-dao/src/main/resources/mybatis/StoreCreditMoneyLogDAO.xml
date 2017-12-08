@@ -5,10 +5,23 @@
 
     <select id="findByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreCreditMoneyLogResponse">
         SELECT
-        l.id, l.change_type type, l.create_time, l.change_amount
-        FROM st_credit_money_log l
-        INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
+            l.id,
+            l.change_type type,
+            l.create_time,
+            l.change_amount
+        FROM st_credit_money_change_log l
+            INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
+    </select>
+
+    <select id="findStoreCreditMoneyByUserId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney">
+        SELECT
+            scm.*
+        FROM
+            st_credit_money AS scm
+        INNER JOIN emp_employee AS ee ON scm.store_id = ee.store_id
+        WHERE
+            ee.emp_id = #{userId}
     </select>
 
 </mapper>

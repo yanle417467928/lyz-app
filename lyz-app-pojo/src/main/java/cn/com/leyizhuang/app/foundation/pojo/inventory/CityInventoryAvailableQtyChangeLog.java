@@ -62,7 +62,7 @@ public class CityInventoryAvailableQtyChangeLog {
     /**
      * 修改类型描述
      */
-    private CityInventoryAvailableQtyChangeType changeTypeDesc;
+    private String changeTypeDesc;
 
     /**
      * 相关单号

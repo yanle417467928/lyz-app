@@ -94,10 +94,10 @@
     <insert id="saveReturnOrderBilling"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling">
         INSERT INTO ord_return_billing
-        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash)
+        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash, lb_quantity)
         VALUES
         (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention}, #{onlinePay},
-        #{cash})
+        #{cash}, #{LeBiQuantity})
     </insert>
 
     <insert id="saveReturnOrderBillingDetail"

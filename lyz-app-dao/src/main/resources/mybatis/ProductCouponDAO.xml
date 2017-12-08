@@ -40,4 +40,34 @@
         AND ccpc.id = #{pcId}
     </select>
 
+    <select id="findOrderCouponByCouponTypeAndUserId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        SELECT
+            *
+        FROM
+            ord_coupon_info
+        WHERE
+            oid = #{orderId}
+        AND coupon_type = #{couponType}
+    </select>
+
+    <select id="findCusProductCouponByCouponId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+        SELECT
+            *
+        FROM
+            cus_customer_product_coupon
+        WHERE
+            id = #{cusProductCouponId}
+    </select>
+
+    <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+        INSERT INTO cus_customer_product_coupon
+        (cus_id, seller_id, store_id, gid, quantity, get_type, get_time, get_ord_no, buy_price, effective_start_time, effective_end_time,is_used,
+        use_time, use_ord_no)
+        VALUES
+        (#{customerId}, #{sellerId}, #{storeId}, #{goodsId}, #{quantity}, #{getType}, #{getOrderNumber}, #{buyPrice}, #{effectiveStartTime},
+         #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber})
+    </insert>
+
 </mapper>

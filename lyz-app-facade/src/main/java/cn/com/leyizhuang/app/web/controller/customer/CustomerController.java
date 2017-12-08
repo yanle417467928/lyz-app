@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
+import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -56,6 +57,9 @@ public class CustomerController {
     @Resource
     private LeBiVariationLogService leBiVariationLogService;
 
+    @Resource
+    private AppUserDeviceService userDeviceService;
+
     /**
      * App 顾客登录
      *
@@ -64,7 +68,7 @@ public class CustomerController {
      * @return resultDTO
      */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
-    public ResultDTO<CustomerLoginResponse> customerLogin(String openId, HttpServletResponse response) {
+    public ResultDTO<CustomerLoginResponse> customerLogin(String openId, String systemType, String clientId, String deviceId, HttpServletResponse response) {
         logger.info("customerLogin CALLED,顾客登录，入参 openId:{}", openId);
         ResultDTO<CustomerLoginResponse> resultDTO;
         try {
@@ -73,12 +77,37 @@ public class CustomerController {
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (null == clientId || "".equalsIgnoreCase(clientId)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "clientId为空！", null);
+                logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == deviceId || "".equalsIgnoreCase(deviceId)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "deviceId为空！", null);
+                logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == systemType || "".equalsIgnoreCase(systemType)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "systemType为空！", null);
+                logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！",
                         new CustomerLoginResponse(Boolean.FALSE, null, null, null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
+            }
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceId(clientId, deviceId);
+            if (null == device) {
+                device = new AppUserDevice(null, customer.getCusId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(systemType),
+                        clientId, deviceId, new Date(),new Date());
+                userDeviceService.addUserDevice(device);
+            }else{
+                device.setLastLoginTime(new Date());
+                userDeviceService.updateLastLoginTime(device);
             }
             //拼装accessToken
             String accessToken = JwtUtils.createJWT(String.valueOf(customer.getCusId()), String.valueOf(customer.getMobile()),
@@ -332,7 +361,7 @@ public class CustomerController {
                 return resultDTO;
             } else if (identityType == 0) {
                 List<ProductCouponResponse> productCouponResponseList = customerService.
-                        findProductCouponBySellerIdAndCustomerId(userId,cusId);
+                        findProductCouponBySellerIdAndCustomerId(userId, cusId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
                 logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -350,11 +379,10 @@ public class CustomerController {
     }
 
 
-
     /**
      * 顾客获取账户余额
      *
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份
      * @return 用户预存款余额
      */
@@ -392,7 +420,7 @@ public class CustomerController {
     /**
      * 顾客获取乐币数量
      *
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 身份类型
      * @return 用户乐币数量
      */
@@ -430,7 +458,7 @@ public class CustomerController {
     /**
      * 顾客签到增加乐币
      *
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 用户身份类型
      * @return 签到是否成功
      */

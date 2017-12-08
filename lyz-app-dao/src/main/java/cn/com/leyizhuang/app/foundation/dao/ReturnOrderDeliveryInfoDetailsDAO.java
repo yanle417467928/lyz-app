@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,4 +12,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReturnOrderDeliveryInfoDetailsDAO {
+
+    /**
+     * 获取退单物流状态信息
+     *
+     * @param returnNo 退单号
+     * @return 物流信息明细
+     */
+    ReturnOrderDeliveryDetail getReturnLogisticStatusDetail(String returnNo);
 }

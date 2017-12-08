@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import lombok.*;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ public class ReturnOrderDeliveryDetail {
     /**
      * 退单物流状态
      */
-    private String returnLogisticStatus;
+    private ReturnLogisticStatus returnLogisticStatus;
     /**
      * 描述
      */

@@ -56,6 +56,9 @@ public class AliPayController {
     @Resource
     private AppOrderService appOrderService;
 
+    @Resource
+    private CommonService commonService;
+
 
     /**
      * 支付宝充值生成充值单
@@ -223,7 +226,8 @@ public class AliPayController {
      */
     @RequestMapping(value = "/return/async")
     public String alipayReturnAsync(HttpServletRequest request) {
-        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 request:{}", request);
+
+        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，入参 request:{}", request);
         try {
             //获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();
@@ -273,7 +277,6 @@ public class AliPayController {
                         if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
-
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 paymentDataDO:{}",
                                     paymentDataDO);
@@ -285,11 +288,12 @@ public class AliPayController {
                                         || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
                                     this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
                                 }
-                            }
-                            if (out_trade_no.contains("_HK")) {
+                            }else if (out_trade_no.contains("_HK")) {
                                 String orderNumber = out_trade_no.replaceAll("_HK", "_XN");
                                 Double money = paymentDataDO.getTotalFee();
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
+                            }else if(out_trade_no.contains("_XN")){
+                                commonService.handleOrderRelevantBusinessAfterOnlinePay(out_trade_no);
                             }
                             logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                             return "success";

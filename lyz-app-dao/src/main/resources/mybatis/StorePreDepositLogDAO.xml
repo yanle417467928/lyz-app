@@ -25,4 +25,22 @@
         #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
 
+    <select id="findStoreByUserId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+        SELECT
+        spd.*
+        FROM
+        st_pre_deposit AS spd
+        INNER JOIN emp_employee AS ee ON spd.store_id = ee.store_id
+        WHERE
+        ee.emp_id = #{userId}
+    </select>
+
+    <update id="updateStPreDepositByUserId">
+        UPDATE st_pre_deposit
+        SET
+        balance = #{money}
+        WHERE
+            store_id = #{userId}
+    </update>
+
 </mapper>

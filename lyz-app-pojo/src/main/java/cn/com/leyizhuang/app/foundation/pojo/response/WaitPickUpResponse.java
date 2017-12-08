@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class WaitPickUpResponse {
     /**
-     * 取货单号
+     * 退货单号
      */
     private String PickUpNumber;
     /**

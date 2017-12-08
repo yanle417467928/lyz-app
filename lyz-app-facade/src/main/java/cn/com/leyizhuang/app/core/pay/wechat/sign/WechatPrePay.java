@@ -30,19 +30,13 @@ public class WechatPrePay {
      * @param request
      * @return 签名证书
      */
-    public static Map<String, Object> wechatSign(String sn, BigDecimal totalAmount, HttpServletRequest request) {
+    public static Map<String, Object> wechatSign(String sn, String payType, BigDecimal totalAmount, HttpServletRequest request) {
         //设置相关参数
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
         parameterMap.put("appid", WechatUtil.APPID);
         parameterMap.put("mch_id", WechatUtil.MCH_ID);
         parameterMap.put("nonce_str", WechatUtil.getNonceStr());
-
-        if (sn.contains("XN")) {
-            parameterMap.put("body", "乐易装线上支付交易");
-        } else {
-            parameterMap.put("body", "乐易装预存款充值");
-        }
-
+        parameterMap.put("body", payType);
         parameterMap.put("out_trade_no", sn);
         parameterMap.put("fee_type", "CNY");
         BigDecimal total = totalAmount.multiply(new BigDecimal(100));
@@ -120,7 +114,6 @@ public class WechatPrePay {
         //这里需要传入微信商户本地证书
         String result = null;
         try {
-            //TODO 微信退款需要下载商户证书
             result = WechatUtil.refundBySslPost("https://api.mch.weixin.qq.com/secapi/pay/refund", requestXML);
         } catch (Exception e) {
             e.printStackTrace();
