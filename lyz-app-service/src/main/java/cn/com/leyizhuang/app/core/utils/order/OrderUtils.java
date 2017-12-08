@@ -111,6 +111,16 @@ public class OrderUtils {
         return orderReturnNumber.toString();
     }
 
+    public static Double replaceNullWithZero(Double d){
+        if (null == d){
+            return 0D;
+        }
+        return d;
+    }
+
+
+
+
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);
