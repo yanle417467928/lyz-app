@@ -168,10 +168,10 @@ public class OrderController {
             //设置商品数量
             Set<Long> hasPriceGoodsIdSet = new HashSet<>();
             AppStore store = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(), orderParam.getIdentityType());
-            AppCustomer customer;
+            AppCustomer customer = new AppCustomer();
             if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getUserId());
-            } else {
+            } else if(orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getCustomerId());
             }
             for (OrderGoodsVO goodsVO : goodsVOList) {
@@ -196,9 +196,19 @@ public class OrderController {
                 } else {
                     inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
                 }
-                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()){
                     memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                }else{
+                    if (null == customer ){
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                    }else{
+                        memberDiscount = 0D;
+                    }
                 }
+
                 OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
                 goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
                 goodsInfo.setIsGift(Boolean.FALSE);
@@ -208,10 +218,17 @@ public class OrderController {
                 goodsInfo.setIsPriceShare(Boolean.FALSE);
                 goodsInfo.setSharePrice(0D);
                 goodsInfo.setIsReturnable(Boolean.TRUE);
-                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()){
                     goodsInfo.setReturnPrice(goodsVO.getVipPrice());
-                } else {
-                    goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                }else{
+                    if (null == customer ){
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                    }else{
+                        goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                    }
                 }
                 goodsInfo.setSku(goodsVO.getSku());
                 goodsInfo.setSkuName(goodsVO.getSkuName());
