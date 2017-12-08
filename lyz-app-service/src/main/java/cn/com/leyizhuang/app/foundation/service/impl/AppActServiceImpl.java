@@ -200,7 +200,7 @@ public class AppActServiceImpl implements AppActService {
                             enjoyTimes++;
                         }
                     }
-                    if (flag) {
+                    if (enjoyTimes > 0) {
                         proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
                         // 结束本次促销循环
                         continue;

@@ -93,25 +93,6 @@ public class OrderGiftController {
             /******计算促销******/
 
             List<GiftListResponseGoods> responseGoodsList = new ArrayList<>();
-            GiftListResponseGoods gift = new GiftListResponseGoods();
-            gift.setIsGift(true);
-            gift.setQty(1);
-            gift.setGoodsId(32L);
-            gift.setCoverImageUri("http://img1.leyizhuang.com.cn/app/images/goods/2298/20170413115354094.png");
-            gift.setGoodsSpecification("12MM");
-            gift.setGoodsUnit("张");
-            gift.setRetailPrice(0d);
-            gift.setSkuName("龙牌家装石膏板9.5mm");
-            GiftListResponseGoods gift1 = new GiftListResponseGoods();
-            gift1.setIsGift(true);
-            gift1.setQty(2);
-            gift1.setGoodsId(33L);
-            gift1.setCoverImageUri("http://img3.leyizhuang.com.cn/app/images/goods/2511/20170413115747766.jpg");
-            gift1.setGoodsSpecification("15MM");
-            gift1.setGoodsUnit("张");
-            gift1.setRetailPrice(0d);
-            gift1.setSkuName("龙牌耐潮石膏板9.5mm");
-
             responseGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     goodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
 
