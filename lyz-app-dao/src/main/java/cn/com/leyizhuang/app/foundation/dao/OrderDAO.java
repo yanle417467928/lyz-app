@@ -33,7 +33,7 @@ public interface OrderDAO {
     //模糊查询订单
     List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType, @Param("condition") String condition);
 
-    OrderBaseInfo findByOrderName(@Param("orderNumber") String outTradeNo);
+    OrderBaseInfo findByOrderNumber(@Param("orderNumber") String orderNumber);
 
     //获取订单头详情
     OrderBaseInfo getOrderDetail(@Param("orderNumber") String orderNumber);

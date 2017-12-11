@@ -43,5 +43,9 @@ public interface CommonService {
                                OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
             throws OrderSaveException;
 
-    void handleOrderRelevantBusinessAfterOnlinePay(String out_trade_no);
+    /**
+     * 订单付清后执行的相关操作
+     * @param orderNumber 订单号
+     */
+    void handleOrderRelevantBusinessAfterPayUp(String orderNumber);
 }

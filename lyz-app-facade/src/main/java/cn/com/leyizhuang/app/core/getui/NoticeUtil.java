@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.getui;
 
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
+import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppMsgInfo;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import com.gexin.fastjson.JSONObject;
@@ -47,7 +47,7 @@ public class NoticeUtil {
         }
         System.setProperty("gexin_pushList_needDetails", "true");
 
-        IGtPush push = new IGtPush(ApplicationConstant.GE_TUI_HOST, ApplicationConstant.APP_KEY, ApplicationConstant.MASTER_SECRET);
+        IGtPush push = new IGtPush(AppApplicationConstant.GE_TUI_HOST, AppApplicationConstant.APP_KEY, AppApplicationConstant.MASTER_SECRET);
         AppMessage message = new AppMessage();
         // 通知透传模板
         //TransmissionTemplate template = getTransmissionTemplate(appMsgInfo);
@@ -61,7 +61,7 @@ public class NoticeUtil {
         AppConditions cdt = new AppConditions();
 
         List<String> appIdList = new ArrayList<String>();
-        appIdList.add(ApplicationConstant.APP_ID);
+        appIdList.add(AppApplicationConstant.APP_ID);
         message.setAppIdList(appIdList);
         message.setConditions(cdt);
         IPushResult ret = push.pushMessageToApp(message);
@@ -79,7 +79,7 @@ public class NoticeUtil {
             return null;
         }
         System.setProperty("gexin_pushList_needDetails", "true");
-        IGtPush push = new IGtPush(ApplicationConstant.GE_TUI_HOST, ApplicationConstant.APP_KEY, ApplicationConstant.MASTER_SECRET);
+        IGtPush push = new IGtPush(AppApplicationConstant.GE_TUI_HOST, AppApplicationConstant.APP_KEY, AppApplicationConstant.MASTER_SECRET);
         AppMessage message = new AppMessage();
 
         TransmissionTemplate template = getTransmissionTemplate(appMsgInfo);
@@ -90,7 +90,7 @@ public class NoticeUtil {
         //推送给App的目标用户需要满足的条件
         AppConditions cdt = new AppConditions();
         List<String> appIdList = new ArrayList<String>();
-        appIdList.add(ApplicationConstant.APP_ID);
+        appIdList.add(AppApplicationConstant.APP_ID);
         message.setAppIdList(appIdList);
         //手机类型
         List<String> phoneTypeList = new ArrayList<String>();
@@ -115,7 +115,7 @@ public class NoticeUtil {
         System.setProperty("gexin_pushList_needDetails", "true");
         List<Target> list = getTargets(appUserDeviceList);
         // 配置返回每个别名及其对应cid的用户状态，可选
-        IGtPush push = new IGtPush(ApplicationConstant.GE_TUI_HOST, ApplicationConstant.APP_KEY, ApplicationConstant.MASTER_SECRET);
+        IGtPush push = new IGtPush(AppApplicationConstant.GE_TUI_HOST, AppApplicationConstant.APP_KEY, AppApplicationConstant.MASTER_SECRET);
         ListMessage message = new ListMessage();
         TransmissionTemplate template = getTransmissionTemplate(appMsgInfo);
         message.setData(template);
@@ -132,8 +132,8 @@ public class NoticeUtil {
 
     public static LinkTemplate getLinkTemplate(AppMsgInfo appMsgInfo) {
         LinkTemplate template = new LinkTemplate();
-        template.setAppId(ApplicationConstant.APP_ID);
-        template.setAppkey(ApplicationConstant.APP_KEY);
+        template.setAppId(AppApplicationConstant.APP_ID);
+        template.setAppkey(AppApplicationConstant.APP_KEY);
 
         // ********** 设置通知栏标题与内容 *********
         //推送标题
@@ -155,8 +155,8 @@ public class NoticeUtil {
 
     public static TransmissionTemplate getTransmissionTemplate(AppMsgInfo appMsgInfo) {
         TransmissionTemplate template = new TransmissionTemplate();
-        template.setAppId(ApplicationConstant.APP_ID);
-        template.setAppkey(ApplicationConstant.APP_KEY);
+        template.setAppId(AppApplicationConstant.APP_ID);
+        template.setAppkey(AppApplicationConstant.APP_KEY);
         template.setTransmissionContent(JSONObject.toJSON(appMsgInfo).toString());
         template.setTransmissionType(2);
         APNPayload payload = new APNPayload();
@@ -204,7 +204,7 @@ public class NoticeUtil {
         List list = new ArrayList();
         for (int i = 0; i < appUserDeviceList.size(); i++) {
             Target temp = new Target();
-            temp.setAppId(ApplicationConstant.APP_ID);
+            temp.setAppId(AppApplicationConstant.APP_ID);
             temp.setClientId(appUserDeviceList.get(i).getClientId());
             list.add(temp);
         }

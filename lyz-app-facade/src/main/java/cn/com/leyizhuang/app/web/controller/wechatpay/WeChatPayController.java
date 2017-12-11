@@ -111,7 +111,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFeeFormat);
 
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
         this.paymentDataService.save(paymentDataDO);
 
@@ -170,7 +170,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, ApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
         this.paymentDataService.save(paymentDataDO);
 
@@ -234,7 +234,7 @@ public class WeChatPayController {
             paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         }
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-        paymentDataDO.setNotifyUrl(ApplicationConstant.alipayReturnUrlAsnyc);
+        paymentDataDO.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
         paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         paymentDataDO.setPaymentTypeDesc(PaymentDataType.REPAYMENT.getDescription());
         paymentDataDO.setTotalFee(Double.parseDouble(totlefee));

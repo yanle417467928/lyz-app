@@ -3,13 +3,14 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
     <sql id="All_FIELD">
-        OID, ORDER_NO, ORDER_TYPE, CREATE_TIME, EFFECTIVE_END_TIME, STATUS, DELIVERY_STATUS, PICK_UP_CODE, DELIVERT_TYPE,
-        ORDER_SUBJECT_TYPE, CREATOR_IDENTITY_TYPE, COMPANY_CODE, COMPANY_STRUCTURE_CODE, CREATOR_ID_FIT, CREATOR_NAME_FIT,
-        CREATOR_PHONE_FIT, EMPLOYEE_ID, EMPLOYEE_NAME, MANAGER_ID, MANAGER_NAME, AUDITOR_ID, AUDITOR_NAME, AUDITOR_PHONE,
-        AUDITING_TIME, STORE_CODE, STORE_STRUCTURE_CODE, CREATOR_ID_STORE, CREATOR_NAME_STORE, CREATOR_PHONE_STORE,
-        SALES_CONSULT_ID, SALES_CONSULT_NAME, SALES_CONSULT_PHONE, CUSTOMER_ID, CUSTOMER_NAME, CUSTOMER_PHONE,
-        TOTAL_GOODS_PRICE, IS_EVALUATED
+        oid, ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code, delivery_type, order_subject_type,
+        creator_identity_type, creator_id, creator_name, creator_phone, store_id, store_code, store_structure_code, sales_consult_id,
+        sales_consult_name, sales_consult_phone, customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, online_pay_type,
+        audit_no, remark
     </sql>
+    <insert id="insert">
+        INSERT INTO ord_base_info ()
+    </insert>
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         <result column="ord_no" property="orderNumber" jdbcType="VARCHAR"/>
         <result column="status" property="status" javaType="cn.com.leyizhuang.app.core.constant.AppOrderStatus"/>
@@ -180,7 +181,7 @@
             ord_no = #{orderNumber}
     </select>
 
-    <select id="findByOrderName" parameterType="java.lang.String"
+    <select id="findByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
         <include refid="All_FIELD"/>
@@ -345,7 +346,8 @@
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving)
         VALUES
-            (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount}, #{freight},
+            (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
+                            #{freight},
                             #{upstairsFee}, #{lebiQuantity}, #{lebiCashDiscount}, #{cashCouponDiscount},
                 #{productCouponDiscount}, #{cusPreDeposit},
                 #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},

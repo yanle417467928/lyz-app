@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.config;
 
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
+import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class DeployConfiguration {
     private String ossBucket;
 
     @Bean
-    public ApplicationConstant applicationConstant() {
+    public AppApplicationConstant applicationConstant() {
         LOG.info("imagePath : {}", imagePath);
         LOG.info("alipayReturnUrl : {}", alipayReturnUrl);
         LOG.info("alipayReturnUrlAsync : {}", alipayReturnUrlAsync);
@@ -50,7 +50,7 @@ public class DeployConfiguration {
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
 
-        ApplicationConstant constant = new ApplicationConstant();
+        AppApplicationConstant constant = new AppApplicationConstant();
         constant.setImagePath(imagePath);
         constant.setAlipayReturnUrl(alipayReturnUrl);
         constant.setAlipayReturnUrlAsnyc(alipayReturnUrlAsync);
@@ -99,7 +99,7 @@ public class DeployConfiguration {
     }
 
     public void setWechatApiClinetCert(String wechatApiClinetCert) {
-        ApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
+        AppApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
     }
 
     public String[] getCdnHosts() {

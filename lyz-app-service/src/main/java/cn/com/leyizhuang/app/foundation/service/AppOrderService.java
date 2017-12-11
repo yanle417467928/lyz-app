@@ -42,7 +42,7 @@ public interface AppOrderService {
     //模糊查询订单
     List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition);
 
-    OrderBaseInfo getOrderByOrderNumber(String outTradeNo);
+    OrderBaseInfo getOrderByOrderNumber(String orderNumber);
 
     //获取订单头详情
     OrderBaseInfo getOrderDetail(String orderNumber);

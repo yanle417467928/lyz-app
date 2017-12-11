@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
@@ -28,6 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 通用方法实现
@@ -37,6 +40,8 @@ import java.util.Map;
  **/
 @Service
 public class CommonServiceImpl implements CommonService {
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(20);
 
 
     @Resource
@@ -524,7 +529,19 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handleOrderRelevantBusinessAfterOnlinePay(String outTradeNo) {
+    public void handleOrderRelevantBusinessAfterPayUp(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)){
+            OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            if (orderBaseInfo.getDeliveryType()== AppDeliveryType.HOUSE_DELIVERY){
+                orderBaseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+            }
+
+           // orderService.updateOrderStatusByOrderNo()
+        }
+
+
 
     }
 }

@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
+import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -189,7 +189,7 @@ public class WechatUtil {
         //指定读取证书格式为PKCS12
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         //读取本机存放的PKCS12证书文件
-        FileInputStream instream = new FileInputStream(new File(ApplicationConstant.wechatApiClinetCert));
+        FileInputStream instream = new FileInputStream(new File(AppApplicationConstant.wechatApiClinetCert));
         try {
             //指定PKCS12的密码(商户ID)
             keyStore.load(instream, MCH_ID.toCharArray());

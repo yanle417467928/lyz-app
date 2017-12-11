@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderType;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -38,6 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 订单相关接口
@@ -50,6 +49,8 @@ import java.util.*;
 public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
+
 
     @Resource
     private AppCustomerService appCustomerService;
@@ -269,6 +270,7 @@ public class OrderController {
             orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, orderParam.getCashCouponIds());
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
+
             //******** 处理账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
@@ -277,9 +279,17 @@ public class OrderController {
 
             //******* 持久化订单相关实体信息  *******
             commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT){
 
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CreateOrderResponse(orderBaseInfo.getOrderNumber(),
-                    Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable()))));
+            }
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT){
+               resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                       new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())),true));
+               logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+               return resultDTO;
+           }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())),false));
             logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |

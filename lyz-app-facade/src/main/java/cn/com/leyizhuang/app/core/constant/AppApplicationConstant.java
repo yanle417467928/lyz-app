@@ -6,7 +6,7 @@ import cn.com.leyizhuang.app.core.config.InterfaceConfigure;
 /**
  * @author Richard
  */
-public class ApplicationConstant {
+public class AppApplicationConstant {
 
     //从配置文件加载值的常量
     public static String imagePath;
@@ -25,7 +25,7 @@ public class ApplicationConstant {
     }
 
     public void setImagePath(String imagePath) {
-        ApplicationConstant.imagePath = imagePath;
+        AppApplicationConstant.imagePath = imagePath;
     }
 
     public String getAlipayReturnUrl() {
@@ -33,7 +33,7 @@ public class ApplicationConstant {
     }
 
     public void setAlipayReturnUrl(String alipayReturnUrl) {
-        ApplicationConstant.alipayReturnUrl = alipayReturnUrl;
+        AppApplicationConstant.alipayReturnUrl = alipayReturnUrl;
     }
 
     public String getAlipayReturnUrlAsnyc() {
@@ -41,7 +41,7 @@ public class ApplicationConstant {
     }
 
     public void setAlipayReturnUrlAsnyc(String alipayReturnUrlAsnyc) {
-        ApplicationConstant.alipayReturnUrlAsnyc = alipayReturnUrlAsnyc;
+        AppApplicationConstant.alipayReturnUrlAsnyc = alipayReturnUrlAsnyc;
     }
 
     public String getWechatReturnUrlAsnyc() {
@@ -49,7 +49,7 @@ public class ApplicationConstant {
     }
 
     public void setWechatReturnUrlAsnyc(String wechatReturnUrlAsnyc) {
-        ApplicationConstant.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
+        AppApplicationConstant.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
     }
 
     public String getWechatApiClinetCert() {
@@ -57,7 +57,7 @@ public class ApplicationConstant {
     }
 
     public void setWechatApiClinetCert(String wechatApiClinetCert) {
-        ApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
+        AppApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
     }
 
     public String[] getCdnHosts() {
@@ -65,7 +65,7 @@ public class ApplicationConstant {
     }
 
     public void setCdnHosts(String[] cdnHosts) {
-        ApplicationConstant.cdnHosts = cdnHosts;
+        AppApplicationConstant.cdnHosts = cdnHosts;
     }
 
     public String getOssFolder() {
@@ -73,7 +73,7 @@ public class ApplicationConstant {
     }
 
     public void setOssFolder(String ossFolder) {
-        ApplicationConstant.ossFolder = ossFolder;
+        AppApplicationConstant.ossFolder = ossFolder;
     }
 
     public String getOssBucket() {
@@ -81,7 +81,7 @@ public class ApplicationConstant {
     }
 
     public void setOssBucket(String ossBucket) {
-        ApplicationConstant.ossBucket = ossBucket;
+        AppApplicationConstant.ossBucket = ossBucket;
     }
 
     public String getWmsUrl() {
@@ -89,7 +89,7 @@ public class ApplicationConstant {
     }
 
     public void setWmsUrl(String wmsUrl) {
-        ApplicationConstant.wmsUrl = wmsUrl;
+        AppApplicationConstant.wmsUrl = wmsUrl;
         InterfaceConfigure.WMS_WS_URL = wmsUrl;
     }
 
@@ -98,7 +98,7 @@ public class ApplicationConstant {
     }
 
     public void setEbsUrl(String ebsUrl) {
-        ApplicationConstant.ebsUrl = ebsUrl;
+        AppApplicationConstant.ebsUrl = ebsUrl;
         InterfaceConfigure.EBS_WS_URL = ebsUrl;
     }
 
@@ -121,6 +121,11 @@ public class ApplicationConstant {
      * APP logo地址
      */
     public static final String APP_LOGO = "http://leyizhuang.oss-cn-shenzhen.aliyuncs.com/lyz-app/logo/Icon-256.png";
+
+    /**
+     * 付清线
+     */
+    public static final Double PAY_UP_LIMIT = 0D;
 
 
 

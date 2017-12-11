@@ -109,8 +109,8 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public OrderBaseInfo getOrderByOrderNumber(String outTradeNo) {
-        return orderDAO.findByOrderName(outTradeNo);
+    public OrderBaseInfo getOrderByOrderNumber(String orderNumber) {
+        return orderDAO.findByOrderNumber(orderNumber);
     }
 
     @Override
