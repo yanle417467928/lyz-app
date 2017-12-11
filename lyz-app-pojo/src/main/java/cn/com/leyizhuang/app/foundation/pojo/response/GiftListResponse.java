@@ -15,10 +15,13 @@ import java.util.List;
 @Setter
 @ToString
 public class GiftListResponse {
-
+    // 本品list
     List<GiftListResponseGoods> goodsList = new ArrayList<>();
 
+    // 产品券List
+    List<GiftListResponseGoods> couponGoodsList = new ArrayList<>();
 
+    // 促销赠品List
     List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
 
 }

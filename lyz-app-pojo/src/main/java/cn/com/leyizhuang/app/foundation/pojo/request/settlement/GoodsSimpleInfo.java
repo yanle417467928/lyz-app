@@ -22,6 +22,7 @@ public class GoodsSimpleInfo implements Serializable {
      * 商品Id
      */
     private Long id;
+
     /**
      * 商品数量
      */
@@ -31,4 +32,9 @@ public class GoodsSimpleInfo implements Serializable {
      * 是否赠品
      */
     private Boolean isGift = Boolean.FALSE;
+
+    /**
+     * 是否为产品券商品
+     */
+    private Boolean isProCouponGoods = Boolean.FALSE;
 }

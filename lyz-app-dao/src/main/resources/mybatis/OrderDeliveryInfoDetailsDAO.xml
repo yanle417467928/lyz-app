@@ -144,4 +144,62 @@
             obi.create_time
         </if>
     </select>
+
+    <select id="getWaitPickUpListByOperatorNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.WaitPickUpResponse">
+        SELECT
+            orli.return_no returnNumber,
+            orli.rejecter receiver,
+            orli.rejecter_phone receiverPhone,
+            obi.sales_consult_name sellerName,
+            obi.sales_consult_phone sellerPhone,
+            orli.return_full_address PickUpAddress,
+            orli.delivery_time pickUpTime
+        FROM
+            ord_return_logistic_info AS orli
+        INNER JOIN ord_return_base_info AS orbi ON orli.return_no = orbi.return_no
+        INNER JOIN ord_base_info AS obi ON obi.ord_no = orbi.ord_no
+        INNER JOIN ord_return_delivery_detail AS ordd ON ordd.return_no = orli.return_no
+        WHERE
+            ordd.return_logistic_status = 'PICKING_GOODS'
+        AND orli.delivery_clerk_no = #{operatorNo}
+    </select>
+
+    <select id="getPickUpDetailByOperatorNoAndReturnNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.PickUpDetailResponse">
+         SELECT
+            orli.return_no returnNumber,
+            orli.rejecter receiver,
+            orli.rejecter_phone receiverPhone,
+            obi.sales_consult_name sellerName,
+            obi.sales_consult_phone sellerPhone,
+            orli.return_full_address PickUpAddress,
+            orli.delivery_time pickUpTime
+        FROM
+            ord_return_logistic_info AS orli
+        INNER JOIN ord_return_base_info AS orbi ON orli.return_no = orbi.return_no
+        INNER JOIN ord_base_info AS obi ON obi.ord_no = orbi.ord_no
+        INNER JOIN ord_return_delivery_detail AS ordd ON ordd.return_no = orli.return_no
+        WHERE
+            ordd.return_logistic_status = 'PICKING_GOODS'
+        AND orli.delivery_clerk_no = #{operatorNo}
+        AND orbi.return_no = #{returnNumber}
+    </select>
+
+    <select id="getReturnGoods" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+        SELECT
+            orgi.retail_price,
+            orgi.return_qty,
+            gg.sku_name,
+            gg.gid goodsId,
+            gg.goods_specification,
+            gg.cover_image_uri,
+            gg.goods_unit
+        FROM
+            ord_return_goods_info AS orgi
+        INNER JOIN gds_goods AS gg ON orgi.sku = gg.sku
+        WHERE
+            orgi.return_no = #{returnNumber}
+    </select>
 </mapper>
