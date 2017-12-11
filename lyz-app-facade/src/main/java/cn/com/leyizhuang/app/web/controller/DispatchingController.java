@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.response.PickUpDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.WaitPickUpResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
@@ -89,6 +91,58 @@ public class DispatchingController {
     }
 
     /**
+     * 配送员获待取货列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 返回待取货列表
+     */
+    @RequestMapping(value = "/pickUp/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getWaitPickUpList(Long userID, Integer identityType) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getWaitPickUpList CALLED,配送员获待取货列表，入参 userID:{}, identityType:{}", userID, identityType);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getWaitPickUpList OUT,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("getWaitPickUpList OUT,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非配送员不能查看待取货列表", null);
+            logger.info("getWaitPickUpList OUT,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            AppEmployee appEmployee = appEmployeeService.findById(userID);
+            if (null == appEmployee) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
+                logger.info("getWaitPickUpList OUT,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
+                logger.info("getWaitPickUpList OUT,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            List<WaitPickUpResponse> waitPickUpResponseList = orderDeliveryInfoDetailsService.getWaitPickUpListByOperatorNo(appEmployee.getDeliveryClerkNo());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, waitPickUpResponseList);
+            logger.info("getWaitPickUpList OUT,配送员获待取货列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，配送员获待取货列表失败", null);
+            logger.warn("getWaitPickUpList EXCEPTION,配送员获待取货列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * 获取出货单详情
      *
      * @param userID       用户id
@@ -141,6 +195,64 @@ public class DispatchingController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取出货单详情失败", null);
             logger.warn("getDeliveryDetails EXCEPTION,获取出货单详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取取货单详情
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param returnNumber 订单号
+     * @return 返回详情
+     */
+    @RequestMapping(value = "/pickUp/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPickUpDetails(Long userID, Integer identityType, String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getPickUpDetails CALLED,获取取货单详情，入参 userID:{}, identityType:{}, returnNumber:{}", userID, identityType, returnNumber);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(returnNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退单号不能为空", null);
+            logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非配送员不能查看取货单详情", null);
+            logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppEmployee appEmployee = appEmployeeService.findById(userID);
+            if (null == appEmployee) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
+                logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
+                logger.info("getPickUpDetails OUT,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            PickUpDetailResponse pickUpDetailResponse = orderDeliveryInfoDetailsService.getPickUpDetailByOperatorNoAndReturnNo(appEmployee.getDeliveryClerkNo(), returnNumber);
+            pickUpDetailResponse.setGoodsList(orderDeliveryInfoDetailsService.getReturnGoods(returnNumber));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, pickUpDetailResponse);
+            logger.info("getPickUpDetails OUT,获取取货单详情成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取取货单详情失败", null);
+            logger.warn("getPickUpDetails EXCEPTION,获取取货单详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

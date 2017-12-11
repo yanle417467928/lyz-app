@@ -92,13 +92,8 @@ public class OrderUtils {
     }
 
     /**
-     * @param
-     * @return
-     * @throws
-     * @title 生成退货单号
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/11/22
+     * 生成退单号
+     * @return  退单号
      */
     public static String getReturnNumber() {
         StringBuilder orderReturnNumber = new StringBuilder();
@@ -120,6 +115,21 @@ public class OrderUtils {
 
 
 
+
+    /**
+     * 生成退款单据号
+     * @return  退款单据号
+     */
+    public static String getRefundNumber() {
+        StringBuilder orderRefundNumber = new StringBuilder();
+        orderRefundNumber.append("TK_");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String timeStamp = sdf.format(date);
+        orderRefundNumber.append(timeStamp);
+        return orderRefundNumber.toString();
+    }
 
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);

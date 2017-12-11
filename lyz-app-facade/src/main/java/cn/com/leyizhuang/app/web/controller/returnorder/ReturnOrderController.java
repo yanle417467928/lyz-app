@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.returnorder;
 
+import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -18,6 +19,10 @@ import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayTradeRefundRequest;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -477,25 +482,35 @@ public class ReturnOrderController {
                             appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
 
                         }
-
-
                     }
                 }
                 //********************************退第三方支付**************************
                 //如果是待收货、门店自提单则需要返回第三方支付金额
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                     if ("ALIPAY".equals(orderBillingDetails.getOnlinePayType())) {
+                        //支付宝退款
+                        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.serverUrl,AlipayConfig.appId,AlipayConfig.privateKey,AlipayConfig.format,AlipayConfig.charset,AlipayConfig.aliPublicKey,AlipayConfig.signType);
+                        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+                        request.setBizContent("{" +
+                                "\"out_trade_no\":\""+orderNumber+"\"," +
+                                "\"refund_amount\":"+orderBillingDetails.getOnlinePayAmount()+"," +
+                                "  }");
+                        AlipayTradeRefundResponse aliPayResponse = alipayClient.execute(request);
+                        if(aliPayResponse.isSuccess()){
+                            //创建退单退款详情实体
+                            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                            returnOrderBillingDetail.setRoid(returnOrderId);
+                            returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setIntoAmountTime(aliPayResponse.getGmtRefundPay());
+                            returnOrderBillingDetail.setReplyCode(aliPayResponse.getTradeNo());
+                            returnOrderBillingDetail.setReturnMoney(Double.valueOf(aliPayResponse.getRefundFee()));
+                            returnOrderBillingDetail.setReturnPayType(OnlinePayType.ALIPAY);
+                            returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                        } else {
+                            System.out.println("调用失败");
+                        }
 
-                        //创建退单退款详情实体
-                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        returnOrderBillingDetail.setRoid(returnOrderId);
-                        returnOrderBillingDetail.setRefundNumber(returnNumber);
-                        //TODO 时间待定
-                        returnOrderBillingDetail.setIntoAmountTime(new Date());
-                        //TODO 第三方回复码
-                        returnOrderBillingDetail.setReplyCode("");
-                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                        returnOrderBillingDetail.setReturnPayType(OnlinePayType.ALIPAY);
+
                     } else if ("WE_CHAT".equals(orderBillingDetails.getOnlinePayType())) {
                         //微信退款方法类
                         WeChatPayController wechat = new WeChatPayController();
@@ -510,6 +525,8 @@ public class ReturnOrderController {
                         returnOrderBillingDetail.setReplyCode("");
                         returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
                         returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
+                        //TODO 保存退款记录
+
                     } else if ("UNION_PAY".equals(orderBillingDetails.getOnlinePayAmount())) {
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
