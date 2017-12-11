@@ -211,7 +211,7 @@ public class OrderController {
 
                 OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
                 goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
-                goodsInfo.setIsGift(Boolean.FALSE);
+                goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
                 goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
                 goodsInfo.setVIPPrice(goodsVO.getVipPrice());
                 goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
@@ -268,6 +268,13 @@ public class OrderController {
                     billing, orderParam.getCashCouponIds());
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
+            //根据应付金额判断订单账单是否已付清
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
+                orderBaseInfo.setIsPayUp(true);
+            } else {
+                orderBaseInfo.setIsPayUp(false);
+            }
+
             //******** 处理账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
@@ -275,20 +282,18 @@ public class OrderController {
                     orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
 
             //******* 持久化订单相关实体信息  *******
-            commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
-            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
-
-            }
-            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
+            commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
+            if (orderBaseInfo.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
+                logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
-            logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
-            return resultDTO;
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException e) {

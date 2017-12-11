@@ -18,7 +18,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -274,6 +273,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCustomerId(customer.getCusId());
                 tempOrder.setCustomerName(customer.getName());
                 tempOrder.setCustomerPhone(customer.getMobile());
+                tempOrder.setCustomerType(customer.getCustomerType());
                 break;
             //顾客下单
             case 6:
@@ -295,6 +295,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCustomerId(appCustomer.getCusId());
                 tempOrder.setCustomerName(appCustomer.getName());
                 tempOrder.setCustomerPhone(appCustomer.getMobile());
+                tempOrder.setCustomerType(appCustomer.getCustomerType());
                 break;
             //装饰公司经理下单
             case 2:

@@ -131,6 +131,10 @@ public class OrderBaseInfo {
     private String customerPhone;
 
     /**
+     * 顾客类型
+     */
+    private AppCustomerType customerType;
+    /**
      * 审核单号
      */
     private String auditNo;
@@ -149,10 +153,22 @@ public class OrderBaseInfo {
      * 线上支付方式
      */
     private OnlinePayType onlinePayType;
+    /**
+     * 线上付款时间
+     */
+    private Date onlinePayTime;
 
     /**
      * 订单备注
      */
     private String remark;
+    /**
+     * 是否已付清账单
+     */
+    private Boolean isPayUp;
+    /**
+     * 订单账款付清时间
+     */
+    private Date payUpTime;
 
 }

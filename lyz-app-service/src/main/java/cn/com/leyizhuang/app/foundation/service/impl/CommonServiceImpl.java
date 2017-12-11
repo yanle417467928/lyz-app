@@ -3,7 +3,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.BeanUtils;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.RandomUtil;
+import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
@@ -19,11 +20,14 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
+import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -67,6 +71,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Resource
     private AppOrderService orderService;
+
+    @Resource
+    private SmsAccountService smsAccountService;
 
 
     @Override
@@ -496,25 +503,101 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                      OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) {
+    public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+                                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) throws IOException {
+
         if (null != orderBaseInfo) {
+            if (orderBaseInfo.getIsPayUp()) {
+                orderBaseInfo.setPayUpTime(new Date());
+                //更新订单状态及物流状态
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                    orderBaseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                    orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                    //TODO 发送WMS
+                } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                    orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+                }
+                //发送提货码
+                String pickUpCode = RandomUtil.randomStrCode(6);
+                SmsAccount account = smsAccountService.findOne();
+                String info = "您的提货码为" + pickUpCode + "，请在【门店取货】时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
+                String content = URLEncoder.encode(info, "GB2312");
+                String mobile = null;
+                if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                    mobile = orderBaseInfo.getCreatorPhone();
+                } else {
+                    mobile = orderBaseInfo.getCustomerPhone();
+                }
+                String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
+                //保存提货码
+                orderBaseInfo.setPickUpCode(pickUpCode);
+
+                //顾客下单发送短信给导购
+                if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                    String tips = "【乐易装】亲爱的用户,您的会员:"
+                            + orderBaseInfo.getCreatorName()
+                            + "在App下单了,订单号:"
+                            + orderBaseInfo.getOrderNumber() +
+                            ",请及时跟进。";
+                }
+                String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                        orderBaseInfo.getSalesConsultPhone(), content);
+                //修改顾客上一次下单时间
+                AppCustomer customer = new AppCustomer();
+                if (orderBaseInfo.getCreatorIdentityType() != AppIdentityType.DECORATE_MANAGER) {
+                    Long cusId;
+                    if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                        cusId = orderBaseInfo.getCustomerId();
+                    } else {
+                        cusId = orderBaseInfo.getCreatorId();
+                    }
+                    customer = customerService.findById(cusId);
+                    customer.setLastConsumptionTime(new Date());
+                }
+            /*
+              更新顾客门店归属
+              如果是导购代下单，且代下单顾客为默认门店，
+              则修改顾客归属至该门店和该导购下
+             */
+                if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                    AppStore originalStore = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCustomerId(),
+                            AppIdentityType.CUSTOMER.getValue());
+                    if (originalStore.getIsDefault()) {
+                        AppStore newStore = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(),
+                                AppIdentityType.SELLER.getValue());
+                        customer.setStoreId(newStore.getStoreId());
+                        customer.setSalesConsultId(orderBaseInfo.getCreatorId());
+                        customer.setBindingTime(new Date());
+                    }
+                }
+                if (null != customer.getCusId()) {
+                    customerService.update(customer);
+                }
+                //TODO 返还经销差价
+            }
+            /* ******************* 保存订单相关一系列信息 ******************* */
+            //保存订单基础信息
             orderService.saveOrderBaseInfo(orderBaseInfo);
+
             if (null != orderBaseInfo.getId()) {
+                //保存订单物流信息
                 if (null != orderLogisticsInfo) {
                     orderLogisticsInfo.setOid(orderBaseInfo.getId());
                     orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
                 }
+                //保存订单商品信息
                 if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
                     }
                 }
+                //保存订单账单信息
                 if (null != orderBillingDetails) {
                     orderBillingDetails.setOid(orderBaseInfo.getId());
                     orderService.saveOrderBillingDetails(orderBillingDetails);
                 }
+                //保存订单账单支付明细信息
                 if (null != paymentDetails && !paymentDetails.isEmpty()) {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
@@ -527,22 +610,79 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
-    @Override
+    /*@Override
     @Transactional(rollbackFor = Exception.class)
-    public void handleOrderRelevantBusinessAfterPayUp(String orderNumber) {
-        if (StringUtils.isNotBlank(orderNumber)){
+    public void handleOrderRelevantBusinessAfterPrePayUp(String orderNumber) throws IOException {
+        if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
-
-            if (orderBaseInfo.getDeliveryType()== AppDeliveryType.HOUSE_DELIVERY){
+            orderBaseInfo.setPayUpTime(new Date());
+            //更新订单状态及物流状态
+            if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                 orderBaseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                // 发送WMS
+            } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+            }
+            //发送提货码
+            String pickUpCode = RandomUtil.randomStrCode(6);
+            SmsAccount account = smsAccountService.findOne();
+            String info = "您的提货码为" + pickUpCode + "，请在【门店取货】时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
+            String content = URLEncoder.encode(info, "GB2312");
+            String mobile = null;
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                mobile = orderBaseInfo.getCreatorPhone();
+            } else {
+                mobile = orderBaseInfo.getCustomerPhone();
+            }
+            String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
+            //保存提货码
+            orderBaseInfo.setPickUpCode(pickUpCode);
+
+            //顾客下单发送短信给导购
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                String tips = "【乐易装】亲爱的用户,您的会员:"
+                        + orderBaseInfo.getCreatorName()
+                        + "在App下单了,订单号:"
+                        + orderBaseInfo.getOrderNumber() +
+                        ",请及时跟进。";
+            }
+            String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                    orderBaseInfo.getSalesConsultPhone(), content);
+            //修改顾客上一次下单时间
+            if (orderBaseInfo.getCreatorIdentityType() != AppIdentityType.DECORATE_MANAGER) {
+                Long cusId;
+                if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                    cusId = orderBaseInfo.getCustomerId();
+                } else {
+                    cusId = orderBaseInfo.getCreatorId();
+                }
+                AppCustomer customer = customerService.findById(cusId);
+                customer.setLastConsumptionTime(new Date());
+            }
+            *//**
+     * 更新顾客门店归属
+     * 如果是导购代下单，且代下单顾客为默认门店，
+     * 则修改顾客归属至该门店和该导购下
+     *//*
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                AppStore originalStore = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCustomerId(),
+                        AppIdentityType.CUSTOMER.getValue());
+                if (originalStore.getIsDefault()) {
+                    AppCustomer customer = customerService.findById(orderBaseInfo.getCustomerId());
+                    AppStore newStore = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(),
+                            AppIdentityType.SELLER.getValue());
+                    customer.setStoreId(newStore.getStoreId());
+                    customer.setSalesConsultId(orderBaseInfo.getCreatorId());
+                    customer.setBindingTime(new Date());
+                }
+
             }
 
-           // orderService.updateOrderStatusByOrderNo()
+            // orderService.updateOrderStatusByOrderNo()
         }
 
 
-
-    }
+    }*/
 }
 
