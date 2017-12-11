@@ -47,16 +47,20 @@
             WHERE
             obi.customer_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
-                AND obi.`status` = 'UNPAID';
+                AND obi.`status` = 'UNPAID'
             </if>
             <if test="null != showStatus and showStatus == 2">
-                AND obi.`status` = 'PENDING_RECEIVE';
+                AND obi.`status` = 'PENDING_RECEIVE'
             </if>
             <if test="null != showStatus and showStatus == 3">
-                AND obi.`status` = 'FINISHED';
+                AND obi.`status` = 'FINISHED'
             </if>
             <if test="null != showStatus and showStatus == 4">
-                AND obi.`status` = 'CANCELED';
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
             </if>
             ORDER BY obi.create_time DESC
         </if>
@@ -71,16 +75,20 @@
             WHERE
             obi.creator_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
-                AND obi.`status` = 'UNPAID';
+                AND obi.`status` = 'UNPAID'
             </if>
             <if test="null != showStatus and showStatus == 2">
-                AND obi.`status` = 'PENDING_RECEIVE';
+                AND obi.`status` = 'PENDING_RECEIVE'
             </if>
             <if test="null != showStatus and showStatus == 3">
-                AND obi.`status` = 'FINISHED';
+                AND obi.`status` = 'FINISHED'
             </if>
             <if test="null != showStatus and showStatus == 4">
-                AND obi.`status` = 'CANCELED';
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
             </if>
             ORDER BY obi.create_time DESC
         </if>
@@ -95,16 +103,20 @@
             WHERE
             obi.sales_consult_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
-                AND obi.`status` = 'UNPAID';
+                AND obi.`status` = 'UNPAID'
             </if>
             <if test="null != showStatus and showStatus == 2">
-                AND obi.`status` = 'PENDING_RECEIVE';
+                AND obi.`status` = 'PENDING_RECEIVE'
             </if>
             <if test="null != showStatus and showStatus == 3">
-                AND obi.`status` = 'FINISHED';
+                AND obi.`status` = 'FINISHED'
             </if>
             <if test="null != showStatus and showStatus == 4">
-                AND obi.`status` = 'CANCELED';
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
             </if>
             ORDER BY obi.create_time DESC
         </if>
