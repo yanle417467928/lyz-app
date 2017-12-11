@@ -378,6 +378,22 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         }
     }
 
+    @Override
+    public Integer findCashCouponAvailQtyByCustomerId(Long userId) {
+        if (null != userId){
+            return customerDAO.findCashCouponAvailQtyByCustomerId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer findProductCouponAvailQtyByCustomerId(Long userId) {
+        if (null != userId){
+            return customerDAO.findProductCouponAvailQtyByCustomerId(userId);
+        }
+        return null;
+    }
+
 
     @Override
     public CustomerPreDeposit findByCusId(Long cusId) {

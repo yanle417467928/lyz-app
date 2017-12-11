@@ -293,7 +293,7 @@ public class AliPayController {
                                 Double money = paymentDataDO.getTotalFee();
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
                             }else if(out_trade_no.contains("_XN")){
-                                commonService.handleOrderRelevantBusinessAfterOnlinePay(out_trade_no);
+                                //commonService.handleOrderRelevantBusinessAfterOnlinePay(out_trade_no);
                             }
                             logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                             return "success";

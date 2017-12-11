@@ -486,4 +486,23 @@
                 #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
 
+    <select id="findCashCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT sum(qty)
+        FROM cus_customer_cash_coupon
+        WHERE cus_id = #{userId}
+              AND is_used IS FALSE
+              AND status IS TRUE
+              AND (now() BETWEEN effective_start_time AND effective_end_time)
+        GROUP BY cus_id
+    </select>
+
+    <select id="findProductCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT sum(quantity)
+        FROM cus_customer_product_coupon
+        WHERE cus_id = #{userId}
+              AND is_used IS FALSE
+              AND (now() BETWEEN effective_start_time AND effective_end_time)
+        GROUP BY cus_id
+    </select>
+
 </mapper>
