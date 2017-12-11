@@ -108,8 +108,8 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public OrderBaseInfo getOrderByOrderNumber(String outTradeNo) {
-        return orderDAO.findByOrderName(outTradeNo);
+    public OrderBaseInfo getOrderByOrderNumber(String orderNumber) {
+        return orderDAO.findByOrderNumber(orderNumber);
     }
 
     @Override
@@ -273,6 +273,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCustomerId(customer.getCusId());
                 tempOrder.setCustomerName(customer.getName());
                 tempOrder.setCustomerPhone(customer.getMobile());
+                tempOrder.setCustomerType(customer.getCustomerType());
                 break;
             //顾客下单
             case 6:
@@ -294,6 +295,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCustomerId(appCustomer.getCusId());
                 tempOrder.setCustomerName(appCustomer.getName());
                 tempOrder.setCustomerPhone(appCustomer.getMobile());
+                tempOrder.setCustomerType(appCustomer.getCustomerType());
                 break;
             //装饰公司经理下单
             case 2:
@@ -422,28 +424,43 @@ public class AppOrderServiceImpl implements AppOrderService {
         Double amountPayable;
         switch (identityType) {
             case 6:
-                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice() + orderBillingDetails.getFreight()
-                        - orderBillingDetails.getMemberDiscount() - orderBillingDetails.getPromotionDiscount()
-                        - orderBillingDetails.getLebiCashDiscount() - orderBillingDetails.getCashCouponDiscount();
+                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
+                        + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
-                amountPayable = orderBillingDetails.getOrderAmountSubtotal() - orderBillingDetails.getCusPreDeposit();
+
+                amountPayable = orderBillingDetails.getOrderAmountSubtotal()
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit());
                 orderBillingDetails.setAmountPayable(amountPayable);
                 break;
             case 0:
-                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice() + orderBillingDetails.getFreight()
-                        - orderBillingDetails.getMemberDiscount() - orderBillingDetails.getPromotionDiscount()
-                        - orderBillingDetails.getLebiCashDiscount() - orderBillingDetails.getCashCouponDiscount();
+                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
+                        + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
-                amountPayable = orderBillingDetails.getOrderAmountSubtotal() - orderBillingDetails.getStPreDeposit()
-                        - orderBillingDetails.getEmpCreditMoney();
+
+                amountPayable = orderBillingDetails.getOrderAmountSubtotal()
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getEmpCreditMoney());
                 orderBillingDetails.setAmountPayable(amountPayable);
                 break;
             case 2:
-                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice() + orderBillingDetails.getFreight()
-                        - orderBillingDetails.getMemberDiscount() - orderBillingDetails.getPromotionDiscount();
+                orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
+                        + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
-                amountPayable = orderBillingDetails.getOrderAmountSubtotal() - orderBillingDetails.getStPreDeposit()
-                        - orderBillingDetails.getStoreCreditMoney() - orderBillingDetails.getStoreSubvention();
+
+                amountPayable = orderBillingDetails.getOrderAmountSubtotal()
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
                 break;
             default:

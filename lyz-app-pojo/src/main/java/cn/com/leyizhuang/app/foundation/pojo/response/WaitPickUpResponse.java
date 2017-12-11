@@ -13,9 +13,9 @@ import lombok.*;
 @AllArgsConstructor
 public class WaitPickUpResponse {
     /**
-     * 取货单号
+     * 退货单号
      */
-    private String PickUpNumber;
+    private String returnNumber;
     /**
      * 顾客/收货人姓名
      */
@@ -39,5 +39,5 @@ public class WaitPickUpResponse {
     /**
      * 取货时间
      */
-    private String PickUpTime;
+    private String pickUpTime;
 }

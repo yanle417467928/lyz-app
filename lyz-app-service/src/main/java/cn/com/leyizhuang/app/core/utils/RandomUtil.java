@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.utils;
 
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Random;
 

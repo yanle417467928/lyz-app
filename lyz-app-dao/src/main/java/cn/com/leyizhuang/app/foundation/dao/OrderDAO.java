@@ -19,7 +19,9 @@ public interface OrderDAO {
     List<MaterialListDO> getGoodsInfoByOrderNumber(String orderNumber);
 
     //用户获取我的订单列表
-    List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType,@Param("showStatus") Integer showStatus);
+    List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(@Param("userID") Long userID,
+                                                            @Param("identityType") AppIdentityType identityType,
+                                                            @Param("showStatus") Integer showStatus);
 
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(@Param("orderNumber") String orderNumber);
@@ -33,7 +35,7 @@ public interface OrderDAO {
     //模糊查询订单
     List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType, @Param("condition") String condition);
 
-    OrderBaseInfo findByOrderName(@Param("orderNumber") String outTradeNo);
+    OrderBaseInfo findByOrderNumber(@Param("orderNumber") String orderNumber);
 
     //获取订单头详情
     OrderBaseInfo getOrderDetail(@Param("orderNumber") String orderNumber);

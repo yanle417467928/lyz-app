@@ -28,11 +28,15 @@
             useGeneratedKeys="true" keyProperty="roid">
         INSERT INTO ord_return_base_info
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
-        creator_identityType, creator_phone, cus_id, cus_name, reason_info, ord_type, return_status)
+        creator_identityType, creator_phone, cus_id, cus_name, reason_info, return_pic, ord_type, return_status)
         VALUES
-        (#{orderId}, #{orderNo}, #{orderTime}, #{returnTime}, #{returnNo}, #{returnType}, #{returnPrice}, #{remarksInfo},
-        #{creatorId}, #{creatorIdentityType}, #{creatorPhone}, #{customerId}, #{customerName},
-         #{reasonInfo}, #{orderType}, #{returnStatus})
+        (#{returnOrderBaseInfo.orderId}, #{returnOrderBaseInfo.orderNo}, #{returnOrderBaseInfo.orderTime},
+        #{returnOrderBaseInfo.returnTime}, #{returnOrderBaseInfo.returnNo}, #{returnOrderBaseInfo.returnType},
+        #{returnOrderBaseInfo.returnPrice}, #{returnOrderBaseInfo.remarksInfo},
+        #{returnOrderBaseInfo.creatorId}, #{returnOrderBaseInfo.creatorIdentityType},
+        #{returnOrderBaseInfo.creatorPhone},
+        #{returnOrderBaseInfo.customerId}, #{returnOrderBaseInfo.customerName},#{returnOrderBaseInfo.reasonInfo},
+        #{returnOrderBaseInfo.returnPic}, #{returnOrderBaseInfo.orderType}, #{returnOrderBaseInfo.returnStatus})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -80,6 +84,9 @@
             </if>
             <if test="null != reasonInfo">
                 reason_info = #{reasonInfo},
+            </if>
+            <if test="null != returnPic">
+                return_pic = #{returnPic},
             </if>
             <if test="null != orderType">
                 ord_type = #{orderType},

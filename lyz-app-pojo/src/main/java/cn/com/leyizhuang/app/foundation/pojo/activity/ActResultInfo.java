@@ -24,6 +24,16 @@ public class ActResultInfo {
     private Long actId;
 
     /**
+     * 促销标题
+     */
+    private String actTitle;
+
+    /**
+     * 促销标题
+     */
+    private Integer giftChooseNumber;
+
+    /**
      * 立减金额
      */
     private Double discount;

@@ -50,4 +50,9 @@ public class AppUserDevice {
      * 创建时间
      */
     private Date createTime;
+
+    /**
+     *  设备上一次登录系统的时间
+     */
+    private Date lastLoginTime;
 }

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import lombok.*;
 
 /**
@@ -43,8 +44,12 @@ public class OrderGoodsInfo {
     /**
      * 会员价
      */
-
     private Double VIPPrice;
+
+    /**
+     * 结算价
+     */
+    private Double settlementPrice;
 
     /**
      * 经销价
@@ -80,7 +85,7 @@ public class OrderGoodsInfo {
      */
     private Integer returnPriority;
     /**
-     *  订单数量
+     * 订单数量
      */
     private Integer orderQuantity;
 
@@ -100,9 +105,9 @@ public class OrderGoodsInfo {
     private Integer returnableQuantity;
 
     /**
-     * 是否赠品
+     * 商品行类型
      */
-    private Boolean isGift;
+    private AppGoodsLineType goodsLineType;
 
     /**
      * 价目表行id

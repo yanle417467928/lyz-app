@@ -17,5 +17,8 @@ public class EmployeeLoginParam {
 
     private String name;
     private String password;
+    private String systemType;
+    private String clientId;
+    private String deviceId;
 
 }

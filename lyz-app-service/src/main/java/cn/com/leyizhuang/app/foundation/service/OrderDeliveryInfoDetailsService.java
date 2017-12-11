@@ -1,9 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +16,7 @@ public interface OrderDeliveryInfoDetailsService {
 
     LogisticsInformationResponse getDeliveryByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
 
-    OrderDeliveryInfoDetails queryByOrderNumberAndOperatorNumber(String orderNumber,String operatorNumber);
+    OrderDeliveryInfoDetails queryByOrderNumberAndOperatorNumber(String orderNumber, String operatorNumber);
 
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo);
@@ -27,5 +25,29 @@ public interface OrderDeliveryInfoDetailsService {
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(String operatorNo, String orderNumber);
 
     //获取推送的物流消息
-    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime ,Integer identityType);
+    List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime, Integer identityType);
+
+    /**
+     * 配送员获取待取货列表
+     *
+     * @param operatorNo 配送员编码
+     * @return 待取货列表
+     */
+    List<WaitPickUpResponse> getWaitPickUpListByOperatorNo(String operatorNo);
+
+    /**
+     * 配送员获取待取货详情
+     *
+     * @param operatorNo   配送员编码
+     * @param returnNumber 退单号
+     * @return 待取货详情
+     */
+    PickUpDetailResponse getPickUpDetailByOperatorNoAndReturnNo(String operatorNo, String returnNumber);
+
+    /**
+     * 获取退货单商品详情
+     * @param returnNumber  退单号
+     * @return  商品详情
+     */
+    List<GiftListResponseGoods> getReturnGoods(String returnNumber);
 }

@@ -27,57 +27,98 @@ public class AppCustomer implements Serializable {
 
     private Long cusId;
 
-    //真实姓名
+    /**
+     * 真实姓名
+     */
     private String name;
 
-    //手机号码
+    /**
+     * 手机号码
+     */
     private String mobile;
 
-    //生日
+    /**
+     * 生日
+     */
     private Date birthday;
 
-    //状态 禁用，启用
+    /**
+     * 状态 禁用，启用
+     */
     private Boolean status;
 
-    //性别
+    /**
+     * 性别
+     */
     private SexType sex;
 
-    //微信openId
+    /**
+     * 微信openId
+     */
     private String openId;
 
-    //头像路径
+    /**
+     * 头像路径
+     */
     private String picUrl;
 
-    //昵称
+    /**
+     * 昵称
+     */
     private String nickName;
 
-    //用户所在城市id
+    /**
+     * 用户所在城市id
+     */
     private Long cityId;
 
-    //销售顾问Id
+    /**
+     * 销售顾问Id
+     */
     private Long salesConsultId;
 
-    //门店Id
+    /**
+     * 门店Id
+     */
     private Long storeId;
 
-    //顾客灯号
+    /**
+     * 顾客灯号
+     */
     private AppCustomerLightStatus light;
 
-    //注册时间
+    /**
+     * 注册时间
+     */
     private LocalDateTime createTime;
 
-    //是否允许货到付款
+    /**
+     * 是否允许货到付款
+     */
     private Boolean isCashOnDelivery;
 
-    //顾客创建类型
+    /**
+     * 顾客创建类型
+     */
     private AppCustomerCreateType createType;
 
-    //顾客类型
+    /**
+     * 顾客类型
+     */
     private AppCustomerType customerType;
 
-    //上次签到时间
+    /**
+     * 上次签到时间
+     */
     private Date lastSignTime;
-
+    /**
+     * 上一次绑定导购时间
+     */
     private Date bindingTime;
+
+    /**
+     * 上一次消费时间
+     */
+    private Date lastConsumptionTime;
 
 }

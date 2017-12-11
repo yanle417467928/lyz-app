@@ -103,4 +103,8 @@ public interface AppCustomerService {
     void addCustomerLeBiVariationLog(CustomerLeBiVariationLog log);
 
     void addCusPreDepositLog(CusPreDepositLogDO cusPreDepositLogDO);
+
+    Integer findCashCouponAvailQtyByCustomerId(Long userId);
+
+    Integer findProductCouponAvailQtyByCustomerId(Long userId);
 }

@@ -95,6 +95,10 @@ public class UserHomePageController {
                 } else {
                     customerHomePageResponse.setCanSign(Boolean.TRUE);
                 }
+                Integer cashCouponQty = customerService.findCashCouponAvailQtyByCustomerId(userId);
+                customerHomePageResponse.setCashCouponQty(cashCouponQty);
+                Integer productCouponQty = customerService.findProductCouponAvailQtyByCustomerId(userId);
+                customerHomePageResponse.setProductCouponQty(productCouponQty);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -235,13 +239,14 @@ public class UserHomePageController {
 
     /**
      * 经理搜索工人
-     * @param userId    用户id
-     * @param identityType  用户类型
-     * @param keywords  搜索条件
-     * @return  返回工人列表
+     *
+     * @param userId       用户id
+     * @param identityType 用户类型
+     * @param keywords     搜索条件
+     * @return 返回工人列表
      */
     @PostMapping(value = "/search/employee", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> searchDecorateEmployeeList(Long userId, Integer identityType , String keywords){
+    public ResultDTO<Object> searchDecorateEmployeeList(Long userId, Integer identityType, String keywords) {
         logger.info("searchDecorateEmployeeList CALLED,搜索我的工人，入参 userId{},identityType{},keywords {}", userId, identityType, keywords);
         ResultDTO<Object> resultDTO;
         if (StringUtils.isBlank(keywords)) {
@@ -265,7 +270,7 @@ public class UserHomePageController {
                     (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
             logger.info("getDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索我的工人失败", null);
             logger.warn("searchDecorateEmployeeList EXCEPTION,搜索我的工人失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);

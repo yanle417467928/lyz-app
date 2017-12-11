@@ -95,15 +95,33 @@
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM act_base b
-        RIGHT JOIN
-        (SELECT  DISTINCT s.act_id from act_stores s RIGHT JOIN (SELECT DISTINCT act_id from act_goods_mapping where sku in (#{skus})) g on s.act_id = g.act_id
+        LEFT JOIN
+        (SELECT  DISTINCT s.act_id from act_stores s RIGHT JOIN
+        (SELECT DISTINCT act_id from act_goods_mapping
+        where sku in
+        <foreach collection="skus" item="sku" index="index" open="(" close=")" separator=",">
+            #{sku}
+        </foreach>
+        ) g on s.act_id = g.act_id
         where s.store_id = #{storeId}) st
         ON b.id = st.act_id
         where
-        #{now} BETWEEN (beginTime,endTime)
-        and cityId = #{cityId}
-        AND  actTarget = #{actTarget}
+        b.begin_time &lt; #{now} and b.end_time &gt; #{now}
+        and b.city_id = #{cityId}
+        AND  b.act_target = #{actTarget}
+        AND st.act_id is NOT NULL
         ORDER BY b.sort_id
+    </select>
+
+    <select id="queryListByActIdsAndEndTime" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base
+        where id IN
+        <foreach collection="actIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and end_time &lt; #{now}
     </select>
 
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
@@ -123,6 +141,7 @@
         #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
         #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
     </foreach>
+
 </insert>
 
 </mapper>

@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -50,6 +48,7 @@ public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
+
     @Resource
     private AppCustomerService appCustomerService;
 
@@ -75,6 +74,8 @@ public class OrderController {
     @Resource
     private CityService cityService;
 
+    @Resource
+    private AppActService actService;
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
@@ -167,10 +168,10 @@ public class OrderController {
             //设置商品数量
             Set<Long> hasPriceGoodsIdSet = new HashSet<>();
             AppStore store = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(), orderParam.getIdentityType());
-            AppCustomer customer;
+            AppCustomer customer = new AppCustomer();
             if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getUserId());
-            } else {
+            } else if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getCustomerId());
             }
             for (OrderGoodsVO goodsVO : goodsVOList) {
@@ -195,22 +196,39 @@ public class OrderController {
                 } else {
                     inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
                 }
-                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                } else {
+                    if (null == customer) {
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                    } else {
+                        memberDiscount = 0D;
+                    }
                 }
+
                 OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
                 goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
-                goodsInfo.setIsGift(Boolean.FALSE);
+                goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
                 goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
                 goodsInfo.setVIPPrice(goodsVO.getVipPrice());
                 goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
                 goodsInfo.setIsPriceShare(Boolean.FALSE);
                 goodsInfo.setSharePrice(0D);
                 goodsInfo.setIsReturnable(Boolean.TRUE);
-                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     goodsInfo.setReturnPrice(goodsVO.getVipPrice());
                 } else {
-                    goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                    if (null == customer) {
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                    } else {
+                        goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                    }
                 }
                 goodsInfo.setSku(goodsVO.getSku());
                 goodsInfo.setSkuName(goodsVO.getSkuName());
@@ -249,6 +267,14 @@ public class OrderController {
             orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, orderParam.getCashCouponIds());
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
+
+            //根据应付金额判断订单账单是否已付清
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
+                orderBaseInfo.setIsPayUp(true);
+            } else {
+                orderBaseInfo.setIsPayUp(false);
+            }
+
             //******** 处理账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
@@ -256,12 +282,18 @@ public class OrderController {
                     orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
 
             //******* 持久化订单相关实体信息  *******
-            commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
-
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new CreateOrderResponse(orderBaseInfo.getOrderNumber(),
-                    Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable()))));
-            logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
+            if (orderBaseInfo.getIsPayUp()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
+                logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
+                logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException e) {
@@ -390,7 +422,17 @@ public class OrderController {
                 }
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣, 加运费
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
                 Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
                 //计算可用的优惠券
@@ -412,14 +454,16 @@ public class OrderController {
                     //合并商品和赠品集合
                     goodsInfo.addAll(giftsInfo);
                 }
+
+
                 goodsSettlement.put("totalQty", totalQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", memberDiscount / 10);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
@@ -477,7 +521,17 @@ public class OrderController {
                 }
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, memberDiscount, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
                 Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
                 //现金券还需要传入订单金额判断是否满减
@@ -507,9 +561,9 @@ public class OrderController {
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", memberDiscount / 10);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
@@ -562,7 +616,17 @@ public class OrderController {
                     }
                 }
                 //计算订单金额小计
-                totalOrderAmount = CountUtil.add(CountUtil.sub(totalPrice, totalPrice / 100), totalPrice / 1000);
+                //********* 计算促销立减金额 *************
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                }
+
+                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
+                    freight = 30.00;
+                }
+                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
                 //获取门店预存款，信用金，现金返利。
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
@@ -588,14 +652,16 @@ public class OrderController {
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("orderDiscount", totalPrice / 100);
+                goodsSettlement.put("orderDiscount", orderDiscount);
                 // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
-                goodsSettlement.put("freight", totalPrice / 1000);
+                goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
                 goodsSettlement.put("storeSubvention", storeSubvention);
             }
+
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
@@ -1057,6 +1123,7 @@ public class OrderController {
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1189,7 +1256,8 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
-                orderDetailsResponse.setPayType(orderBaseInfo.getOnlinePayType().getDescription());
+                orderDetailsResponse.setPayType(null == orderBaseInfo.getOnlinePayType() ?
+                        OnlinePayType.NO.getDescription() : orderBaseInfo.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {

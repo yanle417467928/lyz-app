@@ -10,6 +10,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +41,13 @@ public interface CommonService {
             LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
             LockStoreSubventionException, SystemBusyException;
 
-    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+    void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
-            throws OrderSaveException;
+            throws OrderSaveException, IOException;
+
+   /* *//**
+     * 订单付清后执行的相关操作
+     * @param orderNumber 订单号
+     *//*
+    void handleOrderRelevantBusinessAfterPrePayUp(String orderNumber) throws IOException;*/
 }

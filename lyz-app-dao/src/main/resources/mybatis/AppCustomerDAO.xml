@@ -34,6 +34,12 @@
     <update id="update" parameterType="AppCustomer">
         UPDATE cus_customer
         <set>
+            <if test="null != cityId">
+                city_id = #{cityId},
+            </if>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
             <if test="null != name">
                 name = #{name},
             </if>
@@ -60,18 +66,11 @@
             <if test="null != nickName">
                 nick_name = #{nickName},
             </if>
-            <if test="null != cityId">
-                city_id = #{cityId},
-            </if>
+
             <if test="null != salesConsultId">
                 sales_consult_id = #{salesConsultId},
             </if>
-            <if test="null != storeId">
-                store_id = #{storeId},
-            </if>
-            <if test="null != storeId">
-                store_id = #{storeId},
-            </if>
+
             <if test="null != isCashOnDelivery">
                 is_cash_on_delivery = #{isCashOnDelivery},
             </if>
@@ -86,8 +85,14 @@
                    typeHandler=org.apache.ibatis.type.EnumTypeHandler
                 },
             </if>
+            <if test="null != lastSignTime">
+                last_sign_time = #{bindingTime},
+            </if>
             <if test="null != bindingTime">
                 binding_time = #{bindingTime},
+            </if>
+            <if test="null != lastConsumptionTime">
+                last_consumption_time = #{lastConsumptionTime},
             </if>
         </set>
         WHERE cus_id = #{cusId}
@@ -485,5 +490,24 @@
                                #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
                 #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
+
+    <select id="findCashCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT sum(qty)
+        FROM cus_customer_cash_coupon
+        WHERE cus_id = #{userId}
+              AND is_used IS FALSE
+              AND status IS TRUE
+              AND (now() BETWEEN effective_start_time AND effective_end_time)
+        GROUP BY cus_id
+    </select>
+
+    <select id="findProductCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT sum(quantity)
+        FROM cus_customer_product_coupon
+        WHERE cus_id = #{userId}
+              AND is_used IS FALSE
+              AND (now() BETWEEN effective_start_time AND effective_end_time)
+        GROUP BY cus_id
+    </select>
 
 </mapper>

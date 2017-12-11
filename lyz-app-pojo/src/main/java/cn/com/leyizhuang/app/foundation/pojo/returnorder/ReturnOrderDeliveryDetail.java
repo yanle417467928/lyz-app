@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import lombok.*;
-
-import java.util.Date;
 
 /**
  * 退货地址详情
@@ -22,7 +21,7 @@ public class ReturnOrderDeliveryDetail {
     /**
      * 退单物流状态
      */
-    private String returnLogisticStatus;
+    private ReturnLogisticStatus returnLogisticStatus;
     /**
      * 描述
      */
@@ -30,27 +29,11 @@ public class ReturnOrderDeliveryDetail {
     /**
      * 上门收货人id
      */
-    private Long consigneeId;
+    private Long pickersId;
     /**
      * 收货人编码
      */
-    private String consigneeNumber;
-    /**
-     * 门店编码
-     */
-    private String storeNo;
-    /**
-     * 仓库编码
-     */
-    private String warehouseNo;
-    /**
-     * 收货地址
-     */
-    private String pickUpAddress;
-    /**
-     * 收货时间
-     */
-    private Date pickUpTime;
+    private String pickersNumber;
     /**
      * 物流操作编码
      */

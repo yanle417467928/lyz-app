@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,16 @@ public interface ProductCouponDAO {
      */
     List<OrderCouponInfo> findOrderCouponByCouponTypeAndUserId(@Param("orderId")Long orderId, @Param("couponType")OrderCouponType couponType);
 
+    /**
+     * 获取顾客产品券信息
+     * @param cusProductCouponId    产品券id
+     * @return  产品券信息
+     */
+    CustomerProductCoupon findCusProductCouponByCouponId(@Param("cusProductCouponId")Long cusProductCouponId);
+
+    /**
+     * 添加产品券
+     * @param customerProductCoupon 产品券
+     */
+    void addCustomerProductCoupon(CustomerProductCoupon customerProductCoupon);
 }

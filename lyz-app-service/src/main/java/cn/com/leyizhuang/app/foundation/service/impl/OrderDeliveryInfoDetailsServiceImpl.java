@@ -3,9 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +53,20 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public List<OrderDeliveryInfoDetails> getLogisticsMessageByUserId(Long userID, Date createTime , Integer identityType) {
         return orderDeliveryInfoDetailsDAO.getLogisticsMessageByUserId(userID,createTime, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    }
+
+    @Override
+    public List<WaitPickUpResponse> getWaitPickUpListByOperatorNo(String operatorNo) {
+        return orderDeliveryInfoDetailsDAO.getWaitPickUpListByOperatorNo(operatorNo);
+    }
+
+    @Override
+    public PickUpDetailResponse getPickUpDetailByOperatorNoAndReturnNo(String operatorNo, String returnNumber) {
+        return orderDeliveryInfoDetailsDAO.getPickUpDetailByOperatorNoAndReturnNo(operatorNo, returnNumber);
+    }
+
+    @Override
+    public List<GiftListResponseGoods> getReturnGoods(String returnNumber) {
+        return orderDeliveryInfoDetailsDAO.getReturnGoods(returnNumber);
     }
 }

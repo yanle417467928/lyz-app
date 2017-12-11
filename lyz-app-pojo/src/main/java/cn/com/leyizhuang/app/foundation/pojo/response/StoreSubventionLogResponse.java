@@ -23,7 +23,4 @@ public class StoreSubventionLogResponse {
     //变更类型
     private String type;
 
-    public void setType(StoreSubventionChangeType type) {
-        this.type = type.getValue();
-    }
 }

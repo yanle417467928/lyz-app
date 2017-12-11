@@ -26,4 +26,8 @@ public class CreateOrderResponse implements Serializable {
      * 应付金额
      */
     private Double amountPayable;
+    /**
+     * 是否已付清
+     */
+    private Boolean isPayUp;
 }

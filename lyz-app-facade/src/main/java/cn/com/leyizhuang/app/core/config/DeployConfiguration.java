@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.core.config;
 
-import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
+import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +27,9 @@ public class DeployConfiguration {
     @Value("${deploy.wechat.async.url}")
     private String wechatReturnUrlAsnyc;
 
+    @Value("${deploy.wechat.cert.path}")
+    private String wechatApiClinetCert;
+
     @Value("${deploy.oss.cdnHosts}")
     private String[] cdnHosts;
 
@@ -37,20 +40,22 @@ public class DeployConfiguration {
     private String ossBucket;
 
     @Bean
-    public ApplicationConstant applicationConstant() {
+    public AppApplicationConstant applicationConstant() {
         LOG.info("imagePath : {}", imagePath);
         LOG.info("alipayReturnUrl : {}", alipayReturnUrl);
         LOG.info("alipayReturnUrlAsync : {}", alipayReturnUrlAsync);
         LOG.info("wechatReturnUrlAsnyc : {}", wechatReturnUrlAsnyc);
+        LOG.info("wechatApiClinetCert : {}", wechatApiClinetCert);
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
 
-        ApplicationConstant constant = new ApplicationConstant();
+        AppApplicationConstant constant = new AppApplicationConstant();
         constant.setImagePath(imagePath);
         constant.setAlipayReturnUrl(alipayReturnUrl);
         constant.setAlipayReturnUrlAsnyc(alipayReturnUrlAsync);
         constant.setWechatReturnUrlAsnyc(wechatReturnUrlAsnyc);
+        constant.setWechatApiClinetCert(wechatApiClinetCert);
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
@@ -87,6 +92,14 @@ public class DeployConfiguration {
 
     public void setWechatReturnUrlAsnyc(String wechatReturnUrlAsnyc) {
         this.wechatReturnUrlAsnyc = wechatReturnUrlAsnyc;
+    }
+
+    public String getWechatApiClinetCert() {
+        return wechatApiClinetCert;
+    }
+
+    public void setWechatApiClinetCert(String wechatApiClinetCert) {
+        AppApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
     }
 
     public String[] getCdnHosts() {
