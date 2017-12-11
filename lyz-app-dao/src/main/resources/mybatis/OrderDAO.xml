@@ -39,6 +39,7 @@
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT
             obi.`status`,
+            obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
             obi.delivery_type
@@ -67,6 +68,7 @@
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             SELECT
             obi.`status`,
+            obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
             obi.delivery_type
@@ -95,6 +97,7 @@
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
             obi.`status`,
+            obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
             obi.delivery_type

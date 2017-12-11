@@ -35,8 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 订单相关接口
@@ -49,7 +47,6 @@ import java.util.concurrent.Executors;
 public class OrderController {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-
 
 
     @Resource
@@ -174,7 +171,7 @@ public class OrderController {
             AppCustomer customer = new AppCustomer();
             if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getUserId());
-            } else if(orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
+            } else if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
                 customer = appCustomerService.findById(orderParam.getCustomerId());
             }
             for (OrderGoodsVO goodsVO : goodsVOList) {
@@ -199,15 +196,15 @@ public class OrderController {
                 } else {
                     inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
                 }
-                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()){
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
-                }else{
-                    if (null == customer ){
+                } else {
+                    if (null == customer) {
                         throw new OrderCustomerException("订单顾客信息异常!");
                     }
                     if (customer.getCustomerType() == AppCustomerType.MEMBER) {
                         memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
-                    }else{
+                    } else {
                         memberDiscount = 0D;
                     }
                 }
@@ -221,15 +218,15 @@ public class OrderController {
                 goodsInfo.setIsPriceShare(Boolean.FALSE);
                 goodsInfo.setSharePrice(0D);
                 goodsInfo.setIsReturnable(Boolean.TRUE);
-                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()){
+                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     goodsInfo.setReturnPrice(goodsVO.getVipPrice());
-                }else{
-                    if (null == customer ){
+                } else {
+                    if (null == customer) {
                         throw new OrderCustomerException("订单顾客信息异常!");
                     }
                     if (customer.getCustomerType() == AppCustomerType.MEMBER) {
                         goodsInfo.setReturnPrice(goodsVO.getVipPrice());
-                    }else{
+                    } else {
                         goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
                     }
                 }
@@ -279,17 +276,17 @@ public class OrderController {
 
             //******* 持久化订单相关实体信息  *******
             commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
-            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT){
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
 
             }
-            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT){
-               resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                       new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())),true));
-               logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
-               return resultDTO;
-           }
+            if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
+                logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())),false));
+                    new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
             logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
@@ -421,9 +418,9 @@ public class OrderController {
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣, 加运费
                 //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
-                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 }
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
@@ -452,7 +449,6 @@ public class OrderController {
                     //合并商品和赠品集合
                     goodsInfo.addAll(giftsInfo);
                 }
-
 
 
                 goodsSettlement.put("totalQty", totalQty);
@@ -521,13 +517,13 @@ public class OrderController {
                 //计算订单金额小计
                 //TODO 根据促销减去订单折扣
                 //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
-                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 }
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-                if (totalOrderAmount != null && totalOrderAmount<1000) {
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
                     freight = 30.00;
                 }
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
@@ -616,13 +612,13 @@ public class OrderController {
                 }
                 //计算订单金额小计
                 //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList){
-                    orderDiscount = CountUtil.add(orderDiscount,discountResponse.getDiscountPrice());
+                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 }
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-                if (totalOrderAmount != null && totalOrderAmount<1000) {
+                if (totalOrderAmount != null && totalOrderAmount < 1000) {
                     freight = 30.00;
                 }
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
@@ -1122,6 +1118,7 @@ public class OrderController {
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
