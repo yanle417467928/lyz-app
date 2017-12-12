@@ -1,39 +1,25 @@
-package cn.com.leyizhuang.app.foundation.pojo.returnorder;
+package cn.com.leyizhuang.app.foundation.pojo.request;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
 /**
  * @author Jerry.Ren
- * Notes: 退单物流状态
+ * Notes:
  * Created with IntelliJ IDEA.
  * Date: 2017/12/8.
- * Time: 15:10.
+ * Time: 15:37.
  */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReturnOrderLogisticInfo {
-
-    private Long id;
-
-    /**
-     * 退单id
-     */
-    private Long roid;
-
-    /**
-     * 退单号
-     */
-    private String returnNO;
+public class ReturnDeliverySimpleInfo {
 
     /**
      * 配送方式
      */
-    private AppDeliveryType deliveryType;
-
+    private String deliveryType;
 
     //************* 自提单信息 ************
 
@@ -94,18 +80,4 @@ public class ReturnOrderLogisticInfo {
      * 退货详细地址
      */
     private String detailedAddress;
-
-    /**
-     * 配送员id
-     */
-    private Long deliveryClerkId;
-    /**
-     * 配送员编码
-     */
-    private String deliveryClerkNo;
-    /**
-     * 配送员姓名
-     */
-    private String deliveryClerkName;
-
 }

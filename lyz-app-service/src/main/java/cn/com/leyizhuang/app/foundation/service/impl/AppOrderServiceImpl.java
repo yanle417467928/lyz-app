@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
@@ -494,5 +495,13 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
         orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
+    }
+
+    @Override
+    public List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo) {
+        if (StringUtils.isNotBlank(orderNo)) {
+            return orderDAO.getOrderBillingDetailByOrderNo(orderNo);
+        }
+        return null;
     }
 }

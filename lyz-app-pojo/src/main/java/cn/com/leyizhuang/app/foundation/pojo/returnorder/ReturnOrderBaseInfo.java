@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppOrderType;
-import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
-import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
+import cn.com.leyizhuang.app.core.constant.*;
 import lombok.*;
 
 import java.util.Date;
@@ -71,9 +68,18 @@ public class ReturnOrderBaseInfo {
      */
     private String customerName;
     /**
+     * 顾客类型（当IdentityType == 0，customerType==MEMBER
+     *          当IdentityType == 6，customerType==MEMBER || RETAIL）
+     */
+    private AppCustomerType customerType;
+    /**
      * 退货原因
      */
     private String reasonInfo;
+    /**
+     * 退货问题描述图片
+     */
+    private String returnPic;
     /**
      * 退货物流方式
      */
