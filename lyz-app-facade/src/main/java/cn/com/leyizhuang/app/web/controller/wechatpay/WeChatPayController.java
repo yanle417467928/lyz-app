@@ -59,14 +59,17 @@ public class WeChatPayController {
     @Resource
     private ReturnOrderService returnOrderService;
 
+    @Resource
+    private CommonService commonService;
+
     /**
      * 微信支付订单
      *
-     * @param req          请求对象
-     * @param userId       用户id
-     * @param identityType 用户身份类型
-     * @param amountPayable        支付金额
-     * @param orderNumber      订单号
+     * @param req           请求对象
+     * @param userId        用户id
+     * @param identityType  用户身份类型
+     * @param amountPayable 支付金额
+     * @param orderNumber   订单号
      * @return 微信支付请求签名
      */
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
@@ -375,8 +378,7 @@ public class WeChatPayController {
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
                             } else {
                                 OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
-
-                                //TODO 老乐乐 补充订单支付
+                                commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
                             }
                         }
                     } else {
