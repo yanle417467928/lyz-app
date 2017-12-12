@@ -622,7 +622,7 @@ public class CommonServiceImpl implements CommonService {
         if (StringUtils.isNotBlank(orderNumber)) {
 
             //更新订单第三方支付信息
-            List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.WAIT_PAY);
+            List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
             /*paymentData.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
             paymentData.setTradeNo(tradeNo);
@@ -728,7 +728,6 @@ public class CommonServiceImpl implements CommonService {
             orderService.updateOrderBaseInfo(baseInfo);
             //第三方支付信息
             //paymentDataService.updateByTradeStatusIsWaitPay(paymentData);
-
             //更新订单账单信息
             orderService.updateOrderBillingDetails(billingDetails);
             //保存新增订单账单支付明细
