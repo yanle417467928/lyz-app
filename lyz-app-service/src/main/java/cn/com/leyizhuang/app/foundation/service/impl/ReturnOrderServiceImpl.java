@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
@@ -34,6 +35,8 @@ import java.util.List;
 public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Resource
     private ReturnOrderDAO returnOrderDAO;
+    @Resource
+    private OrderDAO orderDAO;
     @Resource
     private AppStoreService appStoreService;
     @Resource
@@ -115,7 +118,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo,
                                             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos, ReturnOrderBilling returnOrderBilling,
-                                            List<ReturnOrderProductCoupon> productCouponList) throws OrderSaveException {
+                                            List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList) throws OrderSaveException {
 
         if (null != returnOrderBaseInfo) {
             returnOrderDAO.saveReturnOrderBaseInfo(returnOrderBaseInfo);
@@ -139,6 +142,12 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (ReturnOrderProductCoupon productCoupon : productCouponList) {
                         productCoupon.setRoid(roid);
                         returnOrderDAO.saveReturnOrderProductCoupon(productCoupon);
+                    }
+                }
+                if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                        //修改这个数量
+                        orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
                     }
                 }
             } else {
