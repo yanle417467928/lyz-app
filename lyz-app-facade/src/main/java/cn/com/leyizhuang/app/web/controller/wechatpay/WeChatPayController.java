@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -269,14 +270,13 @@ public class WeChatPayController {
      * @param money
      * @return
      */
-    public void wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
-
-
+    public Map<String,String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "微信退款";
 
+        Map<String,String> map = new HashMap<>();
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataService.save(paymentDataDO);
@@ -315,18 +315,29 @@ public class WeChatPayController {
                     dataDO.setTradeNo(tradeNo);
                     dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
+
+                    map.put("code","SUCCESS");
+                    map.put("number",tradeNo);
+                    map.put("money",refundFee);
+                    return map;
                 } else {
                     PaymentDataDO paymentDataDO1 = new PaymentDataDO();
                     paymentDataDO1.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                     response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
+                    map.put("code","FAILURE");
+                    return map;
                 }
             } else {
                 logger.warn("{}", resultMap.get("err_code").toString());
                 logger.warn("{}", resultMap.get("err_code_des").toString());
+                map.put("code","FAILURE");
+                return map;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            map.put("code","FAILURE");
+            return map;
         }
     }
 

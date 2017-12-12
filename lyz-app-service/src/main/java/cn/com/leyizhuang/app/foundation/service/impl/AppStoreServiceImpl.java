@@ -143,7 +143,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
         if (null != userId && null != storeCredit) {
             storeDAO.updateStoreCreditByUserId(userId, storeCredit);
@@ -151,7 +151,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention) {
         if (null != userId && null != storeSubvention) {
             storeDAO.updateStoreSubventionByUserId(userId, storeSubvention);
@@ -298,6 +298,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StoreSubvention findStoreSubventionByEmpId(Long userId) {
         if (null != userId) {
             return storeDAO.findStoreSubventionByEmpId(userId);

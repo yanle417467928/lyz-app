@@ -157,7 +157,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo) {
         this.orderDAO.updateOrderStatusByOrderNo(orderBaseInfo);
         return orderBaseInfo;
@@ -493,6 +493,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
         orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
     }

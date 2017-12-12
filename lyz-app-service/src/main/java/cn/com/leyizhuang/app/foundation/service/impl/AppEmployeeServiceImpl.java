@@ -168,7 +168,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void unlockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit) {
         if (null != userId && null != guideCredit) {
             employeeDAO.unlockGuideCreditByUserIdAndGuideCredit(userId, guideCredit);
@@ -191,6 +191,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId) {
         if (null != empId){
             return employeeDAO.findEmpCreditMoneyByEmpId(empId);
