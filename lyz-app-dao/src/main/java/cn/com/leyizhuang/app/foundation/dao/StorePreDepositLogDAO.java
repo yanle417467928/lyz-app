@@ -25,7 +25,7 @@ public interface StorePreDepositLogDAO {
      * @param userId    用户id
      * @return  门店预存款信息
      */
-    StorePreDeposit findStoreByUserId(@Param("suerId") Long userId);
+    StorePreDeposit findStoreByUserId(@Param("userId") Long userId);
 
     /**
      * 修改门店预存款

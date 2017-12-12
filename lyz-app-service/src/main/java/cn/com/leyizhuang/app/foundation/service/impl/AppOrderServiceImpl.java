@@ -37,16 +37,16 @@ import java.util.List;
 public class AppOrderServiceImpl implements AppOrderService {
 
 
-    @Autowired
+    @Resource
     private AppStoreDAO appStoreDAO;
 
-    @Autowired
+    @Resource
     private CityDAO cityDAO;
 
-    @Autowired
+    @Resource
     private OrderDAO orderDAO;
 
-    @Autowired
+    @Resource
     private ArrearsAuditDAO arrearsAuditDAO;
 
     @Resource
@@ -468,5 +468,10 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         return orderBillingDetails;
+    }
+
+    @Override
+    public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
+        orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
     }
 }

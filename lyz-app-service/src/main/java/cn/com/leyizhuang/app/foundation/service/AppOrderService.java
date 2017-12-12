@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -99,4 +100,12 @@ public interface AppOrderService {
 
     OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType,
                                                   BillingSimpleInfo billing, List<Long> cashCouponIds);
+
+    /**
+     * 根据订单号修改订单状态
+     * @param status    订单状态
+     * @param orderNumber   订单号
+     */
+    void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber);
+
 }

@@ -95,7 +95,7 @@ public class ReturnOrderController {
      * @param remarksInfo  备注
      * @return 成功或失败
      */
-
+    @PostMapping(value = "/cansel/order", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> cancelOrder(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
                                          String orderNumber, String reasonInfo, String remarksInfo) {
         logger.info("cancelOrder CALLED,取消订单，入参 userId:{} identityType:{} orderNumber:{} reasonInfo:{} remarksInfo:{}",
@@ -135,14 +135,18 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (!"RECEIVED".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
-                    !"ALREADY_POSITIONED".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
-                    !"PICKING_GOODS".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
-                    !"LOADING".equals(orderBaseInfo.getDeliveryStatus().getDescription())) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已配送或已签收不能取消订单！", null);
-                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
+            if ("送货上门".equals(AppDeliveryType.HOUSE_DELIVERY.getDescription())){
+                if (!"等待物流接收".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                        !"已接收".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                        !"已定位".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                        !"已拣货".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
+                        !"已装车".equals(orderBaseInfo.getDeliveryStatus().getDescription()) ) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已配送或已签收不能取消订单！", null);
+                    logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
             }
+
             if (null == orderBillingDetails) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
                 logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
@@ -230,7 +234,7 @@ public class ReturnOrderController {
                 Date date = new Date();
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
                     //返回乐币
-                    if (orderBillingDetails.getLebiQuantity() != null) {
+                    if (orderBillingDetails.getLebiQuantity() != null && orderBillingDetails.getLebiQuantity() > 0) {
                         //获取顾客当前乐币数量
                         CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(userId);
                         //返还乐币后顾客乐币数量
@@ -250,7 +254,7 @@ public class ReturnOrderController {
                         leBiVariationLogService.addCustomerLeBiVariationLog(leBiVariationLog);
                     }
                     //返回顾客预存款
-                    if (orderBillingDetails.getCusPreDeposit() != null) {
+                    if (orderBillingDetails.getCusPreDeposit() != null && orderBillingDetails.getCusPreDeposit() > 0) {
                         //获取顾客预存款
                         CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(userId);
                         //返还预存款后顾客预存款金额
@@ -277,7 +281,7 @@ public class ReturnOrderController {
                 }
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
                     //返回门店预存款
-                    if (orderBillingDetails.getStPreDeposit() != null) {
+                    if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
                         //返还预存款后门店预存款金额
@@ -301,7 +305,7 @@ public class ReturnOrderController {
                         storePreDepositLogService.save(stPreDepositLogDO);
                     }
                     //返回导购信用额度
-                    if (orderBillingDetails.getEmpCreditMoney() != null) {
+                    if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0) {
                         //获取导购信用金
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);
                         //返还信用金后导购信用金额度
@@ -325,7 +329,7 @@ public class ReturnOrderController {
                 }
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
                     //返回门店预存款
-                    if (orderBillingDetails.getStPreDeposit() != null) {
+                    if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
                         //返还预存款后门店预存款金额
@@ -349,7 +353,7 @@ public class ReturnOrderController {
                         storePreDepositLogService.save(stPreDepositLogDO);
                     }
                     //返回门店信用金（装饰公司）
-                    if (orderBillingDetails.getStoreCreditMoney() != null) {
+                    if (orderBillingDetails.getStoreCreditMoney() != null && orderBillingDetails.getStoreCreditMoney() > 0) {
                         //查询门店信用金
                         StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(userId);
                         //返还后门店信用金额度
@@ -372,7 +376,7 @@ public class ReturnOrderController {
                         appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
                     }
                     //返回门店现金返利（装饰公司）
-                    if (orderBillingDetails.getStoreSubvention() != null) {
+                    if (orderBillingDetails.getStoreSubvention() != null && orderBillingDetails.getStoreSubvention() > 0) {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(userId);
                         //返还后门店现金返利余额
@@ -542,8 +546,7 @@ public class ReturnOrderController {
 
                 }
                 //修改订单状态为已取消
-                orderBaseInfo.setStatus(AppOrderStatus.CANCELED);
-                appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
+                appOrderService.updateOrderStatusByOrderNoAndStatus(AppOrderStatus.CANCELED,orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
@@ -832,7 +835,7 @@ public class ReturnOrderController {
                     returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
                     //TODO 查促销表的标题
                     returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
-                    returnOrderGoodsResponse.setIsGift(goodsInfo.getIsGift());
+                    returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getDescription());
                     returnOrderGoodsList.add(returnOrderGoodsResponse);
                 }
                 //获取订单商品详细信息包含图片，
