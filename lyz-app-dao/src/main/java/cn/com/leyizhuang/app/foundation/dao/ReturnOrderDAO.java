@@ -62,6 +62,13 @@ public interface ReturnOrderDAO {
      */
     void saveReturnOrderGoodsInfo(ReturnOrderGoodsInfo returnOrderGoodsInfo);
 
+    /**
+     * 保存退单物流明细
+     *
+     * @param returnOrderLogisticInfo 退单物流
+     */
+    void saveReturnOrderLogisticsInfo(ReturnOrderLogisticInfo returnOrderLogisticInfo);
+
     void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail returnOrderBillingDetail);
 
     List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(@Param("userId") Long userId,

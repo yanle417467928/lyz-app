@@ -27,7 +27,10 @@ public class GoodsSimpleInfo implements Serializable {
      * 商品数量
      */
     private Integer num;
-
+    /**
+     * 商品行类型（暂定）
+     */
+    private String goodsLineType;
     /**
      * 是否赠品
      */

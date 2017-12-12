@@ -483,4 +483,11 @@
         WHERE ord_no = #{orderNumber}
 
     </update>
+
+    <select id="getOrderBillingDetailByOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+        SELECT *
+        FROM ord_billing_payment_details
+        WHERE ord_no = #{orderNo}
+    </select>
 </mapper>

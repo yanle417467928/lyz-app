@@ -1,15 +1,20 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.OrderSaveException;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -18,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +52,100 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     private CashCouponService cashCouponService;
     @Resource
     private ReturnOrderService returnOrderService;
+
+    @Override
+    public ReturnOrderBaseInfo createReturnOrderBaseInfo(Long orderId, String orderNo, Date orderTime, String remarksInfo, Long creatorId,
+                                                         Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType) {
+
+        ReturnOrderBaseInfo baseInfo = new ReturnOrderBaseInfo();
+        baseInfo.setOrderId(orderId);
+        baseInfo.setOrderNo(orderNo);
+        baseInfo.setOrderTime(orderTime);
+        baseInfo.setOrderType(orderType);
+        baseInfo.setRemarksInfo(remarksInfo);
+        baseInfo.setCreatorId(creatorId);
+        baseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(creatorIdentityType));
+        baseInfo.setReasonInfo(reasonInfo);
+        baseInfo.setReturnPic(returnPic);
+        baseInfo.setReturnTime(Calendar.getInstance().getTime());
+        baseInfo.setReturnNo(OrderUtils.getReturnNumber());
+        baseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
+        baseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_PICK_UP);
+        if (creatorIdentityType == 6) {
+            AppCustomer customer = appCustomerService.findById(creatorId);
+            baseInfo.setCustomerType(customer.getCustomerType());
+            baseInfo.setCreatorPhone(customer.getMobile());
+        } else if (creatorIdentityType == 2) {
+            AppEmployee employee = appEmployeeService.findById(creatorId);
+            baseInfo.setCreatorPhone(employee.getMobile());
+        }
+        return baseInfo;
+    }
+
+    @Override
+    public ReturnOrderLogisticInfo createReturnOrderLogisticInfo(ReturnDeliverySimpleInfo returnDeliveryInfo) {
+        ReturnOrderLogisticInfo returnOrderLogisticInfo = new ReturnOrderLogisticInfo();
+        if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.RETURN_STORE.getValue())) {
+            returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
+            returnOrderLogisticInfo.setReturnStoreCode(returnDeliveryInfo.getReturnStoreCode());
+            returnOrderLogisticInfo.setReturnStoreName(returnDeliveryInfo.getReturnStoreName());
+            returnOrderLogisticInfo.setReturnStoreAddress(returnDeliveryInfo.getReturnStoreAddress());
+        } else if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_PICK.getValue())) {
+            returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
+            returnOrderLogisticInfo.setDeliveryTime(returnDeliveryInfo.getDeliveryTime());
+            returnOrderLogisticInfo.setRejecter(returnDeliveryInfo.getRejecter());
+            returnOrderLogisticInfo.setRejecterPhone(returnDeliveryInfo.getRejecterPhone());
+            returnOrderLogisticInfo.setDeliveryCity(returnDeliveryInfo.getDeliveryCity());
+            returnOrderLogisticInfo.setDeliveryCounty(returnDeliveryInfo.getDeliveryCounty());
+            returnOrderLogisticInfo.setDeliveryStreet(returnDeliveryInfo.getDeliveryStreet());
+            returnOrderLogisticInfo.setResidenceName(returnDeliveryInfo.getResidenceName());
+            returnOrderLogisticInfo.setDetailedAddress(returnDeliveryInfo.getDetailedAddress());
+            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getDeliveryCity() +
+                    returnDeliveryInfo.getDeliveryCounty() +
+                    returnDeliveryInfo.getDeliveryStreet() +
+                    returnDeliveryInfo.getResidenceName() +
+                    returnDeliveryInfo.getDetailedAddress());
+
+        }
+
+        return returnOrderLogisticInfo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo,
+                                            List<ReturnOrderGoodsInfo> returnOrderGoodsInfos, ReturnOrderBilling returnOrderBilling,
+                                            List<ReturnOrderProductCoupon> productCouponList) throws OrderSaveException {
+
+        if (null != returnOrderBaseInfo) {
+            returnOrderDAO.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+            if (null != returnOrderBaseInfo.getRoid()) {
+                Long roid = returnOrderBaseInfo.getRoid();
+                if (null != returnOrderLogisticInfo) {
+                    returnOrderLogisticInfo.setRoid(roid);
+                    returnOrderDAO.saveReturnOrderLogisticsInfo(returnOrderLogisticInfo);
+                }
+                if (null != returnOrderGoodsInfos && !returnOrderGoodsInfos.isEmpty()) {
+                    for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
+                        goodsInfo.setRoid(roid);
+                        returnOrderDAO.saveReturnOrderGoodsInfo(goodsInfo);
+                    }
+                }
+                if (null != returnOrderBilling) {
+                    returnOrderBilling.setRoid(roid);
+                    returnOrderDAO.saveReturnOrderBilling(returnOrderBilling);
+                }
+                if (null != productCouponList && !productCouponList.isEmpty()) {
+                    for (ReturnOrderProductCoupon productCoupon : productCouponList) {
+                        productCoupon.setRoid(roid);
+                        returnOrderDAO.saveReturnOrderProductCoupon(productCoupon);
+                    }
+                }
+            } else {
+                throw new OrderSaveException("退单主键生成失败!");
+            }
+        }
+    }
 
     @Override
     public void saveReturnOrderBaseInfo(ReturnOrderBaseInfo returnOrderBaseInfo) {
@@ -672,6 +772,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
         }
+    }
+
+    @Override
+    public void saveReturnOrderLogisticsInfo(ReturnOrderLogisticInfo returnOrderLogisticInfo) {
+        returnOrderDAO.saveReturnOrderLogisticsInfo(returnOrderLogisticInfo);
     }
 
     @Override
