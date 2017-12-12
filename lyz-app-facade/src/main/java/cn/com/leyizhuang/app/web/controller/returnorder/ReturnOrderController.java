@@ -81,7 +81,7 @@ public class ReturnOrderController {
      * @param remarksInfo  备注
      * @return 成功或失败
      */
-    @PostMapping(value = "/cansel/order", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/cancel/order", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> cancelOrder(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
                                          String orderNumber, String reasonInfo, String remarksInfo) {
         logger.info("cancelOrder CALLED,取消订单，入参 userId:{} identityType:{} orderNumber:{} reasonInfo:{} remarksInfo:{}",
@@ -882,6 +882,11 @@ public class ReturnOrderController {
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
             //判断物流是否已取货，买券无判断
             ReturnOrderDeliveryDetail returnOrderDeliveryDetail = returnOrderDeliveryDetailsService.getReturnLogisticStatusDetail(returnNumber);
+            if (returnOrderDeliveryDetail == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无物流信息暂不可取消！", null);
+                logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             if (ReturnLogisticStatus.PICKUP_COMPLETE.equals(returnOrderDeliveryDetail.getReturnLogisticStatus())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已退货完成，不可取消！", null);
                 logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
@@ -951,9 +956,10 @@ public class ReturnOrderController {
                         returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
                         returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
                         returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
+                        returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
                         //TODO 查促销表的标题
                         returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
-                        returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getDescription());
+                        returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
                         returnOrderGoodsList.add(returnOrderGoodsResponse);
                     }
                 }

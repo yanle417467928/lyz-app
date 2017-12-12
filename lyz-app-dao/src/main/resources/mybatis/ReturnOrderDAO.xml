@@ -16,7 +16,25 @@
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
-        *
+        roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_identityType,
+        creator_phone,
+        cus_id customerId,
+        cus_name customerName,
+        cus_type customerType,
+        reason_info,
+        return_pic,
+        ord_type orderType,
+        return_status
         FROM ord_return_base_info
         WHERE
         return_no = #{returnNo}
@@ -221,7 +239,7 @@
         SELECT
             ogi.return_qty qty,
             ogi.retail_price,
-            ogi.is_gift,
+        ogi.goods_line_type,
             gg.sku_name,
             gg.gid         goodsId,
             gg.goods_specification,
