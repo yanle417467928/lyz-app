@@ -529,23 +529,11 @@ public class ReturnOrderController {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getDescription())) {
-                                ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
-                                returnOrderGoodsInfo.setGid(goodsInfo.getId());
-                                returnOrderGoodsInfo.setRetailPrice(goodsInfo.getRetailPrice());
-                                returnOrderGoodsInfo.setReturnNo(returnNo);
-                                returnOrderGoodsInfo.setReturnPrice(goodsInfo.getReturnPrice());
-                                returnOrderGoodsInfo.setReturnQty(simpleInfo.getNum());
-                                returnOrderGoodsInfo.setSku(goodsInfo.getSku());
-                                returnOrderGoodsInfo.setSkuName(goodsInfo.getSkuName());
-                                returnOrderGoodsInfo.setVipPrice(goodsInfo.getVIPPrice());
-                                returnOrderGoodsInfo.setWholesalePrice(goodsInfo.getWholesalePrice());
-                                returnOrderGoodsInfo.setGoodsLineType(goodsInfo.getGoodsLineType());
+                                ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getNum(), returnNo);
                                 //设置原订单可退数量 减少
                                 goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getNum());
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getNum());
-                                //修改这个数量
-                                appOrderService.saveOrderGoodsInfo(goodsInfo);
                                 goodsInfos.add(returnOrderGoodsInfo);
                                 returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
                                         CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getNum()));
@@ -658,7 +646,7 @@ public class ReturnOrderController {
                 }
             }
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
-                    productCouponList);
+                    productCouponList, orderGoodsInfoList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -948,18 +936,7 @@ public class ReturnOrderController {
                 //将订单商品信息设置到返回对象中
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     if (goodsInfo.getIsReturnable()) {
-                        ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
-                        returnOrderGoodsResponse.setSku(goodsInfo.getSku());
-                        returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
-                        returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
-                        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
-                        returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
-                        returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
-                        returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
-                        returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
-                        //TODO 查促销表的标题
-                        returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
-                        returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
+                        ReturnOrderGoodsResponse returnOrderGoodsResponse = transform(goodsInfo);
                         returnOrderGoodsList.add(returnOrderGoodsResponse);
                     }
                 }
@@ -1079,5 +1056,37 @@ public class ReturnOrderController {
                 defaultDeliveryAddress.getDetailedAddress();
         orderLogisticsInfo.setShippingAddress(shippingAddress);
         return orderLogisticsInfo;
+    }
+
+    private ReturnOrderGoodsResponse transform(OrderGoodsInfo goodsInfo) {
+        ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
+        returnOrderGoodsResponse.setSku(goodsInfo.getSku());
+        returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
+        returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
+        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
+        returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
+        returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
+        returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
+        returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
+        //TODO 查促销表的标题
+
+        returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
+        returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
+        return returnOrderGoodsResponse;
+    }
+
+    private ReturnOrderGoodsInfo transform(OrderGoodsInfo goodsInfo, Integer qty, String returnNo) {
+        ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
+        returnOrderGoodsInfo.setGid(goodsInfo.getId());
+        returnOrderGoodsInfo.setRetailPrice(goodsInfo.getRetailPrice());
+        returnOrderGoodsInfo.setReturnPrice(goodsInfo.getReturnPrice());
+        returnOrderGoodsInfo.setReturnQty(qty);
+        returnOrderGoodsInfo.setReturnNo(returnNo);
+        returnOrderGoodsInfo.setSku(goodsInfo.getSku());
+        returnOrderGoodsInfo.setSkuName(goodsInfo.getSkuName());
+        returnOrderGoodsInfo.setVipPrice(goodsInfo.getVIPPrice());
+        returnOrderGoodsInfo.setWholesalePrice(goodsInfo.getWholesalePrice());
+        returnOrderGoodsInfo.setGoodsLineType(goodsInfo.getGoodsLineType());
+        return returnOrderGoodsInfo;
     }
 }

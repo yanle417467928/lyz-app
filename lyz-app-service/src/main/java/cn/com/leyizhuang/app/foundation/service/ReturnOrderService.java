@@ -161,6 +161,6 @@ public interface ReturnOrderService {
      * @throws OrderSaveException 订单异常
      */
     void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo, List<ReturnOrderGoodsInfo> returnOrderGoodsInfos,
-                                     ReturnOrderBilling returnOrderBilling, List<ReturnOrderProductCoupon> productCouponList)
+                                     ReturnOrderBilling returnOrderBilling, List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList)
             throws OrderSaveException;
 }
