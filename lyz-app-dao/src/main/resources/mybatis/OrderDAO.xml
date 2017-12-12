@@ -435,13 +435,13 @@
         UPDATE ord_base_info
         <set>
             <if test="null != status ">
-                status = #{status}
+                status = #{status},
             </if>
             <if test="null != deliveryStatus ">
-                delivery_status = #{deliveryStatus}
+                delivery_status = #{deliveryStatus},
             </if>
             <if test="null != pickUpCode ">
-                pick_up_code = #{pickUpCode}
+                pick_up_code = #{pickUpCode},
             </if>
             <if test="null != isEvaluated ">
                 is_evaluated = #{isEvaluated}
@@ -454,19 +454,19 @@
         UPDATE ord_billing_details
         <set>
             <if test="null != onlinePayType ">
-                online_pay_type = #{onlinePayType}
+                online_pay_type = #{onlinePayType},
             </if>
             <if test="null != onlinePayAmount ">
-                online_pay_amount = #{onlinePayAmount}
+                online_pay_amount = #{onlinePayAmount},
             </if>
             <if test="null != arrearage ">
-                arrearage = #{arrearage}
+                arrearage = #{arrearage},
             </if>
             <if test="null != onlinePayType ">
-                online_pay_type = #{onlinePayType}
+                online_pay_type = #{onlinePayType},
             </if>
             <if test="null != payUpTime  ">
-                pay_up_time = #{payUpTime}
+                pay_up_time = #{payUpTime},
             </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
