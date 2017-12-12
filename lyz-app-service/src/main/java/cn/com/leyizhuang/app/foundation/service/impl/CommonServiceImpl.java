@@ -523,7 +523,9 @@ public class CommonServiceImpl implements CommonService {
                 //发送提货码
                 String pickUpCode = RandomUtil.randomStrCode(6);
                 SmsAccount account = smsAccountService.findOne();
-                String info = "您的提货码为" + pickUpCode + "，请在【门店取货】时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
+                String info = "【乐易装】您的提货码为"
+                        + pickUpCode
+                        + "，请在“门店取货”时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
                 String content = URLEncoder.encode(info, "GB2312");
                 String mobile = null;
                 if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
@@ -669,7 +671,9 @@ public class CommonServiceImpl implements CommonService {
             //发送提货码
             String pickUpCode = RandomUtil.randomStrCode(6);
             SmsAccount account = smsAccountService.findOne();
-            String info = "您的提货码为" + pickUpCode + "，请在【门店取货】时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
+            String info = "【乐易装】您的提货码为"
+                    + pickUpCode + "，" +
+                    "请在“门店取货”时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
             String content = URLEncoder.encode(info, "GB2312");
             String mobile = null;
             if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
