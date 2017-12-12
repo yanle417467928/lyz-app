@@ -410,7 +410,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
      * @date 2017/11/21
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public void preDepositRecharge(PaymentDataDO paymentDataDO, CustomerPreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();

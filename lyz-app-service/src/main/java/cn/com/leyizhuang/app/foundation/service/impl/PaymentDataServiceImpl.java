@@ -15,13 +15,13 @@ import java.util.List;
  * @date 2017/11/20
  */
 @Service
-@Transactional
 public class PaymentDataServiceImpl implements PaymentDataService {
 
     @Autowired
     private PaymentDataDAO paymentDataDAO;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PaymentDataDO save(PaymentDataDO paymentDataDO) {
         this.paymentDataDAO.save(paymentDataDO);
         return paymentDataDO;
@@ -33,6 +33,7 @@ public class PaymentDataServiceImpl implements PaymentDataService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateByTradeStatusIsWaitPay(PaymentDataDO paymentDataDO) {
         this.paymentDataDAO.updateByTradeStatusIsWaitPay(paymentDataDO);
     }

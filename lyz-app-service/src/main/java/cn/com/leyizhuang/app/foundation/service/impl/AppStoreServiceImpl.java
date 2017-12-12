@@ -205,6 +205,7 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void preDepositRecharge(PaymentDataDO paymentDataDO, StorePreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();

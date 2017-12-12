@@ -624,10 +624,10 @@ public class CommonServiceImpl implements CommonService {
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.WAIT_PAY);
             PaymentDataDO paymentData = paymentDataList.get(0);
-            paymentData.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+            /*paymentData.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
             paymentData.setTradeNo(tradeNo);
             paymentData.setNotifyTime(new Date());
-
+*/
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
             //更新订单状态及物流状态
@@ -671,9 +671,7 @@ public class CommonServiceImpl implements CommonService {
             //发送提货码
             String pickUpCode = RandomUtil.randomStrCode(6);
             SmsAccount account = smsAccountService.findOne();
-            String info = "【乐易装】您的提货码为"
-                    + pickUpCode + "，" +
-                    "请在“门店取货”时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
+            String info = "【乐易装】您的提货码为" + pickUpCode + "，请在“门店取货”时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
             String content = URLEncoder.encode(info, "GB2312");
             String mobile = null;
             if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
@@ -729,7 +727,8 @@ public class CommonServiceImpl implements CommonService {
             //更新订单基础信息
             orderService.updateOrderBaseInfo(baseInfo);
             //第三方支付信息
-            paymentDataService.updateByTradeStatusIsWaitPay(paymentData);
+            //paymentDataService.updateByTradeStatusIsWaitPay(paymentData);
+
             //更新订单账单信息
             orderService.updateOrderBillingDetails(billingDetails);
             //保存新增订单账单支付明细
