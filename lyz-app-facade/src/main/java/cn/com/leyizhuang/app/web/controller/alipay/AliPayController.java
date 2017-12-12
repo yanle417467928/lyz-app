@@ -322,7 +322,7 @@ public class AliPayController {
                     }
                 }
             }
-        } catch (AlipayApiException | IOException e) {
+        } catch (Exception e){
             e.printStackTrace();
             logger.warn("{}", e);
             throw new RuntimeException("支付宝支付回调接口处理失败");
