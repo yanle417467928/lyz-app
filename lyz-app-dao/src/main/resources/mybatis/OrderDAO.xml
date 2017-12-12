@@ -172,7 +172,28 @@
     </select>
 
     <select id="getOrderGoodsInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
-        SELECT *
+        SELECT
+        id id,
+        oid oid,
+        ord_no orderNumber,
+        sku sku,
+        sku_name skuName,
+        retail_price retailPrice,
+        VIP_price VIPPrice,
+        wholesale_price wholesalePrice,
+        promotion_id promotionId,
+        is_price_share isPriceShare,
+        share_price sharePrice,
+        return_price returnPrice,
+        is_returnable isReturnable,
+        return_priority returnPriority,
+        order_qty orderQuantity,
+        shipping_qty shippingQuantity,
+        return_qty returnQuantity,
+        returnable_qty returnableQuantity,
+        is_gift isGift,
+        price_item_id priceItemId,
+        company_flag companyFlag
         FROM
             ord_goods_info
         WHERE
@@ -257,10 +278,6 @@
         WHERE
             ord_no = #{orderNumber}
     </select>
-    <insert id="">
-        INSERT INTO ord_billing_details (create_time, oid, ord_no, total_goods_price, member_discount, promotion_discount, freight, upstairs_fee, lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit, online_pay_type, online_pay_amount, online_pay_time, st_pre_deposit, emp_credit_money, st_credit_money, st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving, is_pay_up, pay_up_time)
-        VALUES ();
-    </insert>
 
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
@@ -455,4 +472,15 @@
         </set>
     </update>
 
+
+    <update id="updateOrderStatusByOrderNoAndStatus">
+        UPDATE ord_base_info
+        <set>
+            <if test="null != status">
+                status = #{status},
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber}
+
+    </update>
 </mapper>

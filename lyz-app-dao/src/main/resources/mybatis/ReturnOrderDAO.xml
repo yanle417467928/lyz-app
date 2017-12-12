@@ -30,13 +30,13 @@
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
         creator_identityType, creator_phone, cus_id, cus_name, reason_info, return_pic, ord_type, return_status)
         VALUES
-        (#{returnOrderBaseInfo.orderId}, #{returnOrderBaseInfo.orderNo}, #{returnOrderBaseInfo.orderTime},
-        #{returnOrderBaseInfo.returnTime}, #{returnOrderBaseInfo.returnNo}, #{returnOrderBaseInfo.returnType},
-        #{returnOrderBaseInfo.returnPrice}, #{returnOrderBaseInfo.remarksInfo},
-        #{returnOrderBaseInfo.creatorId}, #{returnOrderBaseInfo.creatorIdentityType},
-        #{returnOrderBaseInfo.creatorPhone},
-        #{returnOrderBaseInfo.customerId}, #{returnOrderBaseInfo.customerName},#{returnOrderBaseInfo.reasonInfo},
-        #{returnOrderBaseInfo.returnPic}, #{returnOrderBaseInfo.orderType}, #{returnOrderBaseInfo.returnStatus})
+        (#{orderId}, #{orderNo}, #{orderTime},
+        #{returnTime}, #{returnNo}, #{returnType},
+        #{returnPrice}, #{remarksInfo},
+        #{creatorId}, #{creatorIdentityType},
+        #{creatorPhone},
+        #{customerId}, #{customerName},#{reasonInfo},
+        #{returnPrice}, #{orderType}, #{returnStatus})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"

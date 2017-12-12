@@ -490,4 +490,9 @@ public class AppOrderServiceImpl implements AppOrderService {
             orderDAO.updateOrderBillingDetails(billingDetails);
         }
     }
+
+    @Override
+    public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
+        orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
+    }
 }
