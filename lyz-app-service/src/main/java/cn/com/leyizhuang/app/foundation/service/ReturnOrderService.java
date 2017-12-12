@@ -1,5 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import org.apache.ibatis.annotations.Param;
@@ -58,6 +61,33 @@ public interface ReturnOrderService {
      * @param returnOrderGoodsInfo  退单商品
      */
     void saveReturnOrderGoodsInfo(ReturnOrderGoodsInfo returnOrderGoodsInfo);
+
+    /**
+     * 取消订单
+     * @param orderGoodsInfoList    订单商品列表
+     * @param returnOrderId 退单id
+     * @param userId    用户id
+     * @param identityType  用户类型
+     * @param returnNumber  退单号
+     * @param orderNumber   订单号
+     * @param orderBillingDetails   订单账目明细
+     * @param orderBaseInfo 订单头
+     */
+    void canselOrder(List<OrderGoodsInfo> orderGoodsInfoList, Long returnOrderId, Long userId, Integer identityType,
+                     String returnNumber, String orderNumber, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo);
+
+    /**
+     * 拒签退货
+     * @param orderGoodsInfoList    订单商品列表
+     * @param returnOrderId 退单id
+     * @param userId    用户id
+     * @param returnNumber  退单号
+     * @param orderNumber   订单号
+     * @param orderBillingDetails   订单账目明细
+     * @param orderBaseInfo 订单头
+     */
+    void refusedOrder(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, Long returnOrderId, String returnNumber, String orderNumber,
+                      OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo);
 
     void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail orderReturnBillingDetail);
 
