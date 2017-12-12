@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -293,7 +294,7 @@ public class AliPayController {
                                 Double money = paymentDataDO.getTotalFee();
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
                             }else if(out_trade_no.contains("_XN")){
-                                commonService.handleOrderRelevantBusinessAfterPayUp(out_trade_no);
+                                commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no,trade_no,trade_status,OnlinePayType.ALIPAY);
                             }
                             logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
                             return "success";
@@ -307,6 +308,8 @@ public class AliPayController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             logger.warn("{}", e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "fail");
         return "fail";

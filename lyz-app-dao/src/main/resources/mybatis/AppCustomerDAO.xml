@@ -7,10 +7,11 @@
         <selectKey keyProperty="cusId" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO cus_customer (name, mobile, birthday, status, sex, open_id,
-        pic_url, nick_name, city_id, sales_consult_id, create_time,light,is_cash_on_delivery,create_type,customer_type
+        INSERT INTO cus_customer (store_id,name, mobile, birthday, status, sex, open_id,
+        pic_url, nick_name, city_id, sales_consult_id, create_time,light,is_cash_on_delivery,create_type,customer_type,
+        last_sign_time,binding_time,last_consumption_time
         ) VALUES (
-        #{name}, #{mobile}, #{birthday}, #{status},
+        #{storeId} #{name}, #{mobile}, #{birthday}, #{status},
         #{sex,
         javaType=cn.com.leyizhuang.app.core.constant.SexType,
         typeHandler=org.apache.ibatis.type.EnumTypeHandler},
@@ -21,7 +22,8 @@
         #{isCashOnDelivery},#{createType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
-              typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+              typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+        #{lastSignTime},#{bindingTime},#{lastConsumptionTime}
         )
     </insert>
 

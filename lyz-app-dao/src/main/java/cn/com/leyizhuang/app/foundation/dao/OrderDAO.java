@@ -66,4 +66,8 @@ public interface OrderDAO {
     void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
 
     void saveOrderBillingPaymentDetail(OrderBillingPaymentDetails paymentDetail);
+
+    void updateOrderBaseInfo(OrderBaseInfo baseInfo);
+
+    void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 }

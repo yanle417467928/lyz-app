@@ -99,4 +99,8 @@ public interface AppOrderService {
 
     OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType,
                                                   BillingSimpleInfo billing, List<Long> cashCouponIds);
+
+    void updateOrderBaseInfo(OrderBaseInfo baseInfo);
+
+    void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 }

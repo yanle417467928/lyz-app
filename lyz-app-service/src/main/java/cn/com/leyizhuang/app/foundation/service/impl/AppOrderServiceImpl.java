@@ -17,7 +17,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,16 +36,16 @@ import java.util.List;
 public class AppOrderServiceImpl implements AppOrderService {
 
 
-    @Autowired
+    @Resource
     private AppStoreDAO appStoreDAO;
 
-    @Autowired
+    @Resource
     private CityDAO cityDAO;
 
-    @Autowired
+    @Resource
     private OrderDAO orderDAO;
 
-    @Autowired
+    @Resource
     private ArrearsAuditDAO arrearsAuditDAO;
 
     @Resource
@@ -143,18 +142,21 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderBillingPaymentDetails savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails) {
         this.orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         return orderBillingPaymentDetails;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderBillingDetails updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails) {
         this.orderDAO.updateOwnMoneyByOrderNo(orderBillingDetails);
         return orderBillingDetails;
     }
 
     @Override
+    @Transactional
     public OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo) {
         this.orderDAO.updateOrderStatusByOrderNo(orderBaseInfo);
         return orderBaseInfo;
@@ -253,6 +255,9 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setStoreId(userStore.getStoreId());
         tempOrder.setStoreCode(userStore.getStoreCode());
         tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
+        //设置城市信息
+        tempOrder.setCityId(userStore.getCityId());
+        tempOrder.setCityName(userStore.getCity());
 
         switch (identityType) {
             //导购代下单
@@ -468,5 +473,21 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         return orderBillingDetails;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderBaseInfo(OrderBaseInfo baseInfo) {
+        if (null != baseInfo) {
+            orderDAO.updateOrderBaseInfo(baseInfo);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderBillingDetails(OrderBillingDetails billingDetails) {
+        if (null != billingDetails) {
+            orderDAO.updateOrderBillingDetails(billingDetails);
+        }
     }
 }

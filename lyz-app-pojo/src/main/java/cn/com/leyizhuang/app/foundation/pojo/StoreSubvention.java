@@ -36,5 +36,10 @@ public class StoreSubvention {
      */
     private Double balance;
 
+    /**
+     * 固定额度
+     */
+    private Double balanceLimit;
+
 
 }

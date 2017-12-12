@@ -38,6 +38,9 @@
             <if test="null != tradeStatus">
                 trade_status = #{tradeStatus},
             </if>
+            <if test="null != notifyTime">
+                notify_time = #{notifyTime}
+            </if>
         </set>
         WHERE out_trade_no = #{outTradeNo}
         AND id = #{id}

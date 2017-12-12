@@ -21,6 +21,16 @@ public class OrderBaseInfo {
     private Long id;
 
     /**
+     * 城市id
+     */
+    private Long cityId;
+
+    /**
+     * 城市名称
+     */
+    private String cityName;
+
+    /**
      * 订单号
      */
     private String orderNumber;
@@ -149,26 +159,11 @@ public class OrderBaseInfo {
      */
     private Boolean isEvaluated;
 
-    /**
-     * 线上支付方式
-     */
-    private OnlinePayType onlinePayType;
-    /**
-     * 线上付款时间
-     */
-    private Date onlinePayTime;
 
     /**
      * 订单备注
      */
     private String remark;
-    /**
-     * 是否已付清账单
-     */
-    private Boolean isPayUp;
-    /**
-     * 订单账款付清时间
-     */
-    private Date payUpTime;
+
 
 }

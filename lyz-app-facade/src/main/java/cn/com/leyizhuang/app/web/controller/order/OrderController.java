@@ -270,9 +270,9 @@ public class OrderController {
 
             //根据应付金额判断订单账单是否已付清
             if (orderBillingDetails.getArrearage() <= AppApplicationConstant.PAY_UP_LIMIT) {
-                orderBaseInfo.setIsPayUp(true);
+                orderBillingDetails.setIsPayUp(true);
             } else {
-                orderBaseInfo.setIsPayUp(false);
+                orderBillingDetails.setIsPayUp(false);
             }
 
             //******** 处理账单支付明细信息 *********
@@ -283,7 +283,8 @@ public class OrderController {
 
             //******* 持久化订单相关实体信息  *******
             commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
-            if (orderBaseInfo.getIsPayUp()) {
+
+            if (orderBillingDetails.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
@@ -1246,6 +1247,7 @@ public class OrderController {
         try {
             //获取订单详情
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(orderNumber);
+            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
             if (null != orderBaseInfo) {
                 //获取订单收货/自提门店地址
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
@@ -1256,8 +1258,8 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
-                orderDetailsResponse.setPayType(null == orderBaseInfo.getOnlinePayType() ?
-                        OnlinePayType.NO.getDescription() : orderBaseInfo.getOnlinePayType().getDescription());
+                orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
+                        OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
