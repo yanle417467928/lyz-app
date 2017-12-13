@@ -108,19 +108,4 @@ public class GetPaymentMethodsController {
         }
     }
 
-    /**
-     * 调用微信支付支付金额
-     *
-     * @return
-     */
-    @PostMapping(value = "/wechat/pay", produces = "application/json;charset=UTF-8")
-    public ResultDTO paymentMethodsOfWChatPayment() {
-
-        logger.info("paymentMethodsOfWChatPayment CALLED,调用微信支付支付金额，入参 userId:{},identityType:{},goodsMoney{}");
-
-        ResultDTO<Object> resultDTO;
-
-
-        return null;
-    }
 }
