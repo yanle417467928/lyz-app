@@ -112,4 +112,6 @@ public interface AppOrderService {
      */
     void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber);
 
+
+    List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo);
 }

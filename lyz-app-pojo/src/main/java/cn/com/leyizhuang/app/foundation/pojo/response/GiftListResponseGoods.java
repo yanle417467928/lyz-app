@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,6 +30,10 @@ public class GiftListResponseGoods {
     private Double retailPrice;
     //是否赠品
     private Boolean isGift;
+    /**
+     * 商品类型
+     */
+    private AppGoodsLineType goodsType;
 
 
 }

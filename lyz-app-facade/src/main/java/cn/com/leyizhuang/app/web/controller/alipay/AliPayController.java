@@ -28,10 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author GenerationRoad
@@ -228,7 +225,7 @@ public class AliPayController {
     @RequestMapping(value = "/return/async")
     public String alipayReturnAsync(HttpServletRequest request) {
 
-        logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，入参 request:{}", request);
+        logger.info("alipayReturnAsync OUT,支付宝支付回调接口，入参 request:{}", request);
         try {
             //获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();
@@ -262,56 +259,75 @@ public class AliPayController {
                 trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
                 total_fee = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"), "UTF-8");
 
-                logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 out_trade_no:{} trade_no:{} trade_status:{} total_fee:{}",
+                logger.info("alipayReturnAsync,支付宝支付回调接口，入参 out_trade_no:{}, trade_no:{}, trade_status:{}, total_fee:{}",
                         out_trade_no, trade_no, trade_status, total_fee);
 
                 List<PaymentDataDO> paymentDataList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.TRADE_SUCCESS);
                 if (null != paymentDataList && paymentDataList.size() > 0) {
-                    logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
+                    logger.warn("alipayReturnAsync,支付宝支付回调接口，响应支付宝结果 result:{}", "success");
                     return "success";
                 }
+                if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
 
-                List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
-                if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
-                    PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
-                    if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
-                        if (paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
+                    PaymentDataDO paymentDataDO = new PaymentDataDO();
+                    List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
+                    if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
+                        paymentDataDO = paymentDataDOList.get(0);
+                    }
+                    if (out_trade_no.contains("_CZ")) {
+                        //充值加预存款和日志
+                        if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
                             paymentDataDO.setTradeNo(trade_no);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                            paymentDataDO.setNotifyTime(new Date());
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
-                            logger.info("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 paymentDataDO:{}",
+                            logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
-                            if (out_trade_no.contains("_CZ")) {
-                                //充值加预存款和日志
-                                if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
-                                    this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.ALIPAY_RECHARGE);
-                                } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
-                                        || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
-                                    this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
-                                }
-                            }else if (out_trade_no.contains("_HK")) {
-                                String orderNumber = out_trade_no.replaceAll("_HK", "_XN");
-                                Double money = paymentDataDO.getTotalFee();
-                                appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
-                            }else if(out_trade_no.contains("_XN")){
-                                commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no,trade_no,trade_status,OnlinePayType.ALIPAY);
+                            if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
+                                this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.ALIPAY_RECHARGE);
+                            } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
+                                    || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
+                                this.appStoreServiceImpl.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
                             }
-                            logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "success");
+                            logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
+                            return "success";
+                        }
+
+                    } else if (out_trade_no.contains("_HK")) {
+                        if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
+                            paymentDataDO.setTradeNo(trade_no);
+                            paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                            paymentDataDO.setNotifyTime(new Date());
+                            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                            logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                    paymentDataDO);
+                            String orderNumber = out_trade_no.replaceAll("_HK", "_XN");
+                            Double money = paymentDataDO.getTotalFee();
+                            appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, trade_no, out_trade_no);
+                            logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
+                            return "success";
+                        }
+                    } else if (out_trade_no.contains("_XN")) {
+                        if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(total_fee))) {
+                            paymentDataDO.setTradeNo(trade_no);
+                            paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                            paymentDataDO.setNotifyTime(new Date());
+                            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                            logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                    paymentDataDO);
+                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no, trade_no, trade_status, OnlinePayType.ALIPAY);
+                            logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
                         }
                     }
                 }
             }
-        } catch (AlipayApiException e) {
+        } catch (Exception e){
             e.printStackTrace();
             logger.warn("{}", e);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.warn("{}", e);
-        } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("支付宝支付回调接口处理失败");
         }
-        logger.warn("alipayReturnAsync OUT,支付宝充值预存款返回数据，出参 result:{}", "fail");
+        logger.warn("alipayReturnAsync Exception,支付宝支付回调接口处理失败，出参 result:{}", "fail");
         return "fail";
     }
 

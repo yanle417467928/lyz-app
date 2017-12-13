@@ -257,7 +257,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void unlockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit) {
         if (null != userId && null != customerDeposit) {
             customerDAO.updateDepositByUserId(userId, customerDeposit);
@@ -347,6 +347,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CustomerLeBi findCustomerLebiByCustomerId(Long customerId) {
         if (null != customerId) {
             return customerDAO.findCustomerLebiByCustomerId(customerId);
@@ -396,6 +397,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CustomerPreDeposit findByCusId(Long cusId) {
         return this.customerDAO.findByCusId(cusId);
     }
@@ -410,7 +412,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
      * @date 2017/11/21
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public void preDepositRecharge(PaymentDataDO paymentDataDO, CustomerPreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();

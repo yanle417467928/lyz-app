@@ -66,6 +66,7 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addCustomerProductCoupon(CustomerProductCoupon customerProductCoupon) {
         productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
     }
