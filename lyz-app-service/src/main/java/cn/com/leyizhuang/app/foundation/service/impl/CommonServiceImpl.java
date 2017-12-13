@@ -634,9 +634,9 @@ public class CommonServiceImpl implements CommonService {
             if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                 baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
             } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
-                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
                 // TODO 发送WMS
+                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                //baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
             }
 
 
