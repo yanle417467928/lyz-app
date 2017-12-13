@@ -28,12 +28,7 @@ public class GoodsSimpleInfo implements Serializable {
      */
     private Integer num;
     /**
-     * 是否赠品
+     * 商品行类型(GOODS 本品,PRESENT 赠品, PRODUCT_COUPON 产品券)
      */
-    private Boolean isGift = Boolean.FALSE;
-
-    /**
-     * 是否为产品券商品
-     */
-    private Boolean isProCouponGoods = Boolean.FALSE;
+    private String goodsLineType;
 }

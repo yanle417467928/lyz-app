@@ -1,12 +1,12 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.customer.CustomerController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -68,7 +68,7 @@ public class OrderGiftController {
             // 券商品ids
             List<Long> coupunGoodsIdList = new ArrayList<>();
             for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
-                if(goodsSimpleInfo.getIsProCouponGoods()){
+                if (AppGoodsLineType.PRODUCT_COUPON.getValue().equalsIgnoreCase(goodsSimpleInfo.getGoodsLineType())) {
                     coupunGoodsIdList.add(goodsSimpleInfo.getId());
                 }else{
                     goodsIdList.add(goodsSimpleInfo.getId());

@@ -5,8 +5,8 @@ import cn.com.leyizhuang.app.foundation.dao.MaterialAuditSheetDAO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -82,23 +82,23 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
         Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
         //获取商品相关信息（id，数量，是否赠品）
         ObjectMapper objectMapper = new ObjectMapper();
-        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
-        List<GoodsSimpleInfo> goodsList = objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
-        for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsIdQtyParam.class);
+        List<GoodsIdQtyParam> goodsList = objectMapper.readValue(materialAuditSheetRequest.getGoodsList(), javaType1);
+        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
             //根据商品id查找对应的商品
-            GoodsDO goodsDO = goodsService.queryById(goodsSimpleInfo.getId());
+            GoodsDO goodsDO = goodsService.queryById(goodsIdQtyParam.getId());
             MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
             //对物料审核单商品详情请进行赋值
             materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
-            materialAuditGoodsInfo.setGid(goodsSimpleInfo.getId());
+            materialAuditGoodsInfo.setGid(goodsIdQtyParam.getId());
             materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-            materialAuditGoodsInfo.setQty(goodsSimpleInfo.getNum());
+            materialAuditGoodsInfo.setQty(goodsIdQtyParam.getQty());
             materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
             materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
             materialAuditGoodsInfo.setSku(goodsDO.getSku());
             materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
             //获取商品零售价
-            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(goodsSimpleInfo.getId(), appEmployee.getStoreId());
+            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(goodsIdQtyParam.getId(), appEmployee.getStoreId());
             materialAuditGoodsInfo.setRetailPrice(goodsPrice);
             //对物料审核单商品详情进行保存
             materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
@@ -106,7 +106,7 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
 
         //工人料单提交审核之后，需要清空工人下料清单中对应的商品
         List<Long> deleteGoodsIds = new ArrayList<>();
-        for (GoodsSimpleInfo simpleInfo : goodsList) {
+        for (GoodsIdQtyParam simpleInfo : goodsList) {
             deleteGoodsIds.add(simpleInfo.getId());
         }
 
