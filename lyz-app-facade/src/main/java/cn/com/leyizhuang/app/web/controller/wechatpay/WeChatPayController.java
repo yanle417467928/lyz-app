@@ -342,9 +342,9 @@ public class WeChatPayController {
      * @param response 响应对象
      */
     @PostMapping(value = "/return/async", produces = "application/json;charset=UTF-8")
-    public void wechatReturnSync(HttpServletRequest request, HttpServletResponse response) {
+    public void weChatReturnSync(HttpServletRequest request, HttpServletResponse response) {
 
-        logger.info("wechatReturnSync CALLED,接受微信调用后返回参数的回调接口，入参 request:{},response:{}", request, response);
+        logger.info("weChatReturnSync CALLED,微信支付异步回调接口，入参 request:{},response:{}", request, response);
 
         try {
             //获取响应的信息<为XML格式>转化成Map
@@ -356,8 +356,8 @@ public class WeChatPayController {
                 if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
                     //是否匹配证书
                     if (WechatUtil.verifyNotify(resultMap)) {
-                        //返回响应成功的讯息
-                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                        /*//返回响应成功的讯息
+                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));*/
                         //取出map中的参数，订单号
                         String outTradeNo = resultMap.get("out_trade_no").toString();
                         //微信交易号
@@ -381,24 +381,31 @@ public class WeChatPayController {
                             } else if (outTradeNo.contains("_HK")) {
                                 String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
-                            } else {
+                            } else if (outTradeNo.contains("_XN")) {
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");
                                 if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
-                                    logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                    logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
                                     commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
                                 }
-
                             }
+                            //返回响应成功的讯息
+                            response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                            logger.info("weChatReturnSync,微信支付异步回调接口,回调成功! ");
+                        } else {
+                            logger.warn("weChatReturnSync,微信支付异步回调接口,没有找到该订单:{}", outTradeNo);
+                            response.getWriter().write(WechatUtil.setXML("FAIL", "outTradeNo不存在!"));
                         }
                     } else {
+                        logger.warn("weChatReturnSync,微信支付异步回调接口,签名失败");
                         response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
                     }
                 } else {
-                    logger.warn("支付是失败,错误码:{}", resultMap.get("err_code").toString());
+                    logger.warn("支付失败,错误码:{}", resultMap.get("err_code").toString());
                     logger.warn("错误码说明:{}", resultMap.get("err_code_des").toString());
                 }
             }
