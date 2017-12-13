@@ -87,36 +87,41 @@ public class OrderGiftController {
 
             }
 
-            //为商品设置数量
-            Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
-            while (orderGoodsSimpleResponseiterator.hasNext()) {
-                OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goods.getId())) {
-                        goods.setGoodsQty(info.getNum());
-                        break;
+            if (goodsInfo != null && goodsInfo.size() > 0){
+                //为商品设置数量
+                Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
+                while (orderGoodsSimpleResponseiterator.hasNext()) {
+                    OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goods.getId())) {
+                            goods.setGoodsQty(info.getNum());
+                            break;
+                        }
                     }
                 }
+                promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
             }
-            promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+
             /******计算促销******/
 
             List<GiftListResponseGoods> responseGoodsList = new ArrayList<>();
             responseGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     goodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-
-            //为返商品集合设置数量和赠品属性
-            Iterator<GiftListResponseGoods> iterator = responseGoodsList.iterator();
-            while (iterator.hasNext()) {
-                GiftListResponseGoods goods = iterator.next();
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goods.getGoodsId())) {
-                        goods.setQty(info.getNum());
-                        goods.setIsGift(false);
-                        break;
+            if (responseGoodsList != null && responseGoodsList.size() > 0){
+                //为返商品集合设置数量和赠品属性
+                Iterator<GiftListResponseGoods> iterator = responseGoodsList.iterator();
+                while (iterator.hasNext()) {
+                    GiftListResponseGoods goods = iterator.next();
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goods.getGoodsId())) {
+                            goods.setQty(info.getNum());
+                            goods.setIsGift(false);
+                            break;
+                        }
                     }
                 }
             }
+
 
             // 券商品集合
             List<GiftListResponseGoods> responseCouponGoodsList = new ArrayList<>();
