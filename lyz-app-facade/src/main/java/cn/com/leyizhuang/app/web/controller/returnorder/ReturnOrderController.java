@@ -277,7 +277,7 @@ public class ReturnOrderController {
                     appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
                 }
             }
-            
+
             //创建退单退款总记录实体
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
             returnOrderBilling.setRoid(returnOrderId);
@@ -1089,7 +1089,7 @@ public class ReturnOrderController {
             logger.info("createReturnOrder OUT,用户申请退货创建退货单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (param.getReturnGoodsInfo().isEmpty()) {
+        if (null == param.getReturnGoodsInfo() || param.getReturnGoodsInfo().isEmpty()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有选择退货商品！", null);
             logger.info("createReturnOrder OUT,用户申请退货创建退货单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1152,14 +1152,14 @@ public class ReturnOrderController {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getNum(), returnNo);
+                                ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
-                                goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getNum());
+                                goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
                                 //设置原订单退货数量 增加
-                                goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getNum());
+                                goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
                                 returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
-                                        CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getNum()));
+                                        CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
                             }
                         }
                     }
@@ -1171,7 +1171,7 @@ public class ReturnOrderController {
             List<ReturnOrderProductCoupon> productCouponList = new ArrayList<>();
             //获取订单使用产品
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(userId, OrderCouponType.PRODUCT_COUPON);
-            if (!orderProductCouponList.isEmpty()) {
+            if (null != orderProductCouponList && !orderProductCouponList.isEmpty()) {
                 for (OrderCouponInfo couponInfo : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(couponInfo.getCouponId());
@@ -1201,7 +1201,7 @@ public class ReturnOrderController {
             Double onlinePayPrice = 0.00;
             Double tempPrice = 0.00;
 
-            if (!orderPaymentDetails.isEmpty()) {
+            if (null != orderPaymentDetails && !orderPaymentDetails.isEmpty()) {
                 for (OrderBillingPaymentDetails paymentDetails : orderPaymentDetails) {
                     if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
                         cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
@@ -1554,7 +1554,7 @@ public class ReturnOrderController {
             List<ReturnOrderGoodsResponse> returnOrderGoodsList = null;
             //获取订单商品数量促销信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
-            if (!orderGoodsInfoList.isEmpty()) {
+            if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
                 returnOrderGoodsList = new ArrayList<>(orderGoodsInfoList.size());
                 //将订单商品信息设置到返回对象中
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
@@ -1565,7 +1565,7 @@ public class ReturnOrderController {
                 }
                 //获取订单商品详细信息包含图片，
                 List<GiftListResponseGoods> giftListResponseGoods = appOrderService.getOrderGoodsDetails(orderNumber);
-                if (!giftListResponseGoods.isEmpty()) {
+                if (null != giftListResponseGoods && !giftListResponseGoods.isEmpty()) {
                     for (ReturnOrderGoodsResponse returnOrderGoodsResponse : returnOrderGoodsList) {
                         for (GiftListResponseGoods giftListResponseGood : giftListResponseGoods) {
                             if (giftListResponseGood.getCoverImageUri().equals(returnOrderGoodsResponse.getCoverImageUri())) {

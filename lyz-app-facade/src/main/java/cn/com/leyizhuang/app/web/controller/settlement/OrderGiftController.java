@@ -94,7 +94,7 @@ public class OrderGiftController {
                     OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
                     for (GoodsSimpleInfo info : goodsList) {
                         if (info.getId().equals(goods.getId())) {
-                            goods.setGoodsQty(info.getNum());
+                            goods.setGoodsQty(info.getQty());
                             break;
                         }
                     }
@@ -114,7 +114,7 @@ public class OrderGiftController {
                     GiftListResponseGoods goods = iterator.next();
                     for (GoodsSimpleInfo info : goodsList) {
                         if (info.getId().equals(goods.getGoodsId())) {
-                            goods.setQty(info.getNum());
+                            goods.setQty(info.getQty());
                             goods.setIsGift(false);
                             break;
                         }
@@ -135,7 +135,7 @@ public class OrderGiftController {
                     GiftListResponseGoods goods = iterator2.next();
                     for (GoodsSimpleInfo info : goodsList) {
                         if (info.getId().equals(goods.getGoodsId())) {
-                            goods.setQty(info.getNum());
+                            goods.setQty(info.getQty());
                             goods.setIsGift(false);
                             break;
                         }

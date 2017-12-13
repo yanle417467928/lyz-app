@@ -26,7 +26,7 @@ public class GoodsSimpleInfo implements Serializable {
     /**
      * 商品数量
      */
-    private Integer num;
+    private Integer qty;
     /**
      * 商品行类型(GOODS 本品,PRESENT 赠品, PRODUCT_COUPON 产品券)
      */
