@@ -236,6 +236,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setEffectiveEndTime(calendar.getTime());
         //设置订单状态
         tempOrder.setStatus(AppOrderStatus.UNPAID);
+        //设置订单物流状态
+        tempOrder.setDeliveryStatus(LogisticStatus.INITIAL);
         //设置订单类型 买券、出货
         tempOrder.setOrderType(AppOrderType.SHIPMENT);
         //设置是否已评价

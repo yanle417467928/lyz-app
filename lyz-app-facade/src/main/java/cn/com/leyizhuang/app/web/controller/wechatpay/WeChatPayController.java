@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -372,7 +371,7 @@ public class WeChatPayController {
 
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
 
-                        if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
+                        if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
@@ -383,7 +382,7 @@ public class WeChatPayController {
                                 String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
                             } else {
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))){
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
