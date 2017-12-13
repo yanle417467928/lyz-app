@@ -87,7 +87,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     public String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList) {
         //首先验证自身是否重复商品，goodsList 是不会重复的，在加入下料清单就判断了。
         //不同的促销可能赠送相同的商品。
-        if (!giftList.isEmpty()) {
+        if (goodsList != null && !giftList.isEmpty()) {
             for (GoodsIdQtyParam goodsIdQtyParam : giftList) {
                 for (GoodsIdQtyParam idQtyParam : giftList) {
                     if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
