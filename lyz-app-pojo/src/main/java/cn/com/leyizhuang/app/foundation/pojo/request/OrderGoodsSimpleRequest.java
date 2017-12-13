@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import lombok.*;
@@ -39,7 +38,7 @@ public class OrderGoodsSimpleRequest implements Serializable {
     /**
      * 传输的商品本品集合
      */
-    private List<GoodsSimpleInfo> goodsList;
+    private List<GoodsIdQtyParam> goodsList;
     /**
      * 商品促销计算的赠品集合
      */

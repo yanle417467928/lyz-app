@@ -1049,7 +1049,7 @@ public class ReturnOrderController {
             String returnPic = null;
             if (pictures != null) {
                 for (MultipartFile picture : pictures) {
-                    String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/evaluation/");
+                    String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/reason/");
                     pictureUrls.add(url);
                 }
                 returnPic = org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(), "[]");
@@ -1084,10 +1084,7 @@ public class ReturnOrderController {
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
-                            if ((simpleInfo.getIsGift() && AppGoodsLineType.PRESENT.equals(goodsInfo.getGoodsLineType()))
-                                    || (simpleInfo.getIsProCouponGoods() && AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()))
-                                    || (!simpleInfo.getIsProCouponGoods() && !simpleInfo.getIsGift() && AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType()))
-                                    ) {
+                            if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getNum(), returnNo);
                                 //设置原订单可退数量 减少
                                 goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getNum());
