@@ -176,6 +176,7 @@
         SELECT
             id              id,
             oid             oid,
+            gid             gid,
             ord_no          orderNumber,
             sku             sku,
             sku_name        skuName,

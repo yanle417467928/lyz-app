@@ -6,6 +6,10 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -87,6 +91,8 @@ public class ReturnOrderController {
     private CashCouponService cashCouponService;
     @Resource
     private ReturnOrderService returnOrderService;
+    @Resource
+    private CityService cityService;
 
     /**
      * 取消订单
@@ -220,7 +226,58 @@ public class ReturnOrderController {
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
+                //退还库存量
+                if ("送货上门".equals(orderBaseInfo.getDeliveryType().getDescription())) {
+                    //获取现有城市库存量
+                    CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
+                    //退还城市库存量
+                    if ("顾客".equals(AppIdentityType.getAppIdentityTypeByValue(identityType).getDescription())) {
+                        cityService.updateCityInventoryByCusIdAndGoodsIdAndGoodsQty(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+                    } else {
+                        cityService.updateCityInventoryByEmpIdAndGoodsIdAndGoodsQty(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+                    }
+                    //记录城市库存变更日志
+                    CityInventoryAvailableQtyChangeLog cityInventoryAvailableQtyChangeLog = new CityInventoryAvailableQtyChangeLog();
+                    cityInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
+                    cityInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
+                    cityInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
+                    cityInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
+                    cityInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
+                    cityInventoryAvailableQtyChangeLog.setChangeTime(date);
+                    cityInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
+                    cityInventoryAvailableQtyChangeLog.setAfterChangeQty((cityInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
+                    cityInventoryAvailableQtyChangeLog.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_CANCEL);
+                    cityInventoryAvailableQtyChangeLog.setChangeTypeDesc("配送单取消");
+                    cityInventoryAvailableQtyChangeLog.setReferenceNumber(orderNumber);
+                    //保存记录
+                    cityService.addCityInventoryAvailableQtyChangeLog(cityInventoryAvailableQtyChangeLog);
+                } else if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
+                    OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+                    //查询现有门店库存
+                    StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid());
+                    //退还门店可用量
+                    appStoreService.updateStoreInventoryByStoreCodeAndGoodsId(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+                    //记录门店库存变更日志
+                    StoreInventoryAvailableQtyChangeLog storeInventoryAvailableQtyChangeLog = new StoreInventoryAvailableQtyChangeLog();
+                    storeInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
+                    storeInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
+                    storeInventoryAvailableQtyChangeLog.setStoreId(appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode()).getStoreId());
+                    storeInventoryAvailableQtyChangeLog.setStoreName(orderLogisticsInfo.getBookingStoreName());
+                    storeInventoryAvailableQtyChangeLog.setStoreCode(orderLogisticsInfo.getBookingStoreCode());
+                    storeInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
+                    storeInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
+                    storeInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
+                    storeInventoryAvailableQtyChangeLog.setChangeTime(date);
+                    storeInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
+                    storeInventoryAvailableQtyChangeLog.setAfterChangeQty((storeInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
+                    storeInventoryAvailableQtyChangeLog.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER_CANCEL);
+                    storeInventoryAvailableQtyChangeLog.setChangeTypeDesc("自提单取消");
+                    storeInventoryAvailableQtyChangeLog.setReferenceNumber(orderNumber);
+                    //保存记录
+                    appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
+                }
             }
+            
             //创建退单退款总记录实体
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
             returnOrderBilling.setRoid(returnOrderId);
@@ -501,28 +558,13 @@ public class ReturnOrderController {
             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                 if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //支付宝退款
-                    r.returnAlipayMoney(orderNumber,orderBillingDetails.getOnlinePayAmount(),returnOrderId);
+                    r.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
                     WeChatPayController wechat = new WeChatPayController();
-                    Map<String,String> map =  wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    if ("SUCCESS".equals(map.get("code"))){
-                        //创建退单退款详情实体
-                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        returnOrderBillingDetail.setRoid(returnOrderId);
-                        returnOrderBillingDetail.setRefundNumber(returnNumber);
-                        returnOrderBillingDetail.setIntoAmountTime(new Date());
-                        returnOrderBillingDetail.setReplyCode(map.get("number"));
-                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                        returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
-                        returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-                    }else{
-                        logger.info("canselOrder OUT,微信退款失败！，出参 resultDTO:{}");
-                        throw new RuntimeException("微信退款失败");
-                    }
-
-
+                    Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
+                    r.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -600,6 +642,8 @@ public class ReturnOrderController {
             String returnNumber = OrderUtils.getReturnNumber();
             //创建退单头
             ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
+
+            ReturnOrderController r = new ReturnOrderController();
             if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
                 logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
@@ -670,8 +714,32 @@ public class ReturnOrderController {
                 returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
                 returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
+                returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
+                //退还库存量
+                if ("顾客".equals(AppIdentityType.getAppIdentityTypeByValue(identityType).getDescription())) {
+                    cityService.updateCityInventoryByCusIdAndGoodsIdAndGoodsQty(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+                } else {
+                    cityService.updateCityInventoryByEmpIdAndGoodsIdAndGoodsQty(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+                }
+                //获取现有库存量
+                CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
+                //记录城市库存变更日志
+                CityInventoryAvailableQtyChangeLog cityInventoryAvailableQtyChangeLog = new CityInventoryAvailableQtyChangeLog();
+                cityInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
+                cityInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
+                cityInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
+                cityInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
+                cityInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
+                cityInventoryAvailableQtyChangeLog.setChangeTime(date);
+                cityInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
+                cityInventoryAvailableQtyChangeLog.setAfterChangeQty((cityInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
+                cityInventoryAvailableQtyChangeLog.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_RETURN);
+                cityInventoryAvailableQtyChangeLog.setChangeTypeDesc("拒签退货");
+                cityInventoryAvailableQtyChangeLog.setReferenceNumber(orderNumber);
+                //保存记录
+                cityService.addCityInventoryAvailableQtyChangeLog(cityInventoryAvailableQtyChangeLog);
             }
             //创建退单退款总记录实体
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
@@ -945,19 +1013,18 @@ public class ReturnOrderController {
                 }
             }
 
-            ReturnOrderController r = new ReturnOrderController();
             //********************************退第三方支付**************************
             //如果是待收货、门店自提单则需要返回第三方支付金额
             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                 if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //支付宝退款
-                    r.returnAlipayMoney(orderNumber,orderBillingDetails.getOnlinePayAmount(),returnOrderId);
+                    r.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
                     WeChatPayController wechat = new WeChatPayController();
-                    Map<String,String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    r.returnWeChatMoney(returnOrderId,returnNumber,map);
+                    Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
+                    r.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -1616,12 +1683,13 @@ public class ReturnOrderController {
 
     /**
      * 支付宝退款
+     *
      * @param orderNumber   订单号
-     * @param money 退款金额
+     * @param money         退款金额
      * @param returnOrderId 退单id
      * @throws AlipayApiException
      */
-    public void returnAlipayMoney(String orderNumber,Double money,Long returnOrderId) throws AlipayApiException {
+    public void returnAlipayMoney(String orderNumber, Double money, Long returnOrderId) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.serverUrl, AlipayConfig.appId, AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset, AlipayConfig.aliPublicKey, AlipayConfig.signType);
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
         request.setBizContent("{" +
@@ -1647,12 +1715,13 @@ public class ReturnOrderController {
 
     /**
      * 微信退款
+     *
      * @param returnOrderId 退单id
      * @param returnNumber  退单号
-     * @param map   微信返回值
+     * @param map           微信返回值
      */
-    public void returnWeChatMoney(Long returnOrderId,String returnNumber,Map<String,String> map){
-        if ("SUCCESS".equals(map.get("code"))){
+    public void returnWeChatMoney(Long returnOrderId, String returnNumber, Map<String, String> map) {
+        if ("SUCCESS".equals(map.get("code"))) {
             //创建退单退款详情实体
             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
             returnOrderBillingDetail.setRoid(returnOrderId);
@@ -1662,7 +1731,7 @@ public class ReturnOrderController {
             returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
             returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-        } else{
+        } else {
             logger.info("refusedOrder OUT,微信退款失败！，出参 resultDTO:{}");
             throw new RuntimeException("微信退款失败");
         }

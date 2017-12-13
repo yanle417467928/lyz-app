@@ -133,10 +133,18 @@
         UPDATE st_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-            gid = #{gid}
-            AND store_id = (SELECT emp_employee.store_id
-                            FROM emp_employee
-                            WHERE emp_id = #{userId})
+        gid = #{gid}
+        AND store_id = (SELECT emp_employee.store_id
+        FROM emp_employee
+        WHERE emp_id = #{userId})
+    </update>
+
+    <update id="updateStoreInventoryByStoreCodeAndGoodsId">
+        UPDATE st_inventory
+        SET available_ity = available_ity + #{qty}
+        WHERE
+        gid = #{gid}
+        AND store_code = #{storeCode}
     </update>
 
     <update id="updateStoreInventoryByCustomerIdAndGoodsId">
@@ -329,6 +337,26 @@
             last_update_time
         FROM st_inventory
         WHERE store_id = #{storeId} AND gid = #{goodsId}
+    </select>
+
+    <select id="findStoreInventoryByStoreCodeAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
+        SELECT
+        id,
+        city_id,
+        city_name,
+        city_code,
+        store_id,
+        store_name,
+        store_code,
+        gid,
+        sku,
+        sku_name,
+        available_ity,
+        real_ity,
+        last_update_time
+        FROM st_inventory
+        WHERE store_id = #{storeCode} AND gid = #{goodsId}
     </select>
 
     <insert id="addStoreInventoryAvailableQtyChangeLog" parameterType=

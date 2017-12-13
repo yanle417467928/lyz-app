@@ -329,4 +329,16 @@ public class AppStoreServiceImpl implements AppStoreService {
             storeDAO.addStoreSubventionChangeLog(log);
         }
     }
+
+    @Override
+    public StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long goodsId) {
+        return storeDAO.findStoreInventoryByStoreCodeAndGoodsId(storeCode, goodsId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty) {
+        storeDAO.updateStoreInventoryByStoreCodeAndGoodsId(storeCode, gid, qty);
+    }
+
 }

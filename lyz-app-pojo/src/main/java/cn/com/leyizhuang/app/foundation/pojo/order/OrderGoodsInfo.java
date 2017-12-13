@@ -7,7 +7,7 @@ import lombok.*;
  * 订单商品明细
  *
  * @author Richard
- * Created on 2017-10-10 11:45
+ *         Created on 2017-10-10 11:45
  **/
 @Getter
 @Setter
@@ -26,7 +26,10 @@ public class OrderGoodsInfo {
      * 订单号
      */
     private String orderNumber;
-
+    /**
+     * 商品id
+     */
+    private Long gid;
     /**
      * 商品编码
      */

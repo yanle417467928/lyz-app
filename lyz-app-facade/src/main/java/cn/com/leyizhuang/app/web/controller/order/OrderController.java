@@ -1109,7 +1109,7 @@ public class OrderController {
                 orderListResponses.add(orderListResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderListResponses);
-            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

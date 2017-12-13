@@ -95,6 +95,18 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     }
 
     @Override
+    @Transactional
+    public void updateCityInventoryByCusIdAndGoodsIdAndGoodsQty(Long userId, Long gid, Integer goodsQty) {
+        cityDAO.updateCityInventoryByCustomerIdAndGoodsIdAndInventory(userId, gid, goodsQty);
+    }
+
+    @Override
+    @Transactional
+    public void updateCityInventoryByEmpIdAndGoodsIdAndGoodsQty(Long userId, Long gid, Integer goodsQty) {
+        cityDAO.updateCityInventoryByEmployeeIdAndGoodsIdAndInventory(userId, gid, goodsQty);
+    }
+
+    @Override
     public void modifyCity(City city) {
         cityDAO.modifyCity(city);
     }
