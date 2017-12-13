@@ -1084,7 +1084,10 @@ public class ReturnOrderController {
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
-                            if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getDescription())) {
+                            if ((simpleInfo.getIsGift() && AppGoodsLineType.PRESENT.equals(goodsInfo.getGoodsLineType()))
+                                    || (simpleInfo.getIsProCouponGoods() && AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()))
+                                    || (!simpleInfo.getIsProCouponGoods() && !simpleInfo.getIsGift() && AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType()))
+                                    ) {
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getNum(), returnNo);
                                 //设置原订单可退数量 减少
                                 goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getNum());

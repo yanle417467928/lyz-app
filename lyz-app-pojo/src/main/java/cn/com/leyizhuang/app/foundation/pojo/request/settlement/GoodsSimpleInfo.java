@@ -28,10 +28,6 @@ public class GoodsSimpleInfo implements Serializable {
      */
     private Integer num;
     /**
-     * 商品行类型（暂定）
-     */
-    private String goodsLineType;
-    /**
      * 是否赠品
      */
     private Boolean isGift = Boolean.FALSE;
