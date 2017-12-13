@@ -70,6 +70,8 @@ public interface OrderDAO {
 
     void updateOrderBaseInfo(OrderBaseInfo baseInfo);
 
+    void updateOrderGoodsInfo(OrderGoodsInfo baseInfo);
+
     void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 
     /**

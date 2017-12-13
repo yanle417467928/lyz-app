@@ -164,7 +164,7 @@ public class AppActServiceImpl implements AppActService {
                 if (act.getActType().equals("COMMON_FAMO_SUB")) {
 
                     // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act.getId(), customer.getCustomerType().getValue());
+                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customer.getCustomerType().getValue());
 
                     // 满足促销立减金额
                     if (actualTotalPrice >= act.getFullAmount()) {
@@ -178,7 +178,7 @@ public class AppActServiceImpl implements AppActService {
                 //***************** 普通-满金额-赠商品 ************
                 else if (act.getActType().equals("COMMON_FAMO_GOO")) {
                     // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act.getId(), customer.getCustomerType().getValue());
+                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customer.getCustomerType().getValue());
 
                     // 满足促销立减金额
                     if (actualTotalPrice >= act.getFullAmount()) {
@@ -228,7 +228,7 @@ public class AppActServiceImpl implements AppActService {
                 if (act.getActType().equals("COMMON_FAMO_SUB")) {
 
                     // 参与活动商品总额 导购以会员价计算
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act.getId(), "MEMBER");
+                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, "MEMBER");
 
                     // 满足促销立减金额
                     if (actualTotalPrice >= act.getFullAmount()) {
@@ -242,7 +242,7 @@ public class AppActServiceImpl implements AppActService {
                 //***************** 普通-满金额-赠商品 ************
                 else if (act.getActType().equals("COMMON_FAMO_GOO")) {
                     // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act.getId(), "MEMBER");
+                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, "MEMBER");
 
                     // 满足促销立减金额
                     if (actualTotalPrice >= act.getFullAmount()) {
@@ -323,13 +323,13 @@ public class AppActServiceImpl implements AppActService {
      *
      * @return
      */
-    private Double countActualTotalPrice(Map<String, OrderGoodsSimpleResponse> goodsPool, Long actId, String priceType) {
+    private Double countActualTotalPrice(Map<String, OrderGoodsSimpleResponse> goodsPool, ActBaseDO act, String priceType) {
 
         // 实际支付总额
         Double actualTotalPrice = 0.00;
 
         // 判断是否满足促销条件
-        List<String> skuList = actGoodsMappingDAO.querySkusByActId(actId);
+        List<String> skuList = actGoodsMappingDAO.querySkusByActId(act.getId());
 
         Iterator<Map.Entry<String, OrderGoodsSimpleResponse>> it = goodsPool.entrySet().iterator();
         while (it.hasNext()) {
@@ -346,12 +346,33 @@ public class AppActServiceImpl implements AppActService {
                     } else if (priceType.equals("MEMBER")) {// 零售
                         actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getVipPrice(),goods.getGoodsQty()),actualTotalPrice);
                     }
-
-                    // 该商品参与此促销后 将不能参与其他促销
-                    it.remove();
                 }
             }
 
+        }
+
+        if (actualTotalPrice >= act.getFullAmount()){
+            // 满足金额条件 扣除商品池中商品
+            Iterator<Map.Entry<String, OrderGoodsSimpleResponse>> it2 = goodsPool.entrySet().iterator();
+            while (it2.hasNext()) {
+                Map.Entry<String, OrderGoodsSimpleResponse> itEntry = it2.next();
+                Object itKey = itEntry.getKey();
+                //注意：可以使用这种遍历方式进行删除元素和修改元素
+
+                // 此商品在促销范围内
+                if (skuList.contains(itKey)) {
+                    OrderGoodsSimpleResponse goods = itEntry.getValue();
+                    if (goods != null) {
+                        if(act.getIsDouble()){
+                            // 此可重复参与 直接移除
+                            it2.remove();
+                        }else{
+                            it2.remove();
+                        }
+                    }
+                }
+
+            }
         }
         return actualTotalPrice;
     }
@@ -451,7 +472,7 @@ public class AppActServiceImpl implements AppActService {
         response.setPromotionId(act.getId());
         response.setPromotionTitle(act.getTitle());
         response.setMaxChooseNumber(act.getGiftChooseNumber()*enjoyTime);
-
+        response.setEnjoyTimes(enjoyTime);
 
         List<Long> giftIdList = new ArrayList<>();
         for (ActGiftDetailsDO gift : giftDetailList) {
@@ -476,6 +497,7 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act,Double actualTotalPrice){
+        // 参与次数
         int enjoyTimes = 1;
 
         // 此促销是否可以重复参与
@@ -490,6 +512,7 @@ public class AppActServiceImpl implements AppActService {
         proDiscount.setPromotionId(act.getId());
         proDiscount.setPromotionTitle(act.getTitle());
         proDiscount.setDiscountPrice(CountUtil.mul(sub_amount.getSubAmount(),enjoyTimes));
+        proDiscount.setEnjoyTimes(enjoyTimes);
 
         return proDiscount;
     }

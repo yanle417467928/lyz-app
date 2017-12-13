@@ -22,7 +22,9 @@ public interface ActBaseDAO{
 
     List<ActBaseDO> queryList();
 
-    ActBaseDO queryById();
+    ActBaseDO queryById(@Param("id") Long id);
+
+    List<ActBaseDO> queryByIdList(@Param("ids") List<Long> ids);
 
     /**
      *

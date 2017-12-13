@@ -21,6 +21,9 @@ public class PromotionsGiftListResponse {
     // 促销标题
     private String promotionTitle;
 
+    // 参与此促销次数
+    private Integer enjoyTimes;
+
     // 最大可选赠品数量
     private Integer maxChooseNumber;
 
