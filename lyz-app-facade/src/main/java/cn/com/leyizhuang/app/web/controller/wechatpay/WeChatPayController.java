@@ -13,7 +13,6 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
-import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * @author Jerry.Ren
@@ -270,13 +265,13 @@ public class WeChatPayController {
      * @param money
      * @return
      */
-    public Map<String,String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
+    public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "微信退款";
 
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataService.save(paymentDataDO);
@@ -316,27 +311,27 @@ public class WeChatPayController {
                     dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
 
-                    map.put("code","SUCCESS");
-                    map.put("number",tradeNo);
-                    map.put("money",refundFee);
+                    map.put("code", "SUCCESS");
+                    map.put("number", tradeNo);
+                    map.put("money", refundFee);
                     return map;
                 } else {
                     PaymentDataDO paymentDataDO1 = new PaymentDataDO();
                     paymentDataDO1.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                     response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
-                    map.put("code","FAILURE");
+                    map.put("code", "FAILURE");
                     return map;
                 }
             } else {
                 logger.warn("{}", resultMap.get("err_code").toString());
                 logger.warn("{}", resultMap.get("err_code_des").toString());
-                map.put("code","FAILURE");
+                map.put("code", "FAILURE");
                 return map;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            map.put("code","FAILURE");
+            map.put("code", "FAILURE");
             return map;
         }
     }
@@ -388,22 +383,31 @@ public class WeChatPayController {
                                 String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
                             } else {
-                                OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
-                                commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))){
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                            paymentDataDO);
+                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                }
+
                             }
                         }
                     } else {
                         response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
                     }
                 } else {
-                    logger.warn("{}", resultMap.get("err_code").toString());
-                    logger.warn("{}", resultMap.get("err_code_des").toString());
+                    logger.warn("支付是失败,错误码:{}", resultMap.get("err_code").toString());
+                    logger.warn("错误码说明:{}", resultMap.get("err_code_des").toString());
                 }
             }
-        } catch (IOException | JDOMException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("{}", e);
         }
+
     }
 
 }
