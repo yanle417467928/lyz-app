@@ -25,10 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * @author Jerry.Ren
@@ -386,8 +383,16 @@ public class WeChatPayController {
                                 String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
                             } else {
-                                OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
-                                commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))){
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                            paymentDataDO);
+                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                }
+
                             }
                         }
                     } else {
