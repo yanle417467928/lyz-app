@@ -335,7 +335,7 @@ public class OrderController {
 
         logger.info("enterOrder CALLED,用户确认订单计算商品价格明细，入参 goodsSimpleRequest:{}", goodsSimpleRequest);
 
-        ResultDTO resultDTO;
+        ResultDTO<Object> resultDTO;
         if (null == goodsSimpleRequest || goodsSimpleRequest.getGoodsList().isEmpty()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
             logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
@@ -355,7 +355,7 @@ public class OrderController {
         Integer identityType = goodsSimpleRequest.getIdentityType();
         List<GoodsIdQtyParam> goodsList = goodsSimpleRequest.getGoodsList();
         List<PromotionSimpleInfo> giftList = goodsSimpleRequest.getGiftList();
-        List<ProductCouponSimpleInfo> productCouponList = goodsSimpleRequest.getCouponSimpleInfoList();
+        List<ProductCouponSimpleInfo> productCouponList = goodsSimpleRequest.getProductCouponList();
         try {
             int goodsQty = 0;
             int giftQty = 0;
@@ -406,6 +406,12 @@ public class OrderController {
                 //加本品标识
                 if (goodsInfo != null) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                                break;
+                            }
+                        }
                         simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                         //算总金额
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
@@ -491,6 +497,12 @@ public class OrderController {
                 //加本品标识
                 if (goodsInfo != null) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                                break;
+                            }
+                        }
                         simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                         //算总金额
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
@@ -573,6 +585,12 @@ public class OrderController {
                 //加本品标识
                 if (goodsInfo != null) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                                break;
+                            }
+                        }
                         simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                         //算总金额
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
@@ -806,245 +824,6 @@ public class OrderController {
             return resultDTO;
         }
     }
-
-    /**
-     * 用户锁定订单相关款项和库存
-     *
-     * @param lockExpendRequest
-     * @return
-     */
-    /*@Transactional
-    @PostMapping(value = "/lock", produces = "application/json;charset=UTF-8")*/
-   /* public ResultDTO lockOrder(OrderLockExpendRequest lockExpendRequest) {
-
-        logger.info("lockOrder CALLED,用户锁定订单相关款项和库存，入参 lockExpendRequest:{}", lockExpendRequest);
-
-        ResultDTO resultDTO;
-        if (null == lockExpendRequest) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
-            logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-
-        if (null == lockExpendRequest.getUserId()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == lockExpendRequest.getIdentityType()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
-            logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        Long userId = lockExpendRequest.getUserId();
-        Integer identityType = lockExpendRequest.getIdentityType();
-        try {
-            if (null != lockExpendRequest.getCustomerDeposit() && identityType == 6) {
-
-                int result = appCustomerService.lockCustomerDepositByUserIdAndDeposit(
-                        userId, lockExpendRequest.getCustomerDeposit(), new Date());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "客户预存款余额不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败,客户预存款余额不足，出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("客户预存款余额不足!");
-                }
-            }
-            if (null != lockExpendRequest.getGuideCredit() && identityType == 0) {
-
-                int result = appEmployeeService.lockGuideCreditByUserIdAndCredit(
-                        userId, lockExpendRequest.getGuideCredit());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购信用额度不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，导购信用额度不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("导购信用额度不足!");
-                }
-            }
-            if (null != lockExpendRequest.getStoreDeposit()) {
-                if (identityType == 0 || identityType == 2) {
-                    int result = appStoreService.lockStoreDepositByUserIdAndStoreDeposit(
-                            userId, lockExpendRequest.getStoreDeposit());
-                    if (result == 0) {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店预存款余额不足!", null);
-                        logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店预存款余额不足 出参 resultDTO:{}", resultDTO);
-                        throw new RuntimeException("用户所属门店预存款余额不足!");
-                    }
-                }
-            }
-            if (null != lockExpendRequest.getStoreCredit() && identityType == 2) {
-
-                int result = appStoreService.lockStoreCreditByUserIdAndCredit(
-                        userId, lockExpendRequest.getStoreCredit());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店信用额度余额不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店信用额度余额不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("用户所属门店信用额度余额不足!");
-                }
-            }
-            if (null != lockExpendRequest.getStoreSubvention() && identityType == 2) {
-
-                int result = appStoreService.lockStoreSubventionByUserIdAndSubvention(
-                        userId, lockExpendRequest.getStoreSubvention());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店现金返利余额不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店现金返利余额不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("用户所属门店现金返利余额不足!");
-                }
-            }
-            if (null != lockExpendRequest.getLebiQty() && identityType == 6) {
-
-                int result = appCustomerService.lockCustomerLebiByUserIdAndQty(
-                        userId, lockExpendRequest.getLebiQty(), Calendar.getInstance().getTime());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客乐币剩余数量不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，顾客乐币剩余数量不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("顾客乐币剩余数量不足!");
-                }
-            }
-            if (null != lockExpendRequest.getStoreInventory() && !lockExpendRequest.getStoreInventory().isEmpty()) {
-
-                int result = appStoreService.lockStoreInventoryByUserIdAndIdentityTypeAndInventory(
-                        userId, identityType, lockExpendRequest.getStoreInventory());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户所属门店库存不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，用户所属门店库存不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("用户所属门店库存不足!");
-                }
-            }
-            if (null != lockExpendRequest.getCityInventory() && !lockExpendRequest.getStoreInventory().isEmpty()) {
-
-                int result = cityService.lockCityInventoryByUserIdAndIdentityTypeAndInventory(
-                        userId, identityType, lockExpendRequest.getCityInventory());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市库存不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，城市库存不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("城市库存不足!");
-                }
-            }
-            if (null != lockExpendRequest.getProductCoupons() && !lockExpendRequest.getProductCoupons().isEmpty() && identityType == 6) {
-
-                int result = appCustomerService.lockCustomerProductCouponByUserIdAndProductCoupons(
-                        userId, lockExpendRequest.getProductCoupons());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客产品券数量不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，顾客产品券数量不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("城市库存不足!");
-                }
-            }
-            if (null != lockExpendRequest.getCashCoupons() && !lockExpendRequest.getCashCoupons().isEmpty() && identityType == 6) {
-
-                int result = appCustomerService.lockCustomerCashCouponByUserIdAndCashCoupons(
-                        userId, lockExpendRequest.getCashCoupons());
-                if (result == 0) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客现金券数量不足!", null);
-                    logger.info("lockOrder OUT,用户锁定订单相关款项和库存失败，顾客现金券数量不足 出参 resultDTO:{}", resultDTO);
-                    throw new RuntimeException("顾客现金券数量不足!");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
-            logger.warn("getGoodsListByUserIdAndIdentityType EXCEPTION,用户锁定订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-
-        }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "用户锁定订单相关款项和库存成功！", null);
-        logger.info("lockOrder OUT,用户锁定订单相关款项和库存成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
-    }*/
-
-    /**
-     * 用户释放订单相关款项和库存
-     *
-     * @param lockExpendRequest 释放资源对象
-     * @return
-     */
-    /*@Transactional
-    @PostMapping(value = "/unlock", produces = "application/json;charset=UTF-8")
-    public ResultDTO unlockOrder(@RequestBody OrderLockExpendRequest lockExpendRequest) {
-
-        logger.info("unlockOrder CALLED,用户释放订单相关款项和库存，入参 lockExpendRequest:{}", lockExpendRequest);
-
-        ResultDTO resultDTO;
-        if (null == lockExpendRequest) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
-            logger.info("unlockOrder OUT,用户释放订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-
-        if (null == lockExpendRequest.getUserId()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("unlockOrder OUT,用户释放订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == lockExpendRequest.getIdentityType()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
-            logger.info("unlockOrder OUT,用户释放订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        Long userId = lockExpendRequest.getUserId();
-        Integer identityType = lockExpendRequest.getIdentityType();
-        try {
-            if (null != lockExpendRequest.getCustomerDeposit() && identityType == 6) {
-
-                appCustomerService.unlockCustomerDepositByUserIdAndDeposit(userId, lockExpendRequest.getCustomerDeposit());
-
-            }
-            if (null != lockExpendRequest.getGuideCredit() && identityType == 0) {
-
-                appEmployeeService.unlockGuideCreditByUserIdAndCredit(userId, lockExpendRequest.getGuideCredit());
-
-            }
-            if (null != lockExpendRequest.getStoreDeposit()) {
-                if (identityType == 0 || identityType == 2) {
-                    appStoreService.unlockStoreDepositByUserIdAndStoreDeposit(userId, lockExpendRequest.getStoreDeposit());
-                }
-            }
-            if (null != lockExpendRequest.getStoreCredit() && identityType == 2) {
-
-                appStoreService.unlockStoreCreditByUserIdAndCredit(userId, lockExpendRequest.getStoreCredit());
-
-            }
-            if (null != lockExpendRequest.getStoreSubvention() && identityType == 2) {
-
-                appStoreService.unlockStoreSubventionByUserIdAndSubvention(userId, lockExpendRequest.getStoreSubvention());
-
-            }
-            if (null != lockExpendRequest.getLebiQty() && identityType == 6) {
-
-                appCustomerService.unlockCustomerLebiByUserIdAndQty(userId, lockExpendRequest.getLebiQty());
-
-            }
-            if (null != lockExpendRequest.getStoreInventory() && !lockExpendRequest.getStoreInventory().isEmpty()) {
-
-                appStoreService.unlockStoreInventoryByUserIdAndIdentityTypeAndInventory(userId, identityType, lockExpendRequest.getStoreInventory());
-
-            }
-            if (null != lockExpendRequest.getCityInventory() && !lockExpendRequest.getStoreInventory().isEmpty()) {
-
-                cityService.unlockCityInventoryByUserIdAndIdentityTypeAndInventory(userId, identityType, lockExpendRequest.getCityInventory());
-
-            }
-            if (null != lockExpendRequest.getProductCoupons() && !lockExpendRequest.getProductCoupons().isEmpty() && identityType == 6) {
-
-                appCustomerService.unlockCustomerProductCouponByUserIdAndProductCoupons(userId, lockExpendRequest.getProductCoupons());
-            }
-            if (null != lockExpendRequest.getCashCoupons() && !lockExpendRequest.getCashCoupons().isEmpty() && identityType == 6) {
-
-                appCustomerService.unlockCustomerCashCouponByUserIdAndCashCoupons(userId, lockExpendRequest.getCashCoupons());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户释放订单相关款项和库存失败", null);
-            logger.warn("unlockOrder EXCEPTION,用户释放订单相关款项和库存失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-        }
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "用户锁定订单相关款项和库存成功！", null);
-        logger.info("unlockOrder OUT,用户锁定订单相关款项和库存成功，出参 resultDTO:{}", resultDTO);
-        return resultDTO;
-    }*/
 
     /**
      * 用户获取订单列表
