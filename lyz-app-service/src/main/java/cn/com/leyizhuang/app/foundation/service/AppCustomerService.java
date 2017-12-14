@@ -107,4 +107,9 @@ public interface AppCustomerService {
     Integer findCashCouponAvailQtyByCustomerId(Long userId);
 
     Integer findProductCouponAvailQtyByCustomerId(Long userId);
+
+    Integer countSignDaysByCusId(Long cusId, Date startTimeOfThisMonth, Date date);
+    Integer countTotalSignDaysByCusId(Long cusId);
+
+    Integer countSignAwardLebiQtyByCusId(Long cusId);
 }

@@ -381,7 +381,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public Integer findCashCouponAvailQtyByCustomerId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return customerDAO.findCashCouponAvailQtyByCustomerId(userId);
         }
         return null;
@@ -389,8 +389,32 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public Integer findProductCouponAvailQtyByCustomerId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return customerDAO.findProductCouponAvailQtyByCustomerId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer countSignDaysByCusId(Long cusId, Date startDate, Date endDate) {
+        if (null != cusId && null != startDate && null != endDate) {
+            return customerDAO.countSignDaysByCusId(cusId, startDate, endDate);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer countTotalSignDaysByCusId(Long cusId) {
+        if (null != cusId){
+            return customerDAO.countTotalSignDaysByCusId(cusId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer countSignAwardLebiQtyByCusId(Long cusId) {
+        if (null != cusId){
+            return customerDAO.countSignAwardLebiQtyByCusId(cusId);
         }
         return null;
     }
@@ -412,7 +436,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
      * @date 2017/11/21
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public void preDepositRecharge(PaymentDataDO paymentDataDO, CustomerPreDepositChangeType type) {
         Long userId = paymentDataDO.getUserId();
         Double money = paymentDataDO.getTotalFee();

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
@@ -103,9 +104,9 @@ public class CustomerController {
             AppUserDevice device = userDeviceService.findByClientIdAndDeviceId(clientId, deviceId);
             if (null == device) {
                 device = new AppUserDevice(null, customer.getCusId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(systemType),
-                        clientId, deviceId, new Date(),new Date());
+                        clientId, deviceId, new Date(), new Date());
                 userDeviceService.addUserDevice(device);
-            }else{
+            } else {
                 device.setLastLoginTime(new Date());
                 userDeviceService.updateLastLoginTime(device);
             }
@@ -136,7 +137,7 @@ public class CustomerController {
      */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam, HttpServletResponse response) {
-       // logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
+        // logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
         ResultDTO<CustomerRegistResponse> resultDTO;
         try {
             if (null == registryParam.getOpenId() || "".equalsIgnoreCase(registryParam.getOpenId())) {
@@ -552,14 +553,14 @@ public class CustomerController {
 
 
     /**
-     * @param userId 用户id
+     * @param userId       用户id
      * @param identityType 身份类型
      * @return 预存款消费日志
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType) {
 
-       // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+        // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -587,5 +588,70 @@ public class CustomerController {
             return resultDTO;
         }
     }
+
+
+    /**
+     * 获取顾客签到概况
+     *
+     * @param cusId        顾客id
+     * @param identityType 身份类型
+     * @return 顾客签到概况
+     */
+    @PostMapping(value = "/sign/overview", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerSignOverview(Long cusId, Integer identityType) {
+        ResultDTO<Object> resultDTO;
+        if (null == cusId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerSignOverview OUT,获取顾客签到信息失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getCustomerSignOverview OUT,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != AppIdentityType.CUSTOMER.getValue()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非顾客身份不开放签到功能",
+                    null);
+            logger.info("getCustomerSignOverview OUT,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppCustomer appCustomer = customerService.findById(cusId);
+            if (null != appCustomer) {
+                CustomerSignOverviewResponse response = new CustomerSignOverviewResponse();
+                if (null != appCustomer.getLastSignTime() && DateUtils.isSameDay(appCustomer.getLastSignTime(), new Date())) {
+                    response.setCanSign(false);
+                } else {
+                    response.setCanSign(true);
+                }
+                if (null != appCustomer.getConsecutiveSignDays()) {
+                    response.setConsecutiveSignDays(appCustomer.getConsecutiveSignDays());
+                } else {
+                    response.setConsecutiveSignDays(0);
+                }
+                Integer days = customerService.countSignDaysByCusId(cusId, DateUtil.getStartTimeOfThisMonth(), new Date());
+                response.setConsecutiveSignDays(days);
+                Integer totalDays = customerService.countTotalSignDaysByCusId(cusId);
+                response.setTotalSignDays(totalDays);
+                Integer totalLebiQty = customerService.countSignAwardLebiQtyByCusId(cusId);
+                response.setTotalAwardsQty(totalLebiQty);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该顾客",
+                        null);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取乐币数量失败", null);
+            logger.warn("getCustomerSignOverview EXCEPTION,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }
 

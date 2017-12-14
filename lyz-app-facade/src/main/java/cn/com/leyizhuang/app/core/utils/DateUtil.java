@@ -499,4 +499,33 @@ public class DateUtil {
         }
         return futureDaysList;
     }
+
+
+    /**
+     * 获取两个日期相差天数
+     *
+     * @param startDate 开始日期
+     * @param endDate   结束日期
+     * @return 相差天数
+     */
+    public static int getDifferDays(Date startDate, Date endDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        long time1 = cal.getTimeInMillis();
+        cal.setTime(endDate);
+        long time2 = cal.getTimeInMillis();
+        long differDays = (time2 - time1) / (1000 * 3600 * 24);
+        return Integer.parseInt(String.valueOf(differDays));
+    }
+
+    /**
+     *  获取当前月开始时间
+     * @return 当前月开始时间
+     */
+    public static Date getStartTimeOfThisMonth() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+        return cal.getTime();
+    }
 }

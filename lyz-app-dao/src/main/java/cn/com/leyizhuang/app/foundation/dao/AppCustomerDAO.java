@@ -117,4 +117,12 @@ public interface AppCustomerDAO {
     Integer findCashCouponAvailQtyByCustomerId(Long userId);
 
     Integer findProductCouponAvailQtyByCustomerId(Long userId);
+
+    Integer countSignDaysByCusId(@Param(value = "cusId") Long cusId,
+                                 @Param(value = "startDate") Date startDate,
+                                 @Param(value = "endDate") Date endDate);
+
+    Integer countTotalSignDaysByCusId(Long cusId);
+
+    Integer countSignAwardLebiQtyByCusId(Long cusId);
 }
