@@ -24,4 +24,20 @@
         ORDER BY create_time desc
     </select>
 
+    <select id="findByUserIdAndCreateTime" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse">
+        SELECT id, ord_no orderNumber,customer_name customerName, customer_phone customerPhone,
+        seller_name sellerName, seller_phone sellerPhone, agency_money agencyMoney, real_money realMoney,
+        create_time createTime,
+        payment_method paymentMethod
+        FROM ord_agency_fund
+        WHERE user_id = #{userId}
+        <if test="null != startDate">
+            AND create_time &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            AND create_time &lt;= #{endDate}
+        </if>
+        ORDER BY create_time desc
+    </select>
+
 </mapper>

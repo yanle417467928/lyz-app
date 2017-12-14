@@ -103,6 +103,10 @@ public interface AppStoreDAO {
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(@Param(value = "storeId") Long storeId,
                                                          @Param(value = "goodsId") Long goodsId);
 
+
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(@Param(value = "storeCode") String storeCode,
+                                                         @Param(value = "goodsId") Long goodsId);
+
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 
     StoreCreditMoney findStoreCreditMoneyByEmpId(Long empId);
@@ -114,4 +118,6 @@ public interface AppStoreDAO {
     void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log);
 
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
+
+    void updateStoreInventoryByStoreCodeAndGoodsId(@Param("storeCode") String storeCode, @Param("gid") Long gid, @Param("qty") Integer qty);
 }

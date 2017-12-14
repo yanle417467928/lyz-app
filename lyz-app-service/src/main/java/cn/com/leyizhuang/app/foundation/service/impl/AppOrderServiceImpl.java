@@ -87,7 +87,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     public String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList) {
         //首先验证自身是否重复商品，goodsList 是不会重复的，在加入下料清单就判断了。
         //不同的促销可能赠送相同的商品。
-        if (giftList != null && giftList.size() != 0) {
+        if (giftList != null && !giftList.isEmpty()) {
             for (GoodsIdQtyParam goodsIdQtyParam : giftList) {
                 for (GoodsIdQtyParam idQtyParam : giftList) {
                     if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
@@ -95,25 +95,20 @@ public class AppOrderServiceImpl implements AppOrderService {
                     }
                 }
             }
-            //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
             goodsList.addAll(giftList);
         }
-
-
-
+        //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
             for (GoodsIdQtyParam idQtyParam : goodsList) {
                 if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
                     Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
                     if (!isHaveInventory) {
-                        String msg = goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                        return msg;
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
                     }
                 } else {
                     Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
                     if (!isHaveInventory) {
-                        String msg = goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                        return msg;
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
                     }
                 }
             }

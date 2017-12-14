@@ -252,7 +252,7 @@ public class MaterialListController {
             //查询的是所有的商品下料清单（这个集合对象中的料单号和类型是一样的）
             List<NormalMaterialListResponse> materialListDOS = materialListServiceImpl.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, appIdentityType);
 
-            if (!materialListDOS.isEmpty()) {
+            if (null != materialListDOS && !materialListDOS.isEmpty()) {
                 //只需得到一个料单对象中料单编号
                 MaterialListDO materialListDO = materialListServiceImpl.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId,
                         appIdentityType, materialListDOS.get(0).getGoodsId());
@@ -272,7 +272,7 @@ public class MaterialListController {
             if (identityType == 0){
                 listResponses = materialListServiceImpl.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,appIdentityType);
 
-                if (!listResponses.isEmpty()) {
+                if (null != listResponses && !listResponses.isEmpty()) {
                     //集合对象中都是同一个顾客，所以取其中一个顾客Id
                     AppCustomer appCustomer = customerService.findById(listResponses.get(0).getCusId());
                     //设置返回信息
@@ -282,7 +282,7 @@ public class MaterialListController {
             }else {
                 listResponses = materialListServiceImpl.findCustomerMaterialListByUserIdAndIdentityType(userId, appIdentityType);
             }
-            if (!listResponses.isEmpty()) {
+            if (null != listResponses && !listResponses.isEmpty()) {
                 for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
                     couponMaterialListResponse.setRetailPrice(0.00);
                 }

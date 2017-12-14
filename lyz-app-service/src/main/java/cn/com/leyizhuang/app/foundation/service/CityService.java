@@ -30,6 +30,10 @@ public interface CityService {
 
     void unlockCityInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> cityInventory);
 
+    void updateCityInventoryByCusIdAndGoodsIdAndGoodsQty(Long userId,Long gid,Integer goodsQty);
+
+    void updateCityInventoryByEmpIdAndGoodsIdAndGoodsQty(Long userId,Long gid,Integer goodsQty);
+
     void modifyCity(City city);
 
     void deleteCityByCode(String code);

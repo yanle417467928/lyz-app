@@ -3,10 +3,11 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
     <sql id="All_FIELD">
-        oid, ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code, delivery_type,
+        oid id, ord_no orderNumber, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code,
+        delivery_type,
         order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone, store_id, store_code,
         store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone, customer_id, customer_name,
-        customer_phone, customer_type, total_goods_price, is_evaluated, online_pay_type, audit_no, remark, online_pay_time, pay_up_time, is_pay_up
+        customer_phone, customer_type, total_goods_price, is_evaluated, audit_no, remark, city_id, city_name
     </sql>
 
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -30,7 +31,7 @@
         FROM ord_goods_info og
             LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
-              AND (og.is_gift IS NULL OR og.is_gift = FALSE)
+              AND (og.goods_line_type != 'PRESENT')
     </select>
 
     <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
@@ -173,27 +174,28 @@
 
     <select id="getOrderGoodsInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         SELECT
-        id id,
-        oid oid,
-        ord_no orderNumber,
-        sku sku,
-        sku_name skuName,
-        retail_price retailPrice,
-        VIP_price VIPPrice,
-        wholesale_price wholesalePrice,
-        promotion_id promotionId,
-        is_price_share isPriceShare,
-        share_price sharePrice,
-        return_price returnPrice,
-        is_returnable isReturnable,
-        return_priority returnPriority,
-        order_qty orderQuantity,
-        shipping_qty shippingQuantity,
-        return_qty returnQuantity,
-        returnable_qty returnableQuantity,
-        is_gift isGift,
-        price_item_id priceItemId,
-        company_flag companyFlag
+            id              id,
+            oid             oid,
+            ord_no          orderNumber,
+            sku             sku,
+            sku_name        skuName,
+            retail_price    retailPrice,
+            VIP_price       VIPPrice,
+            wholesale_price wholesalePrice,
+        settlement_price settlementPrice,
+            promotion_id    promotionId,
+            is_price_share  isPriceShare,
+            share_price     sharePrice,
+            return_price    returnPrice,
+            is_returnable   isReturnable,
+            return_priority returnPriority,
+            order_qty       orderQuantity,
+            shipping_qty    shippingQuantity,
+            return_qty      returnQuantity,
+            returnable_qty  returnableQuantity,
+            goods_line_type goods_line_type,
+            price_item_id   priceItemId,
+            company_flag    companyFlag
         FROM
             ord_goods_info
         WHERE
@@ -248,7 +250,7 @@
         SELECT
             create_time,
             oid,
-            ord_no order_number,
+            ord_no          order_number,
             total_goods_price,
             member_discount,
             promotion_discount,
@@ -265,7 +267,7 @@
             st_pre_deposit,
             emp_credit_money,
             st_credit_money store_credit_money,
-            st_subvention store_subvention,
+            st_subvention   store_subvention,
             order_amount_subtotal,
             amount_payable,
             collection_amount,
@@ -282,11 +284,11 @@
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
-            ogi.order_qty qty,
+            ogi.order_qty       qty,
             ogi.retail_price,
-            ogi.is_gift,
+            ogi.goods_line_type goods_type,
             gg.sku_name,
-            gg.gid        goodsId,
+            gg.gid              goodsId,
             gg.goods_specification,
             gg.cover_image_uri,
             gg.goods_unit
@@ -387,8 +389,7 @@
                 #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
                 #{deliveryStreet}, #{detailedAddress})
     </insert>
-    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo"
-            useGeneratedKeys="true" keyProperty="id">
+    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         INSERT INTO ord_goods_info
         (
             oid, ord_no, goods_line_type, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
@@ -434,13 +435,13 @@
         UPDATE ord_base_info
         <set>
             <if test="null != status ">
-                status = #{status}
+                status = #{status},
             </if>
             <if test="null != deliveryStatus ">
-                delivery_status = #{deliveryStatus}
+                delivery_status = #{deliveryStatus},
             </if>
             <if test="null != pickUpCode ">
-                pick_up_code = #{pickUpCode}
+                pick_up_code = #{pickUpCode},
             </if>
             <if test="null != isEvaluated ">
                 is_evaluated = #{isEvaluated}
@@ -453,19 +454,19 @@
         UPDATE ord_billing_details
         <set>
             <if test="null != onlinePayType ">
-                online_pay_type = #{onlinePayType}
+                online_pay_type = #{onlinePayType},
             </if>
             <if test="null != onlinePayAmount ">
-                online_pay_amount = #{onlinePayAmount}
+                online_pay_amount = #{onlinePayAmount},
             </if>
             <if test="null != arrearage ">
-                arrearage = #{arrearage}
+                arrearage = #{arrearage},
             </if>
             <if test="null != onlinePayType ">
-                online_pay_type = #{onlinePayType}
+                online_pay_type = #{onlinePayType},
             </if>
             <if test="null != payUpTime  ">
-                pay_up_time = #{payUpTime}
+                pay_up_time = #{payUpTime},
             </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
