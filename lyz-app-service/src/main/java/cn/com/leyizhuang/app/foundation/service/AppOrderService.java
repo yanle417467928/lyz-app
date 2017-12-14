@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
@@ -113,7 +114,8 @@ public interface AppOrderService {
      * @param status    订单状态
      * @param orderNumber   订单号
      */
-    void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber);
+    void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber);
+
 
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo);

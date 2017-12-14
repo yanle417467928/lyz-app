@@ -93,6 +93,8 @@ public class ReturnOrderController {
     private ReturnOrderService returnOrderService;
     @Resource
     private CityService cityService;
+    @Resource
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
 
     /**
      * 取消订单
@@ -580,7 +582,7 @@ public class ReturnOrderController {
 
             }
             //修改订单状态为已取消
-            appOrderService.updateOrderStatusByOrderNoAndStatus(AppOrderStatus.CANCELED, orderBaseInfo.getOrderNumber());
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED,null, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
@@ -1039,8 +1041,22 @@ public class ReturnOrderController {
                 }
 
             }
-            //修改订单状态为已取消
-            appOrderService.updateOrderStatusByOrderNoAndStatus(AppOrderStatus.REJECTED, orderBaseInfo.getOrderNumber());
+            //获取物流状态明细
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderNumber,LogisticStatus.SEALED_CAR);
+            //记录物流明细表
+            OrderDeliveryInfoDetails newOrderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+            newOrderDeliveryInfoDetails.setOrderNo(orderNumber);
+            newOrderDeliveryInfoDetails.setLogisticStatus(LogisticStatus.REJECT);
+            newOrderDeliveryInfoDetails.setCreateTime(date);
+            newOrderDeliveryInfoDetails.setDescription("拒签");
+            newOrderDeliveryInfoDetails.setOperationType("拒签退货");
+            newOrderDeliveryInfoDetails.setOperatorNo(orderDeliveryInfoDetails.getOperatorNo());
+            newOrderDeliveryInfoDetails.setWarehouseNo(orderDeliveryInfoDetails.getWarehouseNo());
+            newOrderDeliveryInfoDetails.setTaskNo(orderDeliveryInfoDetails.getTaskNo());
+
+            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
+            //修改订单状态为拒签,物流状态拒签
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED,LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);

@@ -530,8 +530,8 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
-        orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
+    public void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber) {
+        orderDAO.updateOrderStatusAndDeliveryStatusByOrderNo(status, deliveryStatus, orderNumber);
     }
 
     @Override

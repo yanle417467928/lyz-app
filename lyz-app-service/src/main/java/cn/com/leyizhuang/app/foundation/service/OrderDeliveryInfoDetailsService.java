@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 
@@ -50,4 +51,14 @@ public interface OrderDeliveryInfoDetailsService {
      * @return  商品详情
      */
     List<GiftListResponseGoods> getReturnGoods(String returnNumber);
+
+
+    /**
+     * 查找订单物流明细
+     * @param orderNumber  订单号
+     * @param logisticStatus    物流状态
+     * @return  物流明细
+     */
+    OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(String orderNumber,LogisticStatus logisticStatus);
+
 }

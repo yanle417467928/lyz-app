@@ -53,23 +53,24 @@
 
     <select id="getOrderBeasInfoByOperatorNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse">
-        SELECT
-            obi.sales_consult_name  sellerName,
-            obi.sales_consult_phone sellerPhone,
-            obi.ord_no              orderNumber,
-            oli.shipping_address    shippingAddress,
-            oli.delivery_time       deliveryTime,
-            oli.receiver            receiver,
-            oli.receiver_phone      receiverPhone,
-            odid.task_no            shipperNumber,
-            obd.collection_amount   collectionAmount
-        FROM
-            ord_base_info AS obi
+            SELECT
+                obi.sales_consult_name sellerName,
+                obi.sales_consult_phone sellerPhone,
+                obi.ord_no orderNumber,
+                oli.shipping_address shippingAddress,
+                oli.delivery_time deliveryTime,
+                oli.receiver receiver,
+                oli.receiver_phone receiverPhone,
+                odid.task_no shipperNumber,
+                obd.collection_amount collectionAmount
+            FROM
+                ord_base_info AS obi
             INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
+            AND obi.delivery_status = odid.logistic_status
             INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        WHERE
-            odid.logistic_status = 'SEALED_CAR'
+            WHERE
+                obi.delivery_status = 'SEALED_CAR'
             AND odid.operator_no = #{operatorNo}
     </select>
 
@@ -201,5 +202,15 @@
         INNER JOIN gds_goods AS gg ON orgi.sku = gg.sku
         WHERE
             orgi.return_no = #{returnNumber}
+    </select>
+
+    <select id="findByOrderNumberAndLogisticStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        SELECT
+            *
+        FROM
+            ord_delivery_info_details
+        WHERE
+            order_no = #{orderNumber}
+        AND logistic_status = #{logisticStatus}
     </select>
 </mapper>

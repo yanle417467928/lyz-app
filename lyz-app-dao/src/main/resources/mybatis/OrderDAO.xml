@@ -475,11 +475,14 @@
     </update>
 
 
-    <update id="updateOrderStatusByOrderNoAndStatus">
+    <update id="updateOrderStatusAndDeliveryStatusByOrderNo">
         UPDATE ord_base_info
         <set>
             <if test="null != status">
                 status = #{status},
+            </if>
+            <if test="null != deliveryStatus">
+                delivery_status = #{deliveryStatus}
             </if>
         </set>
         WHERE ord_no = #{orderNumber}
