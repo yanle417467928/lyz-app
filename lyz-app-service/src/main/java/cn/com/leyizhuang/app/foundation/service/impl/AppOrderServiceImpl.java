@@ -87,7 +87,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     public String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList) {
         //首先验证自身是否重复商品，goodsList 是不会重复的，在加入下料清单就判断了。
         //不同的促销可能赠送相同的商品。
-        if (goodsList != null && !giftList.isEmpty()) {
+        if (giftList != null && giftList.size() != 0) {
             for (GoodsIdQtyParam goodsIdQtyParam : giftList) {
                 for (GoodsIdQtyParam idQtyParam : giftList) {
                     if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
@@ -95,9 +95,12 @@ public class AppOrderServiceImpl implements AppOrderService {
                     }
                 }
             }
+            //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
+            goodsList.addAll(giftList);
         }
-        //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
-        goodsList.addAll(giftList);
+
+
+
         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
             for (GoodsIdQtyParam idQtyParam : goodsList) {
                 if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {

@@ -343,8 +343,8 @@ public class AppActServiceImpl implements AppActService {
                 if (goods != null) {
                     if (priceType.equals("MEMBER")) {// 会员
                         actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getVipPrice(),goods.getGoodsQty()),actualTotalPrice);
-                    } else if (priceType.equals("MEMBER")) {// 零售
-                        actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getVipPrice(),goods.getGoodsQty()),actualTotalPrice);
+                    } else if (priceType.equals("RETAIL")) {// 零售
+                        actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getRetailPrice(),goods.getGoodsQty()),actualTotalPrice);
                     }
                 }
             }

@@ -74,6 +74,7 @@ public interface OrderDAO {
 
     void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 
+    void deleteOrderGoodsInfo(@Param("id") Long id);
     /**
      * 根据订单号修改订单状态
      * @param status    订单状态

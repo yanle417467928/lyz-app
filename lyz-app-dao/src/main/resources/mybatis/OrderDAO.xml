@@ -387,7 +387,8 @@
                 #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
                 #{deliveryStreet}, #{detailedAddress})
     </insert>
-    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ord_goods_info
         (
             oid, ord_no, goods_line_type, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
@@ -539,7 +540,7 @@
                 returnable_qty = #{returnableQuantity,jdbcType=INTEGER},
             </if>
             <if test="goodsLineType != null" >
-                goods_line_type = #{goodsLineType,jdbcType=BIT},
+                goods_line_type = #{goodsLineType,jdbcType=VARCHAR},
             </if>
             <if test="priceItemId != null" >
                 price_item_id = #{priceItemId,jdbcType=BIGINT},
@@ -550,4 +551,9 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+    <delete id="deleteOrderGoodsInfo" parameterType="java.lang.Long">
+        DELETE FROM ord_goods_info
+        WHERE ID = #{id}
+    </delete>
 </mapper>
