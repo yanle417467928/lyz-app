@@ -7,10 +7,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class MaGoodsBrandServiceImpl implements MaGoodsBrandService {
 
     @Autowired
@@ -52,6 +54,23 @@ public class MaGoodsBrandServiceImpl implements MaGoodsBrandService {
     }
 
     @Override
+    public Boolean editIsExistBrandName(String brandName,Long id){
+        return  maGoodsBrandDAO.editIsExistBrandName(brandName,id);
+    }
+
+
+    @Override
+    public Boolean isExistSort(Long sortId){
+        return  maGoodsBrandDAO.isExistSort(sortId);
+    }
+
+
+    @Override
+    public Boolean editIsExistSort(Long sortId,Long id){
+        return  maGoodsBrandDAO.editIsExistSort(sortId,id);
+    }
+
+    @Override
     public GoodsBrand queryGoodsBrandVOById(Long goodsBrandId){
         GoodsBrand goodsBrand =  maGoodsBrandDAO.queryGoodsBrandVOById(goodsBrandId);
         return goodsBrand;
@@ -68,5 +87,12 @@ public class MaGoodsBrandServiceImpl implements MaGoodsBrandService {
     public List<GoodsBrand> queryGoodsBrandList() {
         List<GoodsBrand> pageGoodsBrandList = this.maGoodsBrandDAO.findAllGoodsBrand();
         return pageGoodsBrandList;
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (null != id) {
+            maGoodsBrandDAO.delete(id);
+        }
     }
 }

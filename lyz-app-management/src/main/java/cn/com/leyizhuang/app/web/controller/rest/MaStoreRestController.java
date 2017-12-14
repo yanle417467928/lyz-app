@@ -43,7 +43,7 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * 查询门店列表
+     * 查询门店列表(下拉框)
      *
      * @return
      */
@@ -54,7 +54,7 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * 查询该城市ID的门店列表
+     * 查询该城市ID的门店列表(下拉框)
      *
      * @param cityId
      * @return
@@ -113,7 +113,7 @@ public class MaStoreRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findStoresListByCondition")
-    public GridDataVO<StoreVO> findStoresListByCondition(@RequestParam("enabled") Boolean enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
+    public GridDataVO<StoreVO> findStoresListByCondition(@RequestParam("enabled") String enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId);

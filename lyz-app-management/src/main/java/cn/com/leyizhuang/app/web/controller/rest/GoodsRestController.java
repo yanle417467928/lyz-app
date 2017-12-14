@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.PhysicalClassify;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
@@ -8,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.service.MaPhysicalClassifyService;
 import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -102,7 +106,7 @@ public class GoodsRestController extends BaseRestController {
      */
 
     @PutMapping(value = "update")
-    public ResultDTO<Object> restGoodsVOPost(MaGoodsVO goodsVO, BindingResult result,MultipartFile file) {
+    public ResultDTO<Object> restGoodsVOPost(MaGoodsVO goodsVO, BindingResult result) {
         if (!result.hasErrors()) {
             this.goodsService.updateGoods(goodsVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -121,7 +125,14 @@ public class GoodsRestController extends BaseRestController {
      */
     @PostMapping(value = "updateImg")
     public ResultDTO<Object> updateImg(MultipartFile file) {
-            String picUrl = "http://img1.leyizhuang.com.cn/app/images/goods/2507/20170303114334899.jpg"; /*FileUploadOSSUtils.uploadProfilePhoto(file, "/profile/photo/");*/
+        String picUrl =null;
+        if(!file.isEmpty()){
+             picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "goods/");
+        }else {
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    "图片上传失败", null);
+        }
+            /*FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");*/
             if (null != picUrl || "".equals(picUrl)) {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
             } else {
@@ -131,9 +142,40 @@ public class GoodsRestController extends BaseRestController {
     }
 
 
+    /**
+     * 更新商品详情页
+     * @param imgFile
+     * @return
+     */
+    @PostMapping(value = "updateGoodsDetial")
+    public Map<String, Object> updateGoodsDetial(MultipartFile imgFile) {
+        String url =null;
+        Map<String, Object> res = new HashMap<String, Object>();
+        if(!imgFile.isEmpty()){
+            url = FileUploadOSSUtils.uploadProfilePhoto(imgFile, "goods/");
+        }else {
+            res.put("msg", "图片不存在");
+            return res;
+        }
+            /*;*/
+        if (null != url || "".equals(url)) {
+            res.put("error", 0);
+            res.put("msg", "上传文件成功！");
+            res.put("url", url);
+            return res;
+        } else {
+            res.put("msg", "上传文件失败！");
+            return res;
+        }
+    }
+
+/*
+
     @PostMapping(value = "updateDetial")
     public ResultDTO<Object> updateDetial(MultipartFile file) {
-        String picUrl = "http://img1.leyizhuang.com.cn/app/images/goods/2507/20170303114334899.jpg"; /*FileUploadOSSUtils.uploadProfilePhoto(file, "/profile/photo/");*/
+        String picUrl = "http://img1.leyizhuang.com.cn/app/images/goods/2507/20170303114334899.jpg"; */
+/*FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");*//*
+
         if (null != picUrl || "".equals(picUrl)) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
         } else {
@@ -141,6 +183,7 @@ public class GoodsRestController extends BaseRestController {
                     "图片上传失败", null);
         }
     }
+*/
 
     /**
      * 根据搜索查询商品信息
@@ -188,6 +231,39 @@ public class GoodsRestController extends BaseRestController {
     public List<PhysicalClassify> findPhysicalClassify() {
         List<PhysicalClassify> physicalClassifyList = this.physicalClassifyService.findPhysicalClassifyList();
         return physicalClassifyList;
+    }
+
+
+    /**
+     * 修改商品检验电商名称是否存在
+     * @param skuName
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/isExistSkuName")
+    public ValidatorResultDTO isExistSkuName(@RequestParam(value = "skuName") String skuName,@RequestParam(value = "id")Long id) {
+        if(null==skuName||null==id||"".equals(skuName)){
+            logger.warn("页面提交的数据有错误");
+            return new ValidatorResultDTO(false);
+        }
+        Boolean result = this.goodsService.isExistSkuName(skuName,id);
+        return new ValidatorResultDTO(!result);
+    }
+
+    /**
+     * 修改商品检验排序号是否存在
+     * @param sortId
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/isExistSortId")
+    public ValidatorResultDTO isExistSortId(@RequestParam(value = "sortId") Long sortId,@RequestParam(value = "id")Long id) {
+        if(null==sortId||null==id){
+            logger.warn("页面提交的数据有错误");
+            return new ValidatorResultDTO(false);
+        }
+        Boolean result = this.goodsService.isExistSortId(sortId,id);
+        return new ValidatorResultDTO(!result);
     }
 
 }

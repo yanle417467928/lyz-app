@@ -31,6 +31,8 @@ public class DecorativeCompanyVO {
     // 创建时间
     private Date createTime;
 
+
+
     public static final DecorativeCompanyVO transform(StoreDO storeDO) {
         if (null != storeDO) {
             DecorativeCompanyVO decorativeCompanyVO = new DecorativeCompanyVO();

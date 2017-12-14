@@ -2,10 +2,8 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
-          rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
@@ -257,7 +255,7 @@
                                 <label>
                                     归属城市
                                 </label>
-                                <select name="cityId" id="cityId" class="form-control select"   onchange="findStoreByCity(this.value);" >
+                                <select name="city.cityId" id="cityId" class="form-control select"   onchange="findStoreByCity(this.value);" >
                                 </select>
                             </div>
                         </div>
@@ -266,7 +264,7 @@
                                 <label for="title">
                                     归属门店
                                 </label>
-                                <select name="storeId" id="storeId" class="form-control select"   onchange="findGuide()">
+                                <select name="store.storeId" id="storeId" class="form-control select"   onchange="findGuide()">
                                 </select>
                             </div>
                         </div>
@@ -278,7 +276,7 @@
                                 <label for="description">
                                     归属导购
                                 </label>
-                                <select name="salesConsultId" id="guideId" class="form-control select" >
+                                <select name="salesConsultId.id" id="guideId" class="form-control select" >
                                 </select>
                             </div>
                         </div>
@@ -373,12 +371,13 @@
                  })
                  $("#cityId").append(city);
                  $('#cityId').selectpicker('refresh');
-                 findStoreByCity(1);
+                 findStoreByCity();
              }
          });
      }
 
     function findStoreByCity(cityId) {
+        var cityId = $("#cityId").val();
         $("#storeId").empty()
         var store;
         $.ajax({
@@ -421,7 +420,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    guide += "<option value=" + item.empId + ">" + item.name + "</option>";
+                    guide += "<option value=" + item.id + ">" + item.name + "</option>";
                 })
                 $("#guideId").append(guide);
                 $('#guideId').selectpicker('refresh');

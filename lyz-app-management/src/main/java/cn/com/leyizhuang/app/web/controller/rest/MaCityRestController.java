@@ -74,7 +74,7 @@ public class MaCityRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 查询城市列表
+     * @title 查询城市列表(下拉框)
      * @descripe
      * @author
      * @date 2017/11/3

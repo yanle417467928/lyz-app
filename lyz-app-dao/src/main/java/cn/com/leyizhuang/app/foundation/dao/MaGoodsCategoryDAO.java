@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsCategoryDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -13,16 +15,24 @@ public interface MaGoodsCategoryDAO {
 
     List<GoodsCategoryDO> findGoodsCategoryByPid(Long pid);
 
-    List<GoodsCategoryDO> findGoodsCategoryByPcode(String queryStoreInfo);
+    List<GoodsCategoryDO> findGoodsCategoryByPcode(String queryCategoryInfo);
 
     void save(GoodsCategoryDO goodsCategoryDO);
 
     Boolean isExistCategoryName(String categoryName);
+
+    Boolean editIsExistCategoryName(@Param(value = "categoryName") String categoryName,@Param(value = "id") Long id);
 
     GoodsCategoryDO queryGoodsCategoryVOById(Long goodsCategoryId);
 
     void update(GoodsCategoryDO goodsCategoryDO);
 
     List<GoodsCategoryDO> findEditGoodsCategory();
+
+    void delete(Long id);
+
+    Boolean isExistSortId(Long sortId);
+
+    Boolean editIsExistSortId(@Param(value = "sortId") Long sortId,@Param(value = "id") Long id);
 
 }

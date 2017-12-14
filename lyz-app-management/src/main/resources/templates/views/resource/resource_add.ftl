@@ -270,7 +270,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="seq" type="number" class="form-control" id="seq"
+                                    <input name="sortId" type="number" class="form-control" id="seq"
                                            placeholder="排序号">
                                 </div>
                             </div>

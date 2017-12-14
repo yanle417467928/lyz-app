@@ -1,11 +1,14 @@
 <head>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
 </head>
 <body>
 
@@ -33,13 +36,19 @@
                             onchange="findStoreByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="diyCode" id="diyCode" class="form-control select" style=""margin-left:10px width:auto;"
-                            onchange="findType()">
+                    <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px" style="margin-left:10px width:auto;"
+                      onchange="findIdentityTypeByStore()"  data-live-search="true" >
                         <option value="-1">选择门店</option>
                     </select>
                     <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
-                            onchange="findEmpByType()">
+                            onchange="findEmpByCondition()">
                         <option value="-1">选择类型</option>
+                    </select>
+                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;" data-live-search="true"
+                            onchange="findEmpByCondition()">
+                        <option value="-1">是否可用</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control" style="width:auto;"
@@ -131,6 +140,8 @@
 
     $(function () {
         findCityList();
+        findStorelist();
+        findTypeList();
         initDateGird('/rest/employees/page/grid');
     });
 
@@ -192,17 +203,6 @@
             }
         },
         ]);
-        $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
-        });
-
-        $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/view/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
-        });
-
-        $('#btn_delete').on('click', function () {
-            $grid.remove($('#dataGrid'), '/rest/goods', 'delete');
-        });
     }
 
     var formatDateTime = function (date) {
@@ -219,6 +219,16 @@
         var second = dt.getSeconds();
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+    };
+
+    var formatDateTimeBirthday = function (date) {
+        var dt = new Date(date);
+        var y = dt.getFullYear();
+        var m = dt.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = dt.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        return y + '-' + m + '-' + d ;
     };
 
     var $page = {
@@ -271,7 +281,7 @@
                                 if (null === data.birthday) {
                                     data.birthday = '-';
                                 }else{
-                                    data.birthday=formatDateTime(data.birthday)
+                                    data.birthday=formatDateTimeBirthday(data.birthday)
                                 }
                                 $('#birthday').html( data.birthday);
 
@@ -290,11 +300,11 @@
                                 }
 
                                 if (null === data.storeId) {
-                                    $('#city').html('-');
+                                    $('#store').html('-');
                                 }else if(null === data.storeId.storeName){
-                                    $('#city').html('-');
+                                    $('#store').html('-');
                                 }else{
-                                    $('#city').html(data.storeId.storeName);
+                                    $('#store').html(data.storeId.storeName);
                                 }
 
                                 if (null === data.sex) {
@@ -369,64 +379,16 @@
     }
 
 
-    function findStoreByCity(cityIdVal){
-        $("#queryEmpInfo").val('');
-        initSelect("#diyCode", "选择门店");
-        initSelect("#identityType", "选择类型");
-        var store;
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityIdVal,
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#diyCode").append(store);
-                findEmpByCityId(cityIdVal);
-            }
-        });
-    }
-
     function initSelect(select, optionName) {
         $(select).empty();
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
     }
 
-    function  findEmpByCityId(cityId){
-            $("#dataGrid").bootstrapTable('destroy');
-            if (cityId == -1) {
-                initDateGird('/rest/employees/page/grid');
-            } else {
-                initDateGird('/rest/employees/page/cityGrid/' + cityId);
-            }
-        }
-
-
-    function findEmpByStoreId(storeId, cityId) {
-        $("#dataGrid").bootstrapTable('destroy');
-        if (storeId == -1) {
-            initDateGird('/rest/employees/page/cityGrid/' + cityId);
-        } else {
-            initDateGird('/rest/employees/page/storeGrid/' + storeId);
-        }
-    }
-
-    function findType() {
-        $("#queryEmpInfo").val('');
-        var storeId = $("#diyCode").val();
-        var cityId = $("#cityCode").val();
-        initSelect("#identityType", "选择类型")
+    function findTypeList() {
         var emptype;
         $.ajax({
-            url: '/rest/employees/findEmpType/' + storeId,
+            url: '/rest/employees/findEmpTypeList',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -440,27 +402,50 @@
                     emptype += "<option value=" + item.identityType + ">" + item.identityType + "</option>";
                 })
                 $("#identityType").append(emptype);
-                findEmpByStoreId(storeId, cityId);
             }
         });
     }
 
-    function findEmpByType(){
+    function findStorelist() {
+        var store = "";
+        $.ajax({
+            url: '/rest/stores/findStorelist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
+    }
+
+
+    function findEmpByCondition(){
         $("#queryEmpInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var identityType = $("#identityType").val();
-        var storeId = $("#diyCode").val();
-        if (identityType == -1) {
-            initDateGird('/rest/employees/page/storeGrid/' + storeId);
-        } else {
-            initDateGird('/rest/employees/page/identityTypegrid?identityType=' + identityType+'&storeId='+storeId);
-        }
+        var storeId = $("#storeCode").val();
+        var cityId = $("#cityCode").val();
+        var enabled = $("#enabled").val();
+            initDateGird('/rest/employees/page/conditionGrid?identityType=' + identityType+'&storeId='+storeId+
+            '&cityId='+cityId+'&enabled='+enabled);
     }
 
 
     function findEmpByNameOrPhone() {
         var queryEmpInfo = $("#queryEmpInfo").val();
         $('#cityCode').val("-1");
+        $('#enabled').val("-1");
         initSelect("#diyCode", "选择门店");
         initSelect("#identityType", "选择类型");
         $("#dataGrid").bootstrapTable('destroy');
@@ -470,6 +455,100 @@
         }
             initDateGird('/rest/employees/page/infoGrid/' + queryEmpInfo);
     }
+
+
+    function findStoreByCity(cityId) {
+        initSelect("#storeCode", "选择门店");
+        initSelect("#identityType", "选择类型");
+        $("#queryCusInfo").val('');
+        if(cityId==-1){
+            findStorelist();
+            findTypeList();
+            findEmpByCondition();
+            return false;
+        };
+        findEmpByCondition();
+        var store;
+        $.ajax({
+            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
+        findIdentityTypeByCity();
+    }
+
+
+
+
+
+    function findIdentityTypeByCity(){
+        $("#queryEmpInfo").val('');
+        var cityId = $("#cityCode").val();
+        initSelect("#identityType", "选择类型")
+        var emptype;
+        $.ajax({
+            url: '/rest/employees/findEmpTypeByCityId/'+cityId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    emptype += "<option value=" + item.identityType + ">" + item.identityType + "</option>";
+                })
+                $("#identityType").append(emptype);
+            }
+        });
+    }
+
+    function findIdentityTypeByStore(){
+        $("#queryEmpInfo").val('');
+        var storeId = $("#storeCode").val();
+        initSelect("#identityType", "选择类型");
+        if(storeId==-1){
+            findTypeList();
+            findEmpByCondition();
+            return false;
+        };
+        findEmpByCondition();
+        var emptype;
+        $.ajax({
+            url: '/rest/employees/findEmpTypeByStoreId/'+storeId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    emptype += "<option value=" + item.identityType + ">" + item.identityType + "</option>";
+                })
+                $("#identityType").append(emptype);
+            }
+        });
+    }
+
 
 </script>
 </body>

@@ -371,4 +371,16 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         goodsDAO.updateGoods(goodsDO);
     }
 
+
+    @Override
+    public Boolean isExistSkuName(String skuName,Long id){
+        return  goodsDAO.isExistSkuName(skuName,id);
+    }
+
+
+    @Override
+    public Boolean isExistSortId(Long sortId,Long id){
+        return  goodsDAO.isExistSortId(sortId,id);
+    }
+
 }

@@ -56,12 +56,33 @@
         SELECT EXISTS(SELECT 1
         FROM gds_goods_brand
         WHERE brand_name = #{brandName})
-             ORDER
-        BY
-        sort_id
-        ASC
     </select>
 
+
+    <select id="editIsExistBrandName"   resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_brand
+        WHERE brand_name = #{brandName}
+        AND
+        brd_id !=#{id}
+        )
+    </select>
+
+    <select id="isExistSort" parameterType="java.lang.Long"  resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_brand
+        WHERE  sort_id = #{sortId})
+    </select>
+
+
+    <select id="editIsExistSort"   resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_brand
+        WHERE  sort_id = #{sortId}
+        AND
+        brd_id !=#{id}
+        )
+    </select>
 
     <select id="queryGoodsBrandVOById"  parameterType="java.lang.Long" resultType="GoodsBrand">
         select
@@ -92,4 +113,10 @@
         </set>
         WHERE brd_id = #{brdId}
     </update>
+
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM gds_goods_brand
+        WHERE brd_id = #{id};
+    </delete>
  </mapper>

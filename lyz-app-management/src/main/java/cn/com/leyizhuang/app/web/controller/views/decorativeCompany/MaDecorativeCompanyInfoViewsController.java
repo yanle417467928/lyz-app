@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.views.decorativeCompanyInfo;
+package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -21,5 +21,6 @@ public class MaDecorativeCompanyInfoViewsController extends BaseController {
     public String getDecorativeInfoList() {
         return "/views/decorativeCompany/decorativeCompanyInfo_page";
     }
+
 }
 

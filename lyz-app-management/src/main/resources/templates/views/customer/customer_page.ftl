@@ -1,12 +1,12 @@
 <head>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
@@ -340,7 +340,7 @@
                                 if (null === data.birthday) {
                                     $('#birthday').html('-');
                                 } else {
-                                    $('#birthday').html(formatDateTime(data.birthday));
+                                    $('#birthday').html(formatDateTimeBirthday(data.birthday));
                                 }
 
 
@@ -422,7 +422,9 @@
 
                                 if ('APP_REGISTRY' === data.createType) {
                                     data.createType = 'APP';
-                                } else {
+                                } else if('Background add' === data.createType) {
+                                        data.createType = '后台添加';
+                                }else {
                                     data.createType = '-';
                                 }
                                 $('#createType').html(data.createType);
@@ -488,6 +490,16 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
+    var formatDateTimeBirthday = function (date) {
+        var dt = new Date(date);
+        var y = dt.getFullYear();
+        var m = dt.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = dt.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        return y + '-' + m + '-' + d ;
+    };
+
 
     function findStoreByCity(cityId) {
         initSelect("#storeCode", "选择门店");
@@ -516,6 +528,8 @@
                 })
                 $("#storeCode").append(store);
                 findCusByCityId(cityId);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
             }
         });
     }

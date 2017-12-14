@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
+import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
@@ -45,9 +46,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> restCustomersPageGird(Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPage = this.maCustomerService.queryPageVO(page, size);
-        List<CustomerVO> custmersList = custmersPage.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPage.getTotal());
+        PageInfo<CustomerDO> custmersPage = this.maCustomerService.queryPageVO(page, size);
+        List<CustomerDO> custmersList = custmersPage.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPage.getTotal());
     }
 
     /**
@@ -58,7 +60,8 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/{cusId}")
     public ResultDTO<CustomerVO> restCusIdGet(@PathVariable(value = "cusId") Long cusId) {
-        CustomerVO customerVO = this.maCustomerService.queryCustomerVOById(cusId);
+        CustomerDO customerDO = this.maCustomerService.queryCustomerVOById(cusId);
+        CustomerVO customerVO =  CustomerVO.transform(customerDO);
         if (null == customerVO) {
             logger.warn("查找顾客失败：Role(id = {}) == null", cusId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -81,9 +84,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> getCudByCityId(Integer offset, Integer size, String keywords, @PathVariable(value = "cityId") Long cityId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
-        List<CustomerVO> custmersList = custmersPageByCityID.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByCityID.getTotal());
+        PageInfo<CustomerDO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
+        List<CustomerDO> custmersList = custmersPageByCityID.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByCityID.getTotal());
     }
 
     /**
@@ -99,9 +103,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> getCudByStoreId(Integer offset, Integer size, String keywords, @PathVariable(value = "storeId") Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
-        List<CustomerVO> custmersList = custmersPageByStoreId.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByStoreId.getTotal());
+        PageInfo<CustomerDO> custmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
+        List<CustomerDO> custmersList = custmersPageByStoreId.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByStoreId.getTotal());
     }
 
     /**
@@ -117,9 +122,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> getCudByGuideId(Integer offset, Integer size, String keywords, @PathVariable(value = "guideId") Long guideId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
-        List<CustomerVO> custmersList = custmersPageByGuideId.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByGuideId.getTotal());
+        PageInfo<CustomerDO> custmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
+        List<CustomerDO> custmersList = custmersPageByGuideId.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByGuideId.getTotal());
     }
 
     /**
@@ -135,9 +141,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> getCudByPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") Long queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
-        List<CustomerVO> custmersList = custmersPageByPhone.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByPhone.getTotal());
+        PageInfo<CustomerDO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
+        List<CustomerDO> custmersList = custmersPageByPhone.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByPhone.getTotal());
     }
 
     /**
@@ -153,9 +160,10 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerVO> getCudByName(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") String queryCusInfo) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerVO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
-        List<CustomerVO> custmersList = custmersPageByName.getList();
-        return new GridDataVO<CustomerVO>().transform(custmersList, custmersPageByName.getTotal());
+        PageInfo<CustomerDO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
+        List<CustomerDO> custmersList = custmersPageByName.getList();
+        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
+        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByName.getTotal());
     }
 
     /**
@@ -166,10 +174,10 @@ public class MaCustomerRestController extends BaseRestController {
      * @return
      */
     @PostMapping
-    public ResultDTO<Object> restCustomerVOPost(@Valid Customer customer, BindingResult result, MultipartFile file) {
+    public ResultDTO<Object> restCustomerVOPost(@Valid CustomerVO customer, BindingResult result, MultipartFile file) {
         if (!result.hasErrors()) {
-            if (null != file) {
-                String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "/profile/photo/");
+            if (!file.isEmpty()) {
+                String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");
                 customer.setPicUrl(picUrl);
             } else {
                 customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
@@ -191,6 +199,10 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @PostMapping(value = "/isExistPhoneNumber")
     public ValidatorResultDTO isExistPhoneNumber(@RequestParam(value = "mobile") Long mobile) {
+          if(null==mobile){
+            logger.warn("页面提交的数据有错误");
+            return new ValidatorResultDTO(false);
+        }
         Boolean result = this.maCustomerService.isExistPhoneNumber(mobile);
         return new ValidatorResultDTO(!result);
     }

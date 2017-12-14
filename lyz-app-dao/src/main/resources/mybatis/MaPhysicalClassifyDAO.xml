@@ -7,7 +7,7 @@
            pc.id,
            pc.physical_classify_name
          FROM
-          physical_classify pc
+          goods_physical_classify pc
           WHERE
           1=1
   </select>

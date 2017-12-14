@@ -32,16 +32,28 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
     }
 
    @RequestMapping(value = "/cityDeliveryTimeList/{cityId}")
-    public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,Model model) {
-        model.addAttribute("cityId",cityId);
-        return "/views/city/cityDeliveryTimeList";
+    public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
+       if (!cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+           error404();
+           return "/error/404";
+       } else {
+           model.addAttribute("cityId", cityId);
+           model.addAttribute("cityName", cityName);
+           return "/views/city/cityDeliveryTimeList";
+       }
     }
 
 
     @RequestMapping(value = "/add")
-    public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,Model model) {
-        model.addAttribute("cityId",cityId);
-        return "/views/city/cityDeliveryTime_add";
+    public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
+        if (!cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+                error404();
+                return "/error/404";
+            } else {
+            model.addAttribute("cityId", cityId);
+            model.addAttribute("cityName", cityName);
+            return "/views/city/cityDeliveryTime_add";
+        }
     }
 
     @GetMapping(value = "/edit/{id}")

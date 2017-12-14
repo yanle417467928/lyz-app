@@ -2,10 +2,8 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
-          rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
@@ -118,7 +116,7 @@
                 var $form = $(e.target);
                 var origin = $form.serializeArray();
                 var data = {};
-                var formData = new FormData($( "#cityDeliveryTime_add" )[0]);
+                var formData = new FormData($("#cityDeliveryTime_add")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     var url = '/rest/cityDeliveryTime';
@@ -180,8 +178,10 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <select id="cityId" name="cityId" class="form-control" readonly >
-                                    </select>
+                                    <input name="cityId" type="hidden" class="form-control" id="cityId" readonly
+                                           value="${cityId}">
+                                    <input name="cityName" type="text" class="form-control" id="name" readonly
+                                           value="${cityName}">
                                 </div>
                             </div>
                         </div>
@@ -233,7 +233,6 @@
     </div>
 </section>
 <script>
-    var id;
     $(function () {
          id =  ${cityId};
         if (!$global.validateMobile()) {
@@ -245,14 +244,14 @@
             language: 'zh-CN',
             autoclose: true
         });
-
-        findCitySelection()
+/*
+        findCitySelection()*/
     });
 
-    function findCitySelection(){
+/*    function findCitySelection(){
         var city;
         $.ajax({
-            url: '/rest/citys/findCitylist',
+            url: '/rest/citys/findCity',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -262,16 +261,10 @@
             },
             success: function (result) {
                 clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
-                $("#cityId").append(city);
-                $("#cityId").val(id);
-                $("#cityId").attr("disabled","disabled");
             }
         });
 
-    }
+    }*/
 
 </script>
 </body>

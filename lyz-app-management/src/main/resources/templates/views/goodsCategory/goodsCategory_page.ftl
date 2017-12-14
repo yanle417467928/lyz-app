@@ -35,11 +35,14 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
+                    <button id="btn_delete" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
+                    </button>
                     <select name="goodsCategoryCode" id="goodsCategoryCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findGoodsCategoryByPid(this.value);">
                         <option value="-1">选择父类分级</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称..">
+                        <input type="text" name="queryCategoryInfo" id="queryCategoryInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称..">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findGoodsCategoryByPcode()">查找</button>
@@ -65,6 +68,9 @@
 
         $('#btn_edit').on('click', function() {
             $grid.modify($('#dataGrid'), '/views/admin/goodsCategorys/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+        $('#btn_delete').on('click', function () {
+            $grid.remove($('#dataGrid'), '/rest/goodsCategorys', 'delete');
         });
     });
 
@@ -146,7 +152,7 @@
 
 
     function findGoodsCategoryByPid(pid){
-        $("#queryStoreInfo").val('');
+        $("#queryCategoryInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         if('-1'==pid){
             initDateGird('/rest/goodsCategorys/page/grid');
@@ -158,11 +164,11 @@
     function findGoodsCategoryByPcode(){
         $("#goodsCategoryCode").val('-1');
         $("#dataGrid").bootstrapTable('destroy');
-        var queryStoreInfo =$("#queryStoreInfo").val();
-        if(''==queryStoreInfo||null==queryStoreInfo){
+        var queryCategoryInfo =$("#queryCategoryInfo").val();
+        if(''==queryCategoryInfo||null==queryCategoryInfo){
            initDateGird('/rest/goodsCategorys/page/grid');
         }else{
-            initDateGird('/rest/goodsCategorys/findGoodsCategoryByPcode/'+queryStoreInfo);
+            initDateGird('/rest/goodsCategorys/findGoodsCategoryByPcode/'+queryCategoryInfo);
          }
     }
 </script>

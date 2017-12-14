@@ -14,15 +14,23 @@ public interface MaGoodsCategoryService {
 
     PageInfo<GoodsCategoryDO> findGoodsCategoryByPid(Long pid,Integer offset, Integer size);
 
-    PageInfo<GoodsCategoryDO> findGoodsCategoryByPcode(String queryStoreInfo,Integer offset, Integer size);
+    PageInfo<GoodsCategoryDO> findGoodsCategoryByPcode(String queryCategoryInfo,Integer offset, Integer size);
 
    void save(GoodsCategoryVO goodsCategoryVO);
 
     Boolean isExistCategoryName(String categoryName);
+
+    Boolean editIsExistCategoryName(String categoryName,Long id);
 
     GoodsCategoryVO queryGoodsCategoryVOById(Long goodsCategoryId);
 
     void  update(GoodsCategoryVO goodsCategoryVO);
 
     List<GoodsCategoryVO> findEditGoodsCategory();
+
+    void delete(Long id);
+
+    Boolean isExistSortId(Long sortId);
+
+    Boolean editIsExistSortId(Long sortId,Long id);
 }

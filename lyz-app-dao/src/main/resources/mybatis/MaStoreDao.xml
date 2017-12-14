@@ -52,6 +52,29 @@
     </resultMap>
 
 
+    <resultMap id="decorativeCompanyResultMap" type="DecorativeCompanyInfo">
+        <id property="id" column="store_id" jdbcType="BIGINT"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="enable" column="enable"/>
+<!--        <result property="credit" column="credit"/>
+        <result property="sponsorship" column="sponsorship"/>-->
+        <association property="cityCode" javaType="CityVO">
+            <id property="cityId" column="city_id"/>
+            <result property="code" column="code"/>
+            <result property="name" column="name"/>
+        </association>
+        <association property="credit" javaType="DecorativeCompanyCredit">
+            <id property="cid" column="cid"/>
+            <result property="credit" column="credit"/>
+        </association>
+        <association property="sponsorship" javaType="DecorativeCompanySubvention">
+            <id property="sid" column="sid"/>
+            <result property="sponsorship" column="sponsorship"/>
+        </association>
+    </resultMap>
+
+
     <select id="findAllVO" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
@@ -63,6 +86,8 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+         s.store_type!="ZS"
         ORDER BY
         create_time
         DESC
@@ -87,6 +112,18 @@
         st_store s
         LEFT JOIN city c on s.city_code = c.code
         WHERE c.city_id = #{cityId}
+         AND
+         s.store_type!="ZS"
+    </select>
+
+    <select id="findStoresList" resultType="StoreVO">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+         s.store_type!="ZS"
     </select>
 
 
@@ -102,6 +139,8 @@
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE c.city_id= #{cityId}
+            AND
+         s.store_type!="ZS"
     </select>
 
 
@@ -126,6 +165,8 @@
         AND
          s.enable=#{enabled}
         </if>
+        AND
+        s.store_type!="ZS"
     </select>
 
     <select id="findStoresListByStoreInfo" parameterType="java.lang.String" resultMap="storeVOResultMap">
@@ -140,6 +181,8 @@
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE s.store_name LIKE CONCAT('%',#{queryStoreInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryStoreInfo},'%')
+        AND
+         s.store_type!="ZS"
     </select>
     
     <update id="update">
@@ -167,7 +210,7 @@
         WHERE
         s.store_type="ZS"
         ORDER BY
-        create_time
+        s.create_time
         DESC
     </select>
 
@@ -192,6 +235,9 @@
             AND
             s.enable=#{enabled}
         </if>
+        ORDER BY
+        s.create_time
+        DESC
     </select>
 
     <select id="findDecorativeByInfo" parameterType="java.lang.String" resultMap="storeDOResultMap">
@@ -209,6 +255,127 @@
         s.store_type="ZS"
         AND
         (s.store_name LIKE CONCAT('%',#{queryDecorativeInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryDecorativeInfo},'%'))
+         ORDER BY
+         s.create_time
+         DESC
+    </select>
+
+    <select id="findDecorativeById" parameterType="java.lang.Long" resultMap="storeDOResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        s.create_time,
+        c.name
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        WHERE s.store_id=#{storeId}
+        AND
+         s.store_type="ZS"
+    </select>
+
+    <select id="findDecorativeCreditList"  resultMap="decorativeCompanyResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name,
+        scm.credit_limit_available AS credit,
+        ss.balance AS sponsorship
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        LEFT JOIN st_credit_money scm on s.store_id=scm.store_id
+        LEFT JOIN st_subvention ss on s.store_id=ss.store_id
+        WHERE
+        s.store_type="ZS"
+        ORDER BY
+         s.create_time
+         DESC
+    </select>
+
+
+    <select id="findDecorativeCreditById" parameterType="java.lang.Long" resultMap="decorativeCompanyResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name,
+         scm.id as cid,
+         ss.id as sid,
+        scm.credit_limit_available AS credit,
+        ss.balance AS sponsorship
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        LEFT JOIN st_credit_money scm on s.store_id=scm.store_id
+        LEFT JOIN st_subvention ss on s.store_id=ss.store_id
+        WHERE
+        s.store_id =#{decorativeCompanyId}
+        AND
+        s.store_type="ZS"
+    </select>
+
+    <select id="findDecorativeCreditByInfo" parameterType="java.lang.String" resultMap="decorativeCompanyResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name,
+        scm.credit_limit_available AS credit,
+        ss.balance AS sponsorship
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        LEFT JOIN st_credit_money scm on s.store_id=scm.store_id
+        LEFT JOIN st_subvention ss on s.store_id=ss.store_id
+        WHERE
+        s.store_type="ZS"
+        AND
+        (s.store_name LIKE CONCAT('%',#{queryDecorativeCreditInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryDecorativeCreditInfo},'%'))
+        ORDER BY
+        s.create_time
+        DESC
+    </select>
+
+
+    <select id="findDecorativeCreditByCondition" resultMap="decorativeCompanyResultMap">
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        c.name,
+        scm.credit_limit_available AS credit,
+        ss.balance AS sponsorship
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        LEFT JOIN st_credit_money scm on s.store_id=scm.store_id
+        LEFT JOIN st_subvention ss on s.store_id=ss.store_id
+        WHERE
+        s.store_type="ZS"
+        <if test="null != cityId">
+            AND
+            c.city_id= #{cityId}
+        </if>
+        <if test="null != enabled">
+            AND
+            s.enable=#{enabled}
+        </if>
+        ORDER BY
+        s.create_time
+        DESC
     </select>
 
 </mapper>

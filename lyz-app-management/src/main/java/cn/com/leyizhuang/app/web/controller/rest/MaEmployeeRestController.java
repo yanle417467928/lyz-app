@@ -64,23 +64,6 @@ public class MaEmployeeRestController extends BaseRestController  {
         }
     }
 
-    /**
-     * 查询该城市下的员工
-     * @param offset
-     * @param size
-     * @param keywords
-     * @param cityId
-     * @return
-     */
-    @GetMapping(value = "/page/cityGrid/{cityId}")
-    public GridDataVO<EmployeeVO> restEmployeesPageGirdByCityId(Integer offset, Integer size, String keywords,@PathVariable(value = "cityId") Long cityId) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCityId(page, size,cityId);
-        List<EmployeeDO> employeesList = employeesPage.getList();
-        List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
-        return new GridDataVO<EmployeeVO>().transform(employeesVOList, employeesPage.getTotal());
-    }
 
     /**
      * 查询该门店下的导购
@@ -94,32 +77,38 @@ public class MaEmployeeRestController extends BaseRestController  {
 
 
     /**
-     * 根据类型查询员工
-     * @param id
+     * 查询该门店下的员工类型
+     * @param storeId
+     * @param
      * @return
      */
-    @GetMapping(value = "/findEmpType/{id}")
-    public List<EmployeeVO> findEmpTypeListById(@PathVariable("id") Long id) {
-        return maEmployeeService.findEmpTypeListById(id);
+    @GetMapping(value = "/findEmpTypeByStoreId/{storeId}")
+    public List<EmployeeVO> findEmpTypeByStoreId( @PathVariable("storeId") Long storeId) {
+        return maEmployeeService.findEmpTypeByStoreId(storeId);
     }
 
     /**
-     *查询该门店下的员工
-     * @param offset
-     * @param size
-     * @param keywords
-     * @param storeId
+     * 查询该城市下的员工类型
+     * @param
+     * @param cityId
      * @return
      */
-    @GetMapping(value = "/page/storeGrid/{storeId}")
-    public GridDataVO<EmployeeVO> restEmployeesPageGirdByStoreId(Integer offset, Integer size, String keywords,@PathVariable(value = "storeId") Long storeId) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByStoreId(page, size,storeId);
-        List<EmployeeDO> employeesList = employeesPage.getList();
-        List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
-        return new GridDataVO<EmployeeVO>().transform(employeesVOList, employeesPage.getTotal());
+    @GetMapping(value = "/findEmpTypeByCityId/{cityId}")
+    public List<EmployeeVO> findEmpTypeByCityId(@PathVariable("cityId") Long cityId) {
+        return maEmployeeService.findEmpTypeByCityId(cityId);
     }
+
+
+    /**
+     * 查询所有员工类型
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/findEmpTypeList")
+    public List<EmployeeVO> findEmpTypeList() {
+        return maEmployeeService.findEmpTypeList();
+    }
+
 
     /**
      * 根据身份信息查询员工
@@ -130,11 +119,12 @@ public class MaEmployeeRestController extends BaseRestController  {
      * @param storeId
      * @return
      */
-    @GetMapping(value = "/page/identityTypegrid")
-    public GridDataVO<EmployeeVO> restEmployeesPageGirdByType(Integer offset, Integer size, String keywords,@RequestParam(value = "identityType") String identityType,@RequestParam(value = "storeId") Long storeId) {
+    @GetMapping(value = "/page/conditionGrid")
+    public GridDataVO<EmployeeVO> restEmployeesPageGirdByCondition(Integer offset, Integer size, String keywords,@RequestParam(value = "identityType") String identityType,
+           @RequestParam(value = "storeId") Long storeId,@RequestParam(value = "cityId") Long cityId,@RequestParam(value = "enabled") String enabled) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByType(page, size,identityType,storeId);
+        PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCondition(page, size,identityType,storeId,cityId,enabled);
         List<EmployeeDO> employeesList = employeesPage.getList();
         List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
         return new GridDataVO<EmployeeVO>().transform(employeesVOList, employeesPage.getTotal());

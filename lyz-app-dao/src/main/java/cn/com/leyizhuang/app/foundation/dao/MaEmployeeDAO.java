@@ -13,15 +13,24 @@ public interface MaEmployeeDAO {
 
     EmployeeDO queryEmployeeById(Long id);
 
-    List<EmployeeDO> findEmployeeByCityId(Long cityId);
 
     List<EmployeeDO> findGuideListById(Long storeId);
 
-    List<EmployeeDO> findEmpTypeListById(Long id);
+    List<EmployeeDO> findEmpTypeByStoreId(Long storeId);
 
-    List<EmployeeDO> findEmployeeByStoreId(Long storeId);
+    List<EmployeeDO> findEmpTypeByCityId(Long cityId);
 
-    List<EmployeeDO> queryPageVOByType(@Param(value = "identityType") String identityType, @Param(value = "storeId") Long storeId);
+    List<EmployeeDO> findEmpTypeList();
+
+    List<EmployeeDO> queryPageVOByStoreCondition(@Param(value = "identityType") String identityType, @Param(value = "storeId") Long storeId,@Param(value = "enabled") String enabled);
+
+    List<EmployeeDO> queryPageVOByCityCondition(@Param(value = "identityType") String identityType, @Param(value = "cityId") Long cityId,@Param(value = "enabled") String enabled);
 
     List<EmployeeDO> findEmployeeByInfo(String queryEmpInfo);
+
+    List<EmployeeDO> queryDecorativeEmpPageVO();
+
+    List<EmployeeDO> queryDecorativeEmpPageVOByInfo(String queryEmpInfo);
+
+    List<EmployeeDO> findDecorativeEmpByCondition(@Param(value = "enabled") String enabled, @Param(value = "diyId") String diyId,@Param(value = "identityType") String identityType);
 }

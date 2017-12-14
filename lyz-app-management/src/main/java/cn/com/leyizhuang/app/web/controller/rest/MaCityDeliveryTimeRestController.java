@@ -54,7 +54,11 @@ public class MaCityDeliveryTimeRestController extends BaseRestController {
      * @return
      */
     @PostMapping(value = "/judgmentTime")
-    public ValidatorResultDTO judgmentStartTime(@RequestParam(value="startTime") String startTime,@RequestParam(value="endTime") String endTime,@RequestParam(value="cityId") Long cityId){
+    public ValidatorResultDTO judgmentTime(@RequestParam(value="startTime") String startTime,@RequestParam(value="endTime") String endTime,@RequestParam(value="cityId") Long cityId){
+        if(null==startTime||null==endTime||null==cityId||"".equals(startTime)||"".equals(endTime)){
+            logger.warn("页面提交的数据有错误");
+            return new ValidatorResultDTO(false);
+        }
         Boolean result = this.macityDeliveryTimeService.judgmentTime(startTime,endTime,cityId);
         return  new ValidatorResultDTO(result);
     }

@@ -17,4 +17,5 @@ public interface MaCityDeliveryTimeDAO {
         CityDeliveryTime queryById(Long id);
 
          void  update(CityDeliveryTime cityDeliveryTime);
+
 }

@@ -37,6 +37,10 @@
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s
         ON e.store_id = s.store_id
+        WHERE
+         e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
         order by  emp_id asc
     </select>
 
@@ -46,16 +50,6 @@
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
         where e.emp_id = #{id}
-        order by  emp_id asc
-    </select>
-
-
-    <select id="findEmployeeByCityId" parameterType="java.lang.Long" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
-        from emp_employee e
-        LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s ON e.store_id = s.store_id
-        where e.city_id = #{cityId}
         order by  emp_id asc
     </select>
 
@@ -70,23 +64,90 @@
         order by  emp_id asc
     </select>
 
-    <select id="findEmpTypeListById" parameterType="java.lang.Long" resultType="EmployeeDO">
+    <select id="findEmpTypeByStoreId" parameterType="java.lang.Long" resultType="EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
-        e.store_id=#{id}
+        e.store_id=#{storeId}
+        AND
+         e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
+        order by
+        emp_id asc
+    </select>
+
+    <select id="findEmpTypeByCityId" parameterType="java.lang.Long" resultType="EmployeeDO">
+        select DISTINCT e.identity_type
+        from emp_employee e
+        WHERE
+           e.city_id=#{cityId}
+         AND
+         e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
         order by  emp_id asc
     </select>
 
+    <select id="findEmpTypeList"  resultType="EmployeeDO">
+        select DISTINCT e.identity_type
+        from emp_employee e
+        WHERE
+         e.identity_type!='DECORATE_MANAGER'
+         AND
+        e.identity_type!='DECORATE_EMPLOYEE'
+        order by  emp_id asc
+    </select>
 
-    <select id="findEmployeeByStoreId" parameterType="java.lang.Long" resultMap="employeeResultMap">
+    <select id="queryPageVOByStoreCondition" resultMap="employeeResultMap">
         select e.*,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
         where e.store_id = #{storeId}
+        <if test="null != identityType">
+          AND
+            e.identity_type=#{identityType}
+        </if>
+        <if test="null != enabled">
+            AND
+            e.status=#{enabled}
+        </if>
+        AND
+        e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
         order by  emp_id asc
     </select>
+
+
+    <select id="queryPageVOByCityCondition"  resultMap="employeeResultMap">
+        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        where
+        1=1
+        <if test="null != cityId">
+            AND
+            e.city_id = #{cityId}
+        </if>
+        <if test="null != identityType">
+            AND
+            e.identity_type=#{identityType}
+        </if>
+        <if test="null != enabled">
+            AND
+            e.status=#{enabled}
+        </if>
+        AND
+        e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
+        order by  emp_id asc
+    </select>
+
+
 
     <select id="queryPageVOByType" resultMap="employeeResultMap">
         select e.*,c.city_id,c.name cname,s.store_id,s.store_name
@@ -110,6 +171,68 @@
         e.mobile LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         OR
         e.login_name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
+        AND
+         e.identity_type!='DECORATE_MANAGER'
+        AND
+        e.identity_type!='DECORATE_EMPLOYEE'
         order by  emp_id asc
     </select>
+
+    <select id="queryDecorativeEmpPageVO" resultMap="employeeResultMap">
+        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT  JOIN  st_store s
+        ON e.store_id = s.store_id
+        WHERE
+        e.identity_type='DECORATE_MANAGER'
+        OR
+         e.identity_type='DECORATE_EMPLOYEE'
+        order by  emp_id asc
+    </select>
+
+    <select id="queryDecorativeEmpPageVOByInfo" resultMap="employeeResultMap">
+        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        where
+        (e.name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
+        OR
+        e.mobile LIKE CONCAT('%' ,#{queryEmpInfo},'%')
+        OR
+        e.login_name LIKE CONCAT('%' ,#{queryEmpInfo},'%'))
+        AND
+        (e.identity_type='DECORATE_MANAGER'
+        OR
+         e.identity_type='DECORATE_EMPLOYEE')
+        order by  emp_id asc
+    </select>
+
+
+    <select id="findDecorativeEmpByCondition" resultMap="employeeResultMap">
+        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        where
+        (e.identity_type='DECORATE_MANAGER'
+        OR
+        e.identity_type='DECORATE_EMPLOYEE')
+        <if test="null != diyId">
+        AND
+        e.store_id = #{diyId}
+        </if>
+        <if test="null != identityType">
+        AND
+        e.identity_type=#{identityType}
+        </if>
+        <if test="null != enabled">
+        AND
+          e.status=#{enabled}
+        </if>
+        order by  emp_id asc
+    </select>
+
+
 </mapper>

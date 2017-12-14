@@ -18,4 +18,5 @@ public interface MaCityDeliveryTimeService {
     void update(CityDeliveryTimeVO cityDeliveryTimeVO);
 
     Boolean judgmentTime(String startTime,String endTime,Long cityId);
+
 }

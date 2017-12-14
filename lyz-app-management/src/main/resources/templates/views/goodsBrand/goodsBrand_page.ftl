@@ -35,6 +35,9 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
+                    <button id="btn_delete" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
+                    </button>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入品牌名称..">
                         <span class="input-group-btn">
@@ -95,6 +98,9 @@
 
         $('#btn_edit').on('click', function() {
             modify($('#dataGrid'),'/views/admin/goodsBrands/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+        $('#btn_delete').on('click', function () {
+            remove($('#dataGrid'), '/rest/goodsBrand', 'delete');
         });
     });
 
@@ -178,6 +184,64 @@
             initDateGird('/rest/goodsBrand/page/grid');
         } else {
             initDateGird('/rest/goodsBrand/findBrandByName/' + queryStoreInfo);
+        }
+    }
+
+
+    function remove(container, url, method) {
+        if (null === $global.timer) {
+            var selected = this.getSelectedIds(container);
+            if (null === selected || 0 === selected.length) {
+                $notify.warning('请在点击按钮前选中至少一条数据');
+                return;
+            }
+            $modal.danger('危险操作', '数据删除后无法恢复，是否确认？', function () {
+
+                $global.timer = setTimeout($loading.show, 2000);
+
+                var data = {
+                    ids: selected
+                };
+                var type = null;
+                if ('delete' === method || 'DELETE' === method || 'put' === method || 'PUT' === method) {
+                    data._method = method;
+                    type = 'POST';
+                } else {
+                    type = method;
+                }
+                $.ajax({
+                    url: url,
+                    type: type,
+                    traditional: true,
+                    data: data,
+                    error: function (result) {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        if (-1 === result.code) {
+                            if (null !== result.message) {
+                                $notify.success(result.message);
+                            }
+                        } else {
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        }
+
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        if (0 === result.code) {
+                            container.bootstrapTable('refresh');
+                            if (null !== result.message) {
+                                $notify.success(result.message);
+                            }
+                        } else {
+                            $notify.danger(result.message);
+                        }
+                    }
+                });
+            });
         }
     }
 

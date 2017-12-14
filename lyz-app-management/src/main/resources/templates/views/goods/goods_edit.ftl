@@ -4,19 +4,16 @@
     <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css" />
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
- <#--   <script src="/javascript/goods_edit.js"></script>-->
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css" />
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
-
-
-    <script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
+   <script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/mag/js/zh_CN.js"></script>
 
     <style type="text/css">
@@ -216,13 +213,13 @@
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="exampleInputFile">封面图片</label>
-                                 <input id="coverImagefile"  type="file" name="coverImage"  multiple class="file-loading">
+                                 <input id="coverImagefile"  type="file" name="file"  multiple class="file-loading">
                            </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
                                 <label for="exampleInputFile">轮播图片</label>
-                                <input  id="rotationImagefile"type="file" name="rotationImage" multiple class="file-loading" >
+                                <input  id="rotationImagefile"type="file" name="file" multiple class="file-loading" >
                             </div>
                         </div>
                     </div>
@@ -244,7 +241,7 @@
                      </div>
                   </div>
 
-                <div class="tab-pane" id="tab_1-3">
+               <div class="tab-pane" id="tab_1-3">
                     <div class="row" >
                         <div class="col-md-12 col-xs-12">
                           <div class="form-group">
@@ -257,6 +254,9 @@
                         </div>
                     </div>
                 </div>
+
+
+
 
                 <div class="row">
                     <div class="col-xs-12 col-md-2">
@@ -329,12 +329,12 @@ var categoryName;
   $(function () {
       //初始化编辑器
       var id =$('#id')
-      var editor = KindEditor.create('.editor', {
-          width: '98%',
+    var editor = KindEditor.create('.editor', {
+          width: '80%',
           height: '350px',
           resizeType: 1,
-          uploadJson: '/rest/goods/update?EditorFile&goodId=' + id,
-          fileManagerJson: '//rest/goods/update?=EditorFile&goodId=' + id,
+          uploadJson: '/rest/goods/updateGoodsDetial',
+          fileManagerJson: '/rest/goods/updateGoodsDetial',
           allowFileManager: true
       });
       categoryName ='${(goodsVO.categoryName)}';
@@ -346,18 +346,18 @@ var categoryName;
       }
 
       var rotationImageUris= '${(goodsVO.rotationImageUri)}';
-      if(rotationImageUris!=null){
+      if(rotationImageUris!=null&&rotationImageUris!=''){
           var arr1 = new Array();
           $('#rotationImg').val(rotationImageUris);
           arr1 =    rotationImageUris.split(',');
         for(var a =0;a<arr1.length;a++){
             var rotationImageUri = arr1[a];
-        $("#rotationImageBox").append('<img  src="' + rotationImageUri + '"' + ' class="img-rounded" style="height: 100px;width: 100px;margin-left: 5px;margin-top: 5px" onclick="delImg(this)"/>');
+        $("#rotationImageBox").append('<div class="col-md-3 text-center" ><img  src="' + rotationImageUri + '"' + ' class="img-rounded" style="width: 100px;"/><div style="margin-top: 5px;"><button class="btn btn-default" onclick="delImg(this)">删除</button></div></div>');
             }
           }
 
-      initFileInput('coverImagefile','coverImg',1);
-       initFileInput('rotationImagefile','rotationImg',2);
+      initFileInput('coverImagefile',1);
+       initFileInput('rotationImagefile',2);
   });
 
 $(function () {
@@ -397,24 +397,65 @@ $(function () {
                 validators: {
                     notEmpty: {
                         message: '电商名称不能为空'
+                    },
+                    remote: {
+                        type: 'POST',
+                        url:  '/rest/goods/isExistSkuName',
+                        message: '该电商名称已被使用',
+                        delay: 500,
+                        data: function () {
+                            return {
+                                skuName: $('#skuName').val(),
+                                id:$('#id').val(),
+                            }
+                        }
                     }
                 }
+            },categoryName: {
+                message: '分类名称校验失败',
+                validators: {
+                    notEmpty: {
+                        message: '分类名称不能为空'
+                    }
+                }
+            },sortId: {
+                    message: '排序号校验失败',
+                    validators: {
+                        notEmpty: {
+                            message: '排序号不能为空'
+                        },
+                        regexp: {
+                            regexp:  /^[1-9]\d*$/,
+                            message: '排序号只能输入数字'
+                        },
+                        remote: {
+                            type: 'POST',
+                            url:  '/rest/goods/isExistSortId',
+                            message: '该排序号已被使用',
+                            delay: 500,
+                            data: function () {
+                                return {
+                                    sortId: $('#sortId').val(),
+                                    id:$('#id').val(),
+                                }
+                            }
+                        }
+                    }
             }
         }
     }).on('success.form.bv', function (e) {
         e.preventDefault();
-       var $form = $(e.target);
+        var $form = $(e.target);
         var origin = $form.serializeArray();
         var data = {};
+
         $.each(origin, function () {
             data[this.name] = this.value;
         });
-
         if (null === $global.timer) {
             $global.timer = setTimeout($loading.show, 2000);
-
             var url = '/rest/goods/update';
-
+            console.log(data);
            if (null !== data.id && 0 != data.id) {
                data._method = 'PUT';
             }
@@ -427,7 +468,7 @@ $(function () {
                     $loading.close();
                     $global.timer = null;
                     $notify.danger('网络异常，请稍后重试或联系管理员');
-                    $('#cityDeliveryTime_edit').bootstrapValidator('disableSubmitButtons', false);
+                    $('#goodsFrom').bootstrapValidator('disableSubmitButtons', false);
                 },
                 success: function (result) {
                     if (0 === result.code) {
@@ -436,8 +477,8 @@ $(function () {
                         clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
-                        $notify.danger('时间段与已有时间段冲突');
-                        $('#cityDeliveryTime_edit').bootstrapValidator('disableSubmitButtons', false);
+                        $notify.danger('商品编辑失败');
+                        $('#goodsFrom').bootstrapValidator('disableSubmitButtons', false);
                     }
                 }
             });
@@ -469,7 +510,7 @@ $(function () {
       });
   }
 
-function initFileInput(ctrlName,urlId,type) {
+function initFileInput(ctrlName,type) {
     var control = $('#' + ctrlName);
     control.fileinput({
         language: 'zh', //设置语言
@@ -497,30 +538,35 @@ function initFileInput(ctrlName,urlId,type) {
         $(this).fileinput("upload");
     }).on("fileuploaded", function(event, data) {
        if(data.response.code==0) {
-           var url = $('#' + urlId);
             if(1==type){
-                $('#coverImageShow').html('<img  src="' + data.response.content + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" >')
-                url.val(data.response.content);
+                $('#coverImageBox').html('<img  src="' + data.response.content + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" />')
+                $('#coverImg').val(data.response.content);
             }else if(2==type){
-                if(null==url.val()||''==url.val()){
-                    url.val(data.response.content)
-                }else{
-                    url.val(url.val()+','+data.response.content);
-                }
-                $("#rotationImageBox").append('<img  src="' + data.response.content + '"' + ' class="img-rounded" style="height: 100px;width: 100px;margin-left: 5px;margin-top: 5px" onclick="delImg(this)"/>');
+                $("#rotationImageBox").append('<div class="col-md-3 text-center"  ><img  src="' + data.response.content + '"' + ' class="img-rounded" style="width: 100px"/><div style="margin-top: 5px;"><button class="btn btn-default" onclick="delImg(this)">删除</button></div></div>');
+                getUrl("rotationImageBox",'#rotationImg');
             }
         }
     });
 }
 
 function  delImg(file) {
-    file.remove();
+    file.parentNode.parentNode.remove();
+    getUrl("rotationImageBox",'#rotationImg');
 }
 
-
-
-
-
+function getUrl(urlId,id){
+    var url ='';
+    var charImg = document.all(urlId).getElementsByTagName("img");
+    if(charImg.length==1){
+        url=charImg[0].src;
+    }else{
+        for (var i = 0; i < charImg.length; i++) {
+            url += charImg[i].src+',';
+        }
+        url=url.substring(0,url.length-1);
+    }
+    $(id).val(url);
+}
 </script>
 
 </body>

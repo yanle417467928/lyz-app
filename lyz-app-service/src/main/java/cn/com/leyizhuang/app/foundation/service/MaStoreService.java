@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
 import cn.com.leyizhuang.app.foundation.vo.StoreVO;
@@ -19,7 +20,7 @@ public interface MaStoreService {
 
     PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId);
 
-    PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, Boolean enabled, Long cityId);
+    PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, String enabled, Long cityId);
 
     PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo);
 
@@ -30,4 +31,17 @@ public interface MaStoreService {
     PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
 
     PageInfo<StoreDO> findDecorativeByInfo(Integer page, Integer size,String queryDecorativeInfo);
+
+    DecorativeCompanyVO  queryDecorativeCompanyById(Long decorativeCompanyId);
+
+    List<DecorativeCompanyVO> findDecorativeCompanyVOList();
+
+    PageInfo<DecorativeCompanyInfo> queryDecorativeCreditPageVO(Integer page, Integer size);
+
+    DecorativeCompanyInfo  queryDecorativeCompanyCreditById(Long decorativeCompanyId);
+
+    PageInfo<DecorativeCompanyInfo>  findDecorativeCreditByInfo(Integer page, Integer size,String queryDecorativeCreditInfo);
+
+    PageInfo<DecorativeCompanyInfo> findDecorativeCreditByCondition(Integer page, Integer size, String enabled, Long cityId);
+
 }

@@ -1,11 +1,11 @@
 <head>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -28,6 +28,10 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
+                    <input name="cityId" type="hidden" class="form-control" id="cityId" readonly
+                           value="${cityId}">
+                    <input name="cityName" type="hidden" class="form-control" id="cityName" readonly
+                           value="${cityName}">
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover" >
@@ -40,7 +44,8 @@
 </section>
 <script>
     $(function () {
-       var id =  ${cityId};
+       var id =   $('#cityId').val();
+       var cityName =  $('#cityName').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/cityDeliveryTime/'+id, 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -76,15 +81,13 @@
             }
         ]);
         $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/citysDeliveryTimes/add?parentMenuId=${(parentMenuId!'0')}&cityId='+id);
+            $grid.add('/views/admin/citysDeliveryTimes/add?parentMenuId=${(parentMenuId!'0')}&cityId='+id+'&cityName='+cityName);
         });
 
         $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/citysDeliveryTimes/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
     });
-
-
 
 </script>
 </body>

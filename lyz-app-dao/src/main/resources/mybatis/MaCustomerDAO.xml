@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO">
 
-    <resultMap id="customerVoResultMap" type="CustomerVO">
+    <resultMap id="customerVoResultMap" type="CustomerDO">
         <id column="cus_id" property="cusId" jdbcType="BIGINT"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
@@ -18,12 +18,11 @@
         <result column="binding_time" property="bindingTime" jdbcType="TIMESTAMP"/>
         <result column="create_type" property="createType" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-
-        <association property="store" javaType="StoreVO">
+        <association property="storeId" javaType="StoreVO">
             <id property="storeId" column="store_id"/>
             <result property="storeName" column="store_name"/>
         </association>
-        <association property="city" javaType="CityVO">
+        <association property="cityId" javaType="CityVO">
             <id property="cityId" column="city_id"/>
             <result property="name" column="city_name"/>
         </association>
@@ -141,13 +140,13 @@
 
 
     <insert id="save" parameterType="Customer">
-        INSERT INTO
-        cus_customer (
-        city_id,store_id,sales_consult_id,name,mobile,birthday,status,sex,open_id,pic_url,nick_name,is_cash_on_delivery,create_time,light,create_type,customer_type,last_sign_time,binding_time)
-        VALUES
-        (#{cityId}, #{storeId}, #{salesConsultId}, #{name}, #{mobile}, #{birthday}, #{status}, #{sex},
-        #{openId},#{picUrl},#{nickName},#{isCashOnDelivery},#{createTime},#{light},#{createType},#{customerType},#{lastSignTime},#{bindingTime})
-    </insert>
+    INSERT INTO
+    cus_customer (
+    city_id,store_id,sales_consult_id,name,mobile,birthday,status,sex,open_id,pic_url,nick_name,is_cash_on_delivery,create_time,light,create_type,customer_type,last_sign_time,binding_time)
+    VALUES
+    (#{cityId.cityId}, #{storeId.storeId}, #{salesConsultId.id}, #{name}, #{mobile}, #{birthday}, #{status}, #{sex},
+    #{openId},#{picUrl},#{nickName},#{isCashOnDelivery},#{createTime},#{light},#{createType},#{customerType},#{lastSignTime},#{bindingTime})
+  </insert>
 
     <select id="isExistPhoneNumber" parameterType="java.lang.Long" resultType="boolean">
         SELECT EXISTS(SELECT 1

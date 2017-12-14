@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaDecorativeCompanyCreditDAO">
+
+    <update id="updateDecorativeCompanyCredit" parameterType="DecorativeCompanyCredit">
+        UPDATE
+        st_credit_money
+        <set>
+            <if test="null != credit" >
+                credit_limit_available = #{credit},
+            </if>
+        </set>
+        WHERE id = #{cid}
+    </update>
+
+
+
+    <update id="updateDecorativeCompanySubvention" parameterType="DecorativeCompanySubvention">
+        UPDATE
+        st_subvention
+        <set>
+            <if test="null != sponsorship">
+                balance = #{sponsorship},
+            </if>
+        </set>
+        WHERE id = #{sid}
+    </update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

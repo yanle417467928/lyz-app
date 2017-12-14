@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
 import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
 import org.springframework.stereotype.Repository;
@@ -8,21 +9,21 @@ import java.util.List;
 
 @Repository
 public interface MaCustomerDAO {
-    List<CustomerVO> findAllVO();
+    List<CustomerDO> findAllVO();
 
-    CustomerVO queryCustomerVOById(Long cusId);
+    CustomerDO queryCustomerVOById(Long cusId);
 
-    List<CustomerVO> queryCustomerVOByCityId(Long cityId);
+    List<CustomerDO> queryCustomerVOByCityId(Long cityId);
 
-    List<CustomerVO> queryCustomerVOByStoreId(Long storeId);
+    List<CustomerDO> queryCustomerVOByStoreId(Long storeId);
 
-    List<CustomerVO> queryCustomerVOByGuideId(Long guideId);
+    List<CustomerDO> queryCustomerVOByGuideId(Long guideId);
 
-    List<CustomerVO> queryCustomerVOByPhone(Long queryCusInfo);
+    List<CustomerDO> queryCustomerVOByPhone(Long queryCusInfo);
 
-    List<CustomerVO> queryCustomerVOByName(String queryCusInfo);
+    List<CustomerDO> queryCustomerVOByName(String queryCusInfo);
 
-    void save(Customer customer);
+    void save(CustomerDO customer);
 
     Boolean isExistPhoneNumber(Long moblie);
 }

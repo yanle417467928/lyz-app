@@ -94,4 +94,8 @@ public interface GoodsService {
     PageInfo<GoodsDO> screenGoodsGrid(Integer page, Integer size,Long brandCode,String categoryCode,String companyCode);
 
     void updateGoods(MaGoodsVO goodsVO);
+
+    Boolean isExistSkuName(String skuName,Long id);
+
+    Boolean isExistSortId(Long sortId,Long id);
 }

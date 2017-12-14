@@ -967,4 +967,22 @@
             #{item}
         </foreach>
     </select>
+
+
+    <select id="isExistSkuName"  resultType="boolean">
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods
+        WHERE sku_name = #{skuName}
+        AND gid != #{id}
+        )
+    </select>
+
+
+    <select id="isExistSortId"  resultType="boolean">
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods
+        WHERE sort_id = #{sortId}
+        AND gid != #{id}
+        )
+    </select>
 </mapper>
