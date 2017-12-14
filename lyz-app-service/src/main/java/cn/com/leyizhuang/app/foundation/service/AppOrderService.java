@@ -30,7 +30,7 @@ public interface AppOrderService {
 
     Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty);
 
-    String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList);
+    Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
 
     //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus);

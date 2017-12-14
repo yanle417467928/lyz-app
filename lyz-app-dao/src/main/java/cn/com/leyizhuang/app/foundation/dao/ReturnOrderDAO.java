@@ -72,11 +72,11 @@ public interface ReturnOrderDAO {
     void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail returnOrderBillingDetail);
 
     List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(@Param("userId") Long userId,
-                                                                         @Param("identityType") AppIdentityType identityType,
-                                                                         @Param("status") Integer showStatus);
+                                                                         @Param("identityType") AppIdentityType identityType);
 
     List<ReturnOrderGoodsInfo> findReturnOrderGoodsInfoByOrderNumber(String returnNo);
 
     List<GiftListResponseGoods> getReturnOrderGoodsDetails(String returnNo);
 
+    ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNo);
 }

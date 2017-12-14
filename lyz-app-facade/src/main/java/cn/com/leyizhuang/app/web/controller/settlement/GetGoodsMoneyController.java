@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
@@ -145,7 +144,7 @@ public class GetGoodsMoneyController {
             Map<String, Object> goodsSettlement = new HashMap<>();
             List<OrderGoodsSimpleResponse> goodsInfo;
             List<OrderGoodsSimpleResponse> giftInfo;
-            List<GoodsIdQtyParam> giftsList = null;
+            List<GoodsIdQtyParam> giftsList = new ArrayList<>();
             AppEmployee employee = appEmployeeService.findById(userId);
             for (GoodsIdQtyParam aGoodsList : goodsList) {
                 goodsIds.add(aGoodsList.getId());
@@ -153,10 +152,12 @@ public class GetGoodsMoneyController {
             }
             if (promotionSimpleInfos != null && !promotionSimpleInfos.isEmpty()) {
                 for (PromotionSimpleInfo promotionSimpleInfo : promotionSimpleInfos) {
-                    giftsList.addAll(promotionSimpleInfo.getPresentInfo());
-                    for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
-                        giftIds.add(goodsIdQtyParam.getId());
-                        giftQty = giftQty + goodsIdQtyParam.getQty();
+                    if (null != promotionSimpleInfo.getPresentInfo()) {
+                        giftsList.addAll(promotionSimpleInfo.getPresentInfo());
+                        for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
+                            giftIds.add(goodsIdQtyParam.getId());
+                            giftQty = giftQty + goodsIdQtyParam.getQty();
+                        }
                     }
                 }
             }
@@ -166,9 +167,9 @@ public class GetGoodsMoneyController {
             giftInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
 
             //正品的数量这里需要判断是否和赠品有相同产品，然后算总数量检查库存
-            String msg = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList);
-            if (StringUtils.isNotBlank(msg)) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+            Long msg = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList, null);
+            if (msg != null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + msg + ";商品库存不足！", null);
                 logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -188,13 +189,20 @@ public class GetGoodsMoneyController {
                     simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                 }
             }
-            //加赠品的标识
+            //赠品的数量和标识
             if (giftInfo != null) {
                 for (OrderGoodsSimpleResponse aGiftInfo : giftInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
+                        if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
+                            aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
+                            break;
+                        }
+                    }
                     aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
                 }
                 //合并商品和赠品集合
                 goodsInfo.addAll(giftInfo);
+
                 //设置返回赠品数组，是否要包含促销信息
 //                List<Map> promotionsGiftList = null;
 //

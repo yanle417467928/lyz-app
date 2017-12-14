@@ -177,6 +177,7 @@
             id              id,
             oid             oid,
             ord_no          orderNumber,
+        gid gid,
             sku             sku,
             sku_name        skuName,
             retail_price    retailPrice,

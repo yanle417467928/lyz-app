@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
@@ -93,4 +92,5 @@ public interface OrderDAO {
      * @return 所有支付明细
      */
     List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(@Param("orderNo") String orderNo);
+
 }

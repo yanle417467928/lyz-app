@@ -2,17 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO">
 
-
-    <resultMap id="returnBaseInfo" type="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
-
-        <result column="ord_no" property="returnNo" jdbcType="VARCHAR"/>
-        <result column="return_status" property="returnStatus"
-                javaType="cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus"/>
-        <result column="return_type" property="returnType" jdbcType="VARCHAR"/>
-
-    </resultMap>
-
-
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
@@ -200,31 +189,14 @@
         WHERE roid = #{roid}
     </update>
 
-    <select id="findReturnOrderListByUserIdAndIdentityType" resultMap="returnBaseInfo">
+    <select id="findReturnOrderListByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
 
-        SELECT
-        orbi.return_no,
-        orbi.return_status,
-        orbi.return_type
+        SELECT *
         FROM ord_return_base_info orbi
         WHERE
         orbi.creator_id = #{userId}
-
-        <if test="null != status and status == 1">
-            AND orbi.return_status = 'RETURNING';
-        </if>
-        <if test="null != status and status == 2">
-            AND orbi.return_status = 'CANCELED';
-        </if>
-        <if test="null != status and status == 3">
-            AND orbi.return_status = 'PENDING_PICK_UP';
-        </if>
-        <if test="null != status and status == 4">
-            AND orbi.return_status = 'PENDING_REFUND';
-        </if>
-        <if test="null != status and status == 5">
-            AND orbi.return_status = 'FINISHED';
-        </if>
+        AND orbi.creator_identityType = #{identityType}
     </select>
 
     <select id="findReturnOrderGoodsInfoByOrderNumber"
@@ -250,6 +222,13 @@
             INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
         WHERE
             ogi.return_no = #{orderNumber}
+    </select>
+
+    <select id="getReturnOrderLogisticeInfo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo">
+        SELECT *
+        FROM ord_return_logistic_info
+        WHERE return_no = #{returnNo};
     </select>
 
 </mapper>
