@@ -117,7 +117,7 @@ public class ProductCouponController {
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (productCouponRequest.getProductCouponList().isEmpty()) {
+        if (null == productCouponRequest.getProductCouponList() || productCouponRequest.getProductCouponList().isEmpty()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到产品券信息", null);
             logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;

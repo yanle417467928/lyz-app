@@ -18,4 +18,6 @@ public interface OrderAgencyFundDAO {
 
     List<DeliveryAgencyFundResponse> findByUserId(@Param("userId") Long userId);
 
+    List<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(@Param("userId") Long userId, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
 }

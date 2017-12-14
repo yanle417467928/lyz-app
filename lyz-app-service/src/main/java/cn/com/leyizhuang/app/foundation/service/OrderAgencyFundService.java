@@ -15,4 +15,6 @@ public interface OrderAgencyFundService {
 
     List<DeliveryAgencyFundResponse> findByUserId(Long userId);
 
+    List<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate);
+
 }

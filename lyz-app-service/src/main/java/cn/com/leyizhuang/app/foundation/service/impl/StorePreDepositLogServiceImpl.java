@@ -29,17 +29,20 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StPreDepositLogDO save(StPreDepositLogDO stPreDepositLogDO) {
         this.storePreDepositLogDAO.save(stPreDepositLogDO);
         return stPreDepositLogDO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StorePreDeposit findStoreByUserId(Long userId) {
         return this.storePreDepositLogDAO.findStoreByUserId(userId);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateStPreDepositByUserId(Double money, Long userId) {
         this.storePreDepositLogDAO.updateStPreDepositByUserId(money,userId);
     }

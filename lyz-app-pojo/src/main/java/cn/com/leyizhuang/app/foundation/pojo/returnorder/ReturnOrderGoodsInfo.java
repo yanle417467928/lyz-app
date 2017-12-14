@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import lombok.*;
 
 /**
@@ -54,4 +55,8 @@ public class ReturnOrderGoodsInfo {
      * 退单数量
      */
     private int returnQty;
+    /**
+     * 商品行类型（暂定）
+     */
+    private AppGoodsLineType goodsLineType;
 }

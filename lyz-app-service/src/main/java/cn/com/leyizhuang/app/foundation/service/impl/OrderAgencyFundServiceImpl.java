@@ -32,4 +32,9 @@ public class OrderAgencyFundServiceImpl implements OrderAgencyFundService {
     public List<DeliveryAgencyFundResponse> findByUserId(Long userId) {
         return this.orderAgencyFundDAO.findByUserId(userId);
     }
+
+    @Override
+    public List<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate) {
+        return this.orderAgencyFundDAO.findByUserIdAndCreateTime(userId, startDate, endDate);
+    }
 }

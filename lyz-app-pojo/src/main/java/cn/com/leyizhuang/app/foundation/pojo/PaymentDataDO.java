@@ -89,30 +89,6 @@ public class PaymentDataDO {
     private String remarks;
 
 
-    /*public PaymentDataDO(Long userId, String outTradeNo, Integer paymentType, String notifyUrl, String paymentTypeDesc,
-                         Double totalFee, PaymentDataStatus tradeStatus, OnlinePayType onlinePayType, String remarks) {
-        this.userId = userId;
-        this.outTradeNo = outTradeNo;
-        if (outTradeNo.contains("CZ_")) {
-            if (null != paymentType && paymentType == 0) {
-                this.paymentType = PaymentDataType.ST_PRE_DEPOSIT;
-            } else if (null != paymentType && paymentType == 2) {
-                this.paymentType = PaymentDataType.DEC_PRE_DEPOSIT;
-            } else if (null != paymentType && paymentType == 6) {
-                this.paymentType = PaymentDataType.CUS_PRE_DEPOSIT;
-            }
-        } else {
-            this.paymentType = PaymentDataType.ORDER;
-        }
-        this.appIdentityType = AppIdentityType.getAppIdentityTypeByValue(paymentType);
-        this.notifyUrl = notifyUrl;
-        this.paymentTypeDesc = paymentTypeDesc;
-        this.totalFee = totalFee;
-        this.tradeStatus = tradeStatus;
-        this.onlinePayType = onlinePayType;
-        this.remarks = remarks;
-        this.createTime = LocalDateTime.now();
-    }*/
 
     public PaymentDataDO(Long userId, String outTradeNo, Integer identityType, String notifyUrl,
                          Double totalFee, PaymentDataStatus tradeStatus, OnlinePayType onlinePayType, String remarks) {

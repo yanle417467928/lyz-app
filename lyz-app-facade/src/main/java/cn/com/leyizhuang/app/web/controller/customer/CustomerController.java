@@ -69,7 +69,7 @@ public class CustomerController {
      */
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerLoginResponse> customerLogin(String openId, String systemType, String clientId, String deviceId, HttpServletResponse response) {
-        logger.info("customerLogin CALLED,顾客登录，入参 openId:{}", openId);
+        //logger.info("customerLogin CALLED,顾客登录，入参 openId:{}", openId);
         ResultDTO<CustomerLoginResponse> resultDTO;
         try {
             if (null == openId || "".equalsIgnoreCase(openId)) {
@@ -116,7 +116,7 @@ public class CustomerController {
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(), customer.getCityId()));
-            logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +136,7 @@ public class CustomerController {
      */
     @PostMapping(value = "/registry", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerRegistResponse> customerRegistry(CustomerRegistryParam registryParam, HttpServletResponse response) {
-        logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
+       // logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
         ResultDTO<CustomerRegistResponse> resultDTO;
         try {
             if (null == registryParam.getOpenId() || "".equalsIgnoreCase(registryParam.getOpenId())) {
@@ -202,7 +202,7 @@ public class CustomerController {
                 response.setHeader("token", accessToken);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerRegistResponse(Boolean.FALSE, returnUser.getCusId()));
-                logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
+                //logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
         } catch (Exception e) {
@@ -224,7 +224,7 @@ public class CustomerController {
      */
     @PostMapping(value = "/binding/seller", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerBindingSellerResponse> customerBindingSeller(Long userId, String guidePhone) {
-        logger.info("customerBindingSeller CALLED,顾客绑定服务导购，入参 userId {},guidePhone{}", userId, guidePhone);
+        //logger.info("customerBindingSeller CALLED,顾客绑定服务导购，入参 userId {},guidePhone{}", userId, guidePhone);
 
         ResultDTO<CustomerBindingSellerResponse> resultDTO;
         try {
@@ -278,7 +278,7 @@ public class CustomerController {
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.FALSE, null, store.getStoreName()));
-                logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
+                //logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
         } catch (Exception e) {
@@ -300,7 +300,7 @@ public class CustomerController {
      */
     @PostMapping(value = "/cashCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerCashCoupon(Long userId, String identityType) {
-        logger.info("customerCashCoupon CALLED,获取顾客可用优惠券，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("customerCashCoupon CALLED,获取顾客可用优惠券，入参 userId {},identityType{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -315,7 +315,7 @@ public class CustomerController {
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             }
-            logger.info("customerCashCoupon OUT,获取顾客可用优惠券成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("customerCashCoupon OUT,获取顾客可用优惠券成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -357,13 +357,13 @@ public class CustomerController {
             if (identityType == 6) {
                 List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
-                logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else if (identityType == 0) {
                 List<ProductCouponResponse> productCouponResponseList = customerService.
                         findProductCouponBySellerIdAndCustomerId(userId, cusId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
-                logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不合法,获取产品券列表失败", null);
@@ -389,7 +389,7 @@ public class CustomerController {
     @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerPreDepositBalance(Long userId, Integer identityType) {
 
-        logger.info("getCustomerPreDepositBalance CALLED,顾客获取账户余额，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("getCustomerPreDepositBalance CALLED,顾客获取账户余额，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -406,7 +406,7 @@ public class CustomerController {
         try {
             Double balance = customerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
-            logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("getCustomerPreDepositBalance OUT,顾客获取账户余额成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -427,7 +427,7 @@ public class CustomerController {
     @PostMapping(value = "/lebi/quantity", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerLeBiQuantity(Long userId, Integer identityType) {
 
-        logger.info("getCustomerLeBiQuantity CALLED,顾客获取乐币数量，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("getCustomerLeBiQuantity CALLED,顾客获取乐币数量，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -444,7 +444,7 @@ public class CustomerController {
         try {
             Integer quantity = customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("getCustomerLeBiQuantity OUT,顾客获取乐币数量成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -465,7 +465,7 @@ public class CustomerController {
     @PostMapping(value = "/sign", produces = "application/json;charset=UTF-8")
     public ResultDTO addCustomerLeBiQuantity(Long userId, Integer identityType) {
 
-        logger.info("addCustomerLeBiQuantity CALLED,顾客签到增加乐币，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("addCustomerLeBiQuantity CALLED,顾客签到增加乐币，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -497,7 +497,7 @@ public class CustomerController {
             customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType));
             leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -521,7 +521,7 @@ public class CustomerController {
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType) {
 
-        logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -539,7 +539,7 @@ public class CustomerController {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getRechargeType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
-            logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -550,19 +550,16 @@ public class CustomerController {
         }
     }
 
+
     /**
-     * @param
-     * @return
-     * @throws
-     * @title 获取客户钱包消费记录
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/11/7
+     * @param userId 用户id
+     * @param identityType 身份类型
+     * @return 预存款消费日志
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType) {
 
-        logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+       // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -580,7 +577,7 @@ public class CustomerController {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getConsumptionType();
             List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
-            logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
+            //logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

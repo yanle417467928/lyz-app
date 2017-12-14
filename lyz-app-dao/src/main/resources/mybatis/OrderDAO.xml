@@ -3,14 +3,13 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderDAO">
 
     <sql id="All_FIELD">
-        oid, ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code, delivery_type, order_subject_type,
-        creator_identity_type, creator_id, creator_name, creator_phone, store_id, store_code, store_structure_code, sales_consult_id,
-        sales_consult_name, sales_consult_phone, customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, online_pay_type,
-        audit_no, remark
+        oid id, ord_no orderNumber, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code,
+        delivery_type,
+        order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone, store_id, store_code,
+        store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone, customer_id, customer_name,
+        customer_phone, customer_type, total_goods_price, is_evaluated, audit_no, remark, city_id, city_name
     </sql>
-    <insert id="insert">
-        INSERT INTO ord_base_info ()
-    </insert>
+
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         <result column="ord_no" property="orderNumber" jdbcType="VARCHAR"/>
         <result column="status" property="status" javaType="cn.com.leyizhuang.app.core.constant.AppOrderStatus"/>
@@ -32,7 +31,7 @@
         FROM ord_goods_info og
             LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
-              AND (og.is_gift IS NULL OR og.is_gift = FALSE)
+              AND (og.goods_line_type != 'PRESENT')
     </select>
 
     <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
@@ -174,7 +173,29 @@
     </select>
 
     <select id="getOrderGoodsInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
-        SELECT *
+        SELECT
+            id              id,
+            oid             oid,
+            ord_no          orderNumber,
+            sku             sku,
+            sku_name        skuName,
+            retail_price    retailPrice,
+            VIP_price       VIPPrice,
+            wholesale_price wholesalePrice,
+        settlement_price settlementPrice,
+            promotion_id    promotionId,
+            is_price_share  isPriceShare,
+            share_price     sharePrice,
+            return_price    returnPrice,
+            is_returnable   isReturnable,
+            return_priority returnPriority,
+            order_qty       orderQuantity,
+            shipping_qty    shippingQuantity,
+            return_qty      returnQuantity,
+            returnable_qty  returnableQuantity,
+            goods_line_type goods_line_type,
+            price_item_id   priceItemId,
+            company_flag    companyFlag
         FROM
             ord_goods_info
         WHERE
@@ -226,7 +247,34 @@
 
     <select id="getOrderBillingDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
-        SELECT *
+        SELECT
+            create_time,
+            oid,
+            ord_no          order_number,
+            total_goods_price,
+            member_discount,
+            promotion_discount,
+            freight,
+            upstairs_fee,
+            lebi_quantity,
+            lebi_cash_discount,
+            cash_coupon_discount,
+            product_coupon_discount,
+            cus_pre_deposit,
+            online_pay_type,
+            online_pay_amount,
+            online_pay_time,
+            st_pre_deposit,
+            emp_credit_money,
+            st_credit_money store_credit_money,
+            st_subvention   store_subvention,
+            order_amount_subtotal,
+            amount_payable,
+            collection_amount,
+            arrearage,
+            is_owner_receiving,
+            is_pay_up,
+            pay_up_time
         FROM
             ord_billing_details
         WHERE
@@ -236,11 +284,11 @@
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
-            ogi.order_qty qty,
+            ogi.order_qty       qty,
             ogi.retail_price,
-            ogi.is_gift,
+            ogi.goods_line_type goods_type,
             gg.sku_name,
-            gg.gid        goodsId,
+            gg.gid              goodsId,
             gg.goods_specification,
             gg.cover_image_uri,
             gg.goods_unit
@@ -278,9 +326,9 @@
     <insert id="savePaymentDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
-        (oid, ord_no, currency_type, pay_time, pay_type, amount, reply_code, receipt_number)
+        (oid, ord_no, creatr_time, pay_time, pay_type, amount, reply_code, receipt_number)
         VALUES
-            (#{orderId}, #{orderNumber}, #{currencyType}, #{payTime}, #{payType}, #{amount}, #{replyCode},
+            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
              #{receiptNumber})
     </insert>
 
@@ -310,24 +358,24 @@
 
     <insert id="saveOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo"
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO ord_base_info (ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code,
-                                   delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
-                                   store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
-                                   customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, online_pay_type, audit_no,
-                                   remark)
-        VALUES (#{orderNumber}, #{orderType}, #{createTime}, #{effectiveEndTime}, #{status}, #{deliveryStatus},
-                                #{pickUpCode}, #{deliveryType},
-                                #{orderSubjectType}, #{creatorIdentityType}, #{creatorId}, #{creatorName},
-                                                                                           #{creatorPhone}, #{storeId},
-                                                                                           #{storeCode},
-                                                                                           #{storeStructureCode},
-                                                                                           #{salesConsultId},
-                                                                                           #{salesConsultName},
-                                                                                           #{salesConsultPhone},
-                                                                                           #{customerId},
-                                                                                           #{customerName},
-                #{customerPhone}, #{totalGoodsPrice}, #{isEvaluated},
-                #{onlinePayType}, #{auditNo}, #{remark})
+        INSERT INTO ord_base_info
+        (ord_no, order_type, create_time, effective_end_time, status, delivery_status, pick_up_code,
+         delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
+         store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
+         customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
+         remark
+        )
+        VALUES
+            (
+                #{orderNumber}, #{orderType}, #{createTime}, #{effectiveEndTime}, #{status}, #{deliveryStatus},
+                                #{pickUpCode}, #{deliveryType}, #{orderSubjectType}, #{creatorIdentityType},
+                                #{creatorId},
+                #{creatorName},
+                #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode}, #{salesConsultId},
+                #{salesConsultName},
+                #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
+                #{isEvaluated}, #{auditNo}, #{remark}
+            )
     </insert>
 
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
@@ -342,16 +390,19 @@
                 #{deliveryStreet}, #{detailedAddress})
     </insert>
     <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
-        INSERT INTO ord_goods_info (oid, ord_no, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id, is_price_share,
-                                    share_price, return_price, is_returnable, return_priority, order_qty, shipping_qty, return_qty,
-                                    returnable_qty, is_gift, price_item_id, company_flag)
-        VALUES
-            (#{oid}, #{orderNumber}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice}, #{wholesalePrice}, #{promotionId},
-                     #{isPriceShare}, #{sharePrice},
-                     #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity}, #{shippingQuantity},
-             #{returnQuantity}, #{returnableQuantity}, #{isGift},
-             #{priceItemId}, #{companyFlag}
-            )
+        INSERT INTO ord_goods_info
+        (
+            oid, ord_no, goods_line_type, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
+            is_price_share, share_price, return_price, is_returnable, return_priority, order_qty, shipping_qty,
+            return_qty, returnable_qty, settlement_price, price_item_id, company_flag
+        )
+        VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
+                        #{wholesalePrice}, #{promotionId},
+                        #{isPriceShare}, #{sharePrice},
+            #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity}, #{shippingQuantity},
+            #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
+            #{priceItemId}, #{companyFlag})
+
     </insert>
 
     <insert id="saveOrderBillingDetails"
@@ -359,7 +410,8 @@
         INSERT INTO ord_billing_details (create_time, oid, ord_no, total_goods_price, member_discount, promotion_discount, freight, upstairs_fee,
                                          lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
-                                         st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving)
+                                         st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
+                                         online_pay_time, pay_up_time, is_pay_up)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -367,7 +419,8 @@
                 #{productCouponDiscount}, #{cusPreDeposit},
                 #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
                 #{storeSubvention}, #{orderAmountSubtotal},
-                #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}
+                #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
+             #{payUpTime}, #{isPayUp}
             )
     </insert>
 
@@ -377,4 +430,131 @@
         VALUES (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
                 #{receiptNumber})
     </insert>
+
+    <update id="updateOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        UPDATE ord_base_info
+        <set>
+            <if test="null != status ">
+                status = #{status},
+            </if>
+            <if test="null != deliveryStatus ">
+                delivery_status = #{deliveryStatus},
+            </if>
+            <if test="null != pickUpCode ">
+                pick_up_code = #{pickUpCode},
+            </if>
+            <if test="null != isEvaluated ">
+                is_evaluated = #{isEvaluated}
+            </if>
+        </set>
+    </update>
+
+    <update id="updateOrderBillingDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+        UPDATE ord_billing_details
+        <set>
+            <if test="null != onlinePayType ">
+                online_pay_type = #{onlinePayType},
+            </if>
+            <if test="null != onlinePayAmount ">
+                online_pay_amount = #{onlinePayAmount},
+            </if>
+            <if test="null != arrearage ">
+                arrearage = #{arrearage},
+            </if>
+            <if test="null != onlinePayType ">
+                online_pay_type = #{onlinePayType},
+            </if>
+            <if test="null != payUpTime  ">
+                pay_up_time = #{payUpTime},
+            </if>
+            <if test="null != isPayUp  ">
+                is_pay_up = #{isPayUp}
+            </if>
+        </set>
+    </update>
+
+
+    <update id="updateOrderStatusByOrderNoAndStatus">
+        UPDATE ord_base_info
+        <set>
+            <if test="null != status">
+                status = #{status},
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber}
+
+    </update>
+
+    <update id="updateOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo" >
+        update ord_goods_info
+        <set >
+            <if test="oid != null" >
+                oid = #{oid,jdbcType=BIGINT},
+            </if>
+            <if test="orderNumber != null" >
+                ord_no = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sku != null" >
+                sku = #{sku,jdbcType=VARCHAR},
+            </if>
+            <if test="skuName != null" >
+                sku_name = #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="retailPrice != null" >
+                retail_price = #{retailPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="VIPPrice != null" >
+                VIP_price = #{VIPPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="wholesalePrice != null" >
+                wholesale_price = #{wholesalePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="promotionId != null" >
+                promotion_id = #{promotionId,jdbcType=BIGINT},
+            </if>
+            <if test="isPriceShare != null" >
+                is_price_share = #{isPriceShare,jdbcType=BIT},
+            </if>
+            <if test="sharePrice != null" >
+                share_price = #{sharePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="returnPrice != null" >
+                return_price = #{returnPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="isReturnable != null" >
+                is_returnable = #{isReturnable,jdbcType=BIT},
+            </if>
+            <if test="returnPriority != null" >
+                return_priority = #{returnPriority,jdbcType=INTEGER},
+            </if>
+            <if test="orderQuantity != null" >
+                order_qty = #{orderQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="shippingQuantity != null" >
+                shipping_qty = #{shippingQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="returnQuantity != null" >
+                return_qty = #{returnQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="returnableQuantity != null" >
+                returnable_qty = #{returnableQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="goodsLineType != null" >
+                goods_line_type = #{goodsLineType,jdbcType=VARCHAR},
+            </if>
+            <if test="priceItemId != null" >
+                price_item_id = #{priceItemId,jdbcType=BIGINT},
+            </if>
+            <if test="companyFlag != null" >
+                company_flag = #{companyFlag,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteOrderGoodsInfo" parameterType="java.lang.Long">
+        DELETE FROM ord_goods_info
+        WHERE ID = #{id}
+    </delete>
 </mapper>

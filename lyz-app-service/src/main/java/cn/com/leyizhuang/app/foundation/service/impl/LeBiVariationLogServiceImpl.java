@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,7 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     private LeBiVariationLogDAO leBiVariationLogDAO;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addCustomerLeBiVariationLog(CustomerLeBiVariationLog customerLeBiVariationLog) {
         leBiVariationLogDAO.addCustomerLeBiVariationLog(customerLeBiVariationLog);
     }
@@ -35,6 +37,7 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateLeBiQtyByUserId(Integer quantity, Date lastUpdateTime, Long customerId) {
         leBiVariationLogDAO.updateLeBiQtyByUserId(quantity,lastUpdateTime,customerId);
     }

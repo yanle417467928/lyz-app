@@ -27,6 +27,7 @@ public class StoreCreditMoneyLogServiceImpl implements StoreCreditMoneyLogServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public StoreCreditMoney findStoreCreditMoneyByUserId(Long userId) {
         return this.storeCreditMoneyLogDAO.findStoreCreditMoneyByUserId(userId);
     }

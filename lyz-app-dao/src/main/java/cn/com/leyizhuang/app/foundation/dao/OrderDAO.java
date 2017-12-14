@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
@@ -66,4 +67,26 @@ public interface OrderDAO {
     void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
 
     void saveOrderBillingPaymentDetail(OrderBillingPaymentDetails paymentDetail);
+
+    void updateOrderBaseInfo(OrderBaseInfo baseInfo);
+
+    void updateOrderGoodsInfo(OrderGoodsInfo baseInfo);
+
+    void updateOrderBillingDetails(OrderBillingDetails billingDetails);
+
+    void deleteOrderGoodsInfo(@Param("id") Long id);
+    /**
+     * 根据订单号修改订单状态
+     * @param status    订单状态
+     * @param orderNumber   订单号
+     */
+    void updateOrderStatusByOrderNoAndStatus(@Param("status")AppOrderStatus status,@Param("orderNumber") String orderNumber);
+
+    /**
+     * 获取支付明细
+     *
+     * @param orderNo 订单号
+     * @return 所有支付明细
+     */
+    List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(@Param("orderNo") String orderNo);
 }

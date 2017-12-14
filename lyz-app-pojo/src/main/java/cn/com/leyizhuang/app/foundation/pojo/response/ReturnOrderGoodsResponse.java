@@ -57,7 +57,7 @@ public class ReturnOrderGoodsResponse implements Serializable {
     /**
      * 是否赠品
      */
-    private Boolean isGift;
+    private String goodsLine;
     /**
      * 促销id
      */

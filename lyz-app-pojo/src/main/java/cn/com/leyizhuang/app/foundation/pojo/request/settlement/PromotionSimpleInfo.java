@@ -34,6 +34,11 @@ public class PromotionSimpleInfo implements Serializable {
     private Double discount;
 
     /**
+     * 参与此促销次数
+     */
+    private Integer enjoyTimes;
+
+    /**
      * 赠品明细
      */
     List<GoodsIdQtyParam> presentInfo;

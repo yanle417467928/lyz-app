@@ -15,7 +15,7 @@ public enum ActPromotionType {
     GOO("GOO","送商品"),
     PRO("PRO","送产品券"),
     CAS("CAS","送优惠券"),
-    ADD("ADD","加价");
+    ADD("ADD","加价购");
 
     private final String value;
     private final String description;

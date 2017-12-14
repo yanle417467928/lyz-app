@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -26,6 +28,8 @@ public interface AppOrderService {
     Boolean existGoodsStoreInventory(Long storeId, Long gid, Integer qty);
 
     Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty);
+
+    String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList);
 
     //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus);
@@ -99,4 +103,18 @@ public interface AppOrderService {
 
     OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType,
                                                   BillingSimpleInfo billing, List<Long> cashCouponIds);
+
+    void updateOrderBaseInfo(OrderBaseInfo baseInfo);
+
+    void updateOrderBillingDetails(OrderBillingDetails billingDetails);
+
+    /**
+     * 根据订单号修改订单状态
+     * @param status    订单状态
+     * @param orderNumber   订单号
+     */
+    void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber);
+
+
+    List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo);
 }

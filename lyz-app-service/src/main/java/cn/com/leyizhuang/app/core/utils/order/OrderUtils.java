@@ -36,6 +36,11 @@ public class OrderUtils {
         OrderUtils.cityService = cityService;
     }
 
+    /**
+     * 生成订单号
+     * @param cityId 城市id
+     * @return 订单号
+     */
     public static String generateOrderNumber(Long cityId) {
         if (null != cityId) {
             City city = cityService.findById(cityId);
@@ -51,6 +56,33 @@ public class OrderUtils {
                 orderNumber += randomNumber;
                 System.out.println(orderNumber);
                 return orderNumber;
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 生成收款单号
+     * @param cityId 城市id
+     * @return 收款单号
+     */
+    public static String generateReceiptNumber(Long cityId) {
+        if (null != cityId) {
+            City city = cityService.findById(cityId);
+            if (null != city && null != city.getBriefSpell()) {
+                String receiptNumber = city.getBriefSpell() + "_RC";
+                Calendar calendar = Calendar.getInstance();
+                Date date = calendar.getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                String timeStamp = sdf.format(date);
+                receiptNumber += timeStamp;
+                Random random = new Random();
+                String randomNumber = random.nextInt(900) + 100 + "";
+                receiptNumber += randomNumber;
+                System.out.println(receiptNumber);
+                return receiptNumber;
             } else {
                 return null;
             }
@@ -130,6 +162,8 @@ public class OrderUtils {
         orderRefundNumber.append(timeStamp);
         return orderRefundNumber.toString();
     }
+
+
 
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);

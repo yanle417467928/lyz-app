@@ -47,7 +47,7 @@ public class StoreResponse {
 
     public static List<StoreResponse> transform(List<AppStore> appStores) {
         List<StoreResponse> responseList;
-        if (!appStores.isEmpty()) {
+        if (null != appStores && !appStores.isEmpty()) {
             responseList = new ArrayList<>(appStores.size());
             appStores.forEach(appStore -> responseList.add(transform(appStore)));
         } else {

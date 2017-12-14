@@ -1,12 +1,12 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.customer.CustomerController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -68,7 +68,7 @@ public class OrderGiftController {
             // 券商品ids
             List<Long> coupunGoodsIdList = new ArrayList<>();
             for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
-                if(goodsSimpleInfo.getIsProCouponGoods()){
+                if (AppGoodsLineType.PRODUCT_COUPON.getValue().equalsIgnoreCase(goodsSimpleInfo.getGoodsLineType())) {
                     coupunGoodsIdList.add(goodsSimpleInfo.getId());
                 }else{
                     goodsIdList.add(goodsSimpleInfo.getId());
@@ -87,54 +87,62 @@ public class OrderGiftController {
 
             }
 
-            //为商品设置数量
-            Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
-            while (orderGoodsSimpleResponseiterator.hasNext()) {
-                OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goods.getId())) {
-                        goods.setGoodsQty(info.getNum());
-                        break;
+            if (goodsInfo != null && goodsInfo.size() > 0){
+                //为商品设置数量
+                Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
+                while (orderGoodsSimpleResponseiterator.hasNext()) {
+                    OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goods.getId())) {
+                            goods.setGoodsQty(info.getQty());
+                            break;
+                        }
                     }
                 }
+                promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
             }
-            promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+
             /******计算促销******/
 
             List<GiftListResponseGoods> responseGoodsList = new ArrayList<>();
             responseGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     goodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-
-            //为返商品集合设置数量和赠品属性
-            Iterator<GiftListResponseGoods> iterator = responseGoodsList.iterator();
-            while (iterator.hasNext()) {
-                GiftListResponseGoods goods = iterator.next();
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goods.getGoodsId())) {
-                        goods.setQty(info.getNum());
-                        goods.setIsGift(false);
-                        break;
+            if (responseGoodsList != null && responseGoodsList.size() > 0){
+                //为返商品集合设置数量和赠品属性
+                Iterator<GiftListResponseGoods> iterator = responseGoodsList.iterator();
+                while (iterator.hasNext()) {
+                    GiftListResponseGoods goods = iterator.next();
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goods.getGoodsId())) {
+                            goods.setQty(info.getQty());
+                            goods.setIsGift(false);
+                            break;
+                        }
                     }
                 }
             }
+
 
             // 券商品集合
             List<GiftListResponseGoods> responseCouponGoodsList = new ArrayList<>();
             responseCouponGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     coupunGoodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
 
-            //为返商品集合设置数量和赠品属性
-            Iterator<GiftListResponseGoods> iterator2 = responseCouponGoodsList.iterator();
-            while (iterator2.hasNext()) {
-                GiftListResponseGoods goods = iterator2.next();
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goods.getGoodsId())) {
-                        goods.setQty(info.getNum());
-                        goods.setIsGift(false);
-                        break;
+            if(responseCouponGoodsList != null && responseCouponGoodsList.size() > 0){
+                //为返商品集合设置数量和赠品属性
+                Iterator<GiftListResponseGoods> iterator2 = responseCouponGoodsList.iterator();
+                while (iterator2.hasNext()) {
+                    GiftListResponseGoods goods = iterator2.next();
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goods.getGoodsId())) {
+                            goods.setQty(info.getQty());
+                            goods.setIsGift(false);
+                            break;
+                        }
                     }
                 }
             }
+
 
             GiftListResponse giftListResponse = new GiftListResponse();
             giftListResponse.setGoodsList(responseGoodsList);

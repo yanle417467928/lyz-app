@@ -86,4 +86,8 @@ public interface AppStoreService {
     void addStoreCreditMoneyChangeLog(StoreCreditMoneyChangeLog log);
 
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
+
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long goodsId);
+
+    void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty);
 }

@@ -81,6 +81,10 @@ public class OrderBillingDetails {
      */
     private Double onlinePayAmount;
     /**
+     * 第三方支付时间
+     */
+    private Date onlinePayTime;
+    /**
      * 门店(装饰公司)预存款
      */
     private Double stPreDeposit;
@@ -116,5 +120,14 @@ public class OrderBillingDetails {
      * 是否业主收货
      */
     private Boolean isOwnerReceiving;
+
+    /**
+     * 是否已付清账单
+     */
+    private Boolean isPayUp;
+    /**
+     * 订单账款付清时间
+     */
+    private Date payUpTime;
 
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
@@ -10,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -17,7 +19,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,16 +38,16 @@ import java.util.List;
 public class AppOrderServiceImpl implements AppOrderService {
 
 
-    @Autowired
+    @Resource
     private AppStoreDAO appStoreDAO;
 
-    @Autowired
+    @Resource
     private CityDAO cityDAO;
 
-    @Autowired
+    @Resource
     private OrderDAO orderDAO;
 
-    @Autowired
+    @Resource
     private ArrearsAuditDAO arrearsAuditDAO;
 
     @Resource
@@ -80,6 +81,39 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty) {
         return cityDAO.existGoodsCityInventory(cityId, gid, qty);
+    }
+
+    @Override
+    public String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList) {
+        //首先验证自身是否重复商品，goodsList 是不会重复的，在加入下料清单就判断了。
+        //不同的促销可能赠送相同的商品。
+        if (giftList != null && !giftList.isEmpty()) {
+            for (GoodsIdQtyParam goodsIdQtyParam : giftList) {
+                for (GoodsIdQtyParam idQtyParam : giftList) {
+                    if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
+                        goodsIdQtyParam.setQty(goodsIdQtyParam.getQty() + idQtyParam.getQty());
+                    }
+                }
+            }
+            goodsList.addAll(giftList);
+        }
+        //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
+        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+            for (GoodsIdQtyParam idQtyParam : goodsList) {
+                if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
+                    Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
+                    if (!isHaveInventory) {
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
+                    }
+                } else {
+                    Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
+                    if (!isHaveInventory) {
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     @Override
@@ -143,18 +177,21 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderBillingPaymentDetails savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails) {
         this.orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         return orderBillingPaymentDetails;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderBillingDetails updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails) {
         this.orderDAO.updateOwnMoneyByOrderNo(orderBillingDetails);
         return orderBillingDetails;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderBaseInfo updateOrderStatusByOrderNo(OrderBaseInfo orderBaseInfo) {
         this.orderDAO.updateOrderStatusByOrderNo(orderBaseInfo);
         return orderBaseInfo;
@@ -233,6 +270,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setEffectiveEndTime(calendar.getTime());
         //设置订单状态
         tempOrder.setStatus(AppOrderStatus.UNPAID);
+        //设置订单物流状态
+        tempOrder.setDeliveryStatus(LogisticStatus.INITIAL);
         //设置订单类型 买券、出货
         tempOrder.setOrderType(AppOrderType.SHIPMENT);
         //设置是否已评价
@@ -253,6 +292,9 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setStoreId(userStore.getStoreId());
         tempOrder.setStoreCode(userStore.getStoreCode());
         tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
+        //设置城市信息
+        tempOrder.setCityId(userStore.getCityId());
+        tempOrder.setCityName(userStore.getCity());
 
         switch (identityType) {
             //导购代下单
@@ -468,5 +510,35 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         return orderBillingDetails;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderBaseInfo(OrderBaseInfo baseInfo) {
+        if (null != baseInfo) {
+            orderDAO.updateOrderBaseInfo(baseInfo);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderBillingDetails(OrderBillingDetails billingDetails) {
+        if (null != billingDetails) {
+            orderDAO.updateOrderBillingDetails(billingDetails);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
+        orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
+    }
+
+    @Override
+    public List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo) {
+        if (StringUtils.isNotBlank(orderNo)) {
+            return orderDAO.getOrderBillingDetailByOrderNo(orderNo);
+        }
+        return null;
     }
 }

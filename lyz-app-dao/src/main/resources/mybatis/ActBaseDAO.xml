@@ -85,6 +85,15 @@
         FROM act_base WHERE ID = #{id}
     </select>
 
+    <select id="queryByIdList" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base WHERE ID IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
         SELECT
         <include refid="ALL_FIELDS"/>

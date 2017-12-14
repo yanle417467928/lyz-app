@@ -16,7 +16,25 @@
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
-        *
+        roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_identityType,
+        creator_phone,
+        cus_id customerId,
+        cus_name customerName,
+        cus_type customerType,
+        reason_info,
+        return_pic,
+        ord_type orderType,
+        return_status
         FROM ord_return_base_info
         WHERE
         return_no = #{returnNo}
@@ -28,15 +46,16 @@
             useGeneratedKeys="true" keyProperty="roid">
         INSERT INTO ord_return_base_info
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
-        creator_identityType, creator_phone, cus_id, cus_name, reason_info, return_pic, ord_type, return_status)
+        creator_identityType, creator_phone, cus_id, cus_name,cus_type, reason_info, return_pic, ord_type,
+        return_status)
         VALUES
-        (#{returnOrderBaseInfo.orderId}, #{returnOrderBaseInfo.orderNo}, #{returnOrderBaseInfo.orderTime},
-        #{returnOrderBaseInfo.returnTime}, #{returnOrderBaseInfo.returnNo}, #{returnOrderBaseInfo.returnType},
-        #{returnOrderBaseInfo.returnPrice}, #{returnOrderBaseInfo.remarksInfo},
-        #{returnOrderBaseInfo.creatorId}, #{returnOrderBaseInfo.creatorIdentityType},
-        #{returnOrderBaseInfo.creatorPhone},
-        #{returnOrderBaseInfo.customerId}, #{returnOrderBaseInfo.customerName},#{returnOrderBaseInfo.reasonInfo},
-        #{returnOrderBaseInfo.returnPic}, #{returnOrderBaseInfo.orderType}, #{returnOrderBaseInfo.returnStatus})
+        (#{orderId}, #{orderNo}, #{orderTime},
+        #{returnTime}, #{returnNo}, #{returnType},
+        #{returnPrice}, #{remarksInfo},
+        #{creatorId}, #{creatorIdentityType},
+        #{creatorPhone},
+        #{customerId}, #{customerName},#{customerType},#{reasonInfo},
+        #{returnPrice}, #{orderType}, #{returnStatus})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -125,7 +144,7 @@
 
     <insert id="saveReturnOrderProductCoupon"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderProductCoupon">
-        INSERT INTO ord_return_cash_coupon
+        INSERT INTO ord_return_product_coupon
         (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return)
         VALUES
         (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn})
@@ -134,10 +153,25 @@
     <insert id="saveReturnOrderGoodsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         INSERT INTO ord_return_goods_info
-        (roid, return_no, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty)
+        (roid, return_no, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty,
+        goods_Line_type)
         VALUES
         (#{roid}, #{returnNo}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
-         #{returnPrice}, #{returnQty})
+        #{returnPrice}, #{returnQty},#{goodsLineType})
+    </insert>
+
+    <insert id="saveReturnOrderLogisticsInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo">
+        INSERT INTO ord_return_logistic_info
+        (roid, return_no, delivery_type, return_store_code, return_store_name, return_store_address, delivery_time,
+        delivery_clerk_no,
+        delivery_clerk_id, delivery_clerk_name, rejecter, rejecter_phone, return_full_address, residence_name,
+        delivery_city,
+        delivery_county, delivery_street, detailed_address)
+        VALUES
+        (#{roid},#{returnNO},#{deliveryType},#{returnStoreCode},#{returnStoreName},#{returnStoreAddress},#{deliveryTime},#{deliveryClerkNo},
+        #{deliveryClerkId},#{deliveryClerkName},#{rejecter},#{rejecterPhone},#{returnFullAddress},#{residenceName},#{deliveryCity},
+        #{deliveryCounty},#{deliveryStreet},#{detailedAddress})
     </insert>
 
     <update id="modifyReturnOrderBillingDetail"
@@ -205,7 +239,7 @@
         SELECT
             ogi.return_qty qty,
             ogi.retail_price,
-            ogi.is_gift,
+        ogi.goods_line_type,
             gg.sku_name,
             gg.gid         goodsId,
             gg.goods_specification,

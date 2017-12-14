@@ -7,13 +7,11 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
-import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * @author Jerry.Ren
@@ -59,14 +54,17 @@ public class WeChatPayController {
     @Resource
     private ReturnOrderService returnOrderService;
 
+    @Resource
+    private CommonService commonService;
+
     /**
      * 微信支付订单
      *
-     * @param req          请求对象
-     * @param userId       用户id
-     * @param identityType 用户身份类型
-     * @param amountPayable        支付金额
-     * @param orderNumber      订单号
+     * @param req           请求对象
+     * @param userId        用户id
+     * @param identityType  用户身份类型
+     * @param amountPayable 支付金额
+     * @param orderNumber   订单号
      * @return 微信支付请求签名
      */
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
@@ -266,14 +264,13 @@ public class WeChatPayController {
      * @param money
      * @return
      */
-    public void wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
-
-
+    public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "微信退款";
 
+        Map<String, String> map = new HashMap<>();
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataService.save(paymentDataDO);
@@ -312,18 +309,29 @@ public class WeChatPayController {
                     dataDO.setTradeNo(tradeNo);
                     dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
+
+                    map.put("code", "SUCCESS");
+                    map.put("number", tradeNo);
+                    map.put("money", refundFee);
+                    return map;
                 } else {
                     PaymentDataDO paymentDataDO1 = new PaymentDataDO();
                     paymentDataDO1.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                     response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
+                    map.put("code", "FAILURE");
+                    return map;
                 }
             } else {
                 logger.warn("{}", resultMap.get("err_code").toString());
                 logger.warn("{}", resultMap.get("err_code_des").toString());
+                map.put("code", "FAILURE");
+                return map;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            map.put("code", "FAILURE");
+            return map;
         }
     }
 
@@ -334,9 +342,9 @@ public class WeChatPayController {
      * @param response 响应对象
      */
     @PostMapping(value = "/return/async", produces = "application/json;charset=UTF-8")
-    public void wechatReturnSync(HttpServletRequest request, HttpServletResponse response) {
+    public void weChatReturnSync(HttpServletRequest request, HttpServletResponse response) {
 
-        logger.info("wechatReturnSync CALLED,接受微信调用后返回参数的回调接口，入参 request:{},response:{}", request, response);
+        logger.info("weChatReturnSync CALLED,微信支付异步回调接口，入参 request:{},response:{}", request, response);
 
         try {
             //获取响应的信息<为XML格式>转化成Map
@@ -348,8 +356,8 @@ public class WeChatPayController {
                 if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
                     //是否匹配证书
                     if (WechatUtil.verifyNotify(resultMap)) {
-                        //返回响应成功的讯息
-                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                        /*//返回响应成功的讯息
+                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));*/
                         //取出map中的参数，订单号
                         String outTradeNo = resultMap.get("out_trade_no").toString();
                         //微信交易号
@@ -363,7 +371,7 @@ public class WeChatPayController {
 
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
 
-                        if (null != paymentDataDOList && paymentDataDOList.size() == 1) {
+                        if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
@@ -373,24 +381,39 @@ public class WeChatPayController {
                             } else if (outTradeNo.contains("_HK")) {
                                 String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                 appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
-                            } else {
-                                OrderBaseInfo order = appOrderService.getOrderByOrderNumber(outTradeNo);
-
-                                //TODO 老乐乐 补充订单支付
+                            } else if (outTradeNo.contains("_XN")) {
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
+                                            paymentDataDO);
+                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                }
                             }
+                            //返回响应成功的讯息
+                            response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                            logger.info("weChatReturnSync,微信支付异步回调接口,回调成功! ");
+                        } else {
+                            logger.warn("weChatReturnSync,微信支付异步回调接口,没有找到该订单:{}", outTradeNo);
+                            response.getWriter().write(WechatUtil.setXML("FAIL", "outTradeNo不存在!"));
                         }
                     } else {
+                        logger.warn("weChatReturnSync,微信支付异步回调接口,签名失败");
                         response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
                     }
                 } else {
-                    logger.warn("{}", resultMap.get("err_code").toString());
-                    logger.warn("{}", resultMap.get("err_code_des").toString());
+                    logger.warn("支付失败,错误码:{}", resultMap.get("err_code").toString());
+                    logger.warn("错误码说明:{}", resultMap.get("err_code_des").toString());
                 }
             }
-        } catch (IOException | JDOMException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("{}", e);
         }
+
     }
 
 }

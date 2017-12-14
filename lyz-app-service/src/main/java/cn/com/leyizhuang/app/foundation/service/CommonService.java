@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -11,7 +12,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +42,13 @@ public interface CommonService {
             LockStoreSubventionException, SystemBusyException;
 
     void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
+                                        OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
             throws OrderSaveException, IOException;
 
-   /* *//**
+    /**
      * 订单付清后执行的相关操作
+     *
      * @param orderNumber 订单号
-     *//*
-    void handleOrderRelevantBusinessAfterPrePayUp(String orderNumber) throws IOException;*/
+     */
+    void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo,String tradeStatus, OnlinePayType onlinePayType) throws IOException;
 }
