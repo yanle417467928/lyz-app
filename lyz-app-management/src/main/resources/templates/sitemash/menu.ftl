@@ -1,4 +1,4 @@
-<aside class="main-sidebar">
+<aside class="main-sidebar" >
     <section class="sidebar">
         <!-- Sidememberuser panel -->
         <div class="user-panel">
@@ -23,7 +23,8 @@
                 </span>
             </div>
         </form>
-        <ul class="sidebar-menu">
+        <div class="pre-scrollable" style="max-height: 489px">
+        <ul class="sidebar-menu" >
             <li class="header">操作菜单</li>
         <#if IndexMenuVOList?? && IndexMenuVOList?size gt 0>
             <#list IndexMenuVOList as item>
@@ -122,5 +123,6 @@
         </#list>-->
         </#if>
         </ul>
+        </div>
     </section>
 </aside>

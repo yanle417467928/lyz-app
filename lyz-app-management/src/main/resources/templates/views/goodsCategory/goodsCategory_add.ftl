@@ -2,18 +2,11 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
-          rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
-
-
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css" />
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/locales/zh.js"></script>
 
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -78,6 +71,28 @@
                                 data: function () {
                                     return {
                                         categoryName: $('#categoryName').val(),
+                                    }
+                                }
+                            }
+                        }
+                    },sortId: {
+                        message: '排序号校验失败',
+                        validators: {
+                            notEmpty: {
+                                message: '排序号不能为空'
+                            },
+                            regexp: {
+                                regexp:  /^[1-9]\d*$/,
+                                message: '排序号只能输入数字'
+                            },
+                            remote: {
+                                type: 'POST',
+                                url:  '/rest/goodsCategorys/isExistSortId',
+                                message: '该排序号已被使用',
+                                delay: 500,
+                                data: function () {
+                                    return {
+                                        sortId: $('#sortId').val(),
                                     }
                                 }
                             }
@@ -164,11 +179,11 @@
                                     父分类
                                 </label>
                                 <select class="form-control select" name="paCategoryCode" id="paCategoryCode" >
-                                    <option value="WATER">水</option>
-                                    <option value="ELECTRIC">电</option>
-                                    <option value="WOOD">木</option>
-                                    <option value="TILE">瓦</option>
-                                    <option value="OIL">油</option>
+                                    <option value="水">水</option>
+                                    <option value="电">电</option>
+                                    <option value="木">木</option>
+                                    <option value="瓦">瓦</option>
+                                    <option value="油">油</option>
                                 </select>
                             </div>
                         </div>

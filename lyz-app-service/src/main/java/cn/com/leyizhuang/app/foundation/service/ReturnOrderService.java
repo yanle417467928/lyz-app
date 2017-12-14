@@ -2,8 +2,6 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
@@ -79,10 +77,9 @@ public interface ReturnOrderService {
      * 查所有退货单列表
      * @param userId id
      * @param identityType 身份
-     * @param showStatus 查看的状态
      * @return 退货单列表
      */
-    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer showStatus);
+    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType);
 
     /**
      * 查退货单商品信息
@@ -136,4 +133,6 @@ public interface ReturnOrderService {
     void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo, List<ReturnOrderGoodsInfo> returnOrderGoodsInfos,
                                      ReturnOrderBilling returnOrderBilling, List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList)
             throws OrderSaveException;
+
+    ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNumber);
 }

@@ -59,7 +59,7 @@ public class RandomUtil {
      * @param length 随机数长度
      * @return 随机字符串
      */
-    public static String randomAlphaAndNumStr(int length) {
+ /*   public static String randomAlphaAndNumStr(int length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i <= length; i++) {
             if (i == length) {
@@ -75,7 +75,7 @@ public class RandomUtil {
             }
         }
         return sb.toString();
-    }
+    }*/
 
     /**
      * 生成一个随机字符

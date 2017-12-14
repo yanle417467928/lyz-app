@@ -23,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -84,36 +82,36 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList) {
-        //首先验证自身是否重复商品，goodsList 是不会重复的，在加入下料清单就判断了。
-        //不同的促销可能赠送相同的商品。
-        if (giftList != null && !giftList.isEmpty()) {
-            for (GoodsIdQtyParam goodsIdQtyParam : giftList) {
-                for (GoodsIdQtyParam idQtyParam : giftList) {
-                    if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
-                        goodsIdQtyParam.setQty(goodsIdQtyParam.getQty() + idQtyParam.getQty());
-                    }
-                }
-            }
+    public Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList) {
+
+        if (null == cityId || null == goodsList) {
+            return null;
+        }
+        //如果赠品不为空合并赠品
+        if (null != giftList && !giftList.isEmpty()) {
             goodsList.addAll(giftList);
         }
-        //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
-        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-            for (GoodsIdQtyParam idQtyParam : goodsList) {
-                if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
-                    Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
-                    if (!isHaveInventory) {
-                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                    }
-                } else {
-                    Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
-                    if (!isHaveInventory) {
-                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                    }
-                }
+        //如果券商品不为空合并券商品
+        if (null != couponList && !couponList.isEmpty()) {
+            goodsList.addAll(couponList);
+        }
+        //合并所有商品，相同商品数量相加
+        Map<Long, Integer> mergeMap = new HashMap<Long, Integer>();
+        for (GoodsIdQtyParam param : goodsList) {
+            if (mergeMap.containsKey(param.getId())) {
+                mergeMap.put(param.getId(), param.getQty() + mergeMap.get(param.getId()));
+            } else {
+                mergeMap.put(param.getId(), param.getQty());
             }
         }
-        return "";
+        //遍历判断库存
+        for (Long id : mergeMap.keySet()) {
+            Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, id, mergeMap.get(id));
+            if (!isHaveInventory) {
+                return id;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -530,8 +528,8 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber) {
-        orderDAO.updateOrderStatusByOrderNoAndStatus(status, orderNumber);
+    public void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber) {
+        orderDAO.updateOrderStatusAndDeliveryStatusByOrderNo(status, deliveryStatus, orderNumber);
     }
 
     @Override

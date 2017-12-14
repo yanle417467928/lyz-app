@@ -97,10 +97,10 @@ public class HqAppGoodsController {
                 goods.setRotationImageUri(hqAppGoodsDTO.getRotationImageUri());
                 goods.setGoodsSpecification(hqAppGoodsDTO.getGoodsSpecification());
                 goods.setGoodsUnit(hqAppGoodsDTO.getGoodsUnit());
-                goods.setCId(hqAppGoodsDTO.getCId());
+                goods.setCid(hqAppGoodsDTO.getCId());
                 goods.setCategoryName(hqAppGoodsDTO.getCategoryName());
                 goods.setBrdId(hqAppGoodsDTO.getBrdId());
-                goods.setBrdName(hqAppGoodsDTO.getBrdName());
+                goods.setBrandName(hqAppGoodsDTO.getBrdName());
                 goods.setGtid(hqAppGoodsDTO.getGtid());
                 goods.setTypeName(hqAppGoodsDTO.getTypeName());
                 goods.setIsIndexRecommend(hqAppGoodsDTO.getIsIndexRecommend());
@@ -164,7 +164,7 @@ public class HqAppGoodsController {
                     goodsDO.setGoodsUnit(hqAppGoodsDTO.getGoodsUnit());
                 }
                 if (null != hqAppGoodsDTO.getCId()) {
-                    goodsDO.setCId(hqAppGoodsDTO.getCId());
+                    goodsDO.setCid(hqAppGoodsDTO.getCId());
                 }
                 if (!StringUtils.isBlank(hqAppGoodsDTO.getCategoryName())) {
                     goodsDO.setCategoryName(hqAppGoodsDTO.getCategoryName());
@@ -173,7 +173,7 @@ public class HqAppGoodsController {
                     goodsDO.setBrdId(hqAppGoodsDTO.getBrdId());
                 }
                 if (!StringUtils.isBlank(hqAppGoodsDTO.getBrdName())) {
-                    goodsDO.setBrdName(hqAppGoodsDTO.getBrdName());
+                    goodsDO.setBrandName(hqAppGoodsDTO.getBrdName());
                 }
                 if (null != hqAppGoodsDTO.getGtid()) {
                     goodsDO.setGtid(hqAppGoodsDTO.getGtid());

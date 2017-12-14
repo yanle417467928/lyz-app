@@ -176,8 +176,8 @@
         SELECT
             id              id,
             oid             oid,
-            gid             gid,
             ord_no          orderNumber,
+        gid gid,
             sku             sku,
             sku_name        skuName,
             retail_price    retailPrice,
@@ -476,21 +476,89 @@
     </update>
 
 
-    <update id="updateOrderStatusByOrderNoAndStatus">
+    <update id="updateOrderStatusAndDeliveryStatusByOrderNo">
         UPDATE ord_base_info
         <set>
             <if test="null != status">
                 status = #{status},
+            </if>
+            <if test="null != deliveryStatus">
+                delivery_status = #{deliveryStatus}
             </if>
         </set>
         WHERE ord_no = #{orderNumber}
 
     </update>
 
-    <select id="getOrderBillingDetailByOrderNo"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
-        SELECT *
-        FROM ord_billing_payment_details
-        WHERE ord_no = #{orderNo}
-    </select>
+    <update id="updateOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo" >
+        update ord_goods_info
+        <set >
+            <if test="oid != null" >
+                oid = #{oid,jdbcType=BIGINT},
+            </if>
+            <if test="orderNumber != null" >
+                ord_no = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="sku != null" >
+                sku = #{sku,jdbcType=VARCHAR},
+            </if>
+            <if test="skuName != null" >
+                sku_name = #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="retailPrice != null" >
+                retail_price = #{retailPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="VIPPrice != null" >
+                VIP_price = #{VIPPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="wholesalePrice != null" >
+                wholesale_price = #{wholesalePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="promotionId != null" >
+                promotion_id = #{promotionId,jdbcType=BIGINT},
+            </if>
+            <if test="isPriceShare != null" >
+                is_price_share = #{isPriceShare,jdbcType=BIT},
+            </if>
+            <if test="sharePrice != null" >
+                share_price = #{sharePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="returnPrice != null" >
+                return_price = #{returnPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="isReturnable != null" >
+                is_returnable = #{isReturnable,jdbcType=BIT},
+            </if>
+            <if test="returnPriority != null" >
+                return_priority = #{returnPriority,jdbcType=INTEGER},
+            </if>
+            <if test="orderQuantity != null" >
+                order_qty = #{orderQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="shippingQuantity != null" >
+                shipping_qty = #{shippingQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="returnQuantity != null" >
+                return_qty = #{returnQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="returnableQuantity != null" >
+                returnable_qty = #{returnableQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="goodsLineType != null" >
+                goods_line_type = #{goodsLineType,jdbcType=VARCHAR},
+            </if>
+            <if test="priceItemId != null" >
+                price_item_id = #{priceItemId,jdbcType=BIGINT},
+            </if>
+            <if test="companyFlag != null" >
+                company_flag = #{companyFlag,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteOrderGoodsInfo" parameterType="java.lang.Long">
+        DELETE FROM ord_goods_info
+        WHERE ID = #{id}
+    </delete>
 </mapper>

@@ -32,19 +32,25 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findStoreByCity(this.value);">
+                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findStoreByCondition()">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
-                            data-live-search="true" onchange="findStoreByEnable(this.value);">
+                            data-live-search="true" onchange="findStoreByCondition()">
                         <option value="-1">是否可用</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                     </select>
-                    <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control "
-                           style="width:auto;" placeholder="请输入要查找的店名或编码..">
-                    <button type="button" name="search" id="search-btn" class="btn btn-flat "
-                            onclick="return findStoreByNameOrCode()">
-                        <i class="fa fa-search"></i>
-                    </button>
+
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control "
+                               style="width:auto;" placeholder="请输入要查找的店名或编码..">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findStoreByNameOrCode()">查找</button>
+                        </span>
+                    </div>
+
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -184,7 +190,7 @@
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         }, {
-            field: 'cityId.name',
+            field: 'cityCode.name',
             title: '所属城市',
             align: 'center'
         }, {
@@ -259,10 +265,10 @@
                                 }
                                 $('#storeCode').html(data.storeCode);
 
-                                if (null === data.cityId.name) {
-                                    data.cityId.name = '-';
+                                if (null === data.cityCode.name) {
+                                    data.cityCode.name = '-';
                                 }
-                                $('#cityName').html(data.cityId.name);
+                                $('#cityName').html(data.cityCode.name);
 
                                 if (null === data.storeName) {
                                     data.storeName = '-';
@@ -270,11 +276,11 @@
                                 $('#storeName').html(data.storeName);
 
                                 if (true === data.isDefault) {
-                                    data.isDefault = '是';
+                                    data.isDefault = '<span class="label label-primary">是</span>';
                                 } else if (false === data.isDefault) {
-                                    data.isDefault = '否';
+                                    data.isDefault = '<span class="label label-danger">否</span>';
                                 } else {
-                                    data.isDefault = '-';
+                                    data.isDefault = '<span class="label label-danger">-</span>';
                                 }
                                 $('#isDefault').html(data.isDefault);
 
@@ -353,14 +359,8 @@
     }
 
 
-    function findStoreByCity(cityId) {
-        $("#enabled").empty();
-        var enabled = '';
-        if (-1 == $("#cityCode").val()) {
-            enabled += "<option value=-1>是否可用</option>";
-        } else {
-            enabled += "<option value=-1>是否可用</option><option value=1>可用</option><option value=0>不可用</option>";
-        }
+/*    function findStoreByCity(cityId) {
+        $("#enabled").val('-1');
         $("#enabled").append(enabled);
         findStoreByCityId(cityId);
     }
@@ -373,36 +373,35 @@
         } else {
             initDateGird('/rest/stores/findStoresListByCity/' + cityId);
         }
-    }
+    }*/
 
-    function findStoreByEnable(enabled) {
+    function findStoreByCondition() {
         $("#queryStoreInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var cityId = $("#cityCode").val();
-        if (enabled == -1) {
+        var enabled =  $("#enabled").val();
+        if(enabled==-1&&cityId!=-1){
             initDateGird('/rest/stores/findStoresListByCity/' + cityId);
-        } else {
-            initDateGird('/rest/stores/findStoresListByEnable?enabled=' + enabled + '&cityId=' + cityId);
+        }else if(enabled==-1&&cityId==-1){
+            initDateGird('/rest/stores/page/grid');
+        }else {
+            initDateGird('/rest/stores/findStoresListByCondition?enabled=' + enabled + '&cityId=' + cityId);
         }
-    }
+        }
 
     function findStoreByNameOrCode() {
         var queryStoreInfo = $("#queryStoreInfo").val();
+        $('#cityCode').val("-1");
+        $('#enabled').val("-1");
         if (null == queryStoreInfo || "" == queryStoreInfo) {
             $("#dataGrid").bootstrapTable('destroy');
-            $('#cityCode').val("-1");
-            initSelect("#enabled", "是否可用");
             initDateGird('/rest/stores/page/grid');
         } else {
             if (!checkCharacter(queryStoreInfo)) {
                 $notify.warning('请检查输入是否为汉子或者字母');
-                $('#cityCode').val("-1");
-                initSelect("#enabled", "是否可用");
                 return false;
             }
             $("#dataGrid").bootstrapTable('destroy');
-            $('#cityCode').val("-1");
-            initSelect("#enabled", "是否可用");
             initDateGird('/rest/stores/page/storeGrid/' + queryStoreInfo);
         }
     }

@@ -8,10 +8,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
 
     @Autowired
@@ -39,9 +41,9 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
     }
 
     @Override
-    public PageInfo<GoodsCategoryDO> findGoodsCategoryByPcode(String queryStoreInfo,Integer page, Integer size) {
+    public PageInfo<GoodsCategoryDO> findGoodsCategoryByPcode(String queryCategoryInfo,Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<GoodsCategoryDO> pageGoodsCategoryList = this.maGoodsCategoryDAO.findGoodsCategoryByPcode(queryStoreInfo);
+        List<GoodsCategoryDO> pageGoodsCategoryList = this.maGoodsCategoryDAO.findGoodsCategoryByPcode(queryCategoryInfo);
         return new PageInfo<>(pageGoodsCategoryList);
     }
 
@@ -58,6 +60,12 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
         return  maGoodsCategoryDAO.isExistCategoryName(categoryName);
     }
 
+
+    @Override
+    public Boolean editIsExistCategoryName(String categoryName,Long id){
+        return  maGoodsCategoryDAO.editIsExistCategoryName(categoryName,id);
+    }
+
     @Override
     public GoodsCategoryVO queryGoodsCategoryVOById(Long goodsCategoryId){
         GoodsCategoryDO goodsCategoryDO =  maGoodsCategoryDAO.queryGoodsCategoryVOById(goodsCategoryId);
@@ -71,6 +79,31 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
             GoodsCategoryDO goodsCategoryDO = GoodsCategoryDO.transform(goodsCategoryVO);
             this.maGoodsCategoryDAO.update(goodsCategoryDO);
         }
+    }
 
+
+    @Override
+    public List<GoodsCategoryVO> findEditGoodsCategory() {
+        List<GoodsCategoryDO> GoodsCategoryList = this.maGoodsCategoryDAO.findEditGoodsCategory();
+        List<GoodsCategoryVO> GoodsCategoryVOList = GoodsCategoryVO.transform(GoodsCategoryList);
+        return GoodsCategoryVOList;
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (null != id) {
+            maGoodsCategoryDAO.delete(id);
+        }
+    }
+
+
+    @Override
+    public Boolean isExistSortId(Long sortId){
+        return  maGoodsCategoryDAO.isExistSortId(sortId);
+    }
+
+    @Override
+    public Boolean editIsExistSortId(Long sortId,Long id){
+        return  maGoodsCategoryDAO.editIsExistSortId(sortId,id);
     }
 }

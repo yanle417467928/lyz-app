@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import com.github.pagehelper.PageInfo;
 
@@ -79,6 +80,7 @@ public interface GoodsService {
      */
     void modifySynchronize(GoodsDO goodsDO);
 
+
     /**
      * HQ同步删除商品
      * @param sku   物料编码
@@ -86,4 +88,14 @@ public interface GoodsService {
     void deleteSynchronize(String sku);
 
     List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(Long userId, Integer identityType, Set<Long> goodsIdSet);
+
+    PageInfo<GoodsDO> queryGoodsPageByInfo(Integer page, Integer size,String queryGoodsInfo);
+
+    PageInfo<GoodsDO> screenGoodsGrid(Integer page, Integer size,Long brandCode,String categoryCode,String companyCode);
+
+    void updateGoods(MaGoodsVO goodsVO);
+
+    Boolean isExistSkuName(String skuName,Long id);
+
+    Boolean isExistSortId(Long sortId,Long id);
 }

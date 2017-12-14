@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCityDeliveryTimeDAO">
+
+    <select id="queryPage"  parameterType="java.lang.Long" resultType="CityDeliveryTime">
+        SELECT *
+        FROM city_delivery_time
+        WHERE
+        cityId = #{cityId}
+        ORDER BY start_hour ,start_minute ASC
+    </select>
+
+    <insert id="save" parameterType="CityDeliveryTime">
+      INSERT
+      INTO
+        city_delivery_time (cityId,cityName,start_hour,start_minute,end_hour,end_minute)
+      VALUES
+        (#{cityId},#{cityName},#{startHour},#{startMinute},#{endHour},#{endMinute})
+    </insert>
+
+    <select id="queryById"  parameterType="java.lang.Long" resultType="CityDeliveryTime">
+        SELECT *
+        FROM city_delivery_time
+        WHERE
+        id = #{id}
+        ORDER BY start_hour ,start_minute ASC
+    </select>
+
+   <update id="update"  parameterType="CityDeliveryTime">
+       UPDATE city_delivery_time
+       <set>
+           <if test="null != startHour">
+               start_hour = #{startHour},
+           </if>
+           <if test="null != startMinute">
+               start_minute = #{startMinute},
+           </if>
+           <if test="null != endHour">
+               end_hour = #{endHour},
+           </if>
+           <if test="null != endMinute">
+               end_minute = #{endMinute},
+           </if>
+       </set>
+       WHERE ID = #{id}
+   </update>
+
+
+    <select id="judgmentTime"  parameterType="java.lang.Long" resultType="CityDeliveryTime">
+        SELECT *
+        FROM city_delivery_time
+        WHERE
+        cityId = #{cityId}
+          AND
+        id != #{id}
+        ORDER BY start_hour ,start_minute ASC
+    </select>
+</mapper>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaShoppingGuideDAO">
-
-    <select id="findGuideListById" parameterType="java.lang.Long" resultType="ShoppingGuideVO">
-        SELECT e.emp_id,e.name FROM emp_employee e where e.store_id = #{storeId} and e.identity_type='SELLER'
-    </select>
-</mapper>

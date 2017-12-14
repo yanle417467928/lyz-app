@@ -16,7 +16,17 @@ public interface MaGoodsBrandService {
 
     Boolean isExistBrandName(String brandName);
 
+    Boolean editIsExistBrandName(String brandName,Long id);
+
+    Boolean isExistSort(Long sortId);
+
+    Boolean editIsExistSort( Long sortId,Long id);
+
     GoodsBrand queryGoodsBrandVOById(Long goodsBrandId);
 
     void  update(GoodsBrand goodsBrand);
+
+    List<GoodsBrand> queryGoodsBrandList();
+
+    void delete(Long id);
 }

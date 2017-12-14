@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -93,6 +94,8 @@ public class ReturnOrderController {
     private ReturnOrderService returnOrderService;
     @Resource
     private CityService cityService;
+    @Resource
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
 
     /**
      * 取消订单
@@ -580,7 +583,7 @@ public class ReturnOrderController {
 
             }
             //修改订单状态为已取消
-            appOrderService.updateOrderStatusByOrderNoAndStatus(AppOrderStatus.CANCELED, orderBaseInfo.getOrderNumber());
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED,null, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
@@ -1039,8 +1042,22 @@ public class ReturnOrderController {
                 }
 
             }
-            //修改订单状态为已取消
-            appOrderService.updateOrderStatusByOrderNoAndStatus(AppOrderStatus.REJECTED, orderBaseInfo.getOrderNumber());
+            //获取物流状态明细
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderNumber,LogisticStatus.SEALED_CAR);
+            //记录物流明细表
+            OrderDeliveryInfoDetails newOrderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+            newOrderDeliveryInfoDetails.setOrderNo(orderNumber);
+            newOrderDeliveryInfoDetails.setLogisticStatus(LogisticStatus.REJECT);
+            newOrderDeliveryInfoDetails.setCreateTime(date);
+            newOrderDeliveryInfoDetails.setDescription("拒签");
+            newOrderDeliveryInfoDetails.setOperationType("拒签退货");
+            newOrderDeliveryInfoDetails.setOperatorNo(orderDeliveryInfoDetails.getOperatorNo());
+            newOrderDeliveryInfoDetails.setWarehouseNo(orderDeliveryInfoDetails.getWarehouseNo());
+            newOrderDeliveryInfoDetails.setTaskNo(orderDeliveryInfoDetails.getTaskNo());
+
+            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
+            //修改订单状态为拒签,物流状态拒签
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED,LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
@@ -1290,9 +1307,9 @@ public class ReturnOrderController {
      * @return 退货单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getReturnOrderList(Long userId, Integer identityType, Integer showStatus) {
+    public ResultDTO getReturnOrderList(Long userId, Integer identityType) {
 
-        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{}", userId, identityType, showStatus);
+        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -1307,16 +1324,16 @@ public class ReturnOrderController {
         }
         try {
             //查询所有退单表
-            List<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, showStatus);
+            List<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType);
 
             //创建一个返回对象list
-            List<OrderListResponse> orderListResponses = new ArrayList<>();
+            List<ReturnOrderListResponse> returnOrderListResponses = new ArrayList<>();
 
             for (ReturnOrderBaseInfo returnBaseInfo : baseInfo) {
                 //创建有个存放图片地址的list
                 List<String> goodsImgList = new ArrayList<>();
                 //创建一个返回类（借用订单返回对象）
-                OrderListResponse orderListResponse = new OrderListResponse();
+                ReturnOrderListResponse response = new ReturnOrderListResponse();
                 //获取订单商品
                 List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
                 //遍历订单商品
@@ -1325,16 +1342,23 @@ public class ReturnOrderController {
                     goodsImgList.add(goodsService.queryBySku(returnGoodsInfo.getSku()).getCoverImageUri());
                     count = count + returnGoodsInfo.getReturnQty();
                 }
-                orderListResponse.setOrderNo(returnBaseInfo.getReturnNo());
-                orderListResponse.setStatus(returnBaseInfo.getReturnStatus().getDescription());
-                orderListResponse.setCount(count);
-                orderListResponse.setPrice(returnBaseInfo.getReturnPrice());
-                orderListResponse.setGoodsImgList(goodsImgList);
+                response.setReturnNo(returnBaseInfo.getReturnNo());
+                response.setStatus(returnBaseInfo.getReturnStatus().getDescription());
+                response.setCount(count);
+                response.setReturnPrice(returnBaseInfo.getReturnPrice());
+                response.setReturnType(returnBaseInfo.getReturnType().getDescription());
+                response.setGoodsImgList(goodsImgList);
+                if (identityType == 0) {
+                    CustomerSimpleInfo customer = new CustomerSimpleInfo();
+                    customer.setCustomerId(returnBaseInfo.getCustomerId());
+                    customer.setCustomerName(returnBaseInfo.getCustomerName());
+                    response.setCustomer(customer);
+                }
                 //添加到返回类list中
-                orderListResponses.add(orderListResponse);
+                returnOrderListResponses.add(response);
 
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderListResponses);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnOrderListResponses);
             logger.info("getReturnOrderList OUT,获取用户退货单列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -1382,7 +1406,7 @@ public class ReturnOrderController {
             if (returnBaseInfo != null) {
 
                 //获取原订单收货/自提门店地址
-                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(returnBaseInfo.getOrderNo());
+                ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
 
                 detailResponse = new ReturnOrderDetailResponse();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1392,23 +1416,35 @@ public class ReturnOrderController {
                 detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
                 detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
                 detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
+                detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
+                detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
+                detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
+                if (identityType == 0) {
+                    CustomerSimpleInfo customerSimpleInfo = new CustomerSimpleInfo();
+                    customerSimpleInfo.setCustomerId(returnBaseInfo.getCustomerId());
+                    customerSimpleInfo.setCustomerName(returnBaseInfo.getCustomerName());
+                    detailResponse.setCustomer(customerSimpleInfo);
+                }
                 //取货方式（上门取货，送货到店）
-                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
-                    detailResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
-                    AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
-                    detailResponse.setBookingStorePhone(appStore.getPhone());
-                    detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
+                    detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
+                    AppStore appStore = appStoreService.findByStoreCode(returnOrderLogisticInfo.getReturnStoreCode());
+                    if (appStore != null) {
+                        detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                        detailResponse.setBookingStorePhone(appStore.getPhone());
+                    }
+                    detailResponse.setBookingTime(returnOrderLogisticInfo.getDeliveryTime());
                 } else {
-                    detailResponse.setDeliveryTime(orderLogisticsInfo.getDeliveryTime());
-                    detailResponse.setReceiver(orderLogisticsInfo.getReceiver());
-                    detailResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
-                    detailResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                    detailResponse.setDeliveryTime(returnOrderLogisticInfo.getDeliveryTime());
+                    detailResponse.setReceiver(returnOrderLogisticInfo.getRejecter());
+                    detailResponse.setReceiverPhone(returnOrderLogisticInfo.getRejecterPhone());
+                    detailResponse.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
                 }
                 detailResponse.setGoodsList(returnOrderService.getReturnOrderGoodsDetails(returnNumber));
                 int count = 0;
                 Double totalReturnPrice = 0.00;
                 //获取订单商品
-                List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
                 //遍历订单商品，算出总商品数量和退货商品总价
                 for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
                     count = count + returnGoodsInfo.getReturnQty();

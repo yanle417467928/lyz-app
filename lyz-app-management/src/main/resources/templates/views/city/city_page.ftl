@@ -1,11 +1,11 @@
 <head>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -210,14 +210,13 @@
                                 }
                                 $('#structureTitle').html(data.structureTitle);
 
-                                if (true === data.enable) {
+                                if (true==data.enable) {
                                     $('#enable').html('<span class="label label-primary">是</span>');
-                                }else if(false === data.enable){
-                                    $('#enable').html('<span class="label label-primary">否</span>');
+                                }else if(false==data.enable){
+                                    $('#enable').html('<span class="label label-danger">否</span>');
                                 }else {
-                                    $('#enable').html('-');
+                                    $('#enable').html('<span class="label label-danger">-</span>');
                                 }
-                                $('#enable').html(data.enable);
 
                                 if (null === data.enableFalseTime) {
                                     $('#enableFalseTime').html('-');

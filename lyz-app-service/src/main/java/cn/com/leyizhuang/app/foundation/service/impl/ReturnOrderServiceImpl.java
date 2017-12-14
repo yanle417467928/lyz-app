@@ -6,20 +6,13 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -147,7 +140,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                         //修改这个数量
-                        orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
+                        orderDAO.updateOrderGoodsInfo(orderGoodsInfo);
                     }
                 }
             } else {
@@ -213,10 +206,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer showStatus) {
-        if (userId != null && identityType != null && showStatus != null) {
+    public List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (userId != null && identityType != null) {
             return returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
-                    AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
+                    AppIdentityType.getAppIdentityTypeByValue(identityType));
         }
         return null;
     }
@@ -237,4 +230,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         return null;
     }
 
+    @Override
+    public ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            return returnOrderDAO.getReturnOrderLogisticeInfo(returnNumber);
+        }
+        return null;
+    }
 }

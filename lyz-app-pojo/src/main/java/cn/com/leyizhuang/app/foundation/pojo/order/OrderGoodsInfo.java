@@ -14,7 +14,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderGoodsInfo {
+public class OrderGoodsInfo implements Cloneable{
 
     private Long id;
 
@@ -121,4 +121,19 @@ public class OrderGoodsInfo {
      * 公司编码
      */
     private String companyFlag;
+
+    /**
+     * 浅克隆方法
+     * @return
+     */
+    @Override
+    public OrderGoodsInfo clone() {
+        OrderGoodsInfo obj = null;
+        try{
+            obj = (OrderGoodsInfo)super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
 }

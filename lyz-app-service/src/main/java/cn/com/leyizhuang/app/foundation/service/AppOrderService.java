@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
@@ -29,7 +30,7 @@ public interface AppOrderService {
 
     Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty);
 
-    String existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList);
+    Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
 
     //用户获取我的订单列表
     List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus);
@@ -113,7 +114,8 @@ public interface AppOrderService {
      * @param status    订单状态
      * @param orderNumber   订单号
      */
-    void updateOrderStatusByOrderNoAndStatus(AppOrderStatus status, String orderNumber);
+    void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber);
+
 
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo);

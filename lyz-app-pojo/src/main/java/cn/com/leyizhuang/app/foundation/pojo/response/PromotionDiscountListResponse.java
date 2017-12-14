@@ -21,6 +21,9 @@ public class PromotionDiscountListResponse {
     // 促销标题
     private String promotionTitle;
 
+    // 参与此促销次数
+    private Integer enjoyTimes;
+
     // 优惠金额
     private Double discountPrice;
 

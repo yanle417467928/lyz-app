@@ -1,5 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.activity;
 
+import cn.com.leyizhuang.app.core.constant.ActBaseType;
+import cn.com.leyizhuang.app.core.constant.ActConditionType;
+import cn.com.leyizhuang.app.core.constant.ActPromotionType;
 import cn.com.leyizhuang.common.foundation.pojo.BaseDO;
 import lombok.*;
 
@@ -50,13 +53,13 @@ public class ActBaseDO{
     private String actTarget;
 
     // 促销基本类型
-    private String baseType;
+    private ActBaseType baseType;
 
     // 结果类型
-    private String promotionType;
+    private ActPromotionType promotionType;
 
     // 条件类型
-    private String conditionType;
+    private ActConditionType conditionType;
 
     // 是否叠加
     private Boolean isDouble;
@@ -70,6 +73,9 @@ public class ActBaseDO{
     // 满足数量
     private Integer fullNumber;
 
+    // 是否可退货
+    private Boolean isReturnable;
+
     // 排序号
     private Integer sortId;
 
@@ -77,6 +83,6 @@ public class ActBaseDO{
      * 获取最终促销类型
      */
     public String getActType(){
-        return this.baseType+"_"+this.conditionType+"_"+this.promotionType;
+        return this.baseType.getValue()+"_"+this.conditionType.getValue()+"_"+this.promotionType.getValue();
     }
 }

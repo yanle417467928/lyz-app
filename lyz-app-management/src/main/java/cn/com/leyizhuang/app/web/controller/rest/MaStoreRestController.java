@@ -38,23 +38,23 @@ public class MaStoreRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size);
-        List<StoreVO> PageAllStoresList = storePage.getList();
-        return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
+        List<StoreVO> pageAllStoresList = storePage.getList();
+        return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
     }
 
     /**
-     * 查询门店列表
+     * 查询门店列表(下拉框)
      *
      * @return
      */
     @GetMapping(value = "/findStorelist")
     public List<StoreVO> findStoresList() {
-        List<StoreVO> AllStoresList = this.maStoreService.findStoreList();
-        return AllStoresList;
+        List<StoreVO> allStoresList = this.maStoreService.findStoreList();
+        return allStoresList;
     }
 
     /**
-     * 查询该城市ID的门店列表
+     * 查询该城市ID的门店列表(下拉框)
      *
      * @param cityId
      * @return
@@ -98,8 +98,8 @@ public class MaStoreRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId);
-        List<StoreVO> PageAllStoresList = storePage.getList();
-        return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
+        List<StoreVO> pageAllStoresList = storePage.getList();
+        return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
     }
 
     /**
@@ -112,13 +112,13 @@ public class MaStoreRestController extends BaseRestController {
      * @param keywords
      * @return
      */
-    @GetMapping(value = "/findStoresListByEnable")
-    public GridDataVO<StoreVO> findStoresListByEnable(@RequestParam("enabled") Boolean enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
+    @GetMapping(value = "/findStoresListByCondition")
+    public GridDataVO<StoreVO> findStoresListByCondition(@RequestParam("enabled") String enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByEnable(page, size, enabled, cityId);
-        List<StoreVO> PageAllStoresList = storePage.getList();
-        return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
+        PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId);
+        List<StoreVO> pageAllStoresList = storePage.getList();
+        return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
     }
 
 
@@ -136,8 +136,8 @@ public class MaStoreRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo);
-        List<StoreVO> PageAllStoresList = storePage.getList();
-        return new GridDataVO<StoreVO>().transform(PageAllStoresList, storePage.getTotal());
+        List<StoreVO> pageAllStoresList = storePage.getList();
+        return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
     }
 
     /**

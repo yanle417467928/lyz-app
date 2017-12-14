@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
@@ -53,4 +54,13 @@ public interface OrderDeliveryInfoDetailsDAO {
      * @return  商品详情
      */
     List<GiftListResponseGoods> getReturnGoods(@Param("returnNumber")String returnNumber);
+
+    /**
+     * 查找订单物流明细
+     * @param orderNumber  订单号
+     * @param logisticStatus    物流状态
+     * @return  物流明细
+     */
+    OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(@Param("orderNumber")String orderNumber,
+                                                                @Param("logisticStatus")LogisticStatus logisticStatus);
 }

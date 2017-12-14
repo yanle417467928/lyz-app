@@ -2,18 +2,11 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
-          rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
-
-
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/css/fileinput.css" />
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/fileinput.js"></script>
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/bootstrap-fileinput-master/js/locales/zh.js"></script>
 
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -56,24 +49,24 @@
                 verbose: false,
                 fields: {
                     brandName: {
-                        message: '分类名称校验失败',
+                        message: '品牌名称校验失败',
                         validators: {
                             notEmpty: {
-                                message: '分类名称不能为空'
+                                message: '品牌名称不能为空'
                             },
                             regexp: {
                                 regexp: /^[a-zA-Z0-9\u4E00-\u9FA5]+$/,
-                                message: '分类名称只能输入字母或汉字'
+                                message: '品牌名称只能输入字母或汉字'
                             },
                             stringLength: {
                                 min: 2,
                                 max: 10,
-                                message: '分类名称的长度必须在2~10位之间'
+                                message: '品牌名称的长度必须在2~10位之间'
                             },
                             remote: {
                                 type: 'POST',
                                 url:  '/rest/goodsBrand/isExistBrandName',
-                                message: '已存在分类名称',
+                                message: '已存在品牌名称',
                                 delay: 500,
                                 data: function () {
                                     return {
@@ -96,6 +89,17 @@
                         validators: {
                             notEmpty: {
                                 message: '排序号不能为空'
+                            },
+                            remote: {
+                                type: 'POST',
+                                url:  '/rest/goodsBrand/isExistSort',
+                                message: '已存在排序号',
+                                delay: 500,
+                                data: function () {
+                                    return {
+                                        sortId: $('#sortId').val(),
+                                    }
+                                }
                             }
                         }
                     }

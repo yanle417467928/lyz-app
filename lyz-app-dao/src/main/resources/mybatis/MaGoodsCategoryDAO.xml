@@ -54,7 +54,6 @@
         gds_goods_category (category_name,category_code,p_cid,p_category_code,sort_id)
       VALUES
         (#{categoryName},#{categoryCode},#{pCid},#{pCategoryCode},#{sortId})
-
     </insert>
 
 
@@ -65,6 +64,29 @@
         WHERE category_name = #{categoryName})
     </select>
 
+    <select id="editIsExistCategoryName"  resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_category
+        WHERE category_name = #{categoryName}
+        AND
+        cid!=#{id})
+    </select>
+
+
+    <select id="isExistSortId" parameterType="java.lang.Long"  resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_category
+        WHERE sort_id = #{sortId})
+    </select>
+
+    <select id="editIsExistSortId"   resultType="boolean" >
+        SELECT EXISTS(SELECT 1
+        FROM gds_goods_category
+        WHERE sort_id = #{sortId}
+        AND
+        cid !=#{id}
+        )
+    </select>
 
     <select id="queryGoodsCategoryVOById"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
         select
@@ -97,4 +119,18 @@
         </set>
         WHERE cid = #{cid}
     </update>
+
+
+    <select id="findEditGoodsCategory"  resultType="GoodsCategoryDO">
+        select cid,category_name
+        FROM gds_goods_category
+        where p_cid is not null
+    </select>
+
+
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM gds_goods_category
+        WHERE cid = #{id};
+    </delete>
  </mapper>

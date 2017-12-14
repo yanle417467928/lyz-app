@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -335,11 +336,51 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         goodsDO.setSkuName(goodsDTO.getGoodsName());
         goodsDO.setSku(goodsDTO.getGoodsCode());
         goodsDO.setBrdId(goodsDTO.getBrandId());
-        goodsDO.setBrdName(goodsDTO.getBrandTitle());
+        goodsDO.setBrandName(goodsDTO.getBrandTitle());
         goodsDO.setCoverImageUri(goodsDTO.getCoverImageUri());
         String onSaleTime = goodsDTO.getOnSaleTime();
         return goodsDO;
     }
 
+    @Override
+    public  PageInfo<GoodsDO> queryGoodsPageByInfo (Integer page, Integer size,String queryGoodsInfo){
+        PageHelper.startPage(page, size);
+        List<GoodsDO> goodsDOList = goodsDAO.queryGoodsPageByInfo(queryGoodsInfo);
+        return new PageInfo<>(goodsDOList);
+    }
+
+    @Override
+    public  PageInfo<GoodsDO> screenGoodsGrid (Integer page, Integer size,Long brandCode,String categoryCode,String companyCode){
+        PageHelper.startPage(page, size);
+        if("-1".equals(categoryCode)){
+            categoryCode=null;
+        }
+        if("-1".equals(companyCode)){
+            companyCode=null;
+        }
+        if(-1==brandCode){
+            brandCode=null;
+        }
+        List<GoodsDO> goodsDOList = goodsDAO.screenGoodsGrid(brandCode,categoryCode,companyCode);
+        return new PageInfo<>(goodsDOList);
+    }
+
+    @Override
+    public void updateGoods(MaGoodsVO goodsVO){
+       GoodsDO goodsDO= GoodsDO.transform(goodsVO);
+        goodsDAO.updateGoods(goodsDO);
+    }
+
+
+    @Override
+    public Boolean isExistSkuName(String skuName,Long id){
+        return  goodsDAO.isExistSkuName(skuName,id);
+    }
+
+
+    @Override
+    public Boolean isExistSortId(Long sortId,Long id){
+        return  goodsDAO.isExistSortId(sortId,id);
+    }
 
 }

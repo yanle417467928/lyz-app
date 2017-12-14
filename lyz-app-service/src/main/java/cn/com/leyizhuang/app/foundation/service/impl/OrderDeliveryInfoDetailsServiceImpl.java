@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -68,5 +69,10 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public List<GiftListResponseGoods> getReturnGoods(String returnNumber) {
         return orderDeliveryInfoDetailsDAO.getReturnGoods(returnNumber);
+    }
+
+    @Override
+    public OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(String orderNumber, LogisticStatus logisticStatus) {
+        return orderDeliveryInfoDetailsDAO.findByOrderNumberAndLogisticStatus(orderNumber, logisticStatus);
     }
 }
