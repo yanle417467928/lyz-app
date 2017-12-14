@@ -95,22 +95,20 @@ public class AppOrderServiceImpl implements AppOrderService {
                     }
                 }
             }
+            goodsList.addAll(giftList);
         }
         //现在本品中都是唯一商品，赠品中也是唯一商品，可以把两个合并，在找自身重复商品。
-        goodsList.addAll(giftList);
         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
             for (GoodsIdQtyParam idQtyParam : goodsList) {
                 if (goodsIdQtyParam.getId().equals(idQtyParam.getId())) {
                     Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
                     if (!isHaveInventory) {
-                        String msg = goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                        return msg;
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
                     }
                 } else {
                     Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, goodsIdQtyParam.getId(), goodsIdQtyParam.getQty() + idQtyParam.getQty());
                     if (!isHaveInventory) {
-                        String msg = goodsIdQtyParam.getId().toString().concat("城市库存不足！");
-                        return msg;
+                        return goodsIdQtyParam.getId().toString().concat("城市库存不足！");
                     }
                 }
             }

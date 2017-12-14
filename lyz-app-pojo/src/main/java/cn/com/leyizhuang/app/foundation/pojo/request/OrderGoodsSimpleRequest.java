@@ -46,6 +46,6 @@ public class OrderGoodsSimpleRequest implements Serializable {
     /**
      * 产品券商品集合
      */
-    private List<ProductCouponSimpleInfo> couponSimpleInfoList;
+    private List<ProductCouponSimpleInfo> productCouponList;
 
 }
