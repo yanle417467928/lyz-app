@@ -37,7 +37,7 @@ public class AgencyFundController {
      * @date 2017/11/27
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getAgencyFundList(Long userId, Integer identityType) {
+    public ResultDTO<Object> getAgencyFundList(Long userId, Integer identityType, String startDate, String endDate) {
         logger.info("getAgencyFundList CALLED,获取配送员代收款明细，入参 userId:{} identityType:{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -50,8 +50,15 @@ public class AgencyFundController {
             logger.info("getAgencyFundList OUT,获取配送员代收款明细失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null != endDate){
+            if ( "".equals(endDate.trim())){
+                endDate = null;
+            } else {
+                endDate += " 23:59:59";
+            }
+        }
 
-        List<DeliveryAgencyFundResponse> deliveryAgencyFundResponseList = this.orderAgencyFundServiceImpl.findByUserId(userId);
+        List<DeliveryAgencyFundResponse> deliveryAgencyFundResponseList = this.orderAgencyFundServiceImpl.findByUserIdAndCreateTime(userId, startDate, endDate);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAgencyFundResponseList);
         logger.info("getAgencyFundList OUT,获取配送员代收款明细成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
