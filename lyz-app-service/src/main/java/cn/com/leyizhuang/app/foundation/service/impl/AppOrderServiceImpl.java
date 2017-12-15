@@ -533,9 +533,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo) {
+    public List<OrderBillingPaymentDetails> getOrderBillingDetailListByOrderNo(String orderNo) {
         if (StringUtils.isNotBlank(orderNo)) {
-            return orderDAO.getOrderBillingDetailByOrderNo(orderNo);
+            return orderDAO.getOrderBillingDetailListByOrderNo(orderNo);
         }
         return null;
     }

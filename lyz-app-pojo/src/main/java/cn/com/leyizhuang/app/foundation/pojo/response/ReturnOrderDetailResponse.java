@@ -74,7 +74,7 @@ public class ReturnOrderDetailResponse {
     /**
      * 预约提货时间
      */
-    private String bookingTime;
+//    private String bookingTime;
     /**
      * 商品list
      */

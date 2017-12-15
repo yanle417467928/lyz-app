@@ -970,6 +970,7 @@ public class OrderController {
                     CustomerSimpleInfo customer = new CustomerSimpleInfo();
                     customer.setCustomerId(orderBaseInfo.getCustomerId());
                     customer.setCustomerName(orderBaseInfo.getCustomerName());
+                    customer.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                     orderListResponse.setCustomer(customer);
                 }
                 //添加到返回类list中
@@ -1108,6 +1109,7 @@ public class OrderController {
                     CustomerSimpleInfo customer = new CustomerSimpleInfo();
                     customer.setCustomerId(orderBaseInfo.getCustomerId());
                     customer.setCustomerName(orderBaseInfo.getCustomerName());
+                    customer.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                     orderDetailsResponse.setCustomer(customer);
                 }
                 //根据不同的配送方式进行设值

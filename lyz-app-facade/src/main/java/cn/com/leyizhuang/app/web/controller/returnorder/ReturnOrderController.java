@@ -1148,6 +1148,7 @@ public class ReturnOrderController {
                 if (customer != null) {
                     returnOrderBaseInfo.setCustomerId(customer.getCusId());
                     returnOrderBaseInfo.setCustomerName(customer.getName());
+                    returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
                     returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
                 }
             }
@@ -1167,7 +1168,7 @@ public class ReturnOrderController {
             if (orderGoodsInfoList != null) {
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
-                        if (goodsInfo.getId().equals(simpleInfo.getId())) {
+                        if (goodsInfo.getGid().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
@@ -1206,7 +1207,7 @@ public class ReturnOrderController {
             }
             //******************* 创建退货单金额信息 ************************
             List<OrderBillingPaymentDetails> orderPaymentDetails = appOrderService.
-                    getOrderBillingDetailByOrderNo(orderNo);
+                    getOrderBillingDetailListByOrderNo(orderNo);
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
             //退款优先级
             //顾客：现金POS ——> 第三方支付 ——> 预存款 ——> 未提货产品券
@@ -1352,6 +1353,7 @@ public class ReturnOrderController {
                     CustomerSimpleInfo customer = new CustomerSimpleInfo();
                     customer.setCustomerId(returnBaseInfo.getCustomerId());
                     customer.setCustomerName(returnBaseInfo.getCustomerName());
+                    customer.setCustomerPhone(returnBaseInfo.getCustomerPhone());
                     response.setCustomer(customer);
                 }
                 //添加到返回类list中
@@ -1402,57 +1404,64 @@ public class ReturnOrderController {
         try {
             //查退单
             ReturnOrderBaseInfo returnBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
-            ReturnOrderDetailResponse detailResponse = null;
-            if (returnBaseInfo != null) {
-
-                //获取原订单收货/自提门店地址
-                ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
-
-                detailResponse = new ReturnOrderDetailResponse();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                //设置基础信息
-                if (returnBaseInfo.getReturnStatus() != null) {
-                    detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
-                }
-                detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
-                detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
-                detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
-                if (returnBaseInfo.getReturnType() != null) {
-                    detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
-                }
-                detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
-                if (returnOrderLogisticInfo.getDeliveryType() != null) {
-                    detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
-                }
-                //取货方式（上门取货，送货到店）
-                if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
-                    detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
-                    AppStore appStore = appStoreService.findByStoreCode(returnOrderLogisticInfo.getReturnStoreCode());
-                    if (appStore != null) {
-                        detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
-                        detailResponse.setBookingStorePhone(appStore.getPhone());
-                    }
-                    detailResponse.setBookingTime(returnOrderLogisticInfo.getDeliveryTime());
-                } else {
-                    detailResponse.setDeliveryTime(returnOrderLogisticInfo.getDeliveryTime());
-                    detailResponse.setReceiver(returnOrderLogisticInfo.getRejecter());
-                    detailResponse.setReceiverPhone(returnOrderLogisticInfo.getRejecterPhone());
-                    detailResponse.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
-                }
-                detailResponse.setGoodsList(returnOrderService.getReturnOrderGoodsDetails(returnNumber));
-                int count = 0;
-                Double totalReturnPrice = 0.00;
-                //获取订单商品
-                List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
-                //遍历订单商品，算出总商品数量和退货商品总价
-                for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
-                    count = count + returnGoodsInfo.getReturnQty();
-                    totalReturnPrice = CountUtil.add(totalReturnPrice, CountUtil.mul(returnGoodsInfo.getReturnQty(), returnGoodsInfo.getReturnPrice()));
-                }
-                detailResponse.setReturnQty(count);
-                detailResponse.setTotalReturnPrice(totalReturnPrice);
+            if (null == returnBaseInfo) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
+                logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
+            ReturnOrderDetailResponse detailResponse = null;
+
+            //获取原订单收货/自提门店地址
+            ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
+            if (null == returnOrderLogisticInfo) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少收货物流信息！", null);
+                logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            detailResponse = new ReturnOrderDetailResponse();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            //设置基础信息
+            if (returnBaseInfo.getReturnStatus() != null) {
+                detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
+            }
+            detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
+            detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
+            detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
+            if (returnBaseInfo.getReturnType() != null) {
+                detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
+            }
+            detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
+            if (returnOrderLogisticInfo.getDeliveryType() != null) {
+                detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
+            }
+            //取货方式（上门取货，送货到店）
+            if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
+                detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
+                AppStore appStore = appStoreService.findByStoreCode(returnOrderLogisticInfo.getReturnStoreCode());
+                if (appStore != null) {
+                    detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                    detailResponse.setBookingStorePhone(appStore.getPhone());
+                }
+            } else {
+                detailResponse.setDeliveryTime(returnOrderLogisticInfo.getDeliveryTime());
+                detailResponse.setReceiver(returnOrderLogisticInfo.getRejecter());
+                detailResponse.setReceiverPhone(returnOrderLogisticInfo.getRejecterPhone());
+                detailResponse.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
+            }
+            detailResponse.setGoodsList(returnOrderService.getReturnOrderGoodsDetails(returnNumber));
+            int count = 0;
+            Double totalReturnPrice = 0.00;
+            //获取订单商品
+            List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+            //遍历订单商品，算出总商品数量和退货商品总价
+            for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
+                count = count + returnGoodsInfo.getReturnQty();
+                totalReturnPrice = CountUtil.add(totalReturnPrice, CountUtil.mul(returnGoodsInfo.getReturnQty(), returnGoodsInfo.getReturnPrice()));
+            }
+            detailResponse.setReturnQty(count);
+            detailResponse.setTotalReturnPrice(totalReturnPrice);
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, detailResponse);
             logger.info("getReturnOrderDetail OUT,查看退货单详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1794,7 +1803,7 @@ public class ReturnOrderController {
 
     private ReturnOrderGoodsInfo transform(OrderGoodsInfo goodsInfo, Integer qty, String returnNo) {
         ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
-        returnOrderGoodsInfo.setGid(goodsInfo.getId());
+        returnOrderGoodsInfo.setGid(goodsInfo.getGid());
         returnOrderGoodsInfo.setRetailPrice(goodsInfo.getRetailPrice());
         returnOrderGoodsInfo.setReturnPrice(goodsInfo.getReturnPrice());
         returnOrderGoodsInfo.setReturnQty(qty);

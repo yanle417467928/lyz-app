@@ -44,7 +44,10 @@
             obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
-            obi.delivery_type
+            obi.delivery_type,
+            obi.customer_id,
+            obi.customer_name,
+            obi.customer_phone
             FROM
             ord_base_info AS obi
             WHERE
@@ -283,6 +286,24 @@
             ord_billing_details
         WHERE
             ord_no = #{orderNumber}
+    </select>
+
+    <select id="getOrderBillingDetailListByOrderNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+        SELECT
+            id,
+            oid    orderId,
+            ord_no orderNumber,
+            creatr_time,
+            pay_time,
+            pay_type,
+            amount,
+            reply_code,
+            receipt_number
+        FROM
+            ord_billing_payment_details
+        WHERE
+            ord_no = #{orderNo}
     </select>
 
     <select id="getOrderGoodsDetails" parameterType="java.lang.String"
