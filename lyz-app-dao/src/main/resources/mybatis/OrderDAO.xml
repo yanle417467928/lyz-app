@@ -44,10 +44,7 @@
             obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
-            obi.delivery_type,
-            obi.customer_id,
-            obi.customer_name,
-            obi.customer_phone
+            obi.delivery_type
             FROM
             ord_base_info AS obi
             WHERE
@@ -105,7 +102,10 @@
             obi.is_evaluated,
             obi.ord_no,
             obi.effective_end_time,
-            obi.delivery_type
+            obi.delivery_type,
+            obi.customer_id,
+            obi.customer_name,
+            obi.customer_phone
             FROM
             ord_base_info AS obi
             WHERE

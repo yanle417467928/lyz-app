@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -342,8 +343,8 @@ public class OrderController {
         logger.info("enterOrder CALLED,用户确认订单计算商品价格明细，入参 goodsSimpleRequest:{}", goodsSimpleRequest);
 
         ResultDTO<Object> resultDTO;
-        if (null == goodsSimpleRequest || goodsSimpleRequest.getGoodsList().isEmpty()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "找不到对象！", null);
+        if (AssertUtil.isEmpty(goodsSimpleRequest.getProductCouponList()) || AssertUtil.isEmpty(goodsSimpleRequest.getGoodsList())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单商品信息不可为空！", null);
             logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -392,7 +393,7 @@ public class OrderController {
                     goodsIds.add(aGoodsList.getId());
                     goodsQty = goodsQty + aGoodsList.getQty();
                 }
-                if (giftList != null && !giftList.isEmpty()) {
+                if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
                         if (null != promotionSimpleInfo.getPresentInfo()) {
                             giftsList.addAll(promotionSimpleInfo.getPresentInfo());
@@ -403,7 +404,7 @@ public class OrderController {
                         }
                     }
                 }
-                if (couponList != null && !couponList.isEmpty()) {
+                if (AssertUtil.isNotEmpty(couponList)) {
                     for (GoodsIdQtyParam couponSimpleInfo : couponList) {
 //                        OrderGoodsSimpleResponse couponInfo = goodsService.findGoodsByCustomerIdAndSku(userId,couponSimpleInfo.getSku());
 //                        couponInfo.setGoodsQty(couponSimpleInfo.getQty());
@@ -424,7 +425,7 @@ public class OrderController {
                 //获取产品券信息
                 productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
                 //加本品标识
-                if (goodsInfo != null) {
+                if (AssertUtil.isNotEmpty(goodsInfo)) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
                             if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
@@ -442,7 +443,7 @@ public class OrderController {
                     }
                 }
                 //赠品的数量和标识
-                if (giftsInfo != null) {
+                if (AssertUtil.isNotEmpty(giftsInfo)) {
                     for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
                             if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
@@ -456,7 +457,7 @@ public class OrderController {
                     goodsInfo.addAll(giftsInfo);
                 }
                 //产品券加标识
-                if (productCouponInfo != null) {
+                if (AssertUtil.isNotEmpty(productCouponInfo)) {
                     for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
                             if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
@@ -523,7 +524,7 @@ public class OrderController {
                     goodsIds.add(aGoodsList.getId());
                     goodsQty = goodsQty + aGoodsList.getQty();
                 }
-                if (giftList != null && !giftList.isEmpty()) {
+                if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
                         if (null != promotionSimpleInfo.getPresentInfo()) {
                             giftsList.addAll(promotionSimpleInfo.getPresentInfo());
@@ -534,7 +535,7 @@ public class OrderController {
                         }
                     }
                 }
-                if (couponList != null && !couponList.isEmpty()) {
+                if (AssertUtil.isNotEmpty(couponList)) {
                     for (GoodsIdQtyParam couponSimpleInfo : couponList) {
 //                        OrderGoodsSimpleResponse couponInfo = goodsService.findGoodsByCustomerIdAndSku(userId,couponSimpleInfo.getSku());
 //                        couponInfo.setGoodsQty(couponSimpleInfo.getQty());
@@ -553,7 +554,7 @@ public class OrderController {
                 //获取产品券信息
                 productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
                 //加本品标识
-                if (goodsInfo != null) {
+                if (AssertUtil.isNotEmpty(goodsInfo)) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
                             if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
@@ -570,7 +571,7 @@ public class OrderController {
                     }
                 }
                 //赠品的数量和标识
-                if (giftsInfo != null) {
+                if (AssertUtil.isNotEmpty(giftsInfo)) {
                     for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
                             if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
@@ -584,7 +585,7 @@ public class OrderController {
                     goodsInfo.addAll(giftsInfo);
                 }
                 //产品券加标识
-                if (productCouponInfo != null) {
+                if (AssertUtil.isNotEmpty(productCouponInfo)) {
                     for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
                             if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
@@ -649,7 +650,7 @@ public class OrderController {
                     goodsIds.add(aGoodsList.getId());
                     goodsQty = goodsQty + aGoodsList.getQty();
                 }
-                if (giftList != null && !giftList.isEmpty()) {
+                if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
                         if (null != promotionSimpleInfo.getPresentInfo()) {
                             giftsList.addAll(promotionSimpleInfo.getPresentInfo());
@@ -664,7 +665,7 @@ public class OrderController {
 
                 giftsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
                 //加本品标识
-                if (goodsInfo != null) {
+                if (AssertUtil.isNotEmpty(goodsInfo)) {
                     for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
                             if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
@@ -678,7 +679,7 @@ public class OrderController {
                     }
                 }
                 //赠品的数量和标识
-                if (giftsInfo != null) {
+                if (AssertUtil.isNotEmpty(giftsInfo)) {
                     for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
                         for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
                             if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
@@ -718,7 +719,7 @@ public class OrderController {
 
 
                 //加赠品的数量和标识，除非是有赠品
-                if (giftsInfo != null) {
+                if (AssertUtil.isNotEmpty(giftsInfo)) {
                     for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
                         aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
                     }

@@ -24,6 +24,7 @@ import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.alipay.api.AlipayApiException;
@@ -663,7 +664,7 @@ public class ReturnOrderController {
             String returnPic = null;
             if (pictures != null) {
                 for (MultipartFile picture : pictures) {
-                    String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/evaluation/");
+                    String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/reason/");
                     pictureUrls.add(url);
                 }
                 returnPic = org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(), "[]");
@@ -903,7 +904,7 @@ public class ReturnOrderController {
                     appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
                 }
                 //返回门店现金返利（装饰公司）
-                if (orderBillingDetails.getStoreSubvention() != null && orderBillingDetails.getStoreSubvention() > 0) {
+                if (AssertUtil.isNotEmpty(orderBillingDetails.getStoreSubvention())) {
                     //获取门店现金返利
                     StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
                     //返还后门店现金返利余额
@@ -929,7 +930,7 @@ public class ReturnOrderController {
             //*******************************退券*********************************
             //获取订单使用产品券
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(userId, OrderCouponType.PRODUCT_COUPON);
-            if (orderProductCouponList != null && orderProductCouponList.size() > 0) {
+            if (AssertUtil.isNotEmpty(orderProductCouponList)) {
                 for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
@@ -953,7 +954,7 @@ public class ReturnOrderController {
             }
             //获取订单使用现金券
             List<OrderCouponInfo> orderCashCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(orderBaseInfo.getCreatorId(), OrderCouponType.CASH_COUPON);
-            if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
+            if (AssertUtil.isNotEmpty(orderCashCouponList)) {
                 for (OrderCouponInfo orderCashCoupon : orderCashCouponList) {
                     //查询现金券原信息
                     CashCoupon cashCoupon = cashCouponService.findCashCouponByOrderNumber(orderCashCoupon.getCouponId());
@@ -1131,7 +1132,7 @@ public class ReturnOrderController {
             //*******************处理上传图骗***********************
             List<String> pictureUrls = new ArrayList<>();
             String returnPic = null;
-            if (pictures != null) {
+            if (AssertUtil.isNotEmpty(pictures)) {
                 for (MultipartFile picture : pictures) {
                     String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/reason/");
                     pictureUrls.add(url);
@@ -1145,7 +1146,7 @@ public class ReturnOrderController {
                     order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType());
             if (identityType == 0) {
                 AppCustomer customer = customerService.findById(param.getCusId());
-                if (customer != null) {
+                if (AssertUtil.isNotEmpty(customer)) {
                     returnOrderBaseInfo.setCustomerId(customer.getCusId());
                     returnOrderBaseInfo.setCustomerName(customer.getName());
                     returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
@@ -1165,7 +1166,7 @@ public class ReturnOrderController {
             //获取原单商品信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
 
-            if (orderGoodsInfoList != null) {
+            if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
                 for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                         if (goodsInfo.getGid().equals(simpleInfo.getId())) {
@@ -1219,7 +1220,7 @@ public class ReturnOrderController {
             Double onlinePayPrice = 0.00;
             Double tempPrice = 0.00;
 
-            if (null != orderPaymentDetails && !orderPaymentDetails.isEmpty()) {
+            if (AssertUtil.isNotEmpty(orderPaymentDetails)) {
                 for (OrderBillingPaymentDetails paymentDetails : orderPaymentDetails) {
                     if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
                         cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
@@ -1233,6 +1234,10 @@ public class ReturnOrderController {
                         onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
                     }
                 }
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
+                logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
             //判断退款是否小于现金支付
             if (returnTotalGoodsPrice <= cashPosPrice) {
@@ -1249,7 +1254,7 @@ public class ReturnOrderController {
                     returnOrderBilling.setOnlinePay(onlinePayPrice);
                     tempPrice = CountUtil.sub(tempPrice, onlinePayPrice);
                     OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNo);
-                    if (billingDetails.getCusPreDeposit() != null) {
+                    if (null != billingDetails && billingDetails.getCusPreDeposit() != null) {
                         if (identityType == 6) {
                             //小于预存款，顾客结束
                             if (tempPrice <= billingDetails.getCusPreDeposit()) {
@@ -1625,7 +1630,7 @@ public class ReturnOrderController {
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    returnOrderGoodsList != null && returnOrderGoodsList.size() > 0 ? returnOrderGoodsList : null);
+                    AssertUtil.isNotEmpty(returnOrderGoodsList) ? returnOrderGoodsList : null);
             logger.info("getReturnOrderDetail OUT,用户点击退货获取可退商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
 
@@ -1672,7 +1677,7 @@ public class ReturnOrderController {
             //获取原订单收货/自提门店地址
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
             //如果是门店自提，取货地址就取顾客默认地址
-            if (orderLogisticsInfo != null) {
+            if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
                 if (StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())) {
                     AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
                     DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
