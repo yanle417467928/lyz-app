@@ -16,6 +16,9 @@
         <result column="effective_end_time" property="effectiveEndTime" jdbcType="TIMESTAMP"/>
         <result column="delivery_type" property="deliveryType"
                 javaType="cn.com.leyizhuang.app.core.constant.AppDeliveryType"/>
+        <result column="customer_id" property="customerId" jdbcType="bigint"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="getGoodsInfoByOrderNumber" parameterType="java.lang.String"

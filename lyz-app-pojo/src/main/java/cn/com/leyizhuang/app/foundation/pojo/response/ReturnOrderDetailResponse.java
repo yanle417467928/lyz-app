@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
 import java.util.List;
@@ -90,8 +89,4 @@ public class ReturnOrderDetailResponse {
      */
     private Double totalReturnPrice;
 
-    /**
-     * 代下单顾客信息
-     */
-    private CustomerSimpleInfo customer;
 }

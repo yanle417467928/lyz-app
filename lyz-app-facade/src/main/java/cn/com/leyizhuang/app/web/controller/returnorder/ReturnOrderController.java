@@ -1412,18 +1412,18 @@ public class ReturnOrderController {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                 //设置基础信息
-                detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
+                if (returnBaseInfo.getReturnStatus() != null) {
+                    detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
+                }
                 detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
                 detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
                 detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
-                detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
+                if (returnBaseInfo.getReturnType() != null) {
+                    detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
+                }
                 detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
-                detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
-                if (identityType == 0) {
-                    CustomerSimpleInfo customerSimpleInfo = new CustomerSimpleInfo();
-                    customerSimpleInfo.setCustomerId(returnBaseInfo.getCustomerId());
-                    customerSimpleInfo.setCustomerName(returnBaseInfo.getCustomerName());
-                    detailResponse.setCustomer(customerSimpleInfo);
+                if (returnOrderLogisticInfo.getDeliveryType() != null) {
+                    detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
                 }
                 //取货方式（上门取货，送货到店）
                 if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {

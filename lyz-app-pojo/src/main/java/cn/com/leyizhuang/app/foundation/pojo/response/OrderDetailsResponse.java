@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
 import java.util.List;
@@ -18,6 +19,10 @@ public class OrderDetailsResponse {
      * 订单号
      */
     private String orderNumber;
+    /**
+     * 代下单顾客信息
+     */
+    private CustomerSimpleInfo customer;
     /**
      * 订单创建时间
      */

@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
-import cn.com.leyizhuang.app.foundation.pojo.request.OrderCreateParam;
-import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
-import cn.com.leyizhuang.app.foundation.pojo.request.UsedCouponRequest;
+import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -969,6 +966,12 @@ public class OrderController {
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
+                if (identityType == 0) {
+                    CustomerSimpleInfo customer = new CustomerSimpleInfo();
+                    customer.setCustomerId(orderBaseInfo.getCustomerId());
+                    customer.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderListResponse.setCustomer(customer);
+                }
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
             }
@@ -1101,6 +1104,12 @@ public class OrderController {
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                if (identityType == 0) {
+                    CustomerSimpleInfo customer = new CustomerSimpleInfo();
+                    customer.setCustomerId(orderBaseInfo.getCustomerId());
+                    customer.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderDetailsResponse.setCustomer(customer);
+                }
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
                     orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
