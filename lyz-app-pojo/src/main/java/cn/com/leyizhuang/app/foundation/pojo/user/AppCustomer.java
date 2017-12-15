@@ -111,6 +111,11 @@ public class AppCustomer implements Serializable {
      * 上次签到时间
      */
     private Date lastSignTime;
+
+    /**
+     * 连续签到天数
+     */
+    private Integer consecutiveSignDays;
     /**
      * 上一次绑定导购时间
      */

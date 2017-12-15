@@ -512,4 +512,25 @@
         GROUP BY cus_id
     </select>
 
+    <select id="countSignDaysByCusId" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM cus_sign_log
+        WHERE cus_id = #{cusId}
+              AND (sign_time BETWEEN #{startDate} AND #{endDate})
+    </select>
+
+    <select id="countTotalSignDaysByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM cus_sign_log
+        WHERE cus_id = #{cusId}
+    </select>
+
+    <select id="countSignAwardLebiQtyByCusId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT sum(award_lebi_qty)
+        FROM cus_sign_log
+        WHERE
+            cus_id = #{cusId}
+        GROUP BY cus_id
+    </select>
+
 </mapper>
