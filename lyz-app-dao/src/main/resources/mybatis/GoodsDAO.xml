@@ -717,6 +717,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
         g.gid id,
+        g.sku,
         g.sku_name goods_name,
         g.cover_image_uri,
         g.goods_specification,

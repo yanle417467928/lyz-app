@@ -19,6 +19,7 @@
         creator_phone,
         cus_id customerId,
         cus_name customerName,
+        cus_phone customerPhone,
         cus_type customerType,
         reason_info,
         return_pic,
@@ -35,7 +36,7 @@
             useGeneratedKeys="true" keyProperty="roid">
         INSERT INTO ord_return_base_info
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
-        creator_identityType, creator_phone, cus_id, cus_name,cus_type, reason_info, return_pic, ord_type,
+        creator_identityType, creator_phone, cus_id, cus_name,cus_phone,cus_type, reason_info, return_pic, ord_type,
         return_status)
         VALUES
         (#{orderId}, #{orderNo}, #{orderTime},
@@ -43,7 +44,7 @@
         #{returnPrice}, #{remarksInfo},
         #{creatorId}, #{creatorIdentityType},
         #{creatorPhone},
-        #{customerId}, #{customerName},#{customerType},#{reasonInfo},
+        #{customerId}, #{customerName},#{customerPhone},#{customerType},#{reasonInfo},
         #{returnPrice}, #{orderType}, #{returnStatus})
     </insert>
 
@@ -89,6 +90,9 @@
             </if>
             <if test="null != customerName">
                 cus_name = #{customerName},
+            </if>
+            <if test="null != customerPhone">
+                cus_phone = #{customerPhone},
             </if>
             <if test="null != reasonInfo">
                 reason_info = #{reasonInfo},
@@ -142,10 +146,10 @@
     <insert id="saveReturnOrderGoodsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         INSERT INTO ord_return_goods_info
-        (roid, return_no, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty,
+        (roid, return_no, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty,
         goods_Line_type)
         VALUES
-        (#{roid}, #{returnNo}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
+        (#{roid}, #{returnNo}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
         #{returnPrice}, #{returnQty},#{goodsLineType})
     </insert>
 

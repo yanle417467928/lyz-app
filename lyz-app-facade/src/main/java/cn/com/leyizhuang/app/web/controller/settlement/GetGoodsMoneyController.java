@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +151,7 @@ public class GetGoodsMoneyController {
                 goodsIds.add(aGoodsList.getId());
                 goodsQty = goodsQty + aGoodsList.getQty();
             }
-            if (promotionSimpleInfos != null && !promotionSimpleInfos.isEmpty()) {
+            if (AssertUtil.isNotEmpty(promotionSimpleInfos)) {
                 for (PromotionSimpleInfo promotionSimpleInfo : promotionSimpleInfos) {
                     if (null != promotionSimpleInfo.getPresentInfo()) {
                         giftsList.addAll(promotionSimpleInfo.getPresentInfo());
@@ -184,13 +185,16 @@ public class GetGoodsMoneyController {
                 }
             }
             //加本品标识
-            if (goodsInfo != null) {
+            if (AssertUtil.isNotEmpty(goodsInfo)) {
                 for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                        simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                    }
                     simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                 }
             }
             //赠品的数量和标识
-            if (giftInfo != null) {
+            if (AssertUtil.isNotEmpty(giftInfo)) {
                 for (OrderGoodsSimpleResponse aGiftInfo : giftInfo) {
                     for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
                         if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {

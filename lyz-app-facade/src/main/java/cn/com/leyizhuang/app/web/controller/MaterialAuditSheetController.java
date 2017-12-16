@@ -512,7 +512,7 @@ public class MaterialAuditSheetController {
                     //有相同商品直接和料单的商品合并
                     if (material != null) {
                         materialListDO.setQty(materialListDO.getQty() + material.getQty());
-                        deleteGoodsIds.add(material.getId());
+                        deleteGoodsIds.add(material.getGid());
                     }
                     materialListSave.add(materialListDO);
                 }

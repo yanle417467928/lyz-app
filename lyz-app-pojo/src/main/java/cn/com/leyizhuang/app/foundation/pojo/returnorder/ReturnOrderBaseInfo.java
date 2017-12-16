@@ -68,6 +68,10 @@ public class ReturnOrderBaseInfo {
      */
     private String customerName;
     /**
+     * 顾客电话
+     */
+    private String customerPhone;
+    /**
      * 顾客类型（当IdentityType == 0，customerType==MEMBER
      *          当IdentityType == 6，customerType==MEMBER || RETAIL）
      */

@@ -117,6 +117,5 @@ public interface AppOrderService {
     void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber);
 
 
-
-    List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(String orderNo);
+    List<OrderBillingPaymentDetails> getOrderBillingDetailListByOrderNo(String orderNo);
 }

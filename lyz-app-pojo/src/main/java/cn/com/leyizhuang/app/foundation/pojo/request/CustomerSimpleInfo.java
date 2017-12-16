@@ -24,4 +24,8 @@ public class CustomerSimpleInfo {
      * 顾客姓名
      */
     private String customerName;
+    /**
+     * 顾客电话
+     */
+    private String customerPhone;
 }

@@ -91,6 +91,6 @@ public interface OrderDAO {
      * @param orderNo 订单号
      * @return 所有支付明细
      */
-    List<OrderBillingPaymentDetails> getOrderBillingDetailByOrderNo(@Param("orderNo") String orderNo);
+    List<OrderBillingPaymentDetails> getOrderBillingDetailListByOrderNo(@Param("orderNo") String orderNo);
 
 }
