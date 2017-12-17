@@ -632,11 +632,15 @@ public class CustomerController {
                     response.setConsecutiveSignDays(0);
                 }
                 Integer days = customerService.countSignDaysByCusId(cusId, DateUtil.getStartTimeOfThisMonth(), new Date());
-                response.setConsecutiveSignDays(days);
+                response.setMonthlySignDays(days);
                 Integer totalDays = customerService.countTotalSignDaysByCusId(cusId);
                 response.setTotalSignDays(totalDays);
                 Integer totalLebiQty = customerService.countSignAwardLebiQtyByCusId(cusId);
-                response.setTotalAwardsQty(totalLebiQty);
+                if (null != totalLebiQty) {
+                    response.setTotalAwardsQty(totalLebiQty);
+                } else {
+                    response.setTotalAwardsQty(0);
+                }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
                 return resultDTO;
             } else {
