@@ -343,11 +343,12 @@ public class OrderController {
         logger.info("enterOrder CALLED,用户确认订单计算商品价格明细，入参 goodsSimpleRequest:{}", goodsSimpleRequest);
 
         ResultDTO<Object> resultDTO;
-        if (AssertUtil.isEmpty(goodsSimpleRequest.getProductCouponList()) || AssertUtil.isEmpty(goodsSimpleRequest.getGoodsList())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单商品信息不可为空！", null);
-            logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
+        //可以传的都可以单独存在，不能判断
+//        if (AssertUtil.isEmpty(goodsSimpleRequest.getProductCouponList()) || AssertUtil.isEmpty(goodsSimpleRequest.getGoodsList())) {
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单商品信息不可为空！", null);
+//            logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+//        }
         if (null == goodsSimpleRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
@@ -389,9 +390,11 @@ public class OrderController {
             if (identityType == 6) {
                 AppCustomer customer = appCustomerService.findById(userId);
                 Long cityId = customer.getCityId();
-                for (GoodsIdQtyParam aGoodsList : goodsList) {
-                    goodsIds.add(aGoodsList.getId());
-                    goodsQty = goodsQty + aGoodsList.getQty();
+                if (AssertUtil.isNotEmpty(goodsList)) {
+                    for (GoodsIdQtyParam aGoodsList : goodsList) {
+                        goodsIds.add(aGoodsList.getId());
+                        goodsQty = goodsQty + aGoodsList.getQty();
+                    }
                 }
                 if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
@@ -520,9 +523,11 @@ public class OrderController {
                 Long customerId = goodsSimpleRequest.getCustomerId();
                 AppCustomer customer = appCustomerService.findById(customerId);
                 Long storeId = customer.getStoreId();
-                for (GoodsIdQtyParam aGoodsList : goodsList) {
-                    goodsIds.add(aGoodsList.getId());
-                    goodsQty = goodsQty + aGoodsList.getQty();
+                if (AssertUtil.isNotEmpty(goodsList)) {
+                    for (GoodsIdQtyParam aGoodsList : goodsList) {
+                        goodsIds.add(aGoodsList.getId());
+                        goodsQty = goodsQty + aGoodsList.getQty();
+                    }
                 }
                 if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
@@ -646,9 +651,11 @@ public class OrderController {
             if (identityType == 2) {
                 AppEmployee employee = appEmployeeService.findById(userId);
                 Long storeId = employee.getStoreId();
-                for (GoodsIdQtyParam aGoodsList : goodsList) {
-                    goodsIds.add(aGoodsList.getId());
-                    goodsQty = goodsQty + aGoodsList.getQty();
+                if (AssertUtil.isNotEmpty(goodsList)) {
+                    for (GoodsIdQtyParam aGoodsList : goodsList) {
+                        goodsIds.add(aGoodsList.getId());
+                        goodsQty = goodsQty + aGoodsList.getQty();
+                    }
                 }
                 if (AssertUtil.isNotEmpty(giftList)) {
                     for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
@@ -717,15 +724,6 @@ public class OrderController {
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
                 Double storeSubvention = appStoreService.findSubventionBalanceByUserId(userId);
 
-
-                //加赠品的数量和标识，除非是有赠品
-                if (AssertUtil.isNotEmpty(giftsInfo)) {
-                    for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
-                        aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
-                    }
-                    //合并商品和赠品集合
-                    goodsInfo.addAll(giftsInfo);
-                }
                 goodsSettlement.put("totalQty", goodsQty + giftQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
