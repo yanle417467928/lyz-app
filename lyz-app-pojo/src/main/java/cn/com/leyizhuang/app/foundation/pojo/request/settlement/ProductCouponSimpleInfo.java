@@ -19,7 +19,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ProductCouponSimpleInfo implements Serializable {
 
-    private Long goodsId;
+    private Long id;
 
     private Integer qty;
 }
