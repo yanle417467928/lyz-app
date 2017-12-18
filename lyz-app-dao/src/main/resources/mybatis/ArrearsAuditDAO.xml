@@ -71,14 +71,42 @@
     </select>
 
     <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
-        SELECT * FROM ord_arrears_audit WHERE id = #{id}
+        SELECT
+            id,
+            user_id,
+            ord_no               orderNumber,
+            customer_name,
+            customer_phone,
+            seller_id,
+            seller_name,
+            seller_phone,
+            distribution_address distributionAddress,
+            distribution_time    distributionTime,
+            agency_money,
+            order_money,
+            real_money,
+            payment_method,
+            status,
+            cash_money,
+            pos_money,
+            alipay_money,
+            wechat_money,
+            remarks,
+            create_time,
+            update_time,
+            whether_repayments   whetherRepayments,
+            repayment_time       repaymentTime,
+            picture
+
+        FROM ord_arrears_audit
+        WHERE id = #{id}
     </select>
 
     <update id="updateStatusById" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         UPDATE ord_arrears_audit
         <set>
             <if test="null != status">
-                status = #{status}
+                status = #{status},
             </if>
             <if test="null != updateTime">
                 update_time = #{updateTime}
