@@ -13,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -415,6 +417,16 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public Integer countSignAwardLebiQtyByCusId(Long cusId) {
         if (null != cusId){
             return customerDAO.countSignAwardLebiQtyByCusId(cusId);
+        }
+        return null;
+    }
+
+    @Override
+    public PageInfo<CustomerSignDetailResponse> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size) {
+        if (null != cusId){
+            PageHelper.startPage(page, size);
+            List<CustomerSignDetailResponse> pageGoodsCategoryList = customerDAO.findCustomerSignDetailByCusId(cusId);
+            return new PageInfo<>(pageGoodsCategoryList);
         }
         return null;
     }

@@ -533,4 +533,14 @@
         GROUP BY cus_id
     </select>
 
+    <select id="findCustomerSignDetailByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignDetailResponse">
+        SELECT
+            sign_time,
+            award_lebi_qty award,
+            description
+        FROM cus_sign_log
+        WHERE cus_id = #{cusId}
+    </select>
+
 </mapper>

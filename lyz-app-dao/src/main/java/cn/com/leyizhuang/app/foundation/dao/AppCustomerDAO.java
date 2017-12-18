@@ -4,10 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
-import cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -125,4 +122,6 @@ public interface AppCustomerDAO {
     Integer countTotalSignDaysByCusId(Long cusId);
 
     Integer countSignAwardLebiQtyByCusId(Long cusId);
+
+    List<CustomerSignDetailResponse> findCustomerSignDetailByCusId(Long cusId);
 }

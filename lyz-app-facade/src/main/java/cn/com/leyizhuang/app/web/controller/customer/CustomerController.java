@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -650,12 +651,67 @@ public class CustomerController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取乐币数量失败", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取顾客签到信息失败", null);
             logger.warn("getCustomerSignOverview EXCEPTION,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
     }
+
+
+    @PostMapping(value = "/sign/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerSignDetail(Long cusId, Integer identityType, Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        if (null == cusId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerSignDetail OUT,获取顾客签到明细失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取顾客签到明细失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != AppIdentityType.CUSTOMER.getValue()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非顾客身份不开放签到功能",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取顾客签到明细失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取顾客签到明细失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取顾客签到明细失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppCustomer appCustomer = customerService.findById(cusId);
+            if (null != appCustomer) {
+                PageInfo<CustomerSignDetailResponse> goodsCategoryPage = this.customerService.findCustomerSignDetailByCusIdWithPageable(cusId, page, size);
+                List<CustomerSignDetailResponse> response = goodsCategoryPage.getList();
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该顾客",
+                        null);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取顾客签到明细失败", null);
+            logger.warn("getCustomerSignDetail EXCEPTION,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 
 }
 

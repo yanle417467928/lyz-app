@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import com.github.pagehelper.PageInfo;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -112,4 +113,6 @@ public interface AppCustomerService {
     Integer countTotalSignDaysByCusId(Long cusId);
 
     Integer countSignAwardLebiQtyByCusId(Long cusId);
+
+    PageInfo<CustomerSignDetailResponse> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
 }
