@@ -38,7 +38,8 @@ public class JwtTokenFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         boolean isExcludedPage = false;
-        for (String page : excludedPageArray) {//判断是否在过滤url之外
+        //判断是否在过滤url之外
+        for (String page : excludedPageArray) {
             if (((HttpServletRequest) request).getServletPath().equals(page)) {
                 isExcludedPage = true;
                 break;
