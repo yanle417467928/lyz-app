@@ -18,6 +18,7 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -79,10 +80,8 @@ public class OrderController {
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
-        logger.info("createOrder CALLED,去支付生成订单,入参 cityId:{},userId:{},identityType:{},customerId:{},remark:{},goodsInfo:{}," +
-                        " deliveryInfo:{},cashCouponIds:{},productCouponInfo:{},billingInfo:{}", orderParam.getCityId(),
-                orderParam.getUserId(), orderParam.getIdentityType(), orderParam.getCustomerId(), orderParam.getRemark(), orderParam.getGoodsInfo(),
-                orderParam.getDeliveryInfo(), orderParam.getProductCouponInfo(), orderParam.getBillingInfo());
+        logger.info("createOrder CALLED,去支付生成订单,入参:", JSON.toJSONString(orderParam));
+        System.out.println(JSON.toJSONString(orderParam));
         ResultDTO<Object> resultDTO;
         //获取客户端ip地址
         String ipAddress = IpUtils.getIpAddress(request);
@@ -127,17 +126,24 @@ public class OrderController {
             JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
 
             //************** 转化前台提交过来的json类型参数 ***************
+
+            //商品信息
             List<GoodsSimpleInfo> goodsList = objectMapper.readValue(orderParam.getGoodsInfo(), goodsSimpleInfo);
+            //配送信息
             DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
             if (StringUtils.isBlank(deliverySimpleInfo.getDeliveryType())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送方式不允许为空!", "");
                 logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            //产品券信息
             List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            //促销信息
+            List<PromotionSimpleInfo> promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
-            List<PromotionSimpleInfo> promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+
             //*********************** 开始创建订单 **************************
 
             //***** 创建订单基础信息 *****
@@ -287,7 +293,7 @@ public class OrderController {
             commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
 
             // *******分摊**********
-            dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()),AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()),promotionSimpleInfoList,orderGoodsInfoList);
+            dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             if (orderBillingDetails.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

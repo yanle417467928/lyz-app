@@ -52,7 +52,7 @@ public class OrderUtils {
                 String timeStamp = sdf.format(date);
                 orderNumber += timeStamp;
                 Random random = new Random();
-                String randomNumber = random.nextInt(900000) + 100000 + "";
+                String randomNumber = random.nextInt(900) + 100 + "";
                 orderNumber += randomNumber;
                 System.out.println(orderNumber);
                 return orderNumber;
