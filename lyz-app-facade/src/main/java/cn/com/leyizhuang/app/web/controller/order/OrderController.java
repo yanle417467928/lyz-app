@@ -80,7 +80,7 @@ public class OrderController {
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
-        logger.info("createOrder CALLED,去支付生成订单,入参:", JSON.toJSONString(orderParam));
+        logger.info("createOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
         System.out.println(JSON.toJSONString(orderParam));
         ResultDTO<Object> resultDTO;
         //获取客户端ip地址
