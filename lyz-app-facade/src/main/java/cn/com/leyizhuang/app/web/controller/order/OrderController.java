@@ -601,7 +601,11 @@ public class OrderController {
                         orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
                     }
                     //合并商品和赠品集合
-                    goodsInfo.addAll(productCouponInfo);
+                    if (AssertUtil.isNotEmpty(goodsInfo)) {
+                        goodsInfo.addAll(productCouponInfo);
+                    } else {
+                        goodsInfo = productCouponInfo;
+                    }
                 }
                 //判断库存
                 Long gid = appOrderService.existOrderGoodsInventory(customer.getCityId(), goodsList, giftsList, couponList);
