@@ -1167,21 +1167,22 @@ public class ReturnOrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
 
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
-                for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                     for (GoodsSimpleInfo simpleInfo : simpleInfos) {
-                        if (goodsInfo.getGid().equals(simpleInfo.getId())) {
-                            if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
-                                //设置原订单可退数量 减少
-                                goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
-                                //设置原订单退货数量 增加
-                                goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
-                                goodsInfos.add(returnOrderGoodsInfo);
-                                returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
-                                        CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                        for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                            if (goodsInfo.getGid().equals(simpleInfo.getId())) {
+                                if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
+                                    ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
+                                    //设置原订单可退数量 减少
+                                    goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
+                                    //设置原订单退货数量 增加
+                                    goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
+                                    goodsInfos.add(returnOrderGoodsInfo);
+                                    returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
+                                            CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                                    break;
+                                }
                             }
                         }
-                    }
                 }
             }
 
