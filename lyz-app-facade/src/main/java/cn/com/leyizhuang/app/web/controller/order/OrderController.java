@@ -719,10 +719,11 @@ public class OrderController {
                 //计算订单金额小计
                 //********* 计算促销立减金额 *************
                 List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
-                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                if (AssertUtil.isNotEmpty(discountListResponseList)) {
+                    for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                        orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                    }
                 }
-
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
                 if (totalOrderAmount != null && totalOrderAmount < 1000) {
                     freight = 30.00;
