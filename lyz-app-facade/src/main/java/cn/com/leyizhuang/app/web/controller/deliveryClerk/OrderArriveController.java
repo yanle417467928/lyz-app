@@ -7,7 +7,7 @@ import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -203,7 +203,7 @@ public class OrderArriveController {
     }
 
     /**
-     * @title   配送员跳转订单送达页面失败
+     * @title   配送员跳转订单送达页面
      * @descripe
      * @param
      * @return
@@ -213,7 +213,7 @@ public class OrderArriveController {
      */
     @PostMapping(value = "/skip", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> skipOrderArrive(Long userId, Integer identityType, String orderNo) {
-        logger.info("skipOrderArrive CALLED,配送员跳转订单送达页面失败，入参 userId:{} identityType:{} orderNo:{}", userId, identityType, orderNo);
+        logger.info("skipOrderArrive CALLED,配送员跳转订单送达页面，入参 userId:{} identityType:{} orderNo:{}", userId, identityType, orderNo);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -231,8 +231,8 @@ public class OrderArriveController {
             return resultDTO;
         }
 
-        OrderArrearageInfo orderArrearageInfo = this.appOrderServiceImpl.getOrderArrearageInfo(orderNo);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderArrearageInfo);
+        OrderArrearageInfoResponse orderArrearageInfoResponse = this.appOrderServiceImpl.getOrderArrearageInfo(orderNo);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderArrearageInfoResponse);
         logger.info("skipOrderArrive OUT,配送员跳转订单送达页面成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }

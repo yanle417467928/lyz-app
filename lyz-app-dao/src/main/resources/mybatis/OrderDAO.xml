@@ -586,7 +586,7 @@
         WHERE ID = #{id}
     </delete>
 
-    <select id="getOrderArrearageInfo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo">
+    <select id="getOrderArrearageInfo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse">
         SELECT IFNULL(collection_amount, 0.00) arrearageMoney FROM ord_billing_details WHERE ord_no = #{orderNo}
     </select>
 

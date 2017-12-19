@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class OrderArrearageInfo {
+public class OrderArrearageInfoResponse {
 
     /**
      * 代收款金额
