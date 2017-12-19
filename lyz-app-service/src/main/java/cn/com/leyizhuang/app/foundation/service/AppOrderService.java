@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo;
 
 import java.util.List;
 
@@ -118,4 +119,7 @@ public interface AppOrderService {
 
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailListByOrderNo(String orderNo);
+
+    OrderArrearageInfo getOrderArrearageInfo(String orderNo);
+
 }

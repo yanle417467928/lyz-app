@@ -585,4 +585,9 @@
         DELETE FROM ord_goods_info
         WHERE ID = #{id}
     </delete>
+
+    <select id="getOrderArrearageInfo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo">
+        SELECT IFNULL(collection_amount, 0.00) arrearageMoney FROM ord_billing_details WHERE ord_no = #{orderNo}
+    </select>
+
 </mapper>

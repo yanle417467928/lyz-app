@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -201,5 +202,39 @@ public class OrderArriveController {
         }
     }
 
+    /**
+     * @title   配送员跳转订单送达页面失败
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/12/19
+     */
+    @PostMapping(value = "/skip", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> skipOrderArrive(Long userId, Integer identityType, String orderNo) {
+        logger.info("skipOrderArrive CALLED,配送员跳转订单送达页面失败，入参 userId:{} identityType:{} orderNo:{}", userId, identityType, orderNo);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("skipOrderArrive OUT,配送员跳转订单送达页面失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType && identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("skipOrderArrive OUT,配送员跳转订单送达页面失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == orderNo) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("skipOrderArrive OUT,配送员跳转订单送达页面失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        OrderArrearageInfo orderArrearageInfo = this.appOrderServiceImpl.getOrderArrearageInfo(orderNo);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderArrearageInfo);
+        logger.info("skipOrderArrive OUT,配送员跳转订单送达页面成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
 
 }

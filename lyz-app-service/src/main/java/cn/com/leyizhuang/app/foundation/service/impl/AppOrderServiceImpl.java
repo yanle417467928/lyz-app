@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -538,5 +539,10 @@ public class AppOrderServiceImpl implements AppOrderService {
             return orderDAO.getOrderBillingDetailListByOrderNo(orderNo);
         }
         return null;
+    }
+
+    @Override
+    public OrderArrearageInfo getOrderArrearageInfo(String orderNo) {
+        return this.orderDAO.getOrderArrearageInfo(orderNo);
     }
 }
