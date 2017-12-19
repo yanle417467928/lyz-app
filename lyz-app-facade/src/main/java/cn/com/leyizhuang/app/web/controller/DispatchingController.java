@@ -1,23 +1,23 @@
 package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.response.PickUpDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.WaitDeliveryResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.WaitPickUpResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -256,5 +256,46 @@ public class DispatchingController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
+
+    /**
+     *  配送员获取已完成单列表
+     * @param userId    用户id
+     * @param identityType  用户类型
+     * @return  已完成单列表
+     */
+    @PostMapping(value = "/finish/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getFinishOrderList(Long userId, Integer identityType) {
+        logger.info("getFinishOrderList CALLED,配送员获取已完成单列表，入参 userId:{} identityType:{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getFinishOrderList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType && identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getFinishOrderList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+            if (null == appEmployee) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
+                logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            List<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsService.getAuditFinishOrderByOperatorNo(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, auditFinishResponseList);
+            logger.info("getFinishOrderList OUT,配送员获取已完成单列表成功，出参 resultDTO:{}", auditFinishResponseList.size());
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，配送员获取已完成单列表失败", null);
+            logger.warn("getFinishOrderList EXCEPTION,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
     }
 }
