@@ -99,9 +99,13 @@ public class MaterialListController {
             for (Map.Entry<Long, Integer> entry : goodsMap.entrySet()) {
                 GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
                 if (null != goodsDO) {
+                    //查询经理普通商品
                     MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                             AppIdentityType.getAppIdentityTypeByValue(identityType), entry.getKey());
-                    if (null == materialListDO) {
+                    //查询经理料单商品
+                    MaterialListDO materialAuditListDO = materialListServiceImpl.findAuditListByUserIdAndIdentityTypeAndGoodsId(userId,
+                            AppIdentityType.getAppIdentityTypeByValue(identityType), entry.getKey());
+                    if (null == materialListDO && null == materialAuditListDO) {
                         MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                         materialListDOTemp.setUserId(userId);
                         materialListDOTemp.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
@@ -109,8 +113,14 @@ public class MaterialListController {
                         materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                         materialListSave.add(materialListDOTemp);
                     } else {
-                        materialListDO.setQty(materialListDO.getQty() + entry.getValue());
-                        materialListUpdate.add(materialListDO);
+                        if (null != materialListDO) {
+                            materialListDO.setQty(materialListDO.getQty() + entry.getValue());
+                            materialListUpdate.add(materialListDO);
+                        }
+                        if (null != materialAuditListDO) {
+                            materialAuditListDO.setQty(materialAuditListDO.getQty() + entry.getValue());
+                            materialListUpdate.add(materialAuditListDO);
+                        }
                     }
                 } else {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + entry.getKey() + "" +
