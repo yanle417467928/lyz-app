@@ -96,7 +96,8 @@ public interface AppCustomerDAO {
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(@Param(value = "sellerId") Long sellerId,
                                                                          @Param(value = "cusId") Long cusId);
 
-    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
+    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(@Param(value = "userId") Long userId,
+                                                                    @Param(value ="keywords" ) String keywords);
 
     CustomerCashCoupon findCashCouponByCcid(@Param(value = "id") Long id);
 

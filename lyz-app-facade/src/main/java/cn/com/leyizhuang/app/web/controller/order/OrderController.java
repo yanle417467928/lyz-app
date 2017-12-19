@@ -126,6 +126,7 @@ public class OrderController {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
             JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+            JavaType cashCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
             JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
             JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
 
@@ -140,10 +141,21 @@ public class OrderController {
                 logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            //优惠券信息
+            List<Long> cashCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getCashCouponIds())) {
+                cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(), cashCouponSimpleInfo);
+            }
             //产品券信息
-            List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getProductCouponInfo())) {
+                productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            }
             //促销信息
-            List<PromotionSimpleInfo> promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            List<PromotionSimpleInfo> promotionSimpleInfoList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getPromotionInfo())) {
+                promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            }
             //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
@@ -277,7 +289,7 @@ public class OrderController {
             orderBillingDetails.setPromotionDiscount(promotionDiscount);
             orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
             orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
-                    billing, orderParam.getCashCouponIds());
+                    billing, cashCouponList);
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
             //根据应付金额判断订单账单是否已付清
@@ -291,7 +303,7 @@ public class OrderController {
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
             commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
-                    orderParam.getUserId(), orderParam.getCustomerId(), orderParam.getCashCouponIds(), orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
+                    orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
 
             //******* 持久化订单相关实体信息  *******
             commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
@@ -1137,7 +1149,7 @@ public class OrderController {
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
-                if (orderEvaluation != null){
+                if (orderEvaluation != null) {
                     orderDetailsResponse.setLogisticsStar(orderEvaluation.getLogisticsStar());
                     orderDetailsResponse.setProductStar(orderEvaluation.getProductStar());
                     orderDetailsResponse.setServiceStars(orderEvaluation.getServiceStars());

@@ -409,17 +409,20 @@
             g.sku
     </select>
 
-    <select id="findProductCouponCustomerBySellerId" parameterType="java.lang.Long"
+    <select id="findProductCouponCustomerBySellerId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponCustomer">
         SELECT DISTINCT
-            c.cus_id,
-            cc.name,
-            cc.mobile
+        c.cus_id,
+        cc.name,
+        cc.mobile
         FROM cus_customer_product_coupon c LEFT JOIN cus_customer cc ON cc.cus_id = c.cus_id
-        WHERE c.seller_id = #{sellerId}
-              AND c.is_used IS FALSE
-              AND c.effective_start_time &lt; NOW()
-              AND c.effective_end_time &gt; NOW()
+        WHERE c.seller_id = #{userId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND c.effective_end_time &gt; NOW()
+        <if test="keywords != null and keywords != ''">
+            AND (cc.mobile LIKE CONCAT('%',#{keywords},'%') OR cc.name LIKE CONCAT('%',#{keywords},'%') )
+        </if>
     </select>
 
 
@@ -443,7 +446,7 @@
             status,
             down_time
         FROM cus_customer_cash_coupon
-        WHERE ccid = #{id};
+        WHERE id = #{id};
     </select>
 
     <update id="updateCustomerCashCouponById">
