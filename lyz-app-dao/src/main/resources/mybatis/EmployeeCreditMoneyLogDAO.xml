@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.EmployeeCreditMoneyLogDAO">
+
+
+    <select id="findByUserId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse">
+        SELECT
+            l.id,
+            l.change_type_desc                type,
+            l.create_time,
+            l.reference_number,
+            o.customer_name,
+            o.customer_phone,
+            l.temp_credit_limit_change_amount change_money
+        FROM emp_credit_money_change_log l
+            INNER JOIN emp_employee e ON e.emp_id = l.emp_id
+            INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
+                                          AND e.emp_id = #{userId}
+        ORDER BY l.create_time DESC
+    </select>
+
+</mapper>
