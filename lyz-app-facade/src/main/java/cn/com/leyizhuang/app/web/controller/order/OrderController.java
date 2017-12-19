@@ -142,11 +142,20 @@ public class OrderController {
                 return resultDTO;
             }
             //优惠券信息
-            List<Long> cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(),cashCouponSimpleInfo);
+            List<Long> cashCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getCashCouponIds())) {
+                cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(), cashCouponSimpleInfo);
+            }
             //产品券信息
-            List<ProductCouponSimpleInfo> productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getProductCouponInfo())) {
+                productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            }
             //促销信息
-            List<PromotionSimpleInfo> promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            List<PromotionSimpleInfo> promotionSimpleInfoList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getPromotionInfo())) {
+                promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            }
             //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
@@ -1140,7 +1149,7 @@ public class OrderController {
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
-                if (orderEvaluation != null){
+                if (orderEvaluation != null) {
                     orderDetailsResponse.setLogisticsStar(orderEvaluation.getLogisticsStar());
                     orderDetailsResponse.setProductStar(orderEvaluation.getProductStar());
                     orderDetailsResponse.setServiceStars(orderEvaluation.getServiceStars());
