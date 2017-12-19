@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -92,5 +93,7 @@ public interface OrderDAO {
      * @return 所有支付明细
      */
     List<OrderBillingPaymentDetails> getOrderBillingDetailListByOrderNo(@Param("orderNo") String orderNo);
+
+    OrderArrearageInfoResponse getOrderArrearageInfo(String orderNo);
 
 }

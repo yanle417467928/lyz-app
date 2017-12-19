@@ -147,4 +147,10 @@
         AND oaa.whether_repayments = 1
     </select>
 
+    <select id="getArrearsAuditInfo" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse">
+        SELECT agency_money, real_money, payment_method, status
+        FROM ord_arrears_audit
+        WHERE id = #{id}
+    </select>
+
 </mapper>

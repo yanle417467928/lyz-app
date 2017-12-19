@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class EmployeeController {
 
     @Autowired
     private StorePreDepositLogService storePreDepositLogServiceImpl;
+
+    @Autowired
+    private EmployeeCreditMoneyLogService employeeCreditMoneyLogService;
 
     @Autowired
     private StoreCreditMoneyLogService storeCreditMoneyLogServiceImpl;
@@ -404,6 +408,45 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取装饰公司信用金变更记录失败", null);
             logger.warn("getStoreCreditMoneyLog EXCEPTION, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取导购信用金变更记录
+     *
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/seller/creditMoney/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getSellerCreditMoneyLog(Long userId, Integer identityType) {
+
+        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录失败，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<EmployeeCreditMoneyLogResponse> employeeCreditMoneyLogResponseList = this.employeeCreditMoneyLogService.findByUserId(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    AssertUtil.isNotEmpty(employeeCreditMoneyLogResponseList) ? employeeCreditMoneyLogResponseList : null);
+            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取导购信用金变更记录失败！", null);
+            logger.warn("getSellerCreditMoneyLog EXCEPTION, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

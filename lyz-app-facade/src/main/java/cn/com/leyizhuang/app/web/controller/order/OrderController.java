@@ -447,7 +447,7 @@ public class OrderController {
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                         //算会员折扣(先判断是否是会员还是零售会员)
                         if (null != customer.getSalesConsultId()) {
-                            memberDiscount = CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty());
+                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(simpleResponse.getVipPrice(), simpleResponse.getGoodsQty()));
                         }
                     }
                 }
@@ -581,8 +581,7 @@ public class OrderController {
                         //算总金额
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                         //算会员折扣(先判断是否是会员还是零售会员)
-                        memberDiscount = CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty());
-
+                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(simpleResponse.getVipPrice(), simpleResponse.getGoodsQty()));
                     }
                 }
                 //赠品的数量和标识
