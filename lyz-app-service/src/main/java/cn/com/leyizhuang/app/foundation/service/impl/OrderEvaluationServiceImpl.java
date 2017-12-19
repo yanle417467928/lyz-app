@@ -55,4 +55,14 @@ public class OrderEvaluationServiceImpl implements OrderEvaluationService {
             orderEvaluationDAO.addOrderGoodsEvaluation(goodsEvaluation);
         }
     }
+
+    @Override
+    public void updeteGoodsEvaluationStatus(String orderNumber, Long goodsId) {
+        orderEvaluationDAO.updeteGoodsEvaluationStatus(orderNumber, goodsId);
+    }
+
+    @Override
+    public OrderEvaluation queryOrderEvaluationListByOrderNumber(String orderNumber) {
+        return orderEvaluationDAO.queryOrderEvaluationListByOrderNumber(orderNumber);
+    }
 }

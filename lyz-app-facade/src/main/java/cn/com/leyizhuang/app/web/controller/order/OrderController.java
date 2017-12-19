@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
@@ -77,6 +78,9 @@ public class OrderController {
 
     @Resource
     private AppActDutchService dutchService;
+
+    @Resource
+    private OrderEvaluationService orderEvaluationService;
 
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
@@ -1105,6 +1109,7 @@ public class OrderController {
             //获取订单详情
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(orderNumber);
             OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+            OrderEvaluation orderEvaluation = orderEvaluationService.queryOrderEvaluationListByOrderNumber(orderNumber);
             if (null != orderBaseInfo) {
                 //获取订单收货/自提门店地址
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
@@ -1118,6 +1123,12 @@ public class OrderController {
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                if (orderEvaluation != null){
+                    orderDetailsResponse.setLogisticsStar(orderEvaluation.getLogisticsStar());
+                    orderDetailsResponse.setProductStar(orderEvaluation.getProductStar());
+                    orderDetailsResponse.setServiceStars(orderEvaluation.getServiceStars());
+                }
+                orderDetailsResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 if (identityType == 0) {
                     CustomerSimpleInfo customer = new CustomerSimpleInfo();
                     customer.setCustomerId(orderBaseInfo.getCustomerId());
@@ -1184,7 +1195,7 @@ public class OrderController {
 
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }
-                orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsDetails(orderNumber));
+                orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);

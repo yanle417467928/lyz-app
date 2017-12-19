@@ -121,6 +121,10 @@ public class OrderGoodsInfo implements Cloneable{
      * 公司编码
      */
     private String companyFlag;
+    /**
+     * 是否评价
+     */
+    private Boolean isEvaluation;
 
     /**
      * 浅克隆方法

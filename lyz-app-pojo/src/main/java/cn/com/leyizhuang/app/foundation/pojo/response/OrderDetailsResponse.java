@@ -84,9 +84,25 @@ public class OrderDetailsResponse {
      */
     private CustomerBillingDetailResponse customerBillingDetailResponse;
     /**
+     * 订单是否已评价
+     */
+    private Boolean isEvaluated;
+    /**
+     * 产品星级
+     */
+    private int productStar;
+    /**
+     * 物流星级
+     */
+    private int logisticsStar;
+    /**
+     * 服务星级
+     */
+    private int serviceStars;
+    /**
      * 商品list
      */
-    private List<GiftListResponseGoods> goodsList;
+    private List<OrderGoodsListResponse> goodsList;
 
 
 }
