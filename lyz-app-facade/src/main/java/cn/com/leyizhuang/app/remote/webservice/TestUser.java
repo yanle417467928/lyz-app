@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class TestUser {
+public class TestUser implements Serializable {
 
     private static final long serialVersionUID = -5939599230753662529L;
     private String userId;

@@ -9,11 +9,11 @@ import javax.jws.WebService;
 /**
  * @author Created on 2017-12-19 11:22
  **/
-@WebService
+@WebService(targetNamespace="http://cn.com.leyizhuang.app.remote.webservice.service")
 public interface TestUserService {
 
     @WebMethod
     String getName(@WebParam(name = "userId") String userId);
     @WebMethod
-    TestUser getUser(String userId);
+    String getUser(String userId);
 }
