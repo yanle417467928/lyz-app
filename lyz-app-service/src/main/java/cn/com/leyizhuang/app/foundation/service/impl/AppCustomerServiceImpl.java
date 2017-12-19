@@ -422,11 +422,11 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerSignDetailResponse> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size) {
+    public PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size) {
         if (null != cusId){
             PageHelper.startPage(page, size);
-            List<CustomerSignDetailResponse> pageGoodsCategoryList = customerDAO.findCustomerSignDetailByCusId(cusId);
-            return new PageInfo<>(pageGoodsCategoryList);
+            List<CustomerSignLogBrief> logBriefList = customerDAO.findCustomerSignDetailByCusId(cusId);
+            return new PageInfo<>(logBriefList);
         }
         return null;
     }

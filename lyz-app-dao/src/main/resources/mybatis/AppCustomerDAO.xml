@@ -525,7 +525,7 @@
         WHERE cus_id = #{cusId}
     </select>
 
-    <select id="countSignAwardLebiQtyByCusId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    <select id="countSignAwardLebiQtyByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT sum(award_lebi_qty)
         FROM cus_sign_log
         WHERE
@@ -534,7 +534,7 @@
     </select>
 
     <select id="findCustomerSignDetailByCusId" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignDetailResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignLogBrief">
         SELECT
             sign_time,
             award_lebi_qty award,

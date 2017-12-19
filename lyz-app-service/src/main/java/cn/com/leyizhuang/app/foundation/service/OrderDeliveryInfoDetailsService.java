@@ -61,4 +61,10 @@ public interface OrderDeliveryInfoDetailsService {
      */
     OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(String orderNumber,LogisticStatus logisticStatus);
 
+    /**
+     * 配送员获取已完成单列表
+     * @param userId    配送员编号
+     * @return  已完成单列表
+     */
+    List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId);
 }

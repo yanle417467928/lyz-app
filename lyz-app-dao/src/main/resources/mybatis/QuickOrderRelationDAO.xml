@@ -6,7 +6,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT g.gid, g.sku, g.sku_name, g.cover_image_uri, g.goods_specification, g.goods_unit
         FROM quick_order_relation q
-        LEFT JOIN gds_goods g ON q.goods_id = g.gid
+        LEFT JOIN gds_goods g ON q.goods_sku = g.sku
         WHERE q.number = #{number}
     </select>
 

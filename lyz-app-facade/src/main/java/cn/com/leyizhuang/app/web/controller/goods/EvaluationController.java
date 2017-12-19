@@ -174,6 +174,8 @@ public class EvaluationController {
             goodsEvaluation.setEvaluationPictures(org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(),"[]"));
             goodsEvaluation.setIsShow(Boolean.TRUE);
             orderEvaluationService.addOrderGoodsEvaluation(goodsEvaluation);
+            //修改商品为已评价
+            orderEvaluationService.updeteGoodsEvaluationStatus(orderGoodsEvaluationRequest.getOrderNumber(),orderGoodsEvaluationRequest.getGoodsId());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("orderEvaluationPictureSubmit OUT,订单评价图片上传成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

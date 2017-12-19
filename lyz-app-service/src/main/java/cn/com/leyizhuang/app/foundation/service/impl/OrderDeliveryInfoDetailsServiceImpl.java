@@ -75,4 +75,9 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     public OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(String orderNumber, LogisticStatus logisticStatus) {
         return orderDeliveryInfoDetailsDAO.findByOrderNumberAndLogisticStatus(orderNumber, logisticStatus);
     }
+
+    @Override
+    public List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId) {
+        return orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(userId);
+    }
 }

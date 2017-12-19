@@ -38,7 +38,7 @@ public class AgencyFundController {
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getAgencyFundList(Long userId, Integer identityType, String startDate, String endDate) {
-        logger.info("getAgencyFundList CALLED,获取配送员代收款明细，入参 userId:{} identityType:{}", userId, identityType);
+        logger.info("getAgencyFundList CALLED,获取配送员代收款明细，入参 userId:{} identityType:{} startDate:{} endDate:{}", userId, identityType, startDate, endDate);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);

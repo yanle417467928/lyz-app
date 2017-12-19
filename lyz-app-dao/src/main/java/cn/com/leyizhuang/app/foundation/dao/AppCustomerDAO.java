@@ -123,5 +123,5 @@ public interface AppCustomerDAO {
 
     Integer countSignAwardLebiQtyByCusId(Long cusId);
 
-    List<CustomerSignDetailResponse> findCustomerSignDetailByCusId(Long cusId);
+    List<CustomerSignLogBrief> findCustomerSignDetailByCusId(Long cusId);
 }

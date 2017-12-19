@@ -324,6 +324,25 @@
             ogi.ord_no = #{orderNumber}
     </select>
 
+    <select id="getOrderGoodsList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse">
+        SELECT
+        ogi.order_qty       qty,
+        ogi.retail_price,
+        ogi.goods_line_type goods_type,
+        gg.sku_name,
+        gg.gid              goodsId,
+        gg.goods_specification,
+        gg.cover_image_uri,
+        gg.goods_unit
+        ogi.is_evaluation
+        FROM
+        ord_goods_info AS ogi
+        INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
+        WHERE
+        ogi.ord_no = #{orderNumber}
+    </select>
+
     <select id="getOrderInfoByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderTempInfo">
         SELECT
@@ -585,4 +604,9 @@
         DELETE FROM ord_goods_info
         WHERE ID = #{id}
     </delete>
+
+    <select id="getOrderArrearageInfo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse">
+        SELECT IFNULL(collection_amount, 0.00) arrearageMoney FROM ord_billing_details WHERE ord_no = #{orderNo}
+    </select>
+
 </mapper>

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -56,6 +57,41 @@ public class ArrearsAuditController {
         List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndStatus(userId, arrearsAuditStatusList);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
         logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
+     * @title   获取欠款申请详情
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2017/12/19
+     */
+    @PostMapping(value = "/details", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getArrearsAuditInfo(Long userId, Integer identityType, Long arrearsAuditId) {
+        logger.info("getArrearsAuditInfo CALLED,获取欠款申请详情，入参 userId:{} identityType:{} arrearsAuditId:{}", userId, identityType, arrearsAuditId);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("getArrearsAuditInfo OUT,获取欠款申请详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType && identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getArrearsAuditInfo OUT,获取欠款申请详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == arrearsAuditId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款申请ID不能为空！", null);
+            logger.info("getArrearsAuditInfo OUT,获取欠款申请详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        DeliveryArrearsAuditResponse deliveryArrearsAuditResponse = this.arrearsAuditServiceImpl.getArrearsAuditInfo(arrearsAuditId);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryArrearsAuditResponse);
+        logger.info("getArrearsAuditInfo OUT,获取欠款申请详情成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 
