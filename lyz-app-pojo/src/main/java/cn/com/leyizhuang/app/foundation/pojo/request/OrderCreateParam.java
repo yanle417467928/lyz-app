@@ -67,7 +67,7 @@ public class OrderCreateParam implements Serializable {
     /**
      * 现金券id
      */
-    private List<Long> cashCouponIds;
+    private String cashCouponIds;
 
     /**
      * 账单信息

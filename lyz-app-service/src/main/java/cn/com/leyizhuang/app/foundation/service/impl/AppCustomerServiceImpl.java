@@ -324,9 +324,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId) {
+    public List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId,String keywords) {
         if (null != userId) {
-            return customerDAO.findProductCouponCustomerBySellerId(userId);
+            return customerDAO.findProductCouponCustomerBySellerId(userId,keywords);
         }
         return null;
     }

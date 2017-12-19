@@ -1,0 +1,19 @@
+package cn.com.leyizhuang.app.remote.webservice.service;
+
+import cn.com.leyizhuang.app.remote.webservice.TestUser;
+
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebService;
+
+/**
+ * @author Created on 2017-12-19 11:22
+ **/
+@WebService
+public interface TestUserService {
+
+    @WebMethod
+    String getName(@WebParam(name = "userId") String userId);
+    @WebMethod
+    TestUser getUser(String userId);
+}

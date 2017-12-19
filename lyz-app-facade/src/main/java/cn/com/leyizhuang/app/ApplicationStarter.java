@@ -29,7 +29,7 @@ public class ApplicationStarter {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter();
         registrationBean.setFilter(jwtTokenFilter);
-        registrationBean.addUrlPatterns("/*");
+        registrationBean.addUrlPatterns("/app/*");
         registrationBean.addInitParameter("excludedPages", "/app/employee/login,/app/customer/login," +
                 "/app/customer/registry,/app/city/list,/app/employee/password/modify,/app/sms/verifyCode/send," +
                 "/app/alipay/return/async,/app/wechatpay/return/async");

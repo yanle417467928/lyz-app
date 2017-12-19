@@ -91,7 +91,7 @@ public interface AppCustomerService {
 
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId);
 
-    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId);
+    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId,String keywords);
 
     CustomerCashCoupon findCashCouponByCcid(Long id);
 

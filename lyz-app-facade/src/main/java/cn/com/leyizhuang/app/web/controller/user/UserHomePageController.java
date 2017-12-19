@@ -311,8 +311,14 @@ public class UserHomePageController {
         }
     }
 
+    /**
+     *  导购获取未提货顾客列表
+     * @param userId 用户id
+     * @param identityType 身份类型
+     * @return 有未提货的顾客列表
+     */
     @PostMapping(value = "/get/productCoupon/customer", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> sellerGetProductCouponCustomer(Long userId, Integer identityType) {
+    public ResultDTO<Object> sellerGetProductCouponCustomer(Long userId, Integer identityType,String keywords) {
         logger.info("sellerGetProductCouponCustomer CALLED,导购获取未提货客户列表,入参 userId {},identityType{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -327,7 +333,7 @@ public class UserHomePageController {
         }
         try {
             if (identityType == 0) {
-                List<ProductCouponCustomer> customerList = customerService.findProductCouponCustomerBySellerId(userId);
+                List<ProductCouponCustomer> customerList = customerService.findProductCouponCustomerBySellerId(userId,keywords);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerList);
                 logger.info("sellerGetProductCouponCustomer OUT,导购获取未提货客户成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
