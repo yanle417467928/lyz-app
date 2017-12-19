@@ -446,7 +446,7 @@
             status,
             down_time
         FROM cus_customer_cash_coupon
-        WHERE ccid = #{id};
+        WHERE id = #{id};
     </select>
 
     <update id="updateCustomerCashCouponById">
