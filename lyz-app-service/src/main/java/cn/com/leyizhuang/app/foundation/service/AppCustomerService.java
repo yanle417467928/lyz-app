@@ -114,5 +114,5 @@ public interface AppCustomerService {
 
     Integer countSignAwardLebiQtyByCusId(Long cusId);
 
-    PageInfo<CustomerSignDetailResponse> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
+    PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
 }

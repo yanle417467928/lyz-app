@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 获取顾客签到明细接口返回对象
@@ -22,18 +23,28 @@ public class CustomerSignDetailResponse implements Serializable{
     private static final long serialVersionUID = -6631708612837160074L;
 
     /**
-     * 签到日期
+     * 记录总条数
      */
-    private Date signTime;
+    private Long count;
 
     /**
-     * 签到奖励
+     * 总页数
      */
-    private Integer award;
+    private Integer totalPage;
 
     /**
-     * 说明
+     * 单页条数
      */
-    private String description;
+    private Integer numsPerPage;
+
+    /**
+     * 当前页数
+     */
+    private Integer currentPage;
+
+    /**
+     * 顾客签到日志简要信息
+     */
+    List<CustomerSignLogBrief> data;
 
 }

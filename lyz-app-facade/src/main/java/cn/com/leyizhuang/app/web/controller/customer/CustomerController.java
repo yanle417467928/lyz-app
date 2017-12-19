@@ -694,8 +694,13 @@ public class CustomerController {
         try {
             AppCustomer appCustomer = customerService.findById(cusId);
             if (null != appCustomer) {
-                PageInfo<CustomerSignDetailResponse> goodsCategoryPage = this.customerService.findCustomerSignDetailByCusIdWithPageable(cusId, page, size);
-                List<CustomerSignDetailResponse> response = goodsCategoryPage.getList();
+                PageInfo<CustomerSignLogBrief> logPage = this.customerService.findCustomerSignDetailByCusIdWithPageable(cusId, page, size);
+                CustomerSignDetailResponse response = new CustomerSignDetailResponse();
+                response.setCount(logPage.getTotal());
+                response.setNumsPerPage(logPage.getPageSize());
+                response.setTotalPage(logPage.getPages());
+                response.setCurrentPage(logPage.getPageNum());
+                response.setData(logPage.getList());
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
                 return resultDTO;
             } else {
