@@ -497,6 +497,11 @@ public class OrderController {
                 List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
                 for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                     orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                    PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
+                    promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
+                    promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
+                    promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
+                    giftList.add(promotionSimpleInfo);
                 }
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
@@ -629,6 +634,11 @@ public class OrderController {
                 List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
                 for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                     orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                    PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
+                    promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
+                    promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
+                    promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
+                    giftList.add(promotionSimpleInfo);
                 }
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
@@ -725,6 +735,11 @@ public class OrderController {
                 if (AssertUtil.isNotEmpty(discountListResponseList)) {
                     for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                         orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                        PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
+                        promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
+                        promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
+                        promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
+                        giftList.add(promotionSimpleInfo);
                     }
                 }
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
@@ -750,8 +765,7 @@ public class OrderController {
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
                 goodsSettlement.put("storeSubvention", storeSubvention);
             }
-
-
+            goodsSettlement.put("promotionInfo", giftList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
