@@ -334,7 +334,7 @@
         gg.gid              goodsId,
         gg.goods_specification,
         gg.cover_image_uri,
-        gg.goods_unit
+            gg.goods_unit,
         ogi.is_evaluation
         FROM
         ord_goods_info AS ogi

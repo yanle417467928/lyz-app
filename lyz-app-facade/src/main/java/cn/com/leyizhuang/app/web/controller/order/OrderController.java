@@ -463,7 +463,7 @@ public class OrderController {
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                         //算会员折扣(先判断是否是会员还是零售会员)
                         if (null != customer.getSalesConsultId()) {
-                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(simpleResponse.getVipPrice(), simpleResponse.getGoodsQty()));
+                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                         }
                     }
                 }
@@ -522,7 +522,7 @@ public class OrderController {
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
                 if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 30.00;
+                    freight = 1.00;
                 }
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
@@ -602,7 +602,7 @@ public class OrderController {
                         //算总金额
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                         //算会员折扣(先判断是否是会员还是零售会员)
-                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(simpleResponse.getVipPrice(), simpleResponse.getGoodsQty()));
+                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                     }
                 }
                 //赠品的数量和标识
@@ -659,7 +659,7 @@ public class OrderController {
 
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
                 if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 30.00;
+                    freight = 1.00;
                 }
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
                 //计算顾客乐币
@@ -760,7 +760,7 @@ public class OrderController {
                 }
                 totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
                 if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 30.00;
+                    freight = 1.00;
                 }
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 

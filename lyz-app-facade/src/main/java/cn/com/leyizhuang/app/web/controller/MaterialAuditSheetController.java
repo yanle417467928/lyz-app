@@ -505,7 +505,7 @@ public class MaterialAuditSheetController {
                 //遍历这个料单
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     //如果发现经理的下料清单中有相同的商品
-                    MaterialListDO material = materialListService.findAuditListByUserIdAndIdentityTypeAndGoodsId(userID,
+                    MaterialListDO material = materialListService.findByUserIdAndIdentityTypeAndGoodsId(userID,
                             appIdentityType, materialAuditGoodsInfo.getGid());
                     //转化料单到经理的下料清单中
                     MaterialListDO materialListDO = transform(materialAuditGoodsInfo, userID, auditNo);
