@@ -95,7 +95,7 @@ public class AliPayController {
         try {
             String totalFee = CountUtil.retainTwoDecimalPlaces(money);
             String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
-            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, AppApplicationConstant.alipayReturnUrlAsnyc,
+            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, null,identityType, AppApplicationConstant.alipayReturnUrlAsnyc,
                     Double.parseDouble(totalFee), PaymentDataStatus.WAIT_PAY, OnlinePayType.ALIPAY, "");
             this.paymentDataService.save(paymentDataDO);
 
@@ -177,6 +177,7 @@ public class AliPayController {
         paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
         paymentData.setCreateTime(LocalDateTime.now());
         paymentData.setOutTradeNo(orderNumber);
+        paymentData.setOrderNumber(orderNumber);
         paymentData.setTotalFee(Double.parseDouble(totalFee));
         paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
         paymentData.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
@@ -374,6 +375,7 @@ public class AliPayController {
         if (outTradeNo.contains("_HK")) {
             paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         }
+        paymentDataDO.setOrderNumber(orderNumber);
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
         paymentDataDO.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
         paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);

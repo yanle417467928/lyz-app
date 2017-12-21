@@ -16,4 +16,11 @@ public interface PaymentDataService {
     List<PaymentDataDO> findByOutTradeNoAndTradeStatus(String outTradeNo, PaymentDataStatus tradeStatus);
 
     void updateByTradeStatusIsWaitPay(PaymentDataDO paymentDataDO);
+
+    /**
+     * 查询还款记录详情
+     * @param outTradeNo    还款号
+     * @return  还款记录详情
+     */
+    PaymentDataDO findPaymentDataDOByOutTradeNo(String outTradeNo);
 }

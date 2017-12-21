@@ -20,4 +20,11 @@ public interface PaymentDataDAO {
 
     void updateByTradeStatusIsWaitPay(PaymentDataDO paymentDataDO);
 
+    /**
+     * 查询还款记录详情
+     * @param outTradeNo    还款号
+     * @return  还款记录详情
+     */
+    PaymentDataDO findPaymentDataDOByOutTradeNo(@Param("outTradeNo") String outTradeNo);
+
 }

@@ -45,6 +45,11 @@ public class PaymentDataDO {
     private String outTradeNo;
 
     /**
+     * 订单号
+     */
+    private String orderNumber;
+
+    /**
      * 支付状态
      */
     private PaymentDataStatus tradeStatus;
@@ -89,10 +94,10 @@ public class PaymentDataDO {
     private String remarks;
 
 
-
-    public PaymentDataDO(Long userId, String outTradeNo, Integer identityType, String notifyUrl,
+    public PaymentDataDO(Long userId, String outTradeNo,String orderNumber, Integer identityType, String notifyUrl,
                          Double totalFee, PaymentDataStatus tradeStatus, OnlinePayType onlinePayType, String remarks) {
         this.userId = userId;
+        this.orderNumber = orderNumber;
         this.outTradeNo = outTradeNo;
         if (outTradeNo.contains("_CZ")) {
             if (null != identityType && identityType == 0) {

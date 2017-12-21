@@ -109,7 +109,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFeeFormat);
 
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber,orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
         this.paymentDataService.save(paymentDataDO);
 
@@ -168,7 +168,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo,null, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
         this.paymentDataService.save(paymentDataDO);
 
@@ -228,6 +228,7 @@ public class WeChatPayController {
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);
+        paymentDataDO.setOrderNumber(orderNumber);
         if (outTradeNo.contains("_HK")) {
             paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         }
@@ -271,7 +272,7 @@ public class WeChatPayController {
         String subject = "微信退款";
 
         Map<String, String> map = new HashMap<>();
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, identityType, null,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo,orderNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataService.save(paymentDataDO);
 
@@ -379,8 +380,17 @@ public class WeChatPayController {
                                 appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
 
                             } else if (outTradeNo.contains("_HK")) {
-                                String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
-                                appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "欠款还款");
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
+                                            paymentDataDO);
+                                    String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
+                                    appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
+                                }
                             } else if (outTradeNo.contains("_XN")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");
                                 if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {

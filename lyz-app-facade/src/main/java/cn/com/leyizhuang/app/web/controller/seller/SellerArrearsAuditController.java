@@ -3,15 +3,15 @@ package cn.com.leyizhuang.app.web.controller.seller;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
-import cn.com.leyizhuang.app.foundation.service.OrderAgencyFundService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -51,13 +53,16 @@ public class SellerArrearsAuditController {
     @Autowired
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
 
+    @Autowired
+    private PaymentDataService paymentDataService;
+
 
     /**
-     * @title   导购获取待审核欠款申请列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 导购获取待审核欠款申请列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/24
      */
@@ -84,11 +89,11 @@ public class SellerArrearsAuditController {
     }
 
     /**
-     * @title   导购获取已审核欠款申请列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 导购获取已审核欠款申请列表
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/24
      */
@@ -115,12 +120,12 @@ public class SellerArrearsAuditController {
         return resultDTO;
     }
 
-    /**  
-     * @title   导购审批欠款申请
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 导购审批欠款申请
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
      * @author GenerationRoad
      * @date 2017/11/27
      */
@@ -154,7 +159,7 @@ public class SellerArrearsAuditController {
                 return resultDTO;
             }
             OrderArrearsAuditDO orderArrearsAuditDO = this.arrearsAuditServiceImpl.findById(arrearsAuditId);
-            if (null == orderArrearsAuditDO || !(orderArrearsAuditDO.getStatus().equals(ArrearsAuditStatus.AUDITING))){
+            if (null == orderArrearsAuditDO || !(orderArrearsAuditDO.getStatus().equals(ArrearsAuditStatus.AUDITING))) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
                         null);
                 logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
@@ -162,7 +167,7 @@ public class SellerArrearsAuditController {
             }
             String orderNo = orderArrearsAuditDO.getOrderNumber();
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
-            if (null == orderTempInfo){
+            if (null == orderTempInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息错误！",
                         null);
                 logger.info("audit OUT,导购审批欠款申请失败，出参 resultDTO:{}", resultDTO);
@@ -182,8 +187,8 @@ public class SellerArrearsAuditController {
 
                 //创建收款记录
                 OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
-                        orderTempInfo.getOrderId(),Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
-                        orderNo,collectionAmount,null,null);
+                        orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
+                        orderNo, collectionAmount, null, null);
                 //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
                 this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
@@ -195,7 +200,7 @@ public class SellerArrearsAuditController {
 
                 //生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！","送达",orderTempInfo.getOperatorNo(),orderArrearsAuditDO.getPicture(),"","");
+                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), orderArrearsAuditDO.getPicture(), "", "");
                 this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
                 //修改订单状态
@@ -208,7 +213,7 @@ public class SellerArrearsAuditController {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
                 this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
-            }else {
+            } else {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
                 this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
@@ -228,54 +233,56 @@ public class SellerArrearsAuditController {
 
     /**
      * 导购欠款查询
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @return  欠款列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 欠款列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> findArrearsListByUserId(Long userID,Integer identityType){
+    public ResultDTO<Object> findArrearsListByUserId(Long userID, Integer identityType) {
         logger.info("findArrearsListByUserId CALLED,导购欠款查询，入参 userId:{} identityType:{}", userID, identityType);
         ResultDTO<Object> resultDTO;
 
-            if (null == userID) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-                logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == identityType) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
-                        null);
-                logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (identityType != 0){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
-                        null);
-                logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            try {
-                List<ArrearageListResponse> arrearageListResponseList = arrearsAuditServiceImpl.findArrearsListByUserId(userID);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearageListResponseList);
-                logger.info("findArrearsListByUserId OUT,导购欠款查询成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }catch (Exception e){
-                e.printStackTrace();
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购欠款查询失败!", null);
-                logger.warn("findArrearsListByUserId EXCEPTION,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
-                logger.warn("{}", e);
-                return resultDTO;
-            }
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("findArrearsListByUserId OUT,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<ArrearageListResponse> arrearageListResponseList = arrearsAuditServiceImpl.findArrearsListByUserId(userID);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearageListResponseList);
+            logger.info("findArrearsListByUserId OUT,导购欠款查询成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购欠款查询失败!", null);
+            logger.warn("findArrearsListByUserId EXCEPTION,导购欠款查询失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 
     /**
      * 导购查询还款记录
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @return  返回还款记录列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 返回还款记录列表
      */
     @PostMapping(value = "/repayment/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getRepaymentMondyList(Long userID, Integer identityType){
+    public ResultDTO<Object> getRepaymentMondyList(Long userID, Integer identityType) {
         logger.info("getRepaymentMondyList CALLED,导购查询还款记录，入参 userId:{} identityType:{}", userID, identityType);
         ResultDTO<Object> resultDTO;
 
@@ -290,7 +297,7 @@ public class SellerArrearsAuditController {
             logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 0){
+        if (identityType != 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
@@ -302,17 +309,17 @@ public class SellerArrearsAuditController {
             List<OrderBillingPaymentDetails> orderBillingPaymentDetailsList = arrearsAuditServiceImpl.getRepaymentMondyList(userID);
 
             List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = new ArrayList<>();
-            for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList){
+            for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList) {
                 RepaymentMoneyListResponse repaymentMoneyListResponse = new RepaymentMoneyListResponse();
                 repaymentMoneyListResponse.setRepaymentTime(sdf.format(orderBillingPaymentDetails.getPayTime()));
                 repaymentMoneyListResponse.setRepaymentMoney(orderBillingPaymentDetails.getAmount());
-
+                repaymentMoneyListResponse.setOrderNumber(orderBillingPaymentDetails.getOrderNumber());
                 repaymentMoneyListResponseList.add(repaymentMoneyListResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, repaymentMoneyListResponseList);
             logger.info("getRepaymentMondyList OUT,导购查询还款记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购查询还款记录失败!", null);
             logger.warn("getRepaymentMondyList EXCEPTION,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
@@ -321,4 +328,88 @@ public class SellerArrearsAuditController {
         }
     }
 
+    /**
+     * 导购查询还款记录详情
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param orderNumber  订单号
+     * @return 返回还款记录详情
+     */
+    @PostMapping(value = "/repayment/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getRepaymentMondyDetail(Long userID, Integer identityType, String orderNumber) {
+        logger.info("getRepaymentMondyDetail CALLED,导购查询还款记录详情，入参 userId:{} identityType:{} orderNumber:{}", userID, identityType, orderNumber);
+        ResultDTO<Object> resultDTO;
+
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！",
+                    null);
+            logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            //转换日期
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            //查询订单头
+            OrderBaseInfo orderBaseInfo = appOrderServiceImpl.getOrderByOrderNumber(orderNumber);
+            if (null == orderBaseInfo){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单！",
+                        null);
+                logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
+            //查询支付信息
+            PaymentDataDO paymentDataDO = paymentDataService.findPaymentDataDOByOutTradeNo(outTradeNo);
+            if (null == paymentDataDO){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此还款记录",
+                        null);
+                logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            RepaymentDetailResponse repaymentDetailResponse = new RepaymentDetailResponse();
+            //设值
+            repaymentDetailResponse.setRepaymentMoney(paymentDataDO.getTotalFee());
+            repaymentDetailResponse.setRepaymentNumber(paymentDataDO.getOutTradeNo());
+            repaymentDetailResponse.setOrderNumber(paymentDataDO.getOrderNumber());
+            repaymentDetailResponse.setRepaymentTime(df.format(paymentDataDO.getCreateTime()));
+            repaymentDetailResponse.setRepaymentType(paymentDataDO.getOnlinePayType().getDescription());
+            if (orderBaseInfo.getCreatorIdentityType().getValue() == 6){
+                repaymentDetailResponse.setCustomerName(orderBaseInfo.getCreatorName());
+                repaymentDetailResponse.setCustomerPhone(orderBaseInfo.getCreatorPhone());
+            }else if (orderBaseInfo.getCreatorIdentityType().getValue() == 0){
+                repaymentDetailResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                repaymentDetailResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+            }
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, repaymentDetailResponse);
+            logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,导购查询还款记录详情失败!", null);
+            logger.warn("getRepaymentMondyDetail EXCEPTION,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }

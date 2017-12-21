@@ -20,4 +20,8 @@ public class RepaymentMoneyListResponse {
      * 还款金额
      */
     private Double repaymentMoney;
+    /**
+     * 订单号
+     */
+    private String orderNumber;
 }

@@ -37,4 +37,9 @@ public class PaymentDataServiceImpl implements PaymentDataService {
     public void updateByTradeStatusIsWaitPay(PaymentDataDO paymentDataDO) {
         this.paymentDataDAO.updateByTradeStatusIsWaitPay(paymentDataDO);
     }
+
+    @Override
+    public PaymentDataDO findPaymentDataDOByOutTradeNo(String outTradeNo) {
+        return paymentDataDAO.findPaymentDataDOByOutTradeNo(outTradeNo);
+    }
 }

@@ -16,7 +16,8 @@
         ORDER BY create_time desc
     </select>
 
-    <select id="findByUserIdAndOrderNoAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
+    <select id="findByUserIdAndOrderNoAndStatus"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
         SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
         seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
         distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
@@ -42,7 +43,8 @@
         #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId},#{picture})
     </insert>
 
-    <select id="findBySellerIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">
+    <select id="findBySellerIdAndStatus"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse">
         SELECT oa.id, oa.ord_no orderNumber, oa.customer_name customerName, oa.customer_phone customerPhone,
         (oa.order_money - oa.real_money) arrearsMoney, oa.create_time createTime,
         oa.payment_method paymentMethod, oa.status, oa.order_money orderMoney,
@@ -57,7 +59,8 @@
         ORDER BY oa.create_time desc
     </select>
 
-    <select id="findArrearsListByUserId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
+    <select id="findArrearsListByUserId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
             customer_name customerName,
             ord_no orderNumber,
@@ -70,7 +73,8 @@
         AND (whether_repayments = 0 OR whether_repayments IS NULL );
     </select>
 
-    <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+    <select id="findById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         SELECT
             id,
             user_id,
@@ -115,7 +119,8 @@
         WHERE id = #{id}
     </update>
 
-    <select id="findArrearsByUserIdAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
+    <select id="findArrearsByUserIdAndOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
             *
         FROM
@@ -137,9 +142,17 @@
 
     </update>
 
-    <select id="getRepaymentMondyList" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+    <select id="getRepaymentMondyList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         SELECT
-            obpd.*
+           	obpd.oid orderId,
+            obpd.ord_no orderNumber,
+            obpd.creatr_time createTime,
+            obpd.pay_time payTime,
+            obpd.pay_type payType,
+            obpd.amount amount,
+            obpd.reply_code replyCode,
+            obpd.receipt_number receiptNumber
         FROM
             ord_arrears_audit AS oaa
         INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no
@@ -147,7 +160,8 @@
         AND oaa.whether_repayments = 1
     </select>
 
-    <select id="getArrearsAuditInfo" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse">
+    <select id="getArrearsAuditInfo" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse">
         SELECT agency_money, real_money, payment_method, status
         FROM ord_arrears_audit
         WHERE id = #{id}

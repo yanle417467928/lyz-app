@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         INSERT INTO payment_data
-        (create_time, user_id, identity_type, out_trade_no, trade_status, payment_type, payment_type_desc, total_fee,
+        (create_time, user_id, identity_type, out_trade_no,ord_no, trade_status, payment_type, payment_type_desc, total_fee,
          online_pay_type, notify_url, notify_time, trade_no, remarks)
         VALUES
-            (#{createTime}, #{userId}, #{appIdentityType}, #{outTradeNo}, #{tradeStatus}, #{paymentType},
+            (#{createTime}, #{userId}, #{appIdentityType}, #{outTradeNo},#{orderNumber}, #{tradeStatus}, #{paymentType},
                             #{paymentTypeDesc},
                             #{totalFee}, #{onlinePayType}, #{notifyUrl}, #{notifyTime}, #{tradeNo}, #{remarks})
     </insert>
@@ -26,6 +26,20 @@
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
               AND trade_status = #{tradeStatus}
+        ORDER BY id DESC
+    </select>
+
+    <select id="findPaymentDataDOByOutTradeNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+        SELECT
+        out_trade_no,
+        ord_no orderNumber,
+        total_fee,
+        create_time,
+        online_pay_type,
+        payment_type
+        FROM payment_data
+        WHERE out_trade_no = #{outTradeNo}
         ORDER BY id DESC
     </select>
 
