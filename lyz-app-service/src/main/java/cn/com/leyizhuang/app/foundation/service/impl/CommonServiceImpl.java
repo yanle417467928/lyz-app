@@ -579,9 +579,9 @@ public class CommonServiceImpl implements CommonService {
                             + "在App下单了,订单号:"
                             + orderBaseInfo.getOrderNumber() +
                             ",请及时跟进。";
+                    String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                            orderBaseInfo.getSalesConsultPhone(), tips);
                 }
-                String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
-                        orderBaseInfo.getSalesConsultPhone(), content);
                 //修改顾客上一次下单时间
                 AppCustomer customer = new AppCustomer();
                 Long cusId = null;

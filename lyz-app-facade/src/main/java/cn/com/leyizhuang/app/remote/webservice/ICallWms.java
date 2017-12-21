@@ -23,6 +23,9 @@ import java.util.Date;
 @Service
 public class ICallWms {
 
+    @Resource
+    private AppToWmsOrderService appToWmsOrderService;
+
     private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
 
 
@@ -35,41 +38,9 @@ public class ICallWms {
     private Client wmsClient = dcf.createClient(wmsUrl);
 
 
-    @Resource
-    private AppToWmsOrderService appToWmsOrderService;
 
-    public static void main(String[] args) throws Exception {
-        ICallWms callWms = new ICallWms();
-        AtwRequisitionOrder order = new AtwRequisitionOrder();
-        order.setDiySiteId("FZM007");
-        order.setDiySiteTel("028-83551646");
-        order.setDiySiteTitle("富森富之美");
-        order.setCustomerName("测试");
-        order.setReceiveTimeQuantum("2017-12-20 14:30");
-        order.setOrderNumber("CD_XN20171220102259255115");
-        order.setReceiveAddress("成都市新都区大丰街道订单");
-        order.setReceiveName("测试");
-        order.setReceivePhone("13408698552");
-        order.setCity("成都市");
-        order.setDetailAddress("订单");
-        order.setDisctrict("新都区");
-        order.setSubdistrict("大丰街道");
-        order.setSellerTel("18280285992");
-        order.setGoodsQuantity(1);
-        order.setUpstairsAll(0D);
-        order.setSellerName("樊云霞");
-        order.setDeliveryFee(30.0);
-        order.setColorFee(0D);
-        order.setDiscount(0D);
-        order.setOtherPayed(0D);
-        order.setBalanceUsed(60.0);
-        order.setMemberReceiver("FALSE");
-        order.setUnpayed(0D);
-        order.setTotalGoodsPrice(30.0);
-        order.setAgencyRefund(0.00);
-        callWms.appToWmsOrderService.save(order);
-        callWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
-    }
+
+
 
     /**
      * 发送取消订单到WMS

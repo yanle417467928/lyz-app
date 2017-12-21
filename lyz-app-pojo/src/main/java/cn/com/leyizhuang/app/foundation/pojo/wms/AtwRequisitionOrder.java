@@ -131,7 +131,7 @@ public class AtwRequisitionOrder {
     /**
      * 表示是否是主家收货
      */
-    private String memberReceiver;
+    private Boolean memberReceiver;
     /**
      * 应收金额
      */

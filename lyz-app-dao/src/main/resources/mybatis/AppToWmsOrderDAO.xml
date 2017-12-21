@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO ">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO">
 
     <insert id="saveAtwCancelOrderRequest" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
@@ -13,9 +13,8 @@
 
     <insert id="saveAtwRequisitionOrder" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
-
         INSERT INTO inter_atw_order_requsition
-        (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_numer,
+        (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_number,
          reserve_time_quantum, receive_address, receive_name, receive_phone, city, detail_address, disctrict, province, subdistrict,
          order_time, seller_tel, goods_quantity, upstairs_all, seller_name, delivery_fee, color_fee, discount, other_payed, balance_used,
          member_reveiver, unpayed, total_goods_price, agency_fund)
@@ -99,9 +98,41 @@
 
     <select id="findAtwRequisitionOrderByOrderNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
-        SELECT *
+        SELECT
+            id,
+            create_time,
+            diy_site_address,
+            diy_site_id,
+            diy_site_title,
+            diy_site_tel,
+            remark_info,
+            customer_name,
+            order_number,
+            reserve_time_quantum,
+            receive_address,
+            receive_name,
+            receive_phone,
+            city,
+            detail_address,
+            disctrict,
+            province,
+            subdistrict,
+            order_time,
+            seller_tel,
+            goods_quantity,
+            upstairs_all,
+            seller_name,
+            delivery_fee,
+            color_fee,
+            discount,
+            other_payed,
+            balance_used,
+            member_reveiver,
+            unpayed,
+            total_goods_price,
+            agency_fund
         FROM inter_atw_order_requsition
-        WHERE order_numer = #{orderNo};
+        WHERE order_number = #{orderNo};
     </select>
 
     <select id="findAtwRequisitionOrderGoodsByOrderNo"
