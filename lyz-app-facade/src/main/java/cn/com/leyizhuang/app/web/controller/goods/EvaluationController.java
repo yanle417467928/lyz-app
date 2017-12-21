@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
+import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderEvaluationRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsEvaluationRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.GoodsEvaluationListResponse;
@@ -94,10 +95,17 @@ public class EvaluationController {
             return resultDTO;
         }
         try {
-            //保存订单评价
-            orderEvaluationService.addOrderEvaluation(orderEvaluationRequest);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", "");
-            return resultDTO;
+            OrderEvaluation orderEvaluation = orderEvaluationService.queryOrderEvaluationListByOrderNumber(orderEvaluationRequest.getOrderNumber());
+            if (orderEvaluation == null){
+                //保存订单评价
+                orderEvaluationService.addOrderEvaluation(orderEvaluationRequest);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", "");
+                return resultDTO;
+            }else{
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已评价不能重复评价！", null);
+                logger.info("orderEvaluationSubmit OUT,此订单已评价，订单评价提交失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，订单评价提交失败", null);

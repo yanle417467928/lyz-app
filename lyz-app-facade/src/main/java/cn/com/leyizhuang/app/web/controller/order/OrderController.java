@@ -1126,7 +1126,7 @@ public class OrderController {
     @PostMapping(value = "/detail", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getOrderDetail(Long userID, Integer identityType, String orderNumber) {
         ResultDTO<Object> resultDTO;
-        logger.info("getOrderDetail CALLED,用户获取订单详情，入参 userID:{}, identityType:{}, identityType:{}", userID, identityType, orderNumber);
+        logger.info("getOrderDetail CALLED,用户获取订单详情，入参 userID:{}, identityType:{}, orderNumber:{}", userID, identityType, orderNumber);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
             logger.info("getOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);

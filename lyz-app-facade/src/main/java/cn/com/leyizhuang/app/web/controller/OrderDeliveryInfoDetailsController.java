@@ -46,7 +46,7 @@ public class OrderDeliveryInfoDetailsController {
      * @return 订单详情
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderDelicery(String orderNumber) {
+    public ResultDTO<Object> getOrderDelivery(String orderNumber) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderDelicery CALLED,获取物流详情，入参 orderNumber:{}", orderNumber);
         if (StringUtils.isBlank(orderNumber)) {
@@ -59,7 +59,10 @@ public class OrderDeliveryInfoDetailsController {
             //查询该订单所有物流状态
             List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber);
             //配送员编号
-            String deliveryNumber = orderDeliveryInfoDetailsList.get(1).getOperatorNo();
+            String deliveryNumber= null;
+            if (null != orderDeliveryInfoDetailsList && orderDeliveryInfoDetailsList.size() > 0 ){
+                 deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
+            }
             //创建物流详情list
             List<LogisticsDetailResponse> logisticsDetailResponseList = new ArrayList<>();
             for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList) {
