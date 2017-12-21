@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO ">
+
+    <insert id="saveAtwCancelOrderRequest" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+
+        INSERT INTO inter_atw_order_cancel_request
+        (create_time, cancel_reason, cancel_time, order_no, order_status)
+        VALUES
+            (#{createTime}, #{cancelReason}, #{cancelTime}, #{orderNo}, #{orderStatus})
+    </insert>
+
+    <insert id="saveAtwRequisitionOrder" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+
+        INSERT INTO inter_atw_order_requsition
+        (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_numer,
+         reserve_time_quantum, receive_address, receive_name, receive_phone, city, detail_address, disctrict, province, subdistrict,
+         order_time, seller_tel, goods_quantity, upstairs_all, seller_name, delivery_fee, color_fee, discount, other_payed, balance_used,
+         member_reveiver, unpayed, total_goods_price, agency_fund)
+        VALUES
+            (#{createTime}, #{diySiteAddress}, #{diySiteId}, #{diySiteTitle}, #{diySiteTel}, #{remarkInfo},
+                            #{customerName}, #{orderNumber}, #{receiveTimeQuantum},
+                            #{receiveAddress}, #{receiveName}, #{receivePhone}, #{city}, #{detailAddress}, #{disctrict},
+                                                               #{province}, #{subdistrict}, #{orderTime},
+                                                               #{sellerTel}, #{goodsQuantity}, #{upstairsAll},
+                #{sellerName}, #{deliveryFee}, #{colorFee}, #{discount}, #{otherPayed}, #{balanceUsed},
+                #{memberReceiver}, #{unpayed}, #{totalGoodsPrice}, #{agencyRefund})
+    </insert>
+
+    <insert id="saveAtwRequisitionOrderGoods" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+
+        INSERT INTO inter_atw_order_requisition_goods
+        (create_time, order_number, goods_code, goods_title, quantity, price)
+        VALUES
+            (#{createTime}, #{orderNumber}, #{goodsCode}, #{goodsTitle}, #{quantity}, #{price})
+
+    </insert>
+
+    <update id="updateAtwCancelOrderRequest"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+        UPDATE inter_atw_order_cancel_request
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage}
+            </if>
+        </set>
+
+    </update>
+
+    <update id="updateAtwRequisitionOrder"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+        UPDATE inter_atw_order_requsition
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage}
+            </if>
+        </set>
+
+    </update>
+
+    <update id="updateAtwRequisitionOrderGoods"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+        UPDATE inter_atw_order_requisition_goods
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage}
+            </if>
+        </set>
+
+    </update>
+
+    <select id="findAtwCancelOrderByOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+        SELECT *
+        FROM inter_atw_order_cancel_request
+        WHERE order_no = #{orderNo};
+    </select>
+
+    <select id="findAtwRequisitionOrderByOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+        SELECT *
+        FROM inter_atw_order_requsition
+        WHERE order_numer = #{orderNo};
+    </select>
+
+    <select id="findAtwRequisitionOrderGoodsByOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+        SELECT *
+        FROM inter_atw_order_requisition_goods
+        WHERE order_number = #{orderNo};
+    </select>
+
+</mapper>
