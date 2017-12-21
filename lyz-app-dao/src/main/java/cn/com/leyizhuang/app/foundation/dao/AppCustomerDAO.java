@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import org.apache.ibatis.annotations.Param;
@@ -51,7 +52,8 @@ public interface AppCustomerDAO {
 
     Integer findLeBiQuantityByUserId(Long userId);
 
-    void updateLeBiQuantityByUserId(Long userId);
+    void updateLeBiQuantityByUserId(@Param(value = "userId") Long userId,
+                                    @Param(value = "qty") int qty);
 
     Boolean existsByCustomerId(Long userId);
 
@@ -63,7 +65,8 @@ public interface AppCustomerDAO {
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
-    void updateLastSignTimeByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date);
+    void updateCustomerSignInfoByCustomerId(@Param(value = "cusId") Long cusId, @Param(value = "date") Date date,
+                                            @Param(value = "consecutiveSignDays") int consecutiveSignDays);
 
     int updateDepositByUserIdAndDeposit(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param(value = "version") Date version);
 
@@ -97,7 +100,7 @@ public interface AppCustomerDAO {
                                                                          @Param(value = "cusId") Long cusId);
 
     List<ProductCouponCustomer> findProductCouponCustomerBySellerId(@Param(value = "userId") Long userId,
-                                                                    @Param(value ="keywords" ) String keywords);
+                                                                    @Param(value = "keywords") String keywords);
 
     CustomerCashCoupon findCashCouponByCcid(@Param(value = "id") Long id);
 
@@ -125,4 +128,6 @@ public interface AppCustomerDAO {
     Integer countSignAwardLebiQtyByCusId(Long cusId);
 
     List<CustomerSignLogBrief> findCustomerSignDetailByCusId(Long cusId);
+
+    void saveSignLog(CusSignLog log);
 }

@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -488,16 +487,7 @@ public class CustomerController {
                 logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            commonService.updateCustomerSignTimeAndCustomerLeBiByUserId(userId, identityType);
-
-            //记录变更明细日志
-            CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
-            customerLeBiVariationLog.setCusId(userId);
-            customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
-            customerLeBiVariationLog.setVariationQuantity(1);
-            customerLeBiVariationLog.setVariationTime(new Date());
-            customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType));
-            leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
+            commonService.customerSign(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             //logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

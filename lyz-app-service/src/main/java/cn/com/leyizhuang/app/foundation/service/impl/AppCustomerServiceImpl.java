@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
@@ -167,9 +168,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     @Transactional
-    public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType,int qty) {
         if (null != userId && null != identityType && identityType == 6) {
-            customerDAO.updateLeBiQuantityByUserId(userId);
+            customerDAO.updateLeBiQuantityByUserId(userId,qty);
         }
     }
 
@@ -198,9 +199,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public void updateLastSignTimeByCustomerId(Long cusId, Date date) {
+    public void updateCustomerSignInfoByCustomerId(Long cusId, Date date,int consecutiveSignDays) {
         if (null != cusId) {
-            customerDAO.updateLastSignTimeByCustomerId(cusId, date);
+            customerDAO.updateCustomerSignInfoByCustomerId(cusId, date,consecutiveSignDays);
         }
     }
 
@@ -429,6 +430,13 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             return new PageInfo<>(logBriefList);
         }
         return null;
+    }
+
+    @Override
+    public void saveSignLog(CusSignLog log) {
+        if (null != log){
+            customerDAO.saveSignLog(log);
+        }
     }
 
 

@@ -162,10 +162,19 @@ public class OrderController {
 
             //*********************** 开始创建订单 **************************
 
+            //获取下单人所在门店信息
+            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(), orderParam.getIdentityType());
+            //获取当单顾客信息
+            AppCustomer customer = new AppCustomer();
+            if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
+                customer = appCustomerService.findById(orderParam.getUserId());
+            } else if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
+                customer = appCustomerService.findById(orderParam.getCustomerId());
+            }
+
             //***** 创建订单基础信息 *****
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
-            orderBaseInfo.setOrderType(AppOrderType.SHIPMENT);
 
 
             //***** 创建订单物流信息 *****
@@ -174,109 +183,111 @@ public class OrderController {
 
             //***** 创建订单商品信息 *****
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+            //新建一个map,用来存放最终要检核库存的商品和商品数量
+            Map<Long, Integer> inventoryCheckMap = new HashMap<>();
+
             //定义订单商品零售总价
             Double goodsTotalPrice = 0D;
             //定义订单会员折扣
             Double memberDiscount = 0D;
             //定义订单促销折扣
             Double promotionDiscount = 0D;
-            //获取商品id集合
-            Set<Long> goodsIdSet = new HashSet<>();
-            for (GoodsSimpleInfo goods : goodsList) {
-                goodsIdSet.add(goods.getId());
-            }
-            //新建一个map,用来存放最终要检核库存的商品和商品数量
-            Map<Long, Integer> inventoryCheckMap = new HashMap<>();
-            List<OrderGoodsVO> goodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
-                    orderParam.getUserId(), orderParam.getIdentityType(), goodsIdSet);
-            //设置商品数量
-            Set<Long> hasPriceGoodsIdSet = new HashSet<>();
-            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(orderParam.getUserId(), orderParam.getIdentityType());
-            AppCustomer customer = new AppCustomer();
-            if (orderParam.getIdentityType() == AppIdentityType.CUSTOMER.getValue()) {
-                customer = appCustomerService.findById(orderParam.getUserId());
-            } else if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
-                customer = appCustomerService.findById(orderParam.getCustomerId());
-            }
-            for (OrderGoodsVO goodsVO : goodsVOList) {
-                if (hasPriceGoodsIdSet.contains(goodsVO.getGid())) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!",
+
+
+            if (null != goodsList && goodsList.size() > 0) {
+                //获取本品id集合
+                Set<Long> goodsIdSet = new HashSet<>();
+                for (GoodsSimpleInfo goods : goodsList) {
+                    goodsIdSet.add(goods.getId());
+                }
+                //根据本品id集合查询商品信息
+                List<OrderGoodsVO> goodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                        orderParam.getUserId(), orderParam.getIdentityType(), goodsIdSet);
+                //定义当前有唯一价格的本品id集合
+                Set<Long> hasPriceGoodsIdSet = new HashSet<>();
+                //循环处理查询到的商品信息
+                for (OrderGoodsVO goodsVO : goodsVOList) {
+                    if (hasPriceGoodsIdSet.contains(goodsVO.getGid())) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!",
+                                null);
+                        logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    } else {
+                        hasPriceGoodsIdSet.add(goodsVO.getGid());
+                    }
+                    for (GoodsSimpleInfo info : goodsList) {
+                        if (info.getId().equals(goodsVO.getGid())) {
+                            goodsVO.setQty(info.getQty());
+                        }
+                    }
+                    //加总商品零售价总额
+                    goodsTotalPrice += goodsVO.getRetailPrice() * goodsVO.getQty();
+                    //将本品数量加入库存检核map
+                    if (inventoryCheckMap.containsKey(goodsVO.getGid())) {
+                        inventoryCheckMap.put(goodsVO.getGid(), inventoryCheckMap.get(goodsVO.getGid()) + goodsVO.getQty());
+                    } else {
+                        inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
+                    }
+                    //设置本品会员折扣
+                    if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                        memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                    } else {
+                        if (null == customer) {
+                            throw new OrderCustomerException("订单顾客信息异常!");
+                        }
+                        if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                            memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                        } else {
+                            memberDiscount += 0D;
+                        }
+                    }
+
+                    OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
+                    goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
+                    goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
+                    goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
+                    goodsInfo.setVIPPrice(goodsVO.getVipPrice());
+                    goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
+                    goodsInfo.setIsPriceShare(Boolean.FALSE);
+                    goodsInfo.setSharePrice(0D);
+                    goodsInfo.setIsReturnable(Boolean.TRUE);
+                    if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                        goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                    } else {
+                        if (null == customer) {
+                            throw new OrderCustomerException("订单顾客信息异常!");
+                        }
+                        if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                            goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                        } else {
+                            goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                        }
+                    }
+                    goodsInfo.setSku(goodsVO.getSku());
+                    goodsInfo.setSkuName(goodsVO.getSkuName());
+                    goodsInfo.setOrderQuantity(goodsVO.getQty());
+                    goodsInfo.setShippingQuantity(0);
+                    goodsInfo.setReturnableQuantity(goodsVO.getQty());
+                    goodsInfo.setReturnQuantity(0);
+                    goodsInfo.setReturnPriority(1);
+                    goodsInfo.setPriceItemId(goodsVO.getPriceItemId());
+                    goodsInfo.setCompanyFlag(goodsVO.getCompanyFlag());
+                    orderGoodsInfoList.add(goodsInfo);
+                }
+
+                if (goodsIdSet.size() != hasPriceGoodsIdSet.size()) {
+                    StringBuilder ids = new StringBuilder();
+                    for (Long id : goodsIdSet) {
+                        if (!hasPriceGoodsIdSet.contains(id)) {
+                            ids.append(id).append(",");
+                        }
+                    }
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为 '" + ids + "'的商品在当前门店下没有找到价格!",
                             null);
                     logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                    //throw new RuntimeException("商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!");
-                } else {
-                    hasPriceGoodsIdSet.add(goodsVO.getGid());
+                    //throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
                 }
-                for (GoodsSimpleInfo info : goodsList) {
-                    if (info.getId().equals(goodsVO.getGid())) {
-                        goodsVO.setQty(info.getQty());
-                    }
-                }
-                //加总商品零售价总额
-                goodsTotalPrice += goodsVO.getRetailPrice() * goodsVO.getQty();
-                if (inventoryCheckMap.containsKey(goodsVO.getGid())) {
-                    inventoryCheckMap.put(goodsVO.getGid(), inventoryCheckMap.get(goodsVO.getGid()) + goodsVO.getQty());
-                } else {
-                    inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
-                }
-                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
-                    memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
-                } else {
-                    if (null == customer) {
-                        throw new OrderCustomerException("订单顾客信息异常!");
-                    }
-                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
-                        memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
-                    } else {
-                        memberDiscount = 0D;
-                    }
-                }
-
-                OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
-                goodsInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
-                goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
-                goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
-                goodsInfo.setVIPPrice(goodsVO.getVipPrice());
-                goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
-                goodsInfo.setIsPriceShare(Boolean.FALSE);
-                goodsInfo.setSharePrice(0D);
-                goodsInfo.setIsReturnable(Boolean.TRUE);
-                if (orderParam.getIdentityType() == AppIdentityType.DECORATE_MANAGER.getValue()) {
-                    goodsInfo.setReturnPrice(goodsVO.getVipPrice());
-                } else {
-                    if (null == customer) {
-                        throw new OrderCustomerException("订单顾客信息异常!");
-                    }
-                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
-                        goodsInfo.setReturnPrice(goodsVO.getVipPrice());
-                    } else {
-                        goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
-                    }
-                }
-                goodsInfo.setSku(goodsVO.getSku());
-                goodsInfo.setSkuName(goodsVO.getSkuName());
-                goodsInfo.setOrderQuantity(goodsVO.getQty());
-                goodsInfo.setShippingQuantity(0);
-                goodsInfo.setReturnableQuantity(goodsVO.getQty());
-                goodsInfo.setReturnQuantity(0);
-                goodsInfo.setReturnPriority(1);
-                goodsInfo.setPriceItemId(goodsVO.getPrice_item_id());
-                goodsInfo.setCompanyFlag(goodsVO.getCompanyFlag());
-                orderGoodsInfoList.add(goodsInfo);
-            }
-            if (goodsIdSet.size() != hasPriceGoodsIdSet.size()) {
-                StringBuilder ids = new StringBuilder();
-                for (Long id : goodsIdSet) {
-                    if (!hasPriceGoodsIdSet.contains(id)) {
-                        ids.append(id).append(",");
-                    }
-                }
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为 '" + ids + "'的商品在当前门店下没有找到价格!",
-                        null);
-                logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-                //throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
             }
 
             //********* 处理订单账务相关信息 *********

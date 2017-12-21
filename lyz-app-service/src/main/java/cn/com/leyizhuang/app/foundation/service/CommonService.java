@@ -31,7 +31,7 @@ public interface CommonService {
 
     AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit);
 
-    void updateCustomerSignTimeAndCustomerLeBiByUserId(Long userId, Integer identityType);
+    void customerSign(Long userId, Integer identityType);
 
 
     void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);

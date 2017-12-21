@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
-import cn.com.leyizhuang.app.core.utils.BeanUtils;
-import cn.com.leyizhuang.app.core.utils.RandomUtil;
-import cn.com.leyizhuang.app.core.utils.SmsUtils;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -18,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -77,6 +75,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Resource
     private PaymentDataService paymentDataService;
+
+    @Resource
+    private LeBiVariationLogService leBiVariationLogService;
 
 
     @Override
@@ -146,12 +147,46 @@ public class CommonServiceImpl implements CommonService {
         return customer;
     }
 
-    @Transactional
+
     @Override
-    public void updateCustomerSignTimeAndCustomerLeBiByUserId(Long userId, Integer identityType) {
+    @Transactional(rollbackFor = Exception.class)
+    public void customerSign(Long userId, Integer identityType) {
         if (null != userId) {
-            customerService.addLeBiQuantityByUserIdAndIdentityType(userId, identityType);
-            customerService.updateLastSignTimeByCustomerId(userId, new Date());
+            AppCustomer customer = customerService.findById(userId);
+            if (null != customer) {
+                //更新顾客乐币数量并添加乐币变动日志
+                customerService.addLeBiQuantityByUserIdAndIdentityType(userId, identityType, AppConstant.SIGN_AWARD_LEBI_QTY);
+
+                CustomerLeBiVariationLog customerLeBiVariationLog = new CustomerLeBiVariationLog();
+                customerLeBiVariationLog.setCusId(userId);
+                customerLeBiVariationLog.setLeBiVariationType(LeBiVariationType.SIGN);
+                customerLeBiVariationLog.setVariationQuantity(AppConstant.SIGN_AWARD_LEBI_QTY);
+                customerLeBiVariationLog.setVariationTime(new Date());
+                customerLeBiVariationLog.setAfterVariationQuantity(customerService.findLeBiQuantityByUserIdAndIdentityType(userId, identityType));
+                leBiVariationLogService.addCustomerLeBiVariationLog(customerLeBiVariationLog);
+
+                //更新顾客签到信息并添加签到日志
+                int consecutiveSignDays = 0;
+                if (null != customer.getLastSignTime()) {
+                    int differDays = DateUtil.getDifferDays(customer.getLastSignTime(), new Date());
+                    if (!(differDays > 1)) {
+                        consecutiveSignDays = (null != customer.getConsecutiveSignDays() ? customer.getConsecutiveSignDays() : 0) + 1;
+                    } else {
+                        consecutiveSignDays = 1;
+                    }
+                } else {
+                    consecutiveSignDays = 1;
+                }
+                customerService.updateCustomerSignInfoByCustomerId(userId, new Date(), consecutiveSignDays);
+
+                CusSignLog log = new CusSignLog();
+                log.setAwardLebiQty(1);
+                log.setCusId(userId);
+                log.setCusName(customer.getName());
+                log.setDescription("赏你" + AppConstant.SIGN_AWARD_LEBI_QTY + "乐币!");
+                log.setSignTime(new Date());
+                customerService.saveSignLog(log);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import com.github.pagehelper.PageInfo;
@@ -53,7 +54,7 @@ public interface AppCustomerService {
 
     Map<String, Object> findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney);
 
-    void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType);
+    void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType,int qty);
 
     void modifyCustomerMobileByUserId(Long userId, String mobile);
 
@@ -61,7 +62,7 @@ public interface AppCustomerService {
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
-    void updateLastSignTimeByCustomerId(Long cusId, Date date);
+    void updateCustomerSignInfoByCustomerId(Long cusId, Date date,int consecutiveSignDays);
 
     int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Timestamp version);
 
@@ -115,4 +116,6 @@ public interface AppCustomerService {
     Integer countSignAwardLebiQtyByCusId(Long cusId);
 
     PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
+
+    void saveSignLog(CusSignLog log);
 }

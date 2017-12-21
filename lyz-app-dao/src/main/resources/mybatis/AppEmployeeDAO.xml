@@ -240,7 +240,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         SET
             credit_limit_available = credit_limit_available + #{credit}
         WHERE
-        emp_id = #{userId}
+            emp_id = #{userId}
     </update>
 
     <select id="findSellerByStoreIdAndIdentityType"
@@ -273,6 +273,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             resultType="cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney">
         SELECT
             create_time,
+            last_update_time,
             emp_id,
             credit_limit,
             is_active,

@@ -53,7 +53,7 @@ public class OrderGoodsVO {
     /**
      *  价目表行id
      */
-    private Long price_item_id;
+    private Long priceItemId;
     /**
      * 数量
      */

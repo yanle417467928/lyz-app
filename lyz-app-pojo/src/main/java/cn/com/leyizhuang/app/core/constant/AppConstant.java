@@ -32,4 +32,9 @@ public class AppConstant {
      * 乐观锁重试次数
      */
     public static final int OPTIMISTIC_LOCK_RETRY_TIME = 3;
+
+    /**
+     * 签到赠送乐币数量
+     */
+    public static final int SIGN_AWARD_LEBI_QTY = 1;
 }

@@ -198,7 +198,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber) {
         OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
         OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
@@ -209,7 +209,6 @@ public class AppOrderServiceImpl implements AppOrderService {
         Date repaymentTime = new Date();
         orderBillingPaymentDetails.setPayTime(repaymentTime);
         orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
-        //orderBillingPaymentDetails.setCurrencyType("实际货币");
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);
         orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
@@ -530,7 +529,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status,LogisticStatus deliveryStatus,String orderNumber) {
+    public void updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus status, LogisticStatus deliveryStatus, String orderNumber) {
         orderDAO.updateOrderStatusAndDeliveryStatusByOrderNo(status, deliveryStatus, orderNumber);
     }
 

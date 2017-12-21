@@ -196,11 +196,11 @@
         WHERE cus_id = #{userId}
     </select>
 
-    <update id="updateLeBiQuantityByUserId" parameterType="java.lang.Long">
+    <update id="updateLeBiQuantityByUserId">
         UPDATE
             cus_lb
         SET
-            quantity = quantity + 1
+            quantity = quantity + #{qty}
         WHERE
             cus_id = #{userId}
     </update>
@@ -259,9 +259,10 @@
         INSERT INTO cus_pre_deposit (cus_id, balance) VALUES (#{cusId}, #{balance})
     </insert>
 
-    <update id="updateLastSignTimeByCustomerId">
+    <update id="updateCustomerSignInfoByCustomerId">
         UPDATE cus_customer
-        SET last_sign_time = #{date}
+        SET last_sign_time        = #{date},
+            consecutive_sign_days = #{consecutiveSignDays}
         WHERE cus_id = #{cusId}
     </update>
 
@@ -545,5 +546,10 @@
         FROM cus_sign_log
         WHERE cus_id = #{cusId}
     </select>
+
+    <insert id="saveSignLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog">
+        INSERT INTO cus_sign_log (cus_id, cus_name, sign_time, award_lebi_qty, description)
+        VALUES (#{cusId}, #{cusName}, #{signTime}, #{awardLebiQty}, #{description})
+    </insert>
 
 </mapper>
