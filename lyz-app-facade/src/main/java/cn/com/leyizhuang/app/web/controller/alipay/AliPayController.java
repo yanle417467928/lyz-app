@@ -333,13 +333,11 @@ public class AliPayController {
     }
 
     /**
-     * @param
-     * @return
-     * @throws
-     * @title 支付宝欠款还款
-     * @descripe
-     * @author GenerationRoad
-     * @date 2017/11/20
+     *  支付宝欠款还款
+     * @param userId    用户id
+     * @param identityType  用户类型
+     * @param orderNumber   订单号
+     * @return  支付宝客户端调用相关信息
      */
     @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> aliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
@@ -363,7 +361,7 @@ public class AliPayController {
         }
         OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
         if (null == orderArrearsAuditDO) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为查询到此欠款记录！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此欠款记录！", null);
             logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

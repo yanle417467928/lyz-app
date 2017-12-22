@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaOrderDAO">
+
+    <select id="findMaOrderVOAll" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+            obi.ord_no orderNumber,
+            obi.create_time createTime,
+            obi.creator_phone meberNumber,
+            obi.creator_name meberName,
+            obi.`status` 'status',
+            obi.delivery_type deliveryType,
+            s.store_name storeName,
+            obd.amount_payable orderPrice
+        FROM
+            ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+         WHERE
+        obi.order_subject_type = 'STORE'
+        ORDER BY
+            obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderVOByCityId" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+	    AND obi.city_id = #{cityId}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderVOByStoreId" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND obi.store_id = #{storeId}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderVOByStoreIdAndCityIdAndDeliveryType"
+            resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        <if test="deliveryType != null">
+            AND obi.delivery_type = #{deliveryType}
+        </if>
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderVOByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND obi.ord_no LIKE concat(concat('%',#{orderNumber}),'%')
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderVOByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest"
+            resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        <if test="appDeliveryType != null">
+            AND obi.delivery_type = #{appDeliveryType}
+        </if>
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND obi.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND obi.create_time &lt;= #{endTime}
+        </if>
+        <if test="memberName != null and memberName != ''">
+            AND obi.customer_name LIKE concat(concat('%',#{memberName}),'%')
+        </if>
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="sellerName != null and sellerName != ''">
+            AND obi.sales_consult_name LIKE concat(concat('%',#{sellerName}),'%')
+        </if>
+        <if test="memberPhone != null and memberPhone != ''">
+            AND obi.customer_phone LIKE concat(concat('%',#{memberPhone}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findCompanyOrderAll" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'FIT'
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findCompanyOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'FIT'
+        AND obi.ord_no LIKE concat(concat('%',#{orderNumber}),'%')
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findCompanyOrderByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
+            resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'FIT'
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND obi.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND obi.create_time &lt;= #{endTime}
+        </if>
+        <if test="creatorName != null and creatorName != ''">
+            AND obi.creator_name LIKE concat(concat('%',#{creatorName}),'%')
+        </if>
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="creatorPhone != null and creatorPhone != ''">
+            AND obi.creator_phone LIKE concat(concat('%',#{creatorPhone}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findPendingShipmentOrder" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        	obi.`status` = 'PENDING_SHIPMENT'
+        AND obi.delivery_type = 'SELF_TAKE'
+        ORDER BY
+        obi.create_time DESC
+    </select>
+</mapper>

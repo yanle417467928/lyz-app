@@ -44,4 +44,16 @@ public interface MaStoreDAO {
 
     List<DecorativeCompanyInfo> findDecorativeCreditByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId);
 
+    /**
+     * 获取装饰公司门店列表
+     * @return  门店列表
+     */
+    List<StoreVO> findCompanyStoresList();
+
+    /**
+     * 根据城市获取装饰公司门店列表
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId);
 }
