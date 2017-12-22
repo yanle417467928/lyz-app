@@ -9,8 +9,19 @@ import javax.jws.WebService;
 /**
  * @author Created on 2017-12-19 11:24
  **/
-@WebService(targetNamespace = "http://cn.com.leyizhuang.app.remote.webservice.service", endpointInterface = "cn.com.leyizhuang.app.remote.webservice.service.ReleaseWMSService")
+@WebService(targetNamespace = "http://cn.com.leyizhuang.app.remote.webservice.service",
+        endpointInterface = "cn.com.leyizhuang.app.remote.webservice.service.ReleaseWMSService")
 public class ReleaseWMSServiceImpl implements ReleaseWMSService {
+
+    @Override
+    public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML) {
+
+
+        return null;
+    }
+
+
+    //***************************下面是调用测试***********************************
     @Override
     public String getName(String userId) {
         return "liyd-" + userId;

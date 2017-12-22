@@ -54,7 +54,7 @@ public class TestClient {
         order.setUnpayed(0D);
         order.setTotalGoodsPrice(30.0);
         order.setAgencyRefund(0.00);
-        appToWmsOrderService.save(order);
+        appToWmsOrderService.saveAtwRequisitionOrder(order);
         callWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
     }
 }

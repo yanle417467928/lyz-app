@@ -30,6 +30,7 @@ public class AtwRequisitionOrder {
     private String diySiteAddress;
     /**
      * 门店编码
+     * diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
      */
     private String diySiteId;
     /**

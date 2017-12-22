@@ -21,42 +21,42 @@ public interface AppToWmsOrderService {
      *
      * @param atwCancelOrderRequest 取消订单单据
      */
-    void save(AtwCancelOrderRequest atwCancelOrderRequest);
+    void saveAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest);
 
     /**
      * 保存要货单单据
      *
      * @param atwRequisitionOrder 要货单单据
      */
-    void save(AtwRequisitionOrder atwRequisitionOrder);
+    void saveAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder);
 
     /**
      * 保存要货单商品单据
      *
      * @param atwRequisitionOrderGoods 要货单商品单据
      */
-    void save(AtwRequisitionOrderGoods atwRequisitionOrderGoods);
+    void saveAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods);
 
     /**
      * 修改取消订单单据
      *
      * @param atwCancelOrderRequest 取消订单单据
      */
-    void modify(AtwCancelOrderRequest atwCancelOrderRequest);
+    void modifyAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest);
 
     /**
      * 修改要货单单据
      *
      * @param atwRequisitionOrder 要货单单据
      */
-    void modify(AtwRequisitionOrder atwRequisitionOrder);
+    void modifyAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder);
 
     /**
      * 修改要货单商品单据
      *
      * @param atwRequisitionOrderGoods 要货单商品单据
      */
-    void modify(AtwRequisitionOrderGoods atwRequisitionOrderGoods);
+    void modifyAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods);
 
     /**
      * 查找取消订单单据

@@ -27,37 +27,37 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
 
     @Override
     @Transactional
-    public void save(AtwCancelOrderRequest atwCancelOrderRequest) {
+    public void saveAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest) {
         appToWmsOrderDAO.saveAtwCancelOrderRequest(atwCancelOrderRequest);
     }
 
     @Override
     @Transactional
-    public void save(AtwRequisitionOrder atwRequisitionOrder) {
+    public void saveAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder) {
         appToWmsOrderDAO.saveAtwRequisitionOrder(atwRequisitionOrder);
     }
 
     @Override
     @Transactional
-    public void save(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
+    public void saveAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
         appToWmsOrderDAO.saveAtwRequisitionOrderGoods(atwRequisitionOrderGoods);
     }
 
     @Override
     @Transactional
-    public void modify(AtwCancelOrderRequest atwCancelOrderRequest) {
+    public void modifyAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest) {
         appToWmsOrderDAO.updateAtwCancelOrderRequest(atwCancelOrderRequest);
     }
 
     @Override
     @Transactional
-    public void modify(AtwRequisitionOrder atwRequisitionOrder) {
+    public void modifyAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder) {
         appToWmsOrderDAO.updateAtwRequisitionOrder(atwRequisitionOrder);
     }
 
     @Override
     @Transactional
-    public void modify(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
+    public void modifyAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
         appToWmsOrderDAO.updateAtwRequisitionOrderGoods(atwRequisitionOrderGoods);
     }
 

@@ -28,10 +28,6 @@ public class AppXmlUtil {
      * @return XML数据
      */
     public static String getRequisitionOrderXml(AtwRequisitionOrder requisitionOrder) {
-        String createTime = null;
-        if (requisitionOrder.getCreateTime() != null) {
-            createTime = DateUtil.formatDate(requisitionOrder.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
-        }
         String orderTime = null;
         if (requisitionOrder.getOrderTime() != null) {
             orderTime = DateUtil.formatDate(requisitionOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
@@ -39,7 +35,7 @@ public class AppXmlUtil {
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
                 "<ID>" + requisitionOrder.getId() + "</ID>" +
-                "<CANCEL_TIME>" + createTime + "</CANCEL_TIME>" +
+                "<CANCEL_TIME></CANCEL_TIME>" +
                 "<CHECK_TIME></CHECK_TIME>" +
                 "<DIY_SITE_ADDRESS>" + requisitionOrder.getDiySiteAddress() + "</DIY_SITE_ADDRESS>" +
                 "<DIY_SITE_ID>" + requisitionOrder.getDiySiteId() + "</DIY_SITE_ID>" +
