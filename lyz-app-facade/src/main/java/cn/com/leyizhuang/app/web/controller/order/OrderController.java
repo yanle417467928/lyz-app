@@ -1158,6 +1158,7 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
