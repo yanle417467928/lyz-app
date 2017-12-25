@@ -3,11 +3,12 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaClearTempCreditDAO">
 
     <select id="getCron" resultType="java.lang.String">
-         select cron_express from cron  WHERE is_open = 1 limit 1
+         select cron_express from timed_task  WHERE is_open = 1 limit 1
     </select>
 
     <update id="update" >
-    update cron
+    update
+        timed_task
     SET
     <if test="cronTime != null" >
         cron_express = #{cronTime}

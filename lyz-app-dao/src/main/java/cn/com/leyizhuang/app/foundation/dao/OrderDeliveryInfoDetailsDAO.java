@@ -70,4 +70,20 @@ public interface OrderDeliveryInfoDetailsDAO {
      */
     OrderDeliveryInfoDetails findByOrderNumberAndLogisticStatus(@Param("orderNumber")String orderNumber,
                                                                 @Param("logisticStatus")LogisticStatus logisticStatus);
+
+    /**
+     * 获取未读的物流信息条数
+     *
+     * @param userId       id
+     * @param identityType 身份
+     * @return 未读数
+     */
+    int countUnreadLogisticsMessage(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
+
+    /**
+     * 修改物流信息
+     *
+     * @param orderDeliveryInfoDetails 物流信息
+     */
+    void modifyOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails);
 }

@@ -20,6 +20,7 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Autowired
     private OrderDeliveryInfoDetailsDAO orderDeliveryInfoDetailsDAO;
+
     @Override
     public void addOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
         orderDeliveryInfoDetailsDAO.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
@@ -79,5 +80,15 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId) {
         return orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(userId);
+    }
+
+    @Override
+    public int countUnreadLogisticsMessage(Long userId, Integer identityType) {
+        return orderDeliveryInfoDetailsDAO.countUnreadLogisticsMessage(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    }
+
+    @Override
+    public void modifyOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
+        orderDeliveryInfoDetailsDAO.modifyOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
     }
 }

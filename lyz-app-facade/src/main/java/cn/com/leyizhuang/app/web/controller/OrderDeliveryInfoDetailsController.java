@@ -125,6 +125,9 @@ public class OrderDeliveryInfoDetailsController {
             //创建返回list
             List<LogisticsMessageResponse> logisticsMessageResponseList = new ArrayList<>();
             for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList) {
+                //修改已读状态
+                orderDeliveryInfoDetails.setIsRead(true);
+                orderDeliveryInfoDetailsService.modifyOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
                 //创建返回类
                 LogisticsMessageResponse logisticsMessageResponse = new LogisticsMessageResponse();
                 //设置

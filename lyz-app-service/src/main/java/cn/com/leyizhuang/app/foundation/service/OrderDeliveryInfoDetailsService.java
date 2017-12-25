@@ -67,4 +67,20 @@ public interface OrderDeliveryInfoDetailsService {
      * @return  已完成单列表
      */
     List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId);
+
+    /**
+     * 获取未读的物流信息条数
+     *
+     * @param userId       id
+     * @param identityType 身份
+     * @return 未读数
+     */
+    int countUnreadLogisticsMessage(Long userId, Integer identityType);
+
+    /**
+     * 修改物流明细
+     *
+     * @param orderDeliveryInfoDetails 物流明细
+     */
+    void modifyOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails);
 }
