@@ -105,7 +105,11 @@ public class PhotoOrderController {
                         // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
                         if (!"".equals(myFileName.trim())) {
                             // 定义上传路径
-                            photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
+                            if(!iter.hasNext()){
+                                photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
+                            }else{
+                                photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
+                            }
                         }
                     }
                 }
