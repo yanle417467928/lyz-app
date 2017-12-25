@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -95,7 +93,7 @@ public class AliPayController {
         try {
             String totalFee = CountUtil.retainTwoDecimalPlaces(money);
             String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
-            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, null,identityType, AppApplicationConstant.alipayReturnUrlAsnyc,
+            PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, null, identityType, AppApplicationConstant.alipayReturnUrlAsync,
                     Double.parseDouble(totalFee), PaymentDataStatus.WAIT_PAY, OnlinePayType.ALIPAY, "");
             this.paymentDataService.save(paymentDataDO);
 
@@ -116,7 +114,7 @@ public class AliPayController {
             model.setTotalAmount(totalFee);
             model.setProductCode(AlipayConfig.productCode);
             request.setBizModel(model);
-            request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+            request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
 
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
@@ -180,7 +178,7 @@ public class AliPayController {
         paymentData.setOrderNumber(orderNumber);
         paymentData.setTotalFee(Double.parseDouble(totalFee));
         paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
-        paymentData.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+        paymentData.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
         this.paymentDataService.save(paymentData);
 
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
@@ -200,7 +198,7 @@ public class AliPayController {
         model.setTotalAmount(totalFee);
         model.setProductCode(AlipayConfig.productCode);
         request.setBizModel(model);
-        request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+        request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
@@ -323,7 +321,7 @@ public class AliPayController {
                     }
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("{}", e);
             throw new RuntimeException("支付宝支付回调接口处理失败");
@@ -333,11 +331,12 @@ public class AliPayController {
     }
 
     /**
-     *  支付宝欠款还款
-     * @param userId    用户id
-     * @param identityType  用户类型
-     * @param orderNumber   订单号
-     * @return  支付宝客户端调用相关信息
+     * 支付宝欠款还款
+     *
+     * @param userId       用户id
+     * @param identityType 用户类型
+     * @param orderNumber  订单号
+     * @return 支付宝客户端调用相关信息
      */
     @PostMapping(value = "/repayment/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> aliPayDebtRepayments(Long userId, Integer identityType, String orderNumber) {
@@ -375,7 +374,7 @@ public class AliPayController {
         }
         paymentDataDO.setOrderNumber(orderNumber);
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-        paymentDataDO.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+        paymentDataDO.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
         paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         paymentDataDO.setPaymentTypeDesc(PaymentDataType.REPAYMENT.getDescription());
         paymentDataDO.setTotalFee(Double.parseDouble(totalFee));
@@ -401,7 +400,7 @@ public class AliPayController {
         model.setTotalAmount(totalFee);
         model.setProductCode(AlipayConfig.productCode);
         request.setBizModel(model);
-        request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+        request.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);

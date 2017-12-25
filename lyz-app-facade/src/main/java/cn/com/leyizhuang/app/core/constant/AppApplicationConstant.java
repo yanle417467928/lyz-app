@@ -11,7 +11,7 @@ public class AppApplicationConstant {
     //从配置文件加载值的常量
     public static String imagePath;
     public static String alipayReturnUrl;
-    public static String alipayReturnUrlAsnyc;
+    public static String alipayReturnUrlAsync;
     public static String wechatReturnUrlAsnyc;
     public static String wechatApiClinetCert;
     public static String[] cdnHosts;
@@ -37,11 +37,11 @@ public class AppApplicationConstant {
     }
 
     public String getAlipayReturnUrlAsnyc() {
-        return alipayReturnUrlAsnyc;
+        return alipayReturnUrlAsync;
     }
 
-    public void setAlipayReturnUrlAsnyc(String alipayReturnUrlAsnyc) {
-        AppApplicationConstant.alipayReturnUrlAsnyc = alipayReturnUrlAsnyc;
+    public void setAlipayReturnUrlAsnyc(String alipayReturnUrlAsync) {
+        AppApplicationConstant.alipayReturnUrlAsync = alipayReturnUrlAsync;
     }
 
     public String getWechatReturnUrlAsnyc() {
@@ -103,7 +103,6 @@ public class AppApplicationConstant {
     }
 
 
-
     /**
      * 变更导购时间（天）
      */
@@ -126,7 +125,6 @@ public class AppApplicationConstant {
      * 付清线
      */
     public static final Double PAY_UP_LIMIT = 0D;
-
 
 
 }

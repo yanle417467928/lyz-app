@@ -233,7 +233,7 @@ public class WeChatPayController {
             paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         }
         paymentDataDO.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-        paymentDataDO.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsnyc);
+        paymentDataDO.setNotifyUrl(AppApplicationConstant.wechatReturnUrlAsnyc);
         paymentDataDO.setPaymentType(PaymentDataType.REPAYMENT);
         paymentDataDO.setPaymentTypeDesc(PaymentDataType.REPAYMENT.getDescription());
         paymentDataDO.setTotalFee(Double.parseDouble(totlefee));
