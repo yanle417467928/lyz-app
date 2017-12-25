@@ -149,6 +149,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- spring cloud stream rabbit-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+        <!-- spring boot监控 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -291,6 +297,7 @@
             <systemPath>${basedir}/src/main/resources/lib/protobuf-java-2.5.0.jar
             </systemPath> <!--项目根目录下的lib文件夹下-->
         </dependency>
+
 
     </dependencies>
 
