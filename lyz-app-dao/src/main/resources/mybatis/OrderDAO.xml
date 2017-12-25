@@ -436,11 +436,11 @@
     <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         INSERT INTO ord_goods_info
         (
-            oid, ord_no, goods_line_type, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
+            oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
             is_price_share, share_price, return_price, is_returnable, return_priority, order_qty, shipping_qty,
             return_qty, returnable_qty, settlement_price, price_item_id, company_flag
         )
-        VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
+        VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
                         #{isPriceShare}, #{sharePrice},
             #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity}, #{shippingQuantity},
