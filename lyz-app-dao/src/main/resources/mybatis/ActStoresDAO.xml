@@ -52,4 +52,13 @@
         FROM act_stores
     </select>
 
+    <select id="queryListByActBaseId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_stores where act_id = #{actBaseId}
+    </select>
+
+    <delete id="deleteByActBaseId" parameterType="java.lang.Long">
+        DELETE FROM act_stores where act_id = #{actBaseId}
+    </delete>
 </mapper>

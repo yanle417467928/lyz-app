@@ -23,4 +23,6 @@ public interface ActGiftDetailsDAO {
     ActGiftDetailsDO queryById(@Param("id") Long id);
 
     List<ActGiftDetailsDO> queryByActId(@Param("actId") Long actId);
+
+    void deleteByActBaseId(@Param("actBaseId") Long actBaseId);
 }

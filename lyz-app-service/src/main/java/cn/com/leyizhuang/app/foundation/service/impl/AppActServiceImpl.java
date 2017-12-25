@@ -1,20 +1,23 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.ActStatusType;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.*;
 import cn.com.leyizhuang.app.foundation.pojo.activity.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppActService;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -29,6 +32,9 @@ public class AppActServiceImpl implements AppActService {
     private static final Logger logger = LoggerFactory.getLogger(AppActServiceImpl.class);
     @Autowired
     private ActBaseDAO actBaseDAO;
+
+    @Autowired
+    private GoodsDAO goodsDAO;
 
     @Autowired
     private ActGoodsMappingDAO actGoodsMappingDAO;
@@ -51,15 +57,21 @@ public class AppActServiceImpl implements AppActService {
     @Autowired
     private GoodsPriceService goodsPriceService;
 
+    @Autowired
+    private CityService cityService;
+
     @Override
     public List<ActBaseDO> queryList() {
         return actBaseDAO.queryList();
     }
 
+
+
     /**
      * 检查促销是否过期 未过期：true; 过期：false
      * @return
      */
+    @Override
     public Boolean checkActOutTime(List<Long> actIdList){
         Boolean flag = true;
         LocalDateTime now = LocalDateTime.now();
@@ -143,6 +155,9 @@ public class AppActServiceImpl implements AppActService {
             goodsPool.put(goods.getSku(), goods);
         }
 
+        // 顾客身份
+        AppCustomerType customerType = null;
+
         if (userType.getValue() == 6) {
             // 顾客
             AppCustomer customer = appCustomerService.findById(userId);
@@ -151,63 +166,7 @@ public class AppActServiceImpl implements AppActService {
             }
 
             actList = this.getActList(customer, skus);
-
-            //******************* 根据促销类型 计算促销 *************************
-
-            if (actList == null || actList.size() == 0) {
-
-                logger.info("无促销！");
-                return null;
-            }
-            for (ActBaseDO act : actList) {
-                //***************** 普通-满金额-立减 ************
-                if (act.getActType().equals("COMMON_FAMO_SUB")) {
-
-                    // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customer.getCustomerType().getValue());
-
-                    // 满足促销立减金额
-                    if (actualTotalPrice >= act.getFullAmount()) {
-
-                        // 创建一个促销结果
-                        proDiscountList.add(this.getPromotionDiscountResponse(act,actualTotalPrice));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-                //***************** 普通-满金额-赠商品 ************
-                else if (act.getActType().equals("COMMON_FAMO_GOO")) {
-                    // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customer.getCustomerType().getValue());
-
-                    // 满足促销立减金额
-                    if (actualTotalPrice >= act.getFullAmount()) {
-
-                        int enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
-                        proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-                //***************** 普通-满数量-赠商品 ************
-                else if (act.getActType().equals("COMMON_FQTY_GOO")) {
-                    // 判断本品是否满足数量要求 返回参与此促销次数
-                    Boolean flag = true;
-                    int enjoyTimes = 0;
-                    while(flag){
-                        flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber());
-                        if(flag){
-                            enjoyTimes++;
-                        }
-                    }
-                    if (enjoyTimes > 0) {
-                        proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-
-            }
+            customerType = customer.getCustomerType();
         } else if (userType.getValue() == 0) {
             // 导购
             AppEmployee employee = appEmployeeService.findById(userId);
@@ -216,63 +175,85 @@ public class AppActServiceImpl implements AppActService {
             }
 
             actList = this.getActList(employee, skus);
-            if (actList == null || actList.size() == 0) {
-
-                logger.info("无促销！");
-                return null;
-            }
-            //******************* 根据促销类型 计算促销 *************************
-
-            for (ActBaseDO act : actList) {
-                //***************** 普通-满金额-立减 ************
-                if (act.getActType().equals("COMMON_FAMO_SUB")) {
-
-                    // 参与活动商品总额 导购以会员价计算
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, "MEMBER");
-
-                    // 满足促销立减金额
-                    if (actualTotalPrice >= act.getFullAmount()) {
-
-                        // 创建一个促销结果
-                        proDiscountList.add(this.getPromotionDiscountResponse(act,actualTotalPrice));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-                //***************** 普通-满金额-赠商品 ************
-                else if (act.getActType().equals("COMMON_FAMO_GOO")) {
-                    // 参与活动商品总额
-                    Double actualTotalPrice = countActualTotalPrice(goodsPool, act, "MEMBER");
-
-                    // 满足促销立减金额
-                    if (actualTotalPrice >= act.getFullAmount()) {
-                        int enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
-                        proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-                //***************** 普通-满数量-赠商品 ************
-                else if (act.getActType().equals("COMMON_FQTY_GOO")) {
-                    // 判断本品是否满足数量要求 返回参与此促销次数
-                    Boolean flag = true;
-                    int enjoyTimes = 0;
-                    while(flag){
-                        flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber());
-                        if(flag){
-                            enjoyTimes++;
-                        }
-                    }
-
-                    if (enjoyTimes > 0) {
-                        proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
-                        // 结束本次促销循环
-                        continue;
-                    }
-                }
-            }
+            customerType = AppCustomerType.MEMBER;
         }
 
+        if (actList == null || actList.size() == 0) {
+
+            logger.info("无促销！");
+            return null;
+        }
+
+        //******************* 根据促销类型 计算促销 *************************
+        for (ActBaseDO act : actList) {
+            //***************** 普通-满金额-立减 ************
+            if (act.getActType().equals("COMMON_FAMO_SUB")) {
+
+                // 参与活动商品总额
+                Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customerType);
+
+                // 满足促销立减金额
+                if (actualTotalPrice >= act.getFullAmount()) {
+                    int enjoyTimes = 1;
+                    if(act.getIsDouble()){
+                        enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
+                    }
+                    // 创建一个促销结果
+                    proDiscountList.add(this.getPromotionDiscountResponse(act,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
+            //***************** 普通-满金额-赠商品 ************
+            else if (act.getActType().equals("COMMON_FAMO_GOO")) {
+                // 参与活动商品总额
+                Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customerType);
+
+                // 满足促销金额
+                if (actualTotalPrice >= act.getFullAmount()) {
+
+                    int enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
+                    proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
+            //***************** 普通-满数量-赠商品 ************
+            else if (act.getActType().equals("COMMON_FQTY_GOO")) {
+                // 判断本品是否满足数量要求 得出参与此促销次数
+                Boolean flag = true;
+                int enjoyTimes = 0;
+                while(flag){
+                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber());
+                    if(flag){
+                        enjoyTimes++;
+                    }
+                }
+                if (enjoyTimes > 0) {
+                    proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
+            //***************** 普通-满数量-立减 ************
+            else if (act.getActType().equals("COMMON_FQTY_SUB")){
+                // 判断本品是否满足数量要求 得出参与此促销次数
+                Boolean flag = true;
+                int enjoyTimes = 0;
+                while(flag){
+                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber());
+                    if(flag){
+                        enjoyTimes++;
+                    }
+                }
+                if (enjoyTimes > 0) {
+                    proDiscountList.add(this.getPromotionDiscountResponse(act,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
+
+        }
 
         // 最后优惠金额，赠品，等集合装入促销结果类
         result.setPromotionDiscountList(proDiscountList);
@@ -282,7 +263,7 @@ public class AppActServiceImpl implements AppActService {
     }
 
     /*
-       返回商品 参与的促销 (顾客)
+       返回商品参与的促销 (顾客)
      */
     private List<ActBaseDO> getActList(AppCustomer cus, List<String> skus) {
         // 创建一个促销 集合
@@ -301,7 +282,7 @@ public class AppActServiceImpl implements AppActService {
 
 
     /*
-        返回商品 参与的促销 (导购)
+        返回商品参与的促销 (导购)
      */
     private List<ActBaseDO> getActList(AppEmployee employee, List<String> skus) {
         // 创建一个促销 集合
@@ -323,7 +304,7 @@ public class AppActServiceImpl implements AppActService {
      *
      * @return
      */
-    private Double countActualTotalPrice(Map<String, OrderGoodsSimpleResponse> goodsPool, ActBaseDO act, String priceType) {
+    private Double countActualTotalPrice(Map<String, OrderGoodsSimpleResponse> goodsPool, ActBaseDO act, AppCustomerType customerType) {
 
         // 实际支付总额
         Double actualTotalPrice = 0.00;
@@ -341,9 +322,9 @@ public class AppActServiceImpl implements AppActService {
             if (skuList.contains(itKey)) {
                 OrderGoodsSimpleResponse goods = itEntry.getValue();
                 if (goods != null) {
-                    if (priceType.equals("MEMBER")) {// 会员
+                    if (customerType.equals(AppCustomerType.MEMBER)) {// 会员
                         actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getVipPrice(),goods.getGoodsQty()),actualTotalPrice);
-                    } else if (priceType.equals("RETAIL")) {// 零售
+                    } else if (customerType.equals(AppCustomerType.RETAIL)) {// 零售
                         actualTotalPrice = CountUtil.add(CountUtil.mul(goods.getRetailPrice(),goods.getGoodsQty()),actualTotalPrice);
                     }
                 }
@@ -493,17 +474,9 @@ public class AppActServiceImpl implements AppActService {
     /**
      * 返回优惠立减结果
      * @param act
-     * @param actualTotalPrice
      * @return
      */
-    private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act,Double actualTotalPrice){
-        // 参与次数
-        int enjoyTimes = 1;
-
-        // 此促销是否可以重复参与
-        if(act.getIsDouble()){
-            enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
-        }
+    private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act,int enjoyTimes){
 
         // 创建一个促销结果
         PromotionDiscountListResponse proDiscount = new PromotionDiscountListResponse();
@@ -575,4 +548,196 @@ public class AppActServiceImpl implements AppActService {
         return actGoodsMappingDAO.insertBatch(goodsList);
     }
 
+
+    /******************************************************************** 华丽的分割线 ****************************************************************/
+
+    /**
+     * 分页查询
+     * @param page
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @Override
+    public PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size, String keywords,String status) {
+
+        PageHelper.startPage(page, size);
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryByKeywords(keywords,status);
+        return new PageInfo<>(actBaseDOList);
+    }
+
+    /**
+     * 保存促销
+     * @param baseDO
+     * @param goodsList
+     * @param giftList
+     * @param subAmount
+     */
+    @Transactional
+    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount,List<ActStoreDO> storeDOList){
+        String cityName = cityService.findById(baseDO.getCityId()).getName();
+        baseDO.setCityName(cityName);
+
+        if(giftList != null && giftList.size() > 0){
+            Integer totalQty = 0;
+            for (ActGiftDetailsDO item: giftList) {
+                totalQty += item.getGiftFixedQty();
+            }
+            baseDO.setGiftChooseNumber(totalQty);
+        }
+
+        if(goodsList != null && goodsList.size() > 0){
+            Integer totalQty = 0;
+            for (ActGoodsMappingDO item: goodsList) {
+                totalQty += item.getQty();
+            }
+            baseDO.setFullNumber(totalQty);
+        }
+
+        baseDO.setStatus(ActStatusType.NEW);
+        baseDO.setCreateTime(LocalDateTime.now());
+        // 生成编码
+        String code = baseDO.createCode();
+        baseDO.setActCode(code);
+        actBaseDAO.save(baseDO);
+
+        // 门店和促销映射
+        for (ActStoreDO store : storeDOList) {
+            store.setActId(baseDO.getId());
+            store.setActCode(baseDO.getActCode());
+            actStoresDAO.save(store);
+        }
+
+        //创建本品与促销的映射
+        for (ActGoodsMappingDO item: goodsList) {
+            item.setActId(baseDO.getId());
+            item.setActCode(baseDO.getActCode());
+            actGoodsMappingDAO.save(item);
+        }
+
+        String act_type = baseDO.getActType();
+        if(act_type.contains("SUB")){
+            ActSubAmountDO actSubAmountDO = new ActSubAmountDO();
+            actSubAmountDO.setActId(baseDO.getId());
+            actSubAmountDO.setActCode(baseDO.getActCode());
+            actSubAmountDO.setSubAmount(subAmount);
+
+            actSubAmountDAO.save(actSubAmountDO);
+        }
+        else if (act_type.contains("GOO")){
+            // 创建赠品与促销的映射
+            if(giftList != null && giftList.size() > 0){
+                for (ActGiftDetailsDO item: giftList) {
+                    item.setActId(baseDO.getId());
+                    item.setActCode(baseDO.getActCode());
+
+                    actGiftDetailsDAO.save(item);
+                }
+            }
+        }
+    }
+
+    /**
+     * 更新
+     * @param baseDO
+     * @param goodsList
+     * @param giftList
+     * @param subAmount
+     * @param storeDOList
+     */
+
+    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount,List<ActStoreDO> storeDOList){
+        String cityName = cityService.findById(baseDO.getCityId()).getName();
+        baseDO.setCityName(cityName);
+
+        if(giftList != null && giftList.size() > 0){
+            Integer totalQty = 0;
+            for (ActGiftDetailsDO item: giftList) {
+                totalQty += item.getGiftFixedQty();
+            }
+            baseDO.setFullNumber(totalQty);
+        }
+
+        actBaseDAO.update(baseDO);
+
+        // 修改门店 先删除旧的记录
+        actStoresDAO.deleteByActBaseId(baseDO.getId());
+        for (ActStoreDO store : storeDOList) {
+            store.setActId(baseDO.getId());
+            store.setActCode(baseDO.getActCode());
+            actStoresDAO.save(store);
+        }
+
+        //修改本品 先删除旧的记录
+        actGoodsMappingDAO.deleteByActBaseId(baseDO.getId());
+        for (ActGoodsMappingDO item: goodsList) {
+            item.setActId(baseDO.getId());
+            item.setActCode(baseDO.getActCode());
+            actGoodsMappingDAO.save(item);
+        }
+
+        String act_type = baseDO.getActType();
+        if(act_type.contains("SUB")){
+            // 删除旧记录
+            actSubAmountDAO.deleteByActBaseId(baseDO.getId());
+            ActSubAmountDO actSubAmountDO = new ActSubAmountDO();
+            actSubAmountDO.setActId(baseDO.getId());
+            actSubAmountDO.setActCode(baseDO.getActCode());
+            actSubAmountDO.setSubAmount(subAmount);
+
+            actSubAmountDAO.save(actSubAmountDO);
+        }
+        else if (act_type.contains("GOO")){
+            // 修改赠品 先删除旧记录
+            actGiftDetailsDAO.deleteByActBaseId(baseDO.getId());
+            if(giftList != null && giftList.size() > 0){
+                for (ActGiftDetailsDO item: giftList) {
+                    item.setActId(baseDO.getId());
+                    item.setActCode(baseDO.getActCode());
+
+                    actGiftDetailsDAO.save(item);
+                }
+            }
+        }
+    }
+
+    public ModelMap getModelMapByActBaseId(ModelMap map,Long id){
+        map.addAttribute("actBaseDO",actBaseDAO.queryById(id));
+        map.addAttribute("actStoresDO",actStoresDAO.queryListByActBaseId(id));
+        map.addAttribute("actGoodsMappingDO",actGoodsMappingDAO.queryListByActId(id));
+        map.addAttribute("actGiftDetailsDO",actGiftDetailsDAO.queryByActId(id));
+        map.addAttribute("actSubAmountDO",actSubAmountDAO.queryByActId(id));
+
+        ActBaseDO ActBaseDO = actBaseDAO.queryById(id);
+        List<ActStoreDO> ActStoreDOList = actStoresDAO.queryListByActBaseId(id);
+        List<ActGoodsMappingDO> ActGoodsMappingDOList = actGoodsMappingDAO.queryListByActId(id);
+        List<ActGiftDetailsDO> ActGiftDetailsDOLsit = actGiftDetailsDAO.queryByActId(id);
+        ActSubAmountDO ActSubAmountDOList = actSubAmountDAO.queryByActId(id);
+
+        return map;
+    }
+
+    /**
+     *
+     * 发布促销
+     * @param id
+     */
+    public void publishAct(Long id){
+        ActBaseDO baseDO = actBaseDAO.queryById(id);
+        baseDO.setStatus(ActStatusType.PUBLISH);
+
+        actBaseDAO.update(baseDO);
+    }
+
+    /**
+     *
+     * 失效促销
+     * @param id
+     */
+    public void inValid(Long id){
+        ActBaseDO baseDO = actBaseDAO.queryById(id);
+        baseDO.setStatus(ActStatusType.INVALID);
+
+        actBaseDAO.update(baseDO);
+    }
 }

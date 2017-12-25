@@ -82,4 +82,7 @@
         FROM act_gift_details
     </select>
 
+    <delete id="deleteByActBaseId" parameterType="java.lang.Long">
+        DELETE FROM act_gift_details where act_id = #{actBaseId}
+    </delete>
 </mapper>

@@ -27,6 +27,13 @@ public interface ActBaseDAO{
     List<ActBaseDO> queryByIdList(@Param("ids") List<Long> ids);
 
     /**
+     * 根据关键字返回结果
+     * @param keywords
+     * @return
+     */
+    List<ActBaseDO> queryByKeywords(@Param("keywords") String keywords,@Param("status") String status);
+
+    /**
      *
      * @param skus 商品sku字符串 sku1,sku2,...
      * @param now 当前时间

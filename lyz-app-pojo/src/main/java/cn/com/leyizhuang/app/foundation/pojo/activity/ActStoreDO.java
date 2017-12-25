@@ -35,6 +35,6 @@ public class ActStoreDO implements Serializable{
     private  String storeCode;
 
     // 门店标题
-    private  String storeTilte;
+    private  String storeTitle;
 
 }
