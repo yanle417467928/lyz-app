@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsCategoryDO;
-import cn.com.leyizhuang.app.foundation.vo.GoodsCategoryVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.GoodsCategoryVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface MaGoodsCategoryService {
 
     PageInfo<GoodsCategoryDO> queryPageVO(Integer page, Integer size);
 
-    List<GoodsCategoryVO> findGoodsCategorySelection();
+    List<SimpleGoodsCategoryParam> findGoodsCategorySelection();
 
     PageInfo<GoodsCategoryDO> findGoodsCategoryByPid(Long pid,Integer offset, Integer size);
 

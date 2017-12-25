@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO">
+
+    <resultMap id="CreditMoneyChangeResultMap" type="GuideCreditChangeDetailDO">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time"/>
+        <result property="referenceNumber" column="reference_number"/>
+        <result property="changeTypeDesc" column="change_type_desc"/>
+        <result property="empId" column="emp_id"/>
+        <result property="operatorType" column="operator_type"/>
+        <result property="operatorIp" column="operator_ip"/>
+        <result property="changeType" column="change_type"/>
+        <association property="tempCreditChangeId" javaType="GuideTempCreditChange">
+            <id property="id" column="id" />
+            <result property="tempCreditLimitChangeAmount" column="temp_credit_limit_change_amount"/>
+            <result property="tempCreditLimitAfterChange" column="temp_credit_limit_after_change"/>
+        </association>
+        <association property="fixedCreditChangeId" javaType="GuideFixedCreditChange">
+            <id property="id" column="id" />
+            <result property="fixedCreditLimitChangeAmount" column="fixed_credit_limit_change_amount"/>
+            <result property="fixedCreditLimitAfterChange" column="fixed_credit_limit_after_change"/>
+        </association>
+        <association property="availableCreditChangId" javaType="GuideAvailableCreditChange">
+            <id property="id" column="id" />
+            <result property="creditLimitAvailableChangeAmount" column="credit_limit_available_change_amount"/>
+            <result property="creditLimitAvailableAfterChange" column="credit_limit_available_after_change"/>
+        </association>
+        <association property="operatorId" javaType="SimpleEmployeeParam">
+            <id property="id" column="emp_id" />
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <update id="update" parameterType="GuideCreditMoney">
+        UPDATE
+         emp_credit_money
+        <set>
+            <if test="null != creditLimit">
+                credit_limit = #{creditLimit},
+            </if>
+            <if test="null != tempCreditLimit">
+                temp_credit_limit = #{tempCreditLimit},
+            </if>
+            <if test="null != creditLimitAvailable">
+                credit_limit_available = #{creditLimitAvailable},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+<update id="clearTempCreditLimit" parameterType="java.lang.Long">
+    UPDATE
+    emp_credit_money
+    <set>
+        temp_credit_limit = 0
+    </set>
+    WHERE id = #{id}
+</update>
+
+
+    <update id="clearAllTempCredit" >
+        UPDATE
+        emp_credit_money
+        <set>
+            credit_limit_available = credit_limit_available - temp_credit_limit,
+            temp_credit_limit = 0
+        </set>
+        WHERE 1 =1
+    </update>
+
+
+    <select id="queryAvailableCreditMoneyChangePage" parameterType="java.lang.Long" resultMap="CreditMoneyChangeResultMap">
+       SELECT
+            ecmcl.id,
+            ecmcl.create_time,
+            ecmcl.reference_number,
+            ecmcl.change_type,
+            ecmcl.change_type_desc,
+            ea.credit_limit_available_change_amount,
+            ea.credit_limit_available_after_change,
+            e.emp_id,
+            e.name
+       FROM emp_credit_money_change_log ecmcl
+       LEFT JOIN emp_employee e ON
+       ecmcl.emp_id=e.emp_id
+       RIGHT JOIN emp_available_credit_change_log ea ON
+       ecmcl.available_credit_change_id=ea.id
+       WHERE
+       ecmcl.emp_id=#{id}
+       ORDER BY
+       create_time DESC
+    </select>
+
+    <select id="queryTempCreditMoneyChangePage" parameterType="java.lang.Long" resultMap="CreditMoneyChangeResultMap">
+        SELECT
+        ecmcl.id,
+        ecmcl.create_time,
+        ecmcl.reference_number,
+        ecmcl.change_type,
+        ecmcl.change_type_desc,
+        et.temp_credit_limit_change_amount,
+        et.temp_credit_limit_after_change,
+        e.emp_id,
+        e.name
+        FROM emp_credit_money_change_log ecmcl
+        LEFT JOIN emp_employee e ON
+        ecmcl.emp_id=e.emp_id
+        RIGHT JOIN emp_temp_credit_change_log et ON
+        ecmcl.temp_credit_change_id=et.id
+        WHERE
+        ecmcl.emp_id=#{id}
+        ORDER BY
+        create_time DESC
+    </select>
+
+    <select id="queryFixedCreditMoneyChangePage" parameterType="java.lang.Long" resultMap="CreditMoneyChangeResultMap">
+        SELECT
+        ecmcl.id,
+        ecmcl.create_time,
+        ecmcl.reference_number,
+        ecmcl.change_type,
+        ecmcl.change_type_desc,
+        ef.fixed_credit_limit_change_amount,
+        ef.fixed_credit_limit_after_change,
+        e.emp_id,
+        e.name
+        FROM emp_credit_money_change_log ecmcl
+        LEFT JOIN emp_employee e ON
+        ecmcl.emp_id=e.emp_id
+        RIGHT JOIN emp_fixed_credit_change_log ef ON
+        ecmcl.fixed_credit_change_id=ef.id
+        WHERE
+        ecmcl.emp_id=#{id}
+        ORDER BY
+        create_time DESC
+    </select>
+
+    <insert id="saveCreditChange" parameterType="GuideCreditChangeDetailDO">
+    insert into emp_credit_money_change_log
+    (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip)
+    values
+    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId.id},#{operatorType} ,#{operatorIp});
+    </insert>
+
+    <insert id="saveCreditLimitAvailableChange"  useGeneratedKeys="true" keyProperty="id" parameterType="GuideAvailableCreditChange">
+        insert into emp_available_credit_change_log
+        (credit_limit_available_change_amount,credit_limit_available_after_change)
+        values
+        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange})
+    </insert>
+
+    <insert id="saveTempCreditLimitChange"   useGeneratedKeys="true" keyProperty="id" parameterType="GuideTempCreditChange">
+        insert into emp_temp_credit_change_log
+        (temp_credit_limit_change_amount,temp_credit_limit_after_change )
+        values
+        (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange})
+    </insert>
+
+    <insert id="saveFixedCreditLimitChange"  useGeneratedKeys="true" keyProperty="id" parameterType="GuideFixedCreditChange">
+        insert into emp_fixed_credit_change_log
+        (fixed_credit_limit_change_amount,fixed_credit_limit_after_change)
+        values
+        (#{fixedCreditLimitChangeAmount},#{fixedCreditLimitAfterChange})
+    </insert>
+
+
+</mapper>

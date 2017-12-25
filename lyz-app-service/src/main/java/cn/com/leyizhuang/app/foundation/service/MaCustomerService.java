@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
-import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import com.github.pagehelper.PageInfo;
 
 public interface MaCustomerService {
@@ -21,7 +21,7 @@ public interface MaCustomerService {
 
     PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo);
 
-    void saveCustomer(CustomerVO customer);
+    void saveCustomer(CustomerDetailVO customer);
 
     Boolean isExistPhoneNumber(Long moblie);
 }

@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.city;
 
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
-import cn.com.leyizhuang.app.foundation.vo.CityDeliveryTimeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDeliveryTimeVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @RequestMapping(value = MaCityDeliveryTimeViewsController.PRE_URL, produces = "application/json;charset=utf-8")
@@ -33,7 +30,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
 
    @RequestMapping(value = "/cityDeliveryTimeList/{cityId}")
     public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
-       if (!cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+       if (cityId.equals(0L)||null==cityName||"".equals(cityName)) {
            error404();
            return "/error/404";
        } else {
@@ -46,7 +43,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
 
     @RequestMapping(value = "/add")
     public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
-        if (!cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+        if (cityId.equals(0L)||null==cityName||"".equals(cityName)) {
                 error404();
                 return "/error/404";
             } else {

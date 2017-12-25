@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaClearTempCreditDAO">
+
+    <select id="getCron" resultType="java.lang.String">
+         select cron_express from cron  WHERE is_open = 1 limit 1
+    </select>
+
+    <update id="update" >
+    update cron
+    SET
+    <if test="cronTime != null" >
+        cron_express = #{cronTime}
+    </if>
+    WHERE
+    job_name = #{jobName}
+
+</update>
+</mapper>

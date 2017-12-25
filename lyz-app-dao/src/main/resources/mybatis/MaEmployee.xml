@@ -20,13 +20,54 @@
         <result property="createTime" column="create_time"/>
         <result property="deliveryClerkNo" column="delivery_clerk_no"/>
         <result property="entryTime" column="entryTime"/>
-        <association property="cityId" javaType="City">
+        <association property="cityId" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="cname"/>
         </association>
-        <association property="storeId" javaType="StoreVO">
+        <association property="storeId" javaType="SimpleStoreParam">
             <id property="storeId" column="store_id"/>
             <result property="storeName" column="store_name"/>
+        </association>
+    </resultMap>
+
+
+    <resultMap id="guideResultMap" type="GuideVO">
+        <id property="id" column="emp_id" jdbcType="BIGINT"/>
+        <result property="loginName" column="login_name"/>
+        <result property="name" column="name"/>
+        <association property="cityId" javaType="SimpleCityParam">
+            <id property="cityId" column="city_id"/>
+            <result property="name" column="cname"/>
+        </association>
+        <association property="storeId" javaType="SimpleStoreParam">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+        </association>
+        <association property="guideCreditAvailableMoney" javaType="GuideCreditAvailableMoney">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="creditLimitAvailable" column="credit_limit_available"/>
+        </association>
+    </resultMap>
+
+
+    <resultMap id="guideDetailResultMap" type="GuideDetailVO">
+        <id property="id" column="emp_id" jdbcType="BIGINT"/>
+        <result property="loginName" column="login_name"/>
+        <result property="name" column="name"/>
+        <association property="cityId" javaType="SimpleCityParam">
+            <id property="cityId" column="city_id"/>
+            <result property="name" column="cname"/>
+        </association>
+        <association property="storeId" javaType="SimpleStoreParam">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+        </association>
+        <association property="guideCreditMoney" javaType="GuideCreditMoney">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="creditLimit" column="credit_limit"/>
+            <result property="tempCreditLimit" column="temp_credit_limit"/>
+            <result property="creditLimitAvailable" column="credit_limit_available"/>
+            <result property="lastUpdateTime" column="last_update_time"/>
         </association>
     </resultMap>
 
@@ -232,6 +273,68 @@
           e.status=#{enabled}
         </if>
         order by  emp_id asc
+    </select>
+
+
+    <select id="findAllGuide" resultMap="guideResultMap">
+        select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
+        s.store_name,e.emp_id,ecm.credit_limit_available
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT JOIN  st_store s ON e.store_id = s.store_id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        ORDER BY
+        ecm.id
+        ASC
+    </select>
+
+    <select id="queryGuideVOById" resultMap="guideDetailResultMap">
+        select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit,ecm.temp_credit_limit,ecm.credit_limit_available,ecm.last_update_time
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT JOIN  st_store s ON e.store_id = s.store_id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        WHERE
+        e.emp_id = #{id}
+    </select>
+
+    <select id="queryGuideVOByCondition" resultMap="guideResultMap">
+        select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available as creditLimitAvailable
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT JOIN  st_store s ON e.store_id = s.store_id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        WHERE
+        1=1
+        <if test="null != cityId">
+            AND
+            c.city_id=#{cityId}
+        </if>
+        <if test="null != storeId">
+            AND
+            s.store_id=#{storeId}
+        </if>
+        ORDER BY
+        ecm.id
+        ASC
+    </select>
+
+    <select id="queryGuideVOByInfo" resultMap="guideResultMap">
+        select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available as creditLimitAvailable
+        from emp_employee e
+        LEFT JOIN city c on e.city_id = c.city_id
+        LEFT JOIN  st_store s ON e.store_id = s.store_id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        WHERE
+        e.login_name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
+        OR
+        e.name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
+        ORDER BY
+        ecm.id
+        ASC
     </select>
 
 

@@ -1,9 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
-import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
-import cn.com.leyizhuang.app.foundation.vo.StoreVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -12,11 +15,11 @@ public interface MaStoreService {
 
     PageInfo<StoreVO> queryPageVO(Integer page, Integer size);
 
-    List<StoreVO> findStoreList();
+    List<SimpleStoreParam> findStoreList();
 
-    List<StoreVO> findStoresListByCityId(Long cityId);
+    List<SimpleStoreParam> findStoresListByCityId(Long cityId);
 
-    StoreVO queryStoreVOById(Long storeId);
+    StoreDetailVO queryStoreVOById(Long storeId);
 
     PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId);
 
@@ -32,9 +35,9 @@ public interface MaStoreService {
 
     PageInfo<StoreDO> findDecorativeByInfo(Integer page, Integer size,String queryDecorativeInfo);
 
-    DecorativeCompanyVO  queryDecorativeCompanyById(Long decorativeCompanyId);
+    DecorativeCompanyDetailVO queryDecorativeCompanyById(Long decorativeCompanyId);
 
-    List<DecorativeCompanyVO> findDecorativeCompanyVOList();
+    List<SimpleDecorativeCompany> findDecorativeCompanyVOList();
 
     PageInfo<DecorativeCompanyInfo> queryDecorativeCreditPageVO(Integer page, Integer size);
 

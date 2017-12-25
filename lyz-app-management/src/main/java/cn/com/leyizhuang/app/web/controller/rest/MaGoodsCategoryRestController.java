@@ -2,9 +2,10 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsCategoryService;
-import cn.com.leyizhuang.app.foundation.vo.GoodsCategoryVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.GoodsCategoryVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -52,8 +53,8 @@ public class MaGoodsCategoryRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findGoodsCategorySelection")
-    public  List<GoodsCategoryVO> findGoodsCategorySelection() {
-        List<GoodsCategoryVO> goodsCategoryList = this.maGoodsCategoryService.findGoodsCategorySelection();
+    public  List<SimpleGoodsCategoryParam> findGoodsCategorySelection() {
+        List<SimpleGoodsCategoryParam> goodsCategoryList = this.maGoodsCategoryService.findGoodsCategorySelection();
         return goodsCategoryList;
     }
 

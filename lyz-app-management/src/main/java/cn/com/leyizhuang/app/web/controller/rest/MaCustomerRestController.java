@@ -2,11 +2,11 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
-import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -59,9 +58,9 @@ public class MaCustomerRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/{cusId}")
-    public ResultDTO<CustomerVO> restCusIdGet(@PathVariable(value = "cusId") Long cusId) {
+    public ResultDTO<CustomerDetailVO> restCusIdGet(@PathVariable(value = "cusId") Long cusId) {
         CustomerDO customerDO = this.maCustomerService.queryCustomerVOById(cusId);
-        CustomerVO customerVO =  CustomerVO.transform(customerDO);
+        CustomerDetailVO customerVO =  CustomerDetailVO.transform(customerDO);
         if (null == customerVO) {
             logger.warn("查找顾客失败：Role(id = {}) == null", cusId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -174,7 +173,7 @@ public class MaCustomerRestController extends BaseRestController {
      * @return
      */
     @PostMapping
-    public ResultDTO<Object> restCustomerVOPost(@Valid CustomerVO customer, BindingResult result, MultipartFile file) {
+    public ResultDTO<Object> restCustomerVOPost(@Valid CustomerDetailVO customer, BindingResult result, MultipartFile file) {
         if (!result.hasErrors()) {
             if (!file.isEmpty()) {
                 String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");

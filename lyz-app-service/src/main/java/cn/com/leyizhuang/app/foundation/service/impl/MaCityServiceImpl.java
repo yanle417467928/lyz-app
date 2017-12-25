@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaCityDAO;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.service.MaCityService;
-import cn.com.leyizhuang.app.foundation.vo.CityVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -34,13 +36,13 @@ public class MaCityServiceImpl implements MaCityService {
     }
 
     @Override
-    public List<CityVO> findCitysList() {
-        List<CityVO> cityList = maCityDAO.findAllCityVO();
+    public List<SimpleCityParam> findCitysList() {
+        List<SimpleCityParam> cityList = maCityDAO.findAllSimpleCityParam();
         return cityList;
     }
 
     @Override
-    public CityVO queryCityVOById(Long cityId) {
+    public CityDetailVO queryCityVOById(Long cityId) {
         if (cityId != null) {
             return maCityDAO.findCityVOById(cityId);
         }

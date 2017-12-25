@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyCredit;
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanySubvention;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
 import cn.com.leyizhuang.app.foundation.service.MaDecorativeCompanyCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -100,7 +100,7 @@ public class MaDecorativeCompanyCreditRestController  extends BaseRestController
     }
 
     /**
-     * 标记装饰公司信用金
+     * 编辑装饰公司信用金
      * @param decorativeCompanyCredit
      * @param decorativeCompanySubvention
      * @param result

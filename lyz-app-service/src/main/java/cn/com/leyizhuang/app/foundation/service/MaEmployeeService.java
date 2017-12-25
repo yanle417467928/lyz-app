@@ -1,24 +1,28 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.employee.EmployeeDO;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeEmployeeVO;
-import cn.com.leyizhuang.app.foundation.vo.EmployeeVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface MaEmployeeService {
     PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size);
 
-    EmployeeVO queryEmployeeById(Long id);
+    EmployeeDetailVO queryEmployeeById(Long id);
 
 
     List<EmployeeVO> findGuideListById(Long storeId);
 
-    List<EmployeeVO> findEmpTypeByStoreId(Long storeId);
+    List<EmployeeType> findEmpTypeByStoreId(Long storeId);
 
-    List<EmployeeVO> findEmpTypeByCityId( Long cityId);
+    List<EmployeeType> findEmpTypeByCityId( Long cityId);
 
     PageInfo<EmployeeDO> queryPageVOByCondition(Integer page, Integer size,String identityType,Long storeId,Long cityId,String enabled);
 
@@ -26,11 +30,19 @@ public interface MaEmployeeService {
 
     PageInfo<EmployeeDO> queryDecorativeEmpPageVO(Integer page, Integer size);
 
-    DecorativeEmployeeVO queryDecorativeEmployeeById(Long id);
+    DecorativeEmployeeDetailVO queryDecorativeEmployeeById(Long id);
 
-    List<EmployeeVO> findEmpTypeList();
+    List<EmployeeType> findEmpTypeList();
 
     PageInfo<EmployeeDO>  queryDecorativeEmpPageVOByInfo(Integer page, Integer size,String queryEmpInfo);
 
     PageInfo<EmployeeDO> findDecorativeEmpByCondition(Integer page, Integer size,String enabled,String diyId,String identityType);
+
+    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size);
+
+    GuideDetailVO queryGuideVOById(Long id);
+
+    PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId);
+
+    PageInfo<GuideVO>  queryGuideVOByInfo(Integer page,Integer size,String queryGuideVOInfo);
 }

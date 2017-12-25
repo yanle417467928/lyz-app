@@ -14,8 +14,8 @@
     </select>
 
 
-    <select id="findGoodsCategorySelection"  resultType="GoodsCategoryDO">
-       select cid,category_name
+    <select id="findGoodsCategorySelection"  resultType="SimpleGoodsCategoryParam">
+       select cid as id,category_name
        FROM gds_goods_category ggc
        where ggc.cid
        in

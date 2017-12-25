@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.service.MaCityService;
-import cn.com.leyizhuang.app.foundation.vo.CityVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -58,8 +60,8 @@ public class MaCityRestController extends BaseRestController {
      * @date 2017/11/3
      */
     @GetMapping(value = "/{cityId}")
-    public ResultDTO<CityVO> restCityIdGet(@PathVariable(value = "cityId") Long cityId) {
-        CityVO cityVO = this.maCityService.queryCityVOById(cityId);
+    public ResultDTO<CityDetailVO> restCityIdGet(@PathVariable(value = "cityId") Long cityId) {
+        CityDetailVO cityVO = this.maCityService.queryCityVOById(cityId);
         if (null == cityVO) {
             logger.warn("查找城市失败：Role(id = {}) == null", cityId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -80,9 +82,12 @@ public class MaCityRestController extends BaseRestController {
      * @date 2017/11/3
      */
     @GetMapping(value = "/findCitylist")
-    public List<CityVO> findCitysList() {
-        List<CityVO> citysList = this.maCityService.findCitysList();
+    public List<SimpleCityParam> findCitysList() {
+        List<SimpleCityParam> citysList = this.maCityService.findCitysList();
         return citysList;
     }
+
+
+
 
 }

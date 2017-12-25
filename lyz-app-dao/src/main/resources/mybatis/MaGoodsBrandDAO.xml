@@ -15,6 +15,18 @@
     </select>
 
 
+    <select id="queryGoodsBrandList"  resultType="SimpaleGoodsBrandParam">
+        SELECT
+        brd_id,brand_name
+        FROM
+        gds_goods_brand
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+
 
     <select id="findGoodsBrandById"  parameterType="java.lang.Long" resultType="GoodsBrand">
     select

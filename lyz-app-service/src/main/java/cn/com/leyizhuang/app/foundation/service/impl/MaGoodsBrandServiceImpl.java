@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaGoodsBrandDAO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -84,8 +85,8 @@ public class MaGoodsBrandServiceImpl implements MaGoodsBrandService {
     }
 
     @Override
-    public List<GoodsBrand> queryGoodsBrandList() {
-        List<GoodsBrand> pageGoodsBrandList = this.maGoodsBrandDAO.findAllGoodsBrand();
+    public List<SimpaleGoodsBrandParam> queryGoodsBrandList() {
+        List<SimpaleGoodsBrandParam> pageGoodsBrandList = this.maGoodsBrandDAO.queryGoodsBrandList();
         return pageGoodsBrandList;
     }
 

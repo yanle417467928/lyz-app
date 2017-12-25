@@ -251,7 +251,7 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html("城市详情");
+                                $('#menuTitle').html("员工详情");
 
                                 if (null === data.id) {
                                     data.id = '-';
@@ -446,8 +446,10 @@
         var queryEmpInfo = $("#queryEmpInfo").val();
         $('#cityCode').val("-1");
         $('#enabled').val("-1");
-        initSelect("#diyCode", "选择门店");
+        initSelect("#storeCode", "选择门店");
+        findStorelist();
         initSelect("#identityType", "选择类型");
+        findTypeList();
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryEmpInfo || "" == queryEmpInfo) {
             initDateGird('/rest/employees/page/grid');

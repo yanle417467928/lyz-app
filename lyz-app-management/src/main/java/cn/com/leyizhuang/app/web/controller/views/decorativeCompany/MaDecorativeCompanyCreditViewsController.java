@@ -1,11 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
-import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

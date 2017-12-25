@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyCredit;
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanySubvention;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
 
 public interface MaDecorativeCompanyCreditService {
 

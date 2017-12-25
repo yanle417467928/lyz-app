@@ -1,9 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaGoodsCategoryDAO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsCategoryService;
-import cn.com.leyizhuang.app.foundation.vo.GoodsCategoryVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.GoodsCategoryVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,9 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
     }
 
     @Override
-    public List<GoodsCategoryVO> findGoodsCategorySelection() {
-        List<GoodsCategoryDO> GoodsCategoryList = this.maGoodsCategoryDAO.findGoodsCategorySelection();
-        List<GoodsCategoryVO> GoodsCategoryVOList = GoodsCategoryVO.transform(GoodsCategoryList);
-        return GoodsCategoryVOList;
+    public List<SimpleGoodsCategoryParam> findGoodsCategorySelection() {
+        List<SimpleGoodsCategoryParam> GoodsCategoryList = this.maGoodsCategoryDAO.findGoodsCategorySelection();
+        return GoodsCategoryList;
     }
 
     @Override

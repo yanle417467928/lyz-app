@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaCityDeliveryTimeDAO;
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
-import cn.com.leyizhuang.app.foundation.vo.CityDeliveryTimeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDeliveryTimeVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;

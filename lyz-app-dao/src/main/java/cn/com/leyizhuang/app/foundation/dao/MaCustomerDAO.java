@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
-import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

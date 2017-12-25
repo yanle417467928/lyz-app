@@ -6,7 +6,12 @@
         select * from city order by city_id asc
     </select>
 
-    <select id="findCityVOById" parameterType="java.lang.Long" resultType="CityVO">
+
+    <select id="findAllSimpleCityParam" resultType="SimpleCityParam">
+        select city_id,name from city order by city_id asc
+    </select>
+
+    <select id="findCityVOById" parameterType="java.lang.Long" resultType="CityDetailVO">
         SELECT * FROM city where city_id = #{cityId}
     </select>
 </mapper>

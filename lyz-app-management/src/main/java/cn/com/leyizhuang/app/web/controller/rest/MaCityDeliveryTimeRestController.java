@@ -2,9 +2,9 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
-import cn.com.leyizhuang.app.foundation.vo.CityDeliveryTimeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDeliveryTimeVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;

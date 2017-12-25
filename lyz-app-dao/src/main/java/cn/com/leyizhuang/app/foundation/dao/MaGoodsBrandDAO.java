@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,8 @@ import java.util.List;
 @Repository
 public interface MaGoodsBrandDAO {
     List<GoodsBrand> findAllGoodsBrand();
+
+    List<SimpaleGoodsBrandParam> queryGoodsBrandList();
 
     List<GoodsBrand> findGoodsBrandById(Long pid);
 

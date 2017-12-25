@@ -18,15 +18,15 @@
         <result column="binding_time" property="bindingTime" jdbcType="TIMESTAMP"/>
         <result column="create_type" property="createType" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-        <association property="storeId" javaType="StoreVO">
+        <association property="storeId" javaType="SimpleStoreParam">
             <id property="storeId" column="store_id"/>
             <result property="storeName" column="store_name"/>
         </association>
-        <association property="cityId" javaType="CityVO">
+        <association property="cityId" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="city_name"/>
         </association>
-        <association property="salesConsultId" javaType="EmployeeVO">
+        <association property="salesConsultId" javaType="SimpleEmployeeParam">
             <id property="empId" column="emp_id"/>
             <result property="name" column="emp_name"/>
         </association>

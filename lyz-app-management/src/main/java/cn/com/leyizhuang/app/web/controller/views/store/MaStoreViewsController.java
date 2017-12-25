@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.store;
 
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.StoreVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.web.controller.views.user.AppAdminUserViewController;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class MaStoreViewsController extends BaseController {
     @GetMapping(value = "/edit/{id}")
     public String storeEdit(Model model, @PathVariable(value = "id") Long storeId) {
         if (!storeId.equals(0L)) {
-            StoreVO storeVO = maStoreService.queryStoreVOById(storeId);
+            StoreDetailVO storeVO = maStoreService.queryStoreVOById(storeId);
             if (null == storeVO) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", storeId);
                 error404();

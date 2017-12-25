@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public interface MaGoodsCategoryDAO {
     List<GoodsCategoryDO> findAllGoodsCategory();
 
-    List<GoodsCategoryDO> findGoodsCategorySelection();
+    List<SimpleGoodsCategoryParam> findGoodsCategorySelection();
 
     List<GoodsCategoryDO> findGoodsCategoryByPid(Long pid);
 

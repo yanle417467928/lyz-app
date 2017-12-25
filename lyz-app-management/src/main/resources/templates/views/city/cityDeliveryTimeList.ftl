@@ -22,6 +22,9 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
+                    <button id="btn_back" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
+                    </button>
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
@@ -86,6 +89,9 @@
 
         $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/citysDeliveryTimes/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+        $('#btn_back').on('click', function () {
+            window.history.back()
         });
     });
 

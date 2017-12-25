@@ -1,7 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
@@ -169,12 +170,12 @@ public class MaGoodsBrandRestController extends  BaseRestController {
             this.maGoodsBrandService.update(goodsBrand);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
-            List<ObjectError> allErrors = result.getAllErrors();
-            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
-            System.err.print(allErrors);
-            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
-                    errorMsgToHtml(allErrors), null);
-        }
+        List<ObjectError> allErrors = result.getAllErrors();
+        logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+        System.err.print(allErrors);
+        return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                errorMsgToHtml(allErrors), null);
+      }
     }
 
     /**
@@ -182,8 +183,8 @@ public class MaGoodsBrandRestController extends  BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/brandGrid")
-    public List<GoodsBrand> queryGoodsBrandList() {
-        List<GoodsBrand> pageAllGoodsBrandList = this.maGoodsBrandService.queryGoodsBrandList();
+    public List<SimpaleGoodsBrandParam> queryGoodsBrandList() {
+        List<SimpaleGoodsBrandParam> pageAllGoodsBrandList = this.maGoodsBrandService.queryGoodsBrandList();
         return pageAllGoodsBrandList;
     }
 

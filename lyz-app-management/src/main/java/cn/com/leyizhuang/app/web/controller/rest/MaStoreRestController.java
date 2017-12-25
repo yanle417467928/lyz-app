@@ -1,15 +1,16 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.StoreVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,8 +49,8 @@ public class MaStoreRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findStorelist")
-    public List<StoreVO> findStoresList() {
-        List<StoreVO> allStoresList = this.maStoreService.findStoreList();
+    public List<SimpleStoreParam> findStoresList() {
+        List<SimpleStoreParam> allStoresList = this.maStoreService.findStoreList();
         return allStoresList;
     }
 
@@ -60,8 +61,8 @@ public class MaStoreRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findStoresListByCityId/{cityId}")
-    public List<StoreVO> findStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
-        List<StoreVO> storesList = this.maStoreService.findStoresListByCityId(cityId);
+    public List<SimpleStoreParam> findStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
+        List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId);
         return storesList;
     }
 
@@ -116,8 +117,8 @@ public class MaStoreRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/{storeId}")
-    public ResultDTO<StoreVO> restStoreIdGet(@PathVariable(value = "storeId") Long storeId) {
-        StoreVO storeVO = this.maStoreService.queryStoreVOById(storeId);
+    public ResultDTO<StoreDetailVO> restStoreIdGet(@PathVariable(value = "storeId") Long storeId) {
+        StoreDetailVO storeVO = this.maStoreService.queryStoreVOById(storeId);
         if (null == storeVO) {
             logger.warn("查找门店失败：Role(id = {}) == null", storeId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,

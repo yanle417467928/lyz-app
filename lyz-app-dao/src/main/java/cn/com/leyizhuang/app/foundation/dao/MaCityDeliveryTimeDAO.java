@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

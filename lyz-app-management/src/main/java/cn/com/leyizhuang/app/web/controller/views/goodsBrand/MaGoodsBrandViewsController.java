@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.goodsBrand;
 
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;

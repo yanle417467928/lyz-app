@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface MaGoodsBrandService {
 
     void  update(GoodsBrand goodsBrand);
 
-    List<GoodsBrand> queryGoodsBrandList();
+    List<SimpaleGoodsBrandParam> queryGoodsBrandList();
 
     void delete(Long id);
 }

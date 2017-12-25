@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
-import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
-import cn.com.leyizhuang.app.foundation.vo.StoreVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,11 +16,13 @@ public interface MaStoreDAO {
 
     List<StoreVO> findAllVO();
 
-    List<StoreVO> findStoresList();
+    List<SimpleStoreParam> findStoresList();
 
-    List<StoreVO> findStoresListByCityId(Long cityId);
+    List<SimpleStoreParam> findStoresListByCityId(Long cityId);
 
-    StoreVO findStoresVOById(Long storeId);
+    List<SimpleDecorativeCompany> queryDecorativeCompanyVOList();
+
+    StoreDetailVO findStoresVOById(Long storeId);
 
     List<StoreVO> queryStoreListByCityId(Long cityId);
 

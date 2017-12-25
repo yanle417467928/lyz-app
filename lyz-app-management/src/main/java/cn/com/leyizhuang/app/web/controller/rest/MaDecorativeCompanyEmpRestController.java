@@ -1,13 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.employee.EmployeeDO;
-import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeEmployeeVO;
-import cn.com.leyizhuang.app.foundation.vo.EmployeeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -52,8 +49,8 @@ public class MaDecorativeCompanyEmpRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/{id}")
-    public ResultDTO<DecorativeEmployeeVO> queryEmployeeById(@PathVariable(value = "id") Long id) {
-        DecorativeEmployeeVO decorativeEmployeeVO = this.maEmployeeService.queryDecorativeEmployeeById(id);
+    public ResultDTO<DecorativeEmployeeDetailVO> queryEmployeeById(@PathVariable(value = "id") Long id) {
+        DecorativeEmployeeDetailVO decorativeEmployeeVO = this.maEmployeeService.queryDecorativeEmployeeById(id);
         if (null == decorativeEmployeeVO) {
             logger.warn("查找装饰公司员工失败：Role(id = {}) == null", id);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,

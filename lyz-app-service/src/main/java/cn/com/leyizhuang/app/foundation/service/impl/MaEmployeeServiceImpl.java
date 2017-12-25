@@ -1,11 +1,15 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
-import cn.com.leyizhuang.app.foundation.pojo.employee.EmployeeDO;
-import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeEmployeeVO;
-import cn.com.leyizhuang.app.foundation.vo.EmployeeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,8 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
 
     @Autowired
     private MaEmployeeDAO maEmployeeDAO;
+
+
     @Override
     public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size){
         PageHelper.startPage(page, size);
@@ -28,9 +34,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public EmployeeVO queryEmployeeById(Long id){
+    public EmployeeDetailVO queryEmployeeById(Long id){
         EmployeeDO employeeDO = this.maEmployeeDAO.queryEmployeeById(id);
-        EmployeeVO employeeVO=  EmployeeVO.transform(employeeDO);
+        EmployeeDetailVO employeeVO=  EmployeeDetailVO.transform(employeeDO);
         return employeeVO;
     }
 
@@ -42,21 +48,24 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public List<EmployeeVO> findEmpTypeByStoreId(Long storeId) {
-        List<EmployeeDO> empTypeList = maEmployeeDAO.findEmpTypeByStoreId(storeId);
-        return EmployeeVO.transform(empTypeList);
+    public List<EmployeeType> findEmpTypeByStoreId(Long storeId) {
+        List<EmployeeDO> empDOList = maEmployeeDAO.findEmpTypeByStoreId(storeId);
+        List<EmployeeType> empTypeList =EmployeeType.transform(empDOList);
+        return empTypeList;
     }
 
     @Override
-    public List<EmployeeVO> findEmpTypeByCityId(Long cityId) {
-        List<EmployeeDO> empTypeList = maEmployeeDAO.findEmpTypeByCityId(cityId);
-        return EmployeeVO.transform(empTypeList);
+    public List<EmployeeType> findEmpTypeByCityId(Long cityId) {
+        List<EmployeeDO> empDOList = maEmployeeDAO.findEmpTypeByCityId(cityId);
+        List<EmployeeType> empTypeList =EmployeeType.transform(empDOList);
+        return empTypeList;
     }
 
     @Override
-    public List<EmployeeVO> findEmpTypeList() {
-        List<EmployeeDO> empTypeList = maEmployeeDAO.findEmpTypeList();
-        return EmployeeVO.transform(empTypeList);
+    public List<EmployeeType> findEmpTypeList() {
+        List<EmployeeDO> empDOList = maEmployeeDAO.findEmpTypeList();
+        List<EmployeeType> empTypeList =EmployeeType.transform(empDOList);
+        return empTypeList;
     }
 
     @Override
@@ -106,9 +115,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public DecorativeEmployeeVO queryDecorativeEmployeeById(Long id){
+    public DecorativeEmployeeDetailVO queryDecorativeEmployeeById(Long id){
         EmployeeDO employeeDO = this.maEmployeeDAO.queryEmployeeById(id);
-        DecorativeEmployeeVO decorativeEmployeeVO=  DecorativeEmployeeVO.transform(employeeDO);
+        DecorativeEmployeeDetailVO decorativeEmployeeVO=  DecorativeEmployeeDetailVO.transform(employeeDO);
         return decorativeEmployeeVO;
     }
 
@@ -134,4 +143,39 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findDecorativeEmpByCondition(enabled,diyId,identityType);
         return new PageInfo<>(pageEmployeeList);
     }
+
+    @Override
+    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size){
+        PageHelper.startPage(page, size);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide();
+        return new PageInfo<>(pageGuideVOList);
+    }
+
+
+    @Override
+    public GuideDetailVO queryGuideVOById(Long id){
+        GuideDetailVO guideVO = this.maEmployeeDAO.queryGuideVOById(id);
+        return guideVO;
+    }
+
+    @Override
+    public PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId){
+        if(-1==cityId){
+          cityId=null;
+        }
+        if(-1==storeId){
+            storeId=null;
+        }
+        PageHelper.startPage(page, size);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId);
+        return new PageInfo<>(pageGuideVOList);
+    }
+
+    @Override
+    public PageInfo<GuideVO> queryGuideVOByInfo(Integer page, Integer size,String queryGuideVOInfo){
+        PageHelper.startPage(page, size);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo);
+        return new PageInfo<>(pageGuideVOList);
+    }
+
 }

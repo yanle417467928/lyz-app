@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
-import cn.com.leyizhuang.app.foundation.vo.CityDeliveryTimeVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDeliveryTimeVO;
 import com.github.pagehelper.PageInfo;
-
-import java.util.List;
 
 public interface MaCityDeliveryTimeService {
     PageInfo<CityDeliveryTime> queryPage(Integer page, Integer size, Long cityId);

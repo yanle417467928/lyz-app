@@ -2,11 +2,14 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
-import cn.com.leyizhuang.app.foundation.pojo.decorativeCompany.DecorativeCompanyInfo;
-import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
-import cn.com.leyizhuang.app.foundation.vo.StoreVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +33,20 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<StoreVO> findStoreList() {
-        List<StoreVO> allStoreList = this.mastoreDAO.findStoresList();
+    public List<SimpleStoreParam> findStoreList() {
+        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findStoresList();
         return allStoreList;
     }
 
     @Override
-    public List<StoreVO> findStoresListByCityId(Long cityId) {
-        List<StoreVO> storeList = this.mastoreDAO.findStoresListByCityId(cityId);
+    public List<SimpleStoreParam> findStoresListByCityId(Long cityId) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId);
         return storeList;
     }
 
     @Override
-    public StoreVO queryStoreVOById(Long storeId) {
-        StoreVO storeVO = this.mastoreDAO.findStoresVOById(storeId);
+    public StoreDetailVO queryStoreVOById(Long storeId) {
+        StoreDetailVO storeVO = this.mastoreDAO.findStoresVOById(storeId);
         return storeVO;
     }
 
@@ -112,17 +115,16 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
      @Override
-     public DecorativeCompanyVO queryDecorativeCompanyById(Long decorativeCompanyId) {
+     public DecorativeCompanyDetailVO queryDecorativeCompanyById(Long decorativeCompanyId) {
         StoreDO storeDO = this.mastoreDAO.findDecorativeById(decorativeCompanyId);
-        DecorativeCompanyVO decorativeCompanyVO=  DecorativeCompanyVO.transform(storeDO);
+         DecorativeCompanyDetailVO decorativeCompanyVO=  DecorativeCompanyDetailVO.transform(storeDO);
         return decorativeCompanyVO;
     }
 
     @Override
-    public List<DecorativeCompanyVO> findDecorativeCompanyVOList() {
-        List<StoreDO> decorativeCompanyDOList = this.mastoreDAO.queryDecorativeCompanyPageVO();
-        List<DecorativeCompanyVO> decorativeCompanyVOList= DecorativeCompanyVO.transform(decorativeCompanyDOList);
-        return decorativeCompanyVOList;
+    public List<SimpleDecorativeCompany> findDecorativeCompanyVOList() {
+        List<SimpleDecorativeCompany> decorativeCompanyDOList = this.mastoreDAO.queryDecorativeCompanyVOList();
+        return decorativeCompanyDOList;
     }
 
     @Override

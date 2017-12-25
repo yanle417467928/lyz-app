@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.goodsCategory;
 
 import cn.com.leyizhuang.app.foundation.service.MaGoodsCategoryService;
-import cn.com.leyizhuang.app.foundation.vo.GoodsCategoryVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.GoodsCategoryVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

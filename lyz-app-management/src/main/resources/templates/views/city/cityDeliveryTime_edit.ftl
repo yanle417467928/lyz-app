@@ -85,9 +85,6 @@
                             </div>
                         </div>
                     </div>
-
-            </div>
-        </div>
         <div class="row">
             <div class="col-xs-12 col-md-8"></div>
             <div class="col-xs-12 col-md-2">
@@ -168,14 +165,11 @@
             e.preventDefault();
             var startTime = $('#startTime').val();
             var endTime = $('#endTime').val();
-            var cityId =$('#cityId').val();
-            var id =$('#id').val();
-            var isconflict;
             if(endTime<=startTime){
                 $notify.danger('结束时间小于或等于开始时间');
+                $('#cityDeliveryTime_edit').bootstrapValidator('disableSubmitButtons', false);
                 return false;
             }
-
             var $form = $(e.target);
             var origin = $form.serializeArray();
             var data = {};
@@ -183,13 +177,9 @@
             $.each(origin, function () {
                 data[this.name] = this.value;
             });
-
-
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
-
                 var url = '/rest/cityDeliveryTime';
-
                 if (null !== data.id && 0 != data.id) {
                     data._method = 'PUT';
                 }

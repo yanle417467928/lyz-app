@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaStoreDAO">
 
-    <resultMap id="storeVOResultMap" type="StoreVO">
+    <resultMap id="storeDetailVOResultMap" type="StoreDetailVO">
         <id property="storeId" column="store_id" jdbcType="BIGINT"/>
         <result property="storeName" column="store_name"/>
         <result property="storeCode" column="store_code"/>
@@ -19,9 +19,19 @@
         <result property="area" column="area"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
-        <association property="cityCode" javaType="CityVO">
+        <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
-            <result property="code" column="code"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="storeVOResultMap" type="StoreVO">
+        <id property="storeId" column="store_id" jdbcType="BIGINT"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="enable" column="enable"/>
+        <association property="cityCode" javaType="SimpleCityParam">
+            <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
         </association>
     </resultMap>
@@ -44,9 +54,8 @@
         <result property="area" column="area"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
-        <association property="cityCode" javaType="CityVO">
+        <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
-            <result property="code" column="code"/>
             <result property="name" column="name"/>
         </association>
     </resultMap>
@@ -57,11 +66,10 @@
         <result property="storeName" column="store_name"/>
         <result property="storeCode" column="store_code"/>
         <result property="enable" column="enable"/>
-        <!--        <result property="credit" column="credit"/>
-                <result property="sponsorship" column="sponsorship"/>-->
-        <association property="cityCode" javaType="CityVO">
+<!--        <result property="credit" column="credit"/>
+        <result property="sponsorship" column="sponsorship"/>-->
+        <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
-            <result property="code" column="code"/>
             <result property="name" column="name"/>
         </association>
         <association property="credit" javaType="DecorativeCompanyCredit">
@@ -94,7 +102,7 @@
     </select>
 
 
-    <select id="findStoresVOById" parameterType="java.lang.Long" resultMap="storeVOResultMap">
+    <select id="findStoresVOById" parameterType="java.lang.Long" resultMap="storeDetailVOResultMap">
         SELECT
         s.*,
         c.name
@@ -104,7 +112,7 @@
         where s.store_id=#{storeId}
     </select>
 
-    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
+    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -116,7 +124,7 @@
          s.store_type!="ZS"
     </select>
 
-    <select id="findStoresList" resultType="StoreVO">
+    <select id="findStoresList" resultType="SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -127,7 +135,7 @@
     </select>
 
 
-    <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
+   <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -158,12 +166,12 @@
         WHERE
         1=1
         <if test="null != cityId">
-            AND
-            c.city_id= #{cityId}
+        AND
+        c.city_id= #{cityId}
         </if>
         <if test="null != enabled">
-            AND
-            s.enable=#{enabled}
+        AND
+         s.enable=#{enabled}
         </if>
         AND
         s.store_type!="ZS"
@@ -184,14 +192,14 @@
         AND
          s.store_type!="ZS"
     </select>
-
+    
     <update id="update">
         UPDATE
-        st_store
+          st_store
         <set>
-            <if test="null != isSelfDelivery">
-                is_self_delivery = #{isSelfDelivery},
-            </if>
+          <if test="null != isSelfDelivery">
+             is_self_delivery = #{isSelfDelivery},
+          </if>
         </set>
         WHERE store_id = #{storeId}
     </update>
@@ -207,6 +215,20 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+        s.store_type="ZS"
+        ORDER BY
+        s.create_time
+        DESC
+    </select>
+
+
+    <select id="queryDecorativeCompanyVOList" resultType="SimpleDecorativeCompany">
+        SELECT
+        s.store_name,
+        s.store_id as id
+        FROM
+        st_store s
         WHERE
         s.store_type="ZS"
         ORDER BY
@@ -277,7 +299,7 @@
          s.store_type="ZS"
     </select>
 
-    <select id="findDecorativeCreditList" resultMap="decorativeCompanyResultMap">
+    <select id="findDecorativeCreditList"  resultMap="decorativeCompanyResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -376,51 +398,6 @@
         ORDER BY
         s.create_time
         DESC
-    </select>
-
-
-    <select id="findCompanyStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
-        SELECT
-        s.store_id,
-        s.store_name
-        FROM
-        st_store s
-        LEFT JOIN city c on s.city_code = c.code
-        WHERE c.city_id = #{cityId}
-        AND
-        	s.store_type = 'ZS'
-    </select>
-
-    <select id="findCompanyStoresList" resultType="StoreVO">
-        SELECT
-        s.store_id,
-        s.store_name
-        FROM
-        st_store s
-        WHERE
-        	s.store_type = 'ZS'
-    </select>
-
-    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
-        SELECT
-        s.store_id,
-        s.store_name
-        FROM
-        st_store s
-        LEFT JOIN city c on s.city_code = c.code
-        WHERE c.city_id = #{cityId}
-        AND
-        s.is_self_delivery = TRUE
-    </select>
-
-    <select id="findSelfDeliveryStoresList" resultType="StoreVO">
-        SELECT
-        s.store_id,
-        s.store_name
-        FROM
-        st_store s
-        WHERE
-        s.is_self_delivery = TRUE
     </select>
 
 </mapper>

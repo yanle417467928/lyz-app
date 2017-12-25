@@ -2,14 +2,13 @@ package cn.com.leyizhuang.app.web.controller.city;
 
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.city.CityDeliveryTime;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityDeliveryTimeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.CityListResponse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.service.impl.CityServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;

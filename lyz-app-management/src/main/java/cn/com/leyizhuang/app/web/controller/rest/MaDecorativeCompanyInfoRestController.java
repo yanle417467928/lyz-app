@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.pojo.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.DecorativeCompanyVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -85,8 +87,8 @@ public class MaDecorativeCompanyInfoRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/{decorativeCompanyId}")
-    public ResultDTO<DecorativeCompanyVO> restDecorativeCompanyGet(@PathVariable(value = "decorativeCompanyId") Long decorativeCompanyId) {
-        DecorativeCompanyVO decorativeCompanyVO = this.maStoreService.queryDecorativeCompanyById(decorativeCompanyId);
+    public ResultDTO<DecorativeCompanyDetailVO> restDecorativeCompanyGet(@PathVariable(value = "decorativeCompanyId") Long decorativeCompanyId) {
+        DecorativeCompanyDetailVO decorativeCompanyVO = this.maStoreService.queryDecorativeCompanyById(decorativeCompanyId);
         if (null == decorativeCompanyVO) {
             logger.warn("查找装饰公司失败：Role(id = {}) == null", decorativeCompanyId);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
@@ -101,8 +103,8 @@ public class MaDecorativeCompanyInfoRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findDecorativeCompany")
-    public List<DecorativeCompanyVO> findDecorativeCompanyListByCityId() {
-        List<DecorativeCompanyVO> decorativeCompanyVOList = this.maStoreService.findDecorativeCompanyVOList();
+    public List<SimpleDecorativeCompany> findDecorativeCompanyListByCityId() {
+        List<SimpleDecorativeCompany> decorativeCompanyVOList = this.maStoreService.findDecorativeCompanyVOList();
         return decorativeCompanyVOList;
     }
 }

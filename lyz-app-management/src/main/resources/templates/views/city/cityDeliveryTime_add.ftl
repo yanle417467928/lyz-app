@@ -80,10 +80,12 @@
                 var isconflict;
                 if(endTime<=startTime){
                     $notify.danger('结束时间小于或等于开始时间');
+                    $('#cityDeliveryTime_add').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
             //判断时间段是否有冲突
-                $.ajax({
+
+                    $.ajax({
                     url: '/rest/cityDeliveryTime/judgmentTime',
                     method: 'POST',
                     data: {'startTime':startTime,'endTime':endTime,'cityId':cityId},
@@ -106,9 +108,11 @@
 
                 if(isconflict==1){
                     $notify.danger('网络异常，请稍后重试或联系管理员');
+                    $('#cityDeliveryTime_add').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }else if( isconflict==2){
                     $notify.danger('时间段与现有时间段冲突，请检查');
+                    $('#cityDeliveryTime_add').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
 
@@ -116,18 +120,16 @@
                 var $form = $(e.target);
                 var origin = $form.serializeArray();
                 var data = {};
-                var formData = new FormData($("#cityDeliveryTime_add")[0]);
+                $.each(origin, function () {
+                    data[this.name] = this.value;
+                });
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     var url = '/rest/cityDeliveryTime';
                     $.ajax({
                         url: url,
                         method: 'POST',
-                        data: formData,
-                        async: false,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
+                        data: data,
                         error: function () {
                             clearTimeout($global.timer);
                             $loading.close();
@@ -233,20 +235,6 @@
     </div>
 </section>
 <script>
-    $(function () {
-         id =  ${cityId};
-        if (!$global.validateMobile()) {
-            $('.select').selectpicker();
-        }
-
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            autoclose: true
-        });
-/*
-        findCitySelection()*/
-    });
 
 /*    function findCitySelection(){
         var city;

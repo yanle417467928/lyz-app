@@ -1,12 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
-import cn.com.leyizhuang.app.foundation.pojo.Customer.CustomerDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
-import cn.com.leyizhuang.app.foundation.vo.CustomerVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -76,7 +75,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public void saveCustomer(CustomerVO customer){
+    public void saveCustomer(CustomerDetailVO customer){
         if(null!=customer){
             customer.setCreateTime(new Date());
             customer.setLight("GREEN");
