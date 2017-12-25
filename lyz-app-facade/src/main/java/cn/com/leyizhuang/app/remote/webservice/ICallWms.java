@@ -30,14 +30,16 @@ public class ICallWms {
 
     private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
 
-    private static String wmsUrl = AppApplicationConstant.wmsUrl;
 
     private static QName wmsName = new QName("http://tempuri.org/", "GetErpInfo");
 
-    private static JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+    private static Client wmsClient;
 
-    private static Client wmsClient = dcf.createClient(wmsUrl);
 
+    public static Client getWmsClient() {
+        JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+        return dcf.createClient(AppApplicationConstant.wmsUrl);
+    }
 
     /**
      * 发送取消订单到WMS
@@ -61,6 +63,7 @@ public class ICallWms {
         logger.info("XML拼装完毕 OUT, xml:{}", xml);
         //发送到WMS
         //TODO wms确定td_return_note参数
+        wmsClient = getWmsClient();
         Object[] objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
 
         //修改发送状态
@@ -96,6 +99,7 @@ public class ICallWms {
             String xml = AppXmlUtil.getRequisitionOrderGoodsXml(requisitionOrderGoods);
             logger.info("要货单商品XML拼装完毕 OUT, XML:{}", xml);
             //发送到WMS
+            Client wmsClient = getWmsClient();
             Object[] objects = wmsClient.invoke(wmsName, "td_requisition_goods", "1", xml);
             //解析返回信息
             String errorMsg = AppXmlUtil.checkReturnXml(objects);
@@ -124,6 +128,7 @@ public class ICallWms {
         String xml = AppXmlUtil.getRequisitionOrderXml(requisitionOrder);
         logger.info("XML拼装完毕 OUT, xml:{}", xml);
         //发送到WMS
+        wmsClient = getWmsClient();
         Object[] objects = wmsClient.invoke(wmsName, "td_requisition", "1", xml);
         //解析返回信息
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
