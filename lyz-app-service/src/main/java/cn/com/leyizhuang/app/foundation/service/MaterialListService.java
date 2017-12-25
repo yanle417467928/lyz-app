@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMateria
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -46,4 +47,8 @@ public interface MaterialListService {
     List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
 
     Boolean existOtherMaterialCouponByUserIdAndIdentityType(Long userId, Long cusId, Integer identityType);
+
+    void deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> goodsIds);
+
+    void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> couponGoodsIds);
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -63,6 +64,7 @@ public class MaterialListServiceImpl implements MaterialListService {
         }
         return null;
     }
+
     @Override
     public MaterialListDO findAuditListByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
         if (null != userId && null != identityType && null != goodsId) {
@@ -114,6 +116,24 @@ public class MaterialListServiceImpl implements MaterialListService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> goodsIds) {
+        if (null != userId && null != identityType && null != goodsIds && goodsIds.size() > 0) {
+            materialListDAO.deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(userId, identityType, goodsIds);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType,
+                                                                                       Set<Long> couponGoodsIds) {
+        if (null != userId && null != identityType && null != couponGoodsIds && couponGoodsIds.size() > 0) {
+            materialListDAO.deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(userId, identityType, couponGoodsIds);
+        }
+
+    }
+
+    @Override
     public List<NormalMaterialListResponse> findMaterialListByUserIdAndTypeAndAuditIsNotNull(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
             return materialListDAO.findMaterialListByUserIdAndTypeAndAuditIsNotNull(userId, identityType);
@@ -124,7 +144,7 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public MaterialListDO findCouponTransformByUserIdAndIdentityTypeAndGoodsId(Long userId, AppIdentityType identityType, Long goodsId) {
         if (null != userId && null != identityType && null != goodsId) {
-            return materialListDAO.findCouponTransformByUserIdAndIdentityTypeAndGoodsId(userId, identityType,goodsId);
+            return materialListDAO.findCouponTransformByUserIdAndIdentityTypeAndGoodsId(userId, identityType, goodsId);
         }
         return null;
     }
@@ -132,14 +152,14 @@ public class MaterialListServiceImpl implements MaterialListService {
     @Override
     public MaterialListDO findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(Long userId, Long cusId, AppIdentityType identityType, Long goodsId) {
         if (null != userId && null != cusId && null != identityType && null != goodsId) {
-            return materialListDAO.findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(userId,cusId, identityType,goodsId);
+            return materialListDAO.findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId(userId, cusId, identityType, goodsId);
         }
         return null;
     }
 
     @Override
     public List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(Long userId, AppIdentityType identityType) {
-        if (null != userId && null != identityType ) {
+        if (null != userId && null != identityType) {
             return materialListDAO.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId, identityType);
         }
         return null;

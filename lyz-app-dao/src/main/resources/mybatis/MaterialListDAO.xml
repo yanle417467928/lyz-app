@@ -3,22 +3,25 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaterialListDAO">
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         INSERT INTO material_list
-        (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit,
-        qty,audit_no,material_list_type)
+        (user_id, identity_type, cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit,
+         qty, audit_no, material_list_type)
         VALUES
-        (#{userId}, #{identityType}, #{cusId}, #{gid}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri},
-        #{goodsUnit}, #{qty},#{auditNo},#{materialListType});
+            (#{userId}, #{identityType}, #{cusId}, #{gid}, #{sku}, #{skuName}, #{goodsSpecification}, #{coverImageUri},
+                        #{goodsUnit}, #{qty}, #{auditNo}, #{materialListType});
     </insert>
 
     <insert id="batchSave" parameterType="java.util.List">
         INSERT INTO material_list
-        (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty, audit_no,
+        (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty,
+        audit_no,
         material_list_type)
         VALUES
         <foreach collection="list" item="materialListDO" separator=",">
             (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.cusId},#{materialListDO.gid},
-            #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification}, #{materialListDO.coverImageUri},
-            #{materialListDO.goodsUnit}, #{materialListDO.qty}, #{materialListDO.auditNo},#{materialListDO.materialListType})
+            #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification},
+            #{materialListDO.coverImageUri},
+            #{materialListDO.goodsUnit}, #{materialListDO.qty},
+            #{materialListDO.auditNo},#{materialListDO.materialListType})
         </foreach>
     </insert>
 
@@ -71,12 +74,12 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT *
         FROM
-        material_list
+            material_list
         WHERE user_id = #{userId}
-        AND identity_type = #{identityType}
-        AND gid = #{goodsId}
-        AND audit_no IS NULL
-        AND cus_id IS NULL
+              AND identity_type = #{identityType}
+              AND gid = #{goodsId}
+              AND audit_no IS NULL
+              AND cus_id IS NULL
               AND (material_list_type = 'NORMAL' OR material_list_type IS NULL)
     </select>
 
@@ -84,19 +87,19 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
         SELECT *
         FROM
-        material_list
+            material_list
         WHERE user_id = #{userId}
-        AND identity_type = #{identityType}
-        AND gid = #{goodsId}
-        AND material_list_type = 'AUDIT_TRANSFORM'
-        AND audit_no IS NOT NULL
+              AND identity_type = #{identityType}
+              AND gid = #{goodsId}
+              AND material_list_type = 'AUDIT_TRANSFORM'
+              AND audit_no IS NOT NULL
     </select>
 
     <select id="findMaterialListGoodsIdsByUserIdAndIdentityType" resultType="java.lang.Long">
         SELECT DISTINCT gid
         FROM material_list
         WHERE user_id = #{userId}
-        AND identity_type = #{identityType}
+              AND identity_type = #{identityType}
     </select>
 
     <delete id="deleteMaterialListByUserIdAndIdentityTypeAndGoodsId">
@@ -111,8 +114,8 @@
     <select id="findGoodsQtyByUserIdAndIdentityTypeAndGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam">
         SELECT
-        m.gid id,
-        m.qty
+            m.gid id,
+            m.qty
         FROM material_list m
         WHERE m.user_id = #{userId} AND m.identity_type = #{identityType} AND m.gid = #{goodsId}
               AND m.audit_no IS NULL AND m.cus_id IS NULL AND
@@ -121,29 +124,40 @@
 
     <select id="existOtherMaterialListByUserIdAndIdentityType" resultType="java.lang.Boolean">
         SELECT EXISTS
-        (SELECT 'X' FROM material_list WHERE user_id = #{userId} AND identity_type = #{identityType} AND audit_no IS NOT NULL )
+        (SELECT 'X'
+         FROM material_list
+         WHERE user_id = #{userId} AND identity_type = #{identityType} AND audit_no IS NOT NULL)
     </select>
 
     <select id="existOtherMaterialCouponByUserIdAndIdentityType" resultType="java.lang.Boolean">
         SELECT EXISTS
-        (SELECT 'X' FROM material_list WHERE user_id = #{userId} AND identity_type = #{identityType} AND cus_id IS NOT
-        NULL
-        AND cus_id != #{cusId})
+        (SELECT 'X'
+         FROM material_list
+         WHERE user_id = #{userId} AND identity_type = #{identityType} AND cus_id IS NOT
+                                                                           NULL
+               AND cus_id != #{cusId})
     </select>
 
     <select id="findMaterialListByUserIdAndTypeAndAuditIsNotNull"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
-        SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
-        m.qty, p.retail_price
+        SELECT DISTINCT
+            m.id,
+            m.gid goodsId,
+            m.sku_name,
+            m.goods_specification,
+            m.cover_image_uri,
+            m.goods_unit,
+            m.qty,
+            p.retail_price
         FROM material_list m
-        LEFT JOIN emp_employee c ON c.emp_id = m.user_id
-        LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            LEFT JOIN emp_employee c ON c.emp_id = m.user_id
+            LEFT JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
+                                           AND p.start_time &lt; NOW()
+                                           AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         WHERE m.user_id = #{userId}
-        AND m.identity_type = #{identityType}
-        AND m.material_list_type = 'AUDIT_TRANSFORM'
-        AND m.audit_no IS NOT NULL
+              AND m.identity_type = #{identityType}
+              AND m.material_list_type = 'AUDIT_TRANSFORM'
+              AND m.audit_no IS NOT NULL
     </select>
 
     <select id="findCouponTransformByUserIdAndIdentityTypeAndGoodsId"
@@ -151,10 +165,10 @@
         SELECT *
         FROM material_list m
         WHERE m.user_id = #{userId}
-          AND m.identity_type = #{identityType}
-          AND m.gid = #{goodsId}
-        AND cus_id IS NULL
-          AND m.material_list_type = 'COUPON_TRANSFORM'
+              AND m.identity_type = #{identityType}
+              AND m.gid = #{goodsId}
+              AND cus_id IS NULL
+              AND m.material_list_type = 'COUPON_TRANSFORM'
     </select>
 
     <select id="findCouponTransformByUserIdAndCusIdAndIdentityTypeAndGoodsId"
@@ -170,19 +184,33 @@
 
     <select id="findGuideMaterialListByUserIdAndCusIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse">
-        SELECT DISTINCT m.id, m.gid goodsId, m.cus_id, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
-        m.qty
+        SELECT DISTINCT
+            m.id,
+            m.gid goodsId,
+            m.cus_id,
+            m.sku_name,
+            m.goods_specification,
+            m.cover_image_uri,
+            m.goods_unit,
+            m.qty
         FROM material_list m
         WHERE m.user_id = #{userId}
-        AND m.identity_type = #{identityType}
-        AND m.material_list_type = 'COUPON_TRANSFORM'
-        AND m.cus_id IS NOT NULL
+              AND m.identity_type = #{identityType}
+              AND m.material_list_type = 'COUPON_TRANSFORM'
+              AND m.cus_id IS NOT NULL
     </select>
 
     <select id="findCustomerMaterialListByUserIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse">
 
-        SELECT DISTINCT m.id, m.gid goodsId, m.cus_id, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
+        SELECT DISTINCT
+            m.id,
+            m.gid goodsId,
+            m.cus_id,
+            m.sku_name,
+            m.goods_specification,
+            m.cover_image_uri,
+            m.goods_unit,
             m.qty
         FROM material_list m
         WHERE m.user_id = #{userId}
@@ -190,4 +218,22 @@
               AND m.material_list_type = 'COUPON_TRANSFORM'
               AND m.cus_id IS NULL
     </select>
+
+    <delete id="deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds">
+        DELETE FROM material_list
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND gid IN
+        <foreach collection="goodsIds" item="materialList" open="(" close=")" separator=",">
+            #{materialList}
+        </foreach>
+        AND (material_list_type = 'NORMAL' OR material_list_type = 'AUDIT_TRANSFORM')
+    </delete>
+
+    <delete id="deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds">
+        DELETE FROM material_list
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND gid IN
+        <foreach collection="couponGoodsIds" item="materialList" open="(" close=")" separator=",">
+            #{materialList}
+        </foreach>
+        AND material_list_type = 'COUPON_TRANSFORM'
+    </delete>
 </mapper>

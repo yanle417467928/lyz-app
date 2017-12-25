@@ -325,6 +325,11 @@ public class OrderController {
 
             //********分摊**********
             //dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
+            //****** 清空当单购物车商品 ******
+            commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
+
+            // *******分摊**********
+            dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             if (orderBillingDetails.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
