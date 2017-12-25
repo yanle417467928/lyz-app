@@ -44,4 +44,29 @@ public interface MaStoreService {
 
     PageInfo<DecorativeCompanyInfo> findDecorativeCreditByCondition(Integer page, Integer size, String enabled, Long cityId);
 
+    /**
+     * 获取装饰公司门店列表
+     * @return  门店列表
+     */
+    List<StoreVO> findCompanyStoresList();
+
+    /**
+     * 根据城市获取装饰公司门店列表
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    List<StoreVO> findCompanyStoresListByCityId(Long cityId);
+
+    /**
+     * 根据城市获取支持门店自提门店列表
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    List<StoreVO> findSelfDeliveryStoresListByCityId(Long cityId);
+
+    /**
+     * 获取支持门店自提门店列表
+     * @return  门店列表
+     */
+    List<StoreVO> findSelfDeliveryStoresList();
 }

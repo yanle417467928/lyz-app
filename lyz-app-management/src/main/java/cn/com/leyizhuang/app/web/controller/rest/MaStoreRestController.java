@@ -66,6 +66,50 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
+     * 查询装饰公司门店列表(下拉框)
+     *
+     * @return  门店列表
+     */
+    @GetMapping(value = "/find/company/stores")
+    public List<StoreVO> findCompanyStoresList() {
+        List<StoreVO> allStoresList = this.maStoreService.findCompanyStoresList();
+        return allStoresList;
+    }
+
+    /**
+     * 根据城市id获取支持门店自提的门店列表（下拉框）
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    @GetMapping(value = "/find/city/selfDelivery/stores")
+    public List<StoreVO> findSelfDeliveryStoresListByCityId(Long cityId){
+        List<StoreVO> selfDeliveryStoreList = this.maStoreService.findSelfDeliveryStoresListByCityId(cityId);
+        return selfDeliveryStoreList;
+    }
+
+    /**
+     * 获取支持门店自提的门店列表（下拉框）
+     * @return  门店列表
+     */
+    @GetMapping(value = "/find/selfDelivery/stores")
+    public List<StoreVO> findSelfDeliveryStoresList(){
+        List<StoreVO> selfDeliveryStores = this.maStoreService.findSelfDeliveryStoresList();
+        return selfDeliveryStores;
+    }
+
+    /**
+     * 查询该城市ID的装饰公司门店列表(下拉框)
+     *
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    @GetMapping(value = "/find/company/StoresListByCityId/{cityId}")
+    public List<StoreVO> findCompanyStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
+        List<StoreVO> storesList = this.maStoreService.findCompanyStoresListByCityId(cityId);
+        return storesList;
+    }
+
+    /**
      * 查询门店信息
      *
      * @param storeId

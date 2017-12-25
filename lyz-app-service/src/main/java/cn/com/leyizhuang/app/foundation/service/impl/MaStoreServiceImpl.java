@@ -159,4 +159,24 @@ public class MaStoreServiceImpl implements MaStoreService {
         return new PageInfo<>(pageDecorativeCompanyList);
     }
 
+    @Override
+    public List<StoreVO> findCompanyStoresList() {
+        return mastoreDAO.findCompanyStoresList();
+    }
+
+    @Override
+    public List<StoreVO> findCompanyStoresListByCityId(Long cityId) {
+        return mastoreDAO.findCompanyStoresListByCityId(cityId);
+    }
+
+    @Override
+    public List<StoreVO> findSelfDeliveryStoresListByCityId(Long cityId) {
+        return mastoreDAO.findSelfDeliveryStoresListByCityId(cityId);
+    }
+
+    @Override
+    public List<StoreVO> findSelfDeliveryStoresList() {
+        return mastoreDAO.findSelfDeliveryStoresList();
+    }
+
 }

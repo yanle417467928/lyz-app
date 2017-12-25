@@ -56,4 +56,17 @@ public interface MaStoreDAO {
      * @return  门店列表
      */
     List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId);
+
+    /**
+     * 根据城市获取支持门店自提门店列表
+     * @param cityId    城市id
+     * @return  门店列表
+     */
+    List<StoreVO> findSelfDeliveryStoresListByCityId(@Param("cityId") Long cityId);
+
+    /**
+     * 获取支持门店自提门店列表
+     * @return  门店列表
+     */
+    List<StoreVO> findSelfDeliveryStoresList();
 }

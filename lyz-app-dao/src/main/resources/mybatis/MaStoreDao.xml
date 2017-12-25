@@ -401,4 +401,26 @@
         	s.store_type = 'ZS'
     </select>
 
+    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        LEFT JOIN city c on s.city_code = c.code
+        WHERE c.city_id = #{cityId}
+        AND
+        s.is_self_delivery = TRUE
+    </select>
+
+    <select id="findSelfDeliveryStoresList" resultType="StoreVO">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+        s.is_self_delivery = TRUE
+    </select>
+
 </mapper>
