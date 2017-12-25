@@ -31,6 +31,10 @@ public class PhotoOrderDetailsResponse {
     private String deliveryPhone;
     //收货详细地址
     private String detailedAddress;
+    /**
+     * 是否主家收货
+     */
+    private Boolean isOwnerReceiving;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();

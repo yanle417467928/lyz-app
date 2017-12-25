@@ -377,12 +377,6 @@ public class OrderController {
         logger.info("enterOrder CALLED,用户确认订单计算商品价格明细，入参 goodsSimpleRequest:{}", goodsSimpleRequest);
 
         ResultDTO<Object> resultDTO;
-        //可以传的都可以单独存在，不能判断
-//        if (AssertUtil.isEmpty(goodsSimpleRequest.getProductCouponList()) || AssertUtil.isEmpty(goodsSimpleRequest.getGoodsList())) {
-//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单商品信息不可为空！", null);
-//            logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
-//            return resultDTO;
-//        }
         if (null == goodsSimpleRequest.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
@@ -475,7 +469,8 @@ public class OrderController {
                         totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                         //算会员折扣(先判断是否是会员还是零售会员)
                         if (null != customer.getSalesConsultId()) {
-                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
+                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
+                                    simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                         }
                     }
                 }
@@ -520,7 +515,6 @@ public class OrderController {
                     return resultDTO;
                 }
                 //计算订单金额小计
-                //TODO 根据促销减去订单折扣, 加运费
                 //********* 计算促销立减金额 *************
                 List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
                 for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
@@ -544,13 +538,11 @@ public class OrderController {
                 //查询顾客预存款
                 Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
 
-                goodsSettlement.put("totalQty", goodsQty + giftQty);
+                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
-                // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("orderDiscount", orderDiscount);
-                // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
@@ -657,7 +649,6 @@ public class OrderController {
                     return resultDTO;
                 }
                 //计算订单金额小计
-                //TODO 根据促销减去订单折扣
                 //********* 计算促销立减金额 *************
                 List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
                 for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
@@ -684,13 +675,11 @@ public class OrderController {
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
-                goodsSettlement.put("totalQty", goodsQty + giftQty);
+                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
-                // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("orderDiscount", orderDiscount);
-                // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
@@ -781,12 +770,10 @@ public class OrderController {
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
                 Double storeSubvention = appStoreService.findSubventionBalanceByUserId(userId);
 
-                goodsSettlement.put("totalQty", goodsQty + giftQty);
+                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
-                // TODO 会员折扣在创建促销表后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("orderDiscount", orderDiscount);
-                // TODO 运费再出算法后折算（以下算法无任何意义，作数据填充）
                 goodsSettlement.put("freight", freight);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
