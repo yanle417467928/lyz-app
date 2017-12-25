@@ -316,12 +316,15 @@ public class OrderController {
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
             commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
+            //********分摊**********
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
+
 
             //******* 持久化订单相关实体信息  *******
             commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
 
-            // *******分摊**********
-            dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
+            //********分摊**********
+            //dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             if (orderBillingDetails.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

@@ -564,7 +564,7 @@ function starAndEndDatetimepiker(startDateId,endDateId){
         var startTime = e.date;
         $('#'+endDateId).datetimepicker('setStartDate',startTime);
     }).on('hide',function(e) {
-       // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(startDateId, 'NOT_VALIDATED',null) .validateField(startDateId);
+        $('#activity_form').data('bootstrapValidator') .updateStatus(startDateId, 'NOT_VALIDATED',null) .validateField(startDateId);
     });
 
 
@@ -576,6 +576,6 @@ function starAndEndDatetimepiker(startDateId,endDateId){
         var startTime = e.date;
         $('#'+startDateId).datetimepicker('setEndDate',startTime);
     }).on('hide',function(e) {
-       // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
+        $('#activity_form').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
     });
 }

@@ -56,16 +56,19 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @param orderGoodsInfoList
      * @return
      */
-    public Boolean addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) {
+    public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) {
+
+        // 最终商品明细集合
+        List<OrderGoodsInfo> finallyOrderGoodsInfo = new ArrayList<>();
 
         // 无促销 不用分摊
         if (promotionSimpleInfoList == null || promotionSimpleInfoList.size() == 0) {
-            return false;
+            return finallyOrderGoodsInfo;
         }
 
         // 没有本品明细 不用分摊
         if (orderGoodsInfoList == null || orderGoodsInfoList.size() == 0) {
-            return false;
+            return finallyOrderGoodsInfo;
         }
 
         // 顾客类型
@@ -130,7 +133,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         // 首先生成一条赠品明细行
                         OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
                         newOrderGoodsInfoList.add(giftDetailLine);
-                        orderService.saveOrderGoodsInfo(giftDetailLine);
+                        //orderService.saveOrderGoodsInfo(giftDetailLine);
 
                         giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
                     }
@@ -142,13 +145,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                         OrderGoodsInfo oldGoodsInfo = orderGoodsInfoMap.get(goodsMapping.getSku());
                         Integer oldNum = oldGoodsInfo.getOrderQuantity();
-                        oldGoodsInfo.setOrderQuantity(oldNum - num * enjoyTimes);
+                        oldGoodsInfo.setOrderQuantity(oldNum - num);
                         orderGoodsInfoMap.put(goodsMapping.getSku(), oldGoodsInfo);
 
                         // 克隆一个本品对象
                         OrderGoodsInfo newGoodsInfo = oldGoodsInfo.clone();
                         newGoodsInfo.setId(null);
-                        newGoodsInfo.setOrderQuantity(goodsMapping.getQty() * enjoyTimes);
+                        newGoodsInfo.setOrderQuantity(num);
                         newGoodsInfo.setPromotionId(act.getId().toString());
 
                         newOrderGoodsInfoList.add(newGoodsInfo);
@@ -157,9 +160,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 计算分担金额 并持久化对象
-                    this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType);
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType));
 
-                } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00 && promotionSimpleInfo.getPresentInfo() == null) {
+                } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00) {
                     // 立减优惠
                     Double subPrice = promotionSimpleInfo.getDiscount();
                     // 本品总价
@@ -188,7 +191,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 计算分担金额 并持久化对象
-                    this.countDutchPrice(newOrderGoodsInfoList, goodsTotalPrice, subPrice, identityType, customerType);
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, goodsTotalPrice, subPrice, identityType, customerType));
 
                     // 从促销List中移除
                     promotionMap.remove(act.getId());
@@ -221,11 +224,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     OrderGoodsInfo info = itEntry.getValue();
                     if (info.getOrderQuantity().equals(0)) {
                         // 删除此条记录
-                        orderDAO.deleteOrderGoodsInfo(info.getId());
+                        //orderDAO.deleteOrderGoodsInfo(info.getId());
                         it.remove();
                     } else if (skus.contains(info.getSku())) {
+                        info.setPromotionId(act.getId().toString());
                         newOrderGoodsInfoList.add(info);
                         goodsTotalPrice = CountUtil.add(this.returnCountPrice(info, identityType, customerType), goodsTotalPrice);
+                        it.remove();
                     }
                 }
 
@@ -257,7 +262,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         // 首先生成一条赠品明细行
                         OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
                         newOrderGoodsInfoList.add(giftDetailLine);
-                        orderService.saveOrderGoodsInfo(giftDetailLine);
+                        //orderService.saveOrderGoodsInfo(giftDetailLine);
 
                         giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
                     }
@@ -277,6 +282,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 } else {
                     //throw Exception;
                 }
+
+                finallyOrderGoodsInfo.addAll(newOrderGoodsInfoList);
             }
         }
 
@@ -290,14 +297,17 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             if (info.getOrderQuantity().equals(0)) {
                 it.remove();
                 // 删除此条记录
-                orderDAO.deleteOrderGoodsInfo(info.getId());
+                //orderDAO.deleteOrderGoodsInfo(info.getId());
             } else {
                 // 更新此条记录
-                orderDAO.updateOrderGoodsInfo(info);
+                //orderDAO.updateOrderGoodsInfo(info);
+
+                // 将没有参与促销的商品装入
+                finallyOrderGoodsInfo.add(info);
             }
         }
 
-        return true;
+        return finallyOrderGoodsInfo;
     }
 
     /**
@@ -315,13 +325,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             Double dutchPrice = CountUtil.mul(CountUtil.div(price, totalPrice), subPrice);
             info.setIsPriceShare(true);
             info.setSharePrice(dutchPrice);
-            info.setReturnPrice(CountUtil.sub(price, dutchPrice));
+            info.setReturnPrice(CountUtil.div(CountUtil.sub(price, dutchPrice),info.getOrderQuantity()));
 
-            if (info.getId() == null) {
-                orderDAO.saveOrderGoodsInfo(info);
-            } else {
-                orderDAO.updateOrderGoodsInfo(info);
-            }
+//            if (info.getId() == null) {
+//                orderDAO.saveOrderGoodsInfo(info);
+//            } else {
+//                orderDAO.updateOrderGoodsInfo(info);
+//            }
         }
 
         return orderGoodsInfos;
@@ -348,6 +358,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
         result.setOid(info.getOid());
         result.setOrderNumber(info.getOrderNumber());
+        result.setGid(goods.getGid());
         result.setSku(goods.getSku());
         result.setSkuName(goods.getSkuName());
         result.setRetailPrice(goods.getRetailPrice());

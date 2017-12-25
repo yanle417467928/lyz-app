@@ -101,6 +101,8 @@
         <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
             #{id}
         </foreach>
+
+        ORDER BY sort_id
     </select>
 
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
