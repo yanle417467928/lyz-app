@@ -19,4 +19,7 @@ public class SimpleStoreParam {
     private Long storeId;
    //门店名称
     private String storeName;
+
+    // 是否被选中
+    private Boolean isSelected;
 }

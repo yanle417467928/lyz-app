@@ -25,6 +25,8 @@ public interface ActGoodsMappingDAO {
     List<ActGoodsMappingDO> queryListByActId(@Param("actId") Long actId);
 
     List<String> querySkusByActId(@Param("actId") Long actId);
+
+    void deleteByActBaseId(@Param("actBaseId") Long actBaseId);
     /**
      * 批量插入
      * @param trainRecordList

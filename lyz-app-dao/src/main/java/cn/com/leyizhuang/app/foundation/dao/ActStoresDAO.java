@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,5 +19,9 @@ public interface ActStoresDAO {
 
     List<ActStoreDO> queryList();
 
+    List<ActStoreDO> queryListByActBaseId(@Param("actBaseId") Long actBaseId);
+
     ActStoreDO queryById();
+
+    void deleteByActBaseId(@Param("actBaseId") Long actBaseId);
 }

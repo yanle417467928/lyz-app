@@ -274,6 +274,8 @@ public class MaterialListController {
                 materialWorkerAuditResponse.setGoodsList(materialListDOS);
                 materialWorkerAuditResponse.setAuditNo(auditNo);
                 materialWorkerAuditResponse.setWorker(materialAuditSheet.getEmployeeName());
+                materialWorkerAuditResponse.setRemark(materialAuditSheet.getRemark());
+                materialWorkerAuditResponse.setDetailedAddress(materialAuditSheet.getDetailedAddress());
 
             }
         }

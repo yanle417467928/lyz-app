@@ -103,6 +103,10 @@ public class OrderDetailsResponse {
      * 商品list
      */
     private List<OrderGoodsListResponse> goodsList;
+    /**
+     * 取货码
+     */
+    private String pickUpCode;
 
 
 }

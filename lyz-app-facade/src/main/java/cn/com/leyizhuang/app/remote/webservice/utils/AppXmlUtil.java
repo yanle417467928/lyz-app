@@ -134,6 +134,12 @@ public class AppXmlUtil {
         return Base64Utils.encode(xmlStr);
     }
 
+    /**
+     * 解析返回结果信息
+     *
+     * @param objects
+     * @return
+     */
     public static String checkReturnXml(Object[] objects) {
         StringBuilder result = new StringBuilder();
         if (objects != null) {

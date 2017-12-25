@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response.materialList;
 
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +23,16 @@ public class MaterialWorkerAuditResponse {
      * 提交人姓名
      */
     private String worker;
+
+    /**
+     * 料单备注
+     */
+    private String remark;
+
+    /**
+     * 详细地址
+     */
+    private String detailedAddress;
     /**
      * 物料单商品list
      */

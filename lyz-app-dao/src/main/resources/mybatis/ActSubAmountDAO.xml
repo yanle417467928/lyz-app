@@ -58,4 +58,7 @@
         FROM act_sub_amount
     </select>
 
+    <delete id="deleteByActBaseId" parameterType="java.lang.Long">
+        DELETE FROM act_sub_amount where act_id = #{actBaseId}
+    </delete>
 </mapper>

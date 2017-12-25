@@ -21,4 +21,6 @@ public interface ActSubAmountDAO {
     ActSubAmountDO queryById();
 
     ActSubAmountDO queryByActId(@Param("actId") Long actId);
+
+    void deleteByActBaseId(@Param("actBaseId") Long actBaseId);
 }
