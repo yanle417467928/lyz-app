@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -51,4 +53,6 @@ public interface CommonService {
      * @param orderNumber 订单号
      */
     void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo,String tradeStatus, OnlinePayType onlinePayType) throws IOException;
+
+    void clearOrderGoodsInMaterialList(Long userId, Integer identityType, List<GoodsSimpleInfo> goodsList, List<ProductCouponSimpleInfo> productCouponList);
 }

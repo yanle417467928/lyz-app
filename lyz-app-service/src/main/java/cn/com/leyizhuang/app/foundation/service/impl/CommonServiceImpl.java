@@ -14,6 +14,8 @@ import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -29,10 +31,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 通用方法实现
@@ -580,7 +579,7 @@ public class CommonServiceImpl implements CommonService {
                             + orderBaseInfo.getOrderNumber() +
                             ",请及时跟进。";
                     String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
-                            orderBaseInfo.getSalesConsultPhone(), tips);
+                            orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
                 }
                 //修改顾客上一次下单时间
                 AppCustomer customer = new AppCustomer();
@@ -770,6 +769,30 @@ public class CommonServiceImpl implements CommonService {
             //更新顾客信息
             if (customer.getCusId() != null) {
                 customerService.update(customer);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void clearOrderGoodsInMaterialList(Long userId, Integer identityType, List<GoodsSimpleInfo> goodsList,
+                                              List<ProductCouponSimpleInfo> productCouponList) {
+        if (null != userId && null != identityType){
+            if (null != goodsList && goodsList.size()>0){
+                Set<Long> goodsIds = new HashSet<>();
+                for (GoodsSimpleInfo goods:goodsList){
+                    goodsIds.add(goods.getId());
+                }
+                materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(
+                        userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsIds);
+            }
+            if (null != productCouponList){
+                Set<Long> couponGoodsIds = new HashSet<>();
+                for (ProductCouponSimpleInfo couponGoods:productCouponList){
+                    couponGoodsIds.add(couponGoods.getId());
+                }
+                materialListService.deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(
+                        userId,AppIdentityType.getAppIdentityTypeByValue(identityType),couponGoodsIds);
             }
         }
     }

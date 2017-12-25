@@ -193,7 +193,7 @@ public class OrderController {
             //定义订单促销折扣
             Double promotionDiscount = 0D;
 
-
+            // ********* 处理订单本品并生成相关订单商品信息 **********
             if (null != goodsList && goodsList.size() > 0) {
                 //获取本品id集合
                 Set<Long> goodsIdSet = new HashSet<>();
@@ -290,6 +290,7 @@ public class OrderController {
                     //throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
                 }
             }
+            //********* 处理订单产品券并生成相关订单商品信息 **********
 
             //********* 处理订单账务相关信息 *********
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
@@ -320,8 +321,11 @@ public class OrderController {
             //******* 持久化订单相关实体信息  *******
             commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
 
+            //****** 清空当单购物车商品 ******
+            commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
+
             // *******分摊**********
-            dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
+            dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             if (orderBillingDetails.getIsPayUp()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -60,7 +61,7 @@ public interface MaterialListDAO {
                                                                                 @Param("goodsId") Long goodsId);
 
     List<CouponMaterialListResponse> findGuideMaterialListByUserIdAndCusIdAndIdentityType(@Param("userId") Long userId,
-                                                                             @Param("identityType") AppIdentityType identityType);
+                                                                                          @Param("identityType") AppIdentityType identityType);
 
     List<CouponMaterialListResponse> findCustomerMaterialListByUserIdAndIdentityType(@Param("userId") Long userId,
                                                                                      @Param("identityType") AppIdentityType identityType);
@@ -68,4 +69,12 @@ public interface MaterialListDAO {
     Boolean existOtherMaterialCouponByUserIdAndIdentityType(@Param("userId") Long userId,
                                                             @Param("cusId") Long cusId,
                                                             @Param("identityType") AppIdentityType identityType);
+
+    void deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(@Param(value = "userId") Long userId,
+                                                              @Param(value = "identityType") AppIdentityType identityType,
+                                                              @Param(value = "goodsIds") Set<Long> goodsIds);
+
+    void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(@Param(value = "userId") Long userId,
+                                                                                @Param(value = "identityType") AppIdentityType identityType,
+                                                                                @Param(value = "couponGoodsIds") Set<Long> couponGoodsIds);
 }
