@@ -263,6 +263,7 @@ public class OrderController {
                             goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
                         }
                     }
+                    goodsInfo.setGid(goodsVO.getGid());
                     goodsInfo.setSku(goodsVO.getSku());
                     goodsInfo.setSkuName(goodsVO.getSkuName());
                     goodsInfo.setOrderQuantity(goodsVO.getQty());

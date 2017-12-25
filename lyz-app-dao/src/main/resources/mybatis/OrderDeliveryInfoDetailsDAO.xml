@@ -33,6 +33,17 @@
              #{taskNo}, #{picture})
     </insert>
 
+    <update id="modifyOrderDeliveryInfoDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        UPDATE ord_delivery_info_details
+        <set>
+            <if test="null != isRead">
+                is_read = #{isRead}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
     <select id="getDeliveryByOperatorNoAndOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse">
         SELECT
@@ -238,4 +249,53 @@
             (oaa.`status` = 'AUDIT_NO' OR oaa.`status` = 'AUDIT_PASSED')
         AND oaa.user_id = #{userId}
     </select>
+
+    <select id="countUnreadLogisticsMessage" resultType="java.lang.Integer">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            COUNT(*)
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            WHERE
+            obi.customer_id = #{userId}
+            AND
+            odid.is_read = FALSE
+            AND
+            obi.create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            COUNT(*)
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            WHERE
+            obi.creator_id = #{userId}
+            AND
+            odid.is_read = FALSE
+            AND
+            obi.create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            COUNT(*)
+            FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+            WHERE
+            obi.sales_consult_id = #{userId}
+            AND
+            odid.is_read = FALSE
+            AND
+            obi.create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+            AND
+            (odid.logistic_status = 'SEALED_CAR' OR odid.logistic_status = 'CONFIRM_ARRIVAL')
+        </if>
+    </select>
+
 </mapper>

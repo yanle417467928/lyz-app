@@ -148,6 +148,14 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if ("已完成".equals(orderBaseInfo.getStatus().getDescription())
+                    || "已结案".equals(orderBaseInfo.getStatus().getDescription())
+                    || "已取消".equals(orderBaseInfo.getStatus().getDescription())
+                    || "拒签".equals(orderBaseInfo.getStatus().getDescription())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单状态不能取消！", null);
+                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             if ("送货上门".equals(AppDeliveryType.HOUSE_DELIVERY.getDescription())) {
                 if (!"等待物流接收".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&
                         !"已接收".equals(orderBaseInfo.getDeliveryStatus().getDescription()) &&

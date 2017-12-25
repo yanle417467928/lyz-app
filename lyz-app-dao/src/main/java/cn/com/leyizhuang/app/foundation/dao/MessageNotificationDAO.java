@@ -16,4 +16,20 @@ public interface MessageNotificationDAO {
 
     List<MessageNotificationListResponse> queryListByUserIdAndUserType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
+    /**
+     * 获取未读消息条数
+     *
+     * @param userId
+     * @param appIdentityTypeByValue
+     * @return
+     * @author Jerry
+     */
+    int countUnreadNotifyMessage(@Param("userId") Long userId, @Param("identityType") AppIdentityType appIdentityTypeByValue);
+
+    /**
+     * 修改消息
+     *
+     * @param messageNotificationListResponse 推送消息返回对象
+     */
+    void modifyMessageNotification(MessageNotificationListResponse messageNotificationListResponse);
 }

@@ -26,4 +26,14 @@ public class MessageNotificationServiceImpl implements MessageNotificationServic
     public List<MessageNotificationListResponse> queryListByUserIdAndUserType(Long userId, Integer userType) {
         return this.messageNotificationDAO.queryListByUserIdAndUserType(userId, AppIdentityType.getAppIdentityTypeByValue(userType));
     }
+
+    @Override
+    public int countUnreadNotifyMessage(Long userId, Integer identityType) {
+        return this.messageNotificationDAO.countUnreadNotifyMessage(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    }
+
+    @Override
+    public void modifyMessageNotification(MessageNotificationListResponse messageNotificationListResponse) {
+        messageNotificationDAO.modifyMessageNotification(messageNotificationListResponse);
+    }
 }

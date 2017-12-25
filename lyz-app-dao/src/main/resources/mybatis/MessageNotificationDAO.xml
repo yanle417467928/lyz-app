@@ -8,8 +8,27 @@
         SELECT id, title, create_time,is_read
         FROM message_notification
         WHERE user_id = #{userId} AND identity_type = #{identityType}
+        AND create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY create_time DESC
     </select>
 
+    <select id="countUnreadNotifyMessage" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM message_notification
+        WHERE user_id = #{userId}
+              AND identity_type = #{identityType}
+              AND create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+              AND is_read = FALSE
+    </select>
 
+    <update id="modifyMessageNotification"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
+        UPDATE message_notification
+        <set>
+            <if test="null != isRead">
+                is_read = #{isRead}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

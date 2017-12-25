@@ -264,6 +264,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         //设置订单创建时间
         Calendar calendar = Calendar.getInstance();
         tempOrder.setCreateTime(calendar.getTime());
+        tempOrder.setCityId(cityId);
         //设置订单过期时间
         calendar.add(Calendar.MINUTE, AppConstant.ORDER_EFFECTIVE_MINUTE);
         tempOrder.setEffectiveEndTime(calendar.getTime());

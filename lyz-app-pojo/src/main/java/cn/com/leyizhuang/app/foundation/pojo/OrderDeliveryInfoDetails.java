@@ -53,6 +53,11 @@ public class OrderDeliveryInfoDetails {
      */
     private String picture;
 
+    /**
+     * 是否已读
+     */
+    private Boolean isRead;
+
     public void setDeliveryInfo(String orderNo,LogisticStatus logisticStatus,String description,
                                 String operationType,String operatorNo,String picture,String warehouseNo,String taskNo){
         this.orderNo = orderNo;
