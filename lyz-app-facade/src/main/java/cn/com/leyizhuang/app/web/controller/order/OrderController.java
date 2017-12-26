@@ -400,7 +400,6 @@ public class OrderController {
             int couponQty = 0;
             Double totalPrice = 0.00;
             Double memberDiscount = 0.00;
-            //订单优惠在以后的促销活动表中获取数据
             Double orderDiscount = 0.00;
             //运费暂时还没出算法
             Double freight = 0.00;
@@ -409,147 +408,17 @@ public class OrderController {
             List<Long> giftIds = new ArrayList<Long>();
             List<Long> couponIds = new ArrayList<Long>();
             List<GoodsIdQtyParam> giftsList = new ArrayList<>();
-//            List<GoodsIdQtyParam> couponList = new ArrayList<>();
             List<OrderGoodsSimpleResponse> goodsInfo = null;
             List<OrderGoodsSimpleResponse> giftsInfo = null;
             List<OrderGoodsSimpleResponse> productCouponInfo = null;
             List<CashCouponResponse> cashCouponResponseList = null;
             Map<String, Object> goodsSettlement = new HashMap<>();
-
+            Long cityId = 0L;
+            AppCustomer customer = null;
 
             if (identityType == 6) {
-                AppCustomer customer = appCustomerService.findById(userId);
-                Long cityId = customer.getCityId();
-                if (AssertUtil.isNotEmpty(goodsList)) {
-                    for (GoodsIdQtyParam aGoodsList : goodsList) {
-                        goodsIds.add(aGoodsList.getId());
-                        goodsQty = goodsQty + aGoodsList.getQty();
-                    }
-                }
-                if (AssertUtil.isNotEmpty(giftList)) {
-                    for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
-                        if (null != promotionSimpleInfo.getPresentInfo()) {
-                            giftsList.addAll(promotionSimpleInfo.getPresentInfo());
-                            for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
-                                giftIds.add(goodsIdQtyParam.getId());
-                                giftQty = giftQty + goodsIdQtyParam.getQty();
-                            }
-                        }
-                    }
-                }
-                if (AssertUtil.isNotEmpty(couponList)) {
-                    for (GoodsIdQtyParam couponSimpleInfo : couponList) {
-//                        OrderGoodsSimpleResponse couponInfo = goodsService.findGoodsByCustomerIdAndSku(userId,couponSimpleInfo.getSku());
-//                        couponInfo.setGoodsQty(couponSimpleInfo.getQty());
-//                        couponInfo.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
-//                        productCouponInfo.add(couponInfo);
-//                        GoodsIdQtyParam param = new GoodsIdQtyParam();
-//                        param.setId(couponInfo.getId());
-//                        param.setQty(couponSimpleInfo.getQty());
-//                        couponList.add(param);
-                        couponIds.add(couponSimpleInfo.getId());
-                        couponQty = couponQty + couponSimpleInfo.getQty();
-                    }
-                }
-                //获取商品信息
-                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
-                //获取赠品信息
-                giftsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
-                //获取产品券信息
-                productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
-                //加本品标识
-                if (AssertUtil.isNotEmpty(goodsInfo)) {
-                    for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
-                        //算总金额
-                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
-                        //算会员折扣(先判断是否是会员还是零售会员)
-                        if (null != customer.getSalesConsultId()) {
-                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
-                                    simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
-                        }
-                    }
-                }
-                //赠品的数量和标识
-                if (AssertUtil.isNotEmpty(giftsInfo)) {
-                    for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
-                            if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
-                                aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
-                    }
-                    //合并商品和赠品集合
-                    goodsInfo.addAll(giftsInfo);
-                }
-                //产品券加标识
-                if (AssertUtil.isNotEmpty(productCouponInfo)) {
-                    for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
-                            if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                                orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
-                    }
-                    //合并商品和赠品集合
-                    if (AssertUtil.isNotEmpty(goodsInfo)) {
-                        goodsInfo.addAll(productCouponInfo);
-                    } else {
-                        goodsInfo = productCouponInfo;
-                    }
-                }
-
-                //判断库存的特殊处理
-                Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
-                if (gid != null) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", null);
-                    logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
-                //计算订单金额小计
-                //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
-                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
-                    PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
-                    promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
-                    promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
-                    promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
-                    giftList.add(promotionSimpleInfo);
-                }
-
-                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-                if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 1.00;
-                }
-                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
-                //计算顾客乐币
-                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
-                //计算可用的优惠券
-                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
-                //查询顾客预存款
-                Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
-
-                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-                goodsSettlement.put("totalPrice", totalPrice);
-                goodsSettlement.put("totalGoodsInfo", goodsInfo);
-                goodsSettlement.put("memberDiscount", memberDiscount);
-                goodsSettlement.put("orderDiscount", orderDiscount);
-                goodsSettlement.put("freight", freight);
-                goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                goodsSettlement.put("leBi", leBi);
-                goodsSettlement.put("cashCouponList", cashCouponResponseList);
-                goodsSettlement.put("preDeposit", preDeposit);
+                customer = appCustomerService.findById(userId);
+                cityId = customer.getCityId();
             }
             if (identityType == 0) {
                 if (null == goodsSimpleRequest.getCustomerId()) {
@@ -558,132 +427,159 @@ public class OrderController {
                     return resultDTO;
                 }
                 Long customerId = goodsSimpleRequest.getCustomerId();
-                AppCustomer customer = appCustomerService.findById(customerId);
-                Long storeId = customer.getStoreId();
-                if (AssertUtil.isNotEmpty(goodsList)) {
-                    for (GoodsIdQtyParam aGoodsList : goodsList) {
-                        goodsIds.add(aGoodsList.getId());
-                        goodsQty = goodsQty + aGoodsList.getQty();
-                    }
+                customer = appCustomerService.findById(customerId);
+                cityId = customer.getCityId();
+            }
+            if (identityType == 2) {
+                AppEmployee employee = appEmployeeService.findById(userId);
+                cityId = employee.getCityId();
+            }
+
+            //取出所有本品的id和计算本品数量
+            if (AssertUtil.isNotEmpty(goodsList)) {
+                for (GoodsIdQtyParam aGoodsList : goodsList) {
+                    goodsIds.add(aGoodsList.getId());
+                    goodsQty = goodsQty + aGoodsList.getQty();
                 }
-                if (AssertUtil.isNotEmpty(giftList)) {
-                    for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
-                        if (null != promotionSimpleInfo.getPresentInfo()) {
-                            giftsList.addAll(promotionSimpleInfo.getPresentInfo());
-                            for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
-                                giftIds.add(goodsIdQtyParam.getId());
-                                giftQty = giftQty + goodsIdQtyParam.getQty();
-                            }
+            }
+            //取出所有赠品的id和计算赠品数量
+            if (AssertUtil.isNotEmpty(giftList)) {
+                for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
+                    if (null != promotionSimpleInfo.getPresentInfo()) {
+                        giftsList.addAll(promotionSimpleInfo.getPresentInfo());
+                        for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
+                            giftIds.add(goodsIdQtyParam.getId());
+                            giftQty = giftQty + goodsIdQtyParam.getQty();
                         }
                     }
                 }
-                if (AssertUtil.isNotEmpty(couponList)) {
-                    for (GoodsIdQtyParam couponSimpleInfo : couponList) {
-//                        OrderGoodsSimpleResponse couponInfo = goodsService.findGoodsByCustomerIdAndSku(userId,couponSimpleInfo.getSku());
-//                        couponInfo.setGoodsQty(couponSimpleInfo.getQty());
-//                        couponInfo.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
-//                        productCouponInfo.add(couponInfo);
-//                        GoodsIdQtyParam param = new GoodsIdQtyParam();
-//                        param.setId(couponInfo.getId());
-//                        param.setQty(couponSimpleInfo.getQty());
-//                        couponList.add(param);
-                        couponIds.add(couponSimpleInfo.getId());
-                        couponQty = couponQty + couponSimpleInfo.getQty();
-                    }
+            }
+            //取出所有产品券商品的id和计算产品券商品数量
+            if (AssertUtil.isNotEmpty(couponList)) {
+                for (GoodsIdQtyParam couponSimpleInfo : couponList) {
+                    couponIds.add(couponSimpleInfo.getId());
+                    couponQty = couponQty + couponSimpleInfo.getQty();
                 }
-                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
-                giftsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
+            }
+            if (identityType == 6) {
+                //获取商品信息
+                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+                //获取赠品信息
+                giftsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
                 //获取产品券信息
                 productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
-                //加本品标识
+            } else {
+                //获取商品信息
+                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+                //获取赠品信息
+                giftsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
+                //获取产品券信息
+                productCouponInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, couponIds);
+            }
+            //加本品标识
+            if (AssertUtil.isNotEmpty(goodsInfo)) {
+                for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                        if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                            simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                            break;
+                        }
+                    }
+                    simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
+                    //算总金额
+                    totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
+                    //算会员折扣(先判断是否是会员还是零售会员)
+                    if (identityType != 2 && null != customer.getSalesConsultId()) {
+                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
+                                simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
+                    }
+                }
+            }
+            //赠品的数量和标识
+            if (AssertUtil.isNotEmpty(giftsInfo)) {
+                for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
+                        if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
+                            aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
+                            aGiftInfo.setRetailPrice(0D);
+                            break;
+                        }
+                    }
+                    aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
+                }
+                //合并商品和赠品集合
+                goodsInfo.addAll(giftsInfo);
+            }
+            //产品券加标识
+            if (AssertUtil.isNotEmpty(productCouponInfo)) {
+                for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
+                        if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                            orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                            orderGoodsSimpleResponse.setRetailPrice(0D);
+                            break;
+                        }
+                    }
+                    orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
+                }
+                //合并商品和赠品集合
                 if (AssertUtil.isNotEmpty(goodsInfo)) {
-                    for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
-                        //算总金额
-                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
-                        //算会员折扣(先判断是否是会员还是零售会员)
-                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(), simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
-                    }
+                    goodsInfo.addAll(productCouponInfo);
+                } else {
+                    goodsInfo = productCouponInfo;
                 }
-                //赠品的数量和标识
-                if (AssertUtil.isNotEmpty(giftsInfo)) {
-                    for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
-                            if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
-                                aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
-                    }
-                    //合并商品和赠品集合
-                    goodsInfo.addAll(giftsInfo);
-                }
-                //产品券加标识
-                if (AssertUtil.isNotEmpty(productCouponInfo)) {
-                    for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
-                            if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                                orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
-                    }
-                    //合并商品和赠品集合
-                    if (AssertUtil.isNotEmpty(goodsInfo)) {
-                        goodsInfo.addAll(productCouponInfo);
-                    } else {
-                        goodsInfo = productCouponInfo;
-                    }
-                }
-                //判断库存
-                Long gid = appOrderService.existOrderGoodsInventory(customer.getCityId(), goodsList, giftsList, couponList);
-                if (gid != null) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", null);
-                    logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
-                //计算订单金额小计
-                //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
-                for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
-                    orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
-                    PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
-                    promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
-                    promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
-                    promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
-                    giftList.add(promotionSimpleInfo);
-                }
+            }
 
-                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-                if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 1.00;
-                }
-                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
+            //判断库存的特殊处理
+            Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
+            if (gid != null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", null);
+                logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //计算订单金额小计
+            //********* 计算促销立减金额 *************
+            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+            for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
+                orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
+                PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
+                promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
+                promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
+                promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
+                giftList.add(promotionSimpleInfo);
+            }
+
+            totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
+            if (totalOrderAmount != null && totalOrderAmount < 1000) {
+                freight = 1.00;
+            }
+            totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
+            if (identityType == 6) {
                 //计算顾客乐币
-                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customerId, totalOrderAmount);
+                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
+                //计算可用的优惠券
+                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(userId, totalOrderAmount);
+                //查询顾客预存款
+                Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
+
+                goodsSettlement.put("memberDiscount", memberDiscount);
+                goodsSettlement.put("leBi", leBi);
+                goodsSettlement.put("cashCouponList", cashCouponResponseList);
+                goodsSettlement.put("preDeposit", preDeposit);
+
+            }
+            if (identityType == 0) {
+                //计算顾客乐币
+                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customer.getCusId(), totalOrderAmount);
                 //现金券还需要传入订单金额判断是否满减
-                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customerId, totalOrderAmount);
+                cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customer.getCusId(), totalOrderAmount);
                 //查询导购预存款和信用金
                 SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
                 Double creditMoney = sellerCreditMoneyResponse.getAvailableBalance();
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
-                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-                goodsSettlement.put("totalPrice", totalPrice);
-                goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("memberDiscount", memberDiscount);
-                goodsSettlement.put("orderDiscount", orderDiscount);
-                goodsSettlement.put("freight", freight);
-                goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
@@ -691,97 +587,22 @@ public class OrderController {
             }
 
             if (identityType == 2) {
-                AppEmployee employee = appEmployeeService.findById(userId);
-                Long storeId = employee.getStoreId();
-                if (AssertUtil.isNotEmpty(goodsList)) {
-                    for (GoodsIdQtyParam aGoodsList : goodsList) {
-                        goodsIds.add(aGoodsList.getId());
-                        goodsQty = goodsQty + aGoodsList.getQty();
-                    }
-                }
-                if (AssertUtil.isNotEmpty(giftList)) {
-                    for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
-                        if (null != promotionSimpleInfo.getPresentInfo()) {
-                            giftsList.addAll(promotionSimpleInfo.getPresentInfo());
-                            for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
-                                giftIds.add(goodsIdQtyParam.getId());
-                                giftQty = giftQty + goodsIdQtyParam.getQty();
-                            }
-                        }
-                    }
-                }
-                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
-
-                giftsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
-                //加本品标识
-                if (AssertUtil.isNotEmpty(goodsInfo)) {
-                    for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
-                        //算总金额
-                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
-                    }
-                }
-                //赠品的数量和标识
-                if (AssertUtil.isNotEmpty(giftsInfo)) {
-                    for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
-                        for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
-                            if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
-                                aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
-                                break;
-                            }
-                        }
-                        aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
-                    }
-                    //合并商品和赠品集合
-                    goodsInfo.addAll(giftsInfo);
-                }
-                //判断库存
-                Long gid = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList, null);
-                if (gid != null) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", null);
-                    logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
-                //计算订单金额小计
-                //********* 计算促销立减金额 *************
-                List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
-                if (AssertUtil.isNotEmpty(discountListResponseList)) {
-                    for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
-                        orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
-                        PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
-                        promotionSimpleInfo.setPromotionId(discountResponse.getPromotionId());
-                        promotionSimpleInfo.setDiscount(discountResponse.getDiscountPrice());
-                        promotionSimpleInfo.setEnjoyTimes(discountResponse.getEnjoyTimes());
-                        giftList.add(promotionSimpleInfo);
-                    }
-                }
-                totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-                if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                    freight = 1.00;
-                }
-                totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
-
-                //获取门店预存款，信用金，现金返利。
+                //获取装饰公司门店预存款，信用金，现金返利。
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
                 Double storeSubvention = appStoreService.findSubventionBalanceByUserId(userId);
 
-                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-                goodsSettlement.put("totalPrice", totalPrice);
-                goodsSettlement.put("totalGoodsInfo", goodsInfo);
-                goodsSettlement.put("orderDiscount", orderDiscount);
-                goodsSettlement.put("freight", freight);
-                goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
                 goodsSettlement.put("storeCreditMoney", storeCreditMoney);
                 goodsSettlement.put("storeSubvention", storeSubvention);
             }
+
+            goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
+            goodsSettlement.put("totalPrice", totalPrice);
+            goodsSettlement.put("totalGoodsInfo", goodsInfo);
+            goodsSettlement.put("orderDiscount", orderDiscount);
+            goodsSettlement.put("freight", freight);
+            goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);

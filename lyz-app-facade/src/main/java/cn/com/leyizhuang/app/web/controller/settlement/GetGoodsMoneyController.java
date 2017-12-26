@@ -195,14 +195,15 @@ public class GetGoodsMoneyController {
             }
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftInfo)) {
-                for (OrderGoodsSimpleResponse aGiftInfo : giftInfo) {
+                for (OrderGoodsSimpleResponse response : giftInfo) {
                     for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
-                        if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
-                            aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
+                        if (response.getId().equals(goodsIdQtyParam.getId())) {
+                            response.setGoodsQty(goodsIdQtyParam.getQty());
+                            response.setRetailPrice(0D);
                             break;
                         }
                     }
-                    aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
+                    response.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
                 }
                 //合并商品和赠品集合
                 goodsInfo.addAll(giftInfo);
