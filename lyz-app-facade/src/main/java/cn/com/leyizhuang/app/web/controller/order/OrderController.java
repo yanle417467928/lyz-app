@@ -489,7 +489,7 @@ public class OrderController {
                     //算总金额
                     totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                     //算会员折扣(先判断是否是会员还是零售会员)
-                    if (identityType != 2 && null != customer.getSalesConsultId()) {
+                    if (identityType == 2 || null != customer.getSalesConsultId()) {
                         memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
                                 simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                     }
@@ -562,15 +562,11 @@ public class OrderController {
                 //查询顾客预存款
                 Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
 
-                goodsSettlement.put("memberDiscount", memberDiscount);
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
-
             }
             if (identityType == 0) {
-                //计算顾客乐币
-                Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(customer.getCusId(), totalOrderAmount);
                 //现金券还需要传入订单金额判断是否满减
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customer.getCusId(), totalOrderAmount);
                 //查询导购预存款和信用金
@@ -579,13 +575,10 @@ public class OrderController {
                 //导购门店预存款
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
 
-                goodsSettlement.put("memberDiscount", memberDiscount);
-                goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
             }
-
             if (identityType == 2) {
                 //获取装饰公司门店预存款，信用金，现金返利。
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
@@ -601,6 +594,7 @@ public class OrderController {
             goodsSettlement.put("totalPrice", totalPrice);
             goodsSettlement.put("totalGoodsInfo", goodsInfo);
             goodsSettlement.put("orderDiscount", orderDiscount);
+            goodsSettlement.put("memberDiscount", memberDiscount);
             goodsSettlement.put("freight", freight);
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);

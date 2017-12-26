@@ -1,12 +1,23 @@
 package cn.com.leyizhuang.app.remote.webservice.utils;
 
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +31,7 @@ import java.util.regex.Pattern;
 
 public class AppXmlUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppXmlUtil.class);
 
     /**
      * 获取订单XML数据，相当于发送要货单
@@ -78,6 +90,7 @@ public class AppXmlUtil {
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getRequisitionOrderXml OUT, 拼接订单XML数据, 出参 xmlStr:{}", xmlStr);
         return Base64Utils.encode(xmlStr);
     }
 
@@ -108,6 +121,7 @@ public class AppXmlUtil {
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getCancelOrderXml OUT, 拼接拒签退货和取消订单xml, 出参 xmlStr:{}", xmlStr);
         return Base64Utils.encode(xmlStr);
     }
 
@@ -131,7 +145,61 @@ public class AppXmlUtil {
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getRequisitionOrderGoodsXml OUT, 拼接退货商品和要货商品XML, 出参 xmlStr:{}", xmlStr);
+
         return Base64Utils.encode(xmlStr);
+    }
+
+    /**
+     * 拼接结果信息返回给wms
+     *
+     * @return xml结果
+     */
+    public static String resultStrXml(Integer code, String message) {
+        String xmlStr = "<RESULTS><STATUS>" +
+                "<CODE>" + code + "</CODE>" +
+                "<MESSAGE>" + message + "</MESSAGE>" +
+                "</STATUS></RESULTS>";
+
+        xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("resultStrXml OUT, 拼接结果信息返回给wms, 出参 xmlStr:{}", xmlStr);
+
+        return xmlStr;
+    }
+
+    /**
+     * 解析wms返回的XML字符串
+     *
+     * @param xml 主体内容
+     * @return 文档主体
+     */
+    public Document parseStrXml(String xml) throws ParserConfigurationException, IOException, SAXException {
+        String strXml = xml.trim();
+
+        strXml = xml.replace("\n", "");
+
+        String decodedXML = Base64Utils.decode(strXml);
+
+        if (StringUtils.isBlank(decodedXML)) {
+            LOGGER.info("getWMSInfo, OUT, 解密后XML数据为空");
+//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
+            return null;
+        }
+
+        LOGGER.debug("getWMSInfo, decodedXML=" + decodedXML);
+
+        // 解析XML
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+//        LOGGER.info("getWMSInfo, OUT, 解密后xml参数错误");
+//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
+
+        InputSource is = new InputSource(new StringReader(decodedXML));
+
+        //            LOGGER.info("getWMSInfo, OUT, 解密后xml格式不对");
+//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
+        return builder.parse(is);
     }
 
     /**

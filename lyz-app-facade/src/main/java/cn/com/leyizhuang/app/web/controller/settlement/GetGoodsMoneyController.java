@@ -188,7 +188,10 @@ public class GetGoodsMoneyController {
             if (AssertUtil.isNotEmpty(goodsInfo)) {
                 for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
                     for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                        simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                        if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                            simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                            break;
+                        }
                     }
                     simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
                 }
