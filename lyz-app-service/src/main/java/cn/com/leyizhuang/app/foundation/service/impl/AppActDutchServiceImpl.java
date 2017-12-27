@@ -108,18 +108,40 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 // 赠品
                 if (goodsIdQtyParams != null && goodsIdQtyParams.size() > 0) {
                     Set<Long> goodsIdSet = new HashSet<>();
+                    // 用户选择赠品的数量
+                    Integer giftNum = 0;
+
                     for (GoodsIdQtyParam param : goodsIdQtyParams) {
                         goodsIdSet.add(param.getId());
+                        giftNum += param.getQty();
                     }
 
                     // 根据用户身份 返回有价格信息的赠品集合
                     List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
                             userId, identityType.getValue(), goodsIdSet);
 
+                    /** 根据用户所选赠品数量计算参与促销次数*/
+
+                    // 单个促销最大选择赠品数量
+                    Integer giftMaxChooseNum = act.getGiftChooseNumber();
+
+                    if(giftNum == 0){
+                        enjoyTimes = 0;
+                    }else{
+                        // 向上取整 得出用户加价次数
+                        enjoyTimes = (int) Math.ceil(Double.valueOf(giftNum)/Double.valueOf(giftMaxChooseNum));
+                    }
+
                     // 本品总价
                     Double goodsTotalPrice = 0.00;
                     // 赠品总价
                     Double giftTotalPrice = 0.00;
+                    // 加价金额
+                    Double addAmount = 0.00;
+                    if (act.getActType().contains("ADD")){
+
+                        addAmount = CountUtil.mul(act.getAddAmount(),enjoyTimes);
+                    }
 
                     // 设置数量 新增赠品明细
                     for (OrderGoodsVO goods : giftGoodsVOList) {
@@ -160,7 +182,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 计算分担金额 并持久化对象
-                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType));
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice,addAmount), identityType, customerType));
 
                 } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00) {
                     // 立减优惠
@@ -238,17 +260,35 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 // 赠品
                 if (goodsIdQtyParams != null && goodsIdQtyParams.size() > 0) {
                     Set<Long> goodsIdSet = new HashSet<>();
+                    // 用户选择赠品的数量
+                    Integer giftNum = 0;
                     for (GoodsIdQtyParam param : goodsIdQtyParams) {
                         goodsIdSet.add(param.getId());
+                        giftNum += param.getQty();
                     }
 
                     // 根据用户身份 返回有价格信息的赠品集合
                     List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
                             userId, identityType.getValue(), goodsIdSet);
 
-
                     // 赠品总价
                     Double giftTotalPrice = 0.00;
+
+                    // 加价金额
+                    Double addAmount = 0.00;
+                    if (act.getActType().contains("ADD")){
+                        // 单个促销最大选择赠品数量
+                        Integer giftMaxChooseNum = act.getGiftChooseNumber();
+                        Double addSaleTimes = 0.00;
+                        if(giftNum == 0){
+                            addSaleTimes = 0.00;
+                        }else{
+                            // 向上取整 得出用户加价次数
+                            addSaleTimes = Math.ceil(Double.valueOf(giftNum)/Double.valueOf(giftMaxChooseNum));
+                        }
+
+                        addAmount = CountUtil.mul(act.getAddAmount(),addSaleTimes);
+                    }
 
                     // 设置数量 新增赠品明细
                     for (OrderGoodsVO goods : giftGoodsVOList) {
@@ -268,7 +308,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 计算分担金额 并持久化对象
-                    this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType);
+                    this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice,addAmount), identityType, customerType);
 
                 } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00) {
                     // 立减优惠
@@ -319,13 +359,30 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @return
      */
     private List<OrderGoodsInfo> countDutchPrice(List<OrderGoodsInfo> orderGoodsInfos, Double totalPrice, Double subPrice, AppIdentityType type, AppCustomerType customerType) {
+        // 记录已经分摊的金额  最后一个分摊价采取总价-已经分摊的方式 避免误差
+        Double dutchedPrice = 0.00;
+        for (int i =0 ;i<orderGoodsInfos.size();i++) {
+            OrderGoodsInfo info = orderGoodsInfos.get(i);
+//            Double price = this.returnCountPrice(info, type, customerType);
+//            Double dutchPrice = CountUtil.mul(CountUtil.div(price, totalPrice), subPrice);
+//            info.setIsPriceShare(true);
+//            info.setSharePrice(CountUtil.div(dutchPrice,info.getOrderQuantity()));
+//            info.setReturnPrice(CountUtil.div(CountUtil.sub(price, dutchPrice),info.getOrderQuantity()));
+            if(i < (orderGoodsInfos.size() - 1)){
+                Double price = this.returnCountPrice(info, type, customerType);
+                Double dutchPrice = CountUtil.mul((price / totalPrice) , subPrice);
+                info.setIsPriceShare(true);
+                info.setSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
+                info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
+                dutchedPrice += dutchPrice;
+            }else{
+                Double price = this.returnCountPrice(info, type, customerType);
+                Double dutchPrice =  subPrice - dutchedPrice;
+                info.setIsPriceShare(true);
+                info.setSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
+                info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
 
-        for (OrderGoodsInfo info : orderGoodsInfos) {
-            Double price = this.returnCountPrice(info, type, customerType);
-            Double dutchPrice = CountUtil.mul(CountUtil.div(price, totalPrice), subPrice);
-            info.setIsPriceShare(true);
-            info.setSharePrice(dutchPrice);
-            info.setReturnPrice(CountUtil.div(CountUtil.sub(price, dutchPrice),info.getOrderQuantity()));
+            }
 
 //            if (info.getId() == null) {
 //                orderDAO.saveOrderGoodsInfo(info);

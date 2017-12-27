@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActAddSaleDAO">
+
+    <sql id="ALL_FIELDS">
+        id, goods_id, goods_sku, goods_title,act_id, act_code
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO">
+        INSERT INTO act_add_sale (
+         goods_id, goods_sku, goods_title,act_id, act_code
+        )
+        VALUES
+        (
+        #{goodsId,jdbcType=BIGINT}, #{goodsSku,jdbcType=VARCHAR},#{goodsTitle,jdbcType=VARCHAR},
+        #{actId,jdbcType=BIGINT},#{actCode,jdbcType=VARCHAR}
+
+        )
+    </insert>
+
+    <update id="modify" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO">
+        UPDATE act_add_sale
+        <set>
+            <if test="goodsId != null" >
+                goods_id = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsSku != null" >
+                goods_sku = #{goodsSku,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsTitle != null" >
+                goods_title = #{goodsTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="actID != null">
+                act_id = #{actID,jdbcType=INTBIG},
+            </if>
+            <if test="actCode != null">
+                act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_add_sale WHERE ID = #{id}
+    </select>
+
+    <select id="queryByActId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_add_sale WHERE act_id = #{actBaseId}
+    </select>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_add_sale
+    </select>
+
+    <delete id="deleteByActBaseId" parameterType="java.lang.Long">
+        DELETE FROM act_add_sale where act_id = #{actBaseId}
+    </delete>
+</mapper>

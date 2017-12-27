@@ -101,6 +101,9 @@ public class ManagementActivityRestController extends BaseRestController {
             if(goodsList == null){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品为空", null);
             }
+            if(baseDO.getStatus().equals(ActStatusType.PUBLISH.getValue())){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已经发布，不允许修改", null);
+            }
 
             appActService.edit(baseDO,goodsList,giftList,subAmount,storeList);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修改成功", null);

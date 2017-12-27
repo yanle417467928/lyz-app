@@ -5,10 +5,7 @@ $(function () {
     // 初始化时间控件
     starAndEndDatetimepiker("beginTime","endTime");
 
-    // 初始化城市信息
-    findCityList();
     // 表单元素渲染
-    $('.switch').bootstrapSwitch();
     //Flat red color scheme for iCheck
     $('input[type="checkbox"].flat-red').iCheck({
         checkboxClass: 'icheckbox_flat-green',
@@ -236,7 +233,7 @@ function chooseGoods(tableId) {
             // 此商品未添加过
             if(flag){
                 str += "<tr>" +
-                    "<td><input type='text' id='id'value=" +item.id+ " style='width:90%;border: none;' readonly /></td>" +
+                    "<td><input type='text' id='gid'value=" +item.id+ " style='width:90%;border: none;' readonly /></td>" +
                     "<td><input id='sku' type='text' value='"+item.sku+"' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='title' type='text' value='"+item.skuName+"' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='qty' type='number' value='0'></td>" +
@@ -254,7 +251,7 @@ function chooseGoods(tableId) {
 
 //删除商品节点
 function del_goods_comb(obj) {
-    var deleteGoodsId = $(obj).parent().parent().find("#id").val()
+    var deleteGoodsId = $(obj).parent().parent().find("#gid").val()
     if(deleteGoodsId != 0){
         deleteGoodsIds.push(deleteGoodsId);
     }
@@ -284,9 +281,18 @@ function changeResultType(val) {
     if(val == "GOO"){
         $("#subAmount_div").fadeOut(1);
         $("#Gift_div").fadeIn(1000);
+        $("#giftChooseNumber_div").fadeIn(1000);
+        $("#addAmount_div").fadeOut(1);
     }else if(val == "SUB"){
         $("#subAmount_div").fadeIn(1000);
         $("#Gift_div").fadeOut(1);
+        $("#giftChooseNumber_div").fadeOut(1);
+        $("#addAmount_div").fadeOut(1);
+    }else if(val == "ADD"){
+        $("#subAmount_div").fadeOut(1);
+        $("#Gift_div").fadeIn(1000);
+        $("#giftChooseNumber_div").fadeIn(1000);
+        $("#addAmount_div").fadeIn(1000);
     }
 }
 
@@ -422,8 +428,18 @@ function formValidate() {
                 $notify.danger("最低金额有误");
                 return false;
             }
+        }else if (conditionType == "FQTY"){
+            for (var i = 0 ;i < goodsDetails.length ; i++){
+                var item = goodsDetails[i];
+                if(item.qty == 0){
+                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                    $notify.danger("本品"+item.gid+"数量为0，请设置数量，或者修改促销条件");
+                    return false;
+                }
+            }
+
         }
-        else if(resultType == "SUB"){
+        if(resultType == "SUB"){
             var price = $("#subAmount").val();
             if(price == null || price.trim() == ""){
 
@@ -438,30 +454,58 @@ function formValidate() {
                 return false;
             }
         }
-        else if (conditionType == "FQTY"){
-            for (var i = 0 ;i < goodsDetails.length ; i++){
-                var item = goodsDetails[i];
-                if(item.qty == 0){
-                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("本品"+item.id+"数量为0，请设置数量，或者修改促销条件");
-                    return false;
-                }
-            }
-
-        }
         else if (resultType == "GOO"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
                 return false;
             }
-            for (var i = 0 ;i < giftDetails.length ; i++){
-                var item = giftDetails[i];
-                if(item.qty == 0){
-                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("赠品"+item.id+"数量为0，请设置数量");
-                    return false;
-                }
+            // for (var i = 0 ;i < giftDetails.length ; i++){
+            //     var item = giftDetails[i];
+            //     if(item.qty == 0){
+            //         $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+            //         $notify.danger("赠品"+item.gid+"数量为0，请设置数量");
+            //         return false;
+            //     }
+            // }
+
+            var giftChooseNumber = $("#giftChooseNumber").val();
+            var re = /^[0-9]+.?[0-9]*$/;
+            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
+
+            }else{
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("最大可选赠品数量不正确");
+                return false;
+            }
+        }else if(resultType == "ADD"){
+            if(giftDetails.length == 0){
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请选择赠品");
+                return false;
+            }
+            var giftChooseNumber = $("#giftChooseNumber").val();
+            var re = /^[0-9]+.?[0-9]*$/;
+            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
+
+            }else{
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("最大可选加价购商品数量不正确");
+                return false;
+            }
+
+            var price = $("#addAmount").val();
+            if(price == null || price.trim() == ""){
+
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请填写加价金额");
+                return false;
+            }
+
+            if(!reg.test(price)){
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("加价金额有误");
+                return false;
             }
         }
 
@@ -476,6 +520,7 @@ function formValidate() {
         });
         data["isReturnable"] = isReturnable;
         data["isDouble"] = isDouble;
+        data["isGcOrder"] = isGcOrder;
         data["actTarget"] = target;
         data["goodsDetails"] = JSON.stringify(goodsDetails);
         data["giftDetails"] = JSON.stringify(giftDetails);
@@ -513,7 +558,7 @@ function cheackGoodsDetail(details,tableId){
     var re = /^[0-9]+.?[0-9]*$/;
 
     trs.each(function(i,n){
-        var id = $(n).find("#id").val();
+        var id = $(n).find("#gid").val();
         goodsSku = $(n).find("#sku").val();
         var num = $(n).find("#qty").val();
         if(num=='' || !re.test(num)) {

@@ -25,7 +25,7 @@
         <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
-    <h1>加载中...</h1>
+    <h1>促销管理</h1>
 </#if>
 </section>
 
@@ -40,14 +40,19 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <button id="btn_publish" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 发布
+                    <button id="btn_copy" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> 复制
+                    </button>
+
+                    <button id="btn_publish" type="button" class="btn btn-default" style="margin-left: 10px;">
+                        <span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> 发布
                     </button>
                     <button id="btn_delete" type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 失效
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 失效
                     </button>
-                    <select name="status" id="status" class="form-control select" style="width:auto;"
-                            onchange="statusChange(this.value)">
+
+                    <select name="status" id="status" class="form-control select" style="width:auto;margin-left: 10px;"
+                            onchange="statusChange(this.value)" >
                         <option value="">选择状态</option>
                         <option value="NEW">新建</option>
                         <option value="PUBLISH">已发布</option>

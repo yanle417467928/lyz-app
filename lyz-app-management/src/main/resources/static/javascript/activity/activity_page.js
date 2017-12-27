@@ -21,28 +21,40 @@ function initDateGird(url) {
         align: 'center',
         visible:false
     },{
+        field: 'cityName',
+        title: '城市',
+        align: 'center'
+    },{
         field: 'actCode',
         title: '编码',
-        align: 'center'
+        align: 'left',
+        visible:false
     },{
         field: 'title',
         title: '标题',
-        align: 'center'
+        align: 'left'
     },{
         field: 'type',
         title: '类型',
-        align: 'center'
+        align: 'left'
     },{
         field: 'createTime',
         title: '创建时间',
-        align: 'center',
+        align: 'left',
+        formatter: function(value) {
+            return $localDateTime.toString(value);
+        }
+    },{
+        field: 'beginTime',
+        title: '开始时间',
+        align: 'left',
         formatter: function(value) {
             return $localDateTime.toString(value);
         }
     },{
         field: 'actTarget',
         title: '目标对象',
-        align: 'center'
+        align: 'left'
     },{
         field: 'status',
         title: '状态',
@@ -67,11 +79,15 @@ function initDateGird(url) {
     ]);
 
     $('#btn_add').on('click', function () {
-        $grid.add('/view/activity/add');
+        $grid.add('/view/activity/add/0');
     });
     $('#btn_edit').on('click', function () {
         $grid.modify($('#dataGrid'),'/view/activity/edit/{id}');
     });
+
+    $('#btn_copy').on('click',function () {
+        $grid.modify($('#dataGrid'),'/view/activity/add/{id}');
+    })
 
     $('#btn_publish').on('click', function () {
         $modal.danger("发布","确认发布此促销？",publish);

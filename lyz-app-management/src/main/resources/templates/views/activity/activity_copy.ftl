@@ -1,15 +1,17 @@
 <head>
-    <link href="/stylesheet/devkit.css" rel="stylesheet">
-    <link href="/plugins/iCheck/all.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
           rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
           rel="stylesheet">
     <link href="/plugins/datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css"/>
+    <link href="/plugins/iCheck/all.css" rel="stylesheet">
+
 
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
@@ -29,7 +31,7 @@
 </head>
 <body>
 <section class="content-header">
-    <h1>新增促销</h1>
+    <h1>新增促销（copy）</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -39,6 +41,7 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="activity_form">
+
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -48,7 +51,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="title" type="text" class="form-control" id="cusName"
-                                           placeholder="促销标题">
+                                           placeholder="促销标题" value="<#if actBaseDO??>${actBaseDO.title!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -60,7 +63,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="actCode" type="text" class="form-control" id="nickName"
-                                           placeholder="系统自动生成" readonly="readonly">
+                                           placeholder="系统自动生成" readonly="readonly" value="">
                                 </div>
                             </div>
                         </div>
@@ -74,7 +77,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="beginTime" type="text" class="form-control" id="beginTime"
-                                           readonly placeholder="开始日期">
+                                           readonly placeholder="开始日期" value="<#if actBaseDO??>${(actBaseDO.beginTime)?replace("T"," ")!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -86,7 +89,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="endTime" type="text" class="form-control" id="endTime"
-                                           readonly placeholder="结束日期">
+                                           readonly placeholder="结束日期" value="<#if actBaseDO??>${(actBaseDO.endTime)?replace("T"," ")!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -98,9 +101,9 @@
                                     目标对象
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="顾客" type="checkbox" class="flat-red" checked>顾客
-                                    <input name="target" value="导购" type="checkbox" class="flat-red" checked>导购
-                                    <input name="target" value="装饰公司经理" type="checkbox" class="flat-red">装饰公司经理
+                                    <input name="target" value="顾客" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('顾客')>checked</#if></#if>>顾客
+                                    <input name="target" value="导购" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('导购')>checked</#if></#if>>导购
+                                    <input name="target" value="装饰公司经理" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('装饰公司经理')>checked</#if></#if>>装饰公司经理
                                 </div>
 
                             </div>
@@ -112,10 +115,10 @@
                                 </label>
                                 <div class="input-group">
 
-                                    <input id="isReturnable" type="checkbox" class="flat-red" checked>可退货
-                                    <input id="isDouble" type="checkbox" class="flat-red" checked>可叠加享受
+                                    <input id="isReturnable" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isReturnable?? && actBaseDO.isReturnable = true>checked</#if></#if>>可退货
+                                    <input id="isDouble" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true >checked</#if></#if>>可叠加享受
 
-                                    <input id="isGcOrder" type="checkbox" class="flat-red">工程单可享受
+                                    <input id="isGcOrder" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单可享受
 
                                 </div>
                             </div>
@@ -129,8 +132,12 @@
                             </label>
                             <select name="cityId" id="cityId" class="form-control select"
                                     onchange="findStoreByCity(this.value);">
-
-
+                            <#if cityList??>
+                                <#list cityList as item>
+                                    <option value="${item.cityId}" <#if item.cityId == actBaseDO.cityId >
+                                            selected</#if>>${item.name}</option>
+                                </#list>
+                            </#if>
                             </select>
                         </div>
 
@@ -164,7 +171,18 @@
                                     </div>
 
                                     <div id="stores" style="margin-top: 10px;">
+                                    <#if stores??>
+                                        <#list stores as item>
+                                            <label id='${item.storeId}'
 
+                                            <#if item.isSelected == true>
+                                                   class='label label-success'
+                                            <#else>
+                                                   class='label label-default'
+                                            </#if>
+                                                   onclick='checkStore(this)'>${item.storeName}</label>
+                                        </#list>
+                                    </#if>
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
@@ -196,7 +214,8 @@
                                     <table class="table table-hover" >
                                         <thead>
                                         <tr>
-                                            <th>ID</th>
+
+                                            <th>GID</th>
                                             <th>sku</th>
                                             <th>商品名</th>
                                             <th>数量</th>
@@ -204,7 +223,17 @@
                                         </tr>
                                         </thead>
                                         <tbody id="selectedGoodsTable">
-
+                                        <#if actGoodsMappingDO??>
+                                            <#list actGoodsMappingDO as item>
+                                            <tr>
+                                                <td><input id="gid" type='text'  value="${item.gid?c}" style="width:90%;border: none;" readonly /></td>
+                                                <td><input id='sku' type='text' value="${item.sku}" style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.goodsTitile}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id='qty' type='number' value='${item.qty}'></td>
+                                                <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
+                                            </tr>
+                                            </#list>
+                                        </#if>
                                         </tbody>
 
                                     </table>
@@ -265,7 +294,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="fullAmount" type="number" class="form-control" id="fullAmount">
+                                    <input name="fullAmount" type="number" class="form-control" id="fullAmount" value="<#if actBaseDO?? && actBaseDO.fullAmount??>${actBaseDO.fullAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -280,7 +309,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="subAmount" type="number" class="form-control" id="subAmount">
+                                    <input name="subAmount" type="number" class="form-control" id="subAmount" value="<#if actSubAmountDO?? && actSubAmountDO.subAmount??>${actSubAmountDO.subAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -310,7 +339,7 @@
                                     <table class="table table-hover" >
                                         <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>GID</th>
                                             <th>sku</th>
                                             <th>商品名</th>
                                             <th>数量</th>
@@ -318,7 +347,17 @@
                                         </tr>
                                         </thead>
                                         <tbody id="selectedGiftTable">
-
+                                        <#if actGiftDetailsDO??>
+                                            <#list actGiftDetailsDO as item>
+                                            <tr>
+                                                <td><input id="gid" type='text'  value="${item.giftId?c}" style="width:90%;border: none;" readonly /></td>
+                                                <td><input id='sku' type='text' value="${item.giftSku!''}" style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.giftTitle!''}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id='qty' type='number' value='${item.giftFixedQty?c}'></td>
+                                                <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
+                                            </tr>
+                                            </#list>
+                                        </#if>
                                         </tbody>
 
                                     </table>
@@ -338,7 +377,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="addAmount" type="number" class="form-control" id="addAmount">
+                                    <input name="addAmount" type="number" class="form-control" id="addAmount" value="<#if actBaseDO?? && actBaseDO.addAmount??>${actBaseDO.addAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -353,7 +392,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="giftChooseNumber" type="number" class="form-control" id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="1">
+                                    <input name="giftChooseNumber" type="number" class="form-control" id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="<#if actBaseDO?? && actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -367,7 +406,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="sortId" type="number" class="form-control" id="sortId" value="99">
+                                    <input name="sortId" type="number" class="form-control" id="sortId" value="<#if actBaseDO??>${actBaseDO.sortId?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -375,7 +414,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
                         <div class="col-xs-12 col-md-2">
-                            <button type="submit" class="btn btn-primary footer-btn">
+                            <button  type="submit" class="btn btn-primary footer-btn">
                                 <i class="fa fa-check"></i> 保存
                             </button>
                         </div>
@@ -455,12 +494,32 @@
         </div>
     </div>
 </section>
-
 <script>
-
     $(function () {
-        // 初始化城市信息
-        findCityList();
+
+        // 填充促销类型select
+        var baseTypeVal =  "<#if actBaseDO??>${actBaseDO.baseType!""}</#if>"
+        var conditionTypeVal = "<#if actBaseDO??>${actBaseDO.conditionType!""}</#if>"
+        var resultTypeVal = "<#if actBaseDO??>${actBaseDO.promotionType!""}</#if>"
+
+        if(baseTypeVal != ""){
+            $("#baseType").val(baseTypeVal);
+        }
+
+        if(conditionTypeVal != ""){
+            $("#conditionType option[value='"+conditionTypeVal+"']").prop("selected",true);
+        }
+
+        if(resultTypeVal != null){
+            $("#resultType option[value='"+resultTypeVal+"']").prop("selected",true);
+        }
+        // js改变selectpicker值 需要refresh才生效
+        $("select").each(function () {
+            $(this).selectpicker('refresh');
+        })
+        changeConditionType($("#conditionType").val());
+        changeResultType($("#resultType").val());
+
     })
 
 </script>
