@@ -716,7 +716,7 @@ public class AppActServiceImpl implements AppActService {
      * @param subAmount
      * @param storeDOList
      */
-
+    @Transactional
     public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount,List<ActStoreDO> storeDOList){
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);

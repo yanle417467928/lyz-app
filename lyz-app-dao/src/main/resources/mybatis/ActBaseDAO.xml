@@ -176,6 +176,7 @@
             #{id}
         </foreach>
         and end_time &lt; #{now}
+
     </select>
 
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">

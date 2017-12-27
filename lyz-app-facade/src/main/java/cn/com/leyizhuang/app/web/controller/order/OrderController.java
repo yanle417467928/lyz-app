@@ -156,6 +156,20 @@ public class OrderController {
             if (StringUtils.isNotBlank(orderParam.getPromotionInfo())) {
                 promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
             }
+            // 检查促销是否过期
+            List<Long> promotionIds = new ArrayList<>();
+            for (PromotionSimpleInfo promotion : promotionSimpleInfoList){
+                promotionIds.add(promotion.getPromotionId());
+            }
+            if(promotionIds.size() > 0){
+                Boolean outTime = actService.checkActOutTime(promotionIds);
+                if(!outTime){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "存在过期促销，请重新下单！", "");
+                    logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+
             //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
