@@ -1,19 +1,28 @@
 package cn.com.leyizhuang.app.remote.queue;
 
-import org.springframework.cloud.stream.annotation.Output;
-import org.springframework.cloud.stream.messaging.Sink;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.stereotype.Component;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.queue.MqOrderChannel;
+import com.gexin.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.messaging.support.MessageBuilder;
+
+import javax.annotation.Resource;
 
 /**
- * 消息生产者
- *
- * @author Richard
- * Created on 2017-12-25 11:42
+ * @author Created on 2017-12-26 18:16
  **/
-@Component
-public interface SinkSender {
+@EnableBinding(value = {MqOrderChannel.class})
+@Slf4j
+public class SinkSender {
 
-    @Output(Sink.INPUT)
-    MessageChannel output();
+
+    @Resource
+    private MqOrderChannel orderChannel;
+
+    public void sendOrder(OrderBaseInfo order) {
+        orderChannel.sendOrder().send(MessageBuilder.withPayload(order).build());
+        log.info("发送订单信息:{}", JSON.toJSONString(order));
+    }
+
 }

@@ -38,7 +38,11 @@ spring:
     name: lyz-app-facade
   jersey:
     application-path:
-
+  cloud:
+    stream:
+      bindings:
+        sendOrder:
+          destination: separateOrder
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
   type-aliases-package: cn.com.leyizhuang.app.foundation
@@ -78,6 +82,7 @@ spring:
         max-active: 20
         min-idle: 10
         max-wait: 60000
+
 eureka:
   client:
     service-url:
@@ -102,6 +107,8 @@ deploy:
   ebs:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
+
+
 ---
 # 测试环境配置
 spring:
@@ -116,6 +123,11 @@ spring:
           max-active: 20
           min-idle: 10
           max-wait: 60000
+  rabbitmq:
+    host: 119.23.149.7
+    port: 5672
+    username: guest
+    password: guest
 eureka:
   client:
     service-url:
