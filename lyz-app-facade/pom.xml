@@ -155,11 +155,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- spring cloud stream rabbit-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
-        </dependency>
         <!-- spring boot监控 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
