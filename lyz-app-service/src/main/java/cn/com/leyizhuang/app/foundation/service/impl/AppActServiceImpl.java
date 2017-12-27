@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -47,6 +48,9 @@ public class AppActServiceImpl implements AppActService {
 
     @Autowired
     private ActStoresDAO actStoresDAO;
+
+    @Resource
+    private ActAddSaleDAO actAddSaleDAO;
 
     @Autowired
     private AppCustomerService appCustomerService;
@@ -151,7 +155,7 @@ public class AppActServiceImpl implements AppActService {
             OrderGoodsSimpleResponse goods = goodsInfoList.get(i);
 
             skus.add(goods.getSku());
-            // 把商品及数量注入本品池
+            // 把商品注入本品池
             goodsPool.put(goods.getSku(), goods);
         }
 
@@ -218,8 +222,39 @@ public class AppActServiceImpl implements AppActService {
                     continue;
                 }
             }
+            //***************** 普通-满金额-加价购 ************
+            else if (act.getActType().equals("COMMON_FAMO_ADD")){
+                // 参与活动商品总额
+                Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customerType);
+
+                // 满足促销金额
+                if (actualTotalPrice >= act.getFullAmount()) {
+
+                    int enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice,act.getFullAmount());
+                    proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
             //***************** 普通-满数量-赠商品 ************
             else if (act.getActType().equals("COMMON_FQTY_GOO")) {
+                // 判断本品是否满足数量要求 得出参与此促销次数
+                Boolean flag = true;
+                int enjoyTimes = 0;
+                while(flag){
+                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber());
+                    if(flag){
+                        enjoyTimes++;
+                    }
+                }
+                if (enjoyTimes > 0) {
+                    proGiftList.add(this.getGiftResultByActId(act,userId,userType,enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
+            }
+            //***************** 普通-满数量-加价购 ************
+            else if (act.getActType().equals("COMMON_FQTY_ADD")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
                 Boolean flag = true;
                 int enjoyTimes = 0;
@@ -448,7 +483,6 @@ public class AppActServiceImpl implements AppActService {
 
         // 创建一个促销结果
         PromotionsGiftListResponse response = new PromotionsGiftListResponse();
-        List<ActGiftDetailsDO> giftDetailList = actGiftDetailsDAO.queryByActId(act.getId());
 
         response.setPromotionId(act.getId());
         response.setPromotionTitle(act.getTitle());
@@ -456,18 +490,41 @@ public class AppActServiceImpl implements AppActService {
         response.setEnjoyTimes(enjoyTime);
 
         List<Long> giftIdList = new ArrayList<>();
-        for (ActGiftDetailsDO gift : giftDetailList) {
-            if (gift.getGiftId() != null) {
-                // 赠品为商品
-                giftIdList.add(gift.getGiftId());
+        if (act.getActType().contains("ADD")){
+            List<ActAddSaleDO> giftDetailList = new ArrayList<>();
+            giftDetailList = actAddSaleDAO.queryByActId(act.getId());
+            for (ActAddSaleDO goods : giftDetailList) {
+                    giftIdList.add(goods.getGoodsId());
             }
+        }else if(act.getActType().contains("GOO")){
+            List<ActGiftDetailsDO> giftDetailList = new ArrayList<>();
+            giftDetailList = actGiftDetailsDAO.queryByActId(act.getId());
+            for (ActGiftDetailsDO gift : giftDetailList) {
+                if (gift.getGiftId() != null) {
+                    // 赠品为商品
+                    giftIdList.add(gift.getGiftId());
+                }
 
+            }
         }
+
         List<GiftListResponseGoods> giftListResponseGoods = new ArrayList<>();
         giftListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                 giftIdList, userId, userType);
-        response.setGiftList(giftListResponseGoods);
 
+        if (act.getActType().contains("ADD")){
+            // 加价购 将赠品设置价格
+            for(GiftListResponseGoods gift : giftListResponseGoods){
+                gift.setRetailPrice(act.getAddAmount());
+            }
+        }else if(act.getActType().contains("GOO")){
+            // 赠送 将价格设置为0
+            for(GiftListResponseGoods gift : giftListResponseGoods){
+                gift.setRetailPrice(0D);
+            }
+        }
+
+        response.setGiftList(giftListResponseGoods);
         return response;
     }
 
@@ -578,13 +635,13 @@ public class AppActServiceImpl implements AppActService {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
-        if(giftList != null && giftList.size() > 0){
-            Integer totalQty = 0;
-            for (ActGiftDetailsDO item: giftList) {
-                totalQty += item.getGiftFixedQty();
-            }
-            baseDO.setGiftChooseNumber(totalQty);
-        }
+//        if(giftList != null && giftList.size() > 0){
+//            Integer totalQty = 0;
+//            for (ActGiftDetailsDO item: giftList) {
+//                totalQty += item.getGiftFixedQty();
+//            }
+//            baseDO.setGiftChooseNumber(totalQty);
+//        }
 
         if(goodsList != null && goodsList.size() > 0){
             Integer totalQty = 0;
@@ -632,6 +689,20 @@ public class AppActServiceImpl implements AppActService {
                     item.setActCode(baseDO.getActCode());
 
                     actGiftDetailsDAO.save(item);
+                }
+            }
+        }else if(act_type.contains("ADD")){
+            // 加价购
+            if(giftList != null && giftList.size() > 0){
+                for (ActGiftDetailsDO item: giftList) {
+                    ActAddSaleDO actAddSaleDO = new ActAddSaleDO();
+                    actAddSaleDO.setGoodsId(item.getGiftId());
+                    actAddSaleDO.setGoodsSku(item.getGiftSku());
+                    actAddSaleDO.setGoodsTitle(item.getGiftTitle());
+                    actAddSaleDO.setActId(baseDO.getId());
+                    actAddSaleDO.setActCode(baseDO.getActCode());
+
+                    actAddSaleDAO.save(actAddSaleDO);
                 }
             }
         }
@@ -698,22 +769,52 @@ public class AppActServiceImpl implements AppActService {
                     actGiftDetailsDAO.save(item);
                 }
             }
+        }else if(act_type.contains("ADD")){
+            // 加价购
+            actAddSaleDAO.deleteByActBaseId(baseDO.getId());
+            if(giftList != null && giftList.size() > 0){
+                for (ActGiftDetailsDO item: giftList) {
+                    ActAddSaleDO actAddSaleDO = new ActAddSaleDO();
+                    actAddSaleDO.setGoodsId(item.getGiftId());
+                    actAddSaleDO.setGoodsSku(item.getGiftSku());
+                    actAddSaleDO.setGoodsTitle(item.getGiftTitle());
+                    actAddSaleDO.setActId(baseDO.getId());
+                    actAddSaleDO.setActCode(baseDO.getActCode());
+
+                    actAddSaleDAO.save(actAddSaleDO);
+                }
+            }
         }
     }
 
     public ModelMap getModelMapByActBaseId(ModelMap map,Long id){
-        map.addAttribute("actBaseDO",actBaseDAO.queryById(id));
-        map.addAttribute("actStoresDO",actStoresDAO.queryListByActBaseId(id));
-        map.addAttribute("actGoodsMappingDO",actGoodsMappingDAO.queryListByActId(id));
-        map.addAttribute("actGiftDetailsDO",actGiftDetailsDAO.queryByActId(id));
-        map.addAttribute("actSubAmountDO",actSubAmountDAO.queryByActId(id));
 
         ActBaseDO ActBaseDO = actBaseDAO.queryById(id);
         List<ActStoreDO> ActStoreDOList = actStoresDAO.queryListByActBaseId(id);
         List<ActGoodsMappingDO> ActGoodsMappingDOList = actGoodsMappingDAO.queryListByActId(id);
         List<ActGiftDetailsDO> ActGiftDetailsDOLsit = actGiftDetailsDAO.queryByActId(id);
         ActSubAmountDO ActSubAmountDOList = actSubAmountDAO.queryByActId(id);
+        List<ActAddSaleDO> ActAddSaleDOList = actAddSaleDAO.queryByActId(id);
 
+        if(ActAddSaleDOList != null && ActAddSaleDOList.size() > 0){
+            for (ActAddSaleDO item : ActAddSaleDOList){
+                ActGiftDetailsDO giftDetailsDO = new ActGiftDetailsDO();
+                giftDetailsDO.setActId(item.getActId());
+                giftDetailsDO.setActCode(item.getActCode());
+                giftDetailsDO.setGiftId(item.getGoodsId());
+                giftDetailsDO.setGiftSku(item.getGoodsSku());
+                giftDetailsDO.setGiftTitle(item.getGoodsTitle());
+                giftDetailsDO.setGiftFixedQty(0);
+
+                ActGiftDetailsDOLsit.add(giftDetailsDO);
+            }
+        }
+
+        map.addAttribute("actBaseDO",ActBaseDO);
+        map.addAttribute("actStoresDO",ActStoreDOList);
+        map.addAttribute("actGoodsMappingDO",ActGoodsMappingDOList);
+        map.addAttribute("actGiftDetailsDO",ActGiftDetailsDOLsit);
+        map.addAttribute("actSubAmountDO",ActSubAmountDOList);
         return map;
     }
 

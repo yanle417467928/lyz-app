@@ -5,14 +5,14 @@
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO act_base (
          create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder
         )
         VALUES
         (
@@ -21,7 +21,8 @@
       #{cityName,jdbcType=VARCHAR}, #{actTarget,jdbcType=VARCHAR},
       #{baseType,jdbcType=VARCHAR}, #{promotionType,jdbcType=VARCHAR}, #{conditionType,jdbcType=VARCHAR},
       #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
-      #{fullNumber,jdbcType=INTEGER},#{isReturnable,jdbcType=BIT},#{sortId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR},#{actCode,jdbcType=VARCHAR}
+      #{fullNumber,jdbcType=INTEGER},#{isReturnable,jdbcType=BIT},#{sortId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR},
+      #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT}
         )
     </insert>
 
@@ -82,6 +83,12 @@
             </if>
             <if test="actCode != null">
                 act_code = #{actCode,jdbcType=VARCHAR},
+            </if>
+            <if test="addAmount != null">
+                add_amount = #{addAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="isGcOrder != null">
+                is_gcorder = #{isGcOrder,jdbcType=BIT}
             </if>
         </set>
         WHERE

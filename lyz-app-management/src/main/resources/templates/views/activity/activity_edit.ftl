@@ -31,7 +31,7 @@
 </head>
 <body>
 <section class="content-header">
-    <h1>新增促销</h1>
+    <h1>编辑促销</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -118,10 +118,10 @@
                                 <div class="input-group">
 
                                     <input id="isReturnable" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isReturnable?? && actBaseDO.isReturnable = true>checked</#if></#if>>可退货
-                                    <input id="isDouble" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true ></#if>checked</#if>>可叠加享受
-                                    <!--
-                                    <input id="isGcOrder" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true></#if>checked</#if>>工程单不可享受
-                                    -->
+                                    <input id="isDouble" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true >checked</#if></#if>>可叠加享受
+
+                                    <input id="isGcOrder" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单可享受
+
                                 </div>
                             </div>
                         </div>
@@ -229,9 +229,9 @@
                                             <#list actGoodsMappingDO as item>
                                             <tr>
                                                 <td><input id="gid" type='text'  value="${item.gid?c}" style="width:90%;border: none;" readonly /></td>
-                                                <td><input id='sku' type='text' value="${item.sku}" style='width:90%;border: none;' readonly></td>
-                                                <td><input id='title' type='text' value='${item.goodsTitile}' style='width:90%;border: none;' readonly></td>
-                                                <td><input id='qty' type='number' value='${item.qty}'></td>
+                                                <td><input id='sku' type='text' value="${item.sku!''}" style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.goodsTitile!''}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id='qty' type='number' value='${item.qty?c}'></td>
                                                 <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
                                             </tr>
                                             </#list>
@@ -280,6 +280,7 @@
                                             onchange="changeResultType(this.value);">
                                         <option value="SUB">立减</option>
                                         <option value="GOO">送商品</option>
+                                        <option value="ADD">加价购买</option>
                                     </select>
                                 </div>
                             </div>
@@ -352,9 +353,9 @@
                                             <#list actGiftDetailsDO as item>
                                             <tr>
                                                 <td><input id="gid" type='text'  value="${item.giftId?c}" style="width:90%;border: none;" readonly /></td>
-                                                <td><input id='sku' type='text' value="${item.giftSku}" style='width:90%;border: none;' readonly></td>
-                                                <td><input id='title' type='text' value='${item.giftTitle}' style='width:90%;border: none;' readonly></td>
-                                                <td><input id='qty' type='number' value='${item.giftFixedQty}'></td>
+                                                <td><input id='sku' type='text' value="${item.giftSku!''}" style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.giftTitle!''}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id='qty' type='number' value='${item.giftFixedQty?c}'></td>
                                                 <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
                                             </tr>
                                             </#list>
@@ -366,6 +367,36 @@
                                 <!-- /.box-body -->
                             </div>
                             <!-- /.box -->
+                        </div>
+                    </div>
+
+                    <!-- 加价购金额 -->
+                    <div class="row" id="addAmount_div" style="display: none;">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="description">
+                                    加价购金额
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-cny"></i></span>
+                                    <input name="addAmount" type="number" class="form-control" id="addAmount" value="<#if actBaseDO?? && actBaseDO.addAmount??>${actBaseDO.addAmount?c}</#if>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 赠品最大可选数量 -->
+                    <div class="row" id="giftChooseNumber_div" style="display: none;">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="description">
+                                    赠品最大可选数量
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-cny"></i></span>
+                                    <input name="giftChooseNumber" type="number" class="form-control" id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="<#if actBaseDO?? && actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if>">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -385,7 +416,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
                         <div class="col-xs-12 col-md-2">
-                            <button  type="submit" class="btn btn-primary footer-btn">
+                            <button id="saveBtn" type="submit" class="btn btn-primary footer-btn">
                                 <i class="fa fa-check"></i> 保存
                             </button>
                         </div>
@@ -491,6 +522,13 @@
         changeConditionType($("#conditionType").val());
         changeResultType($("#resultType").val());
 
+        // 当前促销状态 如果已经发布 不能修改
+        var status =  "<#if actBaseDO??>${actBaseDO.status!""}</#if>"
+
+        if(status == 'PUBLISH'){
+            // 隐藏保存按钮
+            $("#saveBtn").hide();
+        }
     })
 
 </script>

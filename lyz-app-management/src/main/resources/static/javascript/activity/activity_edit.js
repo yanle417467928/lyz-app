@@ -6,7 +6,6 @@ $(function () {
     starAndEndDatetimepiker("beginTime","endTime");
 
     // 表单元素渲染
-    $('.switch').bootstrapSwitch();
     //Flat red color scheme for iCheck
     $('input[type="checkbox"].flat-red').iCheck({
         checkboxClass: 'icheckbox_flat-green',
@@ -276,9 +275,18 @@ function changeResultType(val) {
     if(val == "GOO"){
         $("#subAmount_div").fadeOut(1);
         $("#Gift_div").fadeIn(1000);
+        $("#giftChooseNumber_div").fadeIn(1000);
+        $("#addAmount_div").fadeOut(1);
     }else if(val == "SUB"){
         $("#subAmount_div").fadeIn(1000);
         $("#Gift_div").fadeOut(1);
+        $("#giftChooseNumber_div").fadeOut(1);
+        $("#addAmount_div").fadeOut(1);
+    }else if(val == "ADD"){
+        $("#subAmount_div").fadeOut(1);
+        $("#Gift_div").fadeIn(1000);
+        $("#giftChooseNumber_div").fadeIn(1000);
+        $("#addAmount_div").fadeIn(1000);
     }
 }
 
@@ -415,7 +423,18 @@ function formValidate() {
                 return false;
             }
         }
-        else if(resultType == "SUB"){
+        else if (conditionType == "FQTY"){
+            for (var i = 0 ;i < goodsDetails.length ; i++){
+                var item = goodsDetails[i];
+                if(item.qty == 0){
+                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                    $notify.danger("本品"+item.id+"数量为0，请设置数量，或者修改促销条件");
+                    return false;
+                }
+            }
+
+        }
+        if(resultType == "SUB"){
             var price = $("#subAmount").val();
             if(price == null || price.trim() == ""){
 
@@ -430,30 +449,58 @@ function formValidate() {
                 return false;
             }
         }
-        else if (conditionType == "FQTY"){
-            for (var i = 0 ;i < goodsDetails.length ; i++){
-                var item = goodsDetails[i];
-                if(item.qty == 0){
-                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("本品"+item.id+"数量为0，请设置数量，或者修改促销条件");
-                    return false;
-                }
-            }
-
-        }
         else if (resultType == "GOO"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
                 return false;
             }
-            for (var i = 0 ;i < giftDetails.length ; i++){
-                var item = giftDetails[i];
-                if(item.qty == 0){
-                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("赠品"+item.id+"数量为0，请设置数量");
-                    return false;
-                }
+            // for (var i = 0 ;i < giftDetails.length ; i++){
+            //     var item = giftDetails[i];
+            //     if(item.qty == 0){
+            //         $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+            //         $notify.danger("赠品"+item.gid+"数量为0，请设置数量");
+            //         return false;
+            //     }
+            // }
+
+            var giftChooseNumber = $("#giftChooseNumber").val();
+            var re = /^[0-9]+.?[0-9]*$/;
+            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
+
+            }else{
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("最大可选赠品数量不正确");
+                return false;
+            }
+        }else if(resultType == "ADD"){
+            if(giftDetails.length == 0){
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请选择赠品");
+                return false;
+            }
+            var giftChooseNumber = $("#giftChooseNumber").val();
+            var re = /^[0-9]+.?[0-9]*$/;
+            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
+
+            }else{
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("最大可选加价购商品数量不正确");
+                return false;
+            }
+
+            var price = $("#addAmount").val();
+            if(price == null || price.trim() == ""){
+
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请填写加价金额");
+                return false;
+            }
+
+            if(!reg.test(price)){
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("加价金额有误");
+                return false;
             }
         }
 
@@ -468,6 +515,7 @@ function formValidate() {
         });
         data["isReturnable"] = isReturnable;
         data["isDouble"] = isDouble;
+        data["isGcOrder"] = isGcOrder;
         data["actTarget"] = target;
         data["goodsDetails"] = JSON.stringify(goodsDetails);
         data["giftDetails"] = JSON.stringify(giftDetails);

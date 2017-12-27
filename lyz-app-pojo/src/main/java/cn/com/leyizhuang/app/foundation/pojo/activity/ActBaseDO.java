@@ -81,8 +81,14 @@ public class ActBaseDO{
     // 满足数量
     private Integer fullNumber;
 
+    // 加价购需要加价金额
+    private Double addAmount;
+
     // 是否可退货
     private Boolean isReturnable;
+
+    // 工程单可享受
+    private Boolean isGcOrder = false;
 
     // 促销状态
     private ActStatusType status;
@@ -98,7 +104,7 @@ public class ActBaseDO{
     }
 
     /**
-     * 根据促销类型+当前时间+随机数+生成一个 促销编码
+     * 根据促销类型+当前时间+随机数,生成一个促销编码
      */
     public String createCode(){
         String code = this.baseType.getValue().substring(0,1)+this.conditionType.getValue().substring(0,2)+this.promotionType.getValue().substring(0,1);
