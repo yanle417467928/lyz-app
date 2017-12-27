@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderHeader;
 import lombok.*;
 
 import java.util.Date;
@@ -69,5 +70,24 @@ public class OrderDeliveryInfoDetails {
         this.createTime = new Date();
         this.warehouseNo = warehouseNo;
         this.taskNo = taskNo;
+    }
+
+    public static OrderDeliveryInfoDetails transform(WtaShippingOrderHeader header) {
+        OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+
+        deliveryInfoDetails.setOrderNo(header.getOrderNo());
+        deliveryInfoDetails.setIsRead(false);
+        deliveryInfoDetails.setCreateTime(header.getCreateTime());
+        deliveryInfoDetails.setLogisticStatus(LogisticStatus.SEALED_CAR);
+        String description = "您的订单在乐易装在【" +
+                header.getWhNo() +
+                "】仓库" +
+                "封车完成，开始配送";
+        deliveryInfoDetails.setDescription(description);
+        deliveryInfoDetails.setOperationType("封车");
+        deliveryInfoDetails.setOperatorNo(header.getDriver());
+        deliveryInfoDetails.setWarehouseNo(header.getWhNo());
+        deliveryInfoDetails.setTaskNo(header.getTaskNo());
+        return deliveryInfoDetails;
     }
 }

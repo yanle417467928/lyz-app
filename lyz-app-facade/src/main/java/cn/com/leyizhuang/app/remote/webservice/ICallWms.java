@@ -30,7 +30,6 @@ public class ICallWms {
 
     private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
 
-
     private static QName wmsName = new QName("http://tempuri.org/", "GetErpInfo");
 
     private static Client wmsClient;

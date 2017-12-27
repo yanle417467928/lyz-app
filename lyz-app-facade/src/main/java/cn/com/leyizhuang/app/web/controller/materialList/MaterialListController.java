@@ -275,6 +275,12 @@ public class MaterialListController {
                 materialWorkerAuditResponse.setAuditNo(auditNo);
                 materialWorkerAuditResponse.setWorker(materialAuditSheet.getEmployeeName());
                 materialWorkerAuditResponse.setRemark(materialAuditSheet.getRemark());
+                materialWorkerAuditResponse.setReceiver(materialAuditSheet.getReceiver());
+                materialWorkerAuditResponse.setReceiverPhone(materialAuditSheet.getReceiverPhone());
+                materialWorkerAuditResponse.setDeliveryCity(materialAuditSheet.getDeliveryCity());
+                materialWorkerAuditResponse.setDeliveryCounty(materialAuditSheet.getDeliveryCounty());
+                materialWorkerAuditResponse.setDeliveryStreet(materialAuditSheet.getDeliveryStreet());
+                materialWorkerAuditResponse.setResidenceName(materialAuditSheet.getResidenceName());
                 materialWorkerAuditResponse.setDetailedAddress(materialAuditSheet.getDetailedAddress());
 
             }

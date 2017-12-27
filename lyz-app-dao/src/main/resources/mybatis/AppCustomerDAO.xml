@@ -346,38 +346,36 @@
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-            cp.denomination,
-            cp.condition,
-            cp.title
+        cccc.denomination,
+        cccc.condition,
+        cccc.title
         FROM cus_customer_cash_coupon cccc
-            INNER JOIN cp_cash_coupon cp ON cp.ccid = cccc.ccid
         WHERE cccc.ccid = #{ccId}
-              AND cccc.cus_id = #{cusId}
+        AND cccc.id = #{cusId}
               AND cccc.qty &gt;= #{qty}
               AND cccc.is_used = FALSE
-              AND cp.effective_start_time &lt; NOW()
-              AND (cp.effective_end_time IS NULL OR cp.effective_end_time &gt; NOW())
+        AND cccc.effective_start_time &lt; NOW()
+        AND (cccc.effective_end_time IS NULL OR cccc.effective_end_time &gt; NOW())
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-            ccp.ccid id,
-            c.denomination,
-            c.effective_start_time,
-            c.effective_end_time,
-            c.description,
-            c.title
+        ccp.id,
+        ccp.denomination,
+        ccp.effective_start_time,
+        ccp.effective_end_time,
+        ccp.descripttion,
+        ccp.title
         FROM
             cus_customer_cash_coupon ccp
-            INNER JOIN cp_cash_coupon c ON ccp.ccid = c.ccid
         WHERE
             ccp.cus_id = #{userId}
             AND ccp.is_used IS FALSE
             AND ccp.`status` IS TRUE
-            AND c.effective_start_time &lt; now()
-            AND c.effective_end_time &gt; now()
-            AND c.denomination &lt;= #{totalAmount}
+        AND ccp.effective_start_time &lt; now()
+        AND ccp.effective_end_time &gt; now()
+        AND ccp.denomination &lt;= #{totalAmount}
     </select>
 
     <select id="findByCusId" parameterType="java.lang.Long"

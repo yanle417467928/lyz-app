@@ -57,7 +57,6 @@ public class OrderController {
     @Resource
     private AppStoreService appStoreService;
 
-
     @Resource
     private GoodsService goodsService;
 
@@ -672,7 +671,7 @@ public class OrderController {
         Integer identityType = usedCouponRequest.getIdentityType();
         Double totalOrderAmount = usedCouponRequest.getTotalOrderAmount();
         //如果顾客没有选券，直接返回传入的数值不必再计算
-        if (null == usedCouponRequest.getCouponsList() && usedCouponRequest.getCouponsList().isEmpty()) {
+        if (AssertUtil.isEmpty(usedCouponRequest.getCouponsList())) {
             returnMap.put("leBi", usedCouponRequest.getLeBi());
             returnMap.put("totalOrderAmount", totalOrderAmount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
@@ -844,11 +843,9 @@ public class OrderController {
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
                 if (identityType == 0) {
-                    CustomerSimpleInfo customer = new CustomerSimpleInfo();
-                    customer.setCustomerId(orderBaseInfo.getCustomerId());
-                    customer.setCustomerName(orderBaseInfo.getCustomerName());
-                    customer.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                    orderListResponse.setCustomer(customer);
+                    orderListResponse.setCustomer(new CustomerSimpleInfo(orderBaseInfo.getCustomerId(),
+                            orderBaseInfo.getCustomerName(),
+                            orderBaseInfo.getCustomerPhone()));
                 }
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
@@ -991,11 +988,9 @@ public class OrderController {
                 }
                 orderDetailsResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 if (identityType == 0) {
-                    CustomerSimpleInfo customer = new CustomerSimpleInfo();
-                    customer.setCustomerId(orderBaseInfo.getCustomerId());
-                    customer.setCustomerName(orderBaseInfo.getCustomerName());
-                    customer.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                    orderDetailsResponse.setCustomer(customer);
+                    orderDetailsResponse.setCustomer(new CustomerSimpleInfo(orderBaseInfo.getCustomerId(),
+                            orderBaseInfo.getCustomerName(),
+                            orderBaseInfo.getCustomerPhone()));
                 }
                 //根据不同的配送方式进行设值
                 if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
