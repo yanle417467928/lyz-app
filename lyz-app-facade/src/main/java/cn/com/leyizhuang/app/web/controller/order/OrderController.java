@@ -290,6 +290,8 @@ public class OrderController {
                     //throw new RuntimeException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
                 }
             }
+            //创建订单券信息
+            //List<OrderCouponInfo> orderCouponInfoList = commonService.createOrderCouponInf(orderBaseInfo,cashCouponList,productCouponList);
 
             //********* 处理订单账务相关信息 *********
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
@@ -313,9 +315,11 @@ public class OrderController {
 
             //******** 处理账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
+
             //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
             commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
+
             //********分摊**********
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(Long.valueOf(orderParam.getUserId()), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 

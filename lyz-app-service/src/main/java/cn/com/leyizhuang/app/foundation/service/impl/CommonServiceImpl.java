@@ -296,7 +296,7 @@ public class CommonServiceImpl implements CommonService {
             } else {
                 customerIdTemp = customerId;
             }
-            //扣减预存款
+            //扣减优惠券
             if (null != cashCouponIds && cashCouponIds.size() > 0) {
                 for (Long id : cashCouponIds) {
                     Integer affectLine = customerService.lockCustomerCashCouponById(id, orderNumber);

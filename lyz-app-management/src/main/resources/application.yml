@@ -83,6 +83,11 @@ spring:
         max-active: 20
         min-idle: 10
         max-wait: 60000
+  rabbitmq:
+      host: 119.23.149.7
+      port: 5672
+      username: guest
+      password: guest
 eureka:
   client:
     service-url:
@@ -119,12 +124,11 @@ spring:
           max-active: 20
           min-idle: 10
           max-wait: 60000
-   rabbitmq:
+  rabbitmq:
        host: 119.23.149.7
        port: 5672
        username: guest
        password: guest
-
 eureka:
   client:
     service-url:
