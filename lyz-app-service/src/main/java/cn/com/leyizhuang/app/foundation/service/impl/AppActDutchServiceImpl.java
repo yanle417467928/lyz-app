@@ -63,12 +63,12 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
         // 无促销 不用分摊
         if (promotionSimpleInfoList == null || promotionSimpleInfoList.size() == 0) {
-            return finallyOrderGoodsInfo;
+            return orderGoodsInfoList;
         }
 
         // 没有本品明细 不用分摊
         if (orderGoodsInfoList == null || orderGoodsInfoList.size() == 0) {
-            return finallyOrderGoodsInfo;
+            return null;
         }
 
         // 顾客类型
