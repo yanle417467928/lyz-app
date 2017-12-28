@@ -15,7 +15,7 @@ import java.util.Date;
 @RestController
 public class TestClient {
     @Resource
-    private ICallWms callWms;
+    private ICallWms iCallWms;
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
@@ -56,7 +56,6 @@ public class TestClient {
         order.setUnpayed(0D);
         order.setTotalGoodsPrice(30.0);
         order.setAgencyRefund(0.00);
-        appToWmsOrderService.saveAtwRequisitionOrder(order);
 
         AtwRequisitionOrderGoods goods = new AtwRequisitionOrderGoods();
         goods.setCreateTime(new Date());
@@ -65,8 +64,13 @@ public class TestClient {
         goods.setOrderNumber("CD_XN20171220102259123465");
         goods.setPrice(10D);
         goods.setQuantity(1);
-        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
 
-        callWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
+        //备注：目前发送订单通了，取消订单wms还在重新做。
+        //第一步：将订单信息转化成要货单实体AtwRequisitionOrder然后调用下面service保存
+        appToWmsOrderService.saveAtwRequisitionOrder(order);
+        //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
+        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
+        //第三步：调用下面service将订单号发送给wms
+        iCallWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
     }
 }

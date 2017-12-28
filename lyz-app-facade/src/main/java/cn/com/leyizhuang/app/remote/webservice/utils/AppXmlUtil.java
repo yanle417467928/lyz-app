@@ -82,7 +82,7 @@ public class AppXmlUtil {
                 "<DISCOUNT>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getDiscount()) + "</DISCOUNT>" +
                 "<OTHER_PAYED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getOtherPayed()) + "</OTHER_PAYED>" +
                 "<BALANCE_USED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getBalanceUsed()) + "</BALANCE_USED>" +
-                "<MEMBER_RECEIVER>" + requisitionOrder.getMemberReceiver() + "</MEMBER_RECEIVER>" +
+                "<MEMBER_RECEIVER>" + String.valueOf(requisitionOrder.getMemberReceiver()) + "</MEMBER_RECEIVER>" +
                 "<UNPAYED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getUnpayed()) + "</UNPAYED>" +
                 "<TOTAL_GOODS_PRICE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getTotalGoodsPrice()) +
                 "</TOTAL_GOODS_PRICE>" +
