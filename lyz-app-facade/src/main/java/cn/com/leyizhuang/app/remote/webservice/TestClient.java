@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -55,6 +57,16 @@ public class TestClient {
         order.setTotalGoodsPrice(30.0);
         order.setAgencyRefund(0.00);
         appToWmsOrderService.saveAtwRequisitionOrder(order);
+
+        AtwRequisitionOrderGoods goods = new AtwRequisitionOrderGoods();
+        goods.setCreateTime(new Date());
+        goods.setGoodsCode("SJWT4503-20");
+        goods.setGoodsTitle("金牛白色PPR45度弯头20");
+        goods.setOrderNumber("CD_XN20171220102259123465");
+        goods.setPrice(10D);
+        goods.setQuantity(1);
+        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
+
         callWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
     }
 }
