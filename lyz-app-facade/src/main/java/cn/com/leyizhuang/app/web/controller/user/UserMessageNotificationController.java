@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,13 @@ public class UserMessageNotificationController {
             return resultDTO;
         }
         List<MessageNotificationListResponse> messageNotificationListResponseList = this.messageNotificationService.queryListByUserIdAndUserType(userId, identityType);
+        //将未读消息排在最前
+        messageNotificationListResponseList.sort(Comparator.comparing(MessageNotificationListResponse::getIsRead).
+                thenComparing(MessageNotificationListResponse::getCreateTime).reversed());
         for (MessageNotificationListResponse messageNotificationListResponse : messageNotificationListResponseList) {
+            if (messageNotificationListResponse.getIsRead()) {
+                continue;
+            }
             //修改已读状态
             messageNotificationListResponse.setIsRead(true);
             messageNotificationService.modifyMessageNotification(messageNotificationListResponse);

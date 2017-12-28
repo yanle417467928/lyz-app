@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 物流详情
@@ -124,6 +121,9 @@ public class OrderDeliveryInfoDetailsController {
                     getLogisticsMessageByUserId(userID, monday, identityType);
             //创建返回list
             List<LogisticsMessageResponse> logisticsMessageResponseList = new ArrayList<>();
+            //未读消息排序在前
+            orderDeliveryInfoDetailsList.sort(Comparator.comparing(OrderDeliveryInfoDetails::getIsRead).
+                    thenComparing(OrderDeliveryInfoDetails::getCreateTime).reversed());
             for (OrderDeliveryInfoDetails orderDeliveryInfoDetails : orderDeliveryInfoDetailsList) {
                 //修改已读状态
                 orderDeliveryInfoDetails.setIsRead(true);
