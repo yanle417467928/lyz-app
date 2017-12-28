@@ -36,17 +36,8 @@ public class OrderEvaluationServiceImpl implements OrderEvaluationService {
         orderEvaluation.setEvaluationTime(Calendar.getInstance().getTime());
         //保存订单评价
         orderEvaluationDAO.addOrderEvaluation(orderEvaluation);
-
-      /*  //获取订单评价id
-        Long orderEvaluationId = orderEvaluation.getId();
-        //商品评价设值
-        GoodsEvaluation goodsEvaluation = new GoodsEvaluation();
-        goodsEvaluation.setOrderEvaluationId(orderEvaluationId);
-        goodsEvaluation.setEvaluationTime(orderEvaluation.getEvaluationTime());
-        ObjectMapper objectMapper = new ObjectMapper();
-        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsEvaluationSimpleInfo.class);
-        List<GoodsEvaluationSimpleInfo> goodsEvaluationList = objectMapper.readValue(orderGoodsEvaluationRequest.getGoodsList(), javaType1);*/
-
+        //修改订单评价为已评价
+        orderEvaluationDAO.updateOrderEvaluationStatus(orderEvaluationRequest.getOrderNumber());
     }
 
     @Override

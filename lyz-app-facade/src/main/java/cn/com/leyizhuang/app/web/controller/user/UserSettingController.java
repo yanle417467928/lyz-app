@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -236,7 +237,7 @@ public class UserSettingController {
             return resultDTO;
         }
         List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-
+        deliveryAddressResponseList.sort(Comparator.comparing(DeliveryAddressResponse::getIsDefault).reversed());
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
         logger.info("getDeliveryAddress OUT,获取收货地址成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

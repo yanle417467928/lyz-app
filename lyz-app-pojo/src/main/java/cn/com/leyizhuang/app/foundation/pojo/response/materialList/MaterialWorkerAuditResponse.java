@@ -30,6 +30,31 @@ public class MaterialWorkerAuditResponse {
     private String remark;
 
     /**
+     * 收货人姓名
+     */
+    private String receiver;
+
+    /**
+     * 收货人电话号码
+     */
+    private String receiverPhone;
+    /**
+     * /收货市
+     */
+    private String deliveryCity;
+    /**
+     * 收货区
+     */
+    private String deliveryCounty;
+    /**
+     * 收货街道
+     */
+    private String deliveryStreet;
+    /**
+     * 收货小区
+     */
+    private String residenceName;
+    /**
      * 详细地址
      */
     private String detailedAddress;

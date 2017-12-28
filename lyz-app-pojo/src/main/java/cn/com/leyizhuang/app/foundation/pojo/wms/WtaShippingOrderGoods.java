@@ -50,6 +50,7 @@ public class WtaShippingOrderGoods {
     /**
      * 出货单号
      */
+    @Deprecated
     private String sourceNo;
     /**
      * 接口传输标识
@@ -63,4 +64,8 @@ public class WtaShippingOrderGoods {
      * wms收到信息时间
      */
     private Date sendTime;
+
+    public WtaShippingOrderGoods() {
+        this.createTime = new Date();
+    }
 }

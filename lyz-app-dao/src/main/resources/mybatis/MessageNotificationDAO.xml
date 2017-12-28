@@ -5,7 +5,7 @@
 
     <select id="queryListByUserIdAndUserType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
-        SELECT id, title, create_time,is_read
+        SELECT id, title, create_time,is_read,detailed,picture_url
         FROM message_notification
         WHERE user_id = #{userId} AND identity_type = #{identityType}
         AND create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)

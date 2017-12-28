@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -13,7 +15,7 @@ import javax.annotation.Resource;
 @RestController
 public class TestClient {
     @Resource
-    private ICallWms callWms;
+    private ICallWms iCallWms;
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
@@ -54,7 +56,21 @@ public class TestClient {
         order.setUnpayed(0D);
         order.setTotalGoodsPrice(30.0);
         order.setAgencyRefund(0.00);
+
+        AtwRequisitionOrderGoods goods = new AtwRequisitionOrderGoods();
+        goods.setCreateTime(new Date());
+        goods.setGoodsCode("SJWT4503-20");
+        goods.setGoodsTitle("金牛白色PPR45度弯头20");
+        goods.setOrderNumber("CD_XN20171220102259123465");
+        goods.setPrice(10D);
+        goods.setQuantity(1);
+
+        //备注：目前发送订单通了，取消订单wms还在重新做。
+        //第一步：将订单信息转化成要货单实体AtwRequisitionOrder然后调用下面service保存
         appToWmsOrderService.saveAtwRequisitionOrder(order);
-        callWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
+        //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
+        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
+        //第三步：调用下面service将订单号发送给wms
+        iCallWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
     }
 }

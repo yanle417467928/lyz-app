@@ -82,7 +82,7 @@ public class AppXmlUtil {
                 "<DISCOUNT>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getDiscount()) + "</DISCOUNT>" +
                 "<OTHER_PAYED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getOtherPayed()) + "</OTHER_PAYED>" +
                 "<BALANCE_USED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getBalanceUsed()) + "</BALANCE_USED>" +
-                "<MEMBER_RECEIVER>" + requisitionOrder.getMemberReceiver() + "</MEMBER_RECEIVER>" +
+                "<MEMBER_RECEIVER>" + String.valueOf(requisitionOrder.getMemberReceiver()) + "</MEMBER_RECEIVER>" +
                 "<UNPAYED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getUnpayed()) + "</UNPAYED>" +
                 "<TOTAL_GOODS_PRICE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getTotalGoodsPrice()) +
                 "</TOTAL_GOODS_PRICE>" +
@@ -173,7 +173,7 @@ public class AppXmlUtil {
      * @param xml 主体内容
      * @return 文档主体
      */
-    public Document parseStrXml(String xml) throws ParserConfigurationException, IOException, SAXException {
+    public static Document parseStrXml(String xml) throws ParserConfigurationException, IOException, SAXException {
         String strXml = xml.trim();
 
         strXml = xml.replace("\n", "");
@@ -182,23 +182,14 @@ public class AppXmlUtil {
 
         if (StringUtils.isBlank(decodedXML)) {
             LOGGER.info("getWMSInfo, OUT, 解密后XML数据为空");
-//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后XML数据为空</MESSAGE></STATUS></RESULTS>";
             return null;
         }
-
         LOGGER.debug("getWMSInfo, decodedXML=" + decodedXML);
 
         // 解析XML
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-
-//        LOGGER.info("getWMSInfo, OUT, 解密后xml参数错误");
-//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml参数错误</MESSAGE></STATUS></RESULTS>";
-
         InputSource is = new InputSource(new StringReader(decodedXML));
-
-        //            LOGGER.info("getWMSInfo, OUT, 解密后xml格式不对");
-//            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
         return builder.parse(is);
     }
 
@@ -216,7 +207,6 @@ public class AppXmlUtil {
             }
         }
         String resultStr = result.toString();
-        // "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
         if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>")
                 || !resultStr.contains("</MESSAGE>")) {
             return "返回XML格式错误错误:" + resultStr;

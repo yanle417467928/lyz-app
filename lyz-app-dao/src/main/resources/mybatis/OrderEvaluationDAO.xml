@@ -35,4 +35,10 @@
         AND gid = #{goodsId}
     </update>
 
+    <update id="updateOrderEvaluationStatus">
+        UPDATE ord_base_info
+        SET is_evaluated = TRUE
+        WHERE
+          ord_no = #{orderNumber}
+    </update>
 </mapper>

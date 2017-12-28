@@ -72,4 +72,8 @@ public class WtaShippingOrderHeader {
      * wms收到信息时间
      */
     private Date sendTime;
+
+    public WtaShippingOrderHeader() {
+        this.createTime = new Date();
+    }
 }
