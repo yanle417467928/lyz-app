@@ -37,4 +37,9 @@ public class AppConstant {
      * 签到赠送乐币数量
      */
     public static final int SIGN_AWARD_LEBI_QTY = 1;
+
+    /**
+     * 付清线
+     */
+    public static final Double PAY_UP_LIMIT = 0D;
 }

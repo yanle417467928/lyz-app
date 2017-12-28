@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.ProductCouponGetType;
+import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -41,7 +41,7 @@ public class CustomerProductCoupon implements Serializable {
     /**
      * 产品券获取途径
      */
-    private ProductCouponGetType getType;
+    private CouponGetType getType;
 
     /**
      * 获取时间
@@ -93,4 +93,18 @@ public class CustomerProductCoupon implements Serializable {
      */
     private Long sellerId;
 
+    /**
+     * 状态 ：可用、禁用
+     */
+    private Boolean status;
+
+    /**
+     * 禁用时间
+     */
+    private Date disableTime;
+
+    /**
+     * 券订单商品行id
+     */
+    private Long goodsLineId;
 }

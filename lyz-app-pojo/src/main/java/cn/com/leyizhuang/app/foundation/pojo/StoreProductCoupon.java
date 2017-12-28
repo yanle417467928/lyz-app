@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.ProductCouponGetType;
+import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import lombok.*;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ public class StoreProductCoupon {
 
     private Date createTime;
 
-    private ProductCouponGetType getType;
+    private CouponGetType getType;
 
     private String getOrdNo;
 

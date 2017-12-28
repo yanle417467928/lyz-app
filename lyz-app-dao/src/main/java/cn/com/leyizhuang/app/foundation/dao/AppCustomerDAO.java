@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCouponChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
@@ -130,4 +127,13 @@ public interface AppCustomerDAO {
     List<CustomerSignLogBrief> findCustomerSignDetailByCusId(Long cusId);
 
     void saveSignLog(CusSignLog log);
+
+    List<CustomerCashCoupon> findCashCouponsByCcids(@Param(value = "cashCouponList") List<Long> cashCouponList);
+
+    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(@Param(value = "customerId") Long customerId,
+                                                                               @Param(value = "id") Long id,
+                                                                               @Param(value = "qty") Integer qty);
+
+    Integer updateCustomerProductCouponById(@Param(value = "couponId") Long couponId,
+                                          @Param(value = "orderNumber") String orderNumber);
 }

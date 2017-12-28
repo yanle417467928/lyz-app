@@ -118,4 +118,10 @@ public interface AppCustomerService {
     PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
 
     void saveSignLog(CusSignLog log);
+
+    List<CustomerCashCoupon> findCashCouponsByCcids(List<Long> cashCouponList);
+
+    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty);
+
+    Integer lockCustomerProductCouponById(Long couponId, String orderNumber);
 }

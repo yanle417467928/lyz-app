@@ -484,7 +484,7 @@ public class ReturnOrderController {
                     newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
                     newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
                     newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(ProductCouponGetType.CANCEL_ORDER);
+                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
                     newCusProductCoupon.setGetTime(date);
                     newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
                     newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
@@ -947,7 +947,7 @@ public class ReturnOrderController {
                     newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
                     newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
                     newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(ProductCouponGetType.RETURN_ORDER);
+                    newCusProductCoupon.setGetType(CouponGetType.RETURN_ORDER);
                     newCusProductCoupon.setGetTime(date);
                     newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
                     newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());

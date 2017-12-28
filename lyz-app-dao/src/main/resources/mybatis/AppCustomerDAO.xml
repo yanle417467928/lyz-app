@@ -552,4 +552,62 @@
         VALUES (#{cusId}, #{cusName}, #{signTime}, #{awardLebiQty}, #{description})
     </insert>
 
+    <select id="findCashCouponsByCcids" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        SELECT
+        cus_id,
+        ccid,
+        qty,
+        get_time,
+        is_used,
+        use_time,
+        use_ord_no,
+        down_time,
+        status,
+        `condition`,
+        denomination,
+        effective_start_time,
+        effective_end_time,
+        descripttion,
+        title
+        FROM cus_customer_cash_coupon where ccid in
+        <foreach collection="cashCouponList" item="ccid" index="index" open="(" close=")" separator=",">
+            #{ccid}
+        </foreach>
+    </select>
+
+    <select id="findProductCouponsByCustomerIdAndGoodsIdAndQty"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+        SELECT
+            id,
+            cus_id,
+            seller_id,
+            store_id,
+            gid,
+            quantity,
+            get_type,
+            get_time,
+            get_ord_no,
+            buy_price,
+            effective_start_time,
+            effective_end_time,
+            is_used,
+            use_time,
+            use_ord_no
+        FROM cus_customer_product_coupon
+        WHERE cus_id = #{customerId}
+              AND gid = #{id}
+        ORDER BY get_time
+        LIMIT #{qty}
+    </select>
+
+    <update id="updateCustomerProductCouponById">
+        UPDATE cus_customer_product_coupon
+        SET is_used    = TRUE,
+            use_time   = now(),
+            use_ord_no = #{orderNumber}
+        WHERE id = #{couponId}
+              AND status = TRUE
+              AND is_used = FALSE
+              AND now() BETWEEN effective_start_time AND effective_end_time
+    </update>
 </mapper>
