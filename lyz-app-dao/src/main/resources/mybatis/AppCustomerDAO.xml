@@ -615,6 +615,10 @@
         FROM cus_customer_product_coupon
         WHERE cus_id = #{customerId}
               AND gid = #{id}
+              AND status = TRUE
+              AND is_used = FALSE
+              AND effective_start_time &lt; NOW()
+              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
         ORDER BY get_time
         LIMIT #{qty}
     </select>
