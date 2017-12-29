@@ -105,7 +105,7 @@ public interface AppOrderService {
     OrderLogisticsInfo createOrderLogisticInfo(DeliverySimpleInfo deliverySimpleInfo);
 
     OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType,
-                                                  BillingSimpleInfo billing, List<Long> cashCouponIds);
+                                                  BillingSimpleInfo billing, List<Long> cashCouponIds,List<OrderGoodsInfo> productCouponGoodsList);
 
     void updateOrderBaseInfo(OrderBaseInfo baseInfo);
 
@@ -125,4 +125,6 @@ public interface AppOrderService {
 
 
     List<OrderGoodsListResponse> getOrderGoodsList(String orderNumber);
+
+    void saveOrderCouponInfo(OrderCouponInfo couponInfo);
 }

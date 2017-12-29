@@ -30,6 +30,12 @@ public interface OrderEvaluationDAO {
     void updeteGoodsEvaluationStatus(@Param("orderNumber") String orderNumber,@Param("goodsId") Long goodsId);
 
     /**
+     * 修改订单评价状态
+     * @param orderNumber   订单号
+     */
+    void updateOrderEvaluationStatus(@Param("orderNumber") String orderNumber);
+
+    /**
      * 获取订单评价
      * @param orderNumber   订单号
      * @return  订单评价

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsEvaluation;
@@ -231,7 +232,7 @@ public class EvaluationController {
                 goodsEvaluationListResponse.setEvaluationPictures(pictureList);
                 goodsEvaluationListResponse.setIsShow(goodsEvaluation.getIsShow());
                 goodsEvaluationListResponse.setEvaluationQuantity(goodsEvaluationService.getEvaluationQuantityByGid(gid));
-
+                goodsEvaluationListResponse.setEvaluationTime(DateUtil.getDateTimeStr(goodsEvaluation.getEvaluationTime()));
                 goodsEvaluationListResponses.add(goodsEvaluationListResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsEvaluationListResponses);

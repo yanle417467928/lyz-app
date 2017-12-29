@@ -197,12 +197,12 @@
             is_returnable    isReturnable,
             return_priority  returnPriority,
             order_qty        orderQuantity,
-            shipping_qty    shippingQuantity,
-            return_qty      returnQuantity,
-            returnable_qty  returnableQuantity,
-            goods_line_type goods_line_type,
-            price_item_id   priceItemId,
-            company_flag    companyFlag
+            shipping_qty     shippingQuantity,
+            return_qty       returnQuantity,
+            returnable_qty   returnableQuantity,
+            goods_line_type  goods_line_type,
+            price_item_id    priceItemId,
+            company_flag     companyFlag
         FROM
             ord_goods_info
         WHERE
@@ -327,20 +327,20 @@
     <select id="getOrderGoodsList" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse">
         SELECT
-        ogi.order_qty       qty,
-        ogi.retail_price,
-        ogi.goods_line_type goods_type,
-        gg.sku_name,
-        gg.gid              goodsId,
-        gg.goods_specification,
-        gg.cover_image_uri,
+            ogi.order_qty       qty,
+            ogi.retail_price,
+            ogi.goods_line_type goods_type,
+            gg.sku_name,
+            gg.gid              goodsId,
+            gg.goods_specification,
+            gg.cover_image_uri,
             gg.goods_unit,
-        ogi.is_evaluation
+            ogi.is_evaluation
         FROM
-        ord_goods_info AS ogi
-        INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
+            ord_goods_info AS ogi
+            INNER JOIN gds_goods AS gg ON ogi.sku = gg.sku
         WHERE
-        ogi.ord_no = #{orderNumber}
+            ogi.ord_no = #{orderNumber}
     </select>
 
     <select id="getOrderInfoByOrderNo" parameterType="java.lang.String"
@@ -407,7 +407,7 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark,city_id,city_name
+         remark, city_id, city_name, customer_type
         )
         VALUES
             (
@@ -418,7 +418,7 @@
                 #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode}, #{salesConsultId},
                 #{salesConsultName},
                 #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
-                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}
+                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}, #{customerType}
             )
     </insert>
 
@@ -433,7 +433,8 @@
                 #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
                 #{deliveryStreet}, #{detailedAddress})
     </insert>
-    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo" useGeneratedKeys="true" keyProperty="id">
+    <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ord_goods_info
         (
             oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
@@ -443,9 +444,10 @@
         VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
                         #{isPriceShare}, #{sharePrice},
-            #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity}, #{shippingQuantity},
-            #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
-            #{priceItemId}, #{companyFlag})
+                                         #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity},
+                                         #{shippingQuantity},
+                                         #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
+                                         #{priceItemId}, #{companyFlag})
 
     </insert>
 
@@ -470,9 +472,12 @@
 
     <insert id="saveOrderBillingPaymentDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
-        INSERT INTO ord_billing_payment_details (oid, ord_no, creatr_time, pay_time, pay_type, amount, reply_code, receipt_number)
-        VALUES (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
-                #{receiptNumber})
+        INSERT INTO ord_billing_payment_details (oid, ord_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
+                                                 paument_subject_type_desc, amount, reply_code, receipt_number)
+        VALUES
+            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
+                         #{paymentSubjectTypeDesc},
+                         #{amount}, #{replyCode}, #{receiptNumber})
     </insert>
 
     <update id="updateOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -533,67 +538,67 @@
 
     </update>
 
-    <update id="updateOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo" >
+    <update id="updateOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         update ord_goods_info
-        <set >
-            <if test="oid != null" >
+        <set>
+            <if test="oid != null">
                 oid = #{oid,jdbcType=BIGINT},
             </if>
-            <if test="orderNumber != null" >
+            <if test="orderNumber != null">
                 ord_no = #{orderNumber,jdbcType=VARCHAR},
             </if>
-            <if test="sku != null" >
+            <if test="sku != null">
                 sku = #{sku,jdbcType=VARCHAR},
             </if>
-            <if test="skuName != null" >
+            <if test="skuName != null">
                 sku_name = #{skuName,jdbcType=VARCHAR},
             </if>
-            <if test="retailPrice != null" >
+            <if test="retailPrice != null">
                 retail_price = #{retailPrice,jdbcType=DECIMAL},
             </if>
-            <if test="VIPPrice != null" >
+            <if test="VIPPrice != null">
                 VIP_price = #{VIPPrice,jdbcType=DECIMAL},
             </if>
-            <if test="wholesalePrice != null" >
+            <if test="wholesalePrice != null">
                 wholesale_price = #{wholesalePrice,jdbcType=DECIMAL},
             </if>
-            <if test="promotionId != null" >
+            <if test="promotionId != null">
                 promotion_id = #{promotionId,jdbcType=BIGINT},
             </if>
-            <if test="isPriceShare != null" >
+            <if test="isPriceShare != null">
                 is_price_share = #{isPriceShare,jdbcType=BIT},
             </if>
-            <if test="sharePrice != null" >
+            <if test="sharePrice != null">
                 share_price = #{sharePrice,jdbcType=DECIMAL},
             </if>
-            <if test="returnPrice != null" >
+            <if test="returnPrice != null">
                 return_price = #{returnPrice,jdbcType=DECIMAL},
             </if>
-            <if test="isReturnable != null" >
+            <if test="isReturnable != null">
                 is_returnable = #{isReturnable,jdbcType=BIT},
             </if>
-            <if test="returnPriority != null" >
+            <if test="returnPriority != null">
                 return_priority = #{returnPriority,jdbcType=INTEGER},
             </if>
-            <if test="orderQuantity != null" >
+            <if test="orderQuantity != null">
                 order_qty = #{orderQuantity,jdbcType=INTEGER},
             </if>
-            <if test="shippingQuantity != null" >
+            <if test="shippingQuantity != null">
                 shipping_qty = #{shippingQuantity,jdbcType=INTEGER},
             </if>
-            <if test="returnQuantity != null" >
+            <if test="returnQuantity != null">
                 return_qty = #{returnQuantity,jdbcType=INTEGER},
             </if>
-            <if test="returnableQuantity != null" >
+            <if test="returnableQuantity != null">
                 returnable_qty = #{returnableQuantity,jdbcType=INTEGER},
             </if>
-            <if test="goodsLineType != null" >
+            <if test="goodsLineType != null">
                 goods_line_type = #{goodsLineType,jdbcType=VARCHAR},
             </if>
-            <if test="priceItemId != null" >
+            <if test="priceItemId != null">
                 price_item_id = #{priceItemId,jdbcType=BIGINT},
             </if>
-            <if test="companyFlag != null" >
+            <if test="companyFlag != null">
                 company_flag = #{companyFlag,jdbcType=VARCHAR},
             </if>
         </set>
@@ -605,8 +610,15 @@
         WHERE ID = #{id}
     </delete>
 
-    <select id="getOrderArrearageInfo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse">
-        SELECT IFNULL(collection_amount, 0.00) arrearageMoney FROM ord_billing_details WHERE ord_no = #{orderNo}
+    <select id="getOrderArrearageInfo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse">
+        SELECT IFNULL(collection_amount, 0.00) arrearageMoney
+        FROM ord_billing_details
+        WHERE ord_no = #{orderNo}
     </select>
 
+    <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType});
+    </insert>
 </mapper>

@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -77,6 +79,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Resource
     private LeBiVariationLogService leBiVariationLogService;
+
+    @Resource
+    private GoodsService goodsService;
 
 
     @Override
@@ -204,11 +209,12 @@ public class CommonServiceImpl implements CommonService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void reduceInventoryAndMoney(DeliverySimpleInfo deliverySimpleInfo, Map<Long, Integer> inventoryCheckMap, Long cityId,
-                                        Integer identityType, Long userId, Long customerId, List<Long> cashCouponIds, OrderBillingDetails billingDetails,
-                                        String orderNumber, String ipAddress) throws LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException,
-            LockCustomerLebiException, LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
+                                        Integer identityType, Long userId, Long customerId, List<Long> cashCouponIds,
+                                        List<OrderCouponInfo> productCouponList, OrderBillingDetails billingDetails,
+                                        String orderNumber, String ipAddress) throws
+            LockStoreInventoryException, LockCityInventoryException, LockCustomerCashCouponException, LockCustomerLebiException,
+            LockCustomerPreDepositException, LockStorePreDepositException, LockEmpCreditMoneyException, LockStoreCreditMoneyException,
             LockStoreSubventionException, SystemBusyException {
-        //TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         //扣减商品库存
         if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
             if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
@@ -287,7 +293,7 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
         }
-        //扣减优惠券及乐币
+        //扣减顾客产品券、优惠券及乐币
         if (identityType.equals(AppIdentityType.CUSTOMER.getValue()) ||
                 identityType.equals(AppIdentityType.SELLER.getValue())) {
             Long customerIdTemp;
@@ -296,6 +302,28 @@ public class CommonServiceImpl implements CommonService {
             } else {
                 customerIdTemp = customerId;
             }
+            //扣减顾客产品券
+            if (null != productCouponList && productCouponList.size() > 0) {
+                for (OrderCouponInfo couponInfo : productCouponList) {
+                    Integer affectLine = customerService.lockCustomerProductCouponById(couponInfo.getCouponId(), orderNumber);
+                    if (affectLine > 0) {
+                        CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                        changeLog.setCusId(customerIdTemp);
+                        changeLog.setCouponId(couponInfo.getCouponId());
+                        changeLog.setChangeType(CustomerProductCouponChangeType.PLACE_ORDER);
+                        changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.PLACE_ORDER.getDescription());
+                        changeLog.setReferenceNumber(orderNumber);
+                        changeLog.setOperatorId(userId);
+                        changeLog.setOperatorIp(ipAddress);
+                        changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        changeLog.setUseTime(new Date());
+                    } else {
+                        throw new LockCustomerProductCouponException("该客户id为" + couponInfo.getCouponId() + "的产品券已使用或已失效!");
+                    }
+                }
+            }
+            //todo 扣减产品券时更新买券订单可退商品数量
+
             //扣减优惠券
             if (null != cashCouponIds && cashCouponIds.size() > 0) {
                 for (Long id : cashCouponIds) {
@@ -310,8 +338,8 @@ public class CommonServiceImpl implements CommonService {
                         log.setOperatorId(userId);
                         log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                         log.setOperatorIp(ipAddress);
+                        log.setUseTime(new Date());
                         customerService.addCustomerCashCouponChangeLog(log);
-                        break;
                     } else {
                         throw new LockCustomerCashCouponException("该客户id为" + id + "的优惠券已使用或已失效!");
                     }
@@ -540,8 +568,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) throws IOException {
+    public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
+                                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
+                                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) {
 
         if (null != orderBaseInfo) {
             if (null != orderBillingDetails && orderBillingDetails.getIsPayUp()) {
@@ -560,14 +589,23 @@ public class CommonServiceImpl implements CommonService {
                 String info = "【乐易装】您的提货码为"
                         + pickUpCode
                         + "，请在“门店取货”时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
-                String content = URLEncoder.encode(info, "GB2312");
+                String content = null;
+                try {
+                    content = URLEncoder.encode(info, "GB2312");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
                 String mobile = null;
                 if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
                     mobile = orderBaseInfo.getCreatorPhone();
                 } else {
                     mobile = orderBaseInfo.getCustomerPhone();
                 }
-                String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
+                try {
+                    String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 //保存提货码
                 orderBaseInfo.setPickUpCode(pickUpCode);
 
@@ -578,8 +616,12 @@ public class CommonServiceImpl implements CommonService {
                             + "在App下单了,订单号:"
                             + orderBaseInfo.getOrderNumber() +
                             ",请及时跟进。";
-                    String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
-                            orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
+                    try {
+                        String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                                orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 //修改顾客上一次下单时间
                 AppCustomer customer = new AppCustomer();
@@ -626,10 +668,16 @@ public class CommonServiceImpl implements CommonService {
                     orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
                 }
                 //保存订单商品信息
-                if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
+                    }
+                }
+                if (null != orderCouponInfoList && orderCouponInfoList.size() > 0) {
+                    for (OrderCouponInfo couponInfo : orderCouponInfoList) {
+                        couponInfo.setOid(orderBaseInfo.getId());
+                        orderService.saveOrderCouponInfo(couponInfo);
                     }
                 }
                 //保存订单账单信息
@@ -638,7 +686,7 @@ public class CommonServiceImpl implements CommonService {
                     orderService.saveOrderBillingDetails(orderBillingDetails);
                 }
                 //保存订单账单支付明细信息
-                if (null != paymentDetails && !paymentDetails.isEmpty()) {
+                if (null != paymentDetails && paymentDetails.size() > AppConstant.Integer_ZERO) {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
                         orderService.saveOrderBillingPaymentDetail(paymentDetail);
@@ -658,10 +706,7 @@ public class CommonServiceImpl implements CommonService {
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
-            /*paymentData.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
-            paymentData.setTradeNo(tradeNo);
-            paymentData.setNotifyTime(new Date());
-*/
+
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
             //更新订单状态及物流状态
@@ -693,10 +738,23 @@ public class CommonServiceImpl implements CommonService {
 
             if (OnlinePayType.ALIPAY == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ALIPAY.getDescription());
             } else if (OnlinePayType.WE_CHAT == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.WE_CHAT);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.WE_CHAT.getDescription());
             } else if (OnlinePayType.UNION_PAY == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.UNION_PAY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.UNION_PAY.getDescription());
+            }
+            if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.CUSTOMER.getDescription());
+            } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+            } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
             }
             paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
             paymentDetails.setReplyCode(tradeStatus);
@@ -777,24 +835,301 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void clearOrderGoodsInMaterialList(Long userId, Integer identityType, List<GoodsSimpleInfo> goodsList,
                                               List<ProductCouponSimpleInfo> productCouponList) {
-        if (null != userId && null != identityType){
-            if (null != goodsList && goodsList.size()>0){
+        if (null != userId && null != identityType) {
+            if (null != goodsList && goodsList.size() > 0) {
                 Set<Long> goodsIds = new HashSet<>();
-                for (GoodsSimpleInfo goods:goodsList){
+                for (GoodsSimpleInfo goods : goodsList) {
                     goodsIds.add(goods.getId());
                 }
                 materialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(
-                        userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsIds);
+                        userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsIds);
             }
-            if (null != productCouponList){
+            if (null != productCouponList) {
                 Set<Long> couponGoodsIds = new HashSet<>();
-                for (ProductCouponSimpleInfo couponGoods:productCouponList){
+                for (ProductCouponSimpleInfo couponGoods : productCouponList) {
                     couponGoodsIds.add(couponGoods.getId());
                 }
                 materialListService.deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(
-                        userId,AppIdentityType.getAppIdentityTypeByValue(identityType),couponGoodsIds);
+                        userId, AppIdentityType.getAppIdentityTypeByValue(identityType), couponGoodsIds);
             }
         }
     }
+
+    @Override
+    public List<OrderCouponInfo> createOrderCashCouponInfo(OrderBaseInfo orderBaseInfo, List<Long> cashCouponList) {
+        List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
+        if (null != orderBaseInfo) {
+            if (null != cashCouponList && cashCouponList.size() > 0) {
+                List<CustomerCashCoupon> cashCoupons = customerService.findCashCouponsByCcids(cashCouponList);
+                for (CustomerCashCoupon coupon :
+                        cashCoupons) {
+                    OrderCouponInfo couponInfo = new OrderCouponInfo();
+                    couponInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
+                    couponInfo.setCouponId(coupon.getId());
+                    couponInfo.setCouponType(OrderCouponType.CASH_COUPON);
+                    couponInfo.setGetType(coupon.getGetType());
+                    couponInfo.setPurchasePrice(coupon.getPurchasePrice());
+                    couponInfo.setCostPrice(coupon.getDenomination());
+                    orderCouponInfoList.add(couponInfo);
+                }
+            }
+        }
+        return orderCouponInfoList;
+    }
+
+    @Override
+    public List<OrderCouponInfo> createOrderProductCouponInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> productCouponList) {
+        List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
+        if (null != orderBaseInfo) {
+            Long customerIdTemp;
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                customerIdTemp = orderBaseInfo.getCreatorId();
+            } else {
+                customerIdTemp = orderBaseInfo.getCustomerId();
+            }
+            if (null != productCouponList && productCouponList.size() > 0) {
+                for (OrderGoodsInfo couponGoodsInfo : productCouponList) {
+                    List<CustomerProductCoupon> productCoupons = customerService.findProductCouponsByCustomerIdAndGoodsIdAndQty(
+                            customerIdTemp, couponGoodsInfo.getGid(), couponGoodsInfo.getOrderQuantity());
+                    for (CustomerProductCoupon productCoupon : productCoupons) {
+                        OrderCouponInfo couponInfo = new OrderCouponInfo();
+                        couponInfo.setCouponType(OrderCouponType.PRODUCT_COUPON);
+                        couponInfo.setCouponId(productCoupon.getId());
+                        couponInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
+                        couponInfo.setPurchasePrice(productCoupon.getBuyPrice());
+                        couponInfo.setCostPrice(couponGoodsInfo.getSettlementPrice());
+                        couponInfo.setGetType(productCoupon.getGetType());
+                        orderCouponInfoList.add(couponInfo);
+                    }
+                }
+            }
+        }
+        return orderCouponInfoList;
+    }
+
+    @Override
+    public CreateOrderGoodsSupport createOrderGoodsInfo(List<GoodsSimpleInfo> goodsList, Long userId, Integer identityType, Long customerId,
+                                                        List<ProductCouponSimpleInfo> productCouponList, String orderNumber) {
+        List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+        //新建一个map,用来存放最终要检核库存的商品和商品数量
+        Map<Long, Integer> inventoryCheckMap = new HashMap<>();
+        //定义订单商品零售总价
+        Double goodsTotalPrice = 0D;
+        //定义订单会员折扣
+        Double memberDiscount = 0D;
+        //定义订单促销折扣
+        Double promotionDiscount = 0D;
+        //处理订单本品商品信息
+        //获取当单顾客信息
+        AppCustomer customer = new AppCustomer();
+        if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+            customer = customerService.findById(userId);
+        } else if (identityType == AppIdentityType.SELLER.getValue()) {
+            customer = customerService.findById(customerId);
+        }
+        if (null != goodsList && goodsList.size() > 0) {
+            //获取本品id集合
+            Set<Long> goodsIdSet = new HashSet<>();
+            for (GoodsSimpleInfo goods : goodsList) {
+                goodsIdSet.add(goods.getId());
+            }
+            //根据本品id集合查询商品信息
+            List<OrderGoodsVO> goodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    userId, identityType, goodsIdSet);
+            //定义当前有唯一价格的本品id集合
+            Set<Long> hasPriceGoodsIdSet = new HashSet<>();
+            //循环处理查询到的商品信息
+            for (OrderGoodsVO goodsVO : goodsVOList) {
+                if (hasPriceGoodsIdSet.contains(goodsVO.getGid())) {
+                    throw new GoodsMultipartPriceException("商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!");
+                } else {
+                    hasPriceGoodsIdSet.add(goodsVO.getGid());
+                }
+                for (GoodsSimpleInfo info : goodsList) {
+                    if (info.getId().equals(goodsVO.getGid())) {
+                        goodsVO.setQty(info.getQty());
+                    }
+                }
+                //加总商品零售价总额
+                goodsTotalPrice += goodsVO.getRetailPrice() * goodsVO.getQty();
+                //将本品数量加入库存检核map
+                if (inventoryCheckMap.containsKey(goodsVO.getGid())) {
+                    inventoryCheckMap.put(goodsVO.getGid(), inventoryCheckMap.get(goodsVO.getGid()) + goodsVO.getQty());
+                } else {
+                    inventoryCheckMap.put(goodsVO.getGid(), goodsVO.getQty());
+                }
+                //设置本品会员折扣
+                if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                    memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                } else {
+                    if (null == customer) {
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                    } else {
+                        memberDiscount += 0D;
+                    }
+                }
+                OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
+                goodsInfo.setOrderNumber(orderNumber);
+                goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
+                goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
+                goodsInfo.setVIPPrice(goodsVO.getVipPrice());
+                goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
+                goodsInfo.setIsPriceShare(Boolean.FALSE);
+                goodsInfo.setSharePrice(0D);
+                goodsInfo.setIsReturnable(Boolean.TRUE);
+                if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                    goodsInfo.setSettlementPrice(goodsVO.getVipPrice());
+                    goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                } else {
+                    if (null == customer) {
+                        throw new OrderCustomerException("订单顾客信息异常!");
+                    }
+                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                        goodsInfo.setSettlementPrice(goodsVO.getVipPrice());
+                        goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                    } else {
+                        goodsInfo.setSettlementPrice(goodsVO.getRetailPrice());
+                        goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                    }
+                }
+                goodsInfo.setGid(goodsVO.getGid());
+                goodsInfo.setSku(goodsVO.getSku());
+                goodsInfo.setSkuName(goodsVO.getSkuName());
+                goodsInfo.setOrderQuantity(goodsVO.getQty());
+                goodsInfo.setShippingQuantity(0);
+                goodsInfo.setReturnableQuantity(goodsVO.getQty());
+                goodsInfo.setReturnQuantity(0);
+                goodsInfo.setReturnPriority(1);
+                goodsInfo.setPriceItemId(goodsVO.getPriceItemId());
+                goodsInfo.setCompanyFlag(goodsVO.getCompanyFlag());
+                orderGoodsInfoList.add(goodsInfo);
+            }
+
+            if (goodsIdSet.size() != hasPriceGoodsIdSet.size()) {
+                StringBuilder ids = new StringBuilder();
+                for (Long id : goodsIdSet) {
+                    if (!hasPriceGoodsIdSet.contains(id)) {
+                        ids.append(id).append(",");
+                    }
+                }
+                throw new GoodsNoPriceException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
+            }
+        }
+        //处理订单产品券商品信息
+        List<OrderGoodsInfo> productCouponGoodsList = new ArrayList<>();
+        if (null != productCouponList && productCouponList.size() > 0) {
+            //获取本品id集合
+            Set<Long> couponGoodsIdSet = new HashSet<>();
+            for (ProductCouponSimpleInfo productCouponGoods : productCouponList) {
+                couponGoodsIdSet.add(productCouponGoods.getId());
+            }
+            //根据本品id集合查询商品信息
+            List<OrderGoodsVO> couponGoodsList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    userId, identityType, couponGoodsIdSet);
+            //定义当前有唯一价格的本品id集合
+            Set<Long> hasPriceCouponGoodsIdSet = new HashSet<>();
+
+            for (OrderGoodsVO couponGoods : couponGoodsList) {
+                if (hasPriceCouponGoodsIdSet.contains(couponGoods.getGid())) {
+                    throw new GoodsMultipartPriceException("产品券商品 '" + couponGoods.getSkuName() + "'在当前门店下存在多个价格!");
+                } else {
+                    hasPriceCouponGoodsIdSet.add(couponGoods.getGid());
+                }
+                for (ProductCouponSimpleInfo info : productCouponList) {
+                    if (info.getId().equals(couponGoods.getGid())) {
+                        couponGoods.setQty(info.getQty());
+                    }
+                }
+                //加总商品零售价总额
+                goodsTotalPrice += couponGoods.getRetailPrice() * couponGoods.getQty();
+                //将产品券数量加入库存检核map
+                if (inventoryCheckMap.containsKey(couponGoods.getGid())) {
+                    inventoryCheckMap.put(couponGoods.getGid(), inventoryCheckMap.get(couponGoods.getGid()) + couponGoods.getQty());
+                } else {
+                    inventoryCheckMap.put(couponGoods.getGid(), couponGoods.getQty());
+                }
+                //设置产品券商品会员折扣
+                if (null == customer) {
+                    throw new OrderCustomerException("订单顾客信息异常!");
+                }
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                    memberDiscount += (couponGoods.getRetailPrice() - couponGoods.getVipPrice()) * couponGoods.getQty();
+                } else {
+                    memberDiscount += 0D;
+                }
+                OrderGoodsInfo couponGoodsInfo = new OrderGoodsInfo();
+                couponGoodsInfo.setOrderNumber(orderNumber);
+                couponGoodsInfo.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                couponGoodsInfo.setRetailPrice(couponGoods.getRetailPrice());
+                couponGoodsInfo.setVIPPrice(couponGoods.getVipPrice());
+                couponGoodsInfo.setWholesalePrice(couponGoods.getWholesalePrice());
+                couponGoodsInfo.setIsPriceShare(Boolean.FALSE);
+                couponGoodsInfo.setSharePrice(0D);
+                couponGoodsInfo.setIsReturnable(Boolean.TRUE);
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                    couponGoodsInfo.setReturnPrice(couponGoods.getVipPrice());
+                    couponGoodsInfo.setSettlementPrice(couponGoods.getVipPrice());
+                } else {
+                    couponGoodsInfo.setReturnPrice(couponGoods.getRetailPrice());
+                    couponGoodsInfo.setSettlementPrice(couponGoods.getRetailPrice());
+                }
+                couponGoodsInfo.setGid(couponGoods.getGid());
+                couponGoodsInfo.setSku(couponGoods.getSku());
+                couponGoodsInfo.setSkuName(couponGoods.getSkuName());
+                couponGoodsInfo.setOrderQuantity(couponGoods.getQty());
+                couponGoodsInfo.setShippingQuantity(0);
+                couponGoodsInfo.setReturnableQuantity(couponGoods.getQty());
+                couponGoodsInfo.setReturnQuantity(0);
+                couponGoodsInfo.setReturnPriority(1);
+                couponGoodsInfo.setPriceItemId(couponGoods.getPriceItemId());
+                couponGoodsInfo.setCompanyFlag(couponGoods.getCompanyFlag());
+                productCouponGoodsList.add(couponGoodsInfo);
+            }
+            if (couponGoodsIdSet.size() != hasPriceCouponGoodsIdSet.size()) {
+                StringBuilder ids = new StringBuilder();
+                for (Long id : couponGoodsIdSet) {
+                    if (!hasPriceCouponGoodsIdSet.contains(id)) {
+                        ids.append(id).append(",");
+                    }
+                }
+                throw new GoodsNoPriceException("id为 '" + ids + "'的产品券商品在当前门店下没有找到价格!");
+            }
+        }
+        if (productCouponGoodsList.size() > 0) {
+            orderGoodsInfoList.addAll(productCouponGoodsList);
+        }
+        CreateOrderGoodsSupport support = new CreateOrderGoodsSupport();
+        support.setGoodsTotalPrice(goodsTotalPrice);
+        support.setInventoryCheckMap(inventoryCheckMap);
+        support.setMemberDiscount(memberDiscount);
+        support.setOrderGoodsInfoList(orderGoodsInfoList);
+        support.setProductCouponGoodsList(productCouponGoodsList);
+        support.setPromotionDiscount(promotionDiscount);
+        return support;
+    }
+
+    @Override
+    public List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
+        List<OrderBillingPaymentDetails> billingPaymentDetails = new ArrayList<>();
+        if (null != orderBaseInfo && null != orderBillingDetails) {
+            if (null != orderBillingDetails.getCusPreDeposit() && orderBillingDetails.getCusPreDeposit() > AppConstant.DOUBLE_ZERO) {
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CUS_PREPAY, orderBillingDetails.getCusPreDeposit(),
+                        PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
+            if (null != orderBillingDetails.getStPreDeposit() && orderBillingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
+                        PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
+        }
+        return billingPaymentDetails;
+    }
+
 }
 

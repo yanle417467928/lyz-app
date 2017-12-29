@@ -121,10 +121,7 @@ public class AppApplicationConstant {
      */
     public static final String APP_LOGO = "http://leyizhuang.oss-cn-shenzhen.aliyuncs.com/lyz-app/logo/Icon-256.png";
 
-    /**
-     * 付清线
-     */
-    public static final Double PAY_UP_LIMIT = 0D;
+
 
 
 }

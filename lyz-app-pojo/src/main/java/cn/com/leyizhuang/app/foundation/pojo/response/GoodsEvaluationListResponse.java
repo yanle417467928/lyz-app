@@ -38,4 +38,8 @@ public class GoodsEvaluationListResponse {
      * 评价人头像
      */
     private String picUrl;
+    /**
+     * 评价时间
+     */
+    private String evaluationTime;
 }

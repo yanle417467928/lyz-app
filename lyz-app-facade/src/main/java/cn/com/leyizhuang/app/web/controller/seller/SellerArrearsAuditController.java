@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.seller;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -188,7 +188,8 @@ public class SellerArrearsAuditController {
                 //创建收款记录
                 OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
                         orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
-                        orderNo, collectionAmount, null, null);
+                        OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()).getDescription(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
+                        PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, null);
                 //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
                 this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
@@ -370,7 +371,7 @@ public class SellerArrearsAuditController {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             //查询订单头
             OrderBaseInfo orderBaseInfo = appOrderServiceImpl.getOrderByOrderNumber(orderNumber);
-            if (null == orderBaseInfo){
+            if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单！",
                         null);
                 logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
@@ -380,7 +381,7 @@ public class SellerArrearsAuditController {
             String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
             //查询支付信息
             PaymentDataDO paymentDataDO = paymentDataService.findPaymentDataDOByOutTradeNo(outTradeNo);
-            if (null == paymentDataDO){
+            if (null == paymentDataDO) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此还款记录",
                         null);
                 logger.info("getRepaymentMondyDetail OUT,导购查询还款记录详情失败，出参 resultDTO:{}", resultDTO);
@@ -393,10 +394,10 @@ public class SellerArrearsAuditController {
             repaymentDetailResponse.setOrderNumber(paymentDataDO.getOrderNumber());
             repaymentDetailResponse.setRepaymentTime(df.format(paymentDataDO.getCreateTime()));
             repaymentDetailResponse.setRepaymentType(paymentDataDO.getOnlinePayType().getDescription());
-            if (orderBaseInfo.getCreatorIdentityType().getValue() == 6){
+            if (orderBaseInfo.getCreatorIdentityType().getValue() == 6) {
                 repaymentDetailResponse.setCustomerName(orderBaseInfo.getCreatorName());
                 repaymentDetailResponse.setCustomerPhone(orderBaseInfo.getCreatorPhone());
-            }else if (orderBaseInfo.getCreatorIdentityType().getValue() == 0){
+            } else if (orderBaseInfo.getCreatorIdentityType().getValue() == 0) {
                 repaymentDetailResponse.setCustomerName(orderBaseInfo.getCustomerName());
                 repaymentDetailResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
             }

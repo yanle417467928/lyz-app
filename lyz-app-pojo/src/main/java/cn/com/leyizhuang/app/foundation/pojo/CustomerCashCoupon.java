@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -66,6 +67,11 @@ public class CustomerCashCoupon implements Serializable {
     private Double denomination;
 
     /**
+     * 购买价
+     */
+    private Double purchasePrice;
+
+    /**
      * 有效期开始时间
      */
     private Date effectiveStartTime;
@@ -94,5 +100,10 @@ public class CustomerCashCoupon implements Serializable {
      * 停用时间
      */
     private Date downTime;
+
+    /**
+     * 获取方式
+     */
+    private CouponGetType getType;
 
 }

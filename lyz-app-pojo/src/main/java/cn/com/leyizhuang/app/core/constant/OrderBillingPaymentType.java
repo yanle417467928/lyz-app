@@ -10,6 +10,8 @@ import java.util.Objects;
  **/
 public enum OrderBillingPaymentType {
 
+    CUS_PREPAY("CUS_PREPAY","顾客预存款"),
+    ST_PREPAY("ST_PREPAY","门店预存款"),
     ALIPAY("ALIPAY", "支付宝"),
     WE_CHAT("WE_CHAT", "微信"),
     UNION_PAY("UNION_PAY", "银联"),

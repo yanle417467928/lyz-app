@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
@@ -387,11 +388,23 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public OrderBillingDetails createOrderBillingDetails(OrderBillingDetails orderBillingDetails, Long userId, Integer identityType,
-                                                         BillingSimpleInfo billing, List<Long> cashCouponIds) {
+                                                         BillingSimpleInfo billing, List<Long> cashCouponIds, List<OrderGoodsInfo> productCouponGoodsList) {
 
+        orderBillingDetails.setCreateTime(Calendar.getInstance().getTime());
+        orderBillingDetails.setCollectionAmount(OrderUtils.replaceNullWithZero(billing.getCollectionAmount()));
+        orderBillingDetails.setFreight(OrderUtils.replaceNullWithZero(billing.getFreight()));
 
-        orderBillingDetails.setCollectionAmount(billing.getCollectionAmount());
-        orderBillingDetails.setFreight(billing.getFreight());
+        //计算并设置产品券折扣
+        if (null != productCouponGoodsList && productCouponGoodsList.size() > 0) {
+            Double productCouponDiscount = 0D;
+            for (OrderGoodsInfo goodsInfo : productCouponGoodsList) {
+                productCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
+            }
+            orderBillingDetails.setProductCouponDiscount(productCouponDiscount);
+        } else {
+            orderBillingDetails.setProductCouponDiscount(0D);
+        }
+        //计算并设置乐币折扣
         orderBillingDetails.setLebiQuantity(billing.getLeBiQuantity());
         if (null != billing.getLeBiQuantity()) {
             orderBillingDetails.setLebiCashDiscount(billing.getLeBiQuantity() / AppConstant.RMB_TO_LEBI_RATIO);
@@ -432,6 +445,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 stPreDeposit = billing.getStPreDeposit();
             }
             orderBillingDetails.setStPreDeposit(stPreDeposit);
+        } else {
+            orderBillingDetails.setStPreDeposit(0D);
         }
         //设置导购信用额度
         if (identityType == AppIdentityType.SELLER.getValue()) {
@@ -440,6 +455,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 empCreditMoney = billing.getEmpCreditMoney();
             }
             orderBillingDetails.setEmpCreditMoney(empCreditMoney);
+        } else {
+            orderBillingDetails.setEmpCreditMoney(0D);
         }
         //设置门店信用额度
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() ||
@@ -449,24 +466,28 @@ public class AppOrderServiceImpl implements AppOrderService {
                 stCreditMoney = billing.getStoreCreditMoney();
             }
             orderBillingDetails.setStoreCreditMoney(stCreditMoney);
+        } else {
+            orderBillingDetails.setStoreCreditMoney(0D);
         }
-        //设置门店信用额度
+        //设置门店现金返利
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
             Double stSubvention = 0D;
             if (null != billing.getStoreSubvention()) {
                 stSubvention = billing.getStoreSubvention();
             }
             orderBillingDetails.setStoreSubvention(stSubvention);
+        } else {
+            orderBillingDetails.setStoreSubvention(0D);
         }
-
 
         //计算订单金额小计以及应付款
         Double orderAmountSubtotal;
-        Double amountPayable;
+        Double amountPayable = 0D;
         switch (identityType) {
             case 6:
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())
@@ -480,6 +501,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             case 0:
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())
@@ -507,7 +529,16 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
+        if (amountPayable < 0D) {
+            throw new OrderPayableAmountException("订单应付款金额异常(<0)");
+        }
         orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+        //根据应付金额判断订单账单是否已付清
+        if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
+            orderBillingDetails.setIsPayUp(true);
+        } else {
+            orderBillingDetails.setIsPayUp(false);
+        }
         return orderBillingDetails;
     }
 
@@ -544,6 +575,13 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<OrderGoodsListResponse> getOrderGoodsList(String orderNumber) {
         return orderDAO.getOrderGoodsList(orderNumber);
+    }
+
+    @Override
+    public void saveOrderCouponInfo(OrderCouponInfo couponInfo) {
+        if (null != couponInfo) {
+            orderDAO.saveOrderCouponInfo(couponInfo);
+        }
     }
 
     @Override

@@ -168,9 +168,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     @Transactional
-    public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType,int qty) {
+    public void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType, int qty) {
         if (null != userId && null != identityType && identityType == 6) {
-            customerDAO.updateLeBiQuantityByUserId(userId,qty);
+            customerDAO.updateLeBiQuantityByUserId(userId, qty);
         }
     }
 
@@ -199,9 +199,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public void updateCustomerSignInfoByCustomerId(Long cusId, Date date,int consecutiveSignDays) {
+    public void updateCustomerSignInfoByCustomerId(Long cusId, Date date, int consecutiveSignDays) {
         if (null != cusId) {
-            customerDAO.updateCustomerSignInfoByCustomerId(cusId, date,consecutiveSignDays);
+            customerDAO.updateCustomerSignInfoByCustomerId(cusId, date, consecutiveSignDays);
         }
     }
 
@@ -325,9 +325,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId,String keywords) {
+    public List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId, String keywords) {
         if (null != userId) {
-            return customerDAO.findProductCouponCustomerBySellerId(userId,keywords);
+            return customerDAO.findProductCouponCustomerBySellerId(userId, keywords);
         }
         return null;
     }
@@ -408,7 +408,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public Integer countTotalSignDaysByCusId(Long cusId) {
-        if (null != cusId){
+        if (null != cusId) {
             return customerDAO.countTotalSignDaysByCusId(cusId);
         }
         return null;
@@ -416,15 +416,15 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public Integer countSignAwardLebiQtyByCusId(Long cusId) {
-        if (null != cusId){
+        if (null != cusId) {
             return customerDAO.countSignAwardLebiQtyByCusId(cusId);
         }
         return null;
     }
 
     @Override
-    public PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size) {
-        if (null != cusId){
+    public PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId, Integer page, Integer size) {
+        if (null != cusId) {
             PageHelper.startPage(page, size);
             List<CustomerSignLogBrief> logBriefList = customerDAO.findCustomerSignDetailByCusId(cusId);
             return new PageInfo<>(logBriefList);
@@ -434,9 +434,34 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public void saveSignLog(CusSignLog log) {
-        if (null != log){
+        if (null != log) {
             customerDAO.saveSignLog(log);
         }
+    }
+
+    @Override
+    public List<CustomerCashCoupon> findCashCouponsByCcids(List<Long> cashCouponList) {
+        if (null != cashCouponList && cashCouponList.size() > 0) {
+            return customerDAO.findCashCouponsByCcids(cashCouponList);
+        }
+        return null;
+    }
+
+    @Override
+    public List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty) {
+        if (null != customerIdTemp && null != id && null != qty) {
+            return customerDAO.findProductCouponsByCustomerIdAndGoodsIdAndQty(customerIdTemp, id, qty);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer lockCustomerProductCouponById(Long couponId, String orderNumber) {
+        if (null != couponId && null != orderNumber) {
+            return customerDAO.updateCustomerProductCouponById(couponId, orderNumber);
+        }
+        return 0;
     }
 
 

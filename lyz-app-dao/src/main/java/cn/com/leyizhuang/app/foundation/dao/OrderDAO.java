@@ -99,4 +99,5 @@ public interface OrderDAO {
 
     List<OrderGoodsListResponse> getOrderGoodsList(@Param("orderNumber") String orderNumber);
 
+    void saveOrderCouponInfo(OrderCouponInfo couponInfo);
 }
