@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.common.util.GenerateInfoUtils;
+import cn.com.leyizhuang.common.util.CharactersUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,7 +38,7 @@ public class StoreResponse {
         storeResponse.setStoreName(store.getStoreName());
 
         if (null != store.getDetailedAddress()) {
-            String address = GenerateInfoUtils.generateString(true,
+            String address = CharactersUtils.generateString(true,
                     store.getProvince(), store.getCity(), store.getArea(), store.getDetailedAddress());
             storeResponse.setStoreAddress(address);
         }
