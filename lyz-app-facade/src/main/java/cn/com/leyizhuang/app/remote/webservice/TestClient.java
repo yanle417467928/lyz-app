@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.remote.webservice;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,12 +22,15 @@ public class TestClient {
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
 
-   /* public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
+        String STRTABLE = "tbw_send_task_m";
+        String STRTYPE ="test";
+        String XML = "PEVSUD48VEFCTEU+PENfQ09NUEFOWV9JRD4yMDMzPC9DX0NPTVBBTllfSUQ+PENfT1VUX05PPk9VMTEwNDE3MTIyMjAwMDE8L0NfT1VUX05PPjxDX1dIX05PPjExMDQ8L0NfV0hfTk8+PENfV0hfTkFNRT7nmb7lp5PkuK3ovazku5M8L0NfV0hfTkFNRT48Q19JRD4yMTcyNDk8L0NfSUQ+PENfREVTQ1JJUFRJT04+V01T5L2c5Lia5Lu75Yqh54q25oCBVG9FUlA8L0NfREVTQ1JJUFRJT04+PENfREVTVD48L0NfREVTVD48Q19EVD4yMDE3LzEyLzIyIDEyOjA1OjEyPC9DX0RUPjxDX0NPTFVNTjE+Y19pZDwvQ19DT0xVTU4xPjxDX1ZBTFVFMT5aWl9YTjIwMTcxMjIyMTEzMjA3NjI3Njg4PC9DX1ZBTFVFMT48Q19DT0xVTU4yPmNfYmlsbF90eXBlPC9DX0NPTFVNTjI+PENfVkFMVUUyPuaLo+i0p+WNlTwvQ19WQUxVRTI+PENfQ09MVU1OMz5jX3R5cGU8L0NfQ09MVU1OMz48Q19WQUxVRTM+5bey5ouj6LSnPC9DX1ZBTFVFMz48Q19DT0xVTU40PmNfY3VzdG9tZXJfbm88L0NfQ09MVU1OND48Q19WQUxVRTQ+MTAwMDwvQ19WQUxVRTQ+PENfQ09MVU1ONT5jX2djb2RlPC9DX0NPTFVNTjU+PENfVkFMVUU1PkpCQzIzNS0xMDwvQ19WQUxVRTU+PENfQ09MVU1ONj5jX3F0eTwvQ19DT0xVTU42PjxDX1ZBTFVFNj4xLjAwPC9DX1ZBTFVFNj48Q19DT0xVTU43PmNfb3V0X25vPC9DX0NPTFVNTjc+PENfVkFMVUU3Pk9VMTEwNDE3MTIyMjAwMDE8L0NfVkFMVUU3PjxDX0NPTFVNTjg+Y19kX3JlcXVlc3RfcXR5PC9DX0NPTFVNTjg+PENfVkFMVUU4PjEuMDA8L0NfVkFMVUU4PjwvVEFCTEU+PC9FUlA+";
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
         Client client = dcf.createClient("http://localhost:9999/webservice/user?wsdl");
-        Object[] objects=client.invoke("getUser","1");
+        Object[] objects=client.invoke("GetWMSInfo",STRTABLE,STRTYPE,XML);
         System.out.println("*****"+objects[0].toString());
-    }*/
+    }
 
     @RequestMapping("/test/webservice")
     public void testWebservice() throws Exception {
