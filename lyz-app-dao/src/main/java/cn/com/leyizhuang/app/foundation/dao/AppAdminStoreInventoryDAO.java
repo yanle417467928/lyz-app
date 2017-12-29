@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.List;
 @Repository
 public interface AppAdminStoreInventoryDAO {
 
-    List<StoreInventory> queryByStoreId(Long storeId);
+    StoreInventory queryByStoreId(Long storeId);
 
-    List<AppAdminStoreInventoryVO> queryListVO();
+    List<AppAdminStoreInventoryVO> queryListVO(@Param("keywords") String keywords);
 
 
 }

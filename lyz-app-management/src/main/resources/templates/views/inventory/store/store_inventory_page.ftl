@@ -63,19 +63,43 @@
                     </span>
                     <ul id="structureAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>菜单类型</b> <a class="pull-right" id="menuType"></a>
+                            <b>城市id</b> <a class="pull-right" id="cityId"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>链接地址</b> <a class="pull-right" id="menuLinkUri"></a>
+                            <b>城市编码</b> <a class="pull-right" id="cityCode"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>图标样式</b> <a class="pull-right" id="menuIconStyle"></a>
+                            <b>城市名称</b> <a class="pull-right" id="cityName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>相关表名</b> <a class="pull-right" id="menuReferenceTable"></a>
+                            <b>门店id</b> <a class="pull-right" id="storeId"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>排序号</b> <a class="pull-right" id="menuSortId"></a>
+                            <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>门店名称</b> <a class="pull-right" id="storeName"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>商品id</b> <a class="pull-right" id="gid"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>商品编码</b> <a class="pull-right" id="sku"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>商品名称</b> <a class="pull-right" id="skuName"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>可售门店库存</b> <a class="pull-right" id="availableIty"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>真实门店库存</b> <a class="pull-right" id="realIty"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>创建时间</b> <a class="pull-right" id="createTime"></a>
                         </li>
                     </ul>
                 </div>
@@ -88,7 +112,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -104,6 +128,14 @@
         }, {
             field: 'storeName',
             title: '门店名称',
+            events: {
+                'click .scan': function (e, value, row) {
+                    $page.information.show(row.id);
+                }
+            },
+            formatter: function (value) {
+                return '<a class="scan" href="#">' + value + '</a>';
+            },
             align: 'center'
         }, {
             field: 'goodsName',
@@ -144,7 +176,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/menu/' + id,
+                        url: '/rest/store/inventory/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -158,36 +190,72 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html(data.title);
+                                $('#menuTitle').html("门店库存详情");
 
-                                if ('PARENT' === data.type) {
-                                    data.type = '一级菜单';
-                                } else if ('CHILD' === data.type) {
-                                    data.type = '二级菜单';
-                                } else {
-                                    data.type = '??';
+                                if (null === data.cityId) {
+                                    data.cityId = '-';
                                 }
-                                $('#menuType').html(data.type);
+                                $('#cityId').html(data.cityId);
 
-                                if (null === data.linkUri) {
-                                    data.linkUri = '-';
+                                if (null === data.cityCode) {
+                                    data.cityCode = '-';
                                 }
-                                $('#menuLinkUri').html(data.linkUri);
+                                $('#cityCode').html(data.cityCode);
 
-                                if (null === data.iconStyle) {
-                                    data.iconStyle = 'fa fa-circle-o';
+                                if (null === data.cityName) {
+                                    data.cityName = 'fa fa-circle-o';
                                 }
-                                $('#menuIconStyle').html('<i class="' + data.iconStyle + '"></i>');
+                                $('#cityName').html(data.cityName);
 
-                                if (null === data.referenceTable) {
-                                    data.referenceTable = '-';
+                                if (null === data.storeId) {
+                                    data.storeId = '-';
                                 }
-                                $('#menuReferenceTable').html(data.referenceTable);
+                                $('#storeId').html(data.storeId);
 
-                                if (null === data.sortId) {
-                                    data.sortId = '-';
+                                if (null === data.storeCode) {
+                                    data.storeCode = '-';
                                 }
-                                $('#menuSortId').html(data.sortId);
+                                $('#storeCode').html(data.storeCode);
+
+                                if (null === data.storeName) {
+                                    data.storeName = '-';
+                                }
+                                $('#storeName').html(data.storeName);
+
+                                if (null === data.gid) {
+                                    data.gid = '-';
+                                }
+                                $('#gid').html(data.gid);
+
+                                if (null === data.sku) {
+                                    data.sku = '-';
+                                }
+                                $('#sku').html(data.sku);
+
+                                if (null === data.skuName) {
+                                    data.skuName = '-';
+                                }
+                                $('#skuName').html(data.skuName);
+
+                                if (null === data.availableIty) {
+                                    data.availableIty = '-';
+                                }
+                                $('#availableIty').html(data.availableIty);
+
+                                if (null === data.realIty) {
+                                    data.realIty = '-';
+                                }
+                                $('#realIty').html(data.realIty);
+
+                                if (null === data.lastUpdateTime) {
+                                    data.lastUpdateTime = '-';
+                                }
+                                $('#lastUpdateTime').html(data.lastUpdateTime);
+
+                                if (null === data.createTime) {
+                                    data.createTime = '-';
+                                }
+                                $('#createTime').html(data.createTime);
 
                                 $('#information').modal();
                             } else {

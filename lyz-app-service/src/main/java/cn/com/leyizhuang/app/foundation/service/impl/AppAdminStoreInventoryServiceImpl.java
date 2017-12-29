@@ -4,8 +4,6 @@ import cn.com.leyizhuang.app.foundation.dao.AppAdminStoreInventoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
-import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
-import cn.com.leyizhuang.common.foundation.service.impl.BaseServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +25,17 @@ public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventory
 
 
     @Override
-    public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size) {
+    public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords) {
         PageHelper.startPage(page, size);
-        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO();
+        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO(keywords);
         return new PageInfo<>(storeInventoryList);
     }
 
-
+    @Override
+    public StoreInventory queryStoreInventoryById(Long storeId) {
+        if (storeId != null) {
+            return storeInventoryDAO.queryByStoreId(storeId);
+        }
+        return null;
+    }
 }

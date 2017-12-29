@@ -21,5 +21,5 @@ public interface MaCityAvailableItyDAO {
      * @param keywords
      * @return
      */
-    public List<CityInventoryVO> findCityInventoryList(@Param("keywords") String keywords);
+    List<CityInventoryVO> findCityInventoryList(@Param("keywords") String keywords);
 }
