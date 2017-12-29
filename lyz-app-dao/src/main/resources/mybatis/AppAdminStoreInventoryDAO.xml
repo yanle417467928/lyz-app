@@ -21,21 +21,30 @@
         <result column="SOLD_INVENTORY" property="soldInventory"/>
     </resultMap>
 
-    <select id="queryListVO" resultType="AppAdminStoreInventoryVO">
+    <select id="queryListVO" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO">
         SELECT
-        inv.ID ID,
-        inv.STORE_ID STORE_ID,
-        s.STORE_NAME STORE_NAME,
-        inv.GOODS_ID GOODS_ID,
-        g.GOODS_NAME GOODS_NAME,
-        g.GOODS_CODE GOODS_CODE,
-        inv.REAL_INVENTORY REAL_INVENTORY,
-        inv.SOLD_INVENTORY SOLD_INVENTORY
+        inv.id id,
+        inv.store_id storeId,
+        inv.store_name storeName,
+        inv.gid goodsId,
+        inv.sku_name goodsName,
+        inv.sku goodsCode,
+        inv.real_ity realInventory,
+        inv.available_ity soldInventory
         FROM
-        store_inventory inv
-        LEFT JOIN st_store s ON inv.STORE_ID = s.ID
-        LEFT JOIN goods g ON inv.GOODS_ID = g.ID
+        st_inventory inv
+        <if test="null != keywords">
+            WHERE inv.sku LIKE concat('%', #{keywords}, '%')
+            OR inv.sku_name LIKE concat('%', #{keywords}, '%')
+        </if>
     </select>
 
+    <select id="queryByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
+        select *
+        from st_inventory
+        WHERE id = #{storeId};
+    </select>
 
 </mapper>

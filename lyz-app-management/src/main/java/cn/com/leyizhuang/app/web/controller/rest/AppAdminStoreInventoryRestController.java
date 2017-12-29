@@ -1,13 +1,17 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,23 +23,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = AppAdminStoreInventoryRestController.PRE_URL, produces = "application/json;charset=utf8")
 public class AppAdminStoreInventoryRestController extends BaseRestController {
 
-    protected final static String PRE_URL = "/rest/inventory";
+    protected final static String PRE_URL = "/rest/store/inventory";
 
-    private final Logger LOG = LoggerFactory.getLogger(AppAdminStoreInventoryRestController.class);
+    private final Logger logger = LoggerFactory.getLogger(AppAdminStoreInventoryRestController.class);
 
     @Autowired
     private AppAdminStoreInventoryService storeInventoryService;
 
     @GetMapping(value = "/page/grid")
     public GridDataVO<AppAdminStoreInventoryVO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
+
+        logger.info("dataMenuPageGridGet CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+
         // 根据偏移量计算当前页数
         size = getSize(size);
-        Integer page = (offset / size) + 1;
-        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size);
+        Integer page = getPage(offset, size);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size, keywords);
         return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
     }
 
+    /**
+     * 根据门店id 查库存详情
+     *
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/{storeId}")
+    public ResultDTO<StoreInventory> getStoreInventory(@PathVariable(value = "storeId") Long storeId) {
 
+        StoreInventory storeInventory = this.storeInventoryService.queryStoreInventoryById(storeId);
+        if (null == storeInventory) {
+            logger.warn("查找门店库存详情失败：Role(id = {}) == null", storeId);
+            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                    "指定数据不存在，请联系管理员", null);
+        } else {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeInventory);
+        }
+    }
    /* @PostMapping(value = "/validator/title")
     public ValidatorResultDTO restMenuValidatorTitlePost(@RequestParam Long id,@RequestParam String title){
         Boolean result = menuService.existsByTitleAndIdNot(title, id);

@@ -26,10 +26,6 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
-        /*page = null == page ? CommonGlobal.PAGEABLE_DEFAULT_PAGE : page;
-        size = null == size ? CommonGlobal.PAGEABLE_DEFAULT_SIZE : size;
-        PageInfo<StoreInventoryDO> storeInventoryPage = storeInventoryService.queryPage(page,size);
-        model.addAttribute("storeInventoryPage", storeInventoryPage);*/
         return "/views/inventory/store/store_inventory_page";
     }
 
