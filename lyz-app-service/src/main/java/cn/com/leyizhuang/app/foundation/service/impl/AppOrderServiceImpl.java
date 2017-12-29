@@ -391,14 +391,14 @@ public class AppOrderServiceImpl implements AppOrderService {
                                                          BillingSimpleInfo billing, List<Long> cashCouponIds, List<OrderGoodsInfo> productCouponGoodsList) {
 
         orderBillingDetails.setCreateTime(Calendar.getInstance().getTime());
-        orderBillingDetails.setCollectionAmount(billing.getCollectionAmount());
-        orderBillingDetails.setFreight(billing.getFreight());
+        orderBillingDetails.setCollectionAmount(OrderUtils.replaceNullWithZero(billing.getCollectionAmount()));
+        orderBillingDetails.setFreight(OrderUtils.replaceNullWithZero(billing.getFreight()));
 
         //计算并设置产品券折扣
         if (null != productCouponGoodsList && productCouponGoodsList.size() > 0) {
             Double productCouponDiscount = 0D;
             for (OrderGoodsInfo goodsInfo : productCouponGoodsList) {
-                productCouponDiscount += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
+                productCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
             }
             orderBillingDetails.setProductCouponDiscount(productCouponDiscount);
         } else {
@@ -445,6 +445,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 stPreDeposit = billing.getStPreDeposit();
             }
             orderBillingDetails.setStPreDeposit(stPreDeposit);
+        } else {
+            orderBillingDetails.setStPreDeposit(0D);
         }
         //设置导购信用额度
         if (identityType == AppIdentityType.SELLER.getValue()) {
@@ -453,6 +455,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 empCreditMoney = billing.getEmpCreditMoney();
             }
             orderBillingDetails.setEmpCreditMoney(empCreditMoney);
+        } else {
+            orderBillingDetails.setEmpCreditMoney(0D);
         }
         //设置门店信用额度
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() ||
@@ -462,14 +466,18 @@ public class AppOrderServiceImpl implements AppOrderService {
                 stCreditMoney = billing.getStoreCreditMoney();
             }
             orderBillingDetails.setStoreCreditMoney(stCreditMoney);
+        } else {
+            orderBillingDetails.setStoreCreditMoney(0D);
         }
-        //设置门店信用额度
+        //设置门店现金返利
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
             Double stSubvention = 0D;
             if (null != billing.getStoreSubvention()) {
                 stSubvention = billing.getStoreSubvention();
             }
             orderBillingDetails.setStoreSubvention(stSubvention);
+        } else {
+            orderBillingDetails.setStoreSubvention(0D);
         }
 
         //计算订单金额小计以及应付款

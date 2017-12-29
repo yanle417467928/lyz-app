@@ -42,4 +42,14 @@ public class AppConstant {
      * 付清线
      */
     public static final Double PAY_UP_LIMIT = 0D;
+
+    /**
+     * Double 零值
+     */
+    public static final Double DOUBLE_ZERO = 0D;
+
+    /**
+     * Integer 零值
+     */
+    public static final Integer Integer_ZERO = 0;
 }

@@ -870,7 +870,7 @@
         gp.vip_price,
         gp.wholesale_price,
         g.company_flag,
-        gp.price_line_id
+        gp.price_line_id price_item_id
         FROM cus_customer c INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
         INNER JOIN gds_goods g ON gp.gid = g.gid
         where c.cus_id = #{userId}
@@ -946,8 +946,6 @@
     </update>
 
 
-
-
     <select id="findOrderGoodsVOListByEmpIdAndGoodsIds" resultType="cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO">
         SELECT
         g.gid,
@@ -957,7 +955,7 @@
         gp.vip_price,
         gp.wholesale_price,
         g.company_flag,
-        gp.price_line_id
+        gp.price_line_id price_item_id
         FROM emp_employee e INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
         INNER JOIN gds_goods g ON gp.gid = g.gid
         where e.emp_id = #{userId}
@@ -970,20 +968,20 @@
     </select>
 
 
-    <select id="isExistSkuName"  resultType="boolean">
+    <select id="isExistSkuName" resultType="boolean">
         SELECT EXISTS(SELECT 1
-        FROM gds_goods
-        WHERE sku_name = #{skuName}
-        AND gid != #{id}
+                      FROM gds_goods
+                      WHERE sku_name = #{skuName}
+                            AND gid != #{id}
         )
     </select>
 
 
-    <select id="isExistSortId"  resultType="boolean">
+    <select id="isExistSortId" resultType="boolean">
         SELECT EXISTS(SELECT 1
-        FROM gds_goods
-        WHERE sort_id = #{sortId}
-        AND gid != #{id}
+                      FROM gds_goods
+                      WHERE sort_id = #{sortId}
+                            AND gid != #{id}
         )
     </select>
 </mapper>

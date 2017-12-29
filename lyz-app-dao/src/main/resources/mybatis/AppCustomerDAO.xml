@@ -101,7 +101,27 @@
     </update>
 
     <select id="findById" parameterType="java.lang.Long" resultType="AppCustomer">
-        SELECT *
+        SELECT
+            cus_id,
+            city_id,
+            store_id,
+            name,
+            mobile,
+            birthday,
+            status,
+            sex,
+            open_id,
+            pic_url,
+            nick_name,
+            sales_consult_id,
+            create_time,
+            light,
+            create_type,
+            customer_type,
+            last_sign_time,
+            consecutive_sign_days,
+            binding_time,
+            last_consumption_time
         FROM cus_customer
         WHERE cus_id = #{cusId}
     </select>
@@ -147,8 +167,8 @@
         WHERE
             c.cus_id = #{userId}
             AND c.is_used IS FALSE
-            AND c.effective_start_time &lt; NOW()
-            AND c.effective_end_time &gt; NOW()
+            AND effective_start_time &lt; NOW()
+            AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
         GROUP BY
             g.sku
     </select>
@@ -346,36 +366,36 @@
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-        cccc.denomination,
-        cccc.condition,
-        cccc.title
+            cccc.denomination,
+            cccc.condition,
+            cccc.title
         FROM cus_customer_cash_coupon cccc
         WHERE cccc.ccid = #{ccId}
-        AND cccc.id = #{cusId}
+              AND cccc.id = #{cusId}
               AND cccc.qty &gt;= #{qty}
               AND cccc.is_used = FALSE
-        AND cccc.effective_start_time &lt; NOW()
-        AND (cccc.effective_end_time IS NULL OR cccc.effective_end_time &gt; NOW())
+              AND cccc.effective_start_time &lt; NOW()
+              AND (cccc.effective_end_time IS NULL OR cccc.effective_end_time &gt; NOW())
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-        ccp.id,
-        ccp.denomination,
-        ccp.effective_start_time,
-        ccp.effective_end_time,
-        ccp.descripttion,
-        ccp.title
+            ccp.id,
+            ccp.denomination,
+            ccp.effective_start_time,
+            ccp.effective_end_time,
+            ccp.descripttion,
+            ccp.title
         FROM
             cus_customer_cash_coupon ccp
         WHERE
             ccp.cus_id = #{userId}
             AND ccp.is_used IS FALSE
             AND ccp.`status` IS TRUE
-        AND ccp.effective_start_time &lt; now()
-        AND ccp.effective_end_time &gt; now()
-        AND ccp.denomination &lt;= #{totalAmount}
+            AND ccp.effective_start_time &lt; now()
+            AND ccp.effective_end_time &gt; now()
+            AND ccp.denomination &lt;= #{totalAmount}
     </select>
 
     <select id="findByCusId" parameterType="java.lang.Long"
@@ -403,7 +423,7 @@
             AND c.seller_id = #{sellerId}
             AND c.is_used IS FALSE
             AND c.effective_start_time &lt; NOW()
-            AND c.effective_end_time &gt; NOW()
+            AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
         GROUP BY
             g.sku
     </select>
@@ -418,7 +438,7 @@
         WHERE c.seller_id = #{userId}
         AND c.is_used IS FALSE
         AND c.effective_start_time &lt; NOW()
-        AND c.effective_end_time &gt; NOW()
+        AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
         <if test="keywords != null and keywords != ''">
             AND (cc.mobile LIKE CONCAT('%',#{keywords},'%') OR cc.name LIKE CONCAT('%',#{keywords},'%') )
         </if>
@@ -510,7 +530,8 @@
         FROM cus_customer_product_coupon
         WHERE cus_id = #{userId}
               AND is_used IS FALSE
-              AND (now() BETWEEN effective_start_time AND effective_end_time)
+              AND effective_start_time &lt; NOW()
+              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
         GROUP BY cus_id
     </select>
 
@@ -606,6 +627,7 @@
         WHERE id = #{couponId}
               AND status = TRUE
               AND is_used = FALSE
-              AND now() BETWEEN effective_start_time AND effective_end_time
+              AND effective_start_time &lt; NOW()
+              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
     </update>
 </mapper>

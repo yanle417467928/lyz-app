@@ -195,6 +195,7 @@ public class OrderController {
 
             //********* 创建订单券信息 *********
             List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
+
             //创建订单优惠券信息
             List<OrderCouponInfo> orderCashCouponInfoList = commonService.createOrderCashCouponInfo(orderBaseInfo, cashCouponList);
             if (null != orderCashCouponInfoList && orderCashCouponInfoList.size() > 0) {
@@ -206,7 +207,7 @@ public class OrderController {
                 orderCouponInfoList.addAll(orderProductCouponInfoList);
             }
 
-            //********* 处理订单账务相关信息 *********
+            //********* 处理订单账单相关信息 *********
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
             orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
             orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
@@ -219,8 +220,9 @@ public class OrderController {
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
 
-            //******** 处理账单支付明细信息 *********
-            List<OrderBillingPaymentDetails> paymentDetails = new ArrayList<>();
+            //******** 处理订单账单支付明细信息 *********
+            List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo,orderBillingDetails);
+
 
             //********分摊**********
             List<OrderGoodsInfo> orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());

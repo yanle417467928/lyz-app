@@ -62,4 +62,6 @@ public interface CommonService {
 
     CreateOrderGoodsSupport createOrderGoodsInfo(List<GoodsSimpleInfo> goodsList, Long userId, Integer identityType, Long customerId,
                                                  List<ProductCouponSimpleInfo> productCouponList, String orderNumber);
+
+    List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 }

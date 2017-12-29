@@ -407,7 +407,7 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name
+         remark, city_id, city_name, customer_type
         )
         VALUES
             (
@@ -418,7 +418,7 @@
                 #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode}, #{salesConsultId},
                 #{salesConsultName},
                 #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
-                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}
+                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}, #{customerType}
             )
     </insert>
 
@@ -472,9 +472,12 @@
 
     <insert id="saveOrderBillingPaymentDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
-        INSERT INTO ord_billing_payment_details (oid, ord_no, creatr_time, pay_time, pay_type, amount, reply_code, receipt_number)
-        VALUES (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
-                #{receiptNumber})
+        INSERT INTO ord_billing_payment_details (oid, ord_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
+                                                 paument_subject_type_desc, amount, reply_code, receipt_number)
+        VALUES
+            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
+                         #{paymentSubjectTypeDesc},
+                         #{amount}, #{replyCode}, #{receiptNumber})
     </insert>
 
     <update id="updateOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">

@@ -686,7 +686,7 @@ public class CommonServiceImpl implements CommonService {
                     orderService.saveOrderBillingDetails(orderBillingDetails);
                 }
                 //保存订单账单支付明细信息
-                if (null != paymentDetails && !paymentDetails.isEmpty()) {
+                if (null != paymentDetails && paymentDetails.size() > AppConstant.Integer_ZERO) {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
                         orderService.saveOrderBillingPaymentDetail(paymentDetail);
@@ -706,10 +706,7 @@ public class CommonServiceImpl implements CommonService {
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
-            /*paymentData.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
-            paymentData.setTradeNo(tradeNo);
-            paymentData.setNotifyTime(new Date());
-*/
+
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
             //更新订单状态及物流状态
@@ -741,10 +738,23 @@ public class CommonServiceImpl implements CommonService {
 
             if (OnlinePayType.ALIPAY == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ALIPAY.getDescription());
             } else if (OnlinePayType.WE_CHAT == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.WE_CHAT);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.WE_CHAT.getDescription());
             } else if (OnlinePayType.UNION_PAY == onlinePayType) {
                 paymentDetails.setPayType(OrderBillingPaymentType.UNION_PAY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.UNION_PAY.getDescription());
+            }
+            if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.CUSTOMER.getDescription());
+            } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+            } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
             }
             paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
             paymentDetails.setReplyCode(tradeStatus);
@@ -887,7 +897,7 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setCouponId(productCoupon.getId());
                         couponInfo.setOrderNumber(orderBaseInfo.getOrderNumber());
                         couponInfo.setPurchasePrice(productCoupon.getBuyPrice());
-                        couponInfo.setCostPrice(couponGoodsInfo.getRetailPrice());
+                        couponInfo.setCostPrice(couponGoodsInfo.getSettlementPrice());
                         couponInfo.setGetType(productCoupon.getGetType());
                         orderCouponInfoList.add(couponInfo);
                     }
@@ -1041,6 +1051,15 @@ public class CommonServiceImpl implements CommonService {
                 } else {
                     inventoryCheckMap.put(couponGoods.getGid(), couponGoods.getQty());
                 }
+                //设置产品券商品会员折扣
+                if (null == customer) {
+                    throw new OrderCustomerException("订单顾客信息异常!");
+                }
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                    memberDiscount += (couponGoods.getRetailPrice() - couponGoods.getVipPrice()) * couponGoods.getQty();
+                } else {
+                    memberDiscount += 0D;
+                }
                 OrderGoodsInfo couponGoodsInfo = new OrderGoodsInfo();
                 couponGoodsInfo.setOrderNumber(orderNumber);
                 couponGoodsInfo.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
@@ -1050,20 +1069,12 @@ public class CommonServiceImpl implements CommonService {
                 couponGoodsInfo.setIsPriceShare(Boolean.FALSE);
                 couponGoodsInfo.setSharePrice(0D);
                 couponGoodsInfo.setIsReturnable(Boolean.TRUE);
-                if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
                     couponGoodsInfo.setReturnPrice(couponGoods.getVipPrice());
                     couponGoodsInfo.setSettlementPrice(couponGoods.getVipPrice());
                 } else {
-                    if (null == customer) {
-                        throw new OrderCustomerException("订单顾客信息异常!");
-                    }
-                    if (customer.getCustomerType() == AppCustomerType.MEMBER) {
-                        couponGoodsInfo.setReturnPrice(couponGoods.getVipPrice());
-                        couponGoodsInfo.setSettlementPrice(couponGoods.getVipPrice());
-                    } else {
-                        couponGoodsInfo.setReturnPrice(couponGoods.getRetailPrice());
-                        couponGoodsInfo.setSettlementPrice(couponGoods.getRetailPrice());
-                    }
+                    couponGoodsInfo.setReturnPrice(couponGoods.getRetailPrice());
+                    couponGoodsInfo.setSettlementPrice(couponGoods.getRetailPrice());
                 }
                 couponGoodsInfo.setGid(couponGoods.getGid());
                 couponGoodsInfo.setSku(couponGoods.getSku());
@@ -1098,6 +1109,26 @@ public class CommonServiceImpl implements CommonService {
         support.setProductCouponGoodsList(productCouponGoodsList);
         support.setPromotionDiscount(promotionDiscount);
         return support;
+    }
+
+    @Override
+    public List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
+        List<OrderBillingPaymentDetails> billingPaymentDetails = new ArrayList<>();
+        if (null != orderBaseInfo && null != orderBillingDetails) {
+            if (null != orderBillingDetails.getCusPreDeposit() && orderBillingDetails.getCusPreDeposit() > AppConstant.DOUBLE_ZERO) {
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CUS_PREPAY, orderBillingDetails.getCusPreDeposit(),
+                        PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
+            if (null != orderBillingDetails.getStPreDeposit() && orderBillingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
+                        PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
+        }
+        return billingPaymentDetails;
     }
 
 }
