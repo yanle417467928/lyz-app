@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +41,7 @@ public class GoodsController {
      * @return resultDTO
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsListByUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public ResultDTO<Object> getGoodsListByUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getGoodsListByUserIdAndIdentityType CALLED,获取商品列表，入参 categoryCode:{},userId:{},identityType:{}", categoryCode, userId, identityType);
         if (StringUtils.isBlank(categoryCode)) {
@@ -58,8 +59,20 @@ public class GoodsController {
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            List<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType);
+            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsVOList);
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

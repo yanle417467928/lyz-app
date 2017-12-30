@@ -23,6 +23,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -692,7 +693,7 @@ public class OrderController {
      * @return 订单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus) {
+    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}", userID, identityType);
         if (null == userID) {
@@ -705,9 +706,22 @@ public class OrderController {
             logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             //获取用户所有订单列表
-            List<OrderBaseInfo> orderBaseInfoList = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType, showStatus);
+            PageInfo<OrderBaseInfo> orderBaseInfoLists = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType, showStatus,page,size);
+            List <OrderBaseInfo> orderBaseInfoList =orderBaseInfoLists.getList();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
             //循环遍历订单列表
