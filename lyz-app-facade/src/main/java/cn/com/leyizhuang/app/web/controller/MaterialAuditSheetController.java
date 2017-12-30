@@ -238,13 +238,17 @@ public class MaterialAuditSheetController {
             materialAuditDetailsResponse.setReservationDeliveryTime(materialAuditSheet.getReservationDeliveryTime());
             //商品总金额（零售）
             Double totalPrice = 0D;
+            //商品总数量
+            Integer totalGoodsQty = 0;
             //查询物料审核单中对应的商品
             List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = materialAuditGoodsInfoService.queryListByAuditHeaderID(materialAuditSheet.getAuditHeaderID());
             if (null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0) {
                 for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
                     totalPrice += (materialAuditGoodsInfo.getRetailPrice() * materialAuditGoodsInfo.getQty());
+                    totalGoodsQty += materialAuditGoodsInfo.getQty();
                 }
                 materialAuditDetailsResponse.setTotalPrice(totalPrice);
+                materialAuditDetailsResponse.setTotalGoodsQty(totalGoodsQty);
                 //把物料审核单中所有的商品list放入返回值对象中
                 materialAuditDetailsResponse.setGoodsList(materialAuditGoodsInfoList);
 
