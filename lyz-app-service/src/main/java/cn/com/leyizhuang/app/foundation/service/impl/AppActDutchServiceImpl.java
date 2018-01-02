@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.service.AppActDutchService;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
@@ -77,6 +78,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             customerType = appCustomerService.findById(userId).getCustomerType();
         }
 
+        // 本品池
         Map<String, OrderGoodsInfo> orderGoodsInfoMap = new HashMap<>();
         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
             orderGoodsInfoMap.put(goodsInfo.getSku(), goodsInfo);
@@ -160,25 +162,53 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
                     }
 
-                    // 新增一条参与此促销的本品行 并且更新老的行记录的数量
-                    for (ActGoodsMappingDO goodsMapping : goodsMappingList) {
-                        // 参与促销的本品数量
-                        Integer num = goodsMapping.getQty() == null ? 0 : goodsMapping.getQty() * enjoyTimes;
+                    if (act.getIsGoodsOptionalQty()){
+                        /** 本品为数量任选（非固定数量） 则将促销赠分摊到所有满足本品上，并且从本品池中扣除 （原则上此促销排序在固定数量促销之后）**/
 
-                        OrderGoodsInfo oldGoodsInfo = orderGoodsInfoMap.get(goodsMapping.getSku());
-                        Integer oldNum = oldGoodsInfo.getOrderQuantity();
-                        oldGoodsInfo.setOrderQuantity(oldNum - num);
-                        orderGoodsInfoMap.put(goodsMapping.getSku(), oldGoodsInfo);
+                        List<String> skuList = actGoodsMappingDAO.querySkusByActId(act.getId());
 
-                        // 克隆一个本品对象
-                        OrderGoodsInfo newGoodsInfo = oldGoodsInfo.clone();
-                        newGoodsInfo.setId(null);
-                        newGoodsInfo.setOrderQuantity(num);
-                        newGoodsInfo.setPromotionId(act.getId().toString());
+                        Iterator<Map.Entry<String, OrderGoodsInfo>> it = orderGoodsInfoMap.entrySet().iterator();
 
-                        newOrderGoodsInfoList.add(newGoodsInfo);
+                        while (it.hasNext()) {
+                            Map.Entry<String, OrderGoodsInfo> itEntry = it.next();
+                            Object itKey = itEntry.getKey();
+                            //注意：可以使用这种遍历方式进行删除元素和修改元素
 
-                        goodsTotalPrice = CountUtil.add(this.returnCountPrice(newGoodsInfo, identityType, customerType), goodsTotalPrice);
+                            // 此商品在促销范围内
+                            if (skuList.contains(itKey.toString())) {
+                                // 顾客购买此商品数量
+                                OrderGoodsInfo goods = itEntry.getValue();
+                                goods.setPromotionId(act.getId().toString());
+                                newOrderGoodsInfoList.add(goods);
+                                goodsTotalPrice = CountUtil.add(this.returnCountPrice(goods, identityType, customerType), goodsTotalPrice);
+
+                                // 从本品池中扣除
+                                it.remove();
+                            }
+                        }
+
+                    }else{
+                        /** 固定数量 **/
+                        // 新增一条参与此促销的本品行 并且更新老的行记录的数量
+                        for (ActGoodsMappingDO goodsMapping : goodsMappingList) {
+                            // 参与促销的本品数量
+                            Integer num = goodsMapping.getQty() == null ? 0 : goodsMapping.getQty() * enjoyTimes;
+
+                            OrderGoodsInfo oldGoodsInfo = orderGoodsInfoMap.get(goodsMapping.getSku());
+                            Integer oldNum = oldGoodsInfo.getOrderQuantity();
+                            oldGoodsInfo.setOrderQuantity(oldNum - num);
+                            orderGoodsInfoMap.put(goodsMapping.getSku(), oldGoodsInfo);
+
+                            // 克隆一个本品对象
+                            OrderGoodsInfo newGoodsInfo = oldGoodsInfo.clone();
+                            newGoodsInfo.setId(null);
+                            newGoodsInfo.setOrderQuantity(num);
+                            newGoodsInfo.setPromotionId(act.getId().toString());
+
+                            newOrderGoodsInfoList.add(newGoodsInfo);
+
+                            goodsTotalPrice = CountUtil.add(this.returnCountPrice(newGoodsInfo, identityType, customerType), goodsTotalPrice);
+                        }
                     }
 
                     // 计算分担金额 并持久化对象

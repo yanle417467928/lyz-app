@@ -85,6 +85,6 @@
     </insert>
 
     <delete id="deleteByActBaseId" parameterType="java.lang.Long">
-        DELETE FROM act_goods_mapping where act_id = #{actBaseId}
+        DELETE FROM act_goods_mapping where act_id = #{actBaseId} ORDER BY gid
 </delete>
 </mapper>

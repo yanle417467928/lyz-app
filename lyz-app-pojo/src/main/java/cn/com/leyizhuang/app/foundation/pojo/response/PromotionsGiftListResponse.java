@@ -27,6 +27,9 @@ public class PromotionsGiftListResponse {
     // 最大可选赠品数量
     private Integer maxChooseNumber;
 
+    // 赠品数量是否任选
+    private Boolean isGiftOptionalQty;
+
     // 赠品集合
     List<GiftListResponseGoods> giftList;
 }

@@ -102,7 +102,6 @@
                                     <input name="target" value="导购" type="checkbox" class="flat-red" checked>导购
                                     <input name="target" value="装饰公司经理" type="checkbox" class="flat-red">装饰公司经理
                                 </div>
-
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
@@ -111,12 +110,9 @@
                                     使用限制
                                 </label>
                                 <div class="input-group">
-
                                     <input id="isReturnable" type="checkbox" class="flat-red" checked>可退货
                                     <input id="isDouble" type="checkbox" class="flat-red" checked>可叠加享受
-
                                     <input id="isGcOrder" type="checkbox" class="flat-red">工程单可享受
-
                                 </div>
                             </div>
                         </div>
@@ -129,8 +125,6 @@
                             </label>
                             <select name="cityId" id="cityId" class="form-control select"
                                     onchange="findStoreByCity(this.value);">
-
-
                             </select>
                         </div>
 
@@ -156,7 +150,6 @@
                                             <button type="button" class="btn btn-default btn-xs"
                                                     onclick="checkAllStore()">全选
                                             </button>
-
                                             <button type="button" class="btn btn-default btn-xs"
                                                     onclick="unCheckAllStore()">反选
                                             </button>

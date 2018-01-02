@@ -73,7 +73,7 @@
     <select id="queryByActId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM act_gift_details WHERE act_id = #{actId}
+        FROM act_gift_details WHERE act_id = #{actId} ORDER BY gift_id
     </select>
 
     <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO">

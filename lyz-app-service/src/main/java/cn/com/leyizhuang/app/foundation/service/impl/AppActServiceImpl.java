@@ -245,14 +245,8 @@ public class AppActServiceImpl implements AppActService {
             //***************** 普通-满数量-赠商品 ************
             else if (actType.equals("COMMON_FQTY_GOO")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
-                Boolean flag = true;
-                int enjoyTimes = 0;
-                while (flag) {
-                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber(), act.getIsGoodsOptionalQty());
-                    if (flag) {
-                        enjoyTimes++;
-                    }
-                }
+                int enjoyTimes = checkActGoodsNum(goodsPool, act);
+
                 if (enjoyTimes > 0) {
                     proGiftList.add(this.getGiftResultByActId(act, userId, userType, enjoyTimes));
                     // 结束本次促销循环
@@ -262,14 +256,8 @@ public class AppActServiceImpl implements AppActService {
             //***************** 普通-满数量-加价购 ************
             else if (actType.equals("COMMON_FQTY_ADD")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
-                Boolean flag = true;
-                int enjoyTimes = 0;
-                while (flag) {
-                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber(), act.getIsGoodsOptionalQty());
-                    if (flag) {
-                        enjoyTimes++;
-                    }
-                }
+                int enjoyTimes = checkActGoodsNum(goodsPool, act);
+
                 if (enjoyTimes > 0) {
                     proGiftList.add(this.getGiftResultByActId(act, userId, userType, enjoyTimes));
                     // 结束本次促销循环
@@ -279,14 +267,8 @@ public class AppActServiceImpl implements AppActService {
             //***************** 普通-满数量-立减 ************
             else if (actType.equals("COMMON_FQTY_SUB")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
-                Boolean flag = true;
-                int enjoyTimes = 0;
-                while (flag) {
-                    flag = checkActGoodsNum(goodsPool, act.getId(), act.getFullNumber(), act.getIsGoodsOptionalQty());
-                    if (flag) {
-                        enjoyTimes++;
-                    }
-                }
+                int enjoyTimes = checkActGoodsNum(goodsPool, act);
+
                 if (enjoyTimes > 0) {
                     proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes));
                     // 结束本次促销循环
@@ -403,19 +385,36 @@ public class AppActServiceImpl implements AppActService {
      * 检查购买商品是否符合促销对于商品数量的要求
      *
      * @param goodsPool
-     * @param actId
-     * @param fullNumber
+     * @param act
      * @return
      */
-    private Boolean checkActGoodsNum(Map<String, OrderGoodsSimpleResponse> goodsPool, Long actId, Integer fullNumber, Boolean isGoodsOptionalQty) {
+    private Integer checkActGoodsNum(Map<String, OrderGoodsSimpleResponse> goodsPool, ActBaseDO act) {
         Boolean falg = true;
 
-        if (isGoodsOptionalQty) {
-            // 数量任选 只需总数量满足fullNumber即可
+        // 参与次数
+        Integer enjoyTimes = 0;
 
-            List<String> skuList = actGoodsMappingDAO.querySkusByActId(actId);
+        // 促销需要满足总数量
+        Integer fullNumber = act.getFullNumber();
+
+        if(fullNumber == null || fullNumber == 0){
+            return enjoyTimes;
+        }
+
+        // 本品数量是否任选
+        Boolean isGoodsOptionalQty = act.getIsGoodsOptionalQty();
+
+        if (isGoodsOptionalQty) {
+            /** 本品为数量任选（非固定数量） 则将满足本品从本品池中扣除，不能再参与其他促销计算 （原则上此促销排序在固定数量促销之后）**/
+
+            List<String> skuList = actGoodsMappingDAO.querySkusByActId(act.getId());
 
             Iterator<Map.Entry<String, OrderGoodsSimpleResponse>> it = goodsPool.entrySet().iterator();
+
+            // 满足条件商品数量
+            Integer  matchGoodsQty = 0;
+            List<String> matchSku = new ArrayList<>();
+
             while (it.hasNext()) {
                 Map.Entry<String, OrderGoodsSimpleResponse> itEntry = it.next();
                 Object itKey = itEntry.getKey();
@@ -426,26 +425,33 @@ public class AppActServiceImpl implements AppActService {
                     // 顾客购买此商品数量
                     OrderGoodsSimpleResponse goods = itEntry.getValue();
                     Integer buyNum = goods.getGoodsQty();
-
-                    if(buyNum > fullNumber){
-                        goods.setGoodsQty(buyNum - fullNumber);
-                        goodsPool.put(itKey.toString(), goods);
-                        break;
-                    }else if(buyNum == fullNumber){
-                        it.remove();
-                        break;
-                    }else if(buyNum < fullNumber){
-                        it.remove();
-                        fullNumber = fullNumber - buyNum;
-                    }
+                    matchGoodsQty += buyNum;
+                    matchSku.add(goods.getSku());
                 }
             }
 
+            if (matchGoodsQty >= fullNumber){
+                // 满足促销条件 向下取整获取次数
+                enjoyTimes = (int) Math.floor(Double.valueOf(matchGoodsQty)/Double.valueOf(fullNumber));
 
-            return falg;
+                // 扣掉本品池中所有促销范围内商品
+
+                for (String sku : matchSku){
+                    goodsPool.remove(sku);
+                }
+            }else {
+                return 0;
+            }
+
+            if (!act.getIsDouble()){
+                // 不可重复参与
+                enjoyTimes = 1;
+            }
+
+            return enjoyTimes;
         } else {
-            // 本品数量固定
-            List<ActGoodsMappingDO> goodsMappingList = actGoodsMappingDAO.queryListByActId(actId);
+            // 本品数量固定 （组合促销）
+            List<ActGoodsMappingDO> goodsMappingList = actGoodsMappingDAO.queryListByActId(act.getId());
 
             // 总数量是否满足要求 不满足直接返回false
             Integer totalNum = 0;
@@ -456,7 +462,7 @@ public class AppActServiceImpl implements AppActService {
                 }
             }
             if (totalNum < fullNumber) {
-                return false;
+                return 0;
             }
 
             // 判断对单品数量要求
@@ -470,7 +476,7 @@ public class AppActServiceImpl implements AppActService {
                     OrderGoodsSimpleResponse goods = goodsPool.get(goodsMapping.getSku());
 
                     if (goods == null) {
-                        return false;
+                        return 0;
                     }
 
                     Integer buyNum = goods.getGoodsQty();
@@ -478,13 +484,27 @@ public class AppActServiceImpl implements AppActService {
                     if (buyNum < qty) {
                         // 不满足要求 返回false
                         falg = false;
-                        return falg;
+                        return 0;
+                    }else{
+                        // 向下取整 得出单品参与次数 最终取最小次数
+                        Integer singleEnjoyTimes = (int) Math.floor(Double.valueOf(buyNum)/Double.valueOf(qty));
+                        if(enjoyTimes == 0){
+                            enjoyTimes = singleEnjoyTimes;
+                        }else if(singleEnjoyTimes < enjoyTimes){
+                            enjoyTimes = singleEnjoyTimes;
+                        }
                     }
                 }
             }
 
             // 说明以上条件都满足 扣掉商品池中商品
             if (falg) {
+
+                if (!act.getIsDouble()){
+                    // 不可重复参与
+                    enjoyTimes = 1;
+                }
+
                 for (ActGoodsMappingDO goodsMapping : goodsMappingList) {
 
                     // 说明对此商品数量有单独要求 必须满足 qty 个；
@@ -496,7 +516,7 @@ public class AppActServiceImpl implements AppActService {
                         Integer buyNum = goods.getGoodsQty();
 
                         // 满足单品数量要求 扣除商品池中该商品数量
-                        Integer residuNum = buyNum - qty;
+                        Integer residuNum = buyNum - (qty * enjoyTimes);
 
                         if (residuNum == 0 || residuNum < 0) {
                             // 说明此商品被消耗完毕
@@ -509,7 +529,7 @@ public class AppActServiceImpl implements AppActService {
                 }
             }
 
-            return falg;
+            return enjoyTimes;
         }
     }
 
@@ -529,8 +549,10 @@ public class AppActServiceImpl implements AppActService {
 
         response.setPromotionId(act.getId());
         response.setPromotionTitle(act.getTitle());
+        response.setIsGiftOptionalQty(act.getIsGiftOptionalQty());
         response.setMaxChooseNumber(act.getGiftChooseNumber() * enjoyTime);
         response.setEnjoyTimes(enjoyTime);
+
 
         List<Long> giftIdList = new ArrayList<>();
         String actType = act.getActType();
@@ -545,10 +567,9 @@ public class AppActServiceImpl implements AppActService {
             giftDetailList = actGiftDetailsDAO.queryByActId(act.getId());
             for (ActGiftDetailsDO gift : giftDetailList) {
                 if (gift.getGiftId() != null) {
-                    // 赠品为商品
+
                     giftIdList.add(gift.getGiftId());
                 }
-
             }
         }
 
@@ -564,6 +585,22 @@ public class AppActServiceImpl implements AppActService {
         } else if (actType.contains("GOO")) {
             // 赠送 将价格设置为0
             for (GiftListResponseGoods gift : giftListResponseGoods) {
+                if (act.getIsGiftOptionalQty()){
+                    gift.setQty(0);
+                }else{
+                    // 设置每个赠品的固定数量
+                    List<ActGiftDetailsDO> giftDetailList = new ArrayList<>();
+                    giftDetailList = actGiftDetailsDAO.queryByActId(act.getId());
+
+                    for (ActGiftDetailsDO detail : giftDetailList){
+                        for(GiftListResponseGoods responseGoods : giftListResponseGoods){
+                            if (detail.getGiftId().equals(responseGoods.getGoodsId())){
+                                responseGoods.setQty(detail.getGiftFixedQty()*enjoyTime);
+                            }
+                        }
+                    }
+                }
+
                 gift.setRetailPrice(0D);
             }
         }

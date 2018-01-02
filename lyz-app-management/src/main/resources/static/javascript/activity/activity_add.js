@@ -223,7 +223,7 @@ function chooseGoods(tableId) {
             var trs = $("#"+tableId).find("tr");
             var flag = true;
             trs.each(function(i,n){
-                var id = $(n).find("#id").val();
+                var id = $(n).find("#gid").val();
                 if (id == item.id){
                     flag = false;
                     return false;

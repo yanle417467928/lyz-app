@@ -39,4 +39,14 @@
         <include refid="ALL_FIELDS"/>
         FROM cp_cash_coupon WHERE ID = #{id}
     </select>
+
+    <select id="queryByKeywords" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM cp_cash_coupon WHERE 1=1
+        <if test="keywords != null">
+            AND  title LIKE concat("%",#{keywords},"%")
+        </if>
+
+    </select>
 </mapper>
