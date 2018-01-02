@@ -225,8 +225,9 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
                 List<UserGoodsResponse> list = goodsDAO.filterGoodsCustomer(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
                 return new PageInfo<>(list);
             } else {
-                List<UserGoodsResponse> userGoodsResponses = goodsDAO.filterGoodsEmployee(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
-                return new PageInfo<>(userGoodsResponses);
+                PageHelper.startPage(page, size);
+                List<UserGoodsResponse> list = goodsDAO.filterGoodsEmployee(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+                return new PageInfo<>(list);
             }
         }
         return null;
