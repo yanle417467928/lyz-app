@@ -49,10 +49,10 @@ import java.util.Map;
 
 /**
  * @author Jerry.Ren
- *         Notes: 退货单接口
- *         Created with IntelliJ IDEA.
- *         Date: 2017/12/4.
- *         Time: 9:34.
+ * Notes: 退货单接口
+ * Created with IntelliJ IDEA.
+ * Date: 2017/12/4.
+ * Time: 9:34.
  */
 
 @RestController
@@ -592,7 +592,7 @@ public class ReturnOrderController {
 
             }
             //修改订单状态为已取消
-            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED,null, orderBaseInfo.getOrderNumber());
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
@@ -1052,7 +1052,7 @@ public class ReturnOrderController {
 
             }
             //获取物流状态明细
-            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderNumber,LogisticStatus.SEALED_CAR);
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderNumber, LogisticStatus.SEALED_CAR);
             //记录物流明细表
             OrderDeliveryInfoDetails newOrderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
             newOrderDeliveryInfoDetails.setOrderNo(orderNumber);
@@ -1066,7 +1066,7 @@ public class ReturnOrderController {
 
             orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
             //修改订单状态为拒签,物流状态拒签
-            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED,LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
+            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED, LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
@@ -1136,7 +1136,13 @@ public class ReturnOrderController {
             Long userId = param.getUserId();
             Integer identityType = param.getIdentityType();
             String orderNo = param.getOrderNo();
-
+            OrderBaseInfo order = appOrderService.getOrderByOrderNumber(orderNo);
+            //不是已完成订单不可申请退货
+            if (!AppOrderStatus.FINISHED.equals(order.getStatus())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单状态不可退货!", "");
+                logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             //*******************处理上传图骗***********************
             List<String> pictureUrls = new ArrayList<>();
             String returnPic = null;
@@ -1149,7 +1155,6 @@ public class ReturnOrderController {
             }
             //********************创建退货单基础信息******************
             //记录原订单信息
-            OrderBaseInfo order = appOrderService.getOrderByOrderNumber(orderNo);
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.createReturnOrderBaseInfo(order.getId(), order.getOrderNumber(),
                     order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType());
             if (identityType == 0) {
@@ -1175,22 +1180,22 @@ public class ReturnOrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
 
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
-                    for (GoodsSimpleInfo simpleInfo : simpleInfos) {
-                        for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                            if (goodsInfo.getGid().equals(simpleInfo.getId())) {
-                                if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                    ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
-                                    //设置原订单可退数量 减少
-                                    goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
-                                    //设置原订单退货数量 增加
-                                    goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
-                                    goodsInfos.add(returnOrderGoodsInfo);
-                                    returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
-                                            CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
-                                    break;
-                                }
+                for (GoodsSimpleInfo simpleInfo : simpleInfos) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        if (goodsInfo.getGid().equals(simpleInfo.getId())) {
+                            if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
+                                ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
+                                //设置原订单可退数量 减少
+                                goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
+                                //设置原订单退货数量 增加
+                                goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
+                                goodsInfos.add(returnOrderGoodsInfo);
+                                returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
+                                        CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                                break;
                             }
                         }
+                    }
                 }
             }
 

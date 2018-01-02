@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.foundation.dao.StoreCreditMoneyLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreCreditMoneyLogResponse;
 import cn.com.leyizhuang.app.foundation.service.StoreCreditMoneyLogService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,13 @@ public class StoreCreditMoneyLogServiceImpl implements StoreCreditMoneyLogServic
     private StoreCreditMoneyLogDAO storeCreditMoneyLogDAO;
 
     @Override
-    public List<StoreCreditMoneyLogResponse> findByUserId(Long userId) {
-        return this.storeCreditMoneyLogDAO.findByUserId(userId);
+    public PageInfo<StoreCreditMoneyLogResponse> findByUserId(Long userId, Integer page, Integer size) {
+        if (userId != null) {
+            PageHelper.startPage(page, size);
+            List<StoreCreditMoneyLogResponse> logResponseList = this.storeCreditMoneyLogDAO.findByUserId(userId);
+            return new PageInfo<>(logResponseList);
+        }
+        return null;
     }
 
     @Override

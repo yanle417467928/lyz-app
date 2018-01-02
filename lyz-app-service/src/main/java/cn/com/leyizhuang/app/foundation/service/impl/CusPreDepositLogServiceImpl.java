@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.dao.CusPreDepositLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +25,13 @@ public class CusPreDepositLogServiceImpl implements CusPreDepositLogService {
     private CusPreDepositLogDAO cusPreDepositLogDAO;
 
     @Override
-    public List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<CustomerPreDepositChangeType> typeList) {
-        return this.cusPreDepositLogDAO.findByUserIdAndType(userId, typeList);
+    public PageInfo<PreDepositLogResponse> findByUserIdAndType(Long userId, List<CustomerPreDepositChangeType> typeList, Integer page, Integer size) {
+        if (userId != null) {
+            PageHelper.startPage(page, size);
+            List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogDAO.findByUserIdAndType(userId, typeList);
+            return new PageInfo<>(preDepositLogResponseList);
+        }
+        return null;
     }
 
     @Override

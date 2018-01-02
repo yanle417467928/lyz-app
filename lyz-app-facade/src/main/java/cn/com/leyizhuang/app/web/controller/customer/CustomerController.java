@@ -511,7 +511,7 @@ public class CustomerController {
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType) {
+    public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
         //logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
 
@@ -519,6 +519,18 @@ public class CustomerController {
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取客户钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType != 6) {
@@ -529,7 +541,7 @@ public class CustomerController {
         }
         try {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getRechargeType();
-            List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             //logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -549,7 +561,7 @@ public class CustomerController {
      * @return 预存款消费日志
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType) {
+    public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
         // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
 
@@ -557,6 +569,18 @@ public class CustomerController {
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取客户钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType != 6) {
@@ -567,7 +591,7 @@ public class CustomerController {
         }
         try {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getConsumptionType();
-            List<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
             //logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse;
-
-import java.util.List;
+import com.github.pagehelper.PageInfo;
 
 /**
  * @author Jerry.Ren
@@ -19,6 +18,6 @@ public interface EmployeeCreditMoneyLogService {
      * @param userId
      * @return
      */
-    List<EmployeeCreditMoneyLogResponse> findByUserId(Long userId);
+    PageInfo<EmployeeCreditMoneyLogResponse> findByUserId(Long userId, Integer page, Integer size);
 
 }

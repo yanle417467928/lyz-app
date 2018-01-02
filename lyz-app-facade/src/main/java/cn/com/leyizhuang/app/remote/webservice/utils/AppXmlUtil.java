@@ -174,9 +174,9 @@ public class AppXmlUtil {
      * @return 文档主体
      */
     public static Document parseStrXml(String xml) throws ParserConfigurationException, IOException, SAXException {
-        String strXml = xml.trim();
+        xml = xml.trim();
 
-        strXml = xml.replace("\n", "");
+        String strXml = xml.replace("\n", "");
 
         String decodedXML = Base64Utils.decode(strXml);
 
