@@ -192,7 +192,10 @@
             settlement_price settlementPrice,
             promotion_id     promotionId,
             is_price_share   isPriceShare,
-            share_price      sharePrice,
+            promotion_share_price   promotionSharePrice,
+            lb_share_price   lbSharePrice,
+            cash_coupon_share_price  cashCouponSharePrice,
+            cash_return_share_price  cashReturnSharePrice,
             return_price     returnPrice,
             is_returnable    isReturnable,
             return_priority  returnPriority,
@@ -438,12 +441,12 @@
         INSERT INTO ord_goods_info
         (
             oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
-            is_price_share, share_price, return_price, is_returnable, return_priority, order_qty, shipping_qty,
+            is_price_share, promotion_share_price,lb_share_price,cash_coupon_price,cash_return_price, return_price, is_returnable, return_priority, order_qty, shipping_qty,
             return_qty, returnable_qty, settlement_price, price_item_id, company_flag
         )
         VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
-                        #{isPriceShare}, #{sharePrice},
+                        #{isPriceShare}, #{promotionSharePrice},#{lbSharePrice},#{cashCouponSharePrice},#{cashReturnSharePrice},
                                          #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity},
                                          #{shippingQuantity},
                                          #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
@@ -568,8 +571,17 @@
             <if test="isPriceShare != null">
                 is_price_share = #{isPriceShare,jdbcType=BIT},
             </if>
-            <if test="sharePrice != null">
-                share_price = #{sharePrice,jdbcType=DECIMAL},
+            <if test="promotionSharePrice != null">
+                promotion_share_price = #{promotionSharePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="lbSharePrice != null">
+                lb_share_price = #{lbSharePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="cashCouponSharePrice != null">
+                cash_coupon_share_price = #{cashCouponSharePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="cashReturnSharePrice != null">
+                cash_return_share_price = #{cashReturnSharePrice,jdbcType=DECIMAL},
             </if>
             <if test="returnPrice != null">
                 return_price = #{returnPrice,jdbcType=DECIMAL},

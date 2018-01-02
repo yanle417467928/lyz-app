@@ -189,7 +189,46 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-xs-12 col-md-2">
+                            <label for="title">
+                                促销类型
+                            </label>
+                            <select name="baseType" id="baseType" class="form-control select"
+                                    onchange="changeBaseType(this.value);">
+                                <option value="COMMON">普通</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    促销条件
+                                </label>
+                                <div class="form-group">
+                                    <select name="conditionType" id="conditionType" class="form-control select"
+                                            onchange="changeConditionType(this.value);">
+                                        <option value="FQTY">满数量</option>
+                                        <option value="FAMO">满金额</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    促销结果
+                                </label>
+                                <div class="form-group">
+                                    <select name="promotionType" id="resultType" class="form-control select"
+                                            onchange="changeResultType(this.value);">
+                                        <option value="SUB">立减</option>
+                                        <option value="GOO">送商品</option>
+                                        <option value="ADD">加价购买</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- 选择本品table -->
                     <div class="row">
                         <div class="col-xs-12">
@@ -239,49 +278,27 @@
                                     </table>
                                 </div>
                                 <!-- /.box-body -->
+                                <div class="box-footer clearfix">
+                                    <div class="row" id="fullNumber_div">
+
+                                        <div class="col-xs-12 col-md-1">
+                                            <div class="input-group">
+                                                <input id="is_goods_optional_qty" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGoodsOptionalQty?? && actBaseDO.isGoodsOptionalQty = true>checked</#if></#if>>任选数量
+                                            </div>
+                                        </div>
+                                        <div id="goods_optional_qty_div" style="display: none;">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="input-group">
+                                                    <input name="fullNumber" type="number" class="form-control"
+                                                           id="fullNumber" placeholder="总数量" value="<#if actBaseDO??><#if actBaseDO.fullNumber??>${actBaseDO.fullNumber?c}</#if></#if>">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.box -->
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-md-2">
-                                <label for="title">
-                                    促销类型
-                                </label>
-                                    <select name="baseType" id="baseType" class="form-control select"
-                                            onchange="changeBaseType(this.value);">
-                                        <option value="COMMON">普通</option>
-                                    </select>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <div class="form-group">
-                                <label for="title">
-                                    促销条件
-                                </label>
-                                <div class="form-group">
-                                    <select name="conditionType" id="conditionType" class="form-control select"
-                                            onchange="changeConditionType(this.value);">
-                                        <option value="FQTY">满数量</option>
-                                        <option value="FAMO">满金额</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <div class="form-group">
-                                <label for="title">
-                                    促销结果
-                                </label>
-                                <div class="form-group">
-                                    <select name="promotionType" id="resultType" class="form-control select"
-                                            onchange="changeResultType(this.value);">
-                                        <option value="SUB">立减</option>
-                                        <option value="GOO">送商品</option>
-                                        <option value="ADD">加价购买</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -363,6 +380,25 @@
                                     </table>
                                 </div>
                                 <!-- /.box-body -->
+                                <div class="box-footer clearfix">
+                                    <div class="row">
+
+                                        <div class="col-xs-12 col-md-1">
+                                            <div class="input-group">
+                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red" onclick="clickGiftFixedQty(this)" <#if actBaseDO??><#if actBaseDO.isGiftOptionalQty?? && actBaseDO.isGiftOptionalQty = true>checked</#if></#if>>任选数量
+                                            </div>
+                                        </div>
+                                        <div id="gift_optional_qty_div" style="display: none;">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="input-group">
+                                                    <input name="giftChooseNumber" type="number" class="form-control"
+                                                           id="giftChooseNumber" placeholder="赠品最大可选数量" value="<#if actBaseDO??><#if actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if></#if>">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.box -->
                         </div>
@@ -378,21 +414,6 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
                                     <input name="addAmount" type="number" class="form-control" id="addAmount" value="<#if actBaseDO?? && actBaseDO.addAmount??>${actBaseDO.addAmount?c}</#if>">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 赠品最大可选数量 -->
-                    <div class="row" id="giftChooseNumber_div" style="display: none;">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="description">
-                                    赠品最大可选数量
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="giftChooseNumber" type="number" class="form-control" id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="<#if actBaseDO?? && actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -519,7 +540,8 @@
         })
         changeConditionType($("#conditionType").val());
         changeResultType($("#resultType").val());
-
+        clickGoodsFixedQty();
+        clickGiftFixedQty();
     })
 
 </script>

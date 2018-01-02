@@ -372,14 +372,14 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 Double price = this.returnCountPrice(info, type, customerType);
                 Double dutchPrice = CountUtil.mul((price / totalPrice) , subPrice);
                 info.setIsPriceShare(true);
-                info.setSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
+                info.setPromotionSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
                 info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
                 dutchedPrice += dutchPrice;
             }else{
                 Double price = this.returnCountPrice(info, type, customerType);
                 Double dutchPrice =  subPrice - dutchedPrice;
                 info.setIsPriceShare(true);
-                info.setSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
+                info.setPromotionSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
                 info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
 
             }

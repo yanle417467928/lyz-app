@@ -186,7 +186,7 @@ public class ReturnOrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getSharePrice());
+                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
             }
             returnOrderBaseInfo.setReturnPrice(returnPrice);
             returnOrderBaseInfo.setRemarksInfo(remarksInfo);
@@ -691,7 +691,7 @@ public class ReturnOrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getSharePrice());
+                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
             }
             returnOrderBaseInfo.setReturnPrice(returnPrice);
             returnOrderBaseInfo.setRemarksInfo(remarksInfo);

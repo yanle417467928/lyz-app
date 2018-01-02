@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.websocket.server.PathParam;
+
 /**
  * Created by caiyu on 2017/12/8.
  */
@@ -28,4 +30,9 @@ public interface CashCouponDAO {
      * @param customerCashCoupon
      */
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
+
+    /**
+     *  id查询
+     */
+    CashCoupon queryById(@Param("id") Long id);
 }

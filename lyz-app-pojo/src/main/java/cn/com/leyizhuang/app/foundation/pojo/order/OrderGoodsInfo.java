@@ -70,9 +70,24 @@ public class OrderGoodsInfo implements Cloneable{
     private Boolean isPriceShare;
 
     /**
-     * 分摊金额
+     * 促销分摊金额
      */
-    private Double sharePrice;
+    private Double promotionSharePrice;
+
+    /**
+     * 乐币分摊金额
+     */
+    private Double lbSharePrice;
+
+    /**
+     * 现金券分摊金额
+     */
+    private Double cashCouponSharePrice;
+
+    /**
+     * 现金返利分摊金额
+     */
+    private Double cashReturnSharePrice;
 
     /**
      * 退货金额
