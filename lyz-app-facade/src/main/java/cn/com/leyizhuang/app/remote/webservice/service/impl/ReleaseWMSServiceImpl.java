@@ -96,7 +96,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     //查询是否重复
                     List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(header.getOrderNo());
                     if (AssertUtil.isEmpty(deliveryInfoDetailsList)) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,任务编号已经存在 出参 order_no:{}", header.getOrderNo());
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,该订单不存在 出参 order_no:{}", header.getOrderNo());
                         return AppXmlUtil.resultStrXml(1, "App没有找到该订单");
                     }
                     //保存物流信息

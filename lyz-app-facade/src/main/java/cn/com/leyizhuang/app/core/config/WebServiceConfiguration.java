@@ -34,7 +34,7 @@ public class WebServiceConfiguration {
         AppApplicationConstant.ebsUrl = ebsUrl;
         CXFServlet cxfServlet = new CXFServlet();
         ServletRegistrationBean servletDef = new ServletRegistrationBean(
-                cxfServlet, "/webservice/*");
+                cxfServlet, "/services/*");
         servletDef.setLoadOnStartup(1);
         return servletDef;
     }
@@ -52,7 +52,7 @@ public class WebServiceConfiguration {
     @Bean
     public Endpoint endpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), wmsService());
-        endpoint.publish("/user");
+        endpoint.publish("/webservice");
         return endpoint;
     }
 }

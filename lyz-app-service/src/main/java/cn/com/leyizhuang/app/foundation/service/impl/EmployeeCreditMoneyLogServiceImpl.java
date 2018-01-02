@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.EmployeeCreditMoneyLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse;
 import cn.com.leyizhuang.app.foundation.service.EmployeeCreditMoneyLogService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,12 @@ public class EmployeeCreditMoneyLogServiceImpl implements EmployeeCreditMoneyLog
     private EmployeeCreditMoneyLogDAO employeeCreditMoneyLogDAO;
 
     @Override
-    public List<EmployeeCreditMoneyLogResponse> findByUserId(Long userId) {
-        return employeeCreditMoneyLogDAO.findByUserId(userId);
+    public PageInfo<EmployeeCreditMoneyLogResponse> findByUserId(Long userId, Integer page, Integer size) {
+        if (userId != null) {
+            PageHelper.startPage(page, size);
+            List<EmployeeCreditMoneyLogResponse> logResponses = employeeCreditMoneyLogDAO.findByUserId(userId);
+            return new PageInfo<>(logResponses);
+        }
+        return null;
     }
 }

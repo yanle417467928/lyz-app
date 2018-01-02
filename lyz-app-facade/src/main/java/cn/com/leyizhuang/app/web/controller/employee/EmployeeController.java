@@ -14,6 +14,7 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -383,14 +384,26 @@ public class EmployeeController {
      * @date 2017/11/27
      */
     @PostMapping(value = "/creditMoney/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreCreditMoneyLog(Long userId, Integer identityType) {
+    public ResultDTO getStoreCreditMoneyLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getStoreCreditMoneyLog CALLED, 获取装饰公司信用金变更记录，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getStoreCreditMoneyLog CALLED, 获取装饰公司信用金变更记录，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+                    null);
+            logger.info("getSellerCreditMoneyLog OUT, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType != 2) {
@@ -400,7 +413,7 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            List<StoreCreditMoneyLogResponse> storeCreditMoneyLogResponseList = this.storeCreditMoneyLogServiceImpl.findByUserId(userId);
+            PageInfo<StoreCreditMoneyLogResponse> storeCreditMoneyLogResponseList = this.storeCreditMoneyLogServiceImpl.findByUserId(userId, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeCreditMoneyLogResponseList);
             logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -421,14 +434,26 @@ public class EmployeeController {
      * @return
      */
     @PostMapping(value = "/seller/creditMoney/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getSellerCreditMoneyLog(Long userId, Integer identityType) {
+    public ResultDTO getSellerCreditMoneyLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录失败，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录失败，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getCustomerSignDetail OUT,获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType != 0) {
@@ -438,7 +463,7 @@ public class EmployeeController {
             return resultDTO;
         }
         try {
-            List<EmployeeCreditMoneyLogResponse> employeeCreditMoneyLogResponseList = this.employeeCreditMoneyLogService.findByUserId(userId);
+            PageInfo<EmployeeCreditMoneyLogResponse> employeeCreditMoneyLogResponseList = this.employeeCreditMoneyLogService.findByUserId(userId, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     AssertUtil.isNotEmpty(employeeCreditMoneyLogResponseList) ? employeeCreditMoneyLogResponseList : null);
             logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录成功，出参 resultDTO:{}", resultDTO);
