@@ -400,12 +400,6 @@ public class EmployeeController {
             logger.info("getCustomerSignDetail OUT,获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType != 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
-                    null);
-            logger.info("getSellerCreditMoneyLog OUT, 获取装饰公司信用金变更记录失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
         if (null == identityType || identityType != 2) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);

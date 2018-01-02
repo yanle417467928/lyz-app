@@ -368,16 +368,17 @@ public class GoodsController {
      */
     @PostMapping(value = "/filter", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType, String firstCategoryCode, Long categoryId,
-                                             Long brandId, Long typeId, String specification) {
+                                             Long brandId, Long typeId, String specification, Integer page, Integer size) {
         logger.info("filterGoodsList CALLED,筛选商品，入参 userId:{},identityType:{},firstCategoryCode: {},categoryId:{}," +
-                "brandId: {},typeId:{},specification:{}", userId, identityType, firstCategoryCode, categoryId, brandId, typeId, specification);
+                        "brandId: {},typeId:{},specification:{}", userId, identityType, firstCategoryCode, categoryId, brandId,
+                typeId, specification, page, size);
         ResultDTO<Object> resultDTO;
         try {
-            List<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
+            PageInfo<UserGoodsResponse> goodsResponseList = goodsService.filterGoods(userId,
                     AppIdentityType.getAppIdentityTypeByValue(identityType), firstCategoryCode, categoryId,
-                    brandId, typeId, specification);
+                    brandId, typeId, specification, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (goodsResponseList != null && goodsResponseList.size() > 0) ? goodsResponseList : null);
+                    (goodsResponseList != null && goodsResponseList.getList().size() > 0) ? goodsResponseList : null);
             logger.info("filterGoodsList OUT,筛选商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

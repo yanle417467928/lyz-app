@@ -14,7 +14,6 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -217,14 +216,17 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    public List<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type, String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId,
-                                               String specification) {
+    public PageInfo<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type, String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId,
+                                                   String specification, Integer page, Integer size) {
         if ((null != firstCategoryCode || null != secondCategoryId || null != brandId || null != typeId ||
                 null != specification) && null != userId && null != type) {
             if (type.equals(AppIdentityType.CUSTOMER)) {
-                return goodsDAO.filterGoodsCustomer(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+                PageHelper.startPage(page, size);
+                List<UserGoodsResponse> list = goodsDAO.filterGoodsCustomer(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+                return new PageInfo<>(list);
             } else {
-                return goodsDAO.filterGoodsEmployee(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+                List<UserGoodsResponse> userGoodsResponses = goodsDAO.filterGoodsEmployee(userId, firstCategoryCode, secondCategoryId, brandId, typeId, specification);
+                return new PageInfo<>(userGoodsResponses);
             }
         }
         return null;
