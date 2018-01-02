@@ -22,7 +22,7 @@ public interface GoodsService {
 
     GoodsDO managerSaveGoods(GoodsDTO goodsDTO);
 
-    List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType);
+    PageInfo<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType,Integer page,Integer size);
 
     GoodsDO queryById(Long id);
 

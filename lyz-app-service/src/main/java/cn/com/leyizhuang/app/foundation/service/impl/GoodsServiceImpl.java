@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -65,12 +66,17 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    public List<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public PageInfo<UserGoodsResponse> findGoodsListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, Integer page, Integer size) {
         if (null != categoryCode && null != userId && null != identityType) {
+            List<UserGoodsResponse> userGoodsResponseList;
             if (identityType == 6) {
-                return goodsDAO.findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                PageHelper.startPage(page, size);
+                 userGoodsResponseList = goodsDAO.findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                return new PageInfo<>(userGoodsResponseList);
             } else {
-                return goodsDAO.findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId);
+                PageHelper.startPage(page, size);
+                userGoodsResponseList = goodsDAO.findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId);
+                return new PageInfo<>(userGoodsResponseList);
             }
         }
         return null;
@@ -342,6 +348,13 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return goodsDO;
     }
 
+    /**
+     * 查询商品详情
+     * @param page
+     * @param size
+     * @param queryGoodsInfo
+     * @return
+     */
     @Override
     public  PageInfo<GoodsDO> queryGoodsPageByInfo (Integer page, Integer size,String queryGoodsInfo){
         PageHelper.startPage(page, size);
@@ -349,6 +362,15 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return new PageInfo<>(goodsDOList);
     }
 
+    /**
+     * 根据条件筛选商品
+     * @param page
+     * @param size
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @return
+     */
     @Override
     public  PageInfo<GoodsDO> screenGoodsGrid (Integer page, Integer size,Long brandCode,String categoryCode,String companyCode){
         PageHelper.startPage(page, size);
@@ -365,19 +387,33 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return new PageInfo<>(goodsDOList);
     }
 
+    /**
+     * 更新商品信息
+     * @param goodsVO
+     */
     @Override
     public void updateGoods(MaGoodsVO goodsVO){
        GoodsDO goodsDO= GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
     }
 
-
+    /**
+     * 判断是否存在商品名称
+     * @param skuName
+     * @param id
+     * @return
+     */
     @Override
     public Boolean isExistSkuName(String skuName,Long id){
         return  goodsDAO.isExistSkuName(skuName,id);
     }
 
-
+    /**
+     * 判断是否存在排序id
+     * @param sortId
+     * @param id
+     * @return
+     */
     @Override
     public Boolean isExistSortId(Long sortId,Long id){
         return  goodsDAO.isExistSortId(sortId,id);

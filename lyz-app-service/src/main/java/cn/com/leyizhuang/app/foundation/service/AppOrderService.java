@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleIn
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public interface AppOrderService {
     Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
 
     //用户获取我的订单列表
-    List<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus);
+    PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
 
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(String orderNumber);
