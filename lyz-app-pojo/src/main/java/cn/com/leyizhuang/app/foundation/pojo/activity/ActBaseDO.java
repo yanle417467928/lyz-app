@@ -90,6 +90,12 @@ public class ActBaseDO{
     // 工程单可享受
     private Boolean isGcOrder = false;
 
+    // 本品数量任选
+    private Boolean isGoodsOptionalQty;
+
+    // 赠品数量任选
+    private Boolean isGiftOptionalQty;
+
     // 促销状态
     private ActStatusType status;
 

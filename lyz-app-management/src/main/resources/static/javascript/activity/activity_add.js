@@ -223,7 +223,7 @@ function chooseGoods(tableId) {
             var trs = $("#"+tableId).find("tr");
             var flag = true;
             trs.each(function(i,n){
-                var id = $(n).find("#id").val();
+                var id = $(n).find("#gid").val();
                 if (id == item.id){
                     flag = false;
                     return false;
@@ -258,6 +258,47 @@ function del_goods_comb(obj) {
     $(obj).parent().parent().remove();
 }
 
+// checkBox 绑定点击事件
+$(function () {
+    $('#is_goods_optional_qty').on('ifChecked', function(event){
+        //alert($(this).prop('checked'));
+        clickGoodsFixedQty();
+    });
+    $('#is_goods_optional_qty').on('ifUnchecked', function(event){
+        //alert($(this).prop('checked'));
+        clickGoodsFixedQty();
+    });
+
+    $('#is_gift_optional_qty').on('ifChecked', function(event){
+        //alert($(this).prop('checked'));
+        clickGiftFixedQty();
+    });
+    $('#is_gift_optional_qty').on('ifUnchecked', function(event){
+        //alert($(this).prop('checked'));
+        clickGiftFixedQty();
+    });
+})
+
+function clickGoodsFixedQty() {
+    var val = $('#is_goods_optional_qty').prop("checked");
+    if(val){
+        $("#goods_optional_qty_div").fadeIn(1000);
+    }else{
+        $("#fullNumber").val('');
+        $("#goods_optional_qty_div").fadeOut(1);
+    }
+}
+
+function clickGiftFixedQty() {
+    var val = $('#is_gift_optional_qty').prop("checked");
+    if(val){
+        $("#gift_optional_qty_div").fadeIn(1000);
+    }else{
+        $("giftChooseNumber").val();
+        $("#gift_optional_qty_div").fadeOut(1);
+    }
+}
+
 function changeBaseType(val) {
 
 }
@@ -267,8 +308,10 @@ function changeConditionType(val) {
 
     if(baseVal == "COMMON"){
         if(val == "FQTY"){
+            $("#fullNumber_div").fadeIn(1000);
             $("#fullAmount_div").fadeOut(1);
         }else if(val == "FAMO"){
+            $("#fullNumber_div").fadeOut(1);
             $("#fullAmount_div").fadeIn(1000);
         }
     }else{
@@ -370,6 +413,7 @@ function formValidate() {
         var isDouble = $("#isDouble").prop("checked");
         var isGcOrder = $("#isGcOrder").prop("checked");
 
+
         // 已选门店
         var stores = new Array();
         $("#stores > label[class='label label-success']").each(function () {
@@ -398,6 +442,8 @@ function formValidate() {
             $notify.danger("请选择本品");
             return false;
         }
+        // 是否任选数量
+        var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
 
         // 赠品
         var giftDetails = new Array();
@@ -406,6 +452,8 @@ function formValidate() {
             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             return false;
         }
+        // 是否任选数量
+        var isGiftOptionalQty = $("#is_gift_optional_qty").prop('checked');
 
         // 根据选择促销类型判断
         var conditionType = $("#conditionType").val();
@@ -429,15 +477,23 @@ function formValidate() {
                 return false;
             }
         }else if (conditionType == "FQTY"){
-            for (var i = 0 ;i < goodsDetails.length ; i++){
-                var item = goodsDetails[i];
-                if(item.qty == 0){
+            if(isGoodsOptionalQty){
+                var num = $('#fullNumber').val();
+                if(num=='' || num == 0) {
                     $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("本品"+item.gid+"数量为0，请设置数量，或者修改促销条件");
+                    $notify.warning("亲，本品任选数量不正确");
                     return false;
                 }
+            }else{
+                for (var i = 0 ;i < goodsDetails.length ; i++){
+                    var item = goodsDetails[i];
+                    if(item.qty == 0){
+                        $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                        $notify.danger("本品"+item.gid+"数量为0，请设置数量，或者修改促销条件");
+                        return false;
+                    }
+                }
             }
-
         }
         if(resultType == "SUB"){
             var price = $("#subAmount").val();
@@ -460,37 +516,11 @@ function formValidate() {
                 $notify.danger("请选择赠品");
                 return false;
             }
-            // for (var i = 0 ;i < giftDetails.length ; i++){
-            //     var item = giftDetails[i];
-            //     if(item.qty == 0){
-            //         $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-            //         $notify.danger("赠品"+item.gid+"数量为0，请设置数量");
-            //         return false;
-            //     }
-            // }
 
-            var giftChooseNumber = $("#giftChooseNumber").val();
-            var re = /^[0-9]+.?[0-9]*$/;
-            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
-
-            }else{
-                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                $notify.danger("最大可选赠品数量不正确");
-                return false;
-            }
         }else if(resultType == "ADD"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
-                return false;
-            }
-            var giftChooseNumber = $("#giftChooseNumber").val();
-            var re = /^[0-9]+.?[0-9]*$/;
-            if(re.test(giftChooseNumber) && giftChooseNumber > 0){
-
-            }else{
-                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                $notify.danger("最大可选加价购商品数量不正确");
                 return false;
             }
 
@@ -521,6 +551,8 @@ function formValidate() {
         data["isReturnable"] = isReturnable;
         data["isDouble"] = isDouble;
         data["isGcOrder"] = isGcOrder;
+        data["isGoodsOptionalQty"] = isGoodsOptionalQty;
+        data["isGiftOptionalQty"] = isGiftOptionalQty;
         data["actTarget"] = target;
         data["goodsDetails"] = JSON.stringify(goodsDetails);
         data["giftDetails"] = JSON.stringify(giftDetails);
@@ -560,12 +592,7 @@ function cheackGoodsDetail(details,tableId){
     trs.each(function(i,n){
         var id = $(n).find("#gid").val();
         goodsSku = $(n).find("#sku").val();
-        var num = $(n).find("#qty").val();
-        if(num=='' || !re.test(num)) {
-            validateFlag = false;
-            $notify.warning("亲，【" + goodsSku + "】商品数量不正确");
-            return false;
-        }
+
 
         if($.inArray(goodsSku, goodsSkus) >= 0) {
             goodRepeatFlag = true;
@@ -576,6 +603,25 @@ function cheackGoodsDetail(details,tableId){
         goodsSkus.push(goodsSku);
 
         if(tableId == "selectedGoodsTable"){
+            // 是否任选数量
+            var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
+
+            if(isGoodsOptionalQty){
+                var num = $('#fullNumber').val();
+                if(num=='' || num == 0 ||!re.test(num)) {
+                    validateFlag = false;
+                    $notify.warning("亲，本品任选数量不正确");
+                    return false;
+                }
+            }else{
+                var num = $(n).find("#qty").val();
+                if(num=='' || num == 0 ||!re.test(num)) {
+                    validateFlag = false;
+                    $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
+                    return false;
+                }
+            }
+
             details.push({
                 gid:id,
                 qty: $(n).find("#qty").val(),
@@ -583,6 +629,24 @@ function cheackGoodsDetail(details,tableId){
                 goodsTitile: $(n).find("#title").val()
             });
         }else if(tableId == "selectedGiftTable"){
+            // 是否任选数量
+            var isGiftOptionalQty = $("#is_gift_optional_qty").prop('checked');
+
+            if(isGiftOptionalQty){
+                var num = $('#giftChooseNumber').val();
+                if(num=='' || num == 0 ||!re.test(num)) {
+                    validateFlag = false;
+                    $notify.warning("亲，本品任选数量不正确");
+                    return false;
+                }
+            }else{
+                var num = $(n).find("#qty").val();
+                if(num=='' || num == 0 ||!re.test(num)) {
+                    validateFlag = false;
+                    $notify.warning("亲，赠品【" + goodsSku + "】数量不正确");
+                    return false;
+                }
+            }
             details.push({
                 giftId:id,
                 giftFixedQty: $(n).find("#qty").val(),
@@ -624,3 +688,4 @@ function starAndEndDatetimepiker(startDateId,endDateId){
         $('#activity_form').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
     });
 }
+
