@@ -518,6 +518,9 @@
             <if test="null != onlinePayType ">
                 online_pay_type = #{onlinePayType},
             </if>
+            <if test="null != onlinePayTime">
+                online_pay_time = #{onlinePayTime},
+            </if>
             <if test="null != payUpTime  ">
                 pay_up_time = #{payUpTime},
             </if>
