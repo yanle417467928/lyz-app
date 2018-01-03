@@ -94,7 +94,7 @@ public class MaCompanyOrderRestController extends BaseRestController {
      * @param maCompanyOrderVORequest  多条件查询请求参数类
      * @return 订单列表
      */
-    @GetMapping(value = "/page/test")
+    @GetMapping(value = "/page/condition")
     public GridDataVO<MaOrderVO> findOrderByCondition(Integer offset, Integer size, String keywords, MaCompanyOrderVORequest maCompanyOrderVORequest) {
         logger.warn("findOrderByCondition 多条件分页查询装饰公司订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}",offset, size, keywords, maCompanyOrderVORequest);
         try {

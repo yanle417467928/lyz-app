@@ -551,7 +551,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/find/company/Storelist',
+            url: '/rest/stores/find/company/stores',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -637,7 +637,7 @@
         if (orderNumber != null && orderNumber != "") {
             initDateGird('/rest/company/order/page/byOrderNumber/' + orderNumber);
         } else {
-            initDateGird('/rest/company/order/page/test?cityId=' + cityId + '&storeId=' + storeId
+            initDateGird('/rest/company/order/page/condition?cityId=' + cityId + '&storeId=' + storeId
                     + '&beginTime=' + beginTime + '&endTime=' + endTime + '&creatorName=' + creatorName + '&shippingAddress=' + shippingAddress
                     + '&creatorPhone=' + creatorPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone);
         }

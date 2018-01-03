@@ -275,10 +275,6 @@
             language: 'zh-CN',
             autoclose: true
         });
-
-        $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/views/admin/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
-        });
     });
 
 
@@ -296,16 +292,13 @@
             field: 'orderNumber',
             title: '订单号',
             align: 'center',
-            events: {
-                'click .scan': function (e, value, row) {
-                    $page.information.show(row.id);
-                }
-            },
             formatter: function (value) {
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="#">' + value + '</a>';
+                    var  url = "/rest/order/storeOrder/detail/"+value;
+//                    return '<a class="scan" href="/rest/order/storeOrder/detail/'+value+'">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/detail/'+value+'">' + value + '</a>';
                 }
             }
         }, {
@@ -388,8 +381,8 @@
 
     var $page = {
         information: {
-            show: function (id) {
-                var URL = '/rest/goods/' + id;
+            show: function (orderNumber) {
+                var URL = '/rest/goods/' + orderNumber;
                 var success = function (result) {
                     $('#rotationImageContainer').css('display', 'none')
                     if (0 === result.code) {
@@ -655,7 +648,7 @@
         if (orderNumber != null && orderNumber != "") {
             initDateGird('/rest/order/page/byOrderNumber/' + orderNumber);
         } else {
-            initDateGird('/rest/order/page/test?cityId=' + cityId + '&storeId=' + storeId + '&deliveryType=' + deliveryType
+            initDateGird('/rest/order/page/condition?cityId=' + cityId + '&storeId=' + storeId + '&deliveryType=' + deliveryType
                     + '&beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
                     + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone);
         }
