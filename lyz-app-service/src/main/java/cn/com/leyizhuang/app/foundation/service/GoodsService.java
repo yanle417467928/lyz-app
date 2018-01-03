@@ -54,8 +54,7 @@ public interface GoodsService {
 
     List<GoodsPrice> getGoodsPriceByEmployeeAndGoodsId(Long userId, List<Long> goodsIds);
 
-    PageInfo<UserGoodsResponse> filterGoods(Long userId, AppIdentityType type, String firstCategoryCode, Long secondCategoryId,
-                                            Long brandId, Long typeId, String specification, Integer page, Integer size);
+    List<UserGoodsResponse> filterGoods(Long userId, Integer identityType, String firstCategoryCode, Long secondCategoryId, Long brandId, Long typeId, String specification);
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 

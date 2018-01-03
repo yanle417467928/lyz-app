@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.remote.queue;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.queue.MqMessage;
+import cn.com.leyizhuang.app.foundation.pojo.queue.MqMessageType;
 import cn.com.leyizhuang.app.foundation.pojo.queue.MqOrderChannel;
-import com.gexin.fastjson.JSON;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.messaging.support.MessageBuilder;
@@ -21,8 +23,13 @@ public class SinkSender {
     private MqOrderChannel orderChannel;
 
     public void sendOrder(OrderBaseInfo order) {
-        orderChannel.sendOrder().send(MessageBuilder.withPayload(order).build());
-        log.info("发送订单信息:{}", JSON.toJSONString(order));
+        log.info("发送需拆单订单到拆单队列,Begin\n 订单号:{}", order.getOrderNumber());
+        MqMessage message = new MqMessage();
+        message.setType(MqMessageType.ORDER);
+        message.setContent(JSON.toJSONString(order));
+        orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        log.info("发送需拆单订单到拆单队列,End", JSON.toJSONString(order));
     }
+
 
 }
