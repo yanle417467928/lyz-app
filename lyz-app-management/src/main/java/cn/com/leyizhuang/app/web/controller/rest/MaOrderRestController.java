@@ -256,12 +256,12 @@ public class MaOrderRestController extends BaseRestController {
     public ResultDTO<MaOrderDeliveryInfoResponse> getDeliveryInfoByOrderNumber(@PathVariable(value = "orderNumber") String orderNumber) {
         logger.warn("getDeliveryInfoByOrderNumber 后台查看门店配送单物流详情 ,入参 orderNumber:{}", orderNumber);
        MaOrderDeliveryInfoResponse maOrderDeliveryInfoResponse = maOrderService.getDeliveryInfoByOrderNumber(orderNumber);
-       maOrderDeliveryInfoResponse.setOrderDeliveryInfoDetailsList(orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber));
         if (null == maOrderDeliveryInfoResponse) {
             logger.warn("后台查看门店配送单物流详情失败：maOrderDeliveryInfoResponse == null", maOrderDeliveryInfoResponse);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "订单物流信息不存在，请联系管理员", null);
         } else {
+            maOrderDeliveryInfoResponse.setOrderDeliveryInfoDetailsList(orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber));
             logger.warn("后台查看门店配送单物流详情成功：maOrderDeliveryInfoResponse{}", maOrderDeliveryInfoResponse);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, maOrderDeliveryInfoResponse);
         }
