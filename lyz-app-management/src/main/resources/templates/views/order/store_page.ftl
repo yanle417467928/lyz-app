@@ -42,7 +42,7 @@
                                 <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
                                 <div class=" col-xs-6" style="padding-left: 0px">
                                     <input name="beginTime" type="text" class="form-control datepicker" id="beginTime"
-                                        placeholder="开始时间">
+                                           placeholder="开始时间">
                                 </div>
                             </div>
                         </div>
@@ -173,94 +173,7 @@
         </div>
     </div>
 </section>
-<div id="information" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="user-block">
-                    <span class="username" style="margin-left: 0px;">
-                        <a id="goodsTitle" href="#"></a>
-                        <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </span>
-                    <ul id="goodsDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
-                        <li class="list-group-item">
-                            <b>商品id</b> <a class="pull-right" id="id"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料编号</b> <a class="pull-right" id="sku"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料名称</b> <a class="pull-right" id="materialsName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>电商名称</b> <a class="pull-right" id="skuName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料条码</b> <a class="pull-right" id="materialsCode"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料单位</b> <a class="pull-right" id="goodsUnit"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>电商分类</b> <a class="pull-right" id="categoryName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>商品品牌</b> <a class="pull-right" id="brdName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物理分类</b> <a class="pull-right" id="physicalClassify"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料类型</b> <a class="pull-right" id="typeName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>物料状态</b> <a class="pull-right" id="materialsEnable"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>公司标识</b> <a class="pull-right" id="companyFlag"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>排序号</b> <a class="pull-right" id="sortId"></a>
-                        </li>
-                        <li class="list-group-item" style="height: 100px;">
-                            <b>商品封面图</b> <a class="pull-right" id="coverImageUri"></a>
-                        </li>
-                        <li class="list-group-item" style="height: 100px;">
-                            <b>商品轮播图</b> <a class="pull-right" id="rotationImageUri">
-                        </a>
-                        </li>
-                    <#--                <li class="list-group-item">
-                                        <b>商品详情页</b> <a class="pull-right" id="goodsDetial"></a>
-                                    </li>-->
-                        <li class="list-group-item">
-                            <b>是否为热门商品</b> <a class="pull-right" id="isHot"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>是否为调色商品</b> <a class="pull-right" id="isColorMixing"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>资料创建时间</b> <a class="pull-right" id="createTime"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>搜索关键字</b> <a class="pull-right" id="searchKeyword"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>产品档次</b> <a class="pull-right" id="productGrade"></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="javascript:$page.information.close();" role="button" class="btn btn-primary">关闭</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-
 
     var sourceUrl;
     var rotationImage;
@@ -296,9 +209,9 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    var  url = "/rest/order/storeOrder/detail/"+value;
+                    var url = "/rest/order/storeOrder/detail/" + value;
 //                    return '<a class="scan" href="/rest/order/storeOrder/detail/'+value+'">' + value + '</a>';
-                    return '<a class="scan" href="/views/admin/order/detail/'+value+'">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/detail/' + value + '">' + value + '</a>';
                 }
             }
         }, {
@@ -379,161 +292,6 @@
         ]);
     }
 
-    var $page = {
-        information: {
-            show: function (orderNumber) {
-                var URL = '/rest/goods/' + orderNumber;
-                var success = function (result) {
-                    $('#rotationImageContainer').css('display', 'none')
-                    if (0 === result.code) {
-                        var data = result.content;
-                        $('#goodsTitle').html("商品详情");
-                        if (null === data.id) {
-                            data.id = '-';
-                        }
-                        $('#id').html(data.id);
-
-                        if (null === data.sku) {
-                            data.goodsName = '-';
-                        }
-                        $('#sku').html(data.sku);
-
-                        if (null === data.materialsName) {
-                            data.materialsName = '-';
-                        }
-                        $('#materialsName').html(data.materialsName);
-
-                        if (null === data.createTime) {
-                            data.createTime = '-';
-                        }
-                        $('#createTime').html(data.createTime);
-
-                        if (null === data.skuName) {
-                            data.title = '-';
-                        }
-                        $('#skuName').html(data.skuName);
-
-                        if (null === data.materialsCode) {
-                            data.materialsCode = '-';
-                        }
-                        $('#materialsCode').html(data.materialsCode);
-
-                        if (null === data.goodsUnit) {
-                            data.goodsUnit = '-';
-                        }
-                        $('#goodsUnit').html(data.goodsUnit);
-
-                        if (null === data.categoryName) {
-                            data.categoryName = '-';
-                        }
-                        $('#categoryName').html(data.categoryName);
-
-                        if (null === data.brdName) {
-                            data.brdName = '-';
-                        }
-                        $('#brdName').html(data.brdName);
-
-                        if (null === data.physicalClassify) {
-                            data.physicalClassify = '-';
-                        }
-                        $('#physicalClassify').html(data.physicalClassify);
-
-                        if (null === data.typeName) {
-                            data.typeName = '-';
-                        }
-                        $('#typeName').html(data.typeName);
-
-                        if (null === data.materialsEnable) {
-                            data.materialsEnable = '<span class="label label-danger">-</span>';
-                        }
-                        $('#materialsEnable').html(data.materialsEnable);
-
-                        if ('LYZ' === data.companyFlag) {
-                            data.companyFlag = '乐意装';
-                        } else if ('HR' === data.companyFlag) {
-                            data.companyFlag = '华润'
-                        } else if ('YR' === data.companyFlag) {
-                            data.companyFlag = '莹润'
-                        } else {
-                            data.companyFlag = '-'
-                        }
-                        $('#companyFlag').html(data.companyFlag);
-
-                        if (null === data.sortId) {
-                            data.sortId = '-';
-                        }
-                        $('#sortId').html(data.sortId);
-
-
-                        if (null === data.coverImageUri || '' == data.coverImageUri) {
-                            $('#coverImageUri').html('-');
-                        } else {
-                            sourceUrl = data.coverImageUri;
-                            $('#coverImageUri').html('<a href="' + data.coverImageUri + '" data-lightbox="image-1"><img src="' + data.coverImageUri + '"' + ' class="img-rounded" style="height: 80px;width: 80px;"/></a>');
-                        }
-
-                        if (null === data.rotationImageUri || '' == data.rotationImageUri) {
-                            $('#rotationImageUri').html('-');
-                        } else {
-                            $('#rotationImageUri').empty()
-                            rotationImage = data.rotationImageUri.split(",");
-                            for (var a = 0; a < rotationImage.length; a++) {
-                                $('#rotationImageUri').append('<a href="' + rotationImage[a] + '" data-lightbox="group"><img src="' + rotationImage[a] + '"' + ' class="img-rounded" style="height: 80px;width: 80px;margin-left: 5px"  /></a>');
-                            }
-                        }
-                        /*                      if (null === data.goodsDetial) {
-                                                  data.goodsDetial = '-';
-                                              }
-                                              $('#goodsDetial').html(data.goodsDetial);*/
-
-                        if (true === data.isHot) {
-                            data.isHot = ' <span class="label label-primary">是</span>';
-                        } else if (false === data.isHot) {
-                            data.isHot = '<span class="label label-danger">否</span>'
-                        } else {
-                            data.isColorMixing = '<span class="label label-danger">-</span>'
-                        }
-                        $('#isHot').html(data.isHot);
-
-                        if (true === data.isColorMixing) {
-                            data.isColorMixing = ' <span class="label label-primary">是</span>';
-                        } else if (false === data.isColorMixing) {
-                            data.isColorMixing = '<span class="label label-danger">否</span>'
-                        } else {
-                            data.isColorMixing = '<span class="label label-danger">-</span>'
-                        }
-                        $('#isColorMixing').html('' + data.isColorMixing);
-
-                        if (null === data.searchKeyword) {
-                            data.searchKeyword = '-';
-                        }
-                        $('#searchKeyword').html(data.searchKeyword);
-
-                        if (null === data.productGrade) {
-                            data.productGrade = '-';
-                        }
-                        $('#productGrade').html(data.productGrade);
-
-
-                        if (true === data.isOnSale) {
-                            $('#isOnSale').html('<span class="label label-primary">是</span>');
-                        } else if (false === data.isOnSale) {
-                            $('#isOnSale').html('<span class="label label-danger">否</span>');
-                        } else {
-                            $('#isOnSale').html('-');
-                        }
-                        $('#information').modal();
-                    } else {
-                        $notify.danger(result.message);
-                    }
-                };
-                $http.GET(URL, null, success);
-            },
-            close: function () {
-                $('#information').modal('hide');
-            }
-        }
-    }
 
     //获取城市列表
     function findCitylist() {

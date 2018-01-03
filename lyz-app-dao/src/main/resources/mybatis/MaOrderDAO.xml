@@ -398,7 +398,7 @@
         freight freight,
         lebi_cash_discount lebiCashDiscount,
         cash_coupon_discount cashCouponDiscount,
-        amount_payable amountPayable
+        order_amount_subtotal amountPayable
         FROM
         ord_billing_details
         WHERE

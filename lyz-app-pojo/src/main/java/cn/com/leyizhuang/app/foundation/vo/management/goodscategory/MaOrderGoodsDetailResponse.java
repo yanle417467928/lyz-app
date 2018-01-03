@@ -17,6 +17,10 @@ public class MaOrderGoodsDetailResponse {
      */
     private String sku;
     /**
+     * 商品名称
+     */
+    private String goodsName;
+    /**
      * 数量
      */
     private int qty;
