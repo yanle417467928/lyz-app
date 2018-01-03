@@ -978,7 +978,7 @@ public class CommonServiceImpl implements CommonService {
                 goodsInfo.setVIPPrice(goodsVO.getVipPrice());
                 goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
                 goodsInfo.setIsPriceShare(Boolean.FALSE);
-                goodsInfo.setSharePrice(0D);
+                goodsInfo.setPromotionSharePrice(0D);
                 goodsInfo.setIsReturnable(Boolean.TRUE);
                 if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     goodsInfo.setSettlementPrice(goodsVO.getVipPrice());
@@ -1067,7 +1067,7 @@ public class CommonServiceImpl implements CommonService {
                 couponGoodsInfo.setVIPPrice(couponGoods.getVipPrice());
                 couponGoodsInfo.setWholesalePrice(couponGoods.getWholesalePrice());
                 couponGoodsInfo.setIsPriceShare(Boolean.FALSE);
-                couponGoodsInfo.setSharePrice(0D);
+                couponGoodsInfo.setPromotionSharePrice(0D);
                 couponGoodsInfo.setIsReturnable(Boolean.TRUE);
                 if (customer.getCustomerType() == AppCustomerType.MEMBER) {
                     couponGoodsInfo.setReturnPrice(couponGoods.getVipPrice());

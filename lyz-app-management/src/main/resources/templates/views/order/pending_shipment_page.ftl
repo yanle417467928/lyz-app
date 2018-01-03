@@ -552,7 +552,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/find/company/Storelist',
+            url: '/rest/stores/find/selfDelivery/stores',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -585,7 +585,7 @@
 
         var store;
         $.ajax({
-            url: '/rest/stores/find/company/StoresListByCityId/' + cityId,
+            url: '/rest/stores/find/city/selfDelivery/stores/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -636,9 +636,9 @@
         var storeId = $('#storeCode').val();
         $("#dataGrid").bootstrapTable('destroy');
         if (orderNumber != null && orderNumber != "") {
-            initDateGird('/rest/company/order/page/byOrderNumber/' + orderNumber);
+            initDateGird('/rest/order/pendingShipment/byOrderNumber/' + orderNumber);
         } else {
-            initDateGird('/rest/company/order/page/test?cityId=' + cityId + '&storeId=' + storeId
+            initDateGird('/rest/order/page/pendingShipment/condition?cityId=' + cityId + '&storeId=' + storeId
                     + '&beginTime=' + beginTime + '&endTime=' + endTime + '&creatorName=' + creatorName + '&shippingAddress=' + shippingAddress
                     + '&creatorPhone=' + creatorPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone);
         }

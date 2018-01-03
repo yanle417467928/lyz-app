@@ -288,4 +288,147 @@
         ORDER BY
         obi.create_time DESC
     </select>
+
+    <select id="findPendingShipmentOrderByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
+            resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.`status` = 'PENDING_SHIPMENT'
+        AND obi.delivery_type = 'SELF_TAKE'
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND obi.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND obi.create_time &lt;= #{endTime}
+        </if>
+        <if test="creatorName != null and creatorName != ''">
+            AND obi.creator_name LIKE concat(concat('%',#{creatorName}),'%')
+        </if>
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="creatorPhone != null and creatorPhone != ''">
+            AND obi.creator_phone LIKE concat(concat('%',#{creatorPhone}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findPendingShipmentOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_phone meberNumber,
+        obi.creator_name meberName,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        s.store_name storeName,
+        obd.amount_payable orderPrice
+        FROM
+        ord_base_info AS obi
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+         obi.`status` = 'PENDING_SHIPMENT'
+        AND obi.delivery_type = 'SELF_TAKE'
+        AND obi.ord_no LIKE concat(concat('%',#{orderNumber}),'%')
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findMaOrderDetailByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse">
+       SELECT
+            obi.ord_no orderNumber,
+            obi.`status` orderStatus,
+            obi.creator_id creatorId,
+            obi.create_time createTime,
+            obi.creator_name creatorName,
+            obi.delivery_type deliveryType,
+            obi.sales_consult_name sellerName,
+            obi.customer_id customerId,
+            obi.customer_name customerName,
+            obi.remark orderRemarks,
+            s.store_name storeName,
+            oli.receiver receiverName,
+            oli.receiver_phone receiverPhone,
+            oli.is_owner_receiving isOwnerReceiving,
+            oli.shipping_address shippingAddress,
+            obd.collection_amount collectionAmount
+        FROM
+            ord_base_info AS obi
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        INNER JOIN st_store AS s ON s.store_id = obi.store_id
+        WHERE
+            obi.ord_no = #{orderNumber}
+    </select>
+
+    <select id="getMaOrderBillingDetailByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse">
+        SELECT
+        total_goods_price totalGoodsPrice,
+        member_discount memberDiscount,
+        promotion_discount promotionDiscount,
+        freight freight,
+        lebi_cash_discount lebiCashDiscount,
+        cash_coupon_discount cashCouponDiscount,
+        amount_payable amountPayable
+        FROM
+        ord_billing_details
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <select id="getMaOrderBillingPaymentDetailByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse">
+        SELECT
+        pay_time payTime,
+        pay_type paymentType,
+        amount amount
+        FROM
+        ord_billing_payment_details
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <select id="getDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse">
+        SELECT
+            oli.delivery_time deliveryTime,
+            oli.delivery_clerk_name deliveryClerkName,
+            oli.warehouse warehouse,
+            odid.task_no shipmentNumber
+        FROM
+            ord_base_info AS obi
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+        AND odid.logistic_status = obi.delivery_status
+        WHERE
+            obi.ord_no = #{orderNumber}
+    </select>
 </mapper>

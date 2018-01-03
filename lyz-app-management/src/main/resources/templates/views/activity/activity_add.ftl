@@ -102,7 +102,6 @@
                                     <input name="target" value="导购" type="checkbox" class="flat-red" checked>导购
                                     <input name="target" value="装饰公司经理" type="checkbox" class="flat-red">装饰公司经理
                                 </div>
-
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
@@ -111,12 +110,9 @@
                                     使用限制
                                 </label>
                                 <div class="input-group">
-
                                     <input id="isReturnable" type="checkbox" class="flat-red" checked>可退货
                                     <input id="isDouble" type="checkbox" class="flat-red" checked>可叠加享受
-
                                     <input id="isGcOrder" type="checkbox" class="flat-red">工程单可享受
-
                                 </div>
                             </div>
                         </div>
@@ -129,8 +125,6 @@
                             </label>
                             <select name="cityId" id="cityId" class="form-control select"
                                     onchange="findStoreByCity(this.value);">
-
-
                             </select>
                         </div>
 
@@ -156,7 +150,6 @@
                                             <button type="button" class="btn btn-default btn-xs"
                                                     onclick="checkAllStore()">全选
                                             </button>
-
                                             <button type="button" class="btn btn-default btn-xs"
                                                     onclick="unCheckAllStore()">反选
                                             </button>
@@ -172,58 +165,15 @@
                         </div>
                     </div>
 
-                    <!-- 选择本品table -->
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="box box-success">
-                                <div class="box-header">
-                                    <h3 class="box-title">选择本品</h3>
-
-                                    <div class="box-tools">
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="openGoodsModal('selectedGoodsTable')">
-                                            选择商品
-                                        </button>
-
-                                        <div class="box-tools pull-right">
-                                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
-                                                    class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.box-header -->
-                                <div class="box-body table-responsive no-padding">
-                                    <table class="table table-hover" >
-                                        <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>sku</th>
-                                            <th>商品名</th>
-                                            <th>数量</th>
-                                            <th>操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="selectedGoodsTable">
-
-                                        </tbody>
-
-                                    </table>
-                                </div>
-                                <!-- /.box-body -->
-                            </div>
-                            <!-- /.box -->
-                        </div>
-                    </div>
-
                     <div class="row">
                         <div class="col-xs-12 col-md-2">
-                                <label for="title">
-                                    促销类型
-                                </label>
-                                    <select name="baseType" id="baseType" class="form-control select"
-                                            onchange="changeBaseType(this.value);">
-                                        <option value="COMMON">普通</option>
-                                    </select>
+                            <label for="title">
+                                促销类型
+                            </label>
+                            <select name="baseType" id="baseType" class="form-control select"
+                                    onchange="changeBaseType(this.value);">
+                                <option value="COMMON">普通</option>
+                            </select>
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <div class="form-group">
@@ -253,6 +203,75 @@
                                     </select>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 选择本品table -->
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box box-success">
+                                <div class="box-header">
+                                    <h3 class="box-title">选择本品</h3>
+
+                                    <div class="box-tools">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openGoodsModal('selectedGoodsTable')">
+                                            选择商品
+                                        </button>
+
+                                        <div class="box-tools pull-right">
+                                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                                    class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body table-responsive no-padding">
+
+                                    <div class="col-xs-12">
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>sku</th>
+                                                <th>商品名</th>
+                                                <th>数量</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="selectedGoodsTable">
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+
+                                    <!-- /.box-body -->
+                                </div>
+                                <div class="box-footer clearfix">
+                                    <div class="row" id="fullNumber_div">
+
+                                        <div class="col-xs-12 col-md-1">
+                                            <div class="input-group">
+                                                <input id="is_goods_optional_qty" type="checkbox" class="flat-red">任选数量
+                                            </div>
+                                        </div>
+                                        <div id="goods_optional_qty_div" style="display: none;">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="input-group">
+                                                    <input name="fullNumber" type="number" class="form-control"
+                                                           id="fullNumber" placeholder="总数量">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
                         </div>
                     </div>
 
@@ -294,7 +313,8 @@
                                     <h3 class="box-title">选择赠品</h3>
 
                                     <div class="box-tools">
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="openGoodsModal('selectedGiftTable')">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openGoodsModal('selectedGiftTable')">
                                             选择赠品
                                         </button>
 
@@ -307,7 +327,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body table-responsive no-padding">
-                                    <table class="table table-hover" >
+                                    <table class="table table-hover">
                                         <thead>
                                         <tr>
                                             <th>ID</th>
@@ -324,6 +344,26 @@
                                     </table>
                                 </div>
                                 <!-- /.box-body -->
+                                <div class="box-footer clearfix">
+                                    <div class="row">
+
+                                        <div class="col-xs-12 col-md-1">
+                                            <div class="input-group">
+                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red" onclick="clickGiftFixedQty(this)">任选数量
+                                            </div>
+                                        </div>
+                                        <div id="gift_optional_qty_div" style="display: none;">
+                                            <div class="col-xs-12 col-md-2">
+                                                <div class="input-group">
+                                                    <input name="giftChooseNumber" type="number" class="form-control"
+                                                           id="giftChooseNumber" placeholder="赠品最大可选数量">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
                             </div>
                             <!-- /.box -->
                         </div>
@@ -344,7 +384,7 @@
                         </div>
                     </div>
 
-                    <!-- 赠品最大可选数量 -->
+                    <!-- 赠品最大可选数量
                     <div class="row" id="giftChooseNumber_div" style="display: none;">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -353,13 +393,15 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="giftChooseNumber" type="number" class="form-control" id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="1">
+                                    <input name="giftChooseNumber" type="number" class="form-control"
+                                           id="giftChooseNumber" placeholder="填 N ，则以上赠品最多可选择N个" value="1">
                                 </div>
                             </div>
                         </div>
                     </div>
+                    -->
 
-                    <div class="row" id="fullAmount_div" >
+                    <div class="row" id="fullAmount_div">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">

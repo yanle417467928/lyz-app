@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
+import com.github.pagehelper.PageInfo;
 
 /**
  * Created by caiyu on 2017/12/8.
@@ -25,4 +26,10 @@ public interface CashCouponService {
      * @param customerCashCoupon
      */
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
+
+    /**
+     * 现金券 gridData
+     */
+    PageInfo<CashCoupon> queryPage(Integer page, Integer size, String keywords);
+
 }

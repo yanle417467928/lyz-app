@@ -5,6 +5,10 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVO
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -66,5 +70,35 @@ public class MaOrderServiceImpl implements MaOrderService{
     @Override
     public List<MaOrderVO> findPendingShipmentOrder() {
         return maOrderDAO.findPendingShipmentOrder();
+    }
+
+    @Override
+    public List<MaOrderVO> findPendingShipmentOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest) {
+        return maOrderDAO.findPendingShipmentOrderByCondition(maCompanyOrderVORequest);
+    }
+
+    @Override
+    public List<MaOrderVO> findPendingShipmentOrderByOrderNumber(String orderNumber) {
+        return maOrderDAO.findPendingShipmentOrderByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public MaOrderDetailResponse findMaOrderDetailByOrderNumber(String orderNmber) {
+        return maOrderDAO.findMaOrderDetailByOrderNumber(orderNmber);
+    }
+
+    @Override
+    public MaOrderBillingDetailResponse getMaOrderBillingDetailByOrderNumber(String orderNmber) {
+        return maOrderDAO.getMaOrderBillingDetailByOrderNumber(orderNmber);
+    }
+
+    @Override
+    public List<MaOrderBillingPaymentDetailResponse> getMaOrderBillingPaymentDetailByOrderNumber(String orderNmber) {
+        return maOrderDAO.getMaOrderBillingPaymentDetailByOrderNumber(orderNmber);
+    }
+
+    @Override
+    public MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber) {
+        return maOrderDAO.getDeliveryInfoByOrderNumber(orderNmber);
     }
 }

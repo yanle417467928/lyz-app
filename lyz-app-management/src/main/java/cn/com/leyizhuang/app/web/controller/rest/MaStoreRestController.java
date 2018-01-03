@@ -82,8 +82,8 @@ public class MaStoreRestController extends BaseRestController {
      * @param cityId    城市id
      * @return  门店列表
      */
-    @GetMapping(value = "/find/city/selfDelivery/stores")
-    public List<StoreVO> findSelfDeliveryStoresListByCityId(Long cityId){
+    @GetMapping(value = "/find/city/selfDelivery/stores/{cityId}")
+    public List<StoreVO> findSelfDeliveryStoresListByCityId(@PathVariable(value = "cityId") Long cityId){
         List<StoreVO> selfDeliveryStoreList = this.maStoreService.findSelfDeliveryStoresListByCityId(cityId);
         return selfDeliveryStoreList;
     }
