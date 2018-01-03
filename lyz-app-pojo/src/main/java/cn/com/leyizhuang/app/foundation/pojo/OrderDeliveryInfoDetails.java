@@ -84,7 +84,7 @@ public class OrderDeliveryInfoDetails {
                 "】仓库" +
                 "封车完成，开始配送";
         deliveryInfoDetails.setDescription(description);
-        deliveryInfoDetails.setOperationType("封车");
+        deliveryInfoDetails.setOperationType("已封车");
         deliveryInfoDetails.setOperatorNo(header.getDriver());
         deliveryInfoDetails.setWarehouseNo(header.getWhNo());
         deliveryInfoDetails.setTaskNo(header.getTaskNo());

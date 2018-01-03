@@ -32,7 +32,7 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderGoods">
         INSERT INTO inter_wta_order_shipping_goods (create_time, send_time, send_flag, error_message, order_no, task_type,
                                                     task_no, g_code, d_ack_qty, op_status, source_no)
-        VALUES (#{createTime}, #{sendTime}, #{sendFlag}, #{errorMessage}, #{orderNo}, #{cTaskType},
+        VALUES (#{createTime}, #{sendTime}, #{sendFlag}, #{errorMessage}, #{orderNo}, #{taskType},
                                #{taskNo}, #{gCode}, #{dAckQty}, #{opStatus}, #{sourceNo});
     </insert>
 </mapper>

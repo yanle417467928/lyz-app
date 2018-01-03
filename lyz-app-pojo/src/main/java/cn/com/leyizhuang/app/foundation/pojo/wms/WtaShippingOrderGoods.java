@@ -50,7 +50,6 @@ public class WtaShippingOrderGoods {
     /**
      * 出货单号
      */
-    @Deprecated
     private String sourceNo;
     /**
      * 接口传输标识

@@ -254,7 +254,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
             } else if ("c_d_ack_qty".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    shippingOrderGoods.setDAckQty(Integer.valueOf(childNode.getChildNodes().item(0).getNodeValue()));
+                    Double parseDouble = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
+                    shippingOrderGoods.setDAckQty(parseDouble.intValue());
                 }
 //            } else if ("c_d_request_qty".equalsIgnoreCase(childNode.getNodeName())) {
 //                if (null != childNode.getChildNodes().item(0)) {
@@ -263,6 +264,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                }
             } else if ("c_task_type".equalsIgnoreCase(childNode.getNodeName())) {
                 shippingOrderGoods.setTaskType(childNode.getChildNodes().item(0).getNodeValue());
+            } else if ("C_SOURCE_NO".equalsIgnoreCase(childNode.getNodeName())) {
+                shippingOrderGoods.setSourceNo(childNode.getChildNodes().item(0).getNodeValue());
             }
         }
         return shippingOrderGoods;
