@@ -373,7 +373,7 @@
     <insert id="savePaymentDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
-        (oid, ord_no, creatr_time, pay_time, pay_type, amount, reply_code, receipt_number)
+        (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number)
         VALUES
             (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
              #{receiptNumber})
