@@ -126,10 +126,10 @@
         </div>
         <div class="box">
             <div class="row invoice-info">
+                <div class="box-header">
+                    <h3 class="box-title" style="padding-left: 20px;">基本信息</h3>
+                </div>
                 <div class="col-sm-6 invoice-col">
-                    <div class="box-header">
-                        <h3 class="box-title">基本信息</h3>
-                    </div>
                     <b>门店:</b>
                     <spanp class="span">${maOrderDetail.storeName!""}</spanp>
                     <br>
