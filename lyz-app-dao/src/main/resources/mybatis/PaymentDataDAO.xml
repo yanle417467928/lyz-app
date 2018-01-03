@@ -22,7 +22,9 @@
             trade_status,
             user_id,
             identity_type appIdentityType,
-            payment_type
+            payment_type,
+            notify_time,
+            notify_url
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
               AND trade_status = #{tradeStatus}
