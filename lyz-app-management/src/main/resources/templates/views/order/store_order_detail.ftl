@@ -132,7 +132,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <b>送货地址:</b>
-                            <spanp class="span">${maOrderDetail.orderNumber!""}</spanp>
+                            <spanp class="span">${maOrderDetail.shippingAddress!""}</spanp>
                             <input type="hidden" id="dfasd" value="${maOrderDetail.orderNumber!""}"/>
                             <b></b>
                             <span style="float: right;padding-top: 4px;color: #1c94c4" ;
@@ -181,7 +181,7 @@
                     <div class="box-header">
                         <h3 class="box-title"></h3>
                     </div>
-                    <b>下单人id:</b>
+                    <b>下单人:</b>
                     <spanp class="span">${maOrderDetail.creatorName!""}</spanp>
                     <br>
                     <b>客户姓名:</b>
