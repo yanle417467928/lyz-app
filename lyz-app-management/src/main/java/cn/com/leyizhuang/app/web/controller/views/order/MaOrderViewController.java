@@ -87,6 +87,7 @@ public class MaOrderViewController {
                         //创建商品返回对象
                         MaOrderGoodsDetailResponse maOrderGoodsDetailResponse = new MaOrderGoodsDetailResponse();
                         maOrderGoodsDetailResponse.setSku(orderGoodsInfo.getSku());
+                        maOrderGoodsDetailResponse.setGoodsName(orderGoodsInfo.getSkuName());
                         maOrderGoodsDetailResponse.setQty(orderGoodsInfo.getOrderQuantity() == null ? 0:orderGoodsInfo.getOrderQuantity());
                         maOrderGoodsDetailResponse.setUnitPrice(orderGoodsInfo.getRetailPrice() == null ? 0.00:orderGoodsInfo.getRetailPrice());
                         //计算商品小计（零售）

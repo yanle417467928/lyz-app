@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
 
-
-
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <!-- Ionicons -->
@@ -23,7 +20,7 @@
             line-height: 30px;
         }
 
-        .span,.fa {
+        .span, .fa {
             margin-left: 10px;
         }
 
@@ -66,10 +63,11 @@
 
                         <li style="list-style: none">
                             <div class="timeline-item" id="test">
-                                <ul >
+                                <ul>
                                     <span class="logisticCreateTime" id="logisticCreateTime">2017-11-11 11:00:00</span>
                                     <i class="fa fa-circle" style="color: red"></i>
-                                    <span class="logisticStatus" id="logisticStatus" style="padding-left: 100px">已装车</span>
+                                    <span class="logisticStatus" id="logisticStatus"
+                                          style="padding-left: 100px">已装车</span>
                                 </ul>
                                 <div style="padding-left: 141px">
                                     <ul class="timeline" style="margin-bottom: 0px">
@@ -77,17 +75,17 @@
                                     </ul>
                                 </div>
                             </div>
-                            <#--<div class="timeline-item">-->
-                                <#--<ul>-->
-                                    <#--<span>2017-11-11 11:00:00</span>-->
-                                    <#--<i class="fa fa-circle" style="color: red"></i>-->
-                                <#--</ul>-->
-                                <#--<div style="padding-left: 141px">-->
-                                    <#--<ul class="timeline" style="margin-bottom: 0px">-->
-                                        <#--<i class="fa fa-circle" style="color: white"></i>-->
-                                    <#--</ul>-->
-                                <#--</div>-->
-                            <#--</div>-->
+                        <#--<div class="timeline-item">-->
+                        <#--<ul>-->
+                        <#--<span>2017-11-11 11:00:00</span>-->
+                        <#--<i class="fa fa-circle" style="color: red"></i>-->
+                        <#--</ul>-->
+                        <#--<div style="padding-left: 141px">-->
+                        <#--<ul class="timeline" style="margin-bottom: 0px">-->
+                        <#--<i class="fa fa-circle" style="color: white"></i>-->
+                        <#--</ul>-->
+                        <#--</div>-->
+                        <#--</div>-->
                         </li>
                     </ul>
                 </div>
@@ -107,6 +105,23 @@
                 <h2 class="page-header">
                     门店订单详情
                 </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <b>订单号:</b>
+                <spanp>${maOrderDetail.orderNumber!""}</spanp>
+                <b style="margin-left: 50px">创建时间:</b>
+                <spanp>${maOrderDetail.createTime?string("yyyy-MM-dd HH:mm:ss")!""}</spanp>
+                <b style="margin-left: 70px">订单状态:</b>
+                <spanp><#if maOrderDetail.orderStatus = 'UNPAID'>待付款
+                <#elseif maOrderDetail.orderStatus = 'PENDING_SHIPMENT'>
+                    待发货<#elseif maOrderDetail.orderStatus = 'PENDING_RECEIVE'>
+                    待收货<#elseif maOrderDetail.orderStatus = 'FINISHED'>已完成<#elseif maOrderDetail.orderStatus = 'CLOSED'>
+                    已结案<#elseif maOrderDetail.orderStatus = 'CANCELED'>
+                    已取消<#elseif maOrderDetail.orderStatus = 'REJECTED'>
+                    拒签<#elseif maOrderDetail.orderStatus = 'CANCELING'>取消中</#if></spanp>
+                <br>
             </div>
         </div>
         <div class="box">
@@ -135,8 +150,6 @@
                             <spanp class="span">${maOrderDetail.shippingAddress!""}</spanp>
                             <input type="hidden" id="dfasd" value="${maOrderDetail.orderNumber!""}"/>
                             <b></b>
-                            <span style="float: right;padding-top: 4px;color: #1c94c4" ;
-                                  onclick="$page.information.show($(dfasd).val())">点击查看物流详情</span>
                         </div>
                     </div>
                 </#if>
@@ -168,6 +181,8 @@
                     <spanp class="span">${maOrderDetail.receiverPhone!""}</spanp>
                     <br>
                     <b></b>
+                    <span style="padding-top: 4px;color: #1c94c4" ;
+                          onclick="$page.information.show($(dfasd).val())">点击查看物流详情</span>
                     <br>
                 </#if>
                 <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
@@ -207,6 +222,7 @@
                         <thead>
                         <tr>
                             <th>商品编码</th>
+                            <th>商品名称</th>
                             <th>数量</th>
                             <th>单价</th>
                             <th></th>
@@ -220,6 +236,7 @@
                             <#list maOrderDetail.maOrderGoodsDetailResponseList as goods>
                             <tr>
                                 <td>${goods.sku!""}</td>
+                                <td>${goods.goodsName!""}</td>
                                 <td>${goods.qty!""}</td>
                                 <td>${goods.unitPrice!'0.00'}</td>
                                 <td></td>
@@ -252,8 +269,15 @@
                             <#if paymentDetailList?? && paymentDetailList?size gt 0 >
                                 <#list paymentDetailList as paymentDetail>
                                 <tr>
-                                    <td>${(paymentDetail.payTime?string("yyyy-MM-dd hh:mm:ss"))!""}</td>
-                                    <td>${paymentDetail.paymentType!""}</td>
+                                    <td>${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</td>
+                                    <td><#if paymentDetail.paymentType = 'CUS_PREPAY'>
+                                        顾客预存款<#elseif paymentDetail.paymentType = 'ST_PREPAY'>
+                                        门店预存款<#elseif paymentDetail.paymentType = 'ALIPAY'>
+                                        支付宝<#elseif paymentDetail.paymentType = 'WE_CHAT'>
+                                        微信<#elseif paymentDetail.paymentType = 'UNION_PAY'>
+                                        银联<#elseif paymentDetail.paymentType = 'POS'>
+                                        POS<#elseif paymentDetail.paymentType = 'CASH'>
+                                        现金<#elseif paymentDetail.paymentType = 'OTHER'>门店其它</#if></td>
                                     <td>${paymentDetail.amount!'0.00'}</td>
                                 </tr>
                                 </#list>
@@ -367,37 +391,37 @@
                                             }
                                             $('#deliveryTime').html(data.deliveryTime);
 
-                                            if (null != data.orderDeliveryInfoDetailsList){
-                                                var time ='';
-                                                var status='';
-                                                var b ='';
-                                                if(data.orderDeliveryInfoDetailsList.length!=0){
-                                                    for(var i=0;i<data.orderDeliveryInfoDetailsList.length;i++){
+                                            if (null != data.orderDeliveryInfoDetailsList) {
+                                                var time = '';
+                                                var status = '';
+                                                var b = '';
+                                                if (data.orderDeliveryInfoDetailsList.length != 0) {
+                                                    for (var i = 0; i < data.orderDeliveryInfoDetailsList.length; i++) {
                                                         time = formatDateTime(data.orderDeliveryInfoDetailsList[i].createTime);
-                                                        if ("INITIAL" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        if ("INITIAL" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '等待物流接收';
-                                                        }else if ("RECEIVED" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("RECEIVED" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已接收';
-                                                        }else if ("ALREADY_POSITIONED" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("ALREADY_POSITIONED" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已定位';
-                                                        }else if ("PICKING_GOODS" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("PICKING_GOODS" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已拣货';
-                                                        }else if ("LOADING" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("LOADING" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已装车';
-                                                        }else if ("SEALED_CAR" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("SEALED_CAR" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已封车';
-                                                        }else if ("SENDING" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("SENDING" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '未投妥';
-                                                        }else if ("CONFIRM_ARRIVAL" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("CONFIRM_ARRIVAL" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '已签收';
-                                                        }else if ("REJECT" == data.orderDeliveryInfoDetailsList[i].logisticStatus){
+                                                        } else if ("REJECT" == data.orderDeliveryInfoDetailsList[i].logisticStatus) {
                                                             status = '拒签';
                                                         }
 
-                                                      var a ='<ul><span class="logisticCreateTime" id="logisticCreateTime">'+time+'</span><i class="fa fa-circle" style="color: red"></i> <span class="logisticStatus" id="logisticStatus" style="padding-left: 100px">'+status+'</span></ul><div style="padding-left: 140px"> <ul class="timeline" style="margin-bottom: 0px"> <i class="fa fa-circle" style="color: white"></i> </ul></div>';
-                                                /*        $('#logisticCreateTime').html();
-                                                        $('#logisticStatus').html();*/
-                                                   b+=a;
+                                                        var a = '<ul><span class="logisticCreateTime" id="logisticCreateTime">' + time + '</span><i class="fa fa-circle" style="color: red"></i> <span class="logisticStatus" id="logisticStatus" style="padding-left: 100px">' + status + '</span></ul><div style="padding-left: 140px"> <ul class="timeline" style="margin-bottom: 0px"> <i class="fa fa-circle" style="color: white"></i> </ul></div>';
+                                                        /*        $('#logisticCreateTime').html();
+                                                                $('#logisticStatus').html();*/
+                                                        b += a;
                                                     }
                                                 }
                                                 $('#test').html(b);
