@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GuideCreditMoneyDetail {
+    private Long id;
     //员工id
     private Long empId;
     //改变之前固定额度

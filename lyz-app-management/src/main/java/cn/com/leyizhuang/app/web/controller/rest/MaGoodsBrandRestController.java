@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam;
@@ -86,7 +87,7 @@ public class MaGoodsBrandRestController extends  BaseRestController {
      */
     @PostMapping(value = "/isExistBrandName")
     public ValidatorResultDTO isExistBrandName(@RequestParam(value="brandName") String brandName){
-        if(null==brandName||"".equals(brandName)){
+        if(StringUtils.isBlank(brandName)){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }
@@ -102,7 +103,7 @@ public class MaGoodsBrandRestController extends  BaseRestController {
      */
     @PostMapping(value = "/editIsExistBrandName")
     public ValidatorResultDTO editIsExistBrandName(@RequestParam(value="brandName") String brandName,@RequestParam(value="id") Long id){
-        if(null==brandName||null==id||"".equals(brandName)){
+        if(StringUtils.isBlank(brandName)||null==id){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }

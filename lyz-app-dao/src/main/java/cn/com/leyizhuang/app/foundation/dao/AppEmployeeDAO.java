@@ -1,8 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
-import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideAvailableCreditChange;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
@@ -69,5 +69,9 @@ public interface AppEmployeeDAO {
 
     EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId);
 
-    void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log);
+    void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLogDO log);
+
+    Long saveCreditLimitAvailableChange(EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog);
+
+    Long saveTempCreditLimitChange(EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog);
 }

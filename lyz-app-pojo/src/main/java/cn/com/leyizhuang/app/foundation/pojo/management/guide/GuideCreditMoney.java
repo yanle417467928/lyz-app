@@ -19,8 +19,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GuideCreditMoney {
-     //员工id
+
     private Long id;
+    //员工ID
+    private Long empId;
     //固定额度
     private BigDecimal creditLimit;
     //临时额度

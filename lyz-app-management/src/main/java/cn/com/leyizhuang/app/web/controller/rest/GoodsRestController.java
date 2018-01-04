@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.PhysicalClassify;
@@ -242,7 +243,7 @@ public class GoodsRestController extends BaseRestController {
      */
     @PostMapping(value = "/isExistSkuName")
     public ValidatorResultDTO isExistSkuName(@RequestParam(value = "skuName") String skuName,@RequestParam(value = "id")Long id) {
-        if(null==skuName||null==id||"".equals(skuName)){
+        if(StringUtils.isBlank(skuName)||null==id){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }

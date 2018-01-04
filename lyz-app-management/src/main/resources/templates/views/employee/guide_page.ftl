@@ -52,7 +52,7 @@
                                placeholder="请输入姓名或登录名...">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="return  findGuideCreditMoneyByInfo()">查找</button>
+                                    onclick="findGuideCreditMoneyByInfo()">查找</button>
                         </span>
                     </div>
                 </div>
@@ -80,8 +80,10 @@
             </div>
             <div class="modal-footer">
                 <input type="hidden" id="delId"/>
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <input type="hidden" id="tempCreditLimit"/>
+                <input type="hidden" id="creditLimitAvailable"/>
                 <a  onclick="clearSubmit()" class="btn btn-danger" data-dismiss="modal">确定</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -116,13 +118,13 @@
                             <b>归属门店</b> <a class="pull-right" id="store"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>固定额度</b> <a class="pull-right" id="creditLimit"></a>
+                            <b>固定额度</b> <a class="pull-right" id="creditLimitModal"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>临时额度</b> <a class="pull-right" id="tempCreditLimit"></a>
+                            <b>临时额度</b> <a class="pull-right" id="tempCreditLimitModal"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>额度余额</b> <a class="pull-right" id="creditLimitAvailable"></a>
+                            <b>额度余额</b> <a class="pull-right" id="creditLimitAvailableModal"></a>
                         </li>
                         <li class="list-group-item">
                             <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
@@ -139,8 +141,8 @@
 <script>
 
     $(function () {
-        findCityList();
-        findStorelist();
+        findCitySelection();
+        findStoreSelection();
         initDateGird('/rest/employees/guidePage/grid');
         $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/guide/edit/{id}?parentMenuId=${parentMenuId!'0'}')
@@ -190,15 +192,19 @@
                 field: 'storeId.storeName',
                 title: '归属门店',
                 align: 'center'
+            }, {
+                field: 'guideCreditMoney.tempCreditLimit',
+                title: '临时额度',
+                align: 'center'
             },{
-                field: 'guideCreditAvailableMoney.creditLimitAvailable',
+                field: 'guideCreditMoney.creditLimitAvailable',
                 title: '额度余额',
                 align: 'center'
             },{
                 title: '操作',
                 align: 'center',
                 formatter: function(value,row) {
-                    return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.id+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="clearTempCreditLimit('+row.id+')"> 手动清零</button>';
+                    return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.id+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="clearTempCreditLimit('+row.id+','+row.guideCreditMoney.tempCreditLimit+','+row.guideCreditMoney.creditLimitAvailable+')"> 手动清零</button>';
                 }
             }
         ]);
@@ -258,27 +264,27 @@
                                 $('#name').html(data.name);
 
                                 if (null === data.guideCreditMoney) {
-                                    $('#creditLimit').html('-');
+                                    $('#creditLimitModal').html('-');
                                 }else if(null === data.guideCreditMoney.creditLimit) {
-                                    $('#creditLimit').html('-');
+                                    $('#creditLimitModal').html('-');
                                 }else{
-                                    $('#creditLimit').html(data.guideCreditMoney.creditLimit);
+                                    $('#creditLimitModal').html(data.guideCreditMoney.creditLimit);
                                 }
 
                                 if (null === data.guideCreditMoney) {
-                                    $('#tempCreditLimit').html('-');
+                                    $('#tempCreditLimitModal').html('-');
                                 }else if(null===data.guideCreditMoney.tempCreditLimit){
-                                    $('#tempCreditLimit').html('-');
+                                    $('#tempCreditLimitModal').html('-');
                                 }else{
-                                    $('#tempCreditLimit').html(data.guideCreditMoney.tempCreditLimit);
+                                    $('#tempCreditLimitModal').html(data.guideCreditMoney.tempCreditLimit);
                                 }
 
                                 if (null === data.guideCreditMoney) {
-                                    $('#creditLimitAvailable').html('-');
+                                    $('#creditLimitAvailableModal').html('-');
                                 } else if (null === data.guideCreditMoney.creditLimitAvailable){
-                                    $('#creditLimitAvailable').html('-');
+                                    $('#creditLimitAvailableModal').html('-');
                                 }else{
-                                    $('#creditLimitAvailable').html(data.guideCreditMoney.creditLimitAvailable);
+                                    $('#creditLimitAvailableModal').html(data.guideCreditMoney.creditLimitAvailable);
                                 }
 
 
@@ -322,7 +328,7 @@
         }
     }
 
-    function findCityList(){
+    function findCitySelection(){
         $.ajax({
             url: '/rest/citys/findCitylist',
             method: 'GET',
@@ -349,7 +355,7 @@
         $(select).append(selectOption);
     }
 
-    function findStorelist() {
+    function findStoreSelection() {
         var store = "";
         $.ajax({
             url: '/rest/stores/findStorelist',
@@ -388,27 +394,26 @@
 
         $('#cityCode').val("-1");
         initSelect("#storeCode", "选择门店");
-        findStorelist();
+        findStoreSelection();
         $('#storeCode').val("-1");
 
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryGuideVOInfo || "" == queryGuideVOInfo) {
             initDateGird('/rest/employees/guidePage/grid');
-            return false;
-        }
+        }else{
             initDateGird('/rest/employees/guidePage/infoGrid/' + queryGuideVOInfo);
+        }
     }
 
 
     function findStoreByCity(cityId) {
         initSelect("#storeCode", "选择门店");
         $("#queryCusInfo").val('');
+        findGuideCreditMoneyByCondition();
         if(cityId==-1){
-            findStorelist();
-            findGuideCreditMoneyByCondition();
+            findStoreSelection();
             return false;
         };
-        findGuideCreditMoneyByCondition();
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityId/' + cityId,
@@ -431,35 +436,34 @@
         });
     }
 
-     function clearTempCreditLimit(id){
+     function clearTempCreditLimit(id,tempCreditLimit,creditLimitAvailable){
          $('#delId').val(id);
+         $('#tempCreditLimit').val(tempCreditLimit);
+         $('#creditLimitAvailable').val(creditLimitAvailable);
          $('#delcfmModel').modal();
-    }
-
-    function change(){
-        var cronTime=$('#cronTime').val()
-        $.ajax({
-            url: '/rest/guideLine/change' ,
-            data:{'cronTime':cronTime,'jobName':'clearTempCredit'},
-            method: 'POST',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $notify.success('改变成功')
-            }
-        });
     }
 
     function clearSubmit(){
         var delId=$.trim($("#delId").val());
+        var tempCreditLimit= $('#tempCreditLimit').val();
+        var creditLimitAvailable= $('#creditLimitAvailable').val();
+        if(tempCreditLimit==0){
+           $notify.warning('临时额度已为0');
+           return false
+        }
+            var originalCreditLimitAvailable = parseFloat(creditLimitAvailable);
+            var originalTempCreditLimit = parseFloat(tempCreditLimit);
+            var tempCreditLimitAfterChange = parseFloat(0);
+        data = {
+            'empId': delId,
+            'originalCreditLimitAvailable': originalCreditLimitAvailable,
+            'originalTempCreditLimit': originalTempCreditLimit,
+            'tempCreditLimit': tempCreditLimitAfterChange,
+        }
         $.ajax({
-            url: '/rest/guideLine/clearTempCreditLimit/' + delId,
+            url: '/rest/guideLine/clearTempCreditLimit',
             method: 'POST',
+            data:data,
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -468,7 +472,9 @@
             },
             success: function (result) {
                 clearTimeout($global.timer);
-                $notify.success('临时额度清零成功')
+                $notify.success('临时额度清零成功');
+               $("#dataGrid").bootstrapTable('destroy');
+                initDateGird('/rest/employees/guidePage/grid');
             }
         });
     }

@@ -18,6 +18,5 @@ public class MyCommandLineRunner implements CommandLineRunner {
         }else{
             throw new RuntimeException("cron为空");
         }
-
     }
 }

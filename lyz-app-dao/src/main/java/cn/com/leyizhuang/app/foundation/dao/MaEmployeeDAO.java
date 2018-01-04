@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -38,7 +37,7 @@ public interface MaEmployeeDAO {
 
     List<GuideVO> findAllGuide();
 
-    GuideDetailVO queryGuideVOById(Long id);
+    GuideVO queryGuideVOById(Long id);
 
     List<GuideVO> queryGuideVOByCondition(@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
 

@@ -40,7 +40,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="id" type="text" class="form-control" id="id" readonly
+                                    <input name="empId" type="text" class="form-control" id="id" readonly
                                            value="${guideVO.id!''}">
                                 </div>
                             </div>
@@ -90,14 +90,16 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
-                                    固定额度
+                                    额度余额
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalCreditLimit" type="hidden" class="form-control" id="originalCreditLimit"
-                                           readonly   value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
-                                    <input name="creditLimit" type="text" class="form-control" id="creditLimit"
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
+                                    <input name="originalCreditLimitAvailable" type="hidden" class="form-control"
+                                           id="originalCreditLimitAvailable" readonly
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
+                                    <input name="creditLimitAvailable" type="text" class="form-control"
+                                           id="creditLimitAvailable" readonly
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -122,16 +124,14 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
-                                    额度余额
+                                    固定额度
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalCreditLimitAvailable" type="hidden" class="form-control"
-                                           id="originalCreditLimitAvailable" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
-                                    <input name="creditLimitAvailable" type="text" class="form-control"
-                                           id="creditLimitAvailable"
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
+                                    <input name="originalCreditLimit" type="hidden" class="form-control" id="originalCreditLimit"
+                                           readonly   value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
+                                    <input name="creditLimit" type="text" class="form-control" id="creditLimit"
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -238,24 +238,26 @@
             var $form = $(e.target);
             var origin = $form.serializeArray();
             var data = {};
-            $.each(origin, function () {
-                data[this.name] = this.value;
-            });
-            data['creditLimit'] =parseFloat( data.creditLimit.replace(/,/g, ''));
-            data['tempCreditLimit'] = parseFloat(data.tempCreditLimit.replace(/,/g, ''));
-            data['creditLimitAvailable'] = parseFloat(data.creditLimitAvailable.replace(/,/g, ''));
-
-            if(data['creditLimitAvailable']>( data['creditLimit']+data['tempCreditLimit'])){
-                $notify.danger('余额已超出可用额度');
-                $('#guideCredit_edit').bootstrapValidator('disableSubmitButtons', false);
-                return false;
+            var originalCreditLimitAvailable = parseFloat( $('#originalCreditLimitAvailable').val().replace(/,/g, ''));
+            var originalTempCreditLimit = parseFloat( $('#originalTempCreditLimit').val().replace(/,/g, ''));
+            var tempCreditLimitAfterChange = parseFloat( $('#tempCreditLimit').val().replace(/,/g, ''));
+            var originalCreditLimit = parseFloat( $('#originalCreditLimit').val().replace(/,/g, ''));
+            var creditLimit = parseFloat( $('#creditLimit').val().replace(/,/g, ''));
+            var empId = $('#id').val();
+            data = {
+                'empId': empId,
+                'originalCreditLimitAvailable': originalCreditLimitAvailable,
+                'originalTempCreditLimit': originalTempCreditLimit,
+                'originalCreditLimit': originalCreditLimit,
+                'creditLimit': creditLimit,
+                'tempCreditLimit': tempCreditLimitAfterChange
             }
+
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
                 var url = '/rest/guideLine';
                 if (null !== data.id && 0 != data.id) {
                     data._method = 'PUT';
-                    url += ('/' + data.id);
                 }
                 $.ajax({
                     url: url,
@@ -270,7 +272,7 @@
                     },
                     success: function (result) {
                         if (0 === result.code) {
-                            saveCreditChange();
+                          /*      saveCreditChange();*/
                             window.location.href = document.referrer;
                         } else {
                             clearTimeout($global.timer);
@@ -285,49 +287,5 @@
         });
     });
 
-
-    function saveCreditChange() {
-        var originalCreditLimitAvailable = parseFloat( $('#originalCreditLimitAvailable').val().replace(/,/g, ''));
-        var creditLimitAvailableAfterChange = parseFloat( $('#creditLimitAvailable').val().replace(/,/g, ''));
-        var originalTempCreditLimit = parseFloat( $('#originalTempCreditLimit').val().replace(/,/g, ''));
-        var tempCreditLimitAfterChange = parseFloat( $('#tempCreditLimit').val().replace(/,/g, ''));
-        var originalCreditLimit = parseFloat( $('#originalCreditLimit').val().replace(/,/g, ''));
-        var creditLimit = parseFloat( $('#creditLimit').val().replace(/,/g, ''));
-        var empId = $('#id').val();
-        data = {
-            'empId': empId,
-            'originalCreditLimitAvailable': originalCreditLimitAvailable,
-            'originalTempCreditLimit': originalTempCreditLimit,
-            'originalCreditLimit': originalCreditLimit,
-            'creditLimit': creditLimit,
-            'tempCreditLimit': tempCreditLimitAfterChange,
-            'creditLimitAvailable': creditLimitAvailableAfterChange
-        }
-        console.log(data);
-        $.ajax({
-            url: '/rest/guideLine/saveCreditChange',
-            method: 'POST',
-            data: data,
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    window.location.href = document.referrer;
-                    $('#guideCredit_edit').bootstrapValidator('disableSubmitButtons', false);
-                } else {
-                    clearTimeout($global.timer);
-                    $loading.close();
-                    $global.timer = null;
-                    $notify.danger(result.message);
-
-                }
-            }
-        });
-
-    }
 </script>
 </body>

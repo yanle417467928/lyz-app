@@ -3,9 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import com.github.pagehelper.PageInfo;
@@ -40,7 +38,7 @@ public interface MaEmployeeService {
 
     PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size);
 
-    GuideDetailVO queryGuideVOById(Long id);
+    GuideVO queryGuideVOById(Long id);
 
     PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId);
 

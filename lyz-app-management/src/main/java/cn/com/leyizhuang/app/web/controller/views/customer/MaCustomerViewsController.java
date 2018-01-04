@@ -17,11 +17,19 @@ public class MaCustomerViewsController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(MaCustomerViewsController.class);
 
+    /**
+     * 跳转顾客列表
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getCustomerList() {
         return "/views/customer/customer_page";
     }
 
+    /**
+     * 跳转顾客新增页面
+     * @return
+     */
     @RequestMapping(value = "/add")
     public String add() {
         logger.info("新增顾客");

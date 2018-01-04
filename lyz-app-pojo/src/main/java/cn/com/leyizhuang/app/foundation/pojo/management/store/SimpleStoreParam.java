@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 /**
  * Created with IntelliJ IDEA.
- * 后台简单城门店信息
+ * 后台简化门店信息
  *
  * @author liuh
  * Date: 2017/12/24.

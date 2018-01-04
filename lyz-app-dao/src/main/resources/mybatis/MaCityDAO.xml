@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCityDAO">
 
     <select id="findAllCityVO" resultType="CityVO">
-        select * from city order by city_id asc
+        select city_id,name,code,structure_title,enable from city order by city_id asc
     </select>
 
 

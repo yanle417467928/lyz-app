@@ -21,6 +21,10 @@ public class MaCityViewsController extends BaseController {
     @Autowired
     private CityService cityService;
 
+    /**
+     * 城市列表页面
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getCitysList() {
         return "/views/city/city_page";

@@ -16,7 +16,10 @@ public class MaDecorativeCompanyInfoViewsController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(MaDecorativeCompanyInfoViewsController.class);
 
-
+    /**
+     * 跳转装饰公司列表
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getDecorativeInfoList() {
         return "/views/decorativeCompany/decorativeCompanyInfo_page";

@@ -108,7 +108,7 @@
                 }
             },
             {
-                field: 'operatorId.name',
+                field: 'operatorName',
                 title: '变更人',
                 align: 'center'
             }
@@ -166,7 +166,7 @@
                 }
             },
             {
-                field: 'operatorId.name',
+                field: 'operatorName',
                 title: '变更人',
                 align: 'center'
             }
@@ -223,7 +223,7 @@
                 }
             },
             {
-                field: 'operatorId.name',
+                field: 'operatorName',
                 title: '变更人',
                 align: 'center'
             }

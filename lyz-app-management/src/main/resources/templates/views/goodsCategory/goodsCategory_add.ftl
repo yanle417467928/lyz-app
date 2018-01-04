@@ -2,8 +2,10 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
@@ -65,7 +67,7 @@
                             },
                             remote: {
                                 type: 'POST',
-                                url:  '/rest/goodsCategorys/isExistCategoryName',
+                                url: '/rest/goodsCategorys/isExistCategoryName',
                                 message: '已存在分类名称',
                                 delay: 500,
                                 data: function () {
@@ -75,19 +77,19 @@
                                 }
                             }
                         }
-                    },sortId: {
+                    }, sortId: {
                         message: '排序号校验失败',
                         validators: {
                             notEmpty: {
                                 message: '排序号不能为空'
                             },
                             regexp: {
-                                regexp:  /^[1-9]\d*$/,
+                                regexp: /^[1-9]\d*$/,
                                 message: '排序号只能输入数字'
                             },
                             remote: {
                                 type: 'POST',
-                                url:  '/rest/goodsCategorys/isExistSortId',
+                                url: '/rest/goodsCategorys/isExistSortId',
                                 message: '该排序号已被使用',
                                 delay: 500,
                                 data: function () {
@@ -101,10 +103,10 @@
                 }
             }).on('success.form.bv', function (e) {
                 e.preventDefault();
-                var $form = $(e.target);
-                var origin = $form.serializeArray();
-                var data = {};
-                var formData = new FormData($( "#goodsCategory_add" )[0]);
+                /*                var $form = $(e.target);
+                                var origin = $form.serializeArray();
+                                var data = {};*/
+                var formData = new FormData($("#goodsCategory_add")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     var url = '/rest/goodsCategorys';
@@ -178,7 +180,7 @@
                                 <label for="title">
                                     父分类
                                 </label>
-                                <select class="form-control select" name="paCategoryCode" id="paCategoryCode" >
+                                <select class="form-control select" name="paCategoryCode" id="paCategoryCode">
                                     <option value="水">水</option>
                                     <option value="电">电</option>
                                     <option value="木">木</option>

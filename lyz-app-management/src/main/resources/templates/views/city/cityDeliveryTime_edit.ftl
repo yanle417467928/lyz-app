@@ -1,8 +1,10 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -39,9 +41,9 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="id" type="hidden" class="form-control" id="id" readonly
-                                           value="${cityDeliveryTimeVO.id}">
+                                           value="${cityDeliveryTimeVO.id!''}">
                                     <input name="cityId" type="text" class="form-control" id="cityId" readonly
-                                           value="${cityDeliveryTimeVO.cityId}">
+                                           value="${cityDeliveryTimeVO.cityId!''}">
                                 </div>
                             </div>
                         </div>
@@ -53,25 +55,25 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cityName" type="text" class="form-control" id="cityName" readonly
-                                           value="${cityDeliveryTimeVO.cityName}">
+                                           value="${cityDeliveryTimeVO.cityName!''}">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                     <div class="row">
-                       <div class="col-xs-12 col-md-6">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
                                     配送开始时间
                                 </label>
                                 <div class="input-group">
-                                <span class="input-group-addon">从</span>
+                                    <span class="input-group-addon">从</span>
                                     <input name="startTime" type="text" class="form-control" id="startTime"
-                                    value="${cityDeliveryTimeVO.startTime}">
+                                           value="${cityDeliveryTimeVO.startTime!''}">
                                 </div>
                             </div>
-                       </div>
+                        </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label>
@@ -80,27 +82,27 @@
                                 <div class="input-group">
                                     <span class="input-group-addon">至</span>
                                     <input name="endTime" type="text" class="form-control" id="endTime"
-                                           value="${cityDeliveryTimeVO.endTime}">
+                                           value="${cityDeliveryTimeVO.endTime!''}">
                                 </div>
                             </div>
                         </div>
                     </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-8"></div>
-            <div class="col-xs-12 col-md-2">
-                <button type="submit" class="btn btn-primary footer-btn">
-                    <i class="fa fa-check"></i> 保存
-                </button>
-            </div>
-            <div class="col-xs-12 col-md-2">
-                <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                    <i class="fa fa-close"></i> 取消
-                </button>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-8"></div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="submit" class="btn btn-primary footer-btn">
+                                <i class="fa fa-check"></i> 保存
+                            </button>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                <i class="fa fa-close"></i> 取消
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        </form>
-    </div>
-    </div>
     </div>
 </section>
 <script>
@@ -143,7 +145,7 @@
                             message: '配送开始时间不能为空'
                         },
                         regexp: {
-                            regexp:  /^([0-1]{1}\d|2[0-3]):([0-5]\d)$/,
+                            regexp: /^([0-1]{1}\d|2[0-3]):([0-5]\d)$/,
                             message: '时间格式为 xx:xx'
                         }
                     }
@@ -155,8 +157,8 @@
                             message: '配送结束时间不能为空'
                         },
                         regexp: {
-                            regexp:  /^([0-1]{1}\d|2[0-3]):([0-5]\d)$/,
-                            message:'时间格式为 xx:xx'
+                            regexp: /^([0-1]{1}\d|2[0-3]):([0-5]\d)$/,
+                            message: '时间格式为 xx:xx'
                         }
                     }
                 }
@@ -165,7 +167,7 @@
             e.preventDefault();
             var startTime = $('#startTime').val();
             var endTime = $('#endTime').val();
-            if(endTime<=startTime){
+            if (endTime <= startTime) {
                 $notify.danger('结束时间小于或等于开始时间');
                 $('#cityDeliveryTime_edit').bootstrapValidator('disableSubmitButtons', false);
                 return false;

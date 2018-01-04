@@ -5,7 +5,7 @@
 
     <select id="findAllGoodsCategory"  resultType="GoodsCategoryDO">
         SELECT
-           *
+           cid,category_name,sort_id,p_category_code
         FROM
         gds_goods_category
         ORDER BY
@@ -27,7 +27,7 @@
 
     <select id="findGoodsCategoryByPid"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
         select
-        *
+        cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
         where
         g.p_cid=#{pid}
@@ -38,7 +38,7 @@
 
     <select id="findGoodsCategoryByPcode"  parameterType="java.lang.String" resultType="GoodsCategoryDO">
         select
-        *
+         cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
         where
         g.category_name LIKE CONCAT('%',#{queryCusInfo},'%')
@@ -90,7 +90,7 @@
 
     <select id="queryGoodsCategoryVOById"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
         select
-        *
+         cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
         where
         g.cid = #{goodsCategoryId}
@@ -126,7 +126,6 @@
         FROM gds_goods_category
         where p_cid is not null
     </select>
-
 
 
     <delete id="delete" parameterType="java.lang.Long">

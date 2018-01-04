@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.web.controller.views.employee;
 
 import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -31,6 +30,9 @@ public class MaGuideViewsController extends BaseController {
     private MaClearTempCreditService maClearTempCreditService;
 
     @RequestMapping(value = "/list")
+    /**
+     * 跳转导购列表页面
+     */
     public String getGuideLineList() {
         return "/views/employee/guide_page";
     }
@@ -44,7 +46,7 @@ public class MaGuideViewsController extends BaseController {
     @GetMapping(value = "/edit/{id}")
     public String creditEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
-            GuideDetailVO guideVO = this.maEmployeeService.queryGuideVOById(id);
+            GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
             if (null == guideVO) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
                 error404();
@@ -73,12 +75,16 @@ public class MaGuideViewsController extends BaseController {
         return "/views/employee/guideCreditMoneyChanges_page";
     }
 
-
+    /**
+     * 跳转导购清零额度设置页面
+     * @param map
+     * @return
+     */
      @RequestMapping(value = "/clearTimeEdit")
      public String clearTime(ModelMap map) {
         String cron = maClearTempCreditService.getCron();
         map.addAttribute("cron",cron);
-        return "/views/employee/guide_clearTimeEdit";
+        return "/views/employee/guideClearTime_edit";
     }
 }
 

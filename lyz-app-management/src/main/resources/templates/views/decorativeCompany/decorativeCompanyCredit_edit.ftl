@@ -1,8 +1,10 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <style type="text/css">
         .box-default {
@@ -35,9 +37,9 @@
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
         </ul>
 
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab_1-1">
-                    <form id="decorativeCompanyCreditFrom" class="bv-form tab-content">
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1-1">
+                <form id="decorativeCompanyCreditFrom" class="bv-form tab-content">
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
@@ -84,10 +86,10 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cid" type="hidden" class="form-control" id="cid"
-                                           value="${(decorativeCompanyVO.credit.cid)!''}">
+                                           value=" <#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid!''}</#if></#if>">
                                     <input name="credit" type="text" class="form-control" id="credit"
                                            placeholder="信用金余额"
-                                           value="${(decorativeCompanyVO.credit.credit)!''}">
+                                           value=" <#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.credit!''}</#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -100,74 +102,73 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sid" type="hidden" class="form-control" id="sid"
-                                           value="${(decorativeCompanyVO.sponsorship.sid)!''}">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid!''}</#if></#if>">
                                     <input name="sponsorship" type="text" class="form-control" id="sponsorship"
                                            placeholder="赞助金余额"
-                                           value="${(decorativeCompanyVO.sponsorship.sponsorship)!''}">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorship!''}</#if></#if>">
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-md-2">
-                    <button type="submit" class="btn btn-primary footer-btn">
-                        <i class="fa fa-check"></i> 保存
-                    </button>
-                </div>
-                <div class="col-xs-12 col-md-2">
-                    <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                        <i class="fa fa-close"></i> 取消
-                    </button>
-                </div>
-            </div>
-            <!-- =================================下面是弹框======================================= -->
-            <div class="modal modal-primary fade" id="modal-primary">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">正在添加信息</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p id="primaryTitle">正在执行添加操作，您可以点击确认继续，点击关闭则退出。</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="primaryCloseBtn" class="btn btn-outline pull-left"
-                                    data-dismiss="modal">关闭
+                    <div class="row">
+                        <div class="col-xs-12 col-md-8"></div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="submit" class="btn btn-primary footer-btn">
+                                <i class="fa fa-check"></i> 保存
                             </button>
-                            <button type="button" id="modalAddBtn" class="btn btn-outline">确认添加</button>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                <i class="fa fa-close"></i> 取消
+                            </button>
                         </div>
                     </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-            <div class="modal modal-danger fade" id="modal-danger">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">正在删除信息</h4>
+                    <!-- =================================下面是弹框======================================= -->
+                    <div class="modal modal-primary fade" id="modal-primary">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">正在添加信息</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="primaryTitle">正在执行添加操作，您可以点击确认继续，点击关闭则退出。</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="primaryCloseBtn" class="btn btn-outline pull-left"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button type="button" id="modalAddBtn" class="btn btn-outline">确认添加</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
                         </div>
-                        <div class="modal-body">
-                            <p id="dangerTitle">是否将此职位信息从数据中移除，点击确认继续，点击关闭取消操作。</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline pull-left" id="modalCloseBtn"
-                                    data-dismiss="modal">关闭
-                            </button>
-                            <button type="button" id="modalDelBtn" class="btn btn-outline">确定，我要删除</button>
-                        </div>
+                        <!-- /.modal-dialog -->
                     </div>
-                </div>
-            </form>
-         </div>
-    </div>
+                    <!-- /.modal -->
+                    <div class="modal modal-danger fade" id="modal-danger">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">正在删除信息</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="dangerTitle">是否将此职位信息从数据中移除，点击确认继续，点击关闭取消操作。</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline pull-left" id="modalCloseBtn"
+                                            data-dismiss="modal">关闭
+                                    </button>
+                                    <button type="button" id="modalDelBtn" class="btn btn-outline">确定，我要删除</button>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div>
+        </div>
 </section>
 <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -212,7 +213,7 @@
                     validators: {
                         notEmpty: {
                             message: '信用金不能为空'
-                        },  regexp: {
+                        }, regexp: {
                             regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
                             message: '信用金只能为正实数(两位小数)'
                         }
@@ -222,7 +223,7 @@
                     validators: {
                         notEmpty: {
                             message: '赞助金不能为空'
-                        },  regexp: {
+                        }, regexp: {
                             regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
                             message: '赞助金只能为正实数(两位小数)'
                         }
@@ -237,8 +238,8 @@
             $.each(origin, function () {
                 data[this.name] = this.value;
             });
-            data['credit'] = data.credit.replace(/,/g,'');
-            data['sponsorship']= data.sponsorship.replace(/,/g,'');
+            data['credit'] = data.credit.replace(/,/g, '');
+            data['sponsorship'] = data.sponsorship.replace(/,/g, '');
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
 

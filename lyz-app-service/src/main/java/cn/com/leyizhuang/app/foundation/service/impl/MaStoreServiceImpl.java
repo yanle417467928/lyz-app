@@ -38,6 +38,20 @@ public class MaStoreServiceImpl implements MaStoreService {
         return allStoreList;
     }
 
+
+    @Override
+    public List<SimpleStoreParam> findAllStorelist() {
+        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findAllStorelist();
+        return allStoreList;
+    }
+
+
+    @Override
+    public List<SimpleStoreParam> findAllStoresListByCityId(Long cityId) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findAllStoresListByCityId(cityId);
+        return storeList;
+    }
+
     @Override
     public List<SimpleStoreParam> findStoresListByCityId(Long cityId) {
         List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId);

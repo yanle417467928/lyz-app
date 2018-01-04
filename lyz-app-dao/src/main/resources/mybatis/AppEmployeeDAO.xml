@@ -285,12 +285,25 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <insert id="addEmpCreditMoneyChangeLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog">
-        INSERT INTO emp_credit_money_change_log (emp_id, create_time, temp_credit_limit_change_amount, temp_credit_limit_after_change, credit_limit_available_change_amount, credit_limit_available_after_change,
+        INSERT INTO emp_credit_money_change_log (emp_id, create_time, temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,
                                                  reference_number, change_type, change_type_desc, operator_id, operator_type, operator_ip)
-        VALUES (#{empId}, #{createTime}, #{tempCreditLimitChangeAmount}, #{tempCreditLimitAfterChange},
-                          #{creditLimitAvailableChangeAmount}, #{creditLimitAvailableAfterChange},
+        VALUES (#{empId}, #{createTime}, #{tempCreditChangeId}, #{availableCreditChangId},#{fixedCreditChangeId},
                           #{referenceNumber}, #{changeType}, #{changeTypeDesc}, #{operatorId}, #{operatorType},
                 #{operatorIp})
+    </insert>
+
+    <insert id="saveCreditLimitAvailableChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpAvailableCreditMoneyChangeLog">
+        insert into emp_available_credit_change_log
+        (credit_limit_available_change_amount,credit_limit_available_after_change)
+        values
+        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange})
+    </insert>
+
+    <insert id="saveTempCreditLimitChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpTempCreditMoneyChangeLog" >
+        insert into emp_temp_credit_change_log
+        (temp_credit_limit_change_amount,temp_credit_limit_after_change )
+        values
+        (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange})
     </insert>
 
 </mapper>

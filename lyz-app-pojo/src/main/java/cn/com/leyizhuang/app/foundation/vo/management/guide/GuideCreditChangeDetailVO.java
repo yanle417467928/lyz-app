@@ -24,24 +24,26 @@ import java.util.List;
 public class GuideCreditChangeDetailVO {
 
     private Long id;
-    //''导购ID''
+    //'导购ID'
     private Long empId;
-    //''创建时间''
+    //'创建时间'
     private Date  createTime;
-    //'临时额度改变
+    //'临时额度金额改变id
     private GuideTempCreditChange tempCreditChangeId;
-    //''固定额度改变''
+    //'固定额度金额改变id'
     private GuideFixedCreditChange fixedCreditChangeId;
-    //''可用变更'
+    //'可用额度金额改变id'
     private GuideAvailableCreditChange availableCreditChangId;
     //'相关单号'
     private String referenceNumber;
-    //''变更类型'
+    //'变更类型'
     private String changeType;
     //''变更类型描述''
     private String changeTypeDesc;
-    //''操作人id''
-    private SimpleEmployeeParam operatorId;
+    //'操作人id'
+    private Long operatorId;
+    //'操作人id'
+    private String operatorName;
     //操作人IP
     private String operatorIp;
 
@@ -58,6 +60,7 @@ public class GuideCreditChangeDetailVO {
             guideCreditChangeDetailVO.setOperatorId(guideCreditChangeDetailDO.getOperatorId());
             guideCreditChangeDetailVO.setReferenceNumber(guideCreditChangeDetailDO.getReferenceNumber());
             guideCreditChangeDetailVO.setEmpId(guideCreditChangeDetailDO.getEmpId());
+            guideCreditChangeDetailVO.setOperatorName(guideCreditChangeDetailDO.getOperatorName());
             return guideCreditChangeDetailVO;
         } else {
             return null;

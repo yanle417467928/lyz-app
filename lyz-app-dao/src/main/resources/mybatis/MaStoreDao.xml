@@ -124,6 +124,16 @@
          s.store_type!="ZS"
     </select>
 
+    <select id="findAllStoresListByCityId" parameterType="java.lang.Long" resultType="SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        LEFT JOIN city c on s.city_code = c.code
+        WHERE c.city_id = #{cityId}
+    </select>
+
     <select id="findStoresList" resultType="SimpleStoreParam">
         SELECT
         s.store_id,
@@ -132,6 +142,15 @@
         st_store s
         WHERE
          s.store_type!="ZS"
+    </select>
+
+
+    <select id="findAllStorelist" resultType="SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
     </select>
 
 

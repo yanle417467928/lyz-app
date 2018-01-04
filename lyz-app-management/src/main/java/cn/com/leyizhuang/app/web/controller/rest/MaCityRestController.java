@@ -42,6 +42,7 @@ public class MaCityRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/grid")
     public GridDataVO<CityVO> restCitysPageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restCitysPageGird,城市信息分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CityVO> cityPage = this.maCityService.queryPageVO(page, size);
@@ -60,7 +61,8 @@ public class MaCityRestController extends BaseRestController {
      * @date 2017/11/3
      */
     @GetMapping(value = "/{cityId}")
-    public ResultDTO<CityDetailVO> restCityIdGet(@PathVariable(value = "cityId") Long cityId) {
+    public ResultDTO<CityDetailVO> findityDetailVOById(@PathVariable(value = "cityId") Long cityId) {
+        logger.info("findityDetailVOById,查询城市详细信息, 入参 cityId:{}", cityId);
         CityDetailVO cityVO = this.maCityService.queryCityVOById(cityId);
         if (null == cityVO) {
             logger.warn("查找城市失败：Role(id = {}) == null", cityId);
@@ -82,6 +84,7 @@ public class MaCityRestController extends BaseRestController {
      * @date 2017/11/3
      */
     @GetMapping(value = "/findCitylist")
+
     public List<SimpleCityParam> findCitysList() {
         List<SimpleCityParam> citysList = this.maCityService.findCitysList();
         return citysList;

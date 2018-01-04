@@ -2,8 +2,10 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
@@ -65,7 +67,7 @@
                             },
                             remote: {
                                 type: 'POST',
-                                url:  '/rest/goodsBrand/isExistBrandName',
+                                url: '/rest/goodsBrand/isExistBrandName',
                                 message: '已存在品牌名称',
                                 delay: 500,
                                 data: function () {
@@ -75,7 +77,7 @@
                                 }
                             }
                         }
-                    } ,
+                    },
                     brandCode: {
                         message: '品牌编码校验失败',
                         validators: {
@@ -92,7 +94,7 @@
                             },
                             remote: {
                                 type: 'POST',
-                                url:  '/rest/goodsBrand/isExistSort',
+                                url: '/rest/goodsBrand/isExistSort',
                                 message: '已存在排序号',
                                 delay: 500,
                                 data: function () {
@@ -106,10 +108,10 @@
                 }
             }).on('success.form.bv', function (e) {
                 e.preventDefault();
-                var $form = $(e.target);
-                var origin = $form.serializeArray();
-                var data = {};
-                var formData = new FormData($( "#goodsBrand_add" )[0]);
+                /*                var $form = $(e.target);
+                                var origin = $form.serializeArray();
+                                var data = {};*/
+                var formData = new FormData($("#goodsBrand_add")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     var url = '/rest/goodsBrand';

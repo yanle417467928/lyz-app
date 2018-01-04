@@ -28,7 +28,12 @@ public class MaStoreViewsController extends BaseController {
         return "/views/store/store_page";
     }
 
-
+    /**
+     * 跳转门店编辑页面
+     * @param model
+     * @param storeId
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String storeEdit(Model model, @PathVariable(value = "id") Long storeId) {
         if (!storeId.equals(0L)) {

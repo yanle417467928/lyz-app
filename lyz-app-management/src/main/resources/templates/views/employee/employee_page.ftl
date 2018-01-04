@@ -33,11 +33,11 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline ">
                     <select name="city" id="cityCode" class="form-control select" style="margin-left:30px width:auto;"
-                            onchange="findStoreByCity(this.value)">
+                            onchange="findEmpByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px" style="margin-left:10px width:auto;"
-                      onchange="findIdentityTypeByStore()"  data-live-search="true" >
+                      onchange="findEmpByStore()"  data-live-search="true" >
                         <option value="-1">选择门店</option>
                     </select>
                     <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
@@ -139,9 +139,9 @@
 <script>
 
     $(function () {
-        findCityList();
-        findStorelist();
-        findTypeList();
+        findCitySelection();
+        findStoreSelection();
+        findTypeSelection();
         initDateGird('/rest/employees/page/grid');
     });
 
@@ -358,7 +358,7 @@
         }
     }
 
-    function findCityList(){
+    function findCitySelection(){
         $.ajax({
             url: '/rest/citys/findCitylist',
             method: 'GET',
@@ -385,7 +385,7 @@
         $(select).append(selectOption);
     }
 
-    function findTypeList() {
+    function findTypeSelection() {
         var emptype;
         $.ajax({
             url: '/rest/employees/findEmpTypeList',
@@ -406,7 +406,7 @@
         });
     }
 
-    function findStorelist() {
+    function findStoreSelection() {
         var store = "";
         $.ajax({
             url: '/rest/stores/findStorelist',
@@ -447,29 +447,28 @@
         $('#cityCode').val("-1");
         $('#enabled').val("-1");
         initSelect("#storeCode", "选择门店");
-        findStorelist();
+        findStoreSelection();
         initSelect("#identityType", "选择类型");
-        findTypeList();
+        findTypeSelection();
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryEmpInfo || "" == queryEmpInfo) {
             initDateGird('/rest/employees/page/grid');
-            return false;
-        }
+        }else {
             initDateGird('/rest/employees/page/infoGrid/' + queryEmpInfo);
+        }
     }
 
 
-    function findStoreByCity(cityId) {
+    function findEmpByCity(cityId) {
         initSelect("#storeCode", "选择门店");
         initSelect("#identityType", "选择类型");
+        findEmpByCondition();
         $("#queryCusInfo").val('');
         if(cityId==-1){
-            findStorelist();
-            findTypeList();
-            findEmpByCondition();
+            findStoreSelection();
+            findTypeSelection();
             return false;
         };
-        findEmpByCondition();
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityId/' + cityId,
@@ -521,16 +520,15 @@
         });
     }
 
-    function findIdentityTypeByStore(){
+    function findEmpByStore(){
         $("#queryEmpInfo").val('');
         var storeId = $("#storeCode").val();
         initSelect("#identityType", "选择类型");
+        findEmpByCondition();
         if(storeId==-1){
-            findTypeList();
-            findEmpByCondition();
+            findTypeSelection();
             return false;
         };
-        findEmpByCondition();
         var emptype;
         $.ajax({
             url: '/rest/employees/findEmpTypeByStoreId/'+storeId,

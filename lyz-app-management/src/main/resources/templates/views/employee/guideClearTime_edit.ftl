@@ -100,7 +100,7 @@
                     message: 'cron校验失败',
                     validators: {
                         notEmpty: {
-                            message: 'cron不能为空'
+                            message:'cron不能为空'
                         }
                     }
                 }
@@ -108,13 +108,15 @@
         }).on('success.form.bv', function (e) {
             e.preventDefault();
             var cronTime=$('#cron').val();
+            data={'cronTime':cronTime,'jobName':'clearTempCredit'};
+            data._method = 'PUT';
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
                 }
                 $.ajax({
                     url: '/rest/guideLine/change' ,
                     method: 'POST',
-                    data:{'cronTime':cronTime,'jobName':'clearTempCredit'},
+                    data:data ,
                     error: function () {
                         clearTimeout($global.timer);
                         $loading.close();
