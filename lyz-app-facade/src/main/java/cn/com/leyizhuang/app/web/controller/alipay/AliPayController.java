@@ -6,7 +6,9 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -55,7 +57,8 @@ public class AliPayController {
     @Resource
     private CommonService commonService;
 
-
+    @Resource
+    private ICallWms iCallWms;
     /**
      * 支付宝充值生成充值单
      *
@@ -314,6 +317,11 @@ public class AliPayController {
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
+                            //发送订单到WMS
+                            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(out_trade_no);
+                            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                                iCallWms.sendToWmsRequisitionOrderAndGoods(out_trade_no);
+                            }
                             commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no, trade_no, trade_status, OnlinePayType.ALIPAY);
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
