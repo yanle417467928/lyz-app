@@ -18,11 +18,7 @@ public class MqMessageTest {
     private SinkSender sinkSender;
 
     @RequestMapping(value = "/send/message/order")
-    public void testSendOrder() throws Exception {
-        OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
-        orderBaseInfo.setOrderNumber("CD_XN20171227085432234567");
-        orderBaseInfo.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
-        orderBaseInfo.setCreatorName("闫乐");
-        sinkSender.sendOrder(orderBaseInfo);
+    public void testSendOrder(String mainOrderNumber) throws Exception {
+        sinkSender.sendOrder(mainOrderNumber);
     }
 }

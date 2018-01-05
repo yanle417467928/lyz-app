@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.queue;
+package cn.com.leyizhuang.app.foundation.pojo.remote.queue;
 
 /**
  * 消息队列消息类型

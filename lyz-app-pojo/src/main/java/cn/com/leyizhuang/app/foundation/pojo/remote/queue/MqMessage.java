@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.queue;
+package cn.com.leyizhuang.app.foundation.pojo.remote.queue;
 
 import lombok.*;
 

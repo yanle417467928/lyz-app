@@ -34,6 +34,10 @@ public class OrderBaseInfo implements Serializable {
     private String cityName;
 
     /**
+     * 分公司id
+     */
+    private Long sobId;
+    /**
      * 订单号
      */
     private String orderNumber;

@@ -95,5 +95,14 @@ public class AppStore {
      * 门店组织全编码
      */
     private String storeStructureCode;
+    /**
+     * 门店组织id
+     */
+    private String storeOrgId;
+    /**
+     * 分公司id
+     */
+    private Long sobId;
+
 
 }

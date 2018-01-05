@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO">
+
+    <select id="isOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+                      FROM order_base_inf
+                      WHERE main_order_number = #{orderNumber})
+    </select>
+
+    <insert id="saveOrderBaseInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf">
+        INSERT INTO order_base_inf (create_time, send_flag, error_msg, send_time, main_order_number, order_number, sob_id, order_date,
+                                    product_type, order_type_id, user_id, sales_consult_id, coupon_flag, invoice_flag, credit_flag,
+                                    store_org_id, store_code, delivery_type_title, order_amt, rec_amt, lebi_discount,
+                                    store_subvention_discount, promotion_discount, member_discount, cash_coupon_discount,
+                                    product_coupon_discount) VALUES (
+            #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber}, #{orderNumber}, #{sobId},
+                           #{orderDate}, #{productType},
+                           #{orderTypeId}, #{userId}, #{salesConsultId}, #{couponFlag}, #{invoiceFlag}, #{creditFlag},
+                                                      #{storeOrgId}, #{storeCode}, #{deliveryTypeTitle},
+                                                      #{orderAmt}, #{recAmt}, #{lebiDiscount},
+            #{storeSubventionDiscount}, #{promotionDiscount}, #{memberDiscount}, #{cashCouponDiscount},
+            #{productCouponDiscount}
+        )
+    </insert>
+</mapper>

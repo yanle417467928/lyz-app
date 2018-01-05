@@ -299,6 +299,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         //设置城市信息
         tempOrder.setCityId(userStore.getCityId());
         tempOrder.setCityName(userStore.getCity());
+        tempOrder.setSobId(userStore.getSobId());
 
         switch (identityType) {
             //导购代下单

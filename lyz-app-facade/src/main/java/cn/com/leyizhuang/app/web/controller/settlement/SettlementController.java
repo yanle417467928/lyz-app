@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStoreResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -89,7 +90,7 @@ public class SettlementController {
         try {
             //商品id数组转化成list
             List<Long> goodsIdList = Arrays.asList(goodsIds);
-            String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("|");
+            String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("\\|");
             List<String> forbiddenSelfTakeCompanyList = Arrays.asList(forbiddenSelfTakeCompany);
             List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIdList);
             SelfTakeStoreResponse response = new SelfTakeStoreResponse();
@@ -190,10 +191,10 @@ public class SettlementController {
         }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsIdQtyParam.class);
-            List<GoodsIdQtyParam> simpleInfos = objectMapper.readValue(goodsList, javaType1);
+            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+            List<GoodsSimpleInfo> simpleInfos = objectMapper.readValue(goodsList, javaType1);
             Map<Long, Integer> goodsQuantity = new HashMap<>();
-            for (GoodsIdQtyParam info : simpleInfos) {
+            for (GoodsSimpleInfo info : simpleInfos) {
                 if (!goodsQuantity.containsKey(info.getId())) {
                     goodsQuantity.put(info.getId(), info.getQty());
                 } else {
