@@ -7,8 +7,10 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -57,6 +59,11 @@ public class WeChatPayController {
     @Resource
     private CommonService commonService;
 
+    @Resource
+    private AppStoreService appStoreService;
+
+    @Resource
+    private ICallWms iCallWms;
     /**
      * 微信支付订单
      *
@@ -376,9 +383,21 @@ public class WeChatPayController {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
-
-                                appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
-
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "预存款充值");
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
+                                            paymentDataDO);
+                                    if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {
+                                        this.appCustomerServiceImpl.preDepositRecharge(paymentDataDO, CustomerPreDepositChangeType.WECHAT_RECHARGE);
+                                    } else if (paymentDataDO.getPaymentType().equals(PaymentDataType.ST_PRE_DEPOSIT)
+                                            || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
+                                        this.appStoreService.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.WECHAT_RECHARGE);
+                                    }
+                                }
                             } else if (outTradeNo.contains("_HK")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "欠款还款");
                                 if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
@@ -400,6 +419,12 @@ public class WeChatPayController {
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
+
+                                    //发送订单到WMS
+                                    OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(outTradeNo);
+                                    if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                                        iCallWms.sendToWmsRequisitionOrderAndGoods(outTradeNo);
+                                    }
                                     commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
                                 }
                             }

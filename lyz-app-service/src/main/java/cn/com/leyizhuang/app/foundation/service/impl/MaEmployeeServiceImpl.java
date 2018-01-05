@@ -5,9 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import com.github.pagehelper.PageHelper;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 @Service
-@Transactional
 public class MaEmployeeServiceImpl implements MaEmployeeService{
 
     @Autowired
@@ -153,8 +150,8 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
 
 
     @Override
-    public GuideDetailVO queryGuideVOById(Long id){
-        GuideDetailVO guideVO = this.maEmployeeDAO.queryGuideVOById(id);
+    public GuideVO queryGuideVOById(Long id){
+        GuideVO guideVO = this.maEmployeeDAO.queryGuideVOById(id);
         return guideVO;
     }
 

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam;
@@ -138,7 +139,7 @@ public class MaGoodsCategoryRestController extends BaseRestController {
      */
     @PostMapping(value = "/isExistCategoryName")
     public ValidatorResultDTO isExistCategoryName(@RequestParam(value="categoryName") String categoryName){
-        if(null==categoryName||"".equals(categoryName)){
+        if(StringUtils.isBlank(categoryName)){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }
@@ -155,7 +156,7 @@ public class MaGoodsCategoryRestController extends BaseRestController {
      */
     @PostMapping(value = "/editIsExistCategoryName")
     public ValidatorResultDTO editIsExistCategoryName(@RequestParam(value="categoryName") String categoryName,@RequestParam(value="id") Long id){
-        if(null==categoryName||null==id||"".equals(categoryName)){
+        if(null==id||StringUtils.isBlank(categoryName)){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }

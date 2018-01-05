@@ -23,16 +23,30 @@ public class MaGoodsCategoryViewsController extends BaseController {
     @Autowired
     private MaGoodsCategoryService maGoodsCategoryService;
 
+    /**
+     * 跳转商品分类列表
+     * @return
+     */
     @GetMapping(value = "/list")
     public String getGoodsCategoryList() {
         return "/views/goodsCategory/goodsCategory_page";
     }
 
+    /**
+     * 跳转商品分类增加页面
+     * @return
+     */
     @GetMapping(value = "/add")
     public String addGoodsCategory() {
         return "/views/goodsCategory/goodsCategory_add";
     }
 
+    /**
+     * 跳转商品编辑页面
+     * @param model
+     * @param goodsCategoryId
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String goodsCategoryEdit(Model model, @PathVariable(value = "id") Long goodsCategoryId) {
         if (!goodsCategoryId.equals(0L)) {

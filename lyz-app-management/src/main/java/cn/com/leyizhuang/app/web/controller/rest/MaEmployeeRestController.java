@@ -5,7 +5,6 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -68,7 +67,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
 
     /**
-     * 查询该门店下的导购
+     * 查询该门店下的导购(下拉框)
      *
      * @param storeId
      * @return
@@ -80,7 +79,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
 
     /**
-     * 查询该门店下的员工类型
+     * 查询该门店下的员工类型(下拉框)
      *
      * @param storeId
      * @param
@@ -93,7 +92,7 @@ public class MaEmployeeRestController extends BaseRestController {
     }
 
     /**
-     * 查询该城市下的员工类型
+     * 查询该城市下的员工类型(下拉框)
      *
      * @param
      * @param cityId
@@ -107,7 +106,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
 
     /**
-     * 查询所有员工类型
+     * 查询所有员工类型(下拉框)
      *
      * @param
      * @return
@@ -184,8 +183,8 @@ public class MaEmployeeRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/guide/{id}")
-    public ResultDTO<GuideDetailVO> queryGuideVOById(@PathVariable(value = "id") Long id) {
-        GuideDetailVO guideVO = this.maEmployeeService.queryGuideVOById(id);
+    public ResultDTO<GuideVO> queryGuideVOById(@PathVariable(value = "id") Long id) {
+        GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
         if (null == guideVO) {
             logger.warn("查找员工额度失败：Role(id = {}) == null", id);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,

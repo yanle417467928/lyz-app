@@ -39,7 +39,7 @@
                     </button>
 
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findStoreByCity(this.value)">
+                            onchange="findCusByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
 
@@ -501,15 +501,14 @@
     };
 
 
-    function findStoreByCity(cityId) {
+    function findCusByCity(cityId) {
         initSelect("#storeCode", "选择门店");
+        findCusByCityId(cityId);
+        $("#queryCusInfo").val('');
         if(cityId==-1){
           findStorelist();
-          findCusByCityId(cityId);
           return false;
         };
-        $("#queryCusInfo").val('');
-
       /*  initSelect("#guideCode", "选择导购")*/
         var store;
         $.ajax({
@@ -527,7 +526,6 @@
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 })
                 $("#storeCode").append(store);
-                findCusByCityId(cityId);
                 $('#storeCode').selectpicker('refresh');
                 $('#storeCode').selectpicker('render');
             }
@@ -550,14 +548,12 @@
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
         $("#dataGrid").bootstrapTable('destroy');
-        if (storeId == -1) {
-            if(cityId==-1){
+        if (storeId == -1&&cityId==-1) {
                 initDateGird('/rest/customers/page/grid');
-            }else{
-                initDateGird('/rest/customers/page/cityGrid/' + cityId);
-            }
-        } else {
-            initDateGird('/rest/customers/page/storeGrid/' + storeId);
+            }else if(storeId != -1){
+                initDateGird('/rest/customers/page/storeGrid/' + storeId);
+            }else if(storeId == -1&&cityId!=-1){
+            initDateGird('/rest/customers/page/cityGrid/' + cityId);
         }
     }
 

@@ -23,16 +23,30 @@ public class MaGoodsBrandViewsController extends BaseController {
     @Autowired
     private MaGoodsBrandService maGoodsBrandService;
 
+    /**
+     * 跳转商品品牌列表
+     * @return
+     */
     @GetMapping(value = "/list")
     public String getGoodBrandList() {
         return "/views/goodsBrand/goodsBrand_page";
     }
+
+    /**
+     * 跳转商品品牌增加页面
+     * @return
+     */
      @GetMapping(value = "/add")
      public String addGoodBrand() {
         return "/views/goodsBrand/goodsBrand_add";
     }
 
-
+    /**
+     * 跳转商品品牌编辑页面
+     * @param model
+     * @param goodsBrandId
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String goodsBrandEdit(Model model, @PathVariable(value = "id") Long goodsBrandId) {
         if (!goodsBrandId.equals(0L)) {

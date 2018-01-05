@@ -11,6 +11,8 @@
         <result property="operatorType" column="operator_type"/>
         <result property="operatorIp" column="operator_ip"/>
         <result property="changeType" column="change_type"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="operatorName" column="operator_name"/>
         <association property="tempCreditChangeId" javaType="GuideTempCreditChange">
             <id property="id" column="id" />
             <result property="tempCreditLimitChangeAmount" column="temp_credit_limit_change_amount"/>
@@ -25,10 +27,6 @@
             <id property="id" column="id" />
             <result property="creditLimitAvailableChangeAmount" column="credit_limit_available_change_amount"/>
             <result property="creditLimitAvailableAfterChange" column="credit_limit_available_after_change"/>
-        </association>
-        <association property="operatorId" javaType="SimpleEmployeeParam">
-            <id property="id" column="emp_id" />
-            <result property="name" column="name"/>
         </association>
     </resultMap>
 
@@ -46,16 +44,17 @@
                 credit_limit_available = #{creditLimitAvailable},
             </if>
         </set>
-        WHERE id = #{id}
+        WHERE emp_id = #{empId}
     </update>
 
 <update id="clearTempCreditLimit" parameterType="java.lang.Long">
     UPDATE
     emp_credit_money
     <set>
+        credit_limit_available = credit_limit_available - temp_credit_limit,
         temp_credit_limit = 0
     </set>
-    WHERE id = #{id}
+    WHERE emp_id = #{id}
 </update>
 
 
@@ -79,12 +78,10 @@
             ecmcl.change_type_desc,
             ea.credit_limit_available_change_amount,
             ea.credit_limit_available_after_change,
-            e.emp_id,
-            e.name
-       FROM emp_credit_money_change_log ecmcl
-       LEFT JOIN emp_employee e ON
-       ecmcl.emp_id=e.emp_id
-       RIGHT JOIN emp_available_credit_change_log ea ON
+            ecmcl.operator_id,
+            ecmcl.operator_name
+      FROM emp_credit_money_change_log ecmcl
+      RIGHT JOIN emp_available_credit_change_log ea ON
        ecmcl.available_credit_change_id=ea.id
        WHERE
        ecmcl.emp_id=#{id}
@@ -101,11 +98,9 @@
         ecmcl.change_type_desc,
         et.temp_credit_limit_change_amount,
         et.temp_credit_limit_after_change,
-        e.emp_id,
-        e.name
+        ecmcl.operator_id,
+        ecmcl.operator_name
         FROM emp_credit_money_change_log ecmcl
-        LEFT JOIN emp_employee e ON
-        ecmcl.emp_id=e.emp_id
         RIGHT JOIN emp_temp_credit_change_log et ON
         ecmcl.temp_credit_change_id=et.id
         WHERE
@@ -121,13 +116,11 @@
         ecmcl.reference_number,
         ecmcl.change_type,
         ecmcl.change_type_desc,
+        ecmcl.operator_id,
+        ecmcl.operator_name,
         ef.fixed_credit_limit_change_amount,
-        ef.fixed_credit_limit_after_change,
-        e.emp_id,
-        e.name
+        ef.fixed_credit_limit_after_change
         FROM emp_credit_money_change_log ecmcl
-        LEFT JOIN emp_employee e ON
-        ecmcl.emp_id=e.emp_id
         RIGHT JOIN emp_fixed_credit_change_log ef ON
         ecmcl.fixed_credit_change_id=ef.id
         WHERE
@@ -138,9 +131,9 @@
 
     <insert id="saveCreditChange" parameterType="GuideCreditChangeDetailDO">
     insert into emp_credit_money_change_log
-    (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip)
+    (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip,operator_name)
     values
-    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId.id},#{operatorType} ,#{operatorIp});
+    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId},#{operatorType} ,#{operatorIp},#{operatorName});
     </insert>
 
     <insert id="saveCreditLimitAvailableChange"  useGeneratedKeys="true" keyProperty="id" parameterType="GuideAvailableCreditChange">
@@ -163,6 +156,13 @@
         values
         (#{fixedCreditLimitChangeAmount},#{fixedCreditLimitAfterChange})
     </insert>
+
+
+    <select id="findAllGuideCreditMoney" resultType="GuideCreditMoney">
+        SELECT
+        id,emp_id,temp_credit_limit,credit_limit_available
+        FROM emp_credit_money
+    </select>
 
 
 </mapper>

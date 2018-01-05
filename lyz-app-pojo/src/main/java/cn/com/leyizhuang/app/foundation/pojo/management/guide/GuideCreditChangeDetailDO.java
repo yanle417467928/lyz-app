@@ -36,7 +36,9 @@ public class GuideCreditChangeDetailDO {
     //''变更类型描述''
     private String changeTypeDesc;
     //''操作人id''
-    private SimpleEmployeeParam operatorId;
+    private Long operatorId;
+    //''操作人id''
+    private String operatorName;
     // 导购id
     private Long  empId;
     //操作人身份类型
@@ -57,6 +59,7 @@ public class GuideCreditChangeDetailDO {
             guideCreditChangeDetailDO.setOperatorId(guideCreditChangeDetailVO.getOperatorId());
             guideCreditChangeDetailDO.setReferenceNumber(guideCreditChangeDetailVO.getReferenceNumber());
             guideCreditChangeDetailDO.setEmpId(guideCreditChangeDetailVO.getEmpId());
+            guideCreditChangeDetailDO.setOperatorName(guideCreditChangeDetailVO.getOperatorName());
             return guideCreditChangeDetailDO;
         } else {
             return null;

@@ -1,8 +1,10 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -63,12 +65,22 @@
                                 <label for="title">
                                     父级分类
                                 </label>
-                                <select class="form-control select" name="paCategoryCode" id="paCategoryCode" >
-                                    <option value="水"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='水' > selected</#if>>水</option>
-                                    <option value="电"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='电' > selected</#if>>电</option>
-                                    <option value="木"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='木' > selected</#if>>木</option>
-                                    <option value="瓦"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='瓦' > selected</#if>>瓦</option>
-                                    <option value="油"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='油' > selected</#if>>油</option>
+                                <select class="form-control select" name="paCategoryCode" id="paCategoryCode">
+                                    <option value="水"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='水' >
+                                            selected</#if>>水
+                                    </option>
+                                    <option value="电"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='电' >
+                                            selected</#if>>电
+                                    </option>
+                                    <option value="木"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='木' >
+                                            selected</#if>>木
+                                    </option>
+                                    <option value="瓦"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='瓦' >
+                                            selected</#if>>瓦
+                                    </option>
+                                    <option value="油"<#if goodsCategoryVO?? && goodsCategoryVO.paCategoryCode?? && goodsCategoryVO.paCategoryCode=='油' >
+                                            selected</#if>>油
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -85,24 +97,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-8"></div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="submit" class="btn btn-primary footer-btn">
+                                <i class="fa fa-check"></i> 保存
+                            </button>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                <i class="fa fa-close"></i> 取消
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-8"></div>
-            <div class="col-xs-12 col-md-2">
-                <button type="submit" class="btn btn-primary footer-btn">
-                    <i class="fa fa-check"></i> 保存
-                </button>
-            </div>
-            <div class="col-xs-12 col-md-2">
-                <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                    <i class="fa fa-close"></i> 取消
-                </button>
-            </div>
-        </div>
-        </form>
-    </div>
-    </div>
     </div>
 </section>
 <script>
@@ -152,9 +163,9 @@
                             min: 2,
                             max: 20,
                             message: '角色名称的长度必须在2~20位之间'
-                        },remote: {
+                        }, remote: {
                             type: 'POST',
-                            url:  '/rest/goodsCategorys/editIsExistCategoryName',
+                            url: '/rest/goodsCategorys/editIsExistCategoryName',
                             message: '已存在分类名称',
                             delay: 500,
                             data: function () {
@@ -180,9 +191,9 @@
                             min: 1,
                             max: 5,
                             message: '排序号长度必须在1~5位之间'
-                        },remote: {
+                        }, remote: {
                             type: 'POST',
-                            url:  '/rest/goodsCategorys/editIsExistSortId',
+                            url: '/rest/goodsCategorys/editIsExistSortId',
                             message: '已存在排序号',
                             delay: 500,
                             data: function () {

@@ -16,6 +16,10 @@ public class MaDecorativeCompanyEmpViewsController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(MaDecorativeCompanyEmpViewsController.class);
 
+    /**
+     * 跳转装饰公司员工页面
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getDecorativeEmpList() {
         return "/views/decorativeCompany/decorativeCompanyEmp_page";

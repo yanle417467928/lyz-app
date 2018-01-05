@@ -18,7 +18,11 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findStoresList();
 
+    List<SimpleStoreParam> findAllStorelist();
+
     List<SimpleStoreParam> findStoresListByCityId(Long cityId);
+
+    List<SimpleStoreParam> findAllStoresListByCityId(Long cityId);
 
     List<SimpleDecorativeCompany> queryDecorativeCompanyVOList();
 

@@ -26,4 +26,6 @@ public interface MaEmpCreditMoneyDAO {
     void saveFixedCreditLimitChange( GuideFixedCreditChange GuideFixedCreditChange);
 
     void clearAllTempCredit();
+
+    List<GuideCreditMoney> findAllGuideCreditMoney();
 }

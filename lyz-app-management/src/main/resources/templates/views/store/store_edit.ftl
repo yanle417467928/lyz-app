@@ -1,8 +1,10 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
@@ -91,8 +93,12 @@
                                     是否是默认门店
                                 </label>
                                 <select class="form-control select" name="isDefault" disabled="true" id="isDefault">
-                                    <option value="true" <#if store?? && store.isDefault?? && store.isDefault > selected</#if>>是</option>
-                                    <option value="false" <#if store?? && store.isDefault?? && !store.isDefault > selected</#if>>否</option>
+                                    <option value="true" <#if store?? && store.isDefault?? && store.isDefault >
+                                            selected</#if>>是
+                                    </option>
+                                    <option value="false" <#if store?? && store.isDefault?? && !store.isDefault >
+                                            selected</#if>>否
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -102,9 +108,15 @@
                                     门店类型
                                 </label>
                                 <select class="form-control select" name="storeType" disabled="true" id="storeType">
-                                    <option value="1" <#if store?? && store.storeType?? && store.storeType=="ZY" > selected</#if>>自营</option>
-                                    <option value="2" <#if store?? && store.storeType?? && store.storeType=="ZS" > selected</#if>>装饰公司</option>
-                                    <option value="3" <#if store?? && store.storeType?? && store.storeType=="JM" > selected</#if>>加盟店</option>
+                                    <option value="1" <#if store?? && store.storeType?? && store.storeType=="ZY" >
+                                            selected</#if>>自营
+                                    </option>
+                                    <option value="2" <#if store?? && store.storeType?? && store.storeType=="ZS" >
+                                            selected</#if>>装饰公司
+                                    </option>
+                                    <option value="3" <#if store?? && store.storeType?? && store.storeType=="JM" >
+                                            selected</#if>>加盟店
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -117,8 +129,12 @@
                                     是否启用
                                 </label>
                                 <select class="form-control select" name="enable" disabled="true" id="enable">
-                                    <option value="true" <#if store?? && store.enable?? && store.enable > selected</#if>>是</option>
-                                    <option value="false"<#if store?? && store.enable?? && !store.enable > selected</#if>>否</option>
+                                    <option value="true" <#if store?? && store.enable?? && store.enable >
+                                            selected</#if>>是
+                                    </option>
+                                    <option value="false"<#if store?? && store.enable?? && !store.enable >
+                                            selected</#if>>否
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -143,8 +159,12 @@
                                     是否支持门店自提
                                 </label>
                                 <select class="form-control select" name="isSelfDelivery" id="isSelfDelivery">
-                                    <option value="true" <#if store?? && store.isSelfDelivery?? && store.isSelfDelivery > selected</#if>>是</option>
-                                    <option value="false" <#if store?? && store.isSelfDelivery?? && !store.isSelfDelivery > selected</#if>>否</option>
+                                    <option value="true" <#if store?? && store.isSelfDelivery?? && store.isSelfDelivery >
+                                            selected</#if>>是
+                                    </option>
+                                    <option value="false" <#if store?? && store.isSelfDelivery?? && !store.isSelfDelivery >
+                                            selected</#if>>否
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -218,24 +238,22 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-xs-12 col-md-8"></div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="submit" class="btn btn-primary footer-btn">
+                                <i class="fa fa-check"></i> 保存
+                            </button>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                                <i class="fa fa-close"></i> 取消
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-8"></div>
-            <div class="col-xs-12 col-md-2">
-                <button type="submit" class="btn btn-primary footer-btn">
-                    <i class="fa fa-check"></i> 保存
-                </button>
-            </div>
-            <div class="col-xs-12 col-md-2">
-                <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                    <i class="fa fa-close"></i> 取消
-                </button>
-            </div>
-        </div>
-        </form>
-    </div>
-    </div>
     </div>
 </section>
 <script>
@@ -273,9 +291,9 @@
             verbose: false
         }).on('success.form.bv', function (e) {
             e.preventDefault();
-            var isSelfDelivery=$("#isSelfDelivery").val();
-            var storeId=$("#storeId").val();
-            var data = {"storeId":storeId,"isSelfDelivery":isSelfDelivery};
+            var isSelfDelivery = $("#isSelfDelivery").val();
+            var storeId = $("#storeId").val();
+            var data = {"storeId": storeId, "isSelfDelivery": isSelfDelivery};
 
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);

@@ -7,14 +7,15 @@ import org.quartz.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
 @Component
 public class ScheduleTask implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println(new Date() + ": 清除零时额度");
-       MaEmpCreditMoneyService maEmpCreditMoneyService = (MaEmpCreditMoneyService) ApplicationContextUtil.getBean("maEmpCreditMoneyService");
-       maEmpCreditMoneyService.clearAllTempCredit();
+        System.out.println(new Date() + ": 清除临时额度");
+        MaEmpCreditMoneyService maEmpCreditMoneyService = (MaEmpCreditMoneyService) ApplicationContextUtil.getBean("maEmpCreditMoneyService");
+        maEmpCreditMoneyService.autoClearTempCreditMoney();
     }
 
 }

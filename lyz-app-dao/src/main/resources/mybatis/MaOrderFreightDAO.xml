@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaOrderFreightDAO">
+
+    <resultMap id="orderFreightResultMap" type="OrderFreightVO">
+        <id property="id" column="oid" jdbcType="BIGINT"/>
+        <result property="ordNo" column="ord_no"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorPhone" column="creator_phone"/>
+        <result property="cityName" column="city_name"/>
+        <association property="storeId" javaType="SimpleStoreParam">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+        </association>
+        <association property="simpleOrderBillingDetails" javaType="SimpleOrderBillingDetails">
+            <id property="id" column="id"/>
+            <result property="freight" column="freight"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="orderFreightChangeResultMap" type="OrderFreightChangeVO">
+        <id property="id" column="oid" jdbcType="BIGINT"/>
+        <result property="ordNo" column="ord_no"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="cityName" column="city_name"/>
+        <association property="storeId" javaType="SimpleStoreParam">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+        </association>
+        <association property="orderFreightChange" javaType="OrderFreightChange">
+            <id property="id" column="id"/>
+            <result property="modifier" column="modifier"/>
+            <result property="modifyTime" column="modify_time"/>
+            <result property="freightChangeBefore" column="freight_change_before"/>
+            <result property="freightChangeAfter" column="freight_change_after"/>
+            <result property="freightChangeAmount" column="freight_change_amount"/>
+            <result property="modifyReason" column="modify_reason"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="orderFreightDetailResultMap" type="OrderFreightDetailVO">
+        <id property="id" column="oid" jdbcType="BIGINT"/>
+        <result property="ordNo" column="ord_no"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorPhone" column="creator_phone"/>
+        <result property="cityName" column="city_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="remark" column="remark"/>
+        <result property="totalGoodsPrice" column="total_goods_price"/>
+        <association property="storeId" javaType="SimpleStoreParam">
+            <id property="storeId" column="store_id"/>
+            <result property="storeName" column="store_name"/>
+        </association>
+        <association property="simpleOrderBillingDetails" javaType="SimpleOrderBillingDetails">
+        <id property="id" column="id"/>
+        <result property="freight" column="freight"/>
+       </association>
+        <association property="orderLogisticsInfo" javaType="MaOrderLogisticsInfo">
+            <id property="id" column="id"/>
+            <result property="receiver" column="receiver"/>
+            <result property="receiverPhone" column="receiver_phone"/>
+            <result property="shippingAddress" column="shipping_address"/>
+        </association>
+        <collection property="orderGoodsInfoList" ofType="MaOrderGoodsInfo" javaType="ArrayList">
+            <id property="id" column="or_id"/>
+            <result property="sku" column="sku"/>
+            <result property="skuName" column="sku_name"/>
+            <result property="returnPrice" column="return_price"/>
+            <result property="orderQty" column="order_qty"/>
+        </collection>
+    </resultMap>
+
+    <select id="findAllOrderFreight" resultMap="orderFreightResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        WHERE
+        obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+
+    <select id="queryOrderFreightVOByStoreId" parameterType="java.lang.Long" resultMap="orderFreightResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        WHERE
+        obi.store_id = #{storeId}
+        AND
+        obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+    <select id="queryOrderFreightVOByCityId" parameterType="java.lang.Long" resultMap="orderFreightResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        WHERE
+         obi.city_id = #{cityId}
+         AND
+         obi.delivery_type="HOUSE_DELIVERY"
+         AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+    <select id="queryOrderFreightVOByInfo" parameterType="java.lang.String" resultMap="orderFreightResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        WHERE
+          (
+          obi.ord_no LIKE CONCAT('%',#{queryOrderInfo},'%')
+          OR obi.creator_name LIKE CONCAT('%',#{queryOrderInfo},'%')
+          OR obi.creator_phone LIKE CONCAT('%',#{queryOrderInfo},'%')
+          )
+         AND
+         obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+    <select id="queryOrderFreightDetailVOById" parameterType="java.lang.Long" resultMap="orderFreightDetailResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight,obi.remark,obi.create_time,
+        oli.receiver,oli.receiver_phone,oli.shipping_address,
+        ogi.id as or_id,
+        ogi.sku  ,
+        ogi.sku_name,
+        ogi.return_price,
+        ogi.order_qty
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        LEFT JOIN ord_logistics_info oli ON oli.oid = obi.oid
+        LEFT JOIN ord_goods_info ogi ON ogi.oid= obi.oid
+        WHERE
+        obi.oid = #{id}
+        AND
+        obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+
+    <select id="queryOrderFreightVOById" parameterType="java.lang.Long" resultMap="orderFreightResultMap">
+        SELECT
+        obi.oid,obi.ord_no,obi.creator_name,obi.creator_phone,obi.city_name,
+        s.store_id,s.store_name,obd.id,obd.freight
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_billing_details obd on obi.oid = obd.oid
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        WHERE
+        obi.oid = #{id}
+        AND
+        obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY obi.create_time
+        DESC
+    </select>
+
+
+     <update id="update" parameterType="SimpleOrderBillingDetails">
+         UPDATE
+         ord_billing_details
+         <set>
+             <if test="null != freight">
+                 freight = #{freight},
+             </if>
+         </set>
+         WHERE oid = #{oid}
+
+     </update>
+
+    <select id="queryOrderFreightChangeList" resultMap="orderFreightChangeResultMap">
+        SELECT
+        obi.ord_no,obi.creator_name,obi.city_name,
+        s.store_id,s.store_name,ofcl.modifier,ofcl.modify_time,
+        ofcl.freight_change_before,ofcl.freight_change_after,ofcl.freight_change_amount
+        FROM
+        ord_base_info obi
+        LEFT JOIN  st_store s ON obi.store_id = s.store_id
+        RIGHT JOIN ord_freight_change_log ofcl ON obi.oid = ofcl.oid
+        WHERE
+        obi.delivery_type="HOUSE_DELIVERY"
+        AND
+        obi.status="UNPAID"
+        ORDER BY ofcl.modify_time
+        DESC
+    </select>
+
+    <insert id="saveOrderFreightChange" parameterType="OrderFreightChange">
+        insert into ord_freight_change_log
+        (oid,modifier,modify_time,modify_reason,freight_change_before,freight_change_after,freight_change_amount)
+        values
+        (#{orderId},#{modifier},#{modifyTime},#{modifyReason},#{freightChangeBefore},#{freightChangeAfter},#{freightChangeAmount});
+    </insert>
+</mapper>

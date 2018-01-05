@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class MaStoreServiceImpl implements MaStoreService {
 
     @Autowired
@@ -36,6 +35,20 @@ public class MaStoreServiceImpl implements MaStoreService {
     public List<SimpleStoreParam> findStoreList() {
         List<SimpleStoreParam> allStoreList = this.mastoreDAO.findStoresList();
         return allStoreList;
+    }
+
+
+    @Override
+    public List<SimpleStoreParam> findAllStorelist() {
+        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findAllStorelist();
+        return allStoreList;
+    }
+
+
+    @Override
+    public List<SimpleStoreParam> findAllStoresListByCityId(Long cityId) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findAllStoresListByCityId(cityId);
+        return storeList;
     }
 
     @Override

@@ -20,6 +20,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
@@ -83,6 +85,8 @@ public class CommonServiceImpl implements CommonService {
     @Resource
     private GoodsService goodsService;
 
+    @Resource
+    private AppToWmsOrderService appToWmsOrderService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -579,7 +583,13 @@ public class CommonServiceImpl implements CommonService {
                 if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                     orderBaseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
                     orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
-                    //TODO 发送WMS
+                    //保存传wms配送单头档
+                    AppStore store = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(),
+                            orderBaseInfo.getCreatorIdentityType().getValue());
+                    int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+                    AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
+                            store, orderBillingDetails, goodsQuantity);
+                    appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
                 } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                     orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
                 }
@@ -672,6 +682,9 @@ public class CommonServiceImpl implements CommonService {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
+                        //保存传wms配送单商品信息
+                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
                 if (null != orderCouponInfoList && orderCouponInfoList.size() > 0) {
@@ -713,9 +726,9 @@ public class CommonServiceImpl implements CommonService {
             if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                 baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
             } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                // TODO 发送WMS
+                // 发送WMS 在微信和支付宝完成支付回调方法中已发送
                 baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
-                //baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
             }
 
 
