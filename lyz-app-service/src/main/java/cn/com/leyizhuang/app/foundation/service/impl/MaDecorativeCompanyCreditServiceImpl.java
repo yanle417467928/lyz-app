@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 @Service
-@Transactional
 public class MaDecorativeCompanyCreditServiceImpl implements MaDecorativeCompanyCreditService {
     @Resource
     private MaDecorativeCompanyCreditDAO maDecorativeCompanyCreditDAO;

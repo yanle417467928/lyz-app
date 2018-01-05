@@ -51,7 +51,11 @@ public class GuideCreditChangeDetailVO {
         if (null != guideCreditChangeDetailDO) {
             GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
             guideCreditChangeDetailVO.setId(guideCreditChangeDetailDO.getId());
-            guideCreditChangeDetailVO.setChangeType(guideCreditChangeDetailDO.getChangeType());
+            if("CANCEL_ORDER".equals(guideCreditChangeDetailDO.getChangeType())){
+                guideCreditChangeDetailVO.setChangeType("取消订单");
+            }else if("PLACE_ORDER".equals(guideCreditChangeDetailDO.getChangeType())){
+                guideCreditChangeDetailVO.setChangeType("下订单");
+            }
             guideCreditChangeDetailVO.setChangeTypeDesc(guideCreditChangeDetailDO.getChangeTypeDesc());
             guideCreditChangeDetailVO.setCreateTime(guideCreditChangeDetailDO.getCreateTime());
             guideCreditChangeDetailVO.setAvailableCreditChangId(guideCreditChangeDetailDO.getAvailableCreditChangId());

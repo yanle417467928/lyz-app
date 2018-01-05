@@ -1,16 +1,21 @@
 package cn.com.leyizhuang.app.web.controller.store;
 
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
+import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.app.web.controller.user.UserHomePageController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +31,9 @@ public class StoreController {
 
     @Resource
     private AppStoreService appStoreService;
+
+    @Autowired
+    private StorePreDepositLogService storePreDepositLogServiceImpl;
 
     /**
      * 获取门店赞助金余额
@@ -166,7 +174,7 @@ public class StoreController {
      * @param userId
      * @return
      */
-/*    @PostMapping(value = "/preDeposit/recharge/log", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/preDeposit/recharge/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType) {
 
         logger.info("getStoreRechargePreDepositLog CALLED,获取门店钱包充值记录，入参 userId {},identityType{}", userId, identityType);
@@ -174,13 +182,13 @@ public class StoreController {
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
-            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
@@ -196,5 +204,5 @@ public class StoreController {
             logger.warn("{}", e);
             return resultDTO;
         }
-    }*/
+    }
 }

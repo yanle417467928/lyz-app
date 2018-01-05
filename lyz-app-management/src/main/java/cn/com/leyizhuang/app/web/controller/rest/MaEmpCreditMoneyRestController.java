@@ -45,14 +45,14 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
      * @return
      */
     @PutMapping
-    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, BindingResult result, HttpServletRequest request) {
+    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail,@RequestParam(value ="modifyReason") String modifyReason, BindingResult result, HttpServletRequest request) {
         if (!result.hasErrors()) {
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetailVO  guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
             guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
             guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
             guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
-            guideCreditChangeDetailVO.setChangeTypeDesc("管理员修改");
+            guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
             guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
              this.maEmpCreditMoneyService.update(guideCreditMoneyDetail,guideCreditChangeDetailVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

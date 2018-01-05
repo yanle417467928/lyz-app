@@ -28,10 +28,11 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
+            <li><a href="#tab_1-2" data-toggle="tab" ">变更描述</a></li>
         </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="tab_1-1">
                 <form id="guideCredit_edit">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1-1">
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -58,7 +59,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -85,7 +85,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -119,7 +118,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -128,10 +126,31 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalCreditLimit" type="hidden" class="form-control" id="originalCreditLimit"
-                                           readonly   value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
+                                    <input name="originalCreditLimit" type="hidden" class="form-control"
+                                           id="originalCreditLimit"
+                                           readonly
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
                                     <input name="creditLimit" type="text" class="form-control" id="creditLimit"
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+                    <div class="tab-pane" id="tab_1-2">
+                        <div class="box-body table-reponsive">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <div class="form-group">
+                                    <label for="cityName">变更原因
+                                        <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
+                                    </label>
+                                    <div>
+                                    <textarea id="modifyReason" class="form-control" rows="8"
+                                              style="border-color:#808080">
+                                    </textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -150,8 +169,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
     </div>
 </section>
 <script>
@@ -227,7 +244,7 @@
                             message: '可用额度不能为空'
                         },
                         regexp: {
-                            regexp: /^([-]?)((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/ ,
+                            regexp: /^([-]?)((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '可用额度只能输入数字'
                         },
                     }
@@ -238,19 +255,21 @@
             var $form = $(e.target);
             var origin = $form.serializeArray();
             var data = {};
-            var originalCreditLimitAvailable = parseFloat( $('#originalCreditLimitAvailable').val().replace(/,/g, ''));
-            var originalTempCreditLimit = parseFloat( $('#originalTempCreditLimit').val().replace(/,/g, ''));
-            var tempCreditLimitAfterChange = parseFloat( $('#tempCreditLimit').val().replace(/,/g, ''));
-            var originalCreditLimit = parseFloat( $('#originalCreditLimit').val().replace(/,/g, ''));
-            var creditLimit = parseFloat( $('#creditLimit').val().replace(/,/g, ''));
+            var originalCreditLimitAvailable = parseFloat($('#originalCreditLimitAvailable').val().replace(/,/g, ''));
+            var originalTempCreditLimit = parseFloat($('#originalTempCreditLimit').val().replace(/,/g, ''));
+            var tempCreditLimitAfterChange = parseFloat($('#tempCreditLimit').val().replace(/,/g, ''));
+            var originalCreditLimit = parseFloat($('#originalCreditLimit').val().replace(/,/g, ''));
+            var creditLimit = parseFloat($('#creditLimit').val().replace(/,/g, ''));
             var empId = $('#id').val();
+            var modifyReason = $("#modifyReason").val();
             data = {
                 'empId': empId,
                 'originalCreditLimitAvailable': originalCreditLimitAvailable,
                 'originalTempCreditLimit': originalTempCreditLimit,
                 'originalCreditLimit': originalCreditLimit,
                 'creditLimit': creditLimit,
-                'tempCreditLimit': tempCreditLimitAfterChange
+                'tempCreditLimit': tempCreditLimitAfterChange,
+                "modifyReason": modifyReason
             }
 
             if (null === $global.timer) {
@@ -272,7 +291,7 @@
                     },
                     success: function (result) {
                         if (0 === result.code) {
-                          /*      saveCreditChange();*/
+                            /*      saveCreditChange();*/
                             window.location.href = document.referrer;
                         } else {
                             clearTimeout($global.timer);

@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service("maEmpCreditMoneyService")
-@Transactional
 public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
     @Autowired
     private MaEmpCreditMoneyDAO maEmpCreditMoneyDAO;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO){
         if (null != guideCreditMoneyDetail) {
             //得到更新后的可用额度
@@ -45,6 +45,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO){
         if (null != guideCreditMoneyDetail.getEmpId()) {
             this.maEmpCreditMoneyDAO.clearTempCreditLimit(guideCreditMoneyDetail.getEmpId());
@@ -96,6 +97,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO){
         //得到金额变更字表ID集合
         Map<String,Long> idList  = this.saveAllCreditMoneyChange(guideCreditMoneyDetail);
@@ -110,6 +112,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
         }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String,Long> saveAllCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail){
         if(null!=guideCreditMoneyDetail){
             Map idMap = new HashMap();
@@ -156,6 +159,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void autoClearTempCreditMoney(){
         List<GuideCreditMoney> guideCreditMoneyList = this.findAllGuideCreditMoney();
         if(guideCreditMoneyList.size()==0){
