@@ -328,7 +328,7 @@ public class OrderController {
             List<CashCouponResponse> cashCouponResponseList = null;
             Map<String, Object> goodsSettlement = new HashMap<>();
             Long cityId = 0L;
-            AppCustomer customer = null;
+            AppCustomer customer = new AppCustomer();
 
             if (identityType == 6) {
                 customer = appCustomerService.findById(userId);

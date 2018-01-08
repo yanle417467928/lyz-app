@@ -419,13 +419,12 @@ public class WeChatPayController {
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
-
+                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
                                     //发送订单到WMS
                                     OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(outTradeNo);
                                     if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                                         iCallWms.sendToWmsRequisitionOrderAndGoods(outTradeNo);
                                     }
-                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
                                 }
                             }
                             //返回响应成功的讯息
@@ -448,7 +447,5 @@ public class WeChatPayController {
             e.printStackTrace();
             logger.warn("{}", e);
         }
-
     }
-
 }

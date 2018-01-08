@@ -35,7 +35,7 @@ public class TestClient {
     }
 
     @RequestMapping("/test/webservice")
-    public void testWebservice() throws Exception {
+    public void testWebservice() {
         AtwRequisitionOrder order = new AtwRequisitionOrder();
         order.setDiySiteId("FZM007");
         order.setDiySiteTel("028-83551646");
@@ -74,10 +74,10 @@ public class TestClient {
 
         //备注：目前发送订单通了，取消订单wms还在重新做。
         //第一步：将订单信息转化成要货单实体AtwRequisitionOrder然后调用下面service保存
-        appToWmsOrderService.saveAtwRequisitionOrder(order);
+//        appToWmsOrderService.saveAtwRequisitionOrder(order);
         //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
-        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
+//        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
         //第三步：调用下面service将订单号发送给wms
-        iCallWms.sendToWmsRequisitionOrderAndGoods(order.getOrderNumber());
+        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180105145030752391");
     }
 }
