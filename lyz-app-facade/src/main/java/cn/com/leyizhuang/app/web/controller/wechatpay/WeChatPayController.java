@@ -272,6 +272,7 @@ public class WeChatPayController {
      * @param money
      * @return
      */
+    @PostMapping(value = "/refund", produces = "application/json;charset=UTF-8")
     public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
@@ -284,7 +285,7 @@ public class WeChatPayController {
         this.paymentDataService.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> resultMap = (SortedMap<String, Object>) WechatPrePay.wechatRefundSign(
+            Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
                     orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money), req);
 
             if (resultMap != null) {
@@ -364,16 +365,19 @@ public class WeChatPayController {
                 if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
                     //是否匹配证书
                     if (WechatUtil.verifyNotify(resultMap)) {
-                        /*//返回响应成功的讯息
-                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));*/
+                        logger.info("weChatReturnSync,微信支付异步回调接口,回调参数:{}", resultMap);
                         //取出map中的参数，订单号
                         String outTradeNo = resultMap.get("out_trade_no").toString();
+                        logger.info("weChatReturnSync,微信支付异步回调接口,订单号:{}", outTradeNo);
                         //微信交易号
                         String tradeNo = resultMap.get("transaction_id").toString();
+                        logger.info("weChatReturnSync,微信支付异步回调接口,交易号:{}", tradeNo);
                         //订单金额
                         String totalFee = resultMap.get("total_fee").toString();
+                        logger.info("weChatReturnSync,微信支付异步回调接口,订单金额:{}", totalFee);
                         //微信交易状态
                         String tradeStatus = resultMap.get("result_code").toString();
+                        logger.info("weChatReturnSync,微信支付异步回调接口,交易状态:{}", tradeStatus);
                         //转换金额为Double
                         Double totlefeeParse = Double.parseDouble(totalFee);
 
