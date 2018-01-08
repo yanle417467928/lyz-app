@@ -52,6 +52,47 @@
         ASC
     </select>
 
+    <select id="findGoodsBrandByCode"  parameterType="java.lang.String" resultType="GoodsBrand">
+        select
+        *
+        FROM gds_goods_brand g
+        where
+        g.brand_code = #{code}
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+    <select id="findGoodsBrandByCodeList"  parameterType="java.util.List" resultType="GoodsBrand">
+        select
+        *
+        FROM gds_goods_brand g
+        where
+        g.brand_code IN
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
+
+    <select id="findGoodsBrandByIdList"  parameterType="java.util.List" resultType="GoodsBrand">
+        select
+        *
+        FROM gds_goods_brand g
+        where
+        g.brd_id IN
+        <foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+        ORDER
+        BY
+        sort_id
+        ASC
+    </select>
 
     <insert id="save" parameterType="GoodsBrand">
     INSERT

@@ -254,6 +254,19 @@ $localDateTime.toString = function (value) {
         value.second;
 };
 
+var $DateFormat = $DateFormat || {};
+$DateFormat.toString = function(value) {
+    var dateType = "";
+    var date = new Date(value);
+    dateType += date.getFullYear();  //年
+    dateType += "-" + (date.getMonth()+1); //月
+    dateType += "-" + date.getDay(); // 日
+    dateType += " " + date.getHours(); // 时
+    dateType += ":" + date.getMinutes(); // 分
+    dateType += ":" + date.getSeconds(); // 秒
+    return dateType;
+};
+
 var $http = $http || {};
 $http.ajax = function (url, method, data, fun) {
     if (null === $global.timer) {

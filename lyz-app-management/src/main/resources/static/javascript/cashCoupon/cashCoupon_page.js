@@ -9,8 +9,7 @@ function initDateGird(url) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search,
-            status:$("#status").val()
+            keywords: params.search
         }
     }, [{
         checkbox: true,
@@ -36,41 +35,79 @@ function initDateGird(url) {
         field: 'effectiveStartTime',
         title: '有效期开始时间',
         align: 'left',
-        formatter: function(value) {
-            return $localDateTime.toString(value);
+        formatter: function (value, row, index) {
+            if (null != value) {
+                return $DateFormat.toString(value);
+            }
         }
     },{
         field: 'effectiveEndTime',
         title: '有效期结束',
         align: 'left',
-        formatter: function(value) {
-            return $localDateTime.toString(value);
+        formatter: function (value, row, index) {
+            if (null != value) {
+                return $DateFormat.toString(value);
+            }
         }
     },{
-        field: 'descriptions',
+        field: 'description',
         title: '使用说明',
         align: 'left'
     },{
         field: 'remainingQuantity',
         title: '剩余数量',
         align: 'center'
+    },{
+        field: 'id',
+        title: '操作',
+        align: 'center',
+        formatter: function (value,row,index) {
+            return "<a href='/view/cashCoupon/send/"+value+"'>发放</a>"
+    }
     }
 
     ]);
 
     $('#btn_add').on('click', function () {
-        $grid.add('/view/activity/add/0');
+        $grid.add('/view/cashCoupon/add/0');
     });
     $('#btn_edit').on('click', function () {
-        $grid.modify($('#dataGrid'),'/view/activity/edit/{id}');
+        $grid.modify($('#dataGrid'),'/view/cashCoupon/edit/{id}');
     });
 
     $('#btn_copy').on('click',function () {
-        $grid.modify($('#dataGrid'),'/view/activity/add/{id}');
+        //$grid.modify($('#dataGrid'),'/view/cashCoupon/add/{id}');
     })
 
     $('#btn_delete').on('click', function () {
-        $modal.danger("删除","确认删除？删除后不可恢复！！！",invalid);
+        $modal.danger("删除","确认删除？删除后不可恢复！！！",deleteCashCoupon);
     });
 
+}
+
+
+function deleteCashCoupon() {
+    var ids = $grid.getSelectedIds($('#dataGrid'));
+    ids = JSON.stringify(ids);
+    $.ajax({
+        url: '/rest/cashCoupon/delete',
+        method: 'PUT',
+        data:{'ids':ids},
+        error: function () {
+            clearTimeout($global.timer);
+            $loading.close();
+            $global.timer = null;
+            $notify.danger('网络异常，请稍后重试或联系管理员');
+        },
+        success: function (result) {
+            clearTimeout($global.timer);
+            if (0 === result.code) {
+                $notify.info(result.message);
+                $("#dataGrid").bootstrapTable('destroy');
+                initDateGird('/rest/cashCoupon/grid');
+            } else {
+                $notify.danger(result.message);
+            }
+        }
+    });
 }
