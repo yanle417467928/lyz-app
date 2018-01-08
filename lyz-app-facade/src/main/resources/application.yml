@@ -43,6 +43,7 @@ spring:
       bindings:
         sendOrder:
           destination: separateOrder
+
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
   type-aliases-package: cn.com.leyizhuang.app.foundation

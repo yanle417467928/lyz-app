@@ -100,17 +100,17 @@ public class OrderBaseInf {
     /**
      * 是否用券标识（Y/N）
      */
-    private String couponFlag;
+    private AppWhetherFlag couponFlag;
 
     /**
      * 是否开票(Y/N)
      */
-    private String invoiceFlag;
+    private AppWhetherFlag invoiceFlag;
 
     /**
      * 是否使用信用额度(Y/N)
      */
-    private String creditFlag;
+    private AppWhetherFlag creditFlag;
 
     /**
      * 门店组织id

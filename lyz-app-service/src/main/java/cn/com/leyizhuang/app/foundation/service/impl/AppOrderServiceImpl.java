@@ -120,7 +120,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public  PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
+    public PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<OrderBaseInfo> orderBaseInfoList = orderDAO.getOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
         return new PageInfo<>(orderBaseInfoList);
@@ -300,6 +300,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setCityId(userStore.getCityId());
         tempOrder.setCityName(userStore.getCity());
         tempOrder.setSobId(userStore.getSobId());
+        tempOrder.setStoreOrgId(userStore.getStoreId());
 
         switch (identityType) {
             //导购代下单

@@ -2,15 +2,20 @@ package cn.com.leyizhuang.app.remote.queue;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppOrderSubjectType;
+import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
+import cn.com.leyizhuang.app.core.constant.ProductType;
 import cn.com.leyizhuang.app.core.utils.JsonUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
+import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -37,6 +42,9 @@ public class SinkReceiver {
     @Resource
     private AppSeparateOrderService separateOrderService;
 
+    @Resource
+    private TransactionalSupportService supportService;
+
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -55,6 +63,7 @@ public class SinkReceiver {
                     } else {
                         OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
                         if (null != baseInfo) {
+                            OrderBillingDetails billingDetail = orderService.getOrderBillingDetail(orderNumber);
                             List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
                             if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                                 //获取所有companyFlag并加入到set中
@@ -68,7 +77,10 @@ public class SinkReceiver {
                                 }
                                 //创建一个map存放按companyFlag分组的商品信息
                                 Map<String, List<OrderGoodsInfo>> goodsMap = new HashMap<>(5);
-                                List<OrderBaseInf> orderBaseInfList = new ArrayList<>(10);
+                                //分单List
+                                List<OrderBaseInf> orderBaseInfList = new ArrayList<>(5);
+                                //分单商品List
+                                List<OrderGoodsInf> orderGoodsInfList = new ArrayList<>(10);
                                 //循环所有companyFlag,拿到各个分单的产品并创建分单
                                 for (String s : companyFlag) {
                                     List<OrderGoodsInfo> orderGoodsInfoListTemp = new ArrayList<>();
@@ -119,6 +131,29 @@ public class SinkReceiver {
                                                 separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
                                                 separateOrderProductCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
                                             }
+
+                                            OrderGoodsInf goodsInf = new OrderGoodsInf();
+                                            goodsInf.setMainOrderNumber(orderNumber);
+                                            goodsInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                                            goodsInf.setOrderLineId(goodsInfo.getId());
+                                            goodsInf.setCashCouponDiscount(goodsInfo.getCashCouponSharePrice());
+                                            goodsInf.setLebiDiscount(goodsInfo.getLbSharePrice());
+                                            goodsInf.setPromotionDiscount(goodsInfo.getPromotionSharePrice());
+                                            goodsInf.setSubventionDiscount(goodsInfo.getCashReturnSharePrice());
+                                            goodsInf.setDiscountTotalPrice(goodsInf.getCashCouponDiscount() + goodsInf.getLebiDiscount()
+                                                    + goodsInf.getSubventionDiscount() + goodsInf.getPromotionDiscount());
+                                            goodsInf.setGiftFlag(goodsInfo.getGoodsLineType() == AppGoodsLineType.PRESENT ? AppWhetherFlag.Y : AppWhetherFlag.N);
+                                            goodsInf.setSku(goodsInfo.getSku());
+                                            goodsInf.setGoodsTitle(goodsInfo.getSkuName());
+                                            goodsInf.setRetailPrice(goodsInfo.getRetailPrice());
+                                            goodsInf.setHyPrice(goodsInfo.getVIPPrice());
+                                            goodsInf.setJxPrice(goodsInfo.getWholesalePrice());
+                                            goodsInf.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                            goodsInf.setReturnPrice(goodsInfo.getReturnPrice());
+                                            goodsInf.setQuantity(goodsInfo.getOrderQuantity());
+                                            goodsInf.setPromotionId(goodsInfo.getPromotionId());
+                                            orderGoodsInfList.add(goodsInf);
+
                                         }
 
                                         separateOrderAmountPayable = separateOrderGoodsTotalPrice
@@ -135,9 +170,10 @@ public class SinkReceiver {
                                         orderBaseInf.setLebiDiscount(separateOrderLebiDiscount);
                                         orderBaseInf.setMemberDiscount(separateOrderMemberDiscount);
                                         orderBaseInf.setPromotionDiscount(separateOrderPromotionDiscount);
+                                        orderBaseInf.setProductCouponDiscount(separateOrderProductCouponDiscount);
                                         orderBaseInf.setSobId(baseInfo.getSobId());
                                         orderBaseInf.setStoreCode(baseInfo.getStoreCode());
-                                        //orderBaseInf.setStoreOrgId(baseInfo.getStoreStructureCode());
+                                        orderBaseInf.setStoreOrgId(baseInfo.getStoreOrgId());
                                         orderBaseInf.setOrderDate(baseInfo.getCreateTime());
                                         //订单类型
                                         orderBaseInf.setOrderTypeId(4L);
@@ -148,27 +184,39 @@ public class SinkReceiver {
                                         } else {
                                             orderBaseInf.setDecorateManagerId(baseInfo.getCreatorId());
                                         }
-                                        //orderBaseInf.set
-
-
+                                        if (orderBaseInf.getCashCouponDiscount() > 0 || orderBaseInf.getProductCouponDiscount() > 0) {
+                                            orderBaseInf.setCouponFlag(AppWhetherFlag.Y);
+                                        } else {
+                                            orderBaseInf.setCouponFlag(AppWhetherFlag.N);
+                                        }
+                                        orderBaseInf.setProductType(ProductType.getProductTypeByValue(s));
+                                        orderBaseInf.setInvoiceFlag(AppWhetherFlag.N);
+                                        if (billingDetail.getEmpCreditMoney() > 0 || billingDetail.getStoreCreditMoney() > 0) {
+                                            orderBaseInf.setCreditFlag(AppWhetherFlag.Y);
+                                        } else {
+                                            orderBaseInf.setCreditFlag(AppWhetherFlag.N);
+                                        }
                                         orderBaseInfList.add(orderBaseInf);
                                     } else {
                                         // todo 记录拆单错误日志
                                     }
                                 }
-
                                 //循环保存分单基础信息
-                                for (OrderBaseInf baseInf : orderBaseInfList) {
+                                supportService.saveSeparateOrderInfAndGoodsInf(orderBaseInfList,orderGoodsInfList);
+                               /* for (OrderBaseInf baseInf : orderBaseInfList) {
                                     separateOrderService.saveOrderBaseInf(baseInf);
                                 }
+                                for (OrderGoodsInf goodsInf : orderGoodsInfList) {
+                                    separateOrderService.saveOrderGoodsInf(goodsInf);
+                                }*/
+                                System.out.println("咋回事儿？");
                             } else {
                                 //todo 记录拆单错误日志
                             }
                         }
                     }
-
                 } catch (IOException e) {
-
+                    log.info(e.getMessage());
                     e.printStackTrace();
                 }
                 break;
@@ -176,7 +224,6 @@ public class SinkReceiver {
                 break;
         }
         log.info("消费拆单消息队列中的消息 End");
-
     }
 
 }

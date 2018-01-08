@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -28,9 +30,18 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveOrderBaseInf(OrderBaseInf baseInf) {
         if (null != baseInf && null != baseInf.getOrderNumber()) {
             separateOrderDAO.saveOrderBaseInf(baseInf);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderGoodsInf(OrderGoodsInf goodsInf) {
+        if (null != goodsInf) {
+            separateOrderDAO.saveOrderGoodsInf(goodsInf);
         }
     }
 }

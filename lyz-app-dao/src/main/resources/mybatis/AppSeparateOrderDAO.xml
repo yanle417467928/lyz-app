@@ -4,17 +4,18 @@
 
     <select id="isOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT exists(SELECT 1
-                      FROM order_base_inf
+                      FROM inter_ate_order_base_inf
                       WHERE main_order_number = #{orderNumber})
     </select>
 
     <insert id="saveOrderBaseInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf">
-        INSERT INTO order_base_inf (create_time, send_flag, error_msg, send_time, main_order_number, order_number, sob_id, order_date,
-                                    product_type, order_type_id, user_id, sales_consult_id, coupon_flag, invoice_flag, credit_flag,
-                                    store_org_id, store_code, delivery_type_title, order_amt, rec_amt, lebi_discount,
-                                    store_subvention_discount, promotion_discount, member_discount, cash_coupon_discount,
-                                    product_coupon_discount) VALUES (
+        INSERT INTO inter_ate_order_base_inf (create_time, send_flag, error_msg, send_time, main_order_number, order_number,
+                                              sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
+                                              coupon_flag, invoice_flag, credit_flag, store_org_id, store_code, delivery_type_title,
+                                              order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
+                                              member_discount, cash_coupon_discount, product_coupon_discount)
+        VALUES (
             #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber}, #{orderNumber}, #{sobId},
                            #{orderDate}, #{productType},
                            #{orderTypeId}, #{userId}, #{salesConsultId}, #{couponFlag}, #{invoiceFlag}, #{creditFlag},
@@ -24,4 +25,23 @@
             #{productCouponDiscount}
         )
     </insert>
+
+    <insert id="saveOrderGoodsInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        INSERT INTO inter_ate_order_goods_inf (create_time, send_flag, error_msg, send_time, order_line_id, main_order_number, order_number,
+                                               sku, goods_title, quantity, retail_price,
+                                               hy_price, jx_price, settlement_price, return_price, lebi_discount, subvention_discount,
+                                               cash_coupon_discount, promotion_discount, discount_total_price, gift_flag, promotion_id)
+        VALUES
+            (#{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{orderLineId}, #{mainOrderNumber}, #{orderNumber},
+                             #{sku}, #{goodsTitle}, #{quantity}, #{retailPrice}, #{hyPrice},
+                                                                                 #{jxPrice}, #{settlementPrice},
+                                                                                 #{returnPrice}, #{lebiDiscount},
+                                                                                 #{subventionDiscount},
+                                                                                 #{cashCouponDiscount},
+                                                                                 #{promotionDiscount},
+                                                                                 #{discountTotalPrice}, #{giftFlag},
+             #{promotionId})
+    </insert>
+
 </mapper>

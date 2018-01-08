@@ -103,6 +103,11 @@ public class OrderBaseInfo implements Serializable {
     private String storeStructureCode;
 
     /**
+     * 门店组织id
+     */
+    private Long storeOrgId;
+
+    /**
      * 下单人id
      */
     private Long creatorId;

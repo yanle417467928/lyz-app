@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
@@ -26,4 +27,6 @@ public interface AppSeparateOrderDAO {
     Boolean isOrderExist(@Param(value = "orderNumber") String orderNumber);
 
     void saveOrderBaseInf(OrderBaseInf baseInf);
+
+    void saveOrderGoodsInf(OrderGoodsInf goodsInf);
 }

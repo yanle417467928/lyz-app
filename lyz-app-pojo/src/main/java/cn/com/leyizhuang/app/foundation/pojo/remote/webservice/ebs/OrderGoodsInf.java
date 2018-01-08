@@ -1,8 +1,11 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs;
 
+import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
 
 /**
  * 订单商品行
@@ -16,6 +19,26 @@ import lombok.ToString;
 public class OrderGoodsInf {
 
     private Long id;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 是否传输成功
+     */
+    private AppWhetherFlag sendFlag;
+
+    /**
+     * 错误信息
+     */
+    private String errorMsg;
+
+    /**
+     * 传输成功时间
+     */
+    private Date sendTime;
 
     /**
      * 原主单产品行id
@@ -105,11 +128,11 @@ public class OrderGoodsInf {
     /**
      * 赠品标识
      */
-    private String giftFlag;
+    private AppWhetherFlag giftFlag;
 
     /**
      * 促销id
      */
-    private Long promotionId;
+    private String promotionId;
 
 }

@@ -43,6 +43,10 @@ spring:
         bindings:
           receiveOrder:
             destination: separateOrder
+            group: sparateOrder
+            consumer:
+              backOffInitialInterval: 10000
+              backOffMaxInterval: 30000
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
