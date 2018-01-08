@@ -189,8 +189,23 @@ public class AtwRequisitionOrder {
         requisitionOrder.setSellerName(orderBaseInfo.getSalesConsultName());
         requisitionOrder.setDeliveryFee(orderBillingDetails.getFreight());
 //        requisitionOrder.setColorFee(); 没有调色费
-        requisitionOrder.setDiscount(orderBillingDetails.getMemberDiscount() + orderBillingDetails.getCashCouponDiscount() +
-                orderBillingDetails.getPromotionDiscount() + orderBillingDetails.getLebiCashDiscount() + orderBillingDetails.getPromotionDiscount());
+        Double discount = 0D;
+        if (null != orderBillingDetails.getMemberDiscount()) {
+            discount += orderBillingDetails.getMemberDiscount();
+        }
+        if (null != orderBillingDetails.getCashCouponDiscount()) {
+            discount += orderBillingDetails.getCashCouponDiscount();
+        }
+        if (null != orderBillingDetails.getPromotionDiscount()) {
+            discount += orderBillingDetails.getPromotionDiscount();
+        }
+        if (null != orderBillingDetails.getLebiCashDiscount()) {
+            discount += orderBillingDetails.getLebiCashDiscount();
+        }
+        if (null != orderBillingDetails.getPromotionDiscount()) {
+            discount += orderBillingDetails.getPromotionDiscount();
+        }
+        requisitionOrder.setDiscount(discount);
         requisitionOrder.setOtherPayed(orderBillingDetails.getOnlinePayAmount());
         if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
             requisitionOrder.setBalanceUsed(orderBillingDetails.getCusPreDeposit());

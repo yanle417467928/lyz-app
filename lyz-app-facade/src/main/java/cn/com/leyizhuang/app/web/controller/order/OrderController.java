@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
@@ -402,7 +403,7 @@ public class OrderController {
                     //算总金额
                     totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                     //算会员折扣(先判断是否是会员还是零售会员)
-                    if (identityType == 2 || null != customer.getSalesConsultId()) {
+                    if (null != customer.getCustomerType() && customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
                         memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
                                 simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                     }
@@ -572,6 +573,7 @@ public class OrderController {
             returnMap.put("totalOrderAmount", totalOrderAmount);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
         }
         List<GoodsIdQtyParam> cashCouponsList = usedCouponRequest.getCouponsList();
         Map<String, Object> leBi = null;
@@ -606,7 +608,7 @@ public class OrderController {
                             return resultDTO;
                         }
                     } else {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到产品券或者该产品券已过期！", null);
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到优惠券或者该优惠券已过期！", null);
                         logger.info("reEnterOrderByCashCoupon OUT,通过现金券来重新计算确认订单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }

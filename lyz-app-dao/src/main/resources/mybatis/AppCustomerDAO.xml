@@ -366,16 +366,21 @@
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-            cccc.denomination,
-            cccc.condition,
-            cccc.title
-        FROM cus_customer_cash_coupon cccc
-        WHERE cccc.ccid = #{ccId}
-              AND cccc.id = #{cusId}
-              AND cccc.qty &gt;= #{qty}
-              AND cccc.is_used = FALSE
-              AND cccc.effective_start_time &lt; NOW()
-              AND (cccc.effective_end_time IS NULL OR cccc.effective_end_time &gt; NOW())
+        cccc.denomination,
+        cccc.CONDITION,
+        cccc.title
+        FROM
+        cus_customer_cash_coupon cccc
+        WHERE
+        cccc.id = #{ccId}
+        AND cccc.cus_id = #{cusId}
+        AND cccc.qty >= #{qty}
+        AND cccc.is_used = FALSE
+        AND cccc.effective_start_time &lt; NOW()
+        AND (
+        cccc.effective_end_time IS NULL
+        OR cccc.effective_end_time &gt; NOW()
+        )
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
