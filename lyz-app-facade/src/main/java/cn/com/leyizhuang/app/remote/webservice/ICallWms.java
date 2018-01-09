@@ -46,7 +46,7 @@ public class ICallWms {
      * @param orderNumber 取消订单生成的退单信息
      * @throws Exception parseException
      */
-    public void sendToWmsCancelOrder(String orderNumber) throws Exception {
+    public void sendToWmsCancelOrder(String orderNumber) {
         if (StringUtils.isBlank(orderNumber)) {
             return;
         }
@@ -63,7 +63,12 @@ public class ICallWms {
         //发送到WMS
         //TODO wms确定td_return_note参数
         wmsClient = getWmsClient();
-        Object[] objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
+        Object[] objects = new Object[0];
+        try {
+            objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //修改发送状态
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
@@ -79,14 +84,16 @@ public class ICallWms {
      * @param orderNumber
      * @return
      */
-    public void sendToWmsRequisitionOrderAndGoods(String orderNumber) throws Exception {
+    public void sendToWmsRequisitionOrderAndGoods(String orderNumber) {
 
         if (StringUtils.isBlank(orderNumber)) {
+            logger.info("发送要货单及商品信息失败 OUT, 订单号不可为空！ orderNumber:{}", orderNumber);
             return;
         }
         //查询所有要货单商品明细
         List<AtwRequisitionOrderGoods> requisitionOrderGoodsList = appToWmsOrderService.findAtwRequisitionOrderGoodsByOrderNo(orderNumber);
         if (AssertUtil.isEmpty(requisitionOrderGoodsList)) {
+            logger.info("发送要货单及商品信息失败 OUT, 未查到要货单商品明细 orderNumber:{}", orderNumber);
             return;
         }
         for (AtwRequisitionOrderGoods requisitionOrderGoods : requisitionOrderGoodsList) {
@@ -99,16 +106,23 @@ public class ICallWms {
             logger.info("要货单商品XML拼装完毕 OUT, XML:{}", xml);
             //发送到WMS
             Client wmsClient = getWmsClient();
-            Object[] objects = wmsClient.invoke(wmsName, "td_requisition_goods", "1", xml);
+            Object[] objects = new Object[0];
+            try {
+                objects = wmsClient.invoke(wmsName, "td_requisition_goods", "1", xml);
+            } catch (Exception e) {
+                requisitionOrderGoods.setSendFlag(false);
+                requisitionOrderGoods.setErrorMessage("订单号：" + orderNumber + "发送要货单明细失败！");
+                logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+                e.printStackTrace();
+            }
             //解析返回信息
             String errorMsg = AppXmlUtil.checkReturnXml(objects);
             if (errorMsg != null) {
                 //如果发送失败修改发送状态
-                requisitionOrderGoods.setSendTime(new Date());
                 requisitionOrderGoods.setSendFlag(false);
                 requisitionOrderGoods.setErrorMessage(errorMsg);
                 logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-            } else {
+            } else if (null != requisitionOrderGoods.getErrorMessage()) {
                 requisitionOrderGoods.setSendTime(new Date());
                 requisitionOrderGoods.setSendFlag(true);
             }
@@ -128,16 +142,23 @@ public class ICallWms {
         logger.info("XML拼装完毕 OUT, xml:{}", xml);
         //发送到WMS
         wmsClient = getWmsClient();
-        Object[] objects = wmsClient.invoke(wmsName, "td_requisition", "1", xml);
+        Object[] objects = new Object[0];
+        try {
+            objects = wmsClient.invoke(wmsName, "td_requisition", "1", xml);
+        } catch (Exception e) {
+            requisitionOrder.setSendFlag(false);
+            requisitionOrder.setErrorMessage("订单号：" + orderNumber + "发送要货单明细失败！");
+            logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+            e.printStackTrace();
+        }
         //解析返回信息
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
         //修改发送状态
         if (errorMsg != null) {
-            requisitionOrder.setSendTime(new Date());
             requisitionOrder.setSendFlag(false);
             requisitionOrder.setErrorMessage(errorMsg);
             logger.error("发送要货单出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-        } else {
+        } else if (null != requisitionOrder.getErrorMessage()) {
             requisitionOrder.setSendTime(new Date());
             requisitionOrder.setSendFlag(true);
         }

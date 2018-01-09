@@ -24,19 +24,19 @@ public class AllocationQuery {
     /**
      * 城市ID
      */
-    private String city;
+    private Long city;
     /**
      * 门店调出ID
      */
-    private String selectFromName;
+    private Long formName;
     /**
      * 门店调入ID
      */
-    private String selectToName;
+    private Long toName;
     /**
      * 状态
      */
-    private Integer selectStatus;
+    private Integer statusNumber;
     /**
      * 状态枚举格式
      */
@@ -62,21 +62,25 @@ public class AllocationQuery {
         if ("-1".equals(this.city.toString())) {
             this.city = null;
         }
-        if ("-1".equals(this.selectFromName.toString())) {
-            this.selectFromName = null;
+        if ("-1".equals(this.formName.toString())) {
+            this.formName = null;
         }
-        if ("-1".equals(this.selectToName.toString())) {
-            this.selectToName = null;
+        if ("-1".equals(this.toName.toString())) {
+            this.toName = null;
         }
-        if ("-1".equals(this.selectStatus.toString())) {
+        if ("-1".equals(this.statusNumber.toString())) {
             this.allocationTypeEnum = null;
         } else {
-            this.allocationTypeEnum = AllocationTypeEnum.getName(this.selectStatus);
+            this.allocationTypeEnum = AllocationTypeEnum.getName(this.statusNumber);
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            this.startDateTime = sdf.parse(this.startTime);
-            this.endDateTime = sdf.parse(this.endTime);
+            if (null != startTime) {
+                this.startDateTime = sdf.parse(this.startTime);
+            }
+            if (null != endTime) {
+                this.endDateTime = sdf.parse(this.endTime);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }

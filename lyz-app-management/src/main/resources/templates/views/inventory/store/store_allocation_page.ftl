@@ -39,33 +39,35 @@
                         至
                         <input name="endTime" type="text" class="form-control datepicker" id="endTime"
                                placeholder="结束时间">
-                        <select name="city" id="city" class="form-control select" style="width:auto;" title="选择城市">
-                            <option value="-1">选择城市</option>
-                        </select>
                         <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
                             <i class="fa fa-search"></i> 查询
                         </button>
                         <button type="reset" class="btn btn-default">
                             <i class="fa fa-print"></i> 重置
                         </button>
+                        <input type="hidden" id="formName" name="formName">
+                        <input type="hidden" id="toName" name="toName">
+                        <input type="hidden" id="city" name="city">
+                        <input type="hidden" id="statusNumber" name="statusNumber">
                     </div>
                     <div id="toolbar" class="form-inline">
                         <button id="btn_add" type="button" class="btn btn-default">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                         </button>
-                    <#--<select name="city" id="city" class="form-control select" style="width:auto;" title="选择城市">-->
-                    <#--<option value="-1">选择城市</option>-->
-                    <#--</select>-->
+                        <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
+                                title="选择城市">
+                            <option value="-1">选择城市</option>
+                        </select>
                         <select name="selectFromName" id="selectFromName" class="form-control select"
-                                style="width:auto;" data-live-search="true" title="调出门店">
+                                style="width:auto;" title="调出门店">
                             <option value="-1">调出门店</option>
                         </select>
                         <select name="selectToName" id="selectToName" class="form-control select"
-                                style="width:auto;" data-live-search="true" title="调入门店">
+                                style="width:auto;" title="调入门店">
                             <option value="-1">调入门店</option>
                         </select>
-                        <select name="selectStatus" id="status" class="form-control select" style="width:auto;"
-                                title="选择状态">
+                        <select name="selectStatus" id="selectStatus" class="form-control select"
+                                style="width:auto;" title="选择状态">
                             <option value="-1">选择状态</option>
                             <option value="1" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建
                             </option>
@@ -208,6 +210,10 @@
         });
 
         $('#btn_query').on('click', function () {
+            $('#city').val($('#selectCity').val());
+            $('#formName').val($('#selectFromName').val());
+            $('#toName').val($('#selectToName').val());
+            $('#statusNumber').val($('#selectStatus').val());
             $grid.searchTable('dataGrid', 'formSearch');
         });
 
@@ -236,7 +242,7 @@
                 $.each(result, function (i, item) {
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 });
-                $("#city").append(city);
+                $("#selectCity").append(city);
             }
         });
     }
