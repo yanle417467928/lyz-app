@@ -260,8 +260,51 @@ function  send(customerId) {
     $http.ajax('/rest/cashCoupon/send','POST',{'customerId':customerId,'cashCouponId':cashCouponId,'qty': qty},function (result) {
         if (0 === result.code) {
             $notify.info(result.message);
-            $("#dataGrid").bootstrapTable('destroy');
-            initDateGird('/rest/customers/page/grid');
+
+            setTimeout(function () {
+                location.href = "/view/cashCoupon/send/"+cashCouponId;
+            },1000)
+
+        } else {
+            $notify.danger(result.message);
+        }
+    })
+}
+
+/***
+ * 批量发券
+ * **/
+function  sendBatch() {
+    var cashCouponId = $("#cashCouponId").val();
+    var qty = $("#common_qty").val();
+    var customerIds = new Array();
+
+    var selected = $("#dataGrid").bootstrapTable('getSelections');
+    for (var i = 0; i < selected.length; i++) {
+        var data = selected[i];
+        customerIds.push(data.cusId);
+    }
+
+    if (customerIds.length == 0){
+        $notify.danger("请选择顾客");
+        return false;
+    }
+
+    customerIds = JSON.stringify(customerIds);
+
+    var re = /^[0-9]+.?[0-9]*$/;
+    if(qty <= 0 || !re.test(qty)){
+        $notify.danger("券数量有误");
+        return false;
+    }
+
+    $http.ajax('/rest/cashCoupon/sendBatch','POST',{'customerIds':customerIds,'cashCouponId':cashCouponId,'qty': qty},function (result) {
+        if (0 === result.code) {
+            $notify.info(result.message);
+
+            setTimeout(function () {
+                location.href = "/view/cashCoupon/send/"+cashCouponId;
+            },1000)
         } else {
             $notify.danger(result.message);
         }

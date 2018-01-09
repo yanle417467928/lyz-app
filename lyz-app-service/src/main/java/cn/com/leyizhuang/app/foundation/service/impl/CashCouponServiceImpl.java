@@ -186,6 +186,14 @@ public class CashCouponServiceImpl implements CashCouponService{
     }
 
     @Override
+    public CustomerCashCoupon findCustomerCashCouponById(Long id){
+        if (id == null){
+            return null;
+        }
+        return cashCouponDAO.findCustomerCashCouponById(id);
+    }
+
+    @Override
     public List<CashCouponStore> queryStoreByCcid(Long ccid){
         if(ccid == null){
             return null;
@@ -215,6 +223,38 @@ public class CashCouponServiceImpl implements CashCouponService{
             return null;
         }
         return cashCouponDAO.queryGoodsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryStoreIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryStoreIdsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryCompanyIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryCompanyIdsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryBrandIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryBrandIdsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryGoodsIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryGoodsIdsByCcid(ccid);
     }
 
 }

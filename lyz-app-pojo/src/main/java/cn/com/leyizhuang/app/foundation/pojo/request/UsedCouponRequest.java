@@ -44,5 +44,9 @@ public class UsedCouponRequest implements Serializable {
      * 使用的优惠券券ID和数量
      */
     private List<GoodsIdQtyParam> couponsList;
+    /**
+     * 传输的商品本品集合
+     */
+    private List<GoodsIdQtyParam> goodsList;
 
 }

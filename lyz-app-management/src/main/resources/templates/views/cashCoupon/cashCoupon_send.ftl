@@ -67,8 +67,9 @@
                         </select>
 
 
-                        <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                                onchange="findCusByStoreId()"   data-live-search="true" >
+                        <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                                style="width:auto;"
+                                onchange="findCusByStoreId()" data-live-search="true">
                             <option value="-1">选择门店</option>
                         </select>
                     <#--             <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"
@@ -77,12 +78,22 @@
                                  </select>-->
 
                         <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                            <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                            <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control"
+                                   style="width:auto;"
                                    placeholder="请输入要查找的姓名或电话..">
                             <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findCusByNameOrPhone()">查找</button>
                         </span>
+                        </div>
+
+                        <div class="input-group col-md-3" class="form-control">
+                            <input id="common_qty" type="text" class="form-control"
+                                   style="width:auto;" placeholder="请输入发放数量">
+                            <span class="input-group-btn">
+                                  <button type="button" name="oneButtonSend" id="search-btn" class="btn btn-info btn-search"
+                                      onclick="sendBatch()">一键发送</button>
+                            </span>
                         </div>
 
                     </div>

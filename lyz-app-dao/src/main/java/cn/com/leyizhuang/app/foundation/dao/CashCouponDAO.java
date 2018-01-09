@@ -32,6 +32,11 @@ public interface CashCouponDAO {
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
 
     /**
+     * 根据id返回现金券
+     */
+    CustomerCashCoupon findCustomerCashCouponById(@Param("id") Long id);
+
+    /**
      * 根据idList 返回现金券结果
      */
     List<CustomerCashCoupon> queryCustomerCashCouponByIdList(@Param("ids") List<Long> ids);

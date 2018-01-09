@@ -23,15 +23,22 @@
             oci.coupon_id = #{couponId}
     </select>
 
+    <select id="findCustomerCashCouponById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM cus_customer_cash_coupon
+        WHERE id = #{id}
+    </select>
+
     <insert id="addCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon" useGeneratedKeys="true"
-            keyProperty="id">
-        INSERT INTO cp_cash_coupon
-        (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
-        title, city_id , city_name , `type` ,is_specified_store,sort_id)
-        VALUES
-        (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title}
-        ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId})
-    </insert>
+                     keyProperty="id">
+    INSERT INTO cp_cash_coupon
+    (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
+    title, city_id , city_name , `type` ,is_specified_store,sort_id)
+    VALUES
+    (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title}
+    ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId})
+</insert>
 
     <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         INSERT INTO cus_customer_cash_coupon
