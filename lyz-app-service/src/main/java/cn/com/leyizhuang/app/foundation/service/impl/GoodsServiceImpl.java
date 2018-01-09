@@ -305,7 +305,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
             if (identityType == AppIdentityType.CUSTOMER.getValue()) {
                 return goodsDAO.findOrderGoodsVOListByCustomerIdAndGoodsIds(userId, goodsIdSet);
             } else if (identityType == AppIdentityType.SELLER.getValue() || identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
-                return goodsDAO.findOrderGoodsVOListByEmpIdAndGoodsIds(userId,goodsIdSet);
+                return goodsDAO.findOrderGoodsVOListByEmpIdAndGoodsIds(userId, goodsIdSet);
             }
         }
         return null;
@@ -353,13 +353,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
 
     /**
      * 查询商品详情
+     *
      * @param page
      * @param size
      * @param queryGoodsInfo
      * @return
      */
     @Override
-    public  PageInfo<GoodsDO> queryGoodsPageByInfo (Integer page, Integer size,String queryGoodsInfo){
+    public PageInfo<GoodsDO> queryGoodsPageByInfo(Integer page, Integer size, String queryGoodsInfo) {
         PageHelper.startPage(page, size);
         List<GoodsDO> goodsDOList = goodsDAO.queryGoodsPageByInfo(queryGoodsInfo);
         return new PageInfo<>(goodsDOList);
@@ -367,6 +368,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
 
     /**
      * 根据条件筛选商品
+     *
      * @param page
      * @param size
      * @param brandCode
@@ -375,51 +377,54 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
      * @return
      */
     @Override
-    public  PageInfo<GoodsDO> screenGoodsGrid (Integer page, Integer size,Long brandCode,String categoryCode,String companyCode){
+    public PageInfo<GoodsDO> screenGoodsGrid(Integer page, Integer size, Long brandCode, String categoryCode, String companyCode) {
         PageHelper.startPage(page, size);
-        if("-1".equals(categoryCode)){
-            categoryCode=null;
+        if ("-1".equals(categoryCode)) {
+            categoryCode = null;
         }
-        if("-1".equals(companyCode)){
-            companyCode=null;
+        if ("-1".equals(companyCode)) {
+            companyCode = null;
         }
-        if(-1==brandCode){
-            brandCode=null;
+        if (-1 == brandCode) {
+            brandCode = null;
         }
-        List<GoodsDO> goodsDOList = goodsDAO.screenGoodsGrid(brandCode,categoryCode,companyCode);
+        List<GoodsDO> goodsDOList = goodsDAO.screenGoodsGrid(brandCode, categoryCode, companyCode);
         return new PageInfo<>(goodsDOList);
     }
 
     /**
      * 更新商品信息
+     *
      * @param goodsVO
      */
     @Override
-    public void updateGoods(MaGoodsVO goodsVO){
-       GoodsDO goodsDO= GoodsDO.transform(goodsVO);
+    public void updateGoods(MaGoodsVO goodsVO) {
+        GoodsDO goodsDO = GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
     }
 
     /**
      * 判断是否存在商品名称
+     *
      * @param skuName
      * @param id
      * @return
      */
     @Override
-    public Boolean isExistSkuName(String skuName,Long id){
-        return  goodsDAO.isExistSkuName(skuName,id);
+    public Boolean isExistSkuName(String skuName, Long id) {
+        return goodsDAO.isExistSkuName(skuName, id);
     }
 
     /**
      * 判断是否存在排序id
+     *
      * @param sortId
      * @param id
      * @return
      */
     @Override
-    public Boolean isExistSortId(Long sortId,Long id){
-        return  goodsDAO.isExistSortId(sortId,id);
+    public Boolean isExistSortId(Long sortId, Long id) {
+        return goodsDAO.isExistSortId(sortId, id);
     }
 
 }

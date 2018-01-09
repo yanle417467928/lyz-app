@@ -176,9 +176,11 @@ public class MaCustomerRestController extends BaseRestController {
     public ResultDTO<Object> restCustomerVOPost(@Valid CustomerDetailVO customer, BindingResult result, MultipartFile file) {
         if (!result.hasErrors()) {
             if (!file.isEmpty()) {
+                //上传图片得到图片地址
                 String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");
                 customer.setPicUrl(picUrl);
             } else {
+                //没有上传图片 返回默认头像地址
                 customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
             }
             this.maCustomerService.saveCustomer(customer);
@@ -192,7 +194,7 @@ public class MaCustomerRestController extends BaseRestController {
     }
 
     /**
-     * 新增顾客检验电话号码是否存在
+     * 新增顾客检验电话号码是否存在z
      * @param mobile
      * @return
      */

@@ -1,5 +1,10 @@
 package cn.com.leyizhuang.app.foundation.pojo.wms;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -157,4 +162,60 @@ public class AtwRequisitionOrder {
      * wms收到信息时间
      */
     private Date sendTime;
+
+    public static AtwRequisitionOrder transform(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo logisticsInfo, AppStore store,
+                                                OrderBillingDetails orderBillingDetails, int goodsQuantity) {
+        AtwRequisitionOrder requisitionOrder = new AtwRequisitionOrder();
+        requisitionOrder.setCreateTime(new Date());
+        requisitionOrder.setDiySiteAddress(store.getDetailedAddress());
+        requisitionOrder.setDiySiteId(store.getStoreCode());
+        requisitionOrder.setDiySiteTitle(store.getStoreName());
+        requisitionOrder.setDiySiteTel(store.getPhone());
+        requisitionOrder.setRemarkInfo(orderBaseInfo.getRemark());
+        requisitionOrder.setCustomerName(orderBaseInfo.getCreatorName());
+        requisitionOrder.setOrderNumber(orderBaseInfo.getOrderNumber());
+        requisitionOrder.setReceiveTimeQuantum(logisticsInfo.getDeliveryTime());
+        requisitionOrder.setReceiveAddress(logisticsInfo.getDetailedAddress());
+        requisitionOrder.setReceiveName(logisticsInfo.getResidenceName());
+        requisitionOrder.setReceivePhone(logisticsInfo.getReceiverPhone());
+        requisitionOrder.setCity(orderBaseInfo.getCityName());
+        requisitionOrder.setDetailAddress(logisticsInfo.getShippingAddress());
+        requisitionOrder.setDisctrict(logisticsInfo.getDeliveryCounty());
+        requisitionOrder.setProvince(logisticsInfo.getDeliveryCity());
+        requisitionOrder.setSubdistrict(logisticsInfo.getDeliveryStreet());
+        requisitionOrder.setSellerTel(orderBaseInfo.getSalesConsultPhone());
+        requisitionOrder.setGoodsQuantity(goodsQuantity);
+        requisitionOrder.setUpstairsAll(orderBillingDetails.getUpstairsFee());
+        requisitionOrder.setSellerName(orderBaseInfo.getSalesConsultName());
+        requisitionOrder.setDeliveryFee(orderBillingDetails.getFreight());
+//        requisitionOrder.setColorFee(); 没有调色费
+        Double discount = 0D;
+        if (null != orderBillingDetails.getMemberDiscount()) {
+            discount += orderBillingDetails.getMemberDiscount();
+        }
+        if (null != orderBillingDetails.getCashCouponDiscount()) {
+            discount += orderBillingDetails.getCashCouponDiscount();
+        }
+        if (null != orderBillingDetails.getPromotionDiscount()) {
+            discount += orderBillingDetails.getPromotionDiscount();
+        }
+        if (null != orderBillingDetails.getLebiCashDiscount()) {
+            discount += orderBillingDetails.getLebiCashDiscount();
+        }
+        if (null != orderBillingDetails.getPromotionDiscount()) {
+            discount += orderBillingDetails.getPromotionDiscount();
+        }
+        requisitionOrder.setDiscount(discount);
+        requisitionOrder.setOtherPayed(orderBillingDetails.getOnlinePayAmount());
+        if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+            requisitionOrder.setBalanceUsed(orderBillingDetails.getCusPreDeposit());
+        } else {
+            requisitionOrder.setBalanceUsed(orderBillingDetails.getStPreDeposit());
+        }
+        requisitionOrder.setMemberReceiver(logisticsInfo.getIsOwnerReceiving());
+        requisitionOrder.setUnpayed(orderBillingDetails.getAmountPayable());
+        requisitionOrder.setTotalGoodsPrice(orderBaseInfo.getTotalGoodsPrice());
+        requisitionOrder.setAgencyRefund(orderBillingDetails.getCollectionAmount());
+        return requisitionOrder;
+    }
 }

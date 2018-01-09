@@ -1,12 +1,11 @@
 package cn.com.leyizhuang.app.foundation.vo.management.guide;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
-import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditAvailableMoney;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import lombok.*;
-
 /**
- * 导购VO
+ * 导购详情VO
  *
  * @author liuh
  * Created on 2017-11-03 14:14
@@ -28,5 +27,5 @@ public class GuideVO {
     //门店id
     private SimpleStoreParam storeId;
    //导购额度
-    private GuideCreditAvailableMoney guideCreditAvailableMoney;
+    private GuideCreditMoney guideCreditMoney;
 }

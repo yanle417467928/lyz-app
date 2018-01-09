@@ -34,13 +34,16 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         INSERT INTO ord_arrears_audit
-        (user_id,customer_name,customer_phone,seller_name,seller_phone,ord_no,agency_money,order_money,
-        real_money,cash_money,pos_money,alipay_money,wechat_money,payment_method,distribution_address,
-        distribution_time,remarks,status,create_time,seller_id,picture)
+        (user_id, customer_name, customer_phone, seller_name, seller_phone, ord_no, agency_money, order_money,
+         real_money, cash_money, pos_money, alipay_money, wechat_money, payment_method, distribution_address,
+         distribution_time, remarks, status, create_time, seller_id, picture)
         VALUES
-        (#{userId},#{customerName},#{customerPhone},#{sellerName},#{sellerphone},#{orderNumber},#{agencyMoney},#{orderMoney},
-        #{realMoney},#{cashMoney},#{posMoney},#{alipayMoney},#{wechatMoney},#{paymentMethod},#{distributionAddress},
-        #{distributionTime},#{remarks},#{status},#{createTime},#{sellerId},#{picture})
+            (#{userId}, #{customerName}, #{customerPhone}, #{sellerName}, #{sellerphone}, #{orderNumber},
+                        #{agencyMoney}, #{orderMoney},
+                        #{realMoney}, #{cashMoney}, #{posMoney}, #{alipayMoney}, #{wechatMoney}, #{paymentMethod},
+                                                                 #{distributionAddress},
+                                                                 #{distributionTime}, #{remarks}, #{status},
+                                                                 #{createTime}, #{sellerId}, #{picture})
     </insert>
 
     <select id="findBySellerIdAndStatus"
@@ -63,14 +66,14 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
             customer_name customerName,
-            ord_no orderNumber,
-            order_money arrearageMoney
+            ord_no        orderNumber,
+            order_money   arrearageMoney
         FROM
             ord_arrears_audit
         WHERE
             seller_id = #{userID}
-        AND `status` = 'AUDIT_PASSED'
-        AND (whether_repayments = 0 OR whether_repayments IS NULL );
+            AND `status` = 'AUDIT_PASSED'
+            AND (whether_repayments = 0 OR whether_repayments IS NULL);
     </select>
 
     <select id="findById" parameterType="java.lang.Long"
@@ -121,48 +124,51 @@
 
     <select id="findArrearsByUserIdAndOrderNumber"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
-        SELECT
-            *
+        SELECT *
         FROM
             ord_arrears_audit
         WHERE
             seller_id = #{userID}
-        AND ord_no = #{orderNumber}
-        AND `status` = 'AUDIT_PASSED'
-        AND (whether_repayments = 0 OR whether_repayments IS NULL );
+            AND ord_no = #{orderNumber}
+            AND `status` = 'AUDIT_PASSED'
+            AND (whether_repayments = 0 OR whether_repayments IS NULL);
     </select>
 
     <update id="updateStatusAndrRepaymentTimeByOrderNumber">
         UPDATE ord_arrears_audit
         SET whether_repayments = 1,
-            repayment_time = #{repaymentTime}
+            repayment_time     = #{repaymentTime}
         WHERE
             ord_no = #{orderNumber}
-        AND `status` = 'AUDIT_PASSED'
+            AND `status` = 'AUDIT_PASSED'
 
     </update>
 
     <select id="getRepaymentMondyList"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         SELECT
-           	obpd.oid orderId,
-            obpd.ord_no orderNumber,
-            obpd.creatr_time createTime,
-            obpd.pay_time payTime,
-            obpd.pay_type payType,
-            obpd.amount amount,
-            obpd.reply_code replyCode,
+            obpd.oid            orderId,
+            obpd.ord_no         orderNumber,
+            obpd.create_time    createTime,
+            obpd.pay_time       payTime,
+            obpd.pay_type       payType,
+            obpd.amount         amount,
+            obpd.reply_code     replyCode,
             obpd.receipt_number receiptNumber
         FROM
             ord_arrears_audit AS oaa
-        INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no
+            INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no
         WHERE oaa.seller_id = #{userID}
-        AND oaa.whether_repayments = 1
+              AND oaa.whether_repayments = 1
     </select>
 
     <select id="getArrearsAuditInfo" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse">
-        SELECT agency_money, real_money, payment_method, status
+        SELECT
+            agency_money,
+            real_money,
+            payment_method,
+            status
         FROM ord_arrears_audit
         WHERE id = #{id}
     </select>

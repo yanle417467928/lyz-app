@@ -32,13 +32,12 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="" class="box-body form-inline">
-                    <form class="form-horizontal" id="formSearch">
-                    <#--<div class="form-group">-->
-                        <input name="birthday" type="text" class="form-control datepicker" id="birthday"
+                <form class="form-horizontal" id="formSearch">
+                    <div id="" class="box-body form-inline">
+                        <input name="startTime" type="text" class="form-control datepicker" id="startTime"
                                placeholder="开始时间">
                         至
-                        <input name="birthday" type="text" class="form-control datepicker" id="birthday"
+                        <input name="endTime" type="text" class="form-control datepicker" id="endTime"
                                placeholder="结束时间">
                         <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
                             <i class="fa fa-search"></i> 查询
@@ -46,31 +45,38 @@
                         <button type="reset" class="btn btn-default">
                             <i class="fa fa-print"></i> 重置
                         </button>
-                    <#--</div>-->
-                    </form>
-                </div>
-                <div id="toolbar" class="form-inline">
-                    <button id="btn_add" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                    </button>
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findStoreByCity(this.value)">
-                        <option value="-1">选择城市</option>
-                    </select>
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findCusByStoreId()" data-live-search="true">
-                        <option value="-1">调出门店</option>
-                    </select>
-                    <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByGuide()">
-                        <option value="-1">调入门店</option>
-                    </select>
-                    <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByGuide()">
-                        <option value="-1">选择状态</option>
-                    </select>
-                </div>
+                        <input type="hidden" id="formName" name="formName">
+                        <input type="hidden" id="toName" name="toName">
+                        <input type="hidden" id="city" name="city">
+                        <input type="hidden" id="statusNumber" name="statusNumber">
+                    </div>
+                    <div id="toolbar" class="form-inline">
+                        <button id="btn_add" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                        <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
+                                title="选择城市">
+                            <option value="-1">选择城市</option>
+                        </select>
+                        <select name="selectFromName" id="selectFromName" class="form-control select"
+                                style="width:auto;" title="调出门店">
+                            <option value="-1">调出门店</option>
+                        </select>
+                        <select name="selectToName" id="selectToName" class="form-control select"
+                                style="width:auto;" title="调入门店">
+                            <option value="-1">调入门店</option>
+                        </select>
+                        <select name="selectStatus" id="selectStatus" class="form-control select"
+                                style="width:auto;" title="选择状态">
+                            <option value="-1">选择状态</option>
+                            <option value="1" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建
+                            </option>
+                            <option value="2" <#if status?? && status==2>selected</#if>>已出库</option>
+                            <option value="3" <#if status?? && status==3>selected</#if>>已入库</option>
+                            <option value="4" <#if status?? && status==4>selected</#if>>已作废</option>
+                        </select>
+                    </div>
+                </form>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
@@ -94,43 +100,52 @@
                     </span>
                     <ul id="structureAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>城市id</b> <a class="pull-right" id="cityId"></a>
+                            <b>单号</b> <a class="pull-right" id="number"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>城市编码</b> <a class="pull-right" id="cityCode"></a>
+                            <b>城市id</b> <a class="pull-right" id="cityId"></a>
                         </li>
                         <li class="list-group-item">
                             <b>城市名称</b> <a class="pull-right" id="cityName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店id</b> <a class="pull-right" id="storeId"></a>
+                            <b>调出门店ID</b> <a class="pull-right" id="allocationFrom"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
+                            <b>调出门店名称</b> <a class="pull-right" id="allocationFromName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店名称</b> <a class="pull-right" id="storeName"></a>
+                            <b>调入门店ID</b> <a class="pull-right" id="allocationTO"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品id</b> <a class="pull-right" id="gid"></a>
+                            <b>调入门店名称</b> <a class="pull-right" id="allocationToName"></a>
+                        </li>
+
+                        <li class="list-group-item">
+                            <b>状态</b> <a class="pull-right" id="status"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品编码</b> <a class="pull-right" id="sku"></a>
+                            <b>备注</b> <a class="pull-right" id="comment"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品名称</b> <a class="pull-right" id="skuName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>可售门店库存</b> <a class="pull-right" id="availableIty"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>真实门店库存</b> <a class="pull-right" id="realIty"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
+                            <b>创建者</b> <a class="pull-right" id="creator"></a>
                         </li>
                         <li class="list-group-item">
                             <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>修改者</b> <a class="pull-right" id="modifier"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>修改时间</b> <a class="pull-right" id="modifyTime"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>调拨明细</b> <a class="pull-right" id="details"></a>
+
+
+                        </li>
+                        <li class="list-group-item">
+                            <b>调拨轨迹</b> <a class="pull-right" id="trails"></a>
                         </li>
                     </ul>
                 </div>
@@ -143,7 +158,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/allocation/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -157,8 +172,8 @@
             title: 'ID',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
+            field: 'number',
+            title: '单号',
             events: {
                 'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
@@ -169,51 +184,104 @@
             },
             align: 'center'
         }, {
-            field: 'goodsName',
-            title: '商品名称',
+            field: 'cityName',
+            title: '城市',
             align: 'center'
         }, {
-            field: 'goodsCode',
-            title: '商品编码',
+            field: 'allocationFromName',
+            title: '调出门店',
             align: 'center'
         }, {
-            field: 'realInventory',
-            title: '真实库存',
+            field: 'allocationToName',
+            title: '调入门店',
             align: 'center'
         }, {
-            field: 'soldInventory',
-            title: '可售库存',
+            field: 'status',
+            title: '状态',
+            align: 'center'
+        }, {
+            field: 'modifyTime',
+            title: '修改时间',
             align: 'center'
         }]);
 
-        /* $('#btn_add').on('click', function () {
-             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-        ');
-                });
+        $('#btn_add').on('click', function () {
+            $grid.add('/views/admin/inventory/allocation/add?parentMenuId=${(parentMenuId!'0')}')
+        });
 
-                $('#btn_edit').on('click', function() {
-                    $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-        ')
-                });
-
-                $('#btn_delete').on('click', function() {
-                    $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                });*/
+        $('#btn_query').on('click', function () {
+            $('#city').val($('#selectCity').val());
+            $('#formName').val($('#selectFromName').val());
+            $('#toName').val($('#selectToName').val());
+            $('#statusNumber').val($('#selectStatus').val());
+            $grid.searchTable('dataGrid', 'formSearch');
+        });
 
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             language: 'zh-CN',
             autoclose: true
         });
+        findCityList();
+        findStoreList()
     });
 
+    function findCityList() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#selectCity").append(city);
+            }
+        });
+    }
+
+
+    function findStoreList() {
+        var store = "";
+        var fromName = $("#selectFromName");
+        var toName = $("#selectToName");
+        $.ajax({
+            url: '/rest/stores/findStorelist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                fromName.append(store);
+                // fromName.selectpicker('refresh');
+                // fromName.selectpicker('render');
+                toName.append(store);
+                // toName.selectpicker('refresh');
+                // toName.selectpicker('render');
+            }
+        });
+    }
     var $page = {
         information: {
             show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/store/inventory/' + id,
+                        url: '/rest/store/allocation/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -227,72 +295,79 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html("门店库存详情");
+                                $('#menuTitle').html("调拨详情");
 
                                 if (null === data.cityId) {
                                     data.cityId = '-';
                                 }
                                 $('#cityId').html(data.cityId);
 
-                                if (null === data.cityCode) {
-                                    data.cityCode = '-';
+                                if (null === data.number) {
+                                    data.number = '-';
                                 }
-                                $('#cityCode').html(data.cityCode);
+                                $('#number').html(data.number);
 
                                 if (null === data.cityName) {
                                     data.cityName = 'fa fa-circle-o';
                                 }
                                 $('#cityName').html(data.cityName);
 
-                                if (null === data.storeId) {
-                                    data.storeId = '-';
+                                if (null === data.allocationFrom) {
+                                    data.allocationFrom = '-';
                                 }
-                                $('#storeId').html(data.storeId);
+                                $('#allocationFrom').html(data.allocationFrom);
 
-                                if (null === data.storeCode) {
-                                    data.storeCode = '-';
+                                if (null === data.allocationTo) {
+                                    data.allocationTo = '-';
                                 }
-                                $('#storeCode').html(data.storeCode);
+                                $('#allocationTo').html(data.allocationTo);
+                                if (null === data.status) {
+                                    data.status = '-';
+                                }
+                                $('#status').html(data.status);
 
-                                if (null === data.storeName) {
-                                    data.storeName = '-';
+                                if (null === data.allocationFromName) {
+                                    data.allocationFromName = '-';
                                 }
-                                $('#storeName').html(data.storeName);
+                                $('#allocationFromName').html(data.allocationFromName);
+                                if (null === data.allocationToName) {
+                                    data.allocationToName = '-';
+                                }
+                                $('#allocationToName').html(data.allocationToName);
+                                if (null === data.comment) {
+                                    data.comment = '-';
+                                }
+                                $('#comment').html(data.comment);
 
-                                if (null === data.gid) {
-                                    data.gid = '-';
+                                if (null === data.creator) {
+                                    data.creator = '-';
                                 }
-                                $('#gid').html(data.gid);
-
-                                if (null === data.sku) {
-                                    data.sku = '-';
-                                }
-                                $('#sku').html(data.sku);
-
-                                if (null === data.skuName) {
-                                    data.skuName = '-';
-                                }
-                                $('#skuName').html(data.skuName);
-
-                                if (null === data.availableIty) {
-                                    data.availableIty = '-';
-                                }
-                                $('#availableIty').html(data.availableIty);
-
-                                if (null === data.realIty) {
-                                    data.realIty = '-';
-                                }
-                                $('#realIty').html(data.realIty);
-
-                                if (null === data.lastUpdateTime) {
-                                    data.lastUpdateTime = '-';
-                                }
-                                $('#lastUpdateTime').html(data.lastUpdateTime);
+                                $('#creator').html(data.creator);
 
                                 if (null === data.createTime) {
                                     data.createTime = '-';
                                 }
                                 $('#createTime').html(data.createTime);
+
+                                if (null === data.modifier) {
+                                    data.modifier = '-';
+                                }
+                                $('#modifier').html(data.modifier);
+
+                                if (null === data.modifyTime) {
+                                    data.modifyTime = '-';
+                                }
+                                $('#modifyTime').html(data.modifyTime);
+
+                                if (null === data.details) {
+                                    data.details = '-';
+                                }
+                                $('#details').html(data.details);
+
+                                if (null === data.trails) {
+                                    data.trails = '-';
+                                }
+                                $('#trails').html(data.trails);
 
                                 $('#information').modal();
                             } else {

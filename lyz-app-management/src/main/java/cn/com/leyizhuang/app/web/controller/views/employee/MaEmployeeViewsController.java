@@ -18,7 +18,10 @@ public class MaEmployeeViewsController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(MaEmployeeViewsController.class);
 
-
+    /**
+     * 跳转员工列表
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getEmployeesList() {
         return "/views/employee/employee_page";

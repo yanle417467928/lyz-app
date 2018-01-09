@@ -73,10 +73,10 @@
                 send_time = #{sendTime},
             </if>
             <if test="null != errorMessage">
-                error_message = #{errorMessage}
+                error_message = #{errorMessage},
             </if>
         </set>
-
+        WHERE order_no = #{orderNo}
     </update>
 
     <update id="updateAtwRequisitionOrder"
@@ -90,10 +90,10 @@
                 send_time = #{sendTime},
             </if>
             <if test="null != errorMessage">
-                error_message = #{errorMessage}
+                error_message = #{errorMessage},
             </if>
         </set>
-
+        WHERE order_number = #{orderNumber}
     </update>
 
     <update id="updateAtwRequisitionOrderGoods"
@@ -107,10 +107,10 @@
                 send_time = #{sendTime},
             </if>
             <if test="null != errorMessage">
-                error_message = #{errorMessage}
+                error_message = #{errorMessage},
             </if>
         </set>
-
+        WHERE goods_code = #{goodsCode}
     </update>
 
     <select id="findAtwCancelOrderByOrderNo"

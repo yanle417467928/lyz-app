@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
@@ -36,7 +37,8 @@ public class MaCityDeliveryTimeRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/{id}")
-    public GridDataVO<CityDeliveryTimeVO> restCityDeliveryTimeIdGet(Integer offset, Integer size, String keywords, @PathVariable(value = "id") Long id) {
+    public GridDataVO<CityDeliveryTimeVO> restCityDeliveryTimeGrid(Integer offset, Integer size, String keywords, @PathVariable(value = "id") Long id) {
+        logger.info("restCityDeliveryTimeGrid,当前城市下的配送时间页查询, 入参 offset:{},size:{},keywords:{},id:{}", offset, size, keywords,id);
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<CityDeliveryTime> cityDeliveryTimePage = this.macityDeliveryTimeService.queryPage(page, size,id);
@@ -55,7 +57,8 @@ public class MaCityDeliveryTimeRestController extends BaseRestController {
      */
     @PostMapping(value = "/judgmentTime")
     public ValidatorResultDTO judgmentTime(@RequestParam(value="startTime") String startTime,@RequestParam(value="endTime") String endTime,@RequestParam(value="cityId") Long cityId){
-        if(null==startTime||null==endTime||null==cityId||"".equals(startTime)||"".equals(endTime)){
+        logger.info("judgmentTime,判断配送时间与现有时间段是否冲突, 入参 startTime:{},endTime:{},cityId:{}", startTime, endTime, cityId);
+        if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||null==cityId){
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }
@@ -72,13 +75,13 @@ public class MaCityDeliveryTimeRestController extends BaseRestController {
      */
     @PostMapping
     public ResultDTO<?> saveCityDeliveryTime(CityDeliveryTimeVO cityDeliveryTimeVO, BindingResult result) {
+        logger.info("saveCityDeliveryTime,保存配送时间, 入参 cityDeliveryTimeVO:{}", cityDeliveryTimeVO);
         if (!result.hasErrors()) {
             this.macityDeliveryTimeService.save(cityDeliveryTimeVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
             return actFor400(result,"提交的数据有误");
         }
-
     }
 
     /**
@@ -89,6 +92,7 @@ public class MaCityDeliveryTimeRestController extends BaseRestController {
      */
     @PutMapping
     public ResultDTO<String> updateCityDeliveryTime(CityDeliveryTimeVO cityDeliveryTimeVO, BindingResult result) {
+        logger.info("updateCityDeliveryTime,更新配送时间, 入参 cityDeliveryTimeVO:{}", cityDeliveryTimeVO);
         if (!result.hasErrors()&& macityDeliveryTimeService.judgmentTime(cityDeliveryTimeVO.getStartTime(),cityDeliveryTimeVO.getEndTime(),cityDeliveryTimeVO.getCityId(),cityDeliveryTimeVO.getId())) {
             this.macityDeliveryTimeService.update(cityDeliveryTimeVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

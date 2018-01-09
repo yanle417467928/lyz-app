@@ -31,26 +31,9 @@
     </resultMap>
 
 
+
+
     <resultMap id="guideResultMap" type="GuideVO">
-        <id property="id" column="emp_id" jdbcType="BIGINT"/>
-        <result property="loginName" column="login_name"/>
-        <result property="name" column="name"/>
-        <association property="cityId" javaType="SimpleCityParam">
-            <id property="cityId" column="city_id"/>
-            <result property="name" column="cname"/>
-        </association>
-        <association property="storeId" javaType="SimpleStoreParam">
-            <id property="storeId" column="store_id"/>
-            <result property="storeName" column="store_name"/>
-        </association>
-        <association property="guideCreditAvailableMoney" javaType="GuideCreditAvailableMoney">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="creditLimitAvailable" column="credit_limit_available"/>
-        </association>
-    </resultMap>
-
-
-    <resultMap id="guideDetailResultMap" type="GuideDetailVO">
         <id property="id" column="emp_id" jdbcType="BIGINT"/>
         <result property="loginName" column="login_name"/>
         <result property="name" column="name"/>
@@ -73,7 +56,7 @@
 
 
     <select id="findAllEmployee" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s
@@ -95,7 +78,7 @@
     </select>
 
     <select id="findGuideListById" parameterType="java.lang.Long" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -141,7 +124,7 @@
     </select>
 
     <select id="queryPageVOByStoreCondition" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -163,7 +146,7 @@
 
 
     <select id="queryPageVOByCityCondition"  resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -191,7 +174,7 @@
 
 
     <select id="queryPageVOByType" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -203,7 +186,7 @@
 
 
     <select id="findEmployeeByInfo" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -220,7 +203,7 @@
     </select>
 
     <select id="queryDecorativeEmpPageVO" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s
@@ -233,7 +216,7 @@
     </select>
 
     <select id="queryDecorativeEmpPageVOByInfo" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -252,7 +235,7 @@
 
 
     <select id="findDecorativeEmpByCondition" resultMap="employeeResultMap">
-        select e.*,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
@@ -278,34 +261,34 @@
 
     <select id="findAllGuide" resultMap="guideResultMap">
         select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
-        s.store_name,e.emp_id,ecm.credit_limit_available
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         ORDER BY
         ecm.id
         ASC
     </select>
 
-    <select id="queryGuideVOById" resultMap="guideDetailResultMap">
+    <select id="queryGuideVOById" resultMap="guideResultMap">
         select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
         s.store_name,e.emp_id,ecm.id,ecm.credit_limit,ecm.temp_credit_limit,ecm.credit_limit_available,ecm.last_update_time
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         e.emp_id = #{id}
     </select>
 
     <select id="queryGuideVOByCondition" resultMap="guideResultMap">
         select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
-        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available as creditLimitAvailable
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available ,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         1=1
         <if test="null != cityId">
@@ -323,11 +306,11 @@
 
     <select id="queryGuideVOByInfo" resultMap="guideResultMap">
         select e.login_name ,e.name,c.city_id,c.name cname,s.store_id,
-        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available as creditLimitAvailable
+        s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.id
+        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         e.login_name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
         OR

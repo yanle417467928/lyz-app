@@ -3,8 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
-import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
-import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
@@ -203,7 +202,22 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Transactional(rollbackFor = Exception.class)
     public void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log) {
         if (null !=log){
-            employeeDAO.addEmpCreditMoneyChangeLog(log);
+            EmpCreditMoneyChangeLogDO  empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
+            if(null!=log.getCreditLimitAvailableChangeAmount() && 0!=log.getCreditLimitAvailableChangeAmount()){
+                EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog =new EmpAvailableCreditMoneyChangeLog();
+                empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
+                empAvailableCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(log.getCreditLimitAvailableChangeAmount());
+                Long id = employeeDAO.saveCreditLimitAvailableChange(empAvailableCreditMoneyChangeLog);
+                empCreditMoneyChangeLogDO.setAvailableCreditChangId(empAvailableCreditMoneyChangeLog.getId());
+            }
+            if(null!=log.getTempCreditLimitChangeAmount()&& 0!=log.getCreditLimitAvailableChangeAmount()){
+                EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog = new EmpTempCreditMoneyChangeLog();
+                empTempCreditMoneyChangeLog.setTempCreditLimitAfterChange(log.getTempCreditLimitAfterChange());
+                empTempCreditMoneyChangeLog.setTempCreditLimitChangeAmount(log.getTempCreditLimitChangeAmount());
+                Long id  = employeeDAO.saveTempCreditLimitChange(empTempCreditMoneyChangeLog);
+                empCreditMoneyChangeLogDO.setTempCreditChangeId(empTempCreditMoneyChangeLog.getId());
+           }
+            employeeDAO.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLogDO);
         }
     }
 }

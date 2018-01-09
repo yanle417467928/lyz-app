@@ -44,6 +44,17 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
+     * 查询所有门店列表包括装饰公司(下拉框)
+     *
+     * @return
+     */
+    @GetMapping(value = "/findAllStorelist")
+    public List<SimpleStoreParam> findAllStorelist() {
+        List<SimpleStoreParam> allStoresList = this.maStoreService.findAllStorelist();
+        return allStoresList;
+    }
+
+    /**
      * 查询门店列表(下拉框)
      *
      * @return
@@ -53,6 +64,19 @@ public class MaStoreRestController extends BaseRestController {
         List<SimpleStoreParam> allStoresList = this.maStoreService.findStoreList();
         return allStoresList;
     }
+
+    /**
+     * 查询该城市ID的门店列表包括装饰公司(下拉框)
+     *
+     * @param cityId
+     * @return
+     */
+    @GetMapping(value = "/findAllStoresListByCityId/{cityId}")
+    public List<SimpleStoreParam> findAllStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
+        List<SimpleStoreParam> storesList = this.maStoreService.findAllStoresListByCityId(cityId);
+        return storesList;
+    }
+
 
     /**
      * 查询该城市ID的门店列表(下拉框)
@@ -82,8 +106,8 @@ public class MaStoreRestController extends BaseRestController {
      * @param cityId    城市id
      * @return  门店列表
      */
-    @GetMapping(value = "/find/city/selfDelivery/stores")
-    public List<StoreVO> findSelfDeliveryStoresListByCityId(Long cityId){
+    @GetMapping(value = "/find/city/selfDelivery/stores/{cityId}")
+    public List<StoreVO> findSelfDeliveryStoresListByCityId(@PathVariable(value = "cityId") Long cityId){
         List<StoreVO> selfDeliveryStoreList = this.maStoreService.findSelfDeliveryStoresListByCityId(cityId);
         return selfDeliveryStoreList;
     }
@@ -195,7 +219,13 @@ public class MaStoreRestController extends BaseRestController {
      */
     @PutMapping(value = "/{storeId}")
     public ResultDTO<?> updateStoreById(@PathVariable(value = "storeId") Long storeId, @RequestParam(value = "isSelfDelivery") Boolean isSelfDelivery) {
+        if (null != storeId && null != isSelfDelivery) {
             maStoreService.update(storeId, isSelfDelivery);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
+            logger.warn("提交参数有误");
+            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                    "提交参数有误,请检查数据", null);
+        }
     }
 }

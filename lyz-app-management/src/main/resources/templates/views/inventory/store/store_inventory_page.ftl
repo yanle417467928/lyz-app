@@ -250,12 +250,12 @@
                                 if (null === data.lastUpdateTime) {
                                     data.lastUpdateTime = '-';
                                 }
-                                $('#lastUpdateTime').html(data.lastUpdateTime);
+                                $('#lastUpdateTime').html($localDateTime.toString(data.lastUpdateTime));
 
                                 if (null === data.createTime) {
                                     data.createTime = '-';
                                 }
-                                $('#createTime').html(data.createTime);
+                                $('#createTime').html($localDateTime.toString(data.createTime));
 
                                 $('#information').modal();
                             } else {

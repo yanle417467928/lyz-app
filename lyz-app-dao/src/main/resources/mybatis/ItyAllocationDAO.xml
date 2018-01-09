@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO">
+
+    <select id="queryListVO" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO">
+        select
+        id,
+        number,
+        status,
+        allocation_from_name,
+        allocation_to_name,
+        city_name,
+        DATE_FORMAT(modify_time,'%y-%m-%d %H:%i:%s') modify_time
+        from ity_allocation
+        <if test="null != keywords">
+            WHERE ity_allocation.number LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY modify_time DESC
+    </select>
+
+    <select id="queryAllocationById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation">
+        SELECT *
+        FROM ity_allocation
+        WHERE id = #{id}
+    </select>
+
+    <select id="queryDetailsByAllocationId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
+        SELECT *
+        FROM ity_allocation_detail
+    </select>
+
+    <select id="queryTrailsByAllocationId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationTrail">
+        SELECT *
+        FROM ity_allocation_trail
+    </select>
+    <select id="queryByAllocationQuery"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO">
+
+        select
+        id,
+        number,
+        status,
+        allocation_from_name,
+        allocation_to_name,
+        city_name,
+        DATE_FORMAT(modify_time,'%y-%m-%d %H:%i:%s') modify_time
+        from ity_allocation
+        WHERE TRUE
+        <if test="city != null">
+            AND city_id = #{city}
+        </if>
+        <if test="formName != null">
+            AND allocation_from = #{formName}
+        </if>
+        <if test="toName != null">
+            AND allocation_to = #{toName}
+        </if>
+        <if test="allocationTypeEnum != null">
+            AND status = #{allocationTypeEnum}
+        </if>
+        <if test="startDateTime != null">
+            AND modify_time &gt;= #{startDateTime}
+        </if>
+        <if test="endDateTime != null">
+            AND modify_time &lt;= #{endDateTime}
+        </if>
+    </select>
+</mapper>

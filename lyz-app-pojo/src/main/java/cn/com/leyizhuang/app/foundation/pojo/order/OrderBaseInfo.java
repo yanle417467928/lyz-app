@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.order;
 import cn.com.leyizhuang.app.core.constant.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,9 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderBaseInfo {
+public class OrderBaseInfo implements Serializable {
+
+    private static final long serialVersionUID = -4652079711923866954L;
 
     private Long id;
 
@@ -30,6 +33,10 @@ public class OrderBaseInfo {
      */
     private String cityName;
 
+    /**
+     * 分公司id
+     */
+    private Long sobId;
     /**
      * 订单号
      */
@@ -94,6 +101,11 @@ public class OrderBaseInfo {
      * 门店组织全编码
      */
     private String storeStructureCode;
+
+    /**
+     * 门店组织id
+     */
+    private Long storeOrgId;
 
     /**
      * 下单人id

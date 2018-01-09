@@ -22,7 +22,6 @@ import java.util.List;
  * Created on 2017-09-21 14:25
  **/
 @Service
-@Transactional
 public class MaCityServiceImpl implements MaCityService {
 
     @Resource

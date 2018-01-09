@@ -17,7 +17,11 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findStoreList();
 
+    List<SimpleStoreParam> findAllStorelist();
+
     List<SimpleStoreParam> findStoresListByCityId(Long cityId);
+
+    List<SimpleStoreParam> findAllStoresListByCityId(Long cityId);
 
     StoreDetailVO queryStoreVOById(Long storeId);
 

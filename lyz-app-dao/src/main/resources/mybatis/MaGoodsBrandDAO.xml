@@ -5,7 +5,7 @@
 
     <select id="findAllGoodsBrand"  resultType="GoodsBrand">
         SELECT
-           *
+        brd_id,brand_name,sort_id
         FROM
         gds_goods_brand
         ORDER
@@ -42,7 +42,7 @@
 
     <select id="findGoodsBrandByName"  parameterType="java.lang.String" resultType="GoodsBrand">
         select
-        *
+            brd_id,brand_name,sort_id
         FROM gds_goods_brand g
         where
         g.brand_name LIKE CONCAT('%',#{queryCusInfo},'%')

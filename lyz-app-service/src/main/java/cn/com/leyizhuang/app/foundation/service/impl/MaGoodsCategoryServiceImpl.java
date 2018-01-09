@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
 
     @Autowired

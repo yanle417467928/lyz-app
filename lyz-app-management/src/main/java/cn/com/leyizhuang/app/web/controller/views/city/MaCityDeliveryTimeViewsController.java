@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.city;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.service.MaCityDeliveryTimeService;
 import cn.com.leyizhuang.app.foundation.vo.management.city.CityDeliveryTimeVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -23,14 +24,25 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
     @Autowired
     private MaCityDeliveryTimeService maCityDeliveryTimeService;
 
+    /**
+     * 跳转城市列表
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getCitysDeliveryTime() {
         return "/views/city/cityDeliveryTime";
     }
 
+    /**
+     * 跳转该城市下的配送时间列表
+     * @param cityId
+     * @param cityName
+     * @param model
+     * @return
+     */
    @RequestMapping(value = "/cityDeliveryTimeList/{cityId}")
     public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
-       if (cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+       if (cityId.equals(0L)||StringUtils.isBlank(cityName)) {
            error404();
            return "/error/404";
        } else {
@@ -40,10 +52,16 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
        }
     }
 
-
+    /**
+     * 跳转新增配送时间列表
+     * @param cityId
+     * @param cityName
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/add")
     public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
-        if (cityId.equals(0L)||null==cityName||"".equals(cityName)) {
+        if (cityId.equals(0L)|| StringUtils.isBlank(cityName)) {
                 error404();
                 return "/error/404";
             } else {
@@ -53,6 +71,12 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
         }
     }
 
+    /**
+     * 编辑城市配送时间列表
+     * @param model
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/edit/{id}")
     public String cityDeliveryTimeEdit(Model model, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {

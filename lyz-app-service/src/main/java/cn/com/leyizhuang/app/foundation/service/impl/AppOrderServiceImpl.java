@@ -19,6 +19,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleIn
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -120,7 +121,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public  PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
+    public PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<OrderBaseInfo> orderBaseInfoList = orderDAO.getOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
         return new PageInfo<>(orderBaseInfoList);
@@ -299,6 +300,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         //设置城市信息
         tempOrder.setCityId(userStore.getCityId());
         tempOrder.setCityName(userStore.getCity());
+        tempOrder.setSobId(userStore.getSobId());
+        tempOrder.setStoreOrgId(userStore.getStoreId());
 
         switch (identityType) {
             //导购代下单
@@ -586,6 +589,16 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (null != couponInfo) {
             orderDAO.saveOrderCouponInfo(couponInfo);
         }
+    }
+
+    @Override
+    public PageInfo<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer page, Integer size) {
+        if (null != userID && null != identityType && null != page && null !=size ){
+            PageHelper.startPage(page, size);
+            List<OrderListResponse> orderListResponses = orderDAO.getPendingEvaluationOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            return new PageInfo<>(orderListResponses);
+        }
+        return null;
     }
 
     @Override

@@ -24,11 +24,21 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
     @Autowired
     private MaStoreService maStoreService;
 
+    /**
+     * 装饰公司信用列表
+     * @return
+     */
     @RequestMapping(value = "/list")
     public String getDecorativeCreditList() {
         return "/views/decorativeCompany/decorativeCompanyCredit_page";
     }
 
+    /**
+     * 装饰公司信用金编辑页面
+     * @param map
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "/edit/{id}")
     public String DecorativeCreditEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {

@@ -211,6 +211,29 @@ var $grid = {
     },
     getRowByUniqueId: function (container, uniqueId) {
         return container.bootstrapTable('getRowByUniqueId', uniqueId);
+    },
+    searchTable: function (tableId, searchFromId) {
+        //先获取表格参数
+        var tableGrid = $('#' + tableId);
+        var params = tableGrid.bootstrapTable('getOptions');
+        //设置queryParams 传递参数值
+        params.queryParams = function (params) {
+            //定义参数
+            var search = {
+                offset: params.offset,
+                size: params.limit,
+                keywords: params.search
+            };
+            //获取表单数据
+            $.each($('#' + searchFromId).serializeArray(), function (i, filed) {
+                if (null !== filed.value && "" !== filed.value) {
+                    params[filed.name] = filed.value
+                }
+            });
+            //将自定义参数加入queryParams
+            return $.extend(params, search);
+        };
+        tableGrid.bootstrapTable('refresh', params)
     }
 };
 

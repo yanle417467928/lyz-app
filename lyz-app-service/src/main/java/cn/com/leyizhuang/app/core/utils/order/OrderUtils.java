@@ -14,7 +14,7 @@ import java.util.Random;
  * 订单相关工具类
  *
  * @author Richard
- *         Created on 2017-11-16 10:48
+ * Created on 2017-11-16 10:48
  **/
 @Component
 public class OrderUtils {
@@ -36,8 +36,24 @@ public class OrderUtils {
         OrderUtils.cityService = cityService;
     }
 
+
+    /**
+     * 生成分单号
+     *
+     * @param companyFlag     分公司
+     * @param mainOrderNumber 主单号
+     * @return 分单号
+     */
+    public static String generateSeparateOrderNumber(String companyFlag, String mainOrderNumber) {
+        if (null != companyFlag && null != mainOrderNumber) {
+            return mainOrderNumber.replace("XN", companyFlag);
+        }
+        return null;
+    }
+
     /**
      * 生成订单号
+     *
      * @param cityId 城市id
      * @return 订单号
      */
@@ -65,6 +81,7 @@ public class OrderUtils {
 
     /**
      * 生成收款单号
+     *
      * @param cityId 城市id
      * @return 收款单号
      */
@@ -125,7 +142,8 @@ public class OrderUtils {
 
     /**
      * 生成退单号
-     * @return  退单号
+     *
+     * @return 退单号
      */
     public static String getReturnNumber() {
         StringBuilder orderReturnNumber = new StringBuilder();
@@ -138,19 +156,18 @@ public class OrderUtils {
         return orderReturnNumber.toString();
     }
 
-    public static Double replaceNullWithZero(Double d){
-        if (null == d){
+    public static Double replaceNullWithZero(Double d) {
+        if (null == d) {
             return 0D;
         }
         return d;
     }
 
 
-
-
     /**
      * 生成退款单据号
-     * @return  退款单据号
+     *
+     * @return 退款单据号
      */
     public static String getRefundNumber() {
         StringBuilder orderRefundNumber = new StringBuilder();
@@ -162,7 +179,6 @@ public class OrderUtils {
         orderRefundNumber.append(timeStamp);
         return orderRefundNumber.toString();
     }
-
 
 
     public static void main(String[] args) {

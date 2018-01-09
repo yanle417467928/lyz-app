@@ -29,6 +29,7 @@ public class AppAdminStoreInventoryViewController extends BaseController {
         return "/views/inventory/store/store_inventory_page";
     }
 
+
     /**
      * 进销存
      *
@@ -51,6 +52,10 @@ public class AppAdminStoreInventoryViewController extends BaseController {
         return "/views/inventory/store/store_allocation_page";
     }
 
+    @RequestMapping("/allocation/add")
+    public String addAllocation(Model model) {
+        return "/views/inventory/store/store_allocation_add";
+    }
     /**
      * 库存要货
      *
