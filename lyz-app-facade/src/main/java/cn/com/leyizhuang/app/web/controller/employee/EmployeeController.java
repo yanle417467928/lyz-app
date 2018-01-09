@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppSystemType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
@@ -302,9 +303,9 @@ public class EmployeeController {
      * @date 2017/11/8
      */
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType) {
+    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -318,10 +319,22 @@ public class EmployeeController {
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
-            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -343,9 +356,9 @@ public class EmployeeController {
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType) {
+    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType,Integer page, Integer size) {
 
-        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -359,10 +372,22 @@ public class EmployeeController {
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT,获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT,获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
-            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList,null,null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -408,7 +433,7 @@ public class EmployeeController {
         }
         try {
             PageInfo<StoreCreditMoneyLogResponse> storeCreditMoneyLogResponseList = this.storeCreditMoneyLogServiceImpl.findByUserId(userId, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeCreditMoneyLogResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<StoreCreditMoneyLogResponse>().transform(storeCreditMoneyLogResponseList));
             logger.info("getStoreCreditMoneyLog OUT, 获取装饰公司信用金变更记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -459,7 +484,7 @@ public class EmployeeController {
         try {
             PageInfo<EmployeeCreditMoneyLogResponse> employeeCreditMoneyLogResponseList = this.employeeCreditMoneyLogService.findByUserId(userId, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    AssertUtil.isNotEmpty(employeeCreditMoneyLogResponseList) ? employeeCreditMoneyLogResponseList : null);
+                    AssertUtil.isNotEmpty(employeeCreditMoneyLogResponseList) ? new GridDataVO<EmployeeCreditMoneyLogResponse>().transform(employeeCreditMoneyLogResponseList) : null);
             logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -481,9 +506,9 @@ public class EmployeeController {
      * @date 2017/11/27
      */
     @PostMapping(value = "/subvention/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreSubventionLog(Long userId, Integer identityType) {
+    public ResultDTO getStoreSubventionLog(Long userId, Integer identityType,Integer page, Integer size) {
 
-        logger.info("getStoreSubventionLog CALLED, 获取装饰公司现金返利变更记录，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getStoreSubventionLog CALLED, 获取装饰公司现金返利变更记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -497,9 +522,21 @@ public class EmployeeController {
             logger.info("getStoreSubventionLog OUT, 获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreSubventionLog OUT,获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getStoreSubventionLog OUT,获取装饰公司现金返利变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            List<StoreSubventionLogResponse> storeSubventionLogResponseList = this.storeSubventionLogServiceImpl.findByUserId(userId);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSubventionLogResponseList);
+            PageInfo<StoreSubventionLogResponse> storeSubventionLogResponseList = this.storeSubventionLogServiceImpl.findByUserId(userId, page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<StoreSubventionLogResponse>().transform(storeSubventionLogResponseList));
             logger.info("getStoreSubventionLog OUT, 获取装饰公司现金返利变更记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

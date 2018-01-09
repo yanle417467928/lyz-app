@@ -53,6 +53,7 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
             guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
             guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
             guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
+            guideCreditChangeDetailVO.setChangeType("ADMIN_RECHARGE");
             guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
              this.maEmpCreditMoneyService.update(guideCreditMoneyDetail,guideCreditChangeDetailVO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

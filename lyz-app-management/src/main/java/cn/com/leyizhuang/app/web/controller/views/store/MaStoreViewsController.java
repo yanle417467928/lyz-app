@@ -2,9 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.store;
 
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.app.web.controller.views.user.AppAdminUserViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class MaStoreViewsController extends BaseController {
     @Autowired
     private MaStoreService maStoreService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AppAdminUserViewController.class);
+    private static final Logger logger = LoggerFactory.getLogger(MaStoreViewsController.class);
 
     @RequestMapping(value = "/list")
     public String getStoreList() {

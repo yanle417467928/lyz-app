@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
@@ -120,4 +122,5 @@ public interface AppStoreDAO {
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 
     void updateStoreInventoryByStoreCodeAndGoodsId(@Param("storeCode") String storeCode, @Param("gid") Long gid, @Param("qty") Integer qty);
+
 }

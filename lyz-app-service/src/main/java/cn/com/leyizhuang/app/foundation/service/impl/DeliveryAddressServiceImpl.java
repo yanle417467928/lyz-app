@@ -6,10 +6,14 @@ import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -28,13 +32,15 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
-    public List<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType) {
+    public PageInfo<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType, Integer page) {
+        List deliveryAddressResponseList;
         if (identityType.getValue() == 6) {
-            return this.deliveryAddressDAO.queryListByCustomerIdAndStatusIsTrue(userId);
+            PageHelper.startPage(page, 10);
+            deliveryAddressResponseList = this.deliveryAddressDAO.queryListByCustomerIdAndStatusIsTrue(userId);
         } else {
-            return this.deliveryAddressDAO.queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(userId, identityType);
+            deliveryAddressResponseList = this.deliveryAddressDAO.queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue(userId, identityType);
         }
-
+        return new PageInfo<>(deliveryAddressResponseList);
     }
 
     @Override

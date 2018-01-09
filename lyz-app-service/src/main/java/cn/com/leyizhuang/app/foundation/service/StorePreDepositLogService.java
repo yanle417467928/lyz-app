@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -13,7 +14,14 @@ import java.util.List;
  */
 public interface StorePreDepositLogService {
 
-    List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList);
+    PageInfo<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList, Integer page, Integer size);
+    /**
+     * 查询门店预存款信息
+     * @param userId    用户id
+     * @param typeList  变更类型
+     * @return  门店预存款信息
+     */
+    List<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList);
 
     StPreDepositLogDO save(StPreDepositLogDO stPreDepositLogDO);
     /**

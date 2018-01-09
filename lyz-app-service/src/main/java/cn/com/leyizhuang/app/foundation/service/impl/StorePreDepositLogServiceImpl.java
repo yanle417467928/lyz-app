@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,20 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     private StorePreDepositLogDAO storePreDepositLogDAO;
 
     @Override
-    public List<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList) {
-        return this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
+    public PageInfo<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList, Integer page, Integer size) {
+        if(typeList.contains("ALIPAY_RECHARGE")&&typeList.contains("WECHAT_RECHARGE")&&typeList.contains("UNIONPAY_RECHARGE")){
+            PageHelper.startPage(page, size);
+            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
+            return new PageInfo<>(preDepositLogResponseList);
+        }else {
+        List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
+        return new PageInfo<>(preDepositLogResponseList);
+    }
+    }
+
+    @Override
+    public List<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList) {
+        return this.storePreDepositLogDAO.findPreDepositChangeLog(userId, typeList);
     }
 
     @Override

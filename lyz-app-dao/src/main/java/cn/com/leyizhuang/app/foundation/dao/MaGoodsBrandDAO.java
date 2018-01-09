@@ -17,6 +17,12 @@ public interface MaGoodsBrandDAO {
 
     List<GoodsBrand> findGoodsBrandByName(String queryStoreInfo);
 
+    GoodsBrand findGoodsBrandByCode(String code);
+
+    List<GoodsBrand> findGoodsBrandByCodeList(@Param("list") List<String> list);
+
+    List<GoodsBrand> findGoodsBrandByIdList(@Param("list") List<String> list);
+
     void save(GoodsBrand goodsBrand);
 
     Boolean isExistBrandName(String brandName);

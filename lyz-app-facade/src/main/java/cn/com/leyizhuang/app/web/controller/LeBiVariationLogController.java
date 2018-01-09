@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.LeBiVariationLogResPonse;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +45,9 @@ public class LeBiVariationLogController {
      * @return 乐币变动明细列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> queryListByCusIDAndLeBiVariationType(Long userID, Integer identityType, Integer showType) {
+    public ResultDTO<Object> queryListByCusIDAndLeBiVariationType(Long userID, Integer identityType, Integer showType,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("queryListByCusIDAndLeBiVariationType CALLED,查看乐币变动明细列表，入参 userID:{},identityType:{},showType:{}", userID, identityType, showType);
+        logger.info("queryListByCusIDAndLeBiVariationType CALLED,查看乐币变动明细列表，入参 userID:{},identityType:{},showType:{},page:{},size:{}", userID, identityType, showType,page,size);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
@@ -66,13 +68,25 @@ public class LeBiVariationLogController {
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             //查询对应查看类型的所有变动记录
-            List<CustomerLeBiVariationLog> customerLeBiVariationLogList = leBiVariationLogService.queryListBycusIDAndShowTypeType(userID, showType);
+            PageInfo<CustomerLeBiVariationLog> customerLeBiVariationLogList = leBiVariationLogService.queryListBycusIDAndShowTypeType(userID, showType, page, size);
             //创建返回list
             List<LeBiVariationLogResPonse> leBiVariationLogResPonseList = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for (CustomerLeBiVariationLog customerLeBiVariationLog : customerLeBiVariationLogList) {
+            for (CustomerLeBiVariationLog customerLeBiVariationLog : customerLeBiVariationLogList.getList()) {
                 //创建返回类
                 LeBiVariationLogResPonse leBiVariationLogResponse = new LeBiVariationLogResPonse();
                 //设值
@@ -101,8 +115,21 @@ public class LeBiVariationLogController {
                 leBiVariationLogResponse.setTotalQuantity(appCustomerService.findLeBiQuantityByUserIdAndIdentityType(userID, identityType));
                 leBiVariationLogResPonseList.add(leBiVariationLogResponse);
             }
-
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, leBiVariationLogResPonseList);
+            PageInfo<LeBiVariationLogResPonse> pageInfo = new PageInfo<>(leBiVariationLogResPonseList);
+            pageInfo.setEndRow(customerLeBiVariationLogList.getEndRow());
+            pageInfo.setNextPage(customerLeBiVariationLogList.getNextPage());
+            pageInfo.setPageNum(customerLeBiVariationLogList.getPageNum());
+            pageInfo.setPages(customerLeBiVariationLogList.getPages());
+            pageInfo.setPageSize(customerLeBiVariationLogList.getPageSize());
+            pageInfo.setPrePage(customerLeBiVariationLogList.getPrePage());
+            pageInfo.setSize(customerLeBiVariationLogList.getSize());
+            pageInfo.setStartRow(customerLeBiVariationLogList.getStartRow());
+            pageInfo.setTotal(customerLeBiVariationLogList.getTotal());
+            pageInfo.setNavigateFirstPage(customerLeBiVariationLogList.getNavigateFirstPage());
+            pageInfo.setNavigatepageNums(customerLeBiVariationLogList.getNavigatepageNums());
+            pageInfo.setNavigateLastPage(customerLeBiVariationLogList.getNavigateLastPage());
+            pageInfo.setNavigatePages(customerLeBiVariationLogList.getNavigatePages());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<LeBiVariationLogResPonse>().transform(pageInfo));
             logger.info("queryListByCusIDAndLeBiVariationType OUT,查看乐币变动明细列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

@@ -142,12 +142,16 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    public List<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType) {
+    public PageInfo<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
         if (null != userId && null != identityType) {
             if (identityType == 6) {
-                return goodsDAO.findGoodsListByIsHotAndCustomerIdAndIdentityType(userId);
+                PageHelper.startPage(page, size);
+                List<UserGoodsResponse> userGoodsResponseList = goodsDAO.findGoodsListByIsHotAndCustomerIdAndIdentityType(userId);
+                return new PageInfo<>(userGoodsResponseList);
             } else {
-                return goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+                PageHelper.startPage(page, size);
+                List<UserGoodsResponse> userGoodsResponseList =  goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+                return new PageInfo<>(userGoodsResponseList);
             }
         }
         return null;

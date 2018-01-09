@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFundDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface OrderAgencyFundService {
 
     List<DeliveryAgencyFundResponse> findByUserId(Long userId);
 
-    List<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate);
+    PageInfo<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate, Integer page, Integer size);
 
 }

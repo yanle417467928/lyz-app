@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
@@ -840,7 +841,7 @@ public class OrderController {
             pageInfo.setNavigatepageNums(orderBaseInfoLists.getNavigatepageNums());
             pageInfo.setNavigateLastPage(orderBaseInfoLists.getNavigateLastPage());
             pageInfo.setNavigatePages(orderBaseInfoLists.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, pageInfo);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<OrderListResponse>().transform(pageInfo));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {

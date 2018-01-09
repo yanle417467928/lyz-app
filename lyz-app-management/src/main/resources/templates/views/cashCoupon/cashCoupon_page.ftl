@@ -10,7 +10,7 @@
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
-    <script type="text/javascript" src="/javascript/activity/cash_coupon_page.js"></script>
+    <script type="text/javascript" src="/javascript/cashCoupon/cashCoupon_page.js"></script>
 </head>
 <body>
 
@@ -40,9 +40,12 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
+
+                    <!--
                     <button id="btn_copy" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> 复制
                     </button>
+                    -->
 
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>删除

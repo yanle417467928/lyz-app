@@ -28,7 +28,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * 跳转城市列表
      * @return
      */
-    @RequestMapping(value = "/list")
+    @GetMapping(value = "/list")
     public String getCitysDeliveryTime() {
         return "/views/city/cityDeliveryTime";
     }
@@ -40,7 +40,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @param model
      * @return
      */
-   @RequestMapping(value = "/cityDeliveryTimeList/{cityId}")
+   @GetMapping(value = "/cityDeliveryTimeList/{cityId}")
     public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
        if (cityId.equals(0L)||StringUtils.isBlank(cityName)) {
            error404();
@@ -59,7 +59,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @param model
      * @return
      */
-    @RequestMapping(value = "/add")
+    @GetMapping(value = "/add")
     public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
         if (cityId.equals(0L)|| StringUtils.isBlank(cityName)) {
                 error404();
