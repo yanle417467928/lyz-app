@@ -422,7 +422,7 @@ public class OrderController {
                     //算总金额
                     totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                     //算会员折扣(先判断是否是会员还是零售会员)
-                    if (identityType == 2 && null != customer.getCustomerType() && customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+                    if (identityType == 2 || null != customer.getCustomerType() && customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
                         memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
                                 simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                     }
