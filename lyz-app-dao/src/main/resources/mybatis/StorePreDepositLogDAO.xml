@@ -43,4 +43,19 @@
             store_id = #{userId}
     </update>
 
+
+    <select id="findPreDepositChangeLog" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse">
+        SELECT
+        l.id, l.change_type type, l.create_time, l.change_money, l.order_number
+        FROM st_pre_deposit_log l
+        INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
+        INNER JOIN st_store s ON s.store_id = l.store_id AND  store_type!= 'ZS'
+        WHERE
+        l.change_type in
+        <foreach collection="list" item="type" separator="," open="(" close=")">
+            #{type}
+        </foreach>
+        ORDER BY l.create_time DESC
+    </select>
+
 </mapper>

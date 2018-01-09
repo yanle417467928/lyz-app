@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
+import com.github.pagehelper.PageInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface LeBiVariationLogService {
     List<CustomerLeBiVariationLog> queryListBycusID(Long cusId);
 
     //根据变动类型查看顾客乐币变动明细
-    List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType);
+    PageInfo<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType, Integer page, Integer size);
 
     /**
      * 取消订单返回乐币

@@ -13,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -206,10 +208,12 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (userId != null && identityType != null) {
-            return returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
+            PageHelper.startPage(page, size);
+           List<ReturnOrderBaseInfo> returnOrderList =returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
                     AppIdentityType.getAppIdentityTypeByValue(identityType));
+            return new PageInfo<>(returnOrderList);
         }
         return null;
     }

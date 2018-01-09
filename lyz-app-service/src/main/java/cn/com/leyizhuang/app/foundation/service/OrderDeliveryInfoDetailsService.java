@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import com.github.pagehelper.PageInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -66,7 +67,7 @@ public interface OrderDeliveryInfoDetailsService {
      * @param userId    配送员编号
      * @return  已完成单列表
      */
-    List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId);
+    PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId, Integer page, Integer size);
 
     /**
      * 获取未读的物流信息条数

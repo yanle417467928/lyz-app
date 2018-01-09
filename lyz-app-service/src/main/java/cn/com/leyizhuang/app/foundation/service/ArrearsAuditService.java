@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface ArrearsAuditService {
 
     OrderArrearsAuditDO save(OrderArrearsAuditDO orderArrearsAuditDO);
 
-    List<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList);
+    PageInfo<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList,Integer page, Integer size);
 
     /**
      * 查询欠款单
@@ -51,7 +52,7 @@ public interface ArrearsAuditService {
      * @param userID 用户id
      * @return 返回还款记录列表
      */
-    List<OrderBillingPaymentDetails> getRepaymentMondyList(Long userID);
+    PageInfo<OrderBillingPaymentDetails> getRepaymentMondyList(Long userID,Integer page, Integer size);
 
     DeliveryArrearsAuditResponse getArrearsAuditInfo(Long id);
 

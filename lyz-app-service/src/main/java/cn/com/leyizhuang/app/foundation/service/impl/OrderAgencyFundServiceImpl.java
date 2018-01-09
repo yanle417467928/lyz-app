@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.foundation.dao.OrderAgencyFundDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderAgencyFundDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAgencyFundResponse;
 import cn.com.leyizhuang.app.foundation.service.OrderAgencyFundService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,9 @@ public class OrderAgencyFundServiceImpl implements OrderAgencyFundService {
     }
 
     @Override
-    public List<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate) {
-        return this.orderAgencyFundDAO.findByUserIdAndCreateTime(userId, startDate, endDate);
+    public PageInfo<DeliveryAgencyFundResponse> findByUserIdAndCreateTime(Long userId, String startDate, String endDate, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<DeliveryAgencyFundResponse> deliveryAgencyFundResponseList = this.orderAgencyFundDAO.findByUserIdAndCreateTime(userId, startDate, endDate);
+         return new PageInfo<>(deliveryAgencyFundResponseList);
     }
 }

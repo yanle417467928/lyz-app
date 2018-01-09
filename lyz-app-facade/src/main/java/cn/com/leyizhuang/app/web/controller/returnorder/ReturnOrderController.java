@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.returnorder;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -32,6 +33,7 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -1327,9 +1329,9 @@ public class ReturnOrderController {
      * @return 退货单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getReturnOrderList(Long userId, Integer identityType) {
+    public ResultDTO getReturnOrderList(Long userId, Integer identityType,Integer page, Integer size) {
 
-        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{}", userId, identityType);
+        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -1342,14 +1344,26 @@ public class ReturnOrderController {
             logger.info("getReturnOrderList OUT,获取用户退货单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getReturnOrderList OUT,获取用户退货单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getReturnOrderList OUT,获取用户退货单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             //查询所有退单表
-            List<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType);
-
+            PageInfo<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, page, size);
+            List<ReturnOrderBaseInfo> baseInfoList = baseInfo.getList();
             //创建一个返回对象list
             List<ReturnOrderListResponse> returnOrderListResponses = new ArrayList<>();
 
-            for (ReturnOrderBaseInfo returnBaseInfo : baseInfo) {
+            for (ReturnOrderBaseInfo returnBaseInfo : baseInfoList) {
                 //创建有个存放图片地址的list
                 List<String> goodsImgList = new ArrayList<>();
                 //创建一个返回类（借用订单返回对象）
@@ -1379,7 +1393,21 @@ public class ReturnOrderController {
                 returnOrderListResponses.add(response);
 
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnOrderListResponses);
+            PageInfo<ReturnOrderListResponse> pageInfo = new PageInfo<>(returnOrderListResponses);
+            pageInfo.setEndRow(baseInfo.getEndRow());
+            pageInfo.setNextPage(baseInfo.getNextPage());
+            pageInfo.setPageNum(baseInfo.getPageNum());
+            pageInfo.setPages(baseInfo.getPages());
+            pageInfo.setPageSize(baseInfo.getPageSize());
+            pageInfo.setPrePage(baseInfo.getPrePage());
+            pageInfo.setSize(baseInfo.getSize());
+            pageInfo.setStartRow(baseInfo.getStartRow());
+            pageInfo.setTotal(baseInfo.getTotal());
+            pageInfo.setNavigateFirstPage(baseInfo.getNavigateFirstPage());
+            pageInfo.setNavigatepageNums(baseInfo.getNavigatepageNums());
+            pageInfo.setNavigateLastPage(baseInfo.getNavigateLastPage());
+            pageInfo.setNavigatePages(baseInfo.getNavigatePages());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<ReturnOrderListResponse>().transform(pageInfo));
             logger.info("getReturnOrderList OUT,获取用户退货单列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

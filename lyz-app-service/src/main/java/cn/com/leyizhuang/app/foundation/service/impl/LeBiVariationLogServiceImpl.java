@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.LeBiVariationLogDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog;
 import cn.com.leyizhuang.app.foundation.service.LeBiVariationLogService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +34,10 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
     }
 
     @Override
-    public List<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType) {
-        return leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusId, showType);
+    public PageInfo<CustomerLeBiVariationLog> queryListBycusIDAndShowTypeType(Long cusId, Integer showType, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<CustomerLeBiVariationLog> customerLeBiVariationLogList = leBiVariationLogDAO.queryListBycusIDAndShowTypeType(cusId, showType);
+        return new PageInfo<>(customerLeBiVariationLogList);
     }
 
     @Override

@@ -9,6 +9,8 @@ import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryArrearsAuditRespon
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +45,15 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     }
 
     @Override
-    public List<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList) {
-        return this.arrearsAuditDAO.findBySellerIdAndStatus(sellerId, arrearsAuditStatusList);
+    public PageInfo<SellerArrearsAuditResponse> findBySellerIdAndStatus(Long sellerId, List<ArrearsAuditStatus> arrearsAuditStatusList,Integer page, Integer size) {
+        if(arrearsAuditStatusList.contains(ArrearsAuditStatus.AUDITING)){
+            List<SellerArrearsAuditResponse> sellerArrearsAuditResponseList = this.arrearsAuditDAO.findBySellerIdAndStatus(sellerId, arrearsAuditStatusList);
+            return new PageInfo<>(sellerArrearsAuditResponseList);
+        }else{
+            PageHelper.startPage(page, size);
+            List<SellerArrearsAuditResponse> sellerArrearsAuditResponseList = this.arrearsAuditDAO.findBySellerIdAndStatus(sellerId, arrearsAuditStatusList);
+            return new PageInfo<>(sellerArrearsAuditResponseList);
+        }
     }
 
     @Override
@@ -68,8 +77,10 @@ public class ArrearsAuditServiceImpl implements ArrearsAuditService {
     }
 
     @Override
-    public List<OrderBillingPaymentDetails> getRepaymentMondyList(Long userID) {
-        return arrearsAuditDAO.getRepaymentMondyList(userID);
+    public PageInfo<OrderBillingPaymentDetails> getRepaymentMondyList(Long userID,Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderBillingPaymentDetails> orderBillingPaymentDetailsList =arrearsAuditDAO.getRepaymentMondyList(userID);
+        return new PageInfo<>(orderBillingPaymentDetailsList);
     }
 
     @Override
