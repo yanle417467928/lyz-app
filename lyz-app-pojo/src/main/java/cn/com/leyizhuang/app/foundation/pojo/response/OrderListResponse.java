@@ -22,9 +22,17 @@ public class OrderListResponse {
      */
     private String orderNo;
     /**
-     * 代下单顾客信息
+     * 顾客id
      */
-    private CustomerSimpleInfo customer;
+    private Long customerId;
+    /**
+     * 顾客姓名
+     */
+    private String customerName;
+    /**
+     * 顾客电话
+     */
+    private String customerPhone;
     /**
      * 订单状态
      */

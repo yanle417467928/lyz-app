@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -78,6 +79,7 @@ public interface OrderDAO {
     void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 
     void deleteOrderGoodsInfo(@Param("id") Long id);
+
     /**
      * 根据订单号修改订单状态
      *
@@ -100,4 +102,7 @@ public interface OrderDAO {
     List<OrderGoodsListResponse> getOrderGoodsList(@Param("orderNumber") String orderNumber);
 
     void saveOrderCouponInfo(OrderCouponInfo couponInfo);
+
+    List<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(@Param(value = "userID") Long userID,
+                                                                                 @Param(value = "identityType") AppIdentityType identityType);
 }

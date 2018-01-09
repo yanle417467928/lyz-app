@@ -410,7 +410,7 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name, customer_type,store_org_id
+         remark, city_id, city_name, customer_type, store_org_id
         )
         VALUES
             (
@@ -421,7 +421,7 @@
                 #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode}, #{salesConsultId},
                 #{salesConsultName},
                 #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
-                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}, #{customerType},#{storeOrgId}
+                #{isEvaluated}, #{auditNo}, #{remark}, #{cityId}, #{cityName}, #{customerType}, #{storeOrgId}
             )
     </insert>
 
@@ -637,4 +637,49 @@
         INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type)
         VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType});
     </insert>
+
+    <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
+        SELECT
+        o.status,
+        o.is_evaluated,
+        o.ord_no,
+        o.effective_end_time,
+        o.delivery_type,
+        o.customer_id,
+        o.customer_name,
+        o.customer_phone,
+        ob.amount_payable,
+        ogi.cover_image_uri
+        FROM ord_base_info o INNER JOIN ord_billing_details ob ON
+        o.oid = ob.oid,ord_goods_info ogi
+        WHERE
+        o.oid = ogi.oid
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            AND o.customer_id = #{userID}
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            AND o.creator_id = #{userID}
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            AND o.creator_id = #{userID}
+        </if>
+        AND o.creator_identity_type = #{identityType}
+        AND o.status = 'FINISHED'
+    </select>
+    <resultMap id="pendingEvaluationOrder" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse">
+        <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="amount_payable" property="price" jdbcType="DECIMAL"/>
+        <result column="effective_end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="is_evaluated" property="isEvaluated" jdbcType="BIT"/>
+        <result column="delivery_type" property="deliveryType"
+                jdbcType="VARCHAR"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
+        <collection property="goodsImgList" ofType="java.lang.String" javaType="list">
+            <result column="cover_image_uri"/>
+        </collection>
+    </resultMap>
+
 </mapper>

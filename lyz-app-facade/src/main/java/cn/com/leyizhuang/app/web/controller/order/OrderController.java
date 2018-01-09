@@ -90,6 +90,13 @@ public class OrderController {
     @Resource
     private TransactionalSupportService transactionalSupportService;
 
+    /**
+     * 创建订单方法
+     *
+     * @param orderParam 前台提交的订单相关参数
+     * @param request    request对象
+     * @return 订单创建结果
+     */
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
         logger.info("createOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
@@ -223,7 +230,7 @@ public class OrderController {
 
 
             //******** 处理订单账单支付明细信息 *********
-            List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo,orderBillingDetails);
+            List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
 
             //********分摊**********
@@ -688,6 +695,64 @@ public class OrderController {
     }
 
     /**
+     * 用户获取待评价订单列表
+     *
+     * @param userId       用户id
+     * @param identityType 用户类型
+     * @return 订单列表
+     */
+    @PostMapping(value = "/list/pending/evaluation", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPendingEvaluationOrderList(Long userId, Integer identityType, Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getPendingEvaluationOrderList CALLED,用户获取待评价订单列表，入参 userID:{}, identityType:{}", userId, identityType);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取用户待评价订单列表
+            PageInfo<OrderListResponse> responseOrderList = appOrderService.getPendingEvaluationOrderListByUserIDAndIdentityType(userId,
+                    identityType, page, size);
+            for (OrderListResponse response : responseOrderList.getList()) {
+                response.setCount(response.getGoodsImgList().size());
+            }
+            CustomerSignDetailResponse response = new CustomerSignDetailResponse();
+            response.setCount(responseOrderList.getTotal());
+            response.setNumsPerPage(responseOrderList.getPageSize());
+            response.setTotalPage(responseOrderList.getPages());
+            response.setCurrentPage(responseOrderList.getPageNum());
+            response.setData(responseOrderList.getList());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseOrderList.getList());
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", response.getCount());
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取待评价订单列表失败", null);
+            logger.warn("getPendingEvaluationOrderList EXCEPTION,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * 用户获取订单列表
      *
      * @param userID       用户id
@@ -695,7 +760,7 @@ public class OrderController {
      * @return 订单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus,Integer page, Integer size) {
+    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}", userID, identityType);
         if (null == userID) {
@@ -722,8 +787,8 @@ public class OrderController {
         }
         try {
             //获取用户所有订单列表
-            PageInfo<OrderBaseInfo> orderBaseInfoLists = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType, showStatus,page,size);
-            List <OrderBaseInfo> orderBaseInfoList =orderBaseInfoLists.getList();
+            PageInfo<OrderBaseInfo> orderBaseInfoLists = appOrderService.getOrderListByUserIDAndIdentityType(userID, identityType, showStatus, page, size);
+            List<OrderBaseInfo> orderBaseInfoList = orderBaseInfoLists.getList();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
             //循环遍历订单列表
@@ -754,9 +819,9 @@ public class OrderController {
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
                 if (identityType == 0) {
-                    orderListResponse.setCustomer(new CustomerSimpleInfo(orderBaseInfo.getCustomerId(),
-                            orderBaseInfo.getCustomerName(),
-                            orderBaseInfo.getCustomerPhone()));
+                    orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
+                    orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                 }
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
