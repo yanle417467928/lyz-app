@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
+import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.CashCouponDAO;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
@@ -9,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppCashCouponDutchService;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -28,7 +30,8 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
     private GoodsDAO goodsDAO;
 
     @Override
-    public List<OrderGoodsInfo> cashCouponDutch(List<Long> cashCouponIdList, List<OrderGoodsInfo> goodsInfs){
+    @Transactional
+    public List<OrderGoodsInfo> cashCouponDutch(List<Long> cashCouponIdList, List<OrderGoodsInfo> goodsInfs) throws Exception {
         if(cashCouponIdList == null || cashCouponIdList.size() == 0){
             return goodsInfs;
         }
@@ -56,7 +59,8 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                     Double price = goods.getSettlementPrice();
 
                     if(qty == null || qty < 1 || price == null || price == 0){
-                        // TODO 抛异常
+                        //  抛异常
+                        throw new DutchException("通用现金券分摊，商品数量和单价有误！");
                     }
 
                     totalPrice = (price * qty) + totalPrice;
@@ -73,7 +77,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                 List<OrderGoodsInfo> dutchGoodsInfos = new ArrayList<>();
 
                 // 获取指定品牌
-                List<Long> brandIds = cashCouponDAO.queryStoreIdsByCcid(customerCashCoupon.getCcid());
+                List<Long> brandIds = cashCouponDAO.queryBrandIdsByCcid(customerCashCoupon.getCcid());
 
                 // 商品总价
                 Double totalPrice = 0.00;
@@ -85,13 +89,15 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                     Double price = goods.getSettlementPrice();
 
                     if(qty == null || qty < 1 || price == null || price == 0){
-                        // TODO 抛异常
+                        //  抛异常
+                        throw new DutchException("品牌现金券分摊，商品数量和单价有误！");
                     }
 
                     // 获取商品品牌id
                     GoodsDO goodsDO = goodsDAO.findGoodsById(goods.getGid());
                     if (goodsDO == null || goodsDO.getBrdId() == null){
-                        // TODO 抛异常
+                        // 抛异常
+                        throw new DutchException("通用现金券分摊，商品品牌id不存在！");
                     }
                     Long brandId = goodsDO.getBrdId();
 
@@ -124,7 +130,8 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                     Double price = goods.getSettlementPrice();
 
                     if(qty == null || qty < 1 || price == null || price == 0){
-                        // TODO 抛异常
+                        // 抛异常
+                        throw new DutchException("指定商品现金券分摊，商品数量或单价信息有误！");
                     }
 
                     if(goodsIds.contains(goods.getGid())){
@@ -141,7 +148,12 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
         return goodsInfs;
     }
 
-    public List<OrderGoodsInfo> dutchPrice(List<OrderGoodsInfo> goodsInfs,Double totalPrice,Double denomination){
+    public List<OrderGoodsInfo> dutchPrice(List<OrderGoodsInfo> goodsInfs,Double totalPrice,Double denomination) throws Exception {
+
+        if(goodsInfs == null || goodsInfs.size() == 0){
+            throw  new DutchException("现金券分摊有误！无本品");
+        }
+
         // 记录N-1次分摊金额 采用倒挤法
         Double dutchedPrice = 0.00;
 
@@ -156,12 +168,12 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                 goods.setCashCouponSharePrice(dutchPrice + sharePrice);
 
                 // 记录
-                dutchedPrice += dutchPrice;
+                dutchedPrice += dutchPrice * goods.getOrderQuantity();
             }else{
-                Double dutchPrice = CountUtil.sub(totalPrice,dutchedPrice);
+                Double dutchPrice = CountUtil.sub(denomination,dutchedPrice);
 
                 Double sharePrice = null == goods.getCashCouponSharePrice() ? 0.00 : goods.getCashCouponSharePrice();
-                goods.setCashCouponSharePrice(dutchPrice + sharePrice);
+                goods.setCashCouponSharePrice(CountUtil.div((dutchPrice + sharePrice),goods.getOrderQuantity()));
             }
         }
 

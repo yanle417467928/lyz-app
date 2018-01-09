@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface AppCashCouponDutchService {
 
-    List<OrderGoodsInfo> cashCouponDutch(List<Long> cashCouponIdList, List<OrderGoodsInfo> goodsInfs);
+    List<OrderGoodsInfo> cashCouponDutch(List<Long> cashCouponIdList, List<OrderGoodsInfo> goodsInfs) throws Exception;
 }

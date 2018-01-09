@@ -3,8 +3,8 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.CashCouponDAO">
 
     <sql id="ALL_FIELDS">
-        id, cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, condition, denomination,effective_start_time,
-        effective_end_time, descripttion, title
+        id, cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
+        effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store
     </sql>
 
     <sql id="CASH_COUPON_FIELDS">
@@ -134,28 +134,28 @@
 
     <select id="queryStoreIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT
-        id
+        store_id
         FROM cp_cash_coupon_store
         where ccid = #{ccid}
     </select>
 
     <select id="queryCompanyIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT
-        id
+        company_id
         FROM cp_cash_coupon_company
         where ccid = #{ccid}
     </select>
 
     <select id="queryBrandIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT
-        id
+        brand_id
         FROM cp_cash_coupon_brand
         where ccid = #{ccid}
     </select>
 
     <select id="queryGoodsIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT
-        id
+        goods_id
         FROM cp_cash_coupon_goods
         where ccid = #{ccid}
     </select>
