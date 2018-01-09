@@ -40,6 +40,10 @@ public class OrderGoodsInfo implements Cloneable{
      */
     private String skuName;
     /**
+     * 商品图片
+     */
+    private String coverImageUri;
+    /**
      * 零售价
      */
     private Double retailPrice;

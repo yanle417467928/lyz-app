@@ -17,7 +17,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerSignDetailResponse implements Serializable{
+public class CustomerSignDetailResponse<Content> implements Serializable{
 
 
     private static final long serialVersionUID = -6631708612837160074L;
@@ -45,6 +45,6 @@ public class CustomerSignDetailResponse implements Serializable{
     /**
      * 顾客签到日志简要信息
      */
-    List<CustomerSignLogBrief> data;
+    List<Content> data;
 
 }

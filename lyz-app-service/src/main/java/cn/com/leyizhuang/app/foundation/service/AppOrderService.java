@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleIn
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -128,4 +129,6 @@ public interface AppOrderService {
     List<OrderGoodsListResponse> getOrderGoodsList(String orderNumber);
 
     void saveOrderCouponInfo(OrderCouponInfo couponInfo);
+
+    PageInfo<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer page, Integer size);
 }
