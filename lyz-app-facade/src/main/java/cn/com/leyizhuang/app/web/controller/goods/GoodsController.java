@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -43,7 +44,7 @@ public class GoodsController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     public ResultDTO<Object> getGoodsListByUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getGoodsListByUserIdAndIdentityType CALLED,获取商品列表，入参 categoryCode:{},userId:{},identityType:{}", categoryCode, userId, identityType);
+        logger.info("getGoodsListByUserIdAndIdentityType CALLED,获取商品列表，入参 categoryCode:{},userId:{},identityType:{},page:{},size:{}", categoryCode, userId, identityType,page,size);
         if (StringUtils.isBlank(categoryCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "一级分类编码不能为空!", null);
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -73,7 +74,7 @@ public class GoodsController {
         }
         try {
             PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCategoryCodeAndUserIdAndIdentityType(categoryCode, userId, identityType, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsVOList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
             logger.info("getGoodsListByUserIdAndIdentityType OUT,获取商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -219,9 +220,9 @@ public class GoodsController {
      * @return ResultDTO
      */
     @RequestMapping(value = "/hot/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public ResultDTO<Object> getGoodsHotListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 userId:{},identityType:{}", userId, identityType);
+        logger.info("getGoodsHotListByUserIdAndIdentityType CALLED,获取热门商品列表，入参 userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
@@ -232,13 +233,24 @@ public class GoodsController {
             logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            List<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType);
+            PageInfo<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (userGoodsResponseList != null && userGoodsResponseList.size() > 0) ? userGoodsResponseList : null);
+                    (null!=userGoodsResponseList&&null!=userGoodsResponseList.getList()&&userGoodsResponseList.getList().size() > 0) ? new GridDataVO<UserGoodsResponse>().transform(userGoodsResponseList) : null);
             logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-
         } catch (Exception e) {
             e.getStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取热门商品列表失败", null);

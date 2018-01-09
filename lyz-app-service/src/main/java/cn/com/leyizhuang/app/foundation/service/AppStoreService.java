@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 
@@ -90,4 +91,5 @@ public interface AppStoreService {
     StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long goodsId);
 
     void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty);
+
 }

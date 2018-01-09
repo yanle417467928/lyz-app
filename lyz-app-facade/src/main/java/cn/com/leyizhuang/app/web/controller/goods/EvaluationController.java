@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.goods;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -17,6 +18,7 @@ import cn.com.leyizhuang.app.foundation.service.GoodsEvaluationService;
 import cn.com.leyizhuang.app.foundation.service.OrderEvaluationService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -204,7 +206,7 @@ public class EvaluationController {
      * @return 商品评价List
      */
     @PostMapping(value = "/goods/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getGoodsEvaluationList(Long gid) {
+    public ResultDTO<Object> getGoodsEvaluationList(Long gid,Integer page, Integer size) {
         logger.info("getGoodsEvaluationList CALLED,获取商品评价,入参 gid:{}, ", gid);
         ResultDTO<Object> resultDTO;
 
@@ -213,13 +215,25 @@ public class EvaluationController {
             logger.info("getGoodsEvaluationList OUT,获取商品评价失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getGoodsEvaluationList OUT,获取商品评价失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getGoodsEvaluationList OUT,获取商品评价失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
 
         try {
             //查询所有评价
-            List<GoodsEvaluation> goodsEvaluationList = goodsEvaluationService.queryEvaluationListByGid(gid);
+            PageInfo<GoodsEvaluation> goodsEvaluationList = goodsEvaluationService.queryEvaluationListByGid(gid, page, size);
             //创建商品评价返回list
             List<GoodsEvaluationListResponse> goodsEvaluationListResponses = new ArrayList<>();
-            for (GoodsEvaluation goodsEvaluation : goodsEvaluationList) {
+            for (GoodsEvaluation goodsEvaluation : goodsEvaluationList.getList()) {
                 GoodsEvaluationListResponse goodsEvaluationListResponse = new GoodsEvaluationListResponse();
                 goodsEvaluationListResponse.setCommentContent(goodsEvaluation.getCommentContent());
                 goodsEvaluationListResponse.setEvaluationName(goodsEvaluation.getEvaluationName());
@@ -235,7 +249,21 @@ public class EvaluationController {
                 goodsEvaluationListResponse.setEvaluationTime(DateUtil.getDateTimeStr(goodsEvaluation.getEvaluationTime()));
                 goodsEvaluationListResponses.add(goodsEvaluationListResponse);
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsEvaluationListResponses);
+            PageInfo<GoodsEvaluationListResponse> pageInfo = new PageInfo<>(goodsEvaluationListResponses);
+            pageInfo.setEndRow(goodsEvaluationList.getEndRow());
+            pageInfo.setNextPage(goodsEvaluationList.getNextPage());
+            pageInfo.setPageNum(goodsEvaluationList.getPageNum());
+            pageInfo.setPages(goodsEvaluationList.getPages());
+            pageInfo.setPageSize(goodsEvaluationList.getPageSize());
+            pageInfo.setPrePage(goodsEvaluationList.getPrePage());
+            pageInfo.setSize(goodsEvaluationList.getSize());
+            pageInfo.setStartRow(goodsEvaluationList.getStartRow());
+            pageInfo.setTotal(goodsEvaluationList.getTotal());
+            pageInfo.setNavigateFirstPage(goodsEvaluationList.getNavigateFirstPage());
+            pageInfo.setNavigatepageNums(goodsEvaluationList.getNavigatepageNums());
+            pageInfo.setNavigateLastPage(goodsEvaluationList.getNavigateLastPage());
+            pageInfo.setNavigatePages(goodsEvaluationList.getNavigatePages());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<GoodsEvaluationListResponse>().transform(pageInfo));
             logger.info("getGoodsEvaluationList OUT,获取商品评价成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import com.github.pagehelper.PageInfo;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -36,7 +37,7 @@ public interface AppEmployeeService {
 
     AppEmployee findByIdAndStatusIsTrue(Long userId);
 
-    List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType);
+    PageInfo<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size);
 
     List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType);
 

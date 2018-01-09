@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -7,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,9 +121,9 @@ public class UserHomePageController {
      * @return
      */
     @PostMapping(value = "/customer/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomersList(Long userId, Integer identityType) {
+    public ResultDTO getCustomersList(Long userId, Integer identityType,Integer page, Integer size) {
 
-        logger.info("getCustomersList CALLED,获取我的顾客列表，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getCustomersList CALLED,获取我的顾客列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (userId == null) {
@@ -134,11 +136,20 @@ public class UserHomePageController {
             logger.info("getCustomersList OUT,获取我的顾客列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空", null);
+            logger.info("getCustomersList OUT,获取我的顾客列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空", null);
+            logger.info("getCustomersList OUT,获取我的顾客列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            List<CustomerListResponse> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType);
-
+            PageInfo<CustomerListResponse> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (appCustomerList != null && appCustomerList.size() > 0) ? appCustomerList : null);
+                    (null!=appCustomerList&& null!=appCustomerList.getList()&&appCustomerList.getList().size() > 0) ? new GridDataVO<CustomerListResponse>().transform(appCustomerList) : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -199,10 +210,8 @@ public class UserHomePageController {
      * @return
      */
     @PostMapping(value = "/decorateEmployee/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType) {
-
-        logger.info("getDecorateEmployeeList CALLED,获取我的员工列表，入参 userId {},identityType{}", userId, identityType);
-
+    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType,Integer page, Integer size) {
+        logger.info("getDecorateEmployeeList CALLED,获取我的员工列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -214,11 +223,21 @@ public class UserHomePageController {
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getDecorateEmployeeList OUT,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getDecorateEmployeeList OUT,获取我的员工列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            List<EmployeeListResponse> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType);
-
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
+            PageInfo<EmployeeListResponse> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType, page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null!=appEmployeeList && null!=appEmployeeList.getList()&&appEmployeeList.getList().size() > 0) ? new GridDataVO<EmployeeListResponse>().transform(appEmployeeList) : null);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

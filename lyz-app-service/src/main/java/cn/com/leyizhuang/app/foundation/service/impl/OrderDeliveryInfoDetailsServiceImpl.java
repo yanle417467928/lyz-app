@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,8 +80,10 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId) {
-        return orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(userId);
+    public PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(userId);
+        return new PageInfo<>(auditFinishResponseList);
     }
 
     @Override

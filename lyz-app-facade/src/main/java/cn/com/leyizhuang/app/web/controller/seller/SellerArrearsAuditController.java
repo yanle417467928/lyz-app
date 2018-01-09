@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.seller;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
@@ -17,6 +18,7 @@ import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +84,8 @@ public class SellerArrearsAuditController {
         }
         List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
         arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
-        List<SellerArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findBySellerIdAndStatus(userId, arrearsAuditStatusList);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
+        PageInfo<SellerArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findBySellerIdAndStatus(userId, arrearsAuditStatusList,null,null);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList.getList());
         logger.info("getArrearsAuditListBySeller OUT,导购获取待审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
@@ -98,8 +100,8 @@ public class SellerArrearsAuditController {
      * @date 2017/11/24
      */
     @PostMapping(value = "/audited/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> findArrearsAuditedListBySeller(Long userId, Integer identityType) {
-        logger.info("findArrearsAuditedListBySeller CALLED,导购获取已审核欠款申请列表，入参 userId:{} identityType:{}", userId, identityType);
+    public ResultDTO<Object> findArrearsAuditedListBySeller(Long userId, Integer identityType,Integer page, Integer size) {
+        logger.info("findArrearsAuditedListBySeller CALLED,导购获取已审核欠款申请列表，入参 userId:{} identityType:{},page:{},size:{}", userId, identityType,page,size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -111,11 +113,23 @@ public class SellerArrearsAuditController {
             logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
         arrearsAuditStatusList.add(ArrearsAuditStatus.AUDIT_NO);
         arrearsAuditStatusList.add(ArrearsAuditStatus.AUDIT_PASSED);
-        List<SellerArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findBySellerIdAndStatus(userId, arrearsAuditStatusList);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
+        PageInfo<SellerArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findBySellerIdAndStatus(userId, arrearsAuditStatusList, page, size);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<SellerArrearsAuditResponse>().transform(arrearsAuditResponseList));
         logger.info("findArrearsAuditedListBySeller OUT,导购获取已审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
@@ -283,8 +297,8 @@ public class SellerArrearsAuditController {
      * @return 返回还款记录列表
      */
     @PostMapping(value = "/repayment/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getRepaymentMondyList(Long userID, Integer identityType) {
-        logger.info("getRepaymentMondyList CALLED,导购查询还款记录，入参 userId:{} identityType:{}", userID, identityType);
+    public ResultDTO<Object> getRepaymentMondyList(Long userID, Integer identityType,Integer page, Integer size) {
+        logger.info("getRepaymentMondyList CALLED,导购查询还款记录，入参 userId:{} identityType:{},page:{},size:{}", userID, identityType,page,size);
         ResultDTO<Object> resultDTO;
 
         if (null == userID) {
@@ -304,20 +318,46 @@ public class SellerArrearsAuditController {
             logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getRepaymentMondyList OUT,导购查询还款记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            List<OrderBillingPaymentDetails> orderBillingPaymentDetailsList = arrearsAuditServiceImpl.getRepaymentMondyList(userID);
+            PageInfo<OrderBillingPaymentDetails> orderBillingPaymentDetailsList = arrearsAuditServiceImpl.getRepaymentMondyList(userID, page, size);
 
             List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = new ArrayList<>();
-            for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList) {
+            for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList.getList()) {
                 RepaymentMoneyListResponse repaymentMoneyListResponse = new RepaymentMoneyListResponse();
                 repaymentMoneyListResponse.setRepaymentTime(sdf.format(orderBillingPaymentDetails.getPayTime()));
                 repaymentMoneyListResponse.setRepaymentMoney(orderBillingPaymentDetails.getAmount());
                 repaymentMoneyListResponse.setOrderNumber(orderBillingPaymentDetails.getOrderNumber());
                 repaymentMoneyListResponseList.add(repaymentMoneyListResponse);
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, repaymentMoneyListResponseList);
+            PageInfo<RepaymentMoneyListResponse> pageInfo = new PageInfo<>(repaymentMoneyListResponseList);
+            pageInfo.setEndRow(orderBillingPaymentDetailsList.getEndRow());
+            pageInfo.setNextPage(orderBillingPaymentDetailsList.getNextPage());
+            pageInfo.setPageNum(orderBillingPaymentDetailsList.getPageNum());
+            pageInfo.setPages(orderBillingPaymentDetailsList.getPages());
+            pageInfo.setPageSize(orderBillingPaymentDetailsList.getPageSize());
+            pageInfo.setPrePage(orderBillingPaymentDetailsList.getPrePage());
+            pageInfo.setSize(orderBillingPaymentDetailsList.getSize());
+            pageInfo.setStartRow(orderBillingPaymentDetailsList.getStartRow());
+            pageInfo.setTotal(orderBillingPaymentDetailsList.getTotal());
+            pageInfo.setNavigateFirstPage(orderBillingPaymentDetailsList.getNavigateFirstPage());
+            pageInfo.setNavigatepageNums(orderBillingPaymentDetailsList.getNavigatepageNums());
+            pageInfo.setNavigateLastPage(orderBillingPaymentDetailsList.getNavigateLastPage());
+            pageInfo.setNavigatePages(orderBillingPaymentDetailsList.getNavigatePages());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<RepaymentMoneyListResponse>().transform(pageInfo));
             logger.info("getRepaymentMondyList OUT,导购查询还款记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

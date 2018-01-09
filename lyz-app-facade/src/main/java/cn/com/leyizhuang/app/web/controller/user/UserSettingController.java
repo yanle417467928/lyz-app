@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.user;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -19,6 +20,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,10 +224,10 @@ public class UserSettingController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/deliveryAddress/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<List> getDeliveryAddress(Long userId, Integer identityType) {
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType", userId, identityType);
+    public ResultDTO<Object> getDeliveryAddress(Long userId, Integer identityType,Integer page) {
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType,page:{}", userId, identityType,page);
 
-        ResultDTO<List> resultDTO;
+        ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
@@ -236,9 +238,17 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        PageInfo<DeliveryAddressResponse> deliveryAddressResponseListPageInfo = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page);
+        List deliveryAddressResponseList = deliveryAddressResponseListPageInfo.getList();
         deliveryAddressResponseList.sort(Comparator.comparing(DeliveryAddressResponse::getIsDefault).reversed());
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
+        deliveryAddressResponseListPageInfo.setList(deliveryAddressResponseList);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<DeliveryAddressResponse>().transform(deliveryAddressResponseListPageInfo));
         logger.info("getDeliveryAddress OUT,获取收货地址成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
