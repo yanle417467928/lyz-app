@@ -13,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,13 +155,17 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
     }
 
     @Override
-    public List<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status) {
-        return materialAuditSheetDAO.queryListByEmployeeIDAndStatus(employeeID, status);
+    public PageInfo<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status,Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<MaterialAuditSheetResponse> materialAuditSheetResponseList = materialAuditSheetDAO.queryListByEmployeeIDAndStatus(employeeID, status);
+        return new PageInfo<>(materialAuditSheetResponseList);
     }
 
     @Override
-    public List<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status) {
-        return materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID, status);
+    public PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status,Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID, status);
+        return new PageInfo<>(materialAuditSheetList);
     }
 
     /**
