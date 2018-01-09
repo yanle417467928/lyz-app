@@ -122,7 +122,7 @@ public class ICallWms {
                 requisitionOrderGoods.setSendFlag(false);
                 requisitionOrderGoods.setErrorMessage(errorMsg);
                 logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-            } else if (null != requisitionOrderGoods.getErrorMessage()) {
+            } else if (null == requisitionOrderGoods.getErrorMessage()) {
                 requisitionOrderGoods.setSendTime(new Date());
                 requisitionOrderGoods.setSendFlag(true);
             }
@@ -158,7 +158,7 @@ public class ICallWms {
             requisitionOrder.setSendFlag(false);
             requisitionOrder.setErrorMessage(errorMsg);
             logger.error("发送要货单出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-        } else if (null != requisitionOrder.getErrorMessage()) {
+        } else if (null == requisitionOrder.getErrorMessage()) {
             requisitionOrder.setSendTime(new Date());
             requisitionOrder.setSendFlag(true);
         }
