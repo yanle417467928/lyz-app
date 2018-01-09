@@ -38,8 +38,10 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     }
 
     @Override
-    public List<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList) {
-        return this.storePreDepositLogDAO.findPreDepositChangeLog(userId, typeList);
+    public PageInfo<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList,Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<PreDepositLogResponse> rreDepositLogResponseList = this.storePreDepositLogDAO.findPreDepositChangeLog(userId, typeList);
+        return new PageInfo<>(rreDepositLogResponseList);
     }
 
     @Override

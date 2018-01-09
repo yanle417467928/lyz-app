@@ -590,6 +590,13 @@ public class CommonServiceImpl implements CommonService {
                     AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
                             store, orderBillingDetails, goodsQuantity);
                     appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+                    //保存传wms配送单商品信息
+                    if (orderGoodsInfoList.size() > 0) {
+                        for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                            AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
+                            appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
+                        }
+                    }
                 } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                     orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
                 }
@@ -682,9 +689,6 @@ public class CommonServiceImpl implements CommonService {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
-                        //保存传wms配送单商品信息
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
-                        appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
                 if (null != orderCouponInfoList && orderCouponInfoList.size() > 0) {
@@ -721,16 +725,6 @@ public class CommonServiceImpl implements CommonService {
             PaymentDataDO paymentData = paymentDataList.get(0);
 
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
-
-            //更新订单状态及物流状态
-            if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
-                baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
-            } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                // 发送WMS 在微信和支付宝完成支付回调方法中已发送
-                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
-                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
-            }
-
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
@@ -829,6 +823,32 @@ public class CommonServiceImpl implements CommonService {
                 }
 
             }
+
+            //更新订单状态及物流状态
+            if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
+                //保存传wms配送单头档
+                AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
+                        baseInfo.getCreatorIdentityType().getValue());
+                List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+                OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
+                int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+                AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
+                        store, billingDetails, goodsQuantity);
+                appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+                //保存传wms配送单商品信息
+                if (orderGoodsInfoList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
+                    }
+                }
+            }
+
             //更新订单基础信息
             orderService.updateOrderBaseInfo(baseInfo);
             //第三方支付信息

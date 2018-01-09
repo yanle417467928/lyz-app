@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaterialAuditSheetResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import com.github.pagehelper.PageInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,8 +36,8 @@ public interface MaterialAuditSheetService {
     MaterialAuditDetailsResponse queryDetailsByAuditNo(String auditNo);
 
     //根据工人id与料单状态查询list
-    List<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status);
+    PageInfo<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status, Integer page, Integer size);
 
     //项目经理根据状态查看所属装饰公司下的所有物料审核单
-    List<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status);
+    PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status,Integer page, Integer size);
 }
