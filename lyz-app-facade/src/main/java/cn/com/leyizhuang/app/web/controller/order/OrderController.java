@@ -90,6 +90,9 @@ public class OrderController {
     @Resource
     private TransactionalSupportService transactionalSupportService;
 
+    @Resource
+    private AppCashCouponDutchService cashCouponDutchService;
+
     /**
      * 创建订单方法
      *
@@ -228,13 +231,16 @@ public class OrderController {
 
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
-
             //******** 处理订单账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
+            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
-            //********分摊**********
-            List<OrderGoodsInfo> orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
+            //******** 分摊现金券 *********************
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList,support.getOrderGoodsInfoList());
+
+            //******** 分摊促销 ***********************
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************

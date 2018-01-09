@@ -1,7 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.dao.CashCouponDAO;
-
 
 /**
  * 优惠券发放服务类
@@ -9,7 +7,7 @@ import cn.com.leyizhuang.app.foundation.dao.CashCouponDAO;
  */
 public interface CashCouponSendService {
 
-
+    void send(Long customerId,Long cashCouponId,Integer qty);
 
 
 }

@@ -5,18 +5,20 @@ import cn.com.leyizhuang.app.foundation.dao.CashCouponDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.service.CashCouponSendService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 优惠券发放服务类
  * Created by panjie on 2017/12/27.
  */
 @Service
-public class CashCouponSendServiceImpl {
+public class CashCouponSendServiceImpl implements CashCouponSendService{
 
     @Resource
     private CashCouponDAO cashCouponDAO;
@@ -42,7 +44,7 @@ public class CashCouponSendServiceImpl {
 
                 customerCashCoupon.setCusId(appCustomer.getCusId());
                 customerCashCoupon.setCcid(cashCoupon.getId());
-                customerCashCoupon.setQty(qty);
+                customerCashCoupon.setQty(1);
                 customerCashCoupon.setIsUsed(false);
                 customerCashCoupon.setGetTime(new Date());
                 customerCashCoupon.setCondition(cashCoupon.getCondition());
@@ -52,10 +54,31 @@ public class CashCouponSendServiceImpl {
                 customerCashCoupon.setDescription(cashCoupon.getDescription());
                 customerCashCoupon.setTitle(cashCoupon.getTitle());
                 customerCashCoupon.setStatus(true);
+                customerCashCoupon.setCityId(cashCoupon.getCityId());
+                customerCashCoupon.setCityName(cashCoupon.getCityName());
+                customerCashCoupon.setIsSpecifiedStore(cashCoupon.getIsSpecifiedStore());
+                customerCashCoupon.setType(cashCoupon.getType());
 
+                for (int i = 0;i < qty ; i++){
+                    cashCouponDAO.addCustomerCashCoupon(customerCashCoupon);
+                }
             }
 
         }
+    }
+
+    /**
+     * 批量发券
+     * @param customerIdList
+     * @param cashCouponId
+     * @param qty
+     */
+    @Transactional
+    public void sendBatch(List<Long> customerIdList,Long cashCouponId,Integer qty){
+        for (Long customerId : customerIdList) {
+            this.send(customerId,cashCouponId,qty);
+        }
+
     }
 
 }
