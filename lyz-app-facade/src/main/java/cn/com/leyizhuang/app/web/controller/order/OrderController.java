@@ -90,6 +90,9 @@ public class OrderController {
     private TransactionalSupportService transactionalSupportService;
 
     @Resource
+    private AppCashCouponDutchService cashCouponDutchService;
+
+    @Resource
     private ICallWms iCallWms;
 
     /**
@@ -230,13 +233,16 @@ public class OrderController {
 
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
-
             //******** 处理订单账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
+            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
-            //********分摊**********
-            List<OrderGoodsInfo> orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
+            //******** 分摊现金券 *********************
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList,support.getOrderGoodsInfoList());
+
+            //******** 分摊促销 ***********************
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
@@ -266,7 +272,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException e) {
+                OrderPayableAmountException | DutchException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);

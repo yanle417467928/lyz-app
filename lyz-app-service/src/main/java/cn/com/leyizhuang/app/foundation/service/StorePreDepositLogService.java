@@ -21,7 +21,7 @@ public interface StorePreDepositLogService {
      * @param typeList  变更类型
      * @return  门店预存款信息
      */
-    List<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList);
+    PageInfo<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList,Integer page, Integer size);
 
     StPreDepositLogDO save(StPreDepositLogDO stPreDepositLogDO);
     /**

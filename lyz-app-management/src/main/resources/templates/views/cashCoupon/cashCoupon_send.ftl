@@ -25,8 +25,7 @@
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
-    <script type="text/javascript" src="/javascript/common/form_common.js"></script>
-    <script type="text/javascript" src="/javascript/cashCoupon/cashCoupon_edit.js"></script>
+    <script type="text/javascript" src="/javascript/cashCoupon/cashCoupon_send.js"></script>
 
 </head>
 
@@ -39,7 +38,7 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1-1" data-toggle="tab">现金券基本信息</a></li>
         </ul>
-
+        <input type="hidden" id="cashCouponId" value="<#if cashCoupon??>${cashCoupon.id?c}</#if>">
         <div class="row">
             <div class="col-md-2">
                 <h3>标题：<#if cashCoupon??>${cashCoupon.title}</#if></h3>
@@ -55,7 +54,51 @@
             </div>
         </div>
     </div>
+
+    <div class="nav-tabs-custom">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div id="toolbar" class="form-inline">
+
+                        <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                                onchange="findCusByCity(this.value)">
+                            <option value="-1">选择城市</option>
+                        </select>
+
+
+                        <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                                onchange="findCusByStoreId()"   data-live-search="true" >
+                            <option value="-1">选择门店</option>
+                        </select>
+                    <#--             <select name="guideCode" id="guideCode" class="form-control select" style="width:auto;"
+                                         onchange="findCusByGuide()">
+                                     <option value="-1">选择导购</option>
+                                 </select>-->
+
+                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                            <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                                   placeholder="请输入要查找的姓名或电话..">
+                            <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findCusByNameOrPhone()">查找</button>
+                        </span>
+                        </div>
+
+                    </div>
+
+                    <div class="box-body table-reponsive">
+                        <table id="dataGrid" class="table table-bordered table-hover">
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </section>
+
 <script>
 
     $(function () {

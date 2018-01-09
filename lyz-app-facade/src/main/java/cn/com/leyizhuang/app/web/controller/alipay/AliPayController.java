@@ -317,13 +317,14 @@ public class AliPayController {
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
-                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no, trade_no, trade_status, OnlinePayType.ALIPAY);
-                            logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             //发送订单到WMS
                             OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(out_trade_no);
                             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                                 iCallWms.sendToWmsRequisitionOrderAndGoods(out_trade_no);
                             }
+                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no, trade_no, trade_status, OnlinePayType.ALIPAY);
+                            logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
+
                             return "success";
                         }
                     }

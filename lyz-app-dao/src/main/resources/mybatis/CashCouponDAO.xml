@@ -3,8 +3,8 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.CashCouponDAO">
 
     <sql id="ALL_FIELDS">
-        id, cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, condition, denomination,effective_start_time,
-        effective_end_time, descripttion, title
+        id, cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
+        effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store
     </sql>
 
     <sql id="CASH_COUPON_FIELDS">
@@ -35,11 +35,11 @@
 
     <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         INSERT INTO cus_customer_cash_coupon
-        (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, condition, denomination,effective_start_time,
-         effective_end_time, descripttion, title)
+        (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
+         effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store)
         VALUES
         (#{cusId}, #{ccid}, #{qty}, #{getTime}, #{isUsed}, #{useTime}, #{useOrderNumber}, #{downTime}, #{status}, #{condition},
-         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title})
+         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore})
     </insert>
 
     <insert id="addCashCouponStores" parameterType="java.util.List">
@@ -77,6 +77,16 @@
             (#{item.ccid},#{item.goodsId},#{item.goodsName},#{item.sku},#{item.qty})
         </foreach>
     </insert>
+
+    <select id="queryCustomerCashCouponByIdList" parameterType="java.util.List" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM cus_customer_cash_coupon where id IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+    </select>
 
     <select id="queryById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
         SELECT
@@ -118,6 +128,34 @@
     <select id="queryGoodsByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods">
         SELECT
         id,ccid,goods_id,goods_name,sku,qty
+        FROM cp_cash_coupon_goods
+        where ccid = #{ccid}
+    </select>
+
+    <select id="queryStoreIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+        store_id
+        FROM cp_cash_coupon_store
+        where ccid = #{ccid}
+    </select>
+
+    <select id="queryCompanyIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+        company_id
+        FROM cp_cash_coupon_company
+        where ccid = #{ccid}
+    </select>
+
+    <select id="queryBrandIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+        brand_id
+        FROM cp_cash_coupon_brand
+        where ccid = #{ccid}
+    </select>
+
+    <select id="queryGoodsIdsByCcid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+        goods_id
         FROM cp_cash_coupon_goods
         where ccid = #{ccid}
     </select>

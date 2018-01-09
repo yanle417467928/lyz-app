@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.CashCouponSendService;
 import cn.com.leyizhuang.app.foundation.service.CashCouponService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -37,6 +38,9 @@ public class ManagementCashCouponRestController extends  BaseRestController{
 
     @Resource
     private CashCouponService cashCouponService;
+
+    @Resource
+    private CashCouponSendService cashCouponSendService;
 
     @GetMapping("/grid")
     public GridDataVO<CashCoupon> gridData(Integer offset, Integer size, String keywords){
@@ -154,5 +158,17 @@ public class ManagementCashCouponRestController extends  BaseRestController{
 
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "删除成功", null);
 
+    }
+
+    @PostMapping(value = "/send")
+    public ResultDTO<?> send(Long customerId,Long cashCouponId,Integer qty) throws IOException {
+
+        if(customerId == null || cashCouponId == null || qty == 0){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
+        }
+
+        cashCouponSendService.send(customerId,cashCouponId,qty);
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发送成功", null);
     }
 }
