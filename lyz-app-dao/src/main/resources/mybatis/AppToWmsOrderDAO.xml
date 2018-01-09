@@ -110,7 +110,7 @@
                 error_message = #{errorMessage},
             </if>
         </set>
-        WHERE goods_code = #{goodsCode}
+        WHERE goods_code = #{goodsCode} and order_number = #{orderNumber}
     </update>
 
     <select id="findAtwCancelOrderByOrderNo"

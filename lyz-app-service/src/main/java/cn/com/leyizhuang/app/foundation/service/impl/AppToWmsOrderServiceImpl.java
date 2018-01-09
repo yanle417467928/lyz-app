@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -26,37 +25,31 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
     private AppToWmsOrderDAO appToWmsOrderDAO;
 
     @Override
-    @Transactional
     public void saveAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest) {
         appToWmsOrderDAO.saveAtwCancelOrderRequest(atwCancelOrderRequest);
     }
 
     @Override
-    @Transactional
     public void saveAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder) {
         appToWmsOrderDAO.saveAtwRequisitionOrder(atwRequisitionOrder);
     }
 
     @Override
-    @Transactional
     public void saveAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
         appToWmsOrderDAO.saveAtwRequisitionOrderGoods(atwRequisitionOrderGoods);
     }
 
     @Override
-    @Transactional
     public void modifyAtwCancelOrderRequest(AtwCancelOrderRequest atwCancelOrderRequest) {
         appToWmsOrderDAO.updateAtwCancelOrderRequest(atwCancelOrderRequest);
     }
 
     @Override
-    @Transactional
     public void modifyAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder) {
         appToWmsOrderDAO.updateAtwRequisitionOrder(atwRequisitionOrder);
     }
 
     @Override
-    @Transactional
     public void modifyAtwRequisitionOrderGoods(AtwRequisitionOrderGoods atwRequisitionOrderGoods) {
         appToWmsOrderDAO.updateAtwRequisitionOrderGoods(atwRequisitionOrderGoods);
     }

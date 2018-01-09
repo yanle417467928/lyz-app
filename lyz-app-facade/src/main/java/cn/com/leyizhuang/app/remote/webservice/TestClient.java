@@ -78,6 +78,12 @@ public class TestClient {
         //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
 //        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
         //第三步：调用下面service将订单号发送给wms
-        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180105145030752391");
+//        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180109112029014872");
+        AtwRequisitionOrderGoods goods1 = new AtwRequisitionOrderGoods();
+        goods1.setErrorMessage("测试");
+        goods1.setSendFlag(true);
+        goods1.setGoodsCode("DDLPSGB02-9.5MM-C");
+        goods1.setOrderNumber("CD_XN20180109112029014872");
+        appToWmsOrderService.modifyAtwRequisitionOrderGoods(goods1);
     }
 }
