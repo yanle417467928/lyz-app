@@ -379,7 +379,7 @@ public class WeChatPayController {
                         String tradeStatus = resultMap.get("result_code").toString();
                         logger.info("weChatReturnSync,微信支付异步回调接口,交易状态:{}", tradeStatus);
                         //转换金额为Double
-                        Double totlefeeParse = Double.parseDouble(totalFee);
+                        Double totalFeeParse = CountUtil.div(Double.parseDouble(totalFee), 100D);
 
                         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
 
@@ -388,7 +388,7 @@ public class WeChatPayController {
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "预存款充值");
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
@@ -404,7 +404,7 @@ public class WeChatPayController {
                                 }
                             } else if (outTradeNo.contains("_HK")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "欠款还款");
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
@@ -412,11 +412,11 @@ public class WeChatPayController {
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
                                     String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
-                                    appOrderService.saveOrderBillingPaymentDetails(orderNumber, totlefeeParse, tradeNo, outTradeNo);
+                                    appOrderService.saveOrderBillingPaymentDetails(orderNumber, totalFeeParse, tradeNo, outTradeNo);
                                 }
                             } else if (outTradeNo.contains("_XN")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
