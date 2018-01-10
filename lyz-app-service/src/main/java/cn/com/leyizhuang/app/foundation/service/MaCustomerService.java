@@ -1,9 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 public interface MaCustomerService {
 
@@ -24,4 +28,11 @@ public interface MaCustomerService {
     void saveCustomer(CustomerDetailVO customer);
 
     Boolean isExistPhoneNumber(Long moblie);
+
+    PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords);
+
+    CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
+
+    void  changeCusPredepositByCusId(CusPreDepositLogDTO cusPreDepositLogDTO);
+
 }

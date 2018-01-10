@@ -34,5 +34,13 @@ public enum AppIdentityType {
         return description;
     }
 
+    public static AppIdentityType getAppIdentityTypeByDescription(String description) {
+        for (AppIdentityType appIdentityType : AppIdentityType.values()) {
+            if (description.equals(appIdentityType.getDescription())) {
+                return appIdentityType;
+            }
+        }
+        return null;
+    }
 
 }

@@ -42,4 +42,7 @@ public interface MaEmployeeDAO {
     List<GuideVO> queryGuideVOByCondition(@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
 
     List<GuideVO>  queryGuideVOByInfo(String queryGuideVOInfo);
+
+    EmployeeDO findEmployeeDOByEmpId(Long id);
+
 }

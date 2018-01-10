@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCusPreDepositLogDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO">
+        INSERT INTO cus_pre_deposit_log
+        (create_time, change_money, remarks, change_type, cus_id, operator_id, operator_type,
+        operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number)
+        VALUES
+        (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{cusId}, #{operatorId}, #{operatorType},
+        #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+    </insert>
+
+</mapper>
