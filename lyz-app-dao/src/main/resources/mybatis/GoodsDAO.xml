@@ -645,7 +645,8 @@
             cover_image_uri,
             goods_specification,
             goods_unit,
-            brd_id
+            brd_id,
+            company_flag
         FROM gds_goods
         WHERE gid = #{gid}
     </select>
@@ -709,7 +710,8 @@
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        g.company_flag
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -737,7 +739,8 @@
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        g.company_flag
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id

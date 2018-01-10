@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
@@ -70,4 +71,38 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     public void addCustomerProductCoupon(CustomerProductCoupon customerProductCoupon) {
         productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
     }
+
+    /**
+     * 新增产品券模版
+     * @param productCoupon
+     */
+    @Override
+    public void addProductCoupon(ProductCoupon productCoupon){
+        if (productCoupon != null){
+            productCouponDAO.addProductCoupon(productCoupon);
+        }
+    }
+
+    /**
+     * 更新产品券模版
+     * @param productCoupon
+     */
+    @Override
+    public void updateProductCoupon(ProductCoupon productCoupon){
+        if (productCoupon != null){
+            productCouponDAO.updateProductCoupon(productCoupon);
+        }
+    }
+
+    /**
+     * 删除产品券模版
+     */
+    @Override
+    public void deletedProductCoupon(List<Long> ids){
+        if (ids != null && ids.size() > 0){
+            productCouponDAO.deleteProductCoupon(ids);
+        }
+    }
+
+
 }

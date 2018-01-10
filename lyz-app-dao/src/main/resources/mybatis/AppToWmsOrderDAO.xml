@@ -35,7 +35,7 @@
                 #{diySiteTitle},
                 #{diySiteTel},
                 #{remarkInfo},
-                            #{customerName}, #{orderNumber}, #{receiveTimeQuantum},
+        #{customerName}, #{orderNumber}, #{reserveTimeQuantum},
                             #{receiveAddress}, #{receiveName}, #{receivePhone}, #{city}, #{detailAddress}, #{disctrict},
                                                                #{province}, #{subdistrict}, #{orderTime},
                                                                #{sellerTel}, #{goodsQuantity}, #{upstairsAll},
@@ -43,7 +43,7 @@
                 #{memberReceiver},
                 #{unpayed},
                 #{totalGoodsPrice},
-                #{agencyRefund}
+        #{agencyFund}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -151,7 +151,7 @@
             discount,
             other_payed,
             balance_used,
-            member_reveiver,
+        member_receiver,
             unpayed,
             total_goods_price,
             agency_fund

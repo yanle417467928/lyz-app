@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.CashCouponSendService;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,38 +35,59 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
      * @param qty 优惠券数量
      */
     @Transactional
-    public void send(Long customerId,Long cashCouponId,Integer qty){
+    public ResultDTO<String> send(Long customerId, Long cashCouponId, Integer qty){
 
         if(customerId != null && cashCouponId != null && qty > 0 ){
             AppCustomer appCustomer = cusertomerDAO.findById(customerId);
             CashCoupon cashCoupon = cashCouponDAO.queryById(cashCouponId);
 
-            if(appCustomer != null && cashCoupon != null ){
-                CustomerCashCoupon customerCashCoupon = new CustomerCashCoupon();
+            List<Long> storeIds = cashCouponDAO.queryStoreIdsByCcid(cashCoupon.getId());
 
-                customerCashCoupon.setCusId(appCustomer.getCusId());
-                customerCashCoupon.setCcid(cashCoupon.getId());
-                customerCashCoupon.setQty(1);
-                customerCashCoupon.setIsUsed(false);
-                customerCashCoupon.setGetTime(new Date());
-                customerCashCoupon.setCondition(cashCoupon.getCondition());
-                customerCashCoupon.setDenomination(cashCoupon.getDenomination());
-                customerCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
-                customerCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
-                customerCashCoupon.setDescription(cashCoupon.getDescription());
-                customerCashCoupon.setTitle(cashCoupon.getTitle());
-                customerCashCoupon.setStatus(true);
-                customerCashCoupon.setCityId(cashCoupon.getCityId());
-                customerCashCoupon.setCityName(cashCoupon.getCityName());
-                customerCashCoupon.setIsSpecifiedStore(cashCoupon.getIsSpecifiedStore());
-                customerCashCoupon.setType(cashCoupon.getType());
-
-                for (int i = 0;i < qty ; i++){
-                    cashCouponDAO.addCustomerCashCoupon(customerCashCoupon);
-                }
+            if (cashCoupon.getEffectiveEndTime().before(new Date())){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，优惠券已经过期", null);
             }
 
+            if(cashCoupon.getCityId() != appCustomer.getCityId()){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，"+appCustomer.getName()+"不再城市范围下！", null);
+            }
+
+            if(cashCoupon.getIsSpecifiedStore() && !storeIds.contains(appCustomer.getStoreId())){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，"+appCustomer.getName()+"不再指定门店范围下！", null);
+            }else{
+                if(appCustomer != null && cashCoupon != null ){
+                    CustomerCashCoupon customerCashCoupon = new CustomerCashCoupon();
+
+                    customerCashCoupon.setCusId(appCustomer.getCusId());
+                    customerCashCoupon.setCcid(cashCoupon.getId());
+                    customerCashCoupon.setQty(1);
+                    customerCashCoupon.setIsUsed(false);
+                    customerCashCoupon.setGetTime(new Date());
+                    customerCashCoupon.setCondition(cashCoupon.getCondition());
+                    customerCashCoupon.setDenomination(cashCoupon.getDenomination());
+                    customerCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
+                    customerCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
+                    customerCashCoupon.setDescription(cashCoupon.getDescription());
+                    customerCashCoupon.setTitle(cashCoupon.getTitle());
+                    customerCashCoupon.setStatus(true);
+                    customerCashCoupon.setCityId(cashCoupon.getCityId());
+                    customerCashCoupon.setCityName(cashCoupon.getCityName());
+                    customerCashCoupon.setIsSpecifiedStore(cashCoupon.getIsSpecifiedStore());
+                    customerCashCoupon.setType(cashCoupon.getType());
+
+                    for (int i = 0;i < qty ; i++){
+                        cashCouponDAO.addCustomerCashCoupon(customerCashCoupon);
+                    }
+
+                    Integer remainingQuantity = cashCoupon.getRemainingQuantity();
+                    if(remainingQuantity <= 0 || qty > remainingQuantity){
+                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，优惠券剩余数量不足", null);
+                    }
+                    cashCoupon.setRemainingQuantity(remainingQuantity - qty);
+                    cashCouponDAO.updateCashCoupon(cashCoupon);
+                }
+            }
         }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发送成功", null);
     }
 
     /**
@@ -74,11 +97,16 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
      * @param qty
      */
     @Transactional
-    public void sendBatch(List<Long> customerIdList,Long cashCouponId,Integer qty){
+    public ResultDTO<String> sendBatch(List<Long> customerIdList,Long cashCouponId,Integer qty){
+        ResultDTO<String> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "未发送任何券", null);
         for (Long customerId : customerIdList) {
-            this.send(customerId,cashCouponId,qty);
+            result = this.send(customerId,cashCouponId,qty);
+            if (result.getCode().equals(-1)){
+                break;
+            }
         }
 
+        return result;
     }
 
 }

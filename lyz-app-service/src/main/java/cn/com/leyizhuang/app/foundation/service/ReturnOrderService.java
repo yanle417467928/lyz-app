@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
@@ -136,4 +137,12 @@ public interface ReturnOrderService {
             throws OrderSaveException;
 
     ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNumber);
+
+    /**
+     * 单独更新退单状态
+     *
+     * @param outRefundNo
+     * @param finished
+     */
+    void updateReturnOrderStatus(String outRefundNo, AppReturnOrderStatus finished);
 }

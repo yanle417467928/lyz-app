@@ -167,8 +167,20 @@ public class ManagementCashCouponRestController extends  BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
         }
 
-        cashCouponSendService.send(customerId,cashCouponId,qty);
+        return cashCouponSendService.send(customerId,cashCouponId,qty);
+    }
 
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发送成功", null);
+    @PostMapping(value = "/sendBatch")
+    public ResultDTO<?> sendBatch(String customerIds,Long cashCouponId,Integer qty) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+        List<Long> idList = objectMapper.readValue(customerIds, javaType1);
+
+        if(idList == null || idList == null || qty == 0){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
+        }
+
+        return cashCouponSendService.sendBatch(idList,cashCouponId,qty);
     }
 }

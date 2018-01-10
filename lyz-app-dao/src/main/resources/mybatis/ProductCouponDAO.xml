@@ -2,30 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO">
 
+    <sql id="product_coupon_all_fields">
+        id, create_time, gid, denomination, effective_start_time, effective_end_time, description,
+    initial_quantity, remaining_quantity, title, city_id, city_name, store_id, seller_id,
+    sort_id
+
+    </sql>
+
     <select id="findProductCouponByCustomerIdAndGoodsId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
-        SELECT
-        c.id,
-        g.sku_name,
-        g.goods_specification,
-        g.goods_unit goods_unit,
-        c.quantity left_number,
-        g.cover_image_uri
-        FROM
-        cus_customer_product_coupon c
-        INNER JOIN gds_goods g ON c.gid = g.gid
-        WHERE
-        c.cus_id = #{userId}
-        AND c.is_used IS FALSE
-        AND c.effective_start_time &lt; NOW()
-        AND c.effective_end_time &gt; NOW()
-        AND c.gid IN
-        <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
-            #{goodsId}
-        </foreach>
-        GROUP BY
-        g.sku
-    </select>
+                 resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse">
+    SELECT
+    c.id,
+    g.sku_name,
+    g.goods_specification,
+    g.goods_unit goods_unit,
+    c.quantity left_number,
+    g.cover_image_uri
+    FROM
+    cus_customer_product_coupon c
+    INNER JOIN gds_goods g ON c.gid = g.gid
+    WHERE
+    c.cus_id = #{userId}
+    AND c.is_used IS FALSE
+    AND c.effective_start_time &lt; NOW()
+    AND c.effective_end_time &gt; NOW()
+    AND c.gid IN
+    <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+        #{goodsId}
+    </foreach>
+    GROUP BY
+    g.sku
+</select>
 
     <select id="findGoodsIdByUserIdAndProductCouponId" resultType="java.lang.Long">
         SELECT
@@ -70,4 +77,93 @@
          #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber})
     </insert>
 
+    <insert id="addProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProductCoupon">
+         insert into cp_product_coupon (id, create_time, gid,
+      denomination, effective_start_time, effective_end_time,
+      description, initial_quantity, remaining_quantity,
+      title, city_id, city_name,
+      store_id, seller_id, sort_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{gid,jdbcType=BIGINT},
+      #{denomination,jdbcType=DECIMAL}, #{effectiveStartTime,jdbcType=TIMESTAMP}, #{effectiveEndTime,jdbcType=TIMESTAMP},
+      #{description,jdbcType=VARCHAR}, #{initialQuantity,jdbcType=INTEGER}, #{remainingQuantity,jdbcType=INTEGER},
+      #{title,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT}, #{cityName,jdbcType=VARCHAR},
+      #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT}, #{sortId,jdbcType=INTEGER}
+      )
+
+    </insert>
+    
+    <update id="updateProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProductCoupon">
+        update cp_product_coupon
+        <set >
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gid != null" >
+                gid = #{gid,jdbcType=BIGINT},
+            </if>
+            <if test="denomination != null" >
+                denomination = #{denomination,jdbcType=DECIMAL},
+            </if>
+            <if test="effectiveStartTime != null" >
+                effective_start_time = #{effectiveStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="effectiveEndTime != null" >
+                effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="initialQuantity != null" >
+                initial_quantity = #{initialQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="remainingQuantity != null" >
+                remaining_quantity = #{remainingQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="cityId != null" >
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="cityName != null" >
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null" >
+                store_id = #{storeId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerId != null" >
+                seller_id = #{sellerId,jdbcType=BIGINT},
+            </if>
+            <if test="sortId != null" >
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+
+    </update>
+
+    <select id="queryByKeywords" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.ProductCoupon">
+        SELECT
+        <include refid="product_coupon_all_fields"/>
+        FROM cp_product_coupon WHERE 1=1
+        <if test="keywords != null">
+            AND  title LIKE concat("%",#{keywords},"%")
+        </if>
+        ORDER by create_time DESC
+    </select>
+
+    <select id="queryProductCouponById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.ProductCoupon">
+        SELECT
+        <include refid="product_coupon_all_fields"/>
+        FROM cp_product_coupon
+        where id = #{id}
+    </select>
+
+    <delete id="deleteProductCoupon" parameterType="java.util.List">
+        DELETE FROM cp_product_coupon where ID IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

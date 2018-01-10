@@ -60,7 +60,7 @@ public class AppXmlUtil {
                 "<TYPE_ID></TYPE_ID>" +
                 "<CUSTOMER_NAME>" + requisitionOrder.getCustomerName() + "</CUSTOMER_NAME>" +
                 "<CUSTOMER_ID></CUSTOMER_ID>" +
-                "<DELIVERY_TIME>" + requisitionOrder.getReceiveTimeQuantum() + "</DELIVERY_TIME>" +
+                "<DELIVERY_TIME>" + requisitionOrder.getReserveTimeQuantum() + "</DELIVERY_TIME>" +
                 "<ORDER_NUMBER>" + requisitionOrder.getOrderNumber() + "</ORDER_NUMBER>" +
                 "<RECEIVE_ADDRESS>" + requisitionOrder.getReceiveAddress() + "</RECEIVE_ADDRESS>" +
                 "<RECEIVE_NAME>" + requisitionOrder.getReceiveName() + "</RECEIVE_NAME>" +
@@ -86,7 +86,7 @@ public class AppXmlUtil {
                 "<UNPAYED>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getUnpayed()) + "</UNPAYED>" +
                 "<TOTAL_GOODS_PRICE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getTotalGoodsPrice()) +
                 "</TOTAL_GOODS_PRICE>" +
-                "<AGENCY_FUND>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getAgencyRefund()) + "</AGENCY_FUND>" +
+                "<AGENCY_FUND>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getAgencyFund()) + "</AGENCY_FUND>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
