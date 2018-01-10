@@ -27,7 +27,7 @@
         (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_number,
          reserve_time_quantum, receive_address, receive_name, receive_phone, city, detail_address, disctrict, province, subdistrict,
          order_time, seller_tel, goods_quantity, upstairs_all, seller_name, delivery_fee, color_fee, discount, other_payed, balance_used,
-         member_reveiver, unpayed, total_goods_price, agency_fund)
+         member_receiver, unpayed, total_goods_price, agency_fund)
             SELECT
                 #{createTime},
                 #{diySiteAddress},
