@@ -8,7 +8,6 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -287,56 +286,55 @@ public class WeChatPayController {
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
                     orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money), req);
-
+            logger.debug("******微信退款签名***** OUT, 出参 sign:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
-                if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
+                if ("SUCCESS".equalsIgnoreCase(resultMap.get("return_code").toString())) {
+                    if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
+                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                        //取出map中的参数，订单号
+                        String outTradeNo = resultMap.get("out_trade_no").toString();
+                        logger.debug("******微信返回参数订单号***** OUT, 出参 outTradeNo:{}", outTradeNo);
+                        //退单号
+                        String outRefundNo = resultMap.get("out_refund_no").toString();
+                        logger.debug("******微信返回参数退单号***** OUT, 出参 outRefundNo:{}", outRefundNo);
+                        //微信交易号
+                        String tradeNo = resultMap.get("refund_id").toString();
+                        logger.debug("******微信返回参数退单交易号***** OUT, 出参 tradeNo:{}", tradeNo);
+                        //订单金额
+                        String totalFee = resultMap.get("total_fee").toString();
+                        logger.debug("******微信返回参数订单金额***** OUT, 出参 totalFee:{}", totalFee);
+                        //申请退单金额
+                        String refundFee = resultMap.get("refund_fee").toString();
+                        logger.debug("******微信返回参数退单金额***** OUT, 出参 refundFee:{}", refundFee);
+                        //微信交易状态
+                        String tradeStatus = resultMap.get("result_code").toString();
+                        logger.debug("******微信返回参数交易状态***** OUT, 出参 tradeStatus:{}", tradeStatus);
+                        //修改退单状态
+                        returnOrderService.updateReturnOrderStatus(outRefundNo, AppReturnOrderStatus.FINISHED);
 
-                    response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
-                    //取出map中的参数，订单号
-                    String outTradeNo = resultMap.get("out_trade_no").toString();
-                    //退单号
-                    String outRefundNo = resultMap.get("out_refund_no").toString();
-                    //微信交易号
-                    String tradeNo = resultMap.get("refund_id").toString();
-                    //订单金额
-                    String totalFee = resultMap.get("total_fee").toString();
-                    //退单金额
-                    String refundFee = resultMap.get("refund_fee").toString();
-                    //微信交易状态
-                    String tradeStatus = resultMap.get("result_code").toString();
+                        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
+                        PaymentDataDO dataDO = paymentDataDOList.get(0);
+                        dataDO.setTradeNo(tradeNo);
+                        dataDO.setNotifyTime(new Date());
+                        dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
+                        this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
 
-                    //修改退单状态
-                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
-                    returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
-                    returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
-                    //修改退货单金额明细流水单号和时间
-//                    returnOrderService.modifyOrderReturnBillingDetail(new ReturnOrderBillingDetail(tradeNo, Calendar.getInstance().getTime()));
-
-                    List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
-                    PaymentDataDO dataDO = paymentDataDOList.get(0);
-                    dataDO.setTradeNo(tradeNo);
-                    dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
-                    this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
-
-                    map.put("code", "SUCCESS");
-                    map.put("number", tradeNo);
-                    map.put("money", refundFee);
-                    return map;
-                } else {
-                    PaymentDataDO paymentDataDO1 = new PaymentDataDO();
-                    paymentDataDO1.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
-                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
-                    response.getWriter().write(WechatUtil.setXML("FAIL", "签名失败"));
-                    map.put("code", "FAILURE");
-                    return map;
+                        map.put("code", "SUCCESS");
+                        map.put("number", tradeNo);
+                        map.put("money", refundFee);
+                        return map;
+                    }
                 }
-            } else {
-                logger.warn("{}", resultMap.get("err_code").toString());
-                logger.warn("{}", resultMap.get("err_code_des").toString());
-                map.put("code", "FAILURE");
-                return map;
             }
+            paymentDataDO.setRemarks(resultMap.get("return_msg").toString());
+            paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
+            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+            response.getWriter().write(WechatUtil.setXML("FAIL", "参数格式校验错误"));
+            logger.warn("{}", resultMap.get("err_code").toString());
+            logger.warn("{}", resultMap.get("err_code_des").toString());
+            map.put("code", "FAILURE");
+            return map;
         } catch (Exception e) {
             e.printStackTrace();
             map.put("code", "FAILURE");
@@ -385,6 +383,10 @@ public class WeChatPayController {
 
                         if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
                             PaymentDataDO paymentDataDO = paymentDataDOList.get(0);
+                            //微信支付异步多次通知可能造成下面业务操作重复时解除下面封印
+//                            if (PaymentDataStatus.TRADE_SUCCESS.equals(paymentDataDO.getOnlinePayType())){
+//                                return;
+//                            }
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "预存款充值");
@@ -432,7 +434,7 @@ public class WeChatPayController {
                                 }
                             }
                             //返回响应成功的讯息
-                            response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                            response.getWriter().write(WechatUtil.setXML("SUCCESS", null));
                             logger.info("weChatReturnSync,微信支付异步回调接口,回调成功! ");
                         } else {
                             logger.warn("weChatReturnSync,微信支付异步回调接口,没有找到该订单:{}", outTradeNo);

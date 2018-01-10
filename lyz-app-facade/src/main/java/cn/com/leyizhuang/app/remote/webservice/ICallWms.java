@@ -117,7 +117,7 @@ public class ICallWms {
             }
             //解析返回信息
             String errorMsg = AppXmlUtil.checkReturnXml(objects);
-            logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
+            logger.info("*****WMS返回发送要货单商品信息***** 出参 OUT, XML:{}", objects);
             if (errorMsg != null) {
                 //如果发送失败修改发送状态
                 requisitionOrderGoods.setSendFlag(false);
@@ -154,7 +154,7 @@ public class ICallWms {
         }
         //解析返回信息
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
-        logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
+        logger.info("*****WMS返回发送要货单头档信息***** 出参 OUT, XML:{}", objects);
         //修改发送状态
         if (errorMsg != null) {
             requisitionOrder.setSendFlag(false);

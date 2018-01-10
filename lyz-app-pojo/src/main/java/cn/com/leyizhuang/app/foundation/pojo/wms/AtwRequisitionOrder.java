@@ -61,7 +61,7 @@ public class AtwRequisitionOrder {
     /**
      * 预约送货时间段
      */
-    private String receiveTimeQuantum;
+    private String reserveTimeQuantum;
     /**
      * 收货人地址
      */
@@ -149,7 +149,7 @@ public class AtwRequisitionOrder {
     /**
      * 导购填写代收金额
      */
-    private Double agencyRefund;
+    private Double agencyFund;
     /**
      * 接口传输标识
      */
@@ -174,7 +174,7 @@ public class AtwRequisitionOrder {
         requisitionOrder.setRemarkInfo(orderBaseInfo.getRemark());
         requisitionOrder.setCustomerName(orderBaseInfo.getCreatorName());
         requisitionOrder.setOrderNumber(orderBaseInfo.getOrderNumber());
-        requisitionOrder.setReceiveTimeQuantum(logisticsInfo.getDeliveryTime());
+        requisitionOrder.setReserveTimeQuantum(logisticsInfo.getDeliveryTime());
         requisitionOrder.setReceiveAddress(logisticsInfo.getDetailedAddress());
         requisitionOrder.setReceiveName(logisticsInfo.getResidenceName());
         requisitionOrder.setReceivePhone(logisticsInfo.getReceiverPhone());
@@ -215,7 +215,7 @@ public class AtwRequisitionOrder {
         requisitionOrder.setMemberReceiver(logisticsInfo.getIsOwnerReceiving());
         requisitionOrder.setUnpayed(orderBillingDetails.getAmountPayable());
         requisitionOrder.setTotalGoodsPrice(orderBaseInfo.getTotalGoodsPrice());
-        requisitionOrder.setAgencyRefund(orderBillingDetails.getCollectionAmount());
+        requisitionOrder.setAgencyFund(orderBillingDetails.getCollectionAmount());
         return requisitionOrder;
     }
 }

@@ -235,4 +235,9 @@
         WHERE return_no = #{returnNo};
     </select>
 
+    <update id="updateReturnOrderStatus">
+        UPDATE ord_return_base_info
+        SET return_status = #{status}
+        WHERE return_no = #{returnNo}
+    </update>
 </mapper>

@@ -95,16 +95,18 @@ public class WechatPrePay {
         parameterMap.put("appid", WechatUtil.APPID);
         parameterMap.put("mch_id", WechatUtil.MCH_ID);
         parameterMap.put("nonce_str", WechatUtil.getNonceStr());
+        //操作员id与商户号相同即可
+        parameterMap.put("op_user_id", WechatUtil.MCH_ID);
         //商户原单号,商户退单号
         parameterMap.put("out_trade_no", sn);
         parameterMap.put("out_refund_no", rn);
 
         DecimalFormat df = new DecimalFormat("0");
         BigDecimal total = totalfee.multiply(new BigDecimal(100));
-        BigDecimal refound = refoundfee.multiply(new BigDecimal(100));
+        BigDecimal refund = refoundfee.multiply(new BigDecimal(100));
         //金额：支付总金额和退单金额
         parameterMap.put("total_fee", df.format(total));
-        parameterMap.put("total_fee", df.format(refound));
+        parameterMap.put("refund_fee", df.format(refund));
         //签名
         String sign = WechatUtil.createSign("UTF-8", parameterMap);
         parameterMap.put("sign", sign);
