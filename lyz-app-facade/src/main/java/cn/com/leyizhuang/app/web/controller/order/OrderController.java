@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -94,6 +95,9 @@ public class OrderController {
 
     @Resource
     private ICallWms iCallWms;
+
+    @Resource
+    private SinkSender sinkSender;
 
     /**
      * 创建订单方法
@@ -258,6 +262,9 @@ public class OrderController {
                 if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                     iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
                 }
+                //将该订单入拆单消息队列
+                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
@@ -741,7 +748,7 @@ public class OrderController {
         }
         try {
             //获取用户待评价订单列表
-            if(AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.CUSTOMER) {
+            if (AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.CUSTOMER) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户没有权限评价!", null);
                 logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
