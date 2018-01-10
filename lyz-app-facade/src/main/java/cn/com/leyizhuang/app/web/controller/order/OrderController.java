@@ -239,7 +239,7 @@ public class OrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
             //******** 分摊现金券 *********************
-            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList,support.getOrderGoodsInfoList());
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, support.getOrderGoodsInfoList());
 
             //******** 分摊促销 ***********************
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
@@ -824,7 +824,8 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -852,7 +853,7 @@ public class OrderController {
             pageInfo.setNavigatepageNums(orderBaseInfoLists.getNavigatepageNums());
             pageInfo.setNavigateLastPage(orderBaseInfoLists.getNavigateLastPage());
             pageInfo.setNavigatePages(orderBaseInfoLists.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<OrderListResponse>().transform(pageInfo));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<OrderListResponse>().transform(pageInfo));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {

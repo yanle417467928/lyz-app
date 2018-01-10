@@ -53,7 +53,7 @@
                 AND obi.`status` = 'UNPAID'
             </if>
             <if test="null != showStatus and showStatus == 2">
-                AND obi.`status` = 'PENDING_RECEIVE'
+                AND obi.`status` in('PENDING_RECEIVE','PENDING_SHIPMENT')
             </if>
             <if test="null != showStatus and showStatus == 3">
                 AND obi.`status` = 'FINISHED'
@@ -634,8 +634,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type,sku)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType},#{sku});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
