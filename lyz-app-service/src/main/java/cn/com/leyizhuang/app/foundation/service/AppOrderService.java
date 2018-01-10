@@ -131,4 +131,6 @@ public interface AppOrderService {
     void saveOrderCouponInfo(OrderCouponInfo couponInfo);
 
     PageInfo<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer page, Integer size);
+
+    List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber);
 }

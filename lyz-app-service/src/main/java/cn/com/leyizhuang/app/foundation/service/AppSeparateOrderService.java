@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -31,4 +32,8 @@ public interface AppSeparateOrderService {
     void saveOrderBaseInf(OrderBaseInf baseInf);
 
     void saveOrderGoodsInf(OrderGoodsInf goodsInf);
+
+    void separateOrder(String orderNumber);
+
+    void saveOrderCouponInf(OrderCouponInf couponInf);
 }

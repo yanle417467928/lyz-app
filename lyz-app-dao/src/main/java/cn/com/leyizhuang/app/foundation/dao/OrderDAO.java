@@ -105,4 +105,6 @@ public interface OrderDAO {
 
     List<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(@Param(value = "userID") Long userID,
                                                                                  @Param(value = "identityType") AppIdentityType identityType);
+
+    List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber);
 }

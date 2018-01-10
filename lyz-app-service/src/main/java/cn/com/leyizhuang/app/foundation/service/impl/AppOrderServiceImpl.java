@@ -602,6 +602,14 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    public List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)){
+            return orderDAO.getOrderCouponInfoByOrderNumber(orderNumber);
+        }
+        return null;
+    }
+
+    @Override
     public OrderArrearageInfoResponse getOrderArrearageInfo(String orderNo) {
         return this.orderDAO.getOrderArrearageInfo(orderNo);
     }

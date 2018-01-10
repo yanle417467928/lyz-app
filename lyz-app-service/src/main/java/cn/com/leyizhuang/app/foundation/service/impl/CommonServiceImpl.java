@@ -904,6 +904,9 @@ public class CommonServiceImpl implements CommonService {
                 for (OrderGoodsInfo couponGoodsInfo : productCouponList) {
                     List<CustomerProductCoupon> productCoupons = customerService.findProductCouponsByCustomerIdAndGoodsIdAndQty(
                             customerIdTemp, couponGoodsInfo.getGid(), couponGoodsInfo.getOrderQuantity());
+                    if (null == productCoupons || productCoupons.size() < couponGoodsInfo.getOrderQuantity()) {
+                        throw new LockCustomerProductCouponException(couponGoodsInfo.getSkuName() + "产品券数量不足!");
+                    }
                     for (CustomerProductCoupon productCoupon : productCoupons) {
                         OrderCouponInfo couponInfo = new OrderCouponInfo();
                         couponInfo.setCouponType(OrderCouponType.PRODUCT_COUPON);
@@ -912,6 +915,7 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setPurchasePrice(productCoupon.getBuyPrice());
                         couponInfo.setCostPrice(couponGoodsInfo.getSettlementPrice());
                         couponInfo.setGetType(productCoupon.getGetType());
+                        couponInfo.setSku(couponGoodsInfo.getSku());
                         orderCouponInfoList.add(couponInfo);
                     }
                 }

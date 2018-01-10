@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
@@ -44,13 +45,27 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList) {
+    public void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+                                                List<OrderCouponInf> couponInfList) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
+            for (OrderGoodsInf info : orderGoodsInfList
+                    ) {
+                if (info.getProductType() == baseInf.getProductType()) {
+                    info.setHeaderId(baseInf.getHeaderId());
+                }
+
+            }
         }
+        //保存分单商品信息
         for (OrderGoodsInf goodsInf : orderGoodsInfList) {
             separateOrderService.saveOrderGoodsInf(goodsInf);
+        }
+
+        //保存订单券信息
+        for (OrderCouponInf couponInf:couponInfList){
+            separateOrderService.saveOrderCouponInf(couponInf);
         }
     }
 }

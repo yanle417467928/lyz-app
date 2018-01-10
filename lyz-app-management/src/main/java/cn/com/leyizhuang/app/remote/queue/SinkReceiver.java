@@ -42,8 +42,6 @@ public class SinkReceiver {
     @Resource
     private AppSeparateOrderService separateOrderService;
 
-    @Resource
-    private TransactionalSupportService supportService;
 
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -53,6 +51,7 @@ public class SinkReceiver {
         log.info("消费拆单消息队列中的消息 Begin");
         log.info("消息类型:{}", message.getType());
         log.info("消息内容:\n{}", JsonUtils.formatJson(message.getContent()));
+
         switch (message.getType()) {
             case ORDER:
                 try {
@@ -60,163 +59,11 @@ public class SinkReceiver {
                     Boolean isExist = separateOrderService.isOrderExist(orderNumber);
                     if (isExist) {
                         log.info("该订单已拆单，不能重复拆单!");
-                    } else {
-                        OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
-                        if (null != baseInfo) {
-                            OrderBillingDetails billingDetail = orderService.getOrderBillingDetail(orderNumber);
-                            List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
-                            if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
-                                //获取所有companyFlag并加入到set中
-                                Set<String> companyFlag = new HashSet<>();
-                                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                                    if (null != orderGoodsInfo.getCompanyFlag()) {
-                                        companyFlag.add(orderGoodsInfo.getCompanyFlag());
-                                    } else {
-                                        //todo 记录拆单错误日志
-                                    }
-                                }
-                                //创建一个map存放按companyFlag分组的商品信息
-                                Map<String, List<OrderGoodsInfo>> goodsMap = new HashMap<>(5);
-                                //分单List
-                                List<OrderBaseInf> orderBaseInfList = new ArrayList<>(5);
-                                //分单商品List
-                                List<OrderGoodsInf> orderGoodsInfList = new ArrayList<>(10);
-                                //循环所有companyFlag,拿到各个分单的产品并创建分单
-                                for (String s : companyFlag) {
-                                    List<OrderGoodsInfo> orderGoodsInfoListTemp = new ArrayList<>();
-                                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                                        if (orderGoodsInfo.getCompanyFlag().equalsIgnoreCase(s)) {
-                                            orderGoodsInfoListTemp.add(orderGoodsInfo);
-                                        }
-                                    }
-                                    goodsMap.put(s, orderGoodsInfoListTemp);
-                                    //创建分单
-                                    OrderBaseInf orderBaseInf = new OrderBaseInf();
-                                    String separateOrderNumber = OrderUtils.generateSeparateOrderNumber(s, orderNumber);
-                                    if (null != separateOrderNumber) {
-                                        orderBaseInf.setMainOrderNumber(orderNumber);
-                                        orderBaseInf.setOrderNumber(separateOrderNumber);
-                                        orderBaseInf.setCreateTime(new Date());
-                                        orderBaseInf.setDeliveryTypeTitle(baseInfo.getDeliveryType());
-
-                                        //************* 计算分单商品总金额及应付金额 *************
-
-                                        //分单商品零售价总金额
-                                        Double separateOrderGoodsTotalPrice = 0D;
-                                        //分单应付金额
-                                        Double separateOrderAmountPayable = 0D;
-                                        //分单会员折扣
-                                        Double separateOrderMemberDiscount = 0D;
-                                        //分单促销折扣
-                                        Double separateOrderPromotionDiscount = 0D;
-                                        //分单优惠券折扣
-                                        Double separateOrderCashCouponDiscount = 0D;
-                                        //分单产品券折扣
-                                        Double separateOrderProductCouponDiscount = 0D;
-                                        //分单乐币折扣
-                                        Double separateOrderLebiDiscount = 0D;
-                                        //分单现金返利折扣
-                                        Double separateOrderSubventionDiscount = 0D;
-
-                                        for (OrderGoodsInfo goodsInfo : orderGoodsInfoListTemp) {
-                                            if (goodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
-                                                separateOrderGoodsTotalPrice += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
-                                                separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
-                                                separateOrderPromotionDiscount += goodsInfo.getPromotionSharePrice() * goodsInfo.getOrderQuantity();
-                                                separateOrderCashCouponDiscount += goodsInfo.getCashCouponSharePrice() * goodsInfo.getOrderQuantity();
-                                                separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
-                                                separateOrderSubventionDiscount += goodsInfo.getCashReturnSharePrice() * goodsInfo.getOrderQuantity();
-                                            } else if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
-                                                separateOrderGoodsTotalPrice += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
-                                                separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
-                                                separateOrderProductCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
-                                            }
-
-                                            OrderGoodsInf goodsInf = new OrderGoodsInf();
-                                            goodsInf.setMainOrderNumber(orderNumber);
-                                            goodsInf.setOrderNumber(orderBaseInf.getOrderNumber());
-                                            goodsInf.setOrderLineId(goodsInfo.getId());
-                                            goodsInf.setCashCouponDiscount(goodsInfo.getCashCouponSharePrice());
-                                            goodsInf.setLebiDiscount(goodsInfo.getLbSharePrice());
-                                            goodsInf.setPromotionDiscount(goodsInfo.getPromotionSharePrice());
-                                            goodsInf.setSubventionDiscount(goodsInfo.getCashReturnSharePrice());
-                                            goodsInf.setDiscountTotalPrice(goodsInf.getCashCouponDiscount() + goodsInf.getLebiDiscount()
-                                                    + goodsInf.getSubventionDiscount() + goodsInf.getPromotionDiscount());
-                                            goodsInf.setGiftFlag(goodsInfo.getGoodsLineType() == AppGoodsLineType.PRESENT ? AppWhetherFlag.Y : AppWhetherFlag.N);
-                                            goodsInf.setSku(goodsInfo.getSku());
-                                            goodsInf.setGoodsTitle(goodsInfo.getSkuName());
-                                            goodsInf.setRetailPrice(goodsInfo.getRetailPrice());
-                                            goodsInf.setHyPrice(goodsInfo.getVIPPrice());
-                                            goodsInf.setJxPrice(goodsInfo.getWholesalePrice());
-                                            goodsInf.setSettlementPrice(goodsInfo.getSettlementPrice());
-                                            goodsInf.setReturnPrice(goodsInfo.getReturnPrice());
-                                            goodsInf.setQuantity(goodsInfo.getOrderQuantity());
-                                            goodsInf.setPromotionId(goodsInfo.getPromotionId());
-                                            orderGoodsInfList.add(goodsInf);
-
-                                        }
-
-                                        separateOrderAmountPayable = separateOrderGoodsTotalPrice
-                                                - separateOrderMemberDiscount
-                                                - separateOrderPromotionDiscount
-                                                - separateOrderCashCouponDiscount
-                                                - separateOrderProductCouponDiscount
-                                                - separateOrderLebiDiscount
-                                                - separateOrderSubventionDiscount;
-                                        orderBaseInf.setOrderAmt(separateOrderGoodsTotalPrice);
-                                        orderBaseInf.setRecAmt(separateOrderAmountPayable);
-                                        orderBaseInf.setCashCouponDiscount(separateOrderCashCouponDiscount);
-                                        orderBaseInf.setStoreSubventionDiscount(separateOrderSubventionDiscount);
-                                        orderBaseInf.setLebiDiscount(separateOrderLebiDiscount);
-                                        orderBaseInf.setMemberDiscount(separateOrderMemberDiscount);
-                                        orderBaseInf.setPromotionDiscount(separateOrderPromotionDiscount);
-                                        orderBaseInf.setProductCouponDiscount(separateOrderProductCouponDiscount);
-                                        orderBaseInf.setSobId(baseInfo.getSobId());
-                                        orderBaseInf.setStoreCode(baseInfo.getStoreCode());
-                                        orderBaseInf.setStoreOrgId(baseInfo.getStoreOrgId());
-                                        orderBaseInf.setOrderDate(baseInfo.getCreateTime());
-                                        //订单类型
-                                        orderBaseInf.setOrderTypeId(4L);
-                                        orderBaseInf.setOrderSubjectType(baseInfo.getOrderSubjectType());
-                                        if (baseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE) {
-                                            orderBaseInf.setUserId(baseInfo.getCustomerId());
-                                            orderBaseInf.setSalesConsultId(baseInfo.getSalesConsultId());
-                                        } else {
-                                            orderBaseInf.setDecorateManagerId(baseInfo.getCreatorId());
-                                        }
-                                        if (orderBaseInf.getCashCouponDiscount() > 0 || orderBaseInf.getProductCouponDiscount() > 0) {
-                                            orderBaseInf.setCouponFlag(AppWhetherFlag.Y);
-                                        } else {
-                                            orderBaseInf.setCouponFlag(AppWhetherFlag.N);
-                                        }
-                                        orderBaseInf.setProductType(ProductType.getProductTypeByValue(s));
-                                        orderBaseInf.setInvoiceFlag(AppWhetherFlag.N);
-                                        if (billingDetail.getEmpCreditMoney() > 0 || billingDetail.getStoreCreditMoney() > 0) {
-                                            orderBaseInf.setCreditFlag(AppWhetherFlag.Y);
-                                        } else {
-                                            orderBaseInf.setCreditFlag(AppWhetherFlag.N);
-                                        }
-                                        orderBaseInfList.add(orderBaseInf);
-                                    } else {
-                                        // todo 记录拆单错误日志
-                                    }
-                                }
-                                //循环保存分单基础信息
-                                supportService.saveSeparateOrderInfAndGoodsInf(orderBaseInfList,orderGoodsInfList);
-                               /* for (OrderBaseInf baseInf : orderBaseInfList) {
-                                    separateOrderService.saveOrderBaseInf(baseInf);
-                                }
-                                for (OrderGoodsInf goodsInf : orderGoodsInfList) {
-                                    separateOrderService.saveOrderGoodsInf(goodsInf);
-                                }*/
-                                System.out.println("咋回事儿？");
-                            } else {
-                                //todo 记录拆单错误日志
-                            }
-                        }
+                    }else{
+                        separateOrderService.separateOrder(orderNumber);
                     }
                 } catch (IOException e) {
-                    log.info(e.getMessage());
+                    log.warn("消息格式错误!");
                     e.printStackTrace();
                 }
                 break;
