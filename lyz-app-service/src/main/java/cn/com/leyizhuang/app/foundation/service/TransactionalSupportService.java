@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 
@@ -19,5 +20,5 @@ public interface TransactionalSupportService {
                              List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
                              List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
 
-    void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList,List<OrderGoodsInf> orderGoodsInfList );
+    void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList, List<OrderCouponInf> couponInfList);
 }

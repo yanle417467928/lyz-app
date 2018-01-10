@@ -102,7 +102,7 @@ public class MaGoodsVO {
             goodsVO.setRotationImageUri(goodsDO.getRotationImageUri());
             goodsVO.setSortId(goodsDO.getSortId());
             goodsVO.setCompanyFlag(goodsDO.getCompanyFlag());
-            goodsVO.setGoodsDetial(goodsDO.getGoodsDetial());
+            goodsVO.setGoodsDetial(goodsDO.getGoodsDetail());
             goodsVO.setIsColorMixing(goodsDO.getIsColorMixing());
             goodsVO.setMaterialsName(goodsDO.getMaterialsName());
             goodsVO.setMaterialsCode(goodsDO.getMaterialsCode());

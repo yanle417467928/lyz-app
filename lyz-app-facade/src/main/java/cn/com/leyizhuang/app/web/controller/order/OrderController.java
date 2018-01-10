@@ -241,7 +241,7 @@ public class OrderController {
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
             //******** 分摊现金券 *********************
-            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList,support.getOrderGoodsInfoList());
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, support.getOrderGoodsInfoList());
 
             //******** 分摊促销 ***********************
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
@@ -895,6 +895,11 @@ public class OrderController {
         }
         try {
             //获取用户待评价订单列表
+            if(AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.CUSTOMER) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户没有权限评价!", null);
+                logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             PageInfo<OrderListResponse> responseOrderList = appOrderService.getPendingEvaluationOrderListByUserIDAndIdentityType(userId,
                     identityType, page, size);
             for (OrderListResponse response : responseOrderList.getList()) {
@@ -978,7 +983,8 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1006,7 +1012,7 @@ public class OrderController {
             pageInfo.setNavigatepageNums(orderBaseInfoLists.getNavigatepageNums());
             pageInfo.setNavigateLastPage(orderBaseInfoLists.getNavigateLastPage());
             pageInfo.setNavigatePages(orderBaseInfoLists.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<OrderListResponse>().transform(pageInfo));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<OrderListResponse>().transform(pageInfo));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {

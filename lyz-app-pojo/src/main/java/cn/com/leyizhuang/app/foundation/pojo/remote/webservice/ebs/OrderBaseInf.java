@@ -21,7 +21,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderBaseInf {
 
-    private Long id;
+    /**
+     * 头id
+     */
+    private Long headerId;
 
     /**
      * 创建时间

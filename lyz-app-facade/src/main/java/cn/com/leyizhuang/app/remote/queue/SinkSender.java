@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.remote.queue;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessageType;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
@@ -23,10 +24,12 @@ public class SinkSender {
 
     public void sendOrder(String orderNumber) {
         log.info("发送需拆单订单到拆单队列,Begin\n 订单号:{}", orderNumber);
-        MqMessage message = new MqMessage();
-        message.setType(MqMessageType.ORDER);
-        message.setContent(JSON.toJSONString(orderNumber));
-        orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        if (StringUtils.isNotBlank(orderNumber)){
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER);
+            message.setContent(JSON.toJSONString(orderNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
         log.info("发送需拆单订单到拆单队列,End", JSON.toJSONString(orderNumber));
     }
 
