@@ -70,6 +70,47 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
 
             }
             /**
+             * 公司券
+             */
+            else if (type.equals(AppCashCouponType.COMPANY)){
+                // 创建一个集合装需要分摊的商品
+                List<OrderGoodsInfo> dutchGoodsInfos = new ArrayList<>();
+
+                // 获取指定公司标识
+                List<String> companys = cashCouponDAO.queryCompanyFlagsByCcid(customerCashCoupon.getCcid());
+
+                // 商品总价
+                Double totalPrice = 0.00;
+
+                for (int i = goodsInfs.size()-1; i >=0 ; i --){
+                    OrderGoodsInfo goods = goodsInfs.get(i);
+
+                    Integer qty = goods.getOrderQuantity();
+                    Double price = goods.getSettlementPrice();
+
+                    if(qty == null || qty < 1 || price == null || price == 0){
+                        //  抛异常
+                        throw new DutchException("公司现金券分摊，商品数量和单价有误！");
+                    }
+
+                    // 获取商品公司标识
+                    GoodsDO goodsDO = goodsDAO.findGoodsById(goods.getGid());
+                    if (goodsDO == null || goodsDO.getCompanyFlag() == null || goodsDO.getCompanyFlag().equals("")){
+                        // 抛异常
+                        throw new DutchException("公司现金券分摊，商品公司标识不存在！");
+                    }
+                    String companyFlag = goodsDO.getCompanyFlag();
+
+                    if(companys.contains(companyFlag)){
+                        totalPrice = (price * qty) + totalPrice;
+                        dutchGoodsInfos.add(goods);
+                        goodsInfs.remove(goods);
+                    }
+                }
+
+                goodsInfs.addAll(this.dutchPrice(dutchGoodsInfos,totalPrice,denomination));
+            }
+            /**
              * 品牌券 分摊
              */
             else if (type.equals(AppCashCouponType.BRAND)){

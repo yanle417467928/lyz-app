@@ -78,7 +78,7 @@ public interface CashCouponService {
 
     List<Long> queryStoreIdsByCcid(Long ccid);
 
-    List<Long> queryCompanyIdsByCcid(Long ccid);
+    List<String> queryCompanysByCcid(Long ccid);
 
     List<Long> queryBrandIdsByCcid(Long ccid);
 

@@ -83,7 +83,7 @@ public interface CashCouponDAO {
 
     List<Long> queryStoreIdsByCcid(@Param("ccid") Long ccid);
 
-    List<Long> queryCompanyIdsByCcid(@Param("ccid") Long ccid);
+    List<String> queryCompanyFlagsByCcid(@Param("ccid") Long ccid);
 
     List<Long> queryBrandIdsByCcid(@Param("ccid") Long ccid);
 

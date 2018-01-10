@@ -647,7 +647,47 @@ public class OrderController {
                         if(cashCouponType.equals(AppCashCouponType.GENERAL)){
                             // 通用现金券
                             meetAmount = totalOrderAmount;
-                        }else if (cashCouponType.equals(AppCashCouponType.BRAND)){
+                        }
+                        else if (cashCouponType.equals(AppCashCouponType.COMPANY)){
+                            // 指定公司券
+                            List<Long> goodsIds = new ArrayList<>();
+                            for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
+                                goodsIds.add(aGoodsList.getId());
+                            }
+                            List<OrderGoodsSimpleResponse> goodsInfo = null;
+                            if (identityType == 6) {
+                                //获取商品信息
+                                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+                            } else {
+                                //获取商品信息
+                                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+                            }
+
+                            if( goodsInfo == null || goodsInfo.size() == 0){
+                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品信息不对", null);
+                                logger.info("本品信息不对", resultDTO);
+                                return resultDTO;
+                            }
+
+                            // 获取指定公司
+                            List<String> companys = cashCouponService.queryCompanysByCcid(cashCoupon.getCcid());
+
+                            for (OrderGoodsSimpleResponse goods: goodsInfo){
+                                if(companys.contains(goods.getCompanyFlag())){
+                                    for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
+                                        if(goods.getId().equals(aGoodsList.getId())){
+                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)){
+                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getRetailPrice(),aGoodsList.getQty()));
+                                            }else{
+                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getVipPrice(),aGoodsList.getQty()));
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if (cashCouponType.equals(AppCashCouponType.BRAND)){
                             // 品牌现金券
 
                             List<Long> goodsIds = new ArrayList<>();

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 
@@ -40,4 +41,10 @@ public interface ProductCouponService {
      * @param customerProductCoupon 产品券
      */
     void addCustomerProductCoupon(CustomerProductCoupon customerProductCoupon);
+
+
+    void addProductCoupon(ProductCoupon productCoupon);
+    void updateProductCoupon(ProductCoupon productCoupon);
+    void deletedProductCoupon(List<Long> ids);
+
 }

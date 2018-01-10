@@ -23,6 +23,8 @@ public class CashCouponCompany implements Serializable {
 
     private  Long companyId;
 
+    private  String companyFlag;
+
     private  String companyName;
 
 
