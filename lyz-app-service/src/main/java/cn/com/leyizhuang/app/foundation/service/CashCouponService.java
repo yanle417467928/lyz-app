@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -65,6 +66,8 @@ public interface CashCouponService {
 
     CashCoupon queryById(Long id);
 
+    CustomerCashCoupon findCustomerCashCouponById(Long id);
+
     List<CashCouponStore> queryStoreByCcid(Long ccid);
 
     List<CashCouponCompany> queryCompanyByCcid(Long ccid);
@@ -72,4 +75,12 @@ public interface CashCouponService {
     List<CashCouponBrand> queryBrandByCcid(Long ccid);
 
     List<CashCouponGoods> queryGoodsByCcid(Long ccid);
+
+    List<Long> queryStoreIdsByCcid(Long ccid);
+
+    List<String> queryCompanysByCcid(Long ccid);
+
+    List<Long> queryBrandIdsByCcid(Long ccid);
+
+    List<Long> queryGoodsIdsByCcid(Long ccid);
 }

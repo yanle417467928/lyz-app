@@ -32,6 +32,11 @@ public interface CashCouponDAO {
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
 
     /**
+     * 根据id返回现金券
+     */
+    CustomerCashCoupon findCustomerCashCouponById(@Param("id") Long id);
+
+    /**
      * 根据idList 返回现金券结果
      */
     List<CustomerCashCoupon> queryCustomerCashCouponByIdList(@Param("ids") List<Long> ids);
@@ -78,7 +83,7 @@ public interface CashCouponDAO {
 
     List<Long> queryStoreIdsByCcid(@Param("ccid") Long ccid);
 
-    List<Long> queryCompanyIdsByCcid(@Param("ccid") Long ccid);
+    List<String> queryCompanyFlagsByCcid(@Param("ccid") Long ccid);
 
     List<Long> queryBrandIdsByCcid(@Param("ccid") Long ccid);
 

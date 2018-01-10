@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs;
 
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
+import cn.com.leyizhuang.app.core.constant.ProductType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -48,7 +49,7 @@ public class OrderGoodsInf {
     /**
      * 分单头id
      */
-    private Long orderHeaderId;
+    private Long headerId;
 
     /**
      * 主单号
@@ -69,6 +70,11 @@ public class OrderGoodsInf {
      * 商品名称
      */
     private String goodsTitle;
+
+    /**
+     * APP单据产品类型
+     */
+    private ProductType productType;
 
     /**
      * 数量

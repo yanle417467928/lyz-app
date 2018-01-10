@@ -84,7 +84,23 @@ public class CashCouponServiceImpl implements CashCouponService{
         if (type.equals(AppCashCouponType.GENERAL)){
 
         }else if (type.equals(AppCashCouponType.COMPANY)){
+            List<CashCouponCompany> cashCouponCompanyList = new ArrayList<>();
 
+            for (String company : cashCouponCompanies){
+                CashCouponCompany cashCouponCompany = new CashCouponCompany();
+                cashCouponCompany.setCcid(cashCoupon.getId());
+                cashCouponCompany.setCompanyFlag(company);
+                if (company.equals("LYZ")){
+                    cashCouponCompany.setCompanyName("乐易装");
+                }else if (company.equals("HR")){
+                    cashCouponCompany.setCompanyName("华润");
+                }else if (company.equals("YR")){
+                    cashCouponCompany.setCompanyName("盈润");
+                }
+                cashCouponCompanyList.add(cashCouponCompany);
+            }
+
+            cashCouponDAO.addCashCouponCompany(cashCouponCompanyList);
         }else if (type.equals(AppCashCouponType.BRAND)){
             List<GoodsBrand> brandList = maGoodsBrandDAO.findGoodsBrandByIdList(cashCouponBrands);
             List<CashCouponBrand> cashCouponBrandList = new ArrayList<>();
@@ -133,7 +149,25 @@ public class CashCouponServiceImpl implements CashCouponService{
         if (type.equals(AppCashCouponType.GENERAL)){
 
         }else if (type.equals(AppCashCouponType.COMPANY)){
+            cashCouponDAO.deleteCompanyByccid(cashCoupon.getId());
 
+            List<CashCouponCompany> cashCouponCompanyList = new ArrayList<>();
+
+            for (String company : cashCouponCompanies){
+                CashCouponCompany cashCouponCompany = new CashCouponCompany();
+                cashCouponCompany.setCcid(cashCoupon.getId());
+                cashCouponCompany.setCompanyFlag(company);
+                if (company.equals("LYZ")){
+                    cashCouponCompany.setCompanyName("乐易装");
+                }else if (company.equals("HR")){
+                    cashCouponCompany.setCompanyName("华润");
+                }else if (company.equals("YR")){
+                    cashCouponCompany.setCompanyName("盈润");
+                }
+                cashCouponCompanyList.add(cashCouponCompany);
+            }
+
+            cashCouponDAO.addCashCouponCompany(cashCouponCompanyList);
         }else if (type.equals(AppCashCouponType.BRAND)){
             cashCouponDAO.deleteBrandByccid(cashCoupon.getId());
 
@@ -176,13 +210,17 @@ public class CashCouponServiceImpl implements CashCouponService{
     public void deleteCashCouponTemplate(List<Long> ids){
         if (ids != null || ids.size() != 0){
             for (Long id : ids){
-                cashCouponDAO.deleteStoreByccid(id);
-                cashCouponDAO.deleteGoodsByccid(id);
-                cashCouponDAO.deleteBrandByccid(id);
-                cashCouponDAO.deleteCompanyByccid(id);
                 cashCouponDAO.deleteCashCouponByid(id);
             }
         }
+    }
+
+    @Override
+    public CustomerCashCoupon findCustomerCashCouponById(Long id){
+        if (id == null){
+            return null;
+        }
+        return cashCouponDAO.findCustomerCashCouponById(id);
     }
 
     @Override
@@ -215,6 +253,38 @@ public class CashCouponServiceImpl implements CashCouponService{
             return null;
         }
         return cashCouponDAO.queryGoodsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryStoreIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryStoreIdsByCcid(ccid);
+    }
+
+    @Override
+    public List<String> queryCompanysByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryCompanyFlagsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryBrandIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryBrandIdsByCcid(ccid);
+    }
+
+    @Override
+    public List<Long> queryGoodsIdsByCcid(Long ccid){
+        if(ccid == null){
+            return null;
+        }
+        return cashCouponDAO.queryGoodsIdsByCcid(ccid);
     }
 
 }
