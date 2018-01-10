@@ -37,7 +37,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -634,14 +633,14 @@ public class OrderController {
 
                     if (null != cashCoupon) {
                         // 是否关闭
-                        if(!cashCoupon.getStatus()){
+                        if (!cashCoupon.getStatus()) {
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "部分优惠券已经关闭使用", null);
                             logger.info("部分优惠券已经关闭使用", resultDTO);
                             return resultDTO;
                         }
 
                         // 判断是否过期
-                        if (cashCoupon.getEffectiveEndTime().before(new Date())){
+                        if (cashCoupon.getEffectiveEndTime().before(new Date())) {
                             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "部分优惠券已经过期", null);
                             logger.info("部分优惠券已经过期", resultDTO);
                             return resultDTO;
@@ -650,11 +649,10 @@ public class OrderController {
                         AppCashCouponType cashCouponType = cashCoupon.getType();
                         // 订单满足用券条件的金额
                         Double meetAmount = 0.00;
-                        if(cashCouponType.equals(AppCashCouponType.GENERAL)){
+                        if (cashCouponType.equals(AppCashCouponType.GENERAL)) {
                             // 通用现金券
                             meetAmount = totalOrderAmount;
-                        }
-                        else if (cashCouponType.equals(AppCashCouponType.COMPANY)){
+                        } else if (cashCouponType.equals(AppCashCouponType.COMPANY)) {
                             // 指定公司券
                             List<Long> goodsIds = new ArrayList<>();
                             for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
@@ -669,7 +667,7 @@ public class OrderController {
                                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
                             }
 
-                            if( goodsInfo == null || goodsInfo.size() == 0){
+                            if (goodsInfo == null || goodsInfo.size() == 0) {
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品信息不对", null);
                                 logger.info("本品信息不对", resultDTO);
                                 return resultDTO;
@@ -678,22 +676,21 @@ public class OrderController {
                             // 获取指定公司
                             List<String> companys = cashCouponService.queryCompanysByCcid(cashCoupon.getCcid());
 
-                            for (OrderGoodsSimpleResponse goods: goodsInfo){
-                                if(companys.contains(goods.getCompanyFlag())){
+                            for (OrderGoodsSimpleResponse goods : goodsInfo) {
+                                if (companys.contains(goods.getCompanyFlag())) {
                                     for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
-                                        if(goods.getId().equals(aGoodsList.getId())){
-                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)){
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getRetailPrice(),aGoodsList.getQty()));
-                                            }else{
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getVipPrice(),aGoodsList.getQty()));
+                                        if (goods.getId().equals(aGoodsList.getId())) {
+                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)) {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getRetailPrice(), aGoodsList.getQty()));
+                                            } else {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getVipPrice(), aGoodsList.getQty()));
                                             }
                                             break;
                                         }
                                     }
                                 }
                             }
-                        }
-                        else if (cashCouponType.equals(AppCashCouponType.BRAND)){
+                        } else if (cashCouponType.equals(AppCashCouponType.BRAND)) {
                             // 品牌现金券
 
                             List<Long> goodsIds = new ArrayList<>();
@@ -709,7 +706,7 @@ public class OrderController {
                                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
                             }
 
-                            if( goodsInfo == null || goodsInfo.size() == 0){
+                            if (goodsInfo == null || goodsInfo.size() == 0) {
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品信息不对", null);
                                 logger.info("本品信息不对", resultDTO);
                                 return resultDTO;
@@ -718,14 +715,14 @@ public class OrderController {
                             // 获取指定品牌
                             List<Long> brandIds = cashCouponService.queryBrandIdsByCcid(cashCoupon.getCcid());
 
-                            for (OrderGoodsSimpleResponse goods: goodsInfo){
-                                if(brandIds.contains(goods.getBrandId())){
+                            for (OrderGoodsSimpleResponse goods : goodsInfo) {
+                                if (brandIds.contains(goods.getBrandId())) {
                                     for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
-                                        if(goods.getId().equals(aGoodsList.getId())){
-                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)){
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getRetailPrice(),aGoodsList.getQty()));
-                                            }else{
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getVipPrice(),aGoodsList.getQty()));
+                                        if (goods.getId().equals(aGoodsList.getId())) {
+                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)) {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getRetailPrice(), aGoodsList.getQty()));
+                                            } else {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getVipPrice(), aGoodsList.getQty()));
                                             }
                                             break;
                                         }
@@ -734,7 +731,7 @@ public class OrderController {
                             }
 
 
-                        }else if (cashCouponType.equals(AppCashCouponType.GOODS)){
+                        } else if (cashCouponType.equals(AppCashCouponType.GOODS)) {
                             // 指定商品现金券
 
                             List<Long> goodsIds = new ArrayList<>();
@@ -750,7 +747,7 @@ public class OrderController {
                                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
                             }
 
-                            if( goodsInfo == null || goodsInfo.size() == 0){
+                            if (goodsInfo == null || goodsInfo.size() == 0) {
                                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品信息不对", null);
                                 logger.info("本品信息不对", resultDTO);
                                 return resultDTO;
@@ -758,14 +755,14 @@ public class OrderController {
 
                             List<Long> goodsIdList = cashCouponService.queryGoodsIdsByCcid(cashCoupon.getCcid());
 
-                            for (OrderGoodsSimpleResponse goods: goodsInfo){
-                                if(goodsIdList.contains(goods.getId())){
+                            for (OrderGoodsSimpleResponse goods : goodsInfo) {
+                                if (goodsIdList.contains(goods.getId())) {
                                     for (GoodsIdQtyParam aGoodsList : goodsInfoList) {
-                                        if(goods.getId().equals(aGoodsList.getId())){
-                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)){
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getRetailPrice(),aGoodsList.getQty()));
-                                            }else{
-                                                meetAmount = CountUtil.add(meetAmount,CountUtil.mul(goods.getVipPrice(),aGoodsList.getQty()));
+                                        if (goods.getId().equals(aGoodsList.getId())) {
+                                            if (customer.getCustomerType().equals(AppCustomerType.RETAIL)) {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getRetailPrice(), aGoodsList.getQty()));
+                                            } else {
+                                                meetAmount = CountUtil.add(meetAmount, CountUtil.mul(goods.getVipPrice(), aGoodsList.getQty()));
                                             }
                                             break;
                                         }
@@ -901,7 +898,8 @@ public class OrderController {
         }
         try {
             //获取用户待评价订单列表
-            if (AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.CUSTOMER) {
+            if (AppIdentityType.getAppIdentityTypeByValue(identityType) != AppIdentityType.CUSTOMER
+                    && AppIdentityType.getAppIdentityTypeByValue(identityType) != AppIdentityType.DECORATE_MANAGER) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户没有权限评价!", null);
                 logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
