@@ -2,51 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsDAO">
     <resultMap id="goodsResult" type="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
-        <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="CREATOR_ID" property="creatorId"/>
-        <result column="CREATOR_TYPE" property="creatorType"/>
-        <result column="CREATE_TIME" property="createTime"/>
-        <result column="MODIFIER_ID" property="modifierId"/>
-        <result column="MODIFIER_TYPE" property="modifierType"/>
-        <result column="MODIFY_TIME" property="modifyTime"/>
-        <result column="GOODS_NAME" property="goodsName"/>
-        <result column="GOODS_CODE" property="goodsCode"/>
-        <result column="IS_GIFT" property="isGift"/>
-        <result column="TITLE" property="title"/>
-        <result column="SUB_TITLE" property="subTitle"/>
-        <result column="COVER_IMAGE_URI" property="coverImageUri"/>
-        <result column="ROTATION_IMAGE_URI" property="rotationImageUri"/>
-        <result column="DETAIL" property="detail"/>
-        <result column="IS_ON_SALE" property="isOnSale"/>
-        <result column="IS_RECOMMEND_INDEX" property="isRecommendIndex"/>
-        <result column="IS_RECOMMEND_TYPE" property="isRecommendType"/>
-        <result column="IS_HOT" property="isHot"/>
-        <result column="IS_NEW" property="isNew"/>
-        <result column="IS_SPECIAL_PRICE" property="isSpecialPrice"/>
-        <result column="CATEGORY_ID" property="categoryId"/>
-        <result column="CATEGORY_TITLE" property="categoryTitle"/>
-        <result column="CATEGORY_ID_TREE" property="categoryIdTree"/>
-        <result column="MARKET_PRICE" property="marketPrice"/>
-        <result column="SALE_PRICE" property="salePrice"/>
-        <result column="LEFT_NUMBER" property="leftNumber"/>
-        <result column="PRICE_UNIT" property="priceUnit"/>
-        <result column="ONSALE_TIME" property="onSaleTime"/>
-        <result column="CREATE_TIME" property="createTime"/>
-        <result column="SORT_ID" property="sortId"/>
-        <result column="BRAND_NAME" property="brandNAME"/>
-        <result column="BRD_ID" property="brandId"/>
-        <result column="PRODUCT_FLAG" property="productFlag"/>
-        <result column="RETURN_PRICE" property="returnPrice"/>
-        <result column="IS_COLOR_PACKAGE" property="isColorPackage"/>
-        <result column="IS_COLORFUL" property="isColorful"/>
-        <result column="COLOR_PACKAGE_SKU" property="colorPackageSku"/>
-        <result column="INVENTORY_ITEM_ID" property="inventoryItemId"/>
-        <result column="INV_CATEGORY_ID" property="invCategoryId"/>
-        <result column="ITEM_TYPE_NAME" property="itemTypeName"/>
-        <result column="ITEM_TYPE_CODE" property="itemTypeCode"/>
-        <result column="INVENTORY_ITEM_STATUS" property="inventoryItemStatus"/>
-        <result column="ITEM_BARCODE" property="itemBarcode"/>
-        <result column="UNIT_NAME" property="unitName"/>
+        <id column="gid" property="gid" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime"/>
+        <result column="brd_id" property="brdId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="cid" property="cid"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="gtid" property="gtid"/>
+        <result column="type_name" property="typeName"/>
+        <result column="sku" property="sku"/>
+        <result column="sku_name" property="skuName"/>
+        <result column="cover_image_uri" property="coverImageUri"/>
+        <result column="rotation_image_uri" property="rotationImageUri"/>
+        <result column="goods_specification" property="goodsSpecification"/>
+        <result column="goods_unit" property="goodsUnit"/>
+        <result column="is_index_recommend" property="isIndexRecommend"/>
+        <result column="is_hot" property="isHot"/>
+        <result column="is_new" property="isNew"/>
+        <result column="is_color_mixing" property="isColorMixing"/>
+        <result column="sort_id" property="sortId"/>
+        <result column="company_flag" property="companyFlag"/>
+        <result column="materials_code" property="materialsCode"/>
+        <result column="physical_classify" property="physicalClassify"/>
+        <result column="materials_enable" property="materialsEnable"/>
+        <result column="goods_detail" property="goodsDetail"/>
+        <result column="search_keyword" property="searchKeyword"/>
+        <result column="product_grade" property="productGrade"/>
+        <result column="materials_name" property="materialsName"/>
     </resultMap>
 
     <select id="queryList" resultMap="goodsResult">

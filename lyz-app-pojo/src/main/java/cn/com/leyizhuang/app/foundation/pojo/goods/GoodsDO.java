@@ -85,7 +85,7 @@ public class GoodsDO {
     private String searchKeyword;
 
     //商品详情
-    private String goodsDetial;
+    private String goodsDetail;
 
     //物料状态
     private Boolean materialsEnable;
@@ -116,7 +116,7 @@ public class GoodsDO {
             goodsDO.setRotationImageUri(goodsVO.getRotationImageUri());
             goodsDO.setSortId(goodsVO.getSortId());
             goodsDO.setCompanyFlag(goodsVO.getCompanyFlag());
-            goodsDO.setGoodsDetial(goodsVO.getGoodsDetial());
+            goodsDO.setGoodsDetail(goodsVO.getGoodsDetial());
             goodsDO.setIsColorMixing(goodsVO.getIsColorMixing());
             goodsDO.setMaterialsName(goodsVO.getMaterialsName());
             goodsDO.setMaterialsCode(goodsVO.getMaterialsCode());
