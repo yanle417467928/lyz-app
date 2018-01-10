@@ -1,11 +1,11 @@
-<head
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<head>
+<link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -54,63 +54,24 @@
             {
                 field: 'cityId',
                 title: '城市ID',
-                align: 'center',
+                align: 'center'
             }, {
-            field: 'name',
-            title: '城市名称',
-            align: 'center',
-            formatter: function(value, row) {
-                return '<a class="scan" href="cityDeliveryTimeList/'+row.cityId+'?parentMenuId=${(parentMenuId!'0')}&cityName='+row.name+'">' + value + '</a>';
-            }
-        }
-        ]);
+                field: 'name',
+                title: '城市名称',
+                align: 'center'
+            }, {
+                field: 'enable',
+                title: '操作',
+                align: 'center',
+                formatter: function (value, row) {
+                    return '<button class="btn btn-primary btn-xs" onclick="showDetail('+row.cityId+',\''+row.name+'\')"> 查看详情</button>';
+                }
+            }]);
     });
 
-    var $page = {
-        information: {
-            show: function (cityId) {
-                if (null === $global.timer) {
-                    $global.timer = setTimeout($loading.show, 2000);
-                    $.ajax({
-                        url: '/rest/cityDeliveryTime/' + cityId,
-                        method: 'GET',
-                        error: function () {
-                            clearTimeout($global.timer);
-                            $loading.close();
-                            $global.timer = null;
-                            $notify.danger('网络异常，请稍后重试或联系管理员');
-                        },
-                        success: function (result) {
-                            clearTimeout($global.timer);
-                            $loading.close();
-                            $global.timer = null;
-                            if (0 === result.code) {
-                                var data = result.content;
 
-                                $('#menuTitle').html("城市配送时间详情");
-                                if (null === data[0].cityId) {
-                                    data[0].cityId = '-';
-                                }
-                                $('#cityId').html(data[0].cityId);
-
-                                if (null === data[0].cityName) {
-                                    data[0].cityName = '-';
-                                }
-                                $('#name').html(data[0].cityName);
-
-                                $('#information').modal();
-                            } else {
-                                $notify.danger(result.message);
-                            }
-                        }
-                    })
-                }
-            },
-            close: function () {
-                $('#information').modal('hide');
-            }
-        }
+    function showDetail(id,name) {
+        window.location.href = '/views/admin/citysDeliveryTimes/cityDeliveryTimeList/' + id + '?&cityName=' + name;
     }
-
 </script>
 </body>

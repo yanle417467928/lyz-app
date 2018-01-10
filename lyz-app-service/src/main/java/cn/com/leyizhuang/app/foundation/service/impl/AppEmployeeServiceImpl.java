@@ -10,10 +10,13 @@ import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -86,10 +89,11 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public List<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public PageInfo<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (null != userId && null != identityType && identityType == 2) {
+            PageHelper.startPage(page, size);
             List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);
-            return EmployeeListResponse.transform(appEmployeeList);
+            return new PageInfo<>(EmployeeListResponse.transform(appEmployeeList));
         }
         return null;
     }
@@ -205,12 +209,20 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
             EmpCreditMoneyChangeLogDO  empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
             if(null!=log.getCreditLimitAvailableChangeAmount() && 0!=log.getCreditLimitAvailableChangeAmount()){
                 EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog =new EmpAvailableCreditMoneyChangeLog();
-                empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
+                if("PLACE_ORDER".equals(log.getChangeType())){
+                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(BigDecimal.ZERO.subtract(BigDecimal.valueOf(log.getCreditLimitAvailableAfterChange())).doubleValue());
+                }else if("RETURN_ORDER".equals(log.getChangeType())){
+                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
+                }else if("CANCEL_ORDER".equals(log.getChangeType())){
+                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
+                }else{
+                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
+                }
                 empAvailableCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(log.getCreditLimitAvailableChangeAmount());
                 Long id = employeeDAO.saveCreditLimitAvailableChange(empAvailableCreditMoneyChangeLog);
                 empCreditMoneyChangeLogDO.setAvailableCreditChangId(empAvailableCreditMoneyChangeLog.getId());
             }
-            if(null!=log.getTempCreditLimitChangeAmount()&& 0!=log.getCreditLimitAvailableChangeAmount()){
+            if(null!=log.getTempCreditLimitChangeAmount()&& 0!=log.getTempCreditLimitChangeAmount()){
                 EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog = new EmpTempCreditMoneyChangeLog();
                 empTempCreditMoneyChangeLog.setTempCreditLimitAfterChange(log.getTempCreditLimitAfterChange());
                 empTempCreditMoneyChangeLog.setTempCreditLimitChangeAmount(log.getTempCreditLimitChangeAmount());

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.store;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
@@ -7,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.app.web.controller.user.UserHomePageController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ public class StoreController {
     private AppStoreService appStoreService;
 
     @Autowired
-    private StorePreDepositLogService storePreDepositLogServiceImpl;
+    private StorePreDepositLogService storePreDepositLogService;
 
     /**
      * 获取门店赞助金余额
@@ -130,7 +132,7 @@ public class StoreController {
      * @return
      */
     @PostMapping(value = "/preDeposit/balance", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStorePreDepositBalance(Long userId, Integer identityType) {
+    public ResultDTO getStoreRechargePreDepositBalance(Long userId, Integer identityType) {
 
         logger.info("getStorePreDepositBalance CALLED,获取门店预存款余额，入参 userId {},identityType{}", userId, identityType);
 
@@ -170,14 +172,14 @@ public class StoreController {
 
     /**
      * 获取门店充值明细
-     *
      * @param userId
+     * @param identityType
      * @return
      */
     @PostMapping(value = "/preDeposit/recharge/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType) {
+    public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType,Integer page, Integer size) {
 
-        logger.info("getStoreRechargePreDepositLog CALLED,获取门店钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+        logger.info("getStoreRechargePreDepositLog CALLED,获取门店钱包充值记录，入参 userId {},identityType{},page:{}, size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -185,24 +187,144 @@ public class StoreController {
             logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
+        if ( null==identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
                     null);
             logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
-            List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
-            logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录成功，出参 resultDTO:{}", resultDTO);
+            if(identityType == 0 || identityType == 4){
+                List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
+                PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList, page, size);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
+                logger.info("getStoreRechargePreDepositLog OUT,获取门店钱包钱包充值记录成功，出参 resultDTO:{}", resultDTO);
+            }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+            }
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取装饰公司钱包充值记录失败", null);
-            logger.warn("getStoreRechargePreDepositLog EXCEPTION,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店钱包充值记录失败", null);
+            logger.warn("getStoreRechargePreDepositLog EXCEPTION,获取门店公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }
+    }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取门店钱包消费记录
+     * @descripe
+     */
+    @PostMapping(value = "/preDeposit/consumption/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType,Integer page, Integer size) {
+
+        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取门店钱包消费记录，入参 userId {},identityType{},page:{}, size:{}", userId, identityType,page,size);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreConsumptionPreDepositLog OUT, 获取门店钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if ( null==identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT,获取门店钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT,获取门店钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getStoreConsumptionPreDepositLog OUT,获取门店钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            if(identityType == 0 || identityType == 4) {
+                List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
+                PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList,page, size);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
+                logger.info("getStoreConsumptionPreDepositLog OUT, 获取门店钱包消费记录成功，出参 resultDTO:{}", resultDTO);
+            }else{
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+            }
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取门店钱包消费记录失败", null);
+            logger.warn("getStoreConsumptionPreDepositLog EXCEPTION, 获取门店钱包消费记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+
+    /**
+     * 获取门店预存款余额(无装饰公司)
+     *
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/preDepositBalance", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStorePreDepositBalance(Long userId, Integer identityType) {
+
+        logger.info("getStorePreDepositBalance CALLED,获取门店预存款余额，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+                    null);
+            logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            if (identityType == 4) {
+                Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        }catch(Exception e){
+             e.printStackTrace();
+             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取门店预存款余额失败", null);
+             logger.warn("getStorePreDepositBalance EXCEPTION,获取门店预存款余额失败，出参 resultDTO:{}", resultDTO);
+             logger.warn("{}", e);
+             return resultDTO;
         }
     }
 }

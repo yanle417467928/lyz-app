@@ -103,10 +103,11 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public List<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType) {
+    public PageInfo<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
         if (null != userId && null != identityType && identityType == 0) {
+            PageHelper.startPage(page, size);
             List<AppCustomer> appCustomerList = customerDAO.findListBySalesConsultId(userId);
-            return CustomerListResponse.transform(appCustomerList);
+            return  new PageInfo<>(CustomerListResponse.transform(appCustomerList));
         }
         return null;
     }

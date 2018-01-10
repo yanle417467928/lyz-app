@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO;
@@ -9,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.service.PhotoOrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,8 +164,8 @@ public class PhotoOrderController {
         }
         List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
         photoOrderStatuses.add(PhotoOrderStatus.PENDING);
-        List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList);
+        PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses,null,null);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList.getList());
         logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
@@ -178,8 +180,8 @@ public class PhotoOrderController {
      * @date 2017/11/28
      */
     @PostMapping(value = "/handled/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getPhotoOrderOfHandled(Long userId, Integer identityType) {
-        logger.info("getPhotoOrderOfHandled CALLED,获取已处理拍照下单列表，入参 userId:{} identityType:{}", userId, identityType);
+    public ResultDTO<Object> getPhotoOrderOfHandled(Long userId, Integer identityType,Integer page, Integer size) {
+        logger.info("getPhotoOrderOfHandled CALLED,获取已处理拍照下单列表，入参 userId:{} identityType:{},page:{},size:{}", userId, identityType,page,size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -191,12 +193,24 @@ public class PhotoOrderController {
             logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
         photoOrderStatuses.add(PhotoOrderStatus.PLACORDER);
         photoOrderStatuses.add(PhotoOrderStatus.PAYED);
         photoOrderStatuses.add(PhotoOrderStatus.FINISH);
-        List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses);
-        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList);
+        PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses, page,  size);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PhotoOrderListResponse>().transform(photoOrderListResponseList));
         logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }

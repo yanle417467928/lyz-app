@@ -7,6 +7,8 @@ import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse;
 import cn.com.leyizhuang.app.foundation.service.PhotoOrderService;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +35,15 @@ public class PhotoOrderServiceImpl implements PhotoOrderService {
     }
 
     @Override
-    public List<PhotoOrderListResponse> findByUserIdAndIdentityTypeAndStatus(Long userId, AppIdentityType identityType, List<PhotoOrderStatus> photoOrderStatuses) {
-        return this.photoOrderDAO.findByUserIdAndIdentityTypeAndStatus(userId, identityType, photoOrderStatuses);
+    public PageInfo<PhotoOrderListResponse> findByUserIdAndIdentityTypeAndStatus(Long userId, AppIdentityType identityType, List<PhotoOrderStatus> photoOrderStatuses, Integer page, Integer size) {
+       if(photoOrderStatuses.contains(PhotoOrderStatus.PENDING)){
+           List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderDAO.findByUserIdAndIdentityTypeAndStatus(userId, identityType, photoOrderStatuses);
+           return new PageInfo<>(photoOrderListResponseList);
+       }else{
+           PageHelper.startPage(page, size);
+           List<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderDAO.findByUserIdAndIdentityTypeAndStatus(userId, identityType, photoOrderStatuses);
+           return new PageInfo<>(photoOrderListResponseList);
+       }
     }
 
     @Override

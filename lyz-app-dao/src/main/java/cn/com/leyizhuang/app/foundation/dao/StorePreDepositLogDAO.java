@@ -18,6 +18,8 @@ public interface StorePreDepositLogDAO {
 
     List<PreDepositLogResponse> findByUserIdAndType(@Param("userId") Long userId, @Param("list") List<StorePreDepositChangeType> typeList);
 
+    List<PreDepositLogResponse> findPreDepositChangeLog(@Param("userId") Long userId, @Param("list") List<StorePreDepositChangeType> typeList);
+
     void save(StPreDepositLogDO stPreDepositLogDO);
 
     /**

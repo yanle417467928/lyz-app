@@ -1,9 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.order;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -17,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
@@ -89,6 +88,12 @@ public class OrderController {
 
     @Resource
     private TransactionalSupportService transactionalSupportService;
+
+    @Resource
+    private AppCashCouponDutchService cashCouponDutchService;
+
+    @Resource
+    private ICallWms iCallWms;
 
     /**
      * 创建订单方法
@@ -228,13 +233,16 @@ public class OrderController {
 
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
-
             //******** 处理订单账单支付明细信息 *********
             List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
+            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
-            //********分摊**********
-            List<OrderGoodsInfo> orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
+            //******** 分摊现金券 *********************
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList,support.getOrderGoodsInfoList());
+
+            //******** 分摊促销 ***********************
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
 
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
@@ -246,6 +254,10 @@ public class OrderController {
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
 
             if (orderBillingDetails.getIsPayUp()) {
+                //如果预存款或信用金已支付完成直接发送到WMS出货单
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
+                }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
@@ -260,7 +272,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException e) {
+                OrderPayableAmountException | DutchException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -410,7 +422,7 @@ public class OrderController {
                     //算总金额
                     totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
                     //算会员折扣(先判断是否是会员还是零售会员)
-                    if (null != customer.getCustomerType() && customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+                    if (identityType == 2 || null != customer.getCustomerType() && customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
                         memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
                                 simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                     }
@@ -840,7 +852,7 @@ public class OrderController {
             pageInfo.setNavigatepageNums(orderBaseInfoLists.getNavigatepageNums());
             pageInfo.setNavigateLastPage(orderBaseInfoLists.getNavigateLastPage());
             pageInfo.setNavigatePages(orderBaseInfoLists.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, pageInfo);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<OrderListResponse>().transform(pageInfo));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {

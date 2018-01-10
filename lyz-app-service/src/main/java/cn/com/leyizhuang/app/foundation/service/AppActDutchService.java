@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * 促销分摊服务类
+ * 分摊服务类
  * Created by panjie on 2017/12/11.
  */
 public interface AppActDutchService {

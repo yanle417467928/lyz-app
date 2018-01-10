@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -278,17 +280,31 @@ public class MaterialAuditSheetController {
      * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID, Integer status) {
+    public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID, Integer status,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{}", userID, status);
+        logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{},page:{},size:{}", userID, status,page,size);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("queryListByEmployeeIDAndStatus OUT,获取物料审核单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("queryListByEmployeeIDAndStatus OUT,获取物料审核单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("queryListByEmployeeIDAndStatus OUT,获取物料审核单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             //查询用户对应状态的所有物料审核单
-            List<MaterialAuditSheetResponse> materialAuditSheetResponseList = materialAuditSheetService.queryListByEmployeeIDAndStatus(userID, status);
+            PageInfo<MaterialAuditSheetResponse> materialAuditSheetResponsePageInfo = materialAuditSheetService.queryListByEmployeeIDAndStatus(userID, status,page,size);
+            List<MaterialAuditSheetResponse> materialAuditSheetResponseList = materialAuditSheetResponsePageInfo.getList();
+            List<MaterialAuditSheetResponse> newMaterialAuditSheetResponseList = new ArrayList<>();
             for (MaterialAuditSheetResponse materialAuditSheetResponse : materialAuditSheetResponseList) {
                 //计算每单物料审核单的商品总数
                 int totalQty = materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(materialAuditSheetResponse.getAuditHeaderID());
@@ -306,8 +322,10 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setTotalQty(totalQty);
                 materialAuditSheetResponse.setPictureList(pictureList);
+                newMaterialAuditSheetResponseList.add(materialAuditSheetResponse);
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialAuditSheetResponseList);
+            materialAuditSheetResponsePageInfo.setList(newMaterialAuditSheetResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<MaterialAuditSheetResponse>().transform(materialAuditSheetResponsePageInfo));
             logger.info("materialAuditGoodsDetails OUT,获取物料审核单列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -327,11 +345,23 @@ public class MaterialAuditSheetController {
      * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/manager/list", method = RequestMethod.POST)
-    public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID, Integer status) {
+    public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID, Integer status, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},", userID);
+        logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},page:{}, size:{}", userID,page,size);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("managerGetMaterialAuditSheet OUT,根据用户id获取装饰公司审核列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("managerGetMaterialAuditSheet OUT,根据用户id获取装饰公司审核列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
             logger.info("managerGetMaterialAuditSheet OUT,根据用户id获取装饰公司审核列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -341,9 +371,9 @@ public class MaterialAuditSheetController {
             //创建一个存储返回参数对象的list
             List<MaterialAuditSheetResponse> materialAuditSheetResponsesList = new ArrayList<>();
             //获取工人所有的物料审核单列表
-            List<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetService.queryListByStoreIDAndStatus(appEmployee.getStoreId(), status);
+            PageInfo<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetService.queryListByStoreIDAndStatus(appEmployee.getStoreId(), status, page, size);
             //遍历工人所有的物料审核单
-            for (MaterialAuditSheet materialAuditSheet1 : materialAuditSheetList) {
+            for (MaterialAuditSheet materialAuditSheet1 : materialAuditSheetList.getList()) {
                 //创建一个返回参数对象
                 MaterialAuditSheetResponse materialAuditSheetResponse = new MaterialAuditSheetResponse();
                 //查询每单物料审核单所有商品信息
@@ -372,7 +402,21 @@ public class MaterialAuditSheetController {
                 //把所有返回参数对象放入list
                 materialAuditSheetResponsesList.add(materialAuditSheetResponse);
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialAuditSheetResponsesList);
+            PageInfo<MaterialAuditSheetResponse> pageInfo = new PageInfo<>(materialAuditSheetResponsesList);
+            pageInfo.setEndRow(materialAuditSheetList.getEndRow());
+            pageInfo.setNextPage(materialAuditSheetList.getNextPage());
+            pageInfo.setPageNum(materialAuditSheetList.getPageNum());
+            pageInfo.setPages(materialAuditSheetList.getPages());
+            pageInfo.setPageSize(materialAuditSheetList.getPageSize());
+            pageInfo.setPrePage(materialAuditSheetList.getPrePage());
+            pageInfo.setSize(materialAuditSheetList.getSize());
+            pageInfo.setStartRow(materialAuditSheetList.getStartRow());
+            pageInfo.setTotal(materialAuditSheetList.getTotal());
+            pageInfo.setNavigateFirstPage(materialAuditSheetList.getNavigateFirstPage());
+            pageInfo.setNavigatepageNums(materialAuditSheetList.getNavigatepageNums());
+            pageInfo.setNavigateLastPage(materialAuditSheetList.getNavigateLastPage());
+            pageInfo.setNavigatePages(materialAuditSheetList.getNavigatePages());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<MaterialAuditSheetResponse>().transform(pageInfo));
             logger.info("addMaterialAuditSheet OUT,新增物料审核单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

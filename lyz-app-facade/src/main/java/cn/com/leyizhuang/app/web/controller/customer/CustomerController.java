@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.customer;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
@@ -513,7 +514,7 @@ public class CustomerController {
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerRechargePreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        //logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{}", userId, identityType);
+        //logger.info("getCustomerRechargePreDepositLog CALLED,获取客户钱包充值记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -542,7 +543,7 @@ public class CustomerController {
         try {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getRechargeType();
             PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             //logger.info("getCustomerRechargePreDepositLog OUT,获取客户钱包充值记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -563,7 +564,7 @@ public class CustomerController {
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getCustomerConsumptionPreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{}", userId, identityType);
+        // logger.info("getCustomerConsumptionPreDepositLog CALLED,获取客户钱包消费记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -592,7 +593,7 @@ public class CustomerController {
         try {
             List<CustomerPreDepositChangeType> preDepositChangeTypeList = CustomerPreDepositChangeType.getConsumptionType();
             PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.cusPreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, preDepositLogResponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             //logger.info("getCustomerConsumptionPreDepositLog OUT,获取客户钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

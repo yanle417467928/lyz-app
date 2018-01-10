@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import lombok.*;
 
@@ -106,4 +107,23 @@ public class CustomerCashCoupon implements Serializable {
      */
     private CouponGetType getType;
 
+    /**
+     * 城市id
+     */
+    private Long cityId;
+
+    /**
+     * 城市名称
+     */
+    private String cityName;
+
+    /**
+     * 现金券类型
+     */
+    private AppCashCouponType type;
+
+    /**
+     * 指定门店
+     */
+    private Boolean isSpecifiedStore;
 }

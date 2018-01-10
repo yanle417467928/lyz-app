@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public interface PhotoOrderService {
     PhotoOrderDO save(PhotoOrderDO photoOrderDO);
 
-    List<PhotoOrderListResponse> findByUserIdAndIdentityTypeAndStatus(Long userId, AppIdentityType identityType, List<PhotoOrderStatus> photoOrderStatuses);
+    PageInfo<PhotoOrderListResponse> findByUserIdAndIdentityTypeAndStatus(Long userId, AppIdentityType identityType, List<PhotoOrderStatus> photoOrderStatuses,Integer page, Integer size);
 
     PhotoOrderDetailsResponse findById(Long id);
 

@@ -1,7 +1,14 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
@@ -9,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -21,6 +30,9 @@ public class TestClient {
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
+
+    @Resource
+    private AppStoreService storeService;
 
     public static void main(String[] args) throws Exception {
 //        String STRTABLE = "tbw_send_task_m";
@@ -78,6 +90,30 @@ public class TestClient {
         //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
 //        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
         //第三步：调用下面service将订单号发送给wms
-        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180105145030752391");
+//        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180109112029014872");
+        AtwRequisitionOrderGoods goods1 = new AtwRequisitionOrderGoods();
+        goods1.setErrorMessage("测试");
+        goods1.setSendFlag(true);
+        goods1.setGoodsCode("DDLPSGB02-9.5MM-C");
+        goods1.setOrderNumber("CD_XN20180109112029014872");
+//        appToWmsOrderService.modifyAtwRequisitionOrderGoods(goods1);
+
+
+        AppStore store = storeService.findStoreByUserIdAndIdentityType(1L, 0);
+        System.out.println(store.toString());
+        List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+        OrderGoodsInfo orderGoodsInfo = new OrderGoodsInfo();
+        orderGoodsInfo.setOrderQuantity(10);
+        orderGoodsInfoList.add(orderGoodsInfo);
+        int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+        OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
+        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+        OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+        orderBaseInfo.setOrderNumber("CD_XN20180109144722742441");
+        orderBaseInfo.setCreatorId(1L);
+        orderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+        AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
+                store, orderBillingDetails, goodsQuantity);
+        appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
     }
 }

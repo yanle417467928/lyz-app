@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,6 +28,7 @@ public class CashCoupon implements Serializable {
     /**
      * 创建时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     /**
      * 满减条件
@@ -39,11 +42,13 @@ public class CashCoupon implements Serializable {
     /**
      * 有效期开始时间
      */
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm:ss")
     private Date effectiveStartTime;
 
     /**
      * 有效期结束时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date effectiveEndTime;
 
     /**
@@ -65,5 +70,30 @@ public class CashCoupon implements Serializable {
      * 优惠券标题
      */
     private String title;
+
+    /**
+     * 城市id
+     */
+    private Long cityId;
+
+    /**
+     * 城市名称
+     */
+    private String cityName;
+
+    /**
+     * 现金券类型
+     */
+    private AppCashCouponType type;
+
+    /**
+     * 指定门店
+     */
+    private Boolean isSpecifiedStore;
+
+    /**
+     * 排序号
+     */
+    private Integer sortId;
 
 }

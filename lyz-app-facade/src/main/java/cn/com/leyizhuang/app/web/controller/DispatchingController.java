@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -9,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -265,8 +267,8 @@ public class DispatchingController {
      * @return  已完成单列表
      */
     @PostMapping(value = "/finish/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getFinishOrderList(Long userId, Integer identityType) {
-        logger.info("getFinishOrderList CALLED,配送员获取已完成单列表，入参 userId:{} identityType:{}", userId, identityType);
+    public ResultDTO<Object> getFinishOrderList(Long userId, Integer identityType,Integer page, Integer size) {
+        logger.info("getFinishOrderList CALLED,配送员获取已完成单列表，入参 userId:{} identityType:{},page:{},size:{}", userId, identityType,page,size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -278,6 +280,18 @@ public class DispatchingController {
             logger.info("getFinishOrderList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getFinishOrderList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getFinishOrderList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             AppEmployee appEmployee = appEmployeeService.findById(userId);
             if (null == appEmployee) {
@@ -285,9 +299,13 @@ public class DispatchingController {
                 logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            List<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsService.getAuditFinishOrderByOperatorNo(userId);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, auditFinishResponseList);
-            logger.info("getFinishOrderList OUT,配送员获取已完成单列表成功，出参 resultDTO:{}", auditFinishResponseList.size());
+            PageInfo<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsService.getAuditFinishOrderByOperatorNo(userId, page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<AuditFinishResponse>().transform(auditFinishResponseList));
+            if(null!=auditFinishResponseList&&null!=auditFinishResponseList.getList()){
+                logger.info("getFinishOrderList OUT,配送员获取已完成单列表成功，出参 resultDTO:{}", auditFinishResponseList.getList().size());
+            }else{
+                logger.info("getFinishOrderList OUT,配送员获取已完成单列表成功，出参 resultDTO:{}", 0);
+            }
             return resultDTO;
         }catch (Exception e){
             e.printStackTrace();

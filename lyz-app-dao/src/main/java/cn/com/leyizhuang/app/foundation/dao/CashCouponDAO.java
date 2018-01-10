@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -33,6 +32,11 @@ public interface CashCouponDAO {
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
 
     /**
+     * 根据idList 返回现金券结果
+     */
+    List<CustomerCashCoupon> queryCustomerCashCouponByIdList(@Param("ids") List<Long> ids);
+
+    /**
      *  id查询
      */
     CashCoupon queryById(@Param("id") Long id);
@@ -43,4 +47,58 @@ public interface CashCouponDAO {
      * @return
      */
     List<CashCoupon> queryByKeywords(@Param("keywords") String keywords);
+
+    /**
+     * 新增门店关联数据 cp_cash_coupon_store
+     */
+    void addCashCouponStores(List<CashCouponStore> list);
+
+    /**
+     * 新增公司关联数据 cp_cash_coupon_company
+     */
+    void addCashCouponCompany(List<CashCouponCompany> list);
+
+    /**
+     * 新增品牌关联数据 cp_cash_coupon_brand
+     */
+    void addCashCouponBrand(List<CashCouponBrand> list);
+
+    /**
+     * 新增商品关联数据 cp_cash_coupon_goods
+     */
+    void addCashCouponGoods(List<CashCouponGoods> list);
+
+    List<CashCouponStore> queryStoreByCcid(@Param("ccid") Long ccid);
+
+    List<CashCouponCompany> queryCompanyByCcid(@Param("ccid") Long ccid);
+
+    List<CashCouponBrand> queryBrandByCcid(@Param("ccid") Long ccid);
+
+    List<CashCouponGoods> queryGoodsByCcid(@Param("ccid") Long ccid);
+
+    List<Long> queryStoreIdsByCcid(@Param("ccid") Long ccid);
+
+    List<Long> queryCompanyIdsByCcid(@Param("ccid") Long ccid);
+
+    List<Long> queryBrandIdsByCcid(@Param("ccid") Long ccid);
+
+    List<Long> queryGoodsIdsByCcid(@Param("ccid") Long ccid);
+
+    /**
+     * 更新cashCoupon
+     * @param
+     */
+    void updateCashCoupon(CashCoupon cashCoupon);
+
+    void deleteCashCouponByid(@Param("ccid") Long ccid);
+
+    void deleteStoreByccid(@Param("ccid") Long ccid);
+
+    void deleteCompanyByccid(@Param("ccid") Long ccid);
+
+    void deleteBrandByccid(@Param("ccid") Long ccid);
+
+    void deleteGoodsByccid(@Param("ccid") Long ccid);
+
+
 }

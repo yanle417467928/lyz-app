@@ -117,12 +117,13 @@ public class ICallWms {
             }
             //解析返回信息
             String errorMsg = AppXmlUtil.checkReturnXml(objects);
+            logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
             if (errorMsg != null) {
                 //如果发送失败修改发送状态
                 requisitionOrderGoods.setSendFlag(false);
                 requisitionOrderGoods.setErrorMessage(errorMsg);
                 logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-            } else if (null != requisitionOrderGoods.getErrorMessage()) {
+            } else if (null == requisitionOrderGoods.getErrorMessage()) {
                 requisitionOrderGoods.setSendTime(new Date());
                 requisitionOrderGoods.setSendFlag(true);
             }
@@ -153,12 +154,13 @@ public class ICallWms {
         }
         //解析返回信息
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
+        logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
         //修改发送状态
         if (errorMsg != null) {
             requisitionOrder.setSendFlag(false);
             requisitionOrder.setErrorMessage(errorMsg);
             logger.error("发送要货单出现异常 EXCEPTION, errorMsg:{}", errorMsg);
-        } else if (null != requisitionOrder.getErrorMessage()) {
+        } else if (null == requisitionOrder.getErrorMessage()) {
             requisitionOrder.setSendTime(new Date());
             requisitionOrder.setSendFlag(true);
         }
