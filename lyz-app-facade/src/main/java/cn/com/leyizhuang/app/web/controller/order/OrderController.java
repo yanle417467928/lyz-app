@@ -741,6 +741,11 @@ public class OrderController {
         }
         try {
             //获取用户待评价订单列表
+            if(AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.CUSTOMER) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户没有权限评价!", null);
+                logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             PageInfo<OrderListResponse> responseOrderList = appOrderService.getPendingEvaluationOrderListByUserIDAndIdentityType(userId,
                     identityType, page, size);
             for (OrderListResponse response : responseOrderList.getList()) {
