@@ -107,4 +107,21 @@ public interface OrderDAO {
                                                                                  @Param(value = "identityType") AppIdentityType identityType);
 
     List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber);
+
+    Integer getUnpaidOrderQuantityByEmpId(Long id);
+
+    Integer getUnpaidOrderQuantityByCusId(Long id);
+
+
+    Integer getpendingReceiveOrderQuantityByEmpId(Long id);
+
+    Integer getpendingReceiveOrderQuantityByCusId(Long id);
+
+    Integer getIsEvaluatedOrderQuantityByEmpId(Long id);
+
+    Integer getIsEvaluatedOrderQuantityByCusId(Long id);
+
+    Integer getReturningOrderQuantityByEmpId(Long id);
+
+    Integer getReturningOrderQuantityByCusId(Long id);
 }

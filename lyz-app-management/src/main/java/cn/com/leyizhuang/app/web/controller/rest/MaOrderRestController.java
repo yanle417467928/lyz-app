@@ -266,4 +266,31 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, maOrderDeliveryInfoResponse);
         }
     }
+
+
+    /**
+     * 后台分页查询所有待出货自提订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/selfTakeOrderReceivables/page/grid")
+    public GridDataVO<MaOrderVO> restSelfTakeOrderReceivablesPageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restSelfTakeOrderReceivablesPageGird 后台分页获取所有待出货自提订单列表 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaOrderVO> maOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingList(page,size);
+            List<MaOrderVO> maOrderVOList = maOrderVOPageInfo.getList();
+            logger.info("restOrderPageGird ,后台分页获取所有待出货自提订单列表成功",(maOrderVOList==null)?0:maOrderVOList.size());
+            return new GridDataVO<MaOrderVO>().transform(maOrderVOList, maOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restOrderPageGird EXCEPTION,发生未知错误，后台分页获取所有待出货自提订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
 }

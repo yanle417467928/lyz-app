@@ -43,11 +43,19 @@ public class MaCityRestController extends BaseRestController {
     @GetMapping(value = "/page/grid")
     public GridDataVO<CityVO> restCitysPageGird(Integer offset, Integer size, String keywords) {
         logger.info("restCitysPageGird,城市信息分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CityVO> cityPage = this.maCityService.queryPageVO(page, size);
-        List<CityVO> citysList = cityPage.getList();
-        return new GridDataVO<CityVO>().transform(citysList, cityPage.getTotal());
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CityVO> cityPage = this.maCityService.queryPageVO(page, size);
+            List<CityVO> citysList = cityPage.getList();
+            logger.info("restCitysPageGird ,城市信息分页查询成功", citysList.size());
+            return new GridDataVO<CityVO>().transform(citysList, cityPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCitysPageGird EXCEPTION,发生未知错误，城市信息分页查询失败");
+            logger.warn("{}", e);
+            return null;
+        }
 
     }
 
@@ -63,13 +71,21 @@ public class MaCityRestController extends BaseRestController {
     @GetMapping(value = "/{cityId}")
     public ResultDTO<CityDetailVO> findityDetailVOById(@PathVariable(value = "cityId") Long cityId) {
         logger.info("findityDetailVOById,查询城市详细信息, 入参 cityId:{}", cityId);
-        CityDetailVO cityVO = this.maCityService.queryCityVOById(cityId);
-        if (null == cityVO) {
-            logger.warn("查找城市失败：Role(id = {}) == null", cityId);
-            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
-                    "指定数据不存在，请联系管理员", null);
-        } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cityVO);
+        try {
+            CityDetailVO cityVO = this.maCityService.queryCityVOById(cityId);
+            if (null == cityVO) {
+                logger.warn("查找城市失败：Role(id = {}) == null", cityId);
+                return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                        "指定数据不存在，请联系管理员", null);
+            } else {
+                logger.info("findityDetailVOById ,查询城市详细信息成功", cityVO);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cityVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findityDetailVOById EXCEPTION,发生未知错误，,查询城市详细信息失败");
+            logger.warn("{}", e);
+            return null;
         }
     }
 
@@ -86,11 +102,18 @@ public class MaCityRestController extends BaseRestController {
     @GetMapping(value = "/findCitylist")
 
     public List<SimpleCityParam> findCitysList() {
-        List<SimpleCityParam> citysList = this.maCityService.findCitysList();
-        return citysList;
+        logger.info("findCitysList,查询城市列表(下拉框)");
+        try {
+            List<SimpleCityParam> citysList = this.maCityService.findCitysList();
+            logger.info("findCitysList ,查询城市列表(下拉框)成功", citysList.size());
+            return citysList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findCitysList EXCEPTION,发生未知错误，,查询城市列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
-
-
 
 
 }

@@ -136,4 +136,6 @@ public interface MaOrderDAO {
      * @return  物流详情
      */
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(@Param("orderNumber") String orderNmber);
+
+    List<MaOrderVO> findSelfTakeOrderShippingList();
 }

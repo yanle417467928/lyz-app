@@ -9,6 +9,8 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetail
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -100,5 +102,12 @@ public class MaOrderServiceImpl implements MaOrderService{
     @Override
     public MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber) {
         return maOrderDAO.getDeliveryInfoByOrderNumber(orderNmber);
+    }
+
+    @Override
+    public PageInfo<MaOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<MaOrderVO> MaOrderVOList = maOrderDAO.findSelfTakeOrderShippingList();
+        return  new PageInfo<>(MaOrderVOList);
     }
 }

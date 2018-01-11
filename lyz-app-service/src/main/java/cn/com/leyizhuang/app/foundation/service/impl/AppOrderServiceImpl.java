@@ -613,4 +613,44 @@ public class AppOrderServiceImpl implements AppOrderService {
     public OrderArrearageInfoResponse getOrderArrearageInfo(String orderNo) {
         return this.orderDAO.getOrderArrearageInfo(orderNo);
     }
+
+    @Override
+    public Integer getUnpaidOrderQuantityByEmpId(Long id) {
+        return this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
+    }
+
+    @Override
+    public Integer getUnpaidOrderQuantityByCusId(Long id) {
+        return this.orderDAO.getUnpaidOrderQuantityByCusId(id);
+    }
+
+    @Override
+    public Integer getpendingReceiveOrderQuantityByEmpId(Long id) {
+        return this.orderDAO.getpendingReceiveOrderQuantityByEmpId(id);
+    }
+
+    @Override
+    public Integer getpendingReceiveOrderQuantityByCusId(Long id) {
+        return this.orderDAO.getpendingReceiveOrderQuantityByCusId(id);
+    }
+
+    @Override
+    public Integer getIsEvaluatedOrderQuantityByEmpId(Long id) {
+        return this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
+    }
+
+    @Override
+    public Integer getIsEvaluatedOrderQuantityByCusId(Long id) {
+        return this.orderDAO.getIsEvaluatedOrderQuantityByCusId(id);
+    }
+
+    @Override
+    public Integer getReturningOrderQuantityByEmpId(Long id) {
+        return this.orderDAO.getReturningOrderQuantityByEmpId(id);
+    }
+
+    @Override
+    public Integer getReturningOrderQuantityByCusId(Long id) {
+        return this.orderDAO.getReturningOrderQuantityByCusId(id);
+    }
 }

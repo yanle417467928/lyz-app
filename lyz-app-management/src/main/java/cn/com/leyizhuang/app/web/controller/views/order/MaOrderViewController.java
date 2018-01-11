@@ -125,4 +125,25 @@ public class MaOrderViewController {
         }
         return "/views/order/store_order_detail";
     }
+
+
+    /**
+     * 跳转门店自提单出货页面
+     * @return
+     */
+    @RequestMapping(value = "/selfTakeOrederShipping/list")
+    public String getSelfTakeOrederShippingList() {
+        return "/views/order/selfTakeOrederShipping_page";
+    }
+
+
+    /**
+     * 跳转门店自提单收款页面
+     * @return
+     */
+    @RequestMapping(value = "/selfTakeOrederReceivables/list")
+    public String getSelfTakeOrederReceivablesList() {
+        return "/views/order/selfTakeOrederReceivables_page";
+    }
+
 }

@@ -634,8 +634,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
@@ -699,4 +699,74 @@
     </select>
 
 
+    <select id="getUnpaidOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE creator_id = #{id}
+        AND creator_identity_type !='CUSTOMER'
+        AND status = 'UNPAID'
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getUnpaidOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE (customer_id = #{id}
+        OR (creator_id = #{id} AND creator_identity_type ='CUSTOMER' ))
+        AND status  = 'UNPAID'
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getpendingReceiveOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE creator_id = #{id}
+        AND creator_identity_type !='CUSTOMER'
+        AND status = 'PENDING_RECEIVE'
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getpendingReceiveOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE (customer_id = #{id}
+        OR (creator_id = #{id} AND creator_identity_type ='CUSTOMER' ))
+        AND status  = 'PENDING_RECEIVE'
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getIsEvaluatedOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE creator_id = #{id}
+        AND creator_identity_type !='CUSTOMER'
+        AND status ='FINISHED'
+        AND is_evaluated = FALSE
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getIsEvaluatedOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_base_info
+        WHERE (customer_id = #{id}
+        OR (creator_id = #{id} AND creator_identity_type ='CUSTOMER' ))
+        AND status  ='FINISHED'
+        AND is_evaluated = FALSE
+        AND effective_end_time&gt; NOW()
+    </select>
+
+
+    <select id="getReturningOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_return_base_info
+        WHERE creator_id = #{id}
+        AND creator_identityType !='CUSTOMER'
+        AND return_status ='RETURNING'
+    </select>
+
+
+    <select id="getReturningOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT count(1) FROM ord_return_base_info
+        WHERE creator_id = #{id}
+        AND creator_identityType ='CUSTOMER'
+        AND return_status  ='RETURNING'
+    </select>
 </mapper>

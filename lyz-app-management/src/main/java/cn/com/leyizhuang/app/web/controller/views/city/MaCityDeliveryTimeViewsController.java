@@ -80,15 +80,15 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
     @GetMapping(value = "/edit/{id}")
     public String cityDeliveryTimeEdit(Model model, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
-            CityDeliveryTimeVO  cityDeliveryTimeVO = maCityDeliveryTimeService.queryById(id);
-            if (null == cityDeliveryTimeVO) {
-                logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
-                error404();
-                return "/error/404";
-            } else {
-                model.addAttribute("cityDeliveryTimeVO",cityDeliveryTimeVO);
-            }
+        CityDeliveryTimeVO  cityDeliveryTimeVO = maCityDeliveryTimeService.queryById(id);
+        if (null == cityDeliveryTimeVO) {
+            logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
+            error404();
+            return "/error/404";
+        } else {
+            model.addAttribute("cityDeliveryTimeVO",cityDeliveryTimeVO);
         }
-        return "/views/city/cityDeliveryTime_edit";
     }
+        return "/views/city/cityDeliveryTime_edit";
+}
 }
