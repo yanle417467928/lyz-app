@@ -24,10 +24,6 @@ function initDateGird(url) {
         title: '标题',
         align: 'left'
     },{
-        field: 'denomination',
-        title: '价值',
-        align: 'center'
-    },{
         field: 'effectiveStartTime',
         title: '有效期开始时间',
         align: 'left',
@@ -67,6 +63,7 @@ function initDateGird(url) {
     $('#btn_add').on('click', function () {
         $grid.add('/view/productCoupon/add/0');
     });
+
     $('#btn_edit').on('click', function () {
         $grid.modify($('#dataGrid'),'/view/productCoupon/edit/{id}');
     });
@@ -81,13 +78,12 @@ function initDateGird(url) {
 
 }
 
-
 function deleteproductCoupon() {
     var ids = $grid.getSelectedIds($('#dataGrid'));
     ids = JSON.stringify(ids);
     $.ajax({
         url: '/rest/productCoupon/delete',
-        method: 'PUT',
+        method: 'POST',
         data:{'ids':ids},
         error: function () {
             clearTimeout($global.timer);

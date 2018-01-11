@@ -26,7 +26,7 @@
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
     <script type="text/javascript" src="/javascript/common/form_common.js"></script>
-    <script type="text/javascript" src="/javascript/productCoupon/productCoupon_add.js"></script>
+    <script type="text/javascript" src="/javascript/productCoupon/productCoupon_edit.js"></script>
 
 </head>
 
@@ -42,6 +42,10 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="productCoupon_form">
+
+                    <input type="hidden" name="id" value="<#if productCoupon?? && productCoupon.id??>${productCoupon.id?c}</#if>">
+                    <input type="hidden" name="createTime" value="<#if productCoupon?? && productCoupon.createTime??>${productCoupon.createTime?string('yyyy-MM-dd hh:mm:ss')}</#if>">
+
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -51,7 +55,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="title" type="text" class="form-control" id="title"
-                                           placeholder="请选择产品" readonly="readonly">
+                                           placeholder="请选择产品" readonly="readonly" value="<#if productCoupon?? && productCoupon.title??>${productCoupon.title!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -63,7 +67,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="description" type="text" class="form-control" id="description"
-                                           placeholder="30个字以内">
+                                           placeholder="30个字以内" value="<#if productCoupon?? && productCoupon.description??>${productCoupon.description!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -77,7 +81,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="effectiveStartTime" type="text" class="form-control" id="effectiveStartTime"
-                                           readonly placeholder="使用开始日期">
+                                           readonly placeholder="使用开始日期" value="<#if productCoupon?? && productCoupon.effectiveStartTime??>${productCoupon.effectiveStartTime?string('yyyy-MM-dd hh:mm:ss')}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -89,7 +93,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="effectiveEndTime" type="text" class="form-control" id="effectiveEndTime"
-                                           readonly placeholder="使用结束日期">
+                                           readonly placeholder="使用结束日期" value="<#if productCoupon?? && productCoupon.effectiveEndTime??>${productCoupon.effectiveEndTime?string('yyyy-MM-dd hh:mm:ss')}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -129,7 +133,12 @@
                                             </tr>
                                             </thead>
                                             <tbody id="selectedGoodsTable">
-
+                                            <tr>
+                                                <td><input id="gid" type='text'  value="<#if goodsInfo?? >${goodsInfo.gid?c}</#if>" style="width:90%;border: none;" readonly /></td>
+                                                <td><input id='sku' type='text' value="<#if goodsInfo?? >${goodsInfo.sku!""}</#if>" style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='<#if goodsInfo?? >${goodsInfo.title!""}</#if>' style='width:90%;border: none;' readonly></td>
+                                                <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
+                                            </tr>
                                             </tbody>
 
                                         </table>

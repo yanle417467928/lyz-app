@@ -1,0 +1,117 @@
+package cn.com.leyizhuang.app.web.controller.rest;
+
+import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
+import cn.com.leyizhuang.app.foundation.service.ProductCouponSendService;
+import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 产品券控制器
+ * Created by panjie on 2018/1/10.
+ */
+@RestController
+@RequestMapping(value = ManagementProductCouponRestController.PRE_URL, produces = "application/json;charset=utf-8")
+public class ManagementProductCouponRestController extends BaseRestController {
+
+    protected final static String PRE_URL = "/rest/productCoupon";
+
+    private final Logger logger = LoggerFactory.getLogger(ManagementProductCouponRestController.class);
+
+    @Resource
+    private ProductCouponService productCouponService;
+
+    @Resource
+    private ProductCouponSendService productCouponSendService;
+
+    @GetMapping("/grid")
+    public GridDataVO<ProductCoupon> gridData(Integer offset, Integer size, String keywords) {
+        GridDataVO<ProductCoupon> gridDataVO = new GridDataVO<ProductCoupon>();
+        Integer page = getPage(offset, size);
+
+        PageInfo<ProductCoupon> pageInfo = productCouponService.queryPage(page, size, keywords);
+
+        return gridDataVO.transform(pageInfo.getList(), pageInfo.getTotal());
+    }
+
+    @PostMapping("/save")
+    public ResultDTO<?> save(@Valid ProductCoupon productCoupon, BindingResult result) throws IOException {
+        if (!result.hasErrors()) {
+            if (productCoupon == null) {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "产品券数据不正确！", null);
+            }
+            productCoupon.setCreateTime(new Date());
+            productCoupon.setRemainingQuantity(productCoupon.getInitialQuantity());
+            productCouponService.addProductCoupon(productCoupon);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "新增产品券模版成功！", null);
+        } else {
+            return actFor400(result, "提交的数据有误");
+        }
+    }
+
+    @PutMapping("/edit")
+    public ResultDTO<?> edit(@Valid ProductCoupon productCoupon, BindingResult result) throws IOException {
+        if (!result.hasErrors()) {
+            if (productCoupon == null) {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "产品券数据不正确！", null);
+            }
+
+            productCouponService.updateProductCoupon(productCoupon);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "编辑产品券模版成功！", null);
+        } else {
+            return actFor400(result, "提交的数据有误");
+        }
+    }
+
+    @PostMapping(value = "/delete")
+    public ResultDTO<?> deleteByIdList(String ids) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+        List<Long> idList = objectMapper.readValue(ids, javaType1);
+
+        productCouponService.deletedProductCoupon(idList);
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "删除成功", null);
+
+    }
+
+    @PostMapping(value = "/send")
+    public ResultDTO<?> send(Long customerId, Long productCouponId,Long sellerId, Integer qty) throws IOException {
+
+        if (customerId == null || productCouponId == null || sellerId == null ||qty == 0) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败,参数有误", null);
+        }
+
+        productCouponSendService.send(customerId,productCouponId,sellerId,qty);
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发券成功", null);
+    }
+
+    @PostMapping(value = "/sendBatch")
+    public ResultDTO<?> sendBatch(String customerIds, Long productCouponId,Long sellerId, Integer qty) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+        List<Long> idList = objectMapper.readValue(customerIds, javaType1);
+
+        if(idList == null || idList == null || sellerId == null || qty == 0){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
+        }
+
+        return productCouponSendService.sendBatch(idList,productCouponId,sellerId,qty);
+    }
+}

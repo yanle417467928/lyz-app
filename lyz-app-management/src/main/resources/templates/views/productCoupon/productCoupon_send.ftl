@@ -25,28 +25,28 @@
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
-    <script type="text/javascript" src="/javascript/cashCoupon/cashCoupon_send.js"></script>
+    <script type="text/javascript" src="/javascript/productCoupon/productCoupon_send.js"></script>
 
 </head>
 
 <body>
 <section class="content-header">
-    <h1>优惠券发放</h1>
+    <h1>产品券发放</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab_1-1" data-toggle="tab">优惠券基本信息</a></li>
+            <li class="active"><a href="#tab_1-1" data-toggle="tab">产品券基本信息</a></li>
         </ul>
-        <input type="hidden" id="cashCouponId" value="<#if cashCoupon??>${cashCoupon.id?c}</#if>">
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
+                <input type="hidden" id="productCouponId" value="<#if productCoupon??>${productCoupon.id?c}</#if>">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="title">标题：</label>
                             <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.title}</#if>
+                            <#if productCoupon??>${productCoupon.title!""}</#if>
                             </div>
                         </div>
                     </div>
@@ -55,34 +55,65 @@
                         <div class="form-group">
                             <label class="title">剩余数量：</label>
                             <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
+                            <#if productCoupon??>${productCoupon.remainingQuantity?c}</#if>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="title">面额￥：</label>
+                            <label class="title">有效期开始时间：</label>
                             <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.denomination}</#if>
+                            <#if productCoupon?? && productCoupon.effectiveStartTime??>${productCoupon.effectiveStartTime?string('yyyy-MM-dd hh:mm:ss')}</#if>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="title">使用条件￥：</label>
+                            <label class="title">有效期结束时间：</label>
                             <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
+                            <#if productCoupon?? && productCoupon.effectiveEndTime??>${productCoupon.effectiveEndTime?string('yyyy-MM-dd hh:mm:ss')}</#if>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="title">
+                                指定导购
+                            </label>
+                            <div class="form-inline">
+                                <select  id="sellerCityCode" class="form-control select" style="width:auto;"
+                                        onchange="changeCity(this.value)">
+                                    <option value="-1">选择城市</option>
+                                </select>
+
+                                <select  id="sellerStoreCode" class="form-control selectpicker" data-width="120px"
+                                        style="width:auto;"
+                                        onchange="changeStore(this.value)" data-live-search="true">
+                                    <option value="-1">选择门店</option>
+                                </select>
+
+                                <select name="seller" id="seller" class="form-control selectpicker" data-width="120px"
+                                        style="width:auto;"
+                                        onchange="" data-live-search="true">
+                                    <option value="-1">选择导购</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
             </div>
         </div>
+
     </div>
+
     <div class="nav-tabs-custom">
         <div class="row">
             <div class="col-xs-12">

@@ -32,7 +32,7 @@
 
 <body>
 <section class="content-header">
-    <h1>新增现金券模版</h1>
+    <h1>新增优惠券模版</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -46,7 +46,7 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
-                                    现金券标题
+                                    优惠券标题
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
@@ -154,14 +154,14 @@
                         <div class="col-xs-12 col-md-2">
                             <div class="form-group">
                                 <label for="title">
-                                    现金券类型
+                                    优惠券类型
                                 </label>
                                 <select name="type" id="type" class="form-control select"
                                         onchange="changeType(this.value);">
-                                    <option value="GENERAL">通用现金券</option>
-                                    <option value="COMPANY">公司现金券</option>
-                                    <option value="BRAND">品牌现金券</option>
-                                    <option value="GOODS">指定商品现金券</option>
+                                    <option value="GENERAL">通用优惠券</option>
+                                    <option value="COMPANY">公司优惠券</option>
+                                    <option value="BRAND">品牌优惠券</option>
+                                    <option value="GOODS">指定商品优惠券</option>
                                 </select>
                             </div>
                         </div>

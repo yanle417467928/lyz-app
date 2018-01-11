@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -78,10 +77,6 @@ public class ProductCoupon implements Serializable {
      */
     private String cityName;
 
-    /**
-     * 现金券类型
-     */
-    private AppCashCouponType type;
 
     /**
      * 指定门店

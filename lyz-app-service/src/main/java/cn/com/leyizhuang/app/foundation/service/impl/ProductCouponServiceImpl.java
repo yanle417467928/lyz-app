@@ -7,6 +7,8 @@ import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,5 +106,23 @@ public class ProductCouponServiceImpl implements ProductCouponService {
         }
     }
 
+    @Override
+    public PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords) {
+
+        PageHelper.startPage(page, size);
+        List<ProductCoupon> list = productCouponDAO.queryByKeywords(keywords);
+        return new PageInfo<ProductCoupon>(list);
+    }
+
+    @Override
+    public ProductCoupon queryProductCouponById(Long id){
+
+        if (id == null){
+            return null;
+        }
+
+        ProductCoupon productCoupon = productCouponDAO.queryProductCouponById(id);
+        return productCoupon;
+    }
 
 }

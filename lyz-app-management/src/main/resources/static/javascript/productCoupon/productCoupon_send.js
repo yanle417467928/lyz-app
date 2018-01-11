@@ -21,6 +21,7 @@ function findCitylist() {
                 city += "<option value=" + item.cityId + ">" + item.name + "</option>";
             })
             $("#cityCode").append(city);
+            $("#sellerCityCode").append(city);
         }
     });
 }
@@ -45,6 +46,7 @@ function findStorelist() {
             $("#storeCode").append(store);
             $('#storeCode').selectpicker('refresh');
             $('#storeCode').selectpicker('render');
+
         }
     });
 }
@@ -244,12 +246,69 @@ function initSelect(select, optionName) {
     $(select).append(selectOption);
 }
 
+function changeCity(val) {
+    initSelect("#sellerStoreCode", "选择门店");
+    initSelect("#seller", "选择导购");
+
+    var store;
+    $.ajax({
+        url: '/rest/stores/findStoresListByCityId/' + val,
+        method: 'GET',
+        error: function () {
+            clearTimeout($global.timer);
+            $loading.close();
+            $global.timer = null;
+            $notify.danger('网络异常，请稍后重试或联系管理员');
+        },
+        success: function (result) {
+            clearTimeout($global.timer);
+            $.each(result, function (i, item) {
+                store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+            })
+            $("#sellerStoreCode").append(store);
+            $('#sellerStoreCode').selectpicker('refresh');
+            $('#sellerStoreCode').selectpicker('render');
+        }
+    });
+}
+
+function changeStore(val) {
+    initSelect("#seller", "选择导购");
+
+    var seller;
+    $.ajax({
+        url: '/rest/employees/findGuidesListById/' + val,
+        method: 'GET',
+        error: function () {
+            clearTimeout($global.timer);
+            $loading.close();
+            $global.timer = null;
+            $notify.danger('网络异常，请稍后重试或联系管理员');
+        },
+        success: function (result) {
+            clearTimeout($global.timer);
+            $.each(result, function (i, item) {
+                seller += "<option value=" + item.id + ">" + item.name + "</option>";
+            })
+            $("#seller").append(seller);
+            $('#seller').selectpicker('refresh');
+            $('#seller').selectpicker('render');
+        }
+    });
+}
 /**
  * 发券
  * **/
 function  send(customerId) {
-    var cashCouponId = $("#cashCouponId").val();
+    var productCouponId = $("#productCouponId").val();
     var qty = $("#qty_"+customerId).val();
+
+    var seller = $("#seller").val();
+
+    if(seller == -1){
+        $notify.warning("指定导购");
+        return false;
+    }
 
     var re = /^[0-9]+.?[0-9]*$/;
     if(qty <= 0 || !re.test(qty)){
@@ -257,12 +316,12 @@ function  send(customerId) {
         return false;
     }
 
-    $http.ajax('/rest/cashCoupon/send','POST',{'customerId':customerId,'cashCouponId':cashCouponId,'qty': qty},function (result) {
+    $http.ajax('/rest/productCoupon/send','POST',{'customerId':customerId,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
         if (0 === result.code) {
             $notify.info(result.message);
 
             setTimeout(function () {
-                location.href = "/view/cashCoupon/send/"+cashCouponId;
+                location.href = "/view/productCoupon/send/"+productCouponId;
             },1000)
 
         } else {
@@ -275,9 +334,16 @@ function  send(customerId) {
  * 批量发券
  * **/
 function  sendBatch() {
-    var cashCouponId = $("#cashCouponId").val();
+    var productCouponId = $("#productCouponId").val();
     var qty = $("#common_qty").val();
     var customerIds = new Array();
+
+    var seller = $("#seller").val();
+
+    if(seller == -1){
+        $notify.warning("指定导购");
+        return false;
+    }
 
     var selected = $("#dataGrid").bootstrapTable('getSelections');
     for (var i = 0; i < selected.length; i++) {
@@ -298,12 +364,12 @@ function  sendBatch() {
         return false;
     }
 
-    $http.ajax('/rest/cashCoupon/sendBatch','POST',{'customerIds':customerIds,'cashCouponId':cashCouponId,'qty': qty},function (result) {
+    $http.ajax('/rest/productCoupon/sendBatch','POST',{'customerIds':customerIds,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
         if (0 === result.code) {
             $notify.info(result.message);
 
             setTimeout(function () {
-                location.href = "/view/cashCoupon/send/"+cashCouponId;
+                location.href = "/view/productCoupon/send/"+productCouponId;
             },1000)
         } else {
             $notify.danger(result.message);
