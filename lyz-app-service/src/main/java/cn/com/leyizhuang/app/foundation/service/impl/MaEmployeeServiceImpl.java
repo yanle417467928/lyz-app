@@ -175,4 +175,10 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         return new PageInfo<>(pageGuideVOList);
     }
 
+    @Override
+    public EmployeeDO findEmployeeDOByEmpId(Long id) {
+        return this.maEmployeeDAO.findEmployeeDOByEmpId(id);
+    }
+
+
 }

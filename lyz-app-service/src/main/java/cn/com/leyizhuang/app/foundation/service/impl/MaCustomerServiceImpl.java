@@ -2,20 +2,28 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
+import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.AssertTrue;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Resource
@@ -90,6 +98,38 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Override
     public Boolean isExistPhoneNumber(Long moblie) {
         return maCustomerDAO.isExistPhoneNumber(moblie);
+    }
+
+    @Override
+    public PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
+        PageHelper.startPage(page, size);
+        List<CustomerPreDepositVO> list = this.maCustomerDAO.findAllCusPredeposit(cityId, storeId, keywords);
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public CustomerPreDepositVO queryCusPredepositByCusId(Long cusId) {
+        return this.maCustomerDAO.queryCusPredepositByCusId(cusId);
+    }
+
+    @Override
+    public void changeCusPredepositByCusId(CusPreDepositLogDTO cusPreDepositLogDTO) {
+        Long userId = cusPreDepositLogDTO.getCusId();
+        Double money = cusPreDepositLogDTO.getChangeMoney();
+        CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findByCusId(userId);
+        if (null == customerPreDeposit) {
+            customerPreDeposit = new CustomerPreDeposit();
+            customerPreDeposit.setBalance(money);
+            customerPreDeposit.setCusId(userId);
+            customerPreDeposit.setCreateTime(new Date());
+            customerPreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+            this.maCustomerDAO.savePreDeposit(customerPreDeposit);
+        } else {
+            int row = this.maCustomerDAO.updateDepositByUserId(userId, money, new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new AppConcurrentExcp("账号余额信息过期！");
+            }
+        }
     }
 }
 

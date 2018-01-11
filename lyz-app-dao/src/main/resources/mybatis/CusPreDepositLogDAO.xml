@@ -18,10 +18,10 @@
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO">
         INSERT INTO cus_pre_deposit_log
         (create_time, change_money, remarks, change_type, cus_id, operator_id, operator_type,
-        operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number)
+        operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number,change_type_desc)
         VALUES
         (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{cusId}, #{operatorId}, #{operatorType},
-        #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+        #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber}, #{changeTypeDesc})
     </insert>
 
 </mapper>

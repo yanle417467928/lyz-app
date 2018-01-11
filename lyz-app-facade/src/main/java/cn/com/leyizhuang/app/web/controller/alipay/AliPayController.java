@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -63,6 +64,10 @@ public class AliPayController {
 
     @Resource
     private ICallWms iCallWms;
+
+    @Resource
+    private SinkSender sinkSender;
+
     /**
      * 支付宝充值生成充值单
      *
@@ -345,7 +350,7 @@ public class AliPayController {
                     logger.warn("alipayReturnAsync,支付宝支付回调接口，响应支付宝结果 result:{}", "success");
                     return "success";
                 }
-                if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+                if ("TRADE_FINISHED".equals(trade_status) || "TRADE_SUCCESS".equals(trade_status)) {
 
                     PaymentDataDO paymentDataDO = new PaymentDataDO();
                     List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(out_trade_no, PaymentDataStatus.WAIT_PAY);
@@ -393,7 +398,11 @@ public class AliPayController {
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
+                            //处理第三方支付成功之后订单相关事务
                             commonService.handleOrderRelevantBusinessAfterOnlinePayUp(out_trade_no, trade_no, trade_status, OnlinePayType.ALIPAY);
+                            //发送订单到拆单消息队列
+                            sinkSender.sendOrder(out_trade_no);
+
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             //发送订单到WMS
                             OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(out_trade_no);
