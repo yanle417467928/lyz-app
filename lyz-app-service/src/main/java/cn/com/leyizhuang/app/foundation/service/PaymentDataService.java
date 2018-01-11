@@ -17,6 +17,8 @@ public interface PaymentDataService {
 
     void updateByTradeStatusIsWaitPay(PaymentDataDO paymentDataDO);
 
+    void updateByTradeStatusIsWaitRefund(PaymentDataDO paymentDataDO);
+
     /**
      * 查询还款记录详情
      * @param outTradeNo    还款号

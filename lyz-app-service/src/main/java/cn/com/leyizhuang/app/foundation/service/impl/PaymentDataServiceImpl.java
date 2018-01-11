@@ -39,6 +39,12 @@ public class PaymentDataServiceImpl implements PaymentDataService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByTradeStatusIsWaitRefund(PaymentDataDO paymentDataDO) {
+        this.paymentDataDAO.updateByTradeStatusIsWaitRefund(paymentDataDO);
+    }
+
+    @Override
     public PaymentDataDO findPaymentDataDOByOutTradeNo(String outTradeNo) {
         return paymentDataDAO.findPaymentDataDOByOutTradeNo(outTradeNo);
     }
