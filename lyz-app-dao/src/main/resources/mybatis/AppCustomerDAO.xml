@@ -300,6 +300,14 @@
         WHERE cus_id = #{userId}
     </update>
 
+    <update id="updateDepositByUserIdAndLastUpdateTime">
+        UPDATE cus_pre_deposit
+        SET balance = balance + #{deposit},
+        last_update_time = #{lastUpdateTime}
+        WHERE cus_id = #{userId}
+        AND last_update_time = #{oldLastUpdateTime}
+    </update>
+
     <update id="updateLeBiByUserIdAndQuantity">
         UPDATE cus_lb
         SET quantity = quantity + #{qty}

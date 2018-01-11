@@ -154,4 +154,52 @@
         WHERE mobile = #{mobile})
     </select>
 
+    <select id="findAllCusPredeposit" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
+        SELECT
+          c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name
+        FROM cus_customer c
+        LEFT JOIN cus_pre_deposit cp on cp.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE
+        (1 = 1)
+        <if test="null != cityId and cityId != -1">
+          AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+          AND c.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (c.name LIKE concat(concat('%',#{keywords}),'%')
+            OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+    </select>
+
+    <select id="queryCusPredepositByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
+        SELECT
+        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name
+        FROM cus_customer c
+        LEFT JOIN cus_pre_deposit cp on cp.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE c.cus_id = #{cusId}
+    </select>
+
+    <select id="findByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+        SELECT *
+        FROM cus_pre_deposit
+        WHERE cus_id = #{cusId}
+    </select>
+
+    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+        INSERT INTO cus_pre_deposit (cus_id, balance, last_update_time, create_time) VALUES (#{cusId}, #{balance}, #{lastUpdateTime}, #{createTime})
+    </insert>
+
+    <update id="updateDepositByUserId">
+        UPDATE cus_pre_deposit
+        SET balance = balance + #{deposit},
+          last_update_time = #{lastUpdateTime}
+        WHERE cus_id = #{userId}
+         AND last_update_time = #{oldLastUpdateTime}
+    </update>
+
 </mapper>

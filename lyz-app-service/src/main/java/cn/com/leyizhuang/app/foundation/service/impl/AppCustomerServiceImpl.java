@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
+import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -491,9 +492,14 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             customerPreDeposit = new CustomerPreDeposit();
             customerPreDeposit.setBalance(money);
             customerPreDeposit.setCusId(userId);
+            customerPreDeposit.setCreateTime(new Date());
+            customerPreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
             this.customerDAO.savePreDeposit(customerPreDeposit);
         } else {
-            this.customerDAO.updateDepositByUserId(userId, money);
+            int row = this.customerDAO.updateDepositByUserIdAndLastUpdateTime(userId, money, new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new AppConcurrentExcp("账号余额信息过期！");
+            }
         }
         CusPreDepositLogDO log = new CusPreDepositLogDO();
         log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);
@@ -501,6 +507,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         log.setOrderNumber(paymentDataDO.getOutTradeNo());
         log.setMerchantOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), money));
+        log.setChangeTypeDesc(paymentDataDO.getPaymentTypeDesc());
         this.cusPreDepositLogServiceImpl.save(log);
     }
 }
