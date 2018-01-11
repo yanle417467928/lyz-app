@@ -37,7 +37,7 @@ public interface AppEmployeeService {
 
     AppEmployee findByIdAndStatusIsTrue(Long userId);
 
-    PageInfo<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size);
+    PageInfo<AppEmployee> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size);
 
     List<EmployeeListResponse> searchBySalesConsultIdAndKeywords(Long userId, String keywords, Integer identityType);
 

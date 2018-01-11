@@ -2,9 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +14,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CusPreDepositLogDO {
 
     private Long id;

@@ -43,4 +43,6 @@ public interface MaEmployeeService {
     PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId);
 
     PageInfo<GuideVO>  queryGuideVOByInfo(Integer page,Integer size,String queryGuideVOInfo);
+
+    EmployeeDO findEmployeeDOByEmpId(Long id);
 }

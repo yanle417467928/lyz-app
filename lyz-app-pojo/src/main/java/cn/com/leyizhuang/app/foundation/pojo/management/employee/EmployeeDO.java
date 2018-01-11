@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.employee;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
@@ -34,7 +35,7 @@ public class EmployeeDO {
     //密码加盐
     private String salt;
     //身份类型
-    private String identityType;
+    private AppIdentityType identityType;
     //导购类型
     private String sellerType;
     //手机号
@@ -66,7 +67,7 @@ public class EmployeeDO {
             employeeDO.setEmpId(employeeVO.getId());
             employeeDO.setLoginName(employeeVO.getLoginName());
             employeeDO.setName(employeeVO.getName());
-            employeeDO.setIdentityType(employeeVO.getIdentityType());
+            employeeDO.setIdentityType(AppIdentityType.getAppIdentityTypeByDescription(employeeVO.getIdentityType()));
             employeeDO.setSellerType(employeeVO.getSellerType());
             employeeDO.setMobile(employeeVO.getMobile());
             employeeDO.setBirthday(employeeVO.getBirthday());

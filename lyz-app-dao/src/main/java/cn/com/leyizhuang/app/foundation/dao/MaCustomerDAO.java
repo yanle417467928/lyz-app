@@ -1,8 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -24,4 +28,15 @@ public interface MaCustomerDAO {
     void save(CustomerDO customer);
 
     Boolean isExistPhoneNumber(Long moblie);
+
+    List<CustomerPreDepositVO> findAllCusPredeposit(@Param("cityId") Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+
+    CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
+
+    CustomerPreDeposit findByCusId(Long cusId);
+
+    void savePreDeposit(CustomerPreDeposit preDeposit);
+
+    int updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
+
 }

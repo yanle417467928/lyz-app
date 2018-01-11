@@ -613,4 +613,33 @@ public class AppOrderServiceImpl implements AppOrderService {
     public OrderArrearageInfoResponse getOrderArrearageInfo(String orderNo) {
         return this.orderDAO.getOrderArrearageInfo(orderNo);
     }
+
+    @Override
+    public Map<String,Integer> getAppOrderQuantityByEmpId(Long id) {
+        Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
+        Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByEmpId(id);
+        Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
+        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByEmpId(id);
+        Map quantityMap = new HashMap();
+        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        return quantityMap;
+    }
+
+    @Override
+    public Map<String,Integer> getAppOrderQuantityByCusId(Long id) {
+        Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByCusId(id);
+        Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByCusId(id);
+        Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByCusId(id);
+        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByCusId(id);
+        Map quantityMap = new HashMap();
+        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        return quantityMap;
+    }
+
 }

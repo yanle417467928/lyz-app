@@ -38,7 +38,7 @@ public interface AppCustomerService {
 
     List<ProductCouponResponse> findProductCouponByCustomerId(Long userId);
 
-    PageInfo<CustomerListResponse> findListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size);
+    PageInfo<AppCustomer> findListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size);
 
     List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
 

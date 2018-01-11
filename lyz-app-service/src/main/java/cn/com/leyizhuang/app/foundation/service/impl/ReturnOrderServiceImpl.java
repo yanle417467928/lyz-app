@@ -241,4 +241,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         }
         return null;
     }
+
+    @Override
+    public void updateReturnOrderStatus(String returnNumber, AppReturnOrderStatus finished) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            returnOrderDAO.updateReturnOrderStatus(returnNumber, finished);
+        }
+    }
 }

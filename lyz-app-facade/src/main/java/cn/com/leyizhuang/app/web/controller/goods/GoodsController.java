@@ -249,7 +249,7 @@ public class GoodsController {
             PageInfo<UserGoodsResponse> userGoodsResponseList = goodsService.findGoodsListByIsHotAndUserIdAndIdentityType(userId, identityType, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     (null!=userGoodsResponseList&&null!=userGoodsResponseList.getList()&&userGoodsResponseList.getList().size() > 0) ? new GridDataVO<UserGoodsResponse>().transform(userGoodsResponseList) : null);
-            logger.warn("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getGoodsHotListByUserIdAndIdentityType OUT,获取热门商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.getStackTrace();

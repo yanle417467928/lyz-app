@@ -92,6 +92,13 @@ eureka:
   client:
     service-url:
       defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
+task:
+  executor:
+    id: "AppTaskExecutor-"
+    core-pool-size: 5
+    max-pool-size: 25
+    queue-capacity: 100
+    keep-alive: 120
 deploy:
   image-path: src/main/resources/static/images
   alipay:

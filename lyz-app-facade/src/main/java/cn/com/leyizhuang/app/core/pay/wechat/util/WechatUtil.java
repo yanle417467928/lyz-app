@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.core.pay.wechat.util;
 
 import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -94,7 +95,11 @@ public class WechatUtil {
         StringBuffer sb = new StringBuffer();
         sb.append("<xml>");
         sb.append("<return_code>" + "<![CDATA[" + return_code + "]]></return_code>");
-        sb.append("<return_msg>" + "<![CDATA[" + return_msg + "]]></return_msg>");
+        if (StringUtils.isNotBlank(return_msg)) {
+            sb.append("<return_msg>" + "<![CDATA[" + return_msg + "]]></return_msg>");
+        } else {
+            sb.append("<return_msg></return_msg>");
+        }
         sb.append("</xml>");
         return sb.toString();
     }

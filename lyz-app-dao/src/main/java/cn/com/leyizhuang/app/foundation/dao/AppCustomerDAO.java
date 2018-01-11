@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -73,7 +74,9 @@ public interface AppCustomerDAO {
     int updateCashCouponByUserIdAndCashCoupons(
             @Param("userId") Long userId, @Param("gid") Long goodsId, @Param("qty") Integer qty);
 
-    void updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
+    int updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
+
+    int updateDepositByUserIdAndLastUpdateTime(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
 
     void updateLeBiByUserIdAndQuantity(@Param("userId") Long userId, @Param("qty") Integer qty);
 

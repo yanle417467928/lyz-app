@@ -89,11 +89,11 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public PageInfo<EmployeeListResponse> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
+    public PageInfo<AppEmployee> findDecorateEmployeeListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (null != userId && null != identityType && identityType == 2) {
             PageHelper.startPage(page, size);
             List<AppEmployee> appEmployeeList = employeeDAO.findDecorateEmployeeListByManagerId(userId);
-            return new PageInfo<>(EmployeeListResponse.transform(appEmployeeList));
+            return new PageInfo<>(appEmployeeList);
         }
         return null;
     }

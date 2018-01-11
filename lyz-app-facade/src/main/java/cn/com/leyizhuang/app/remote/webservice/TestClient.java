@@ -53,7 +53,7 @@ public class TestClient {
         order.setDiySiteTel("028-83551646");
         order.setDiySiteTitle("富森富之美");
         order.setCustomerName("测试");
-        order.setReceiveTimeQuantum("2017-12-20 14:30");
+        order.setReserveTimeQuantum("2017-12-20 14:30");
         order.setOrderNumber("CD_XN20171220102259123465");
         order.setReceiveAddress("成都市新都区大丰街道订单");
         order.setReceiveName("测试");
@@ -74,7 +74,7 @@ public class TestClient {
         order.setMemberReceiver(false);
         order.setUnpayed(0D);
         order.setTotalGoodsPrice(30.0);
-        order.setAgencyRefund(0.00);
+        order.setAgencyFund(0.00);
 
         AtwRequisitionOrderGoods goods = new AtwRequisitionOrderGoods();
         goods.setCreateTime(new Date());

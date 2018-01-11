@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -133,4 +134,9 @@ public interface AppOrderService {
     PageInfo<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer page, Integer size);
 
     List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber);
+
+    Map<String,Integer> getAppOrderQuantityByEmpId(Long id);
+
+    Map<String,Integer> getAppOrderQuantityByCusId(Long id);
+
 }

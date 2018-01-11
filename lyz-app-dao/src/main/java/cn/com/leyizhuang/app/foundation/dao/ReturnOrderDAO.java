@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import org.apache.ibatis.annotations.Param;
@@ -79,4 +80,7 @@ public interface ReturnOrderDAO {
     List<GiftListResponseGoods> getReturnOrderGoodsDetails(String returnNo);
 
     ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNo);
+
+    void updateReturnOrderStatus(@Param("returnNo") String returnNumber,
+                                 @Param("status") AppReturnOrderStatus finished);
 }

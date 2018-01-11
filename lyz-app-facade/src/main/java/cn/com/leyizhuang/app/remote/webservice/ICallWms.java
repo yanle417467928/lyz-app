@@ -12,6 +12,7 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -46,6 +47,7 @@ public class ICallWms {
      * @param orderNumber 取消订单生成的退单信息
      * @throws Exception parseException
      */
+    @Async
     public void sendToWmsCancelOrder(String orderNumber) {
         if (StringUtils.isBlank(orderNumber)) {
             return;
@@ -84,6 +86,7 @@ public class ICallWms {
      * @param orderNumber
      * @return
      */
+    @Async
     public void sendToWmsRequisitionOrderAndGoods(String orderNumber) {
 
         if (StringUtils.isBlank(orderNumber)) {
@@ -117,7 +120,7 @@ public class ICallWms {
             }
             //解析返回信息
             String errorMsg = AppXmlUtil.checkReturnXml(objects);
-            logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
+            logger.info("*****WMS返回发送要货单商品信息***** 出参 OUT, XML:{}", objects);
             if (errorMsg != null) {
                 //如果发送失败修改发送状态
                 requisitionOrderGoods.setSendFlag(false);
@@ -154,7 +157,7 @@ public class ICallWms {
         }
         //解析返回信息
         String errorMsg = AppXmlUtil.checkReturnXml(objects);
-        logger.info("*****WMS返回信息***** 出参 OUT, XML:{}", objects);
+        logger.info("*****WMS返回发送要货单头档信息***** 出参 OUT, XML:{}", objects);
         //修改发送状态
         if (errorMsg != null) {
             requisitionOrder.setSendFlag(false);

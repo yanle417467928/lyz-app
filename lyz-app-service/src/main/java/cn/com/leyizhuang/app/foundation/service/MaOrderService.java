@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetail
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -130,4 +131,8 @@ public interface MaOrderService {
      * @return  物流详情
      */
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber);
+
+
+
+    PageInfo<MaOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size);
 }

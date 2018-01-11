@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -147,9 +150,10 @@ public class UserHomePageController {
             return resultDTO;
         }
         try {
-            PageInfo<CustomerListResponse> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
+            PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
+            List<CustomerListResponse> CustomerListResponseList =CustomerListResponse.transform(appCustomerList.getList());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (null!=appCustomerList&& null!=appCustomerList.getList()&&appCustomerList.getList().size() > 0) ? new GridDataVO<CustomerListResponse>().transform(appCustomerList) : null);
+                    (null!=appCustomerList&& null!=appCustomerList.getList()&&appCustomerList.getList().size() > 0) ? new GridDataVO<CustomerListResponse>().transform(CustomerListResponseList,appCustomerList) : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -236,8 +240,9 @@ public class UserHomePageController {
             return resultDTO;
         }
         try {
-            PageInfo<EmployeeListResponse> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null!=appEmployeeList && null!=appEmployeeList.getList()&&appEmployeeList.getList().size() > 0) ? new GridDataVO<EmployeeListResponse>().transform(appEmployeeList) : null);
+            PageInfo<AppEmployee> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType, page, size);
+            List<EmployeeListResponse> employeeListResponseList = EmployeeListResponse.transform(appEmployeeList.getList());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null!=appEmployeeList && null!=appEmployeeList.getList()&&appEmployeeList.getList().size() > 0) ? new GridDataVO<EmployeeListResponse>().transform(employeeListResponseList,appEmployeeList) : null);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
