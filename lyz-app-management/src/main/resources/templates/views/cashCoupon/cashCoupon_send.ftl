@@ -75,7 +75,7 @@
                         <div class="form-group">
                             <label class="title">使用条件￥：</label>
                             <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
+                            <#if cashCoupon??>${cashCoupon.condition}</#if>
                             </div>
                         </div>
                     </div>

@@ -339,9 +339,11 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
                         <div class="col-xs-12 col-md-2">
+                            <!--
                             <button type="submit" class="btn btn-primary footer-btn">
                                 <i class="fa fa-check"></i> 保存
                             </button>
+                            -->
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <button id="btn-cancel" type="button" class="btn btn-danger footer-btn btn-cancel">
@@ -409,9 +411,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <!--
+
                                 <button id="goodsModalConfirm" type="button" class="btn btn-primary">确定</button>
-                                -->
+
                                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                             </div>
                         </div>
@@ -428,14 +430,12 @@
         //表单验证初始化
         formValidate();
 
-        // 初始化城市、门店信息
-        $commonForm.city("/rest/citys/findCitylist","cityId");
-
         // 选中城市
         var cityId =  "<#if cashCoupon?? && cashCoupon.cityId??>${cashCoupon.cityId?c}</#if>";
-        if (cityId != ""){
-            $("#cityId option[value='"+cityId+"']").prop("selected",true);
-        }
+
+        // 初始化城市、门店信息
+        $commonForm.city("/rest/citys/findCitylist","cityId",cityId);
+
 
         /**绑定全选、反选按钮、门店点击事件**/
         $("#checkAllStoreButton").on("click",function(){
@@ -461,7 +461,7 @@
         var companyArr = new Array();
         <#if companyList??>
             <#list companyList as item>
-            companyArr.push({item.companyId});
+            companyArr.push(${item.companyId});
             </#list>
         </#if>
 
