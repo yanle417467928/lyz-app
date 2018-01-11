@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -63,6 +64,10 @@ public class WeChatPayController {
 
     @Resource
     private ICallWms iCallWms;
+
+    @Resource
+    private SinkSender sinkSender;
+
     /**
      * 微信支付订单
      *
@@ -115,7 +120,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFeeFormat);
 
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber,orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
         this.paymentDataService.save(paymentDataDO);
 
@@ -174,7 +179,7 @@ public class WeChatPayController {
         Double totalFeeParse = Double.parseDouble(totalFee);
         String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo,null, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, null, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
         this.paymentDataService.save(paymentDataDO);
 
@@ -279,7 +284,7 @@ public class WeChatPayController {
         String subject = "微信退款";
 
         Map<String, String> map = new HashMap<>();
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo,orderNo, identityType, null,
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, orderNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
         this.paymentDataService.save(paymentDataDO);
 
@@ -343,7 +348,7 @@ public class WeChatPayController {
     }
 
     /**
-     * 接受微信调用后返回参数的回调接口
+     * 微信回调接口
      *
      * @param request  请求对象
      * @param response 响应对象
@@ -425,7 +430,12 @@ public class WeChatPayController {
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
+                                    //处理第三方支付成功之后订单相关事务
                                     commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+
+                                    //发送订单到拆单消息队列
+                                    sinkSender.sendOrder(outTradeNo);
+
                                     //发送订单到WMS
                                     OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(outTradeNo);
                                     if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
