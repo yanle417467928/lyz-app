@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author GenerationRoad
@@ -38,7 +39,7 @@ public class MaCusPreDepositLogServiceImpl implements MaCusPreDepositLogService 
     public CusPreDepositLogDO save(CusPreDepositLogDTO cusPreDepositLogDTO) {
         CusPreDepositLogDO cusPreDepositLogDO = this.transform(cusPreDepositLogDTO);
         CustomerPreDepositVO customerPreDepositVO = this.maCustomerService.queryCusPredepositByCusId(cusPreDepositLogDO.getCusId());
-        cusPreDepositLogDO.setBalance(CountUtil.add(Double.parseDouble(customerPreDepositVO.getBalance()), cusPreDepositLogDO.getChangeMoney()));
+        cusPreDepositLogDO.setBalance(Double.parseDouble(customerPreDepositVO.getBalance()));
 
         this.maCusPreDepositLogDAO.save(cusPreDepositLogDO);
         return cusPreDepositLogDO;
@@ -53,6 +54,8 @@ public class MaCusPreDepositLogServiceImpl implements MaCusPreDepositLogService 
             cusPreDepositLogDO.setUserIdAndOperatorinfo(cusPreDepositLogDTO.getCusId(), employeeDO.getEmpId(), employeeDO.getIdentityType(), "");
             cusPreDepositLogDO.setMerchantOrderNumber(cusPreDepositLogDTO.getMerchantOrderNumber());
             cusPreDepositLogDO.setRemarks(cusPreDepositLogDTO.getRemarks());
+            cusPreDepositLogDO.setTransferTime(LocalDateTime.parse(cusPreDepositLogDTO.getTransferTime() + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            cusPreDepositLogDO.setChangeTypeDesc(cusPreDepositLogDTO.getChangeType().getDescription());
             return cusPreDepositLogDO;
         } else {
             return null;

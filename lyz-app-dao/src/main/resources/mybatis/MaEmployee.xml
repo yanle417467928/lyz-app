@@ -323,7 +323,7 @@
     <select id="findEmployeeDOByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         SELECT emp_id,identity_type
         FROM emp_employee
-        WHERE e.emp_id = #{id}
+        WHERE emp_id = #{id}
     </select>
 
 

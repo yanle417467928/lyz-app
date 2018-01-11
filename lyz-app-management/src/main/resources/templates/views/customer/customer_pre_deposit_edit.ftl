@@ -98,7 +98,7 @@
                 var formData = new FormData($("#cus_pre_deposit_edit")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
-                    var url = '/rest/customers';
+                    var url = '/rest/customer/preDeposit/edit';
                     $.ajax({
                         url: url,
                         method: 'POST',

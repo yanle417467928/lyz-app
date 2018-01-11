@@ -29,15 +29,11 @@ public class CusPreDepositLogDTO {
     /**
      * 变更金额
      */
-    @Pattern(regexp = "^[-+]?\\d*[.]?\\d{0,2}$",
-            message = "请输入正确的金额")
-    @NotNull(message = "变更金额不能为空")
-    @Length(min = 1, max = 10, message = "金额的长度必须在1~10位之间")
     private Double changeMoney;
     /**
      * 到账时间
      */
-    private LocalDateTime transferTime;
+    private String transferTime;
     /**
      * 商户订单号
      */

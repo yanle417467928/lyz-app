@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -47,7 +44,7 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
         return new GridDataVO<CustomerPreDepositVO>().transform(custmerPrePage.getList(), custmerPrePage.getTotal());
     }
 
-    @PutMapping(value = "/edit")
+    @PostMapping(value = "/edit")
     public ResultDTO<String> modifyEmployeeIdPut(@Valid CusPreDepositLogDTO cusPreDepositLogDTO, BindingResult result) {
         if (!result.hasErrors()) {
             if (null != cusPreDepositLogDTO && null != cusPreDepositLogDTO.getCusId() && cusPreDepositLogDTO.getCusId() != 0){
