@@ -717,7 +717,7 @@
     </select>
 
 
-    <select id="getpendingReceiveOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    <select id="getPendingReceiveOrderQuantityByEmpId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT count(1) FROM ord_base_info
         WHERE creator_id = #{id}
         AND creator_identity_type !='CUSTOMER'
@@ -726,7 +726,7 @@
     </select>
 
 
-    <select id="getpendingReceiveOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    <select id="getPendingReceiveOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT count(1) FROM ord_base_info
         WHERE (customer_id = #{id}
         OR (creator_id = #{id} AND creator_identity_type ='CUSTOMER' ))

@@ -1272,179 +1272,40 @@ public class OrderController {
      * @param identityType
      * @return
      */
-    @PostMapping(value = "/unpaidOrderQuantity", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getUnpaidOrderQuantity(Long userId, Integer identityType) {
+    @PostMapping(value = "/AppOrderQuantity", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getAppOrderQuantity(Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getUnpaidOrderQuantity CALLED,获取待付款订单数量，入参 userID:{}, identityType:{}", userId, identityType);
+        logger.info("getAppOrderQuantity CALLED,获取App订单数量，入参 userID:{}, identityType:{}", userId, identityType);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getUnpaidOrderQuantity OUT,获取待付款订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getUnpaidOrderQuantity OUT,获取待付款订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            Integer quantity;
+            Map<String,Integer>  quantity;
             if (0 == identityType || 4 == identityType|| 2 == identityType ) {
                 //导购或店长 装饰经理获取待付款订单数量
-                quantity = appOrderService.getUnpaidOrderQuantityByEmpId(userId);
+                quantity = appOrderService.getAppOrderQuantityByEmpId(userId);
             } else if (6 == identityType) {
                 //顾客获取待付款订单数量
-                quantity = appOrderService.getUnpaidOrderQuantityByCusId(userId);
+                quantity = appOrderService.getAppOrderQuantityByCusId(userId);
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getUnpaidOrderQuantity OUT,获取待付款订单数量失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getUnpaidOrderQuantity OUT,获取待付款订单数量成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取待付款订单数量失败", null);
-            logger.warn("getUnpaidOrderQuantity EXCEPTION,获取待付款订单数量失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-        }
-    }
-
-    /**
-     * 获取待收货订单数量
-     *
-     * @param userId
-     * @param identityType
-     * @return
-     */
-    @PostMapping(value = "/pendingReceiveOrderQuantity", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getpendingReceiveOrderQuantity(Long userId, Integer identityType) {
-        ResultDTO<Object> resultDTO;
-        logger.info("getpendingReceiveOrderQuantity CALLED,获取待收货订单数量，入参 userID:{}, identityType:{}", userId, identityType);
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getpendingReceiveOrderQuantity OUT,获取待收货订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getpendingReceiveOrderQuantity OUT,获取待收货订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        try {
-            Integer quantity;
-            if (0 == identityType || 4 == identityType|| 2 == identityType) {
-                //导购或店长 装饰经理获取待收货订单数量
-                quantity = appOrderService.getpendingReceiveOrderQuantityByEmpId(userId);
-            } else if (6 == identityType) {
-                //顾客获取待收货订单数量
-                quantity = appOrderService.getpendingReceiveOrderQuantityByCusId(userId);
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getpendingReceiveOrderQuantity OUT,获取待收货订单数量失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getpendingReceiveOrderQuantity OUT,获取待收货订单数量成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取待收货订单数量失败", null);
-            logger.warn("getpendingReceiveOrderQuantity EXCEPTION,获取待收货订单数量失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-        }
-    }
-
-
-    /**
-     * 获取未评价订单数量
-     *
-     * @param userId
-     * @param identityType
-     * @return
-     */
-    @PostMapping(value = "/isEvaluateOrderQuantity", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getIsEvaluatedOrderQuantity(Long userId, Integer identityType) {
-        ResultDTO<Object> resultDTO;
-        logger.info("getIsEvaluatedOrderQuantity CALLED,获取未评价订单数量，入参 userID:{}, identityType:{}", userId, identityType);
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getIsEvaluatedOrderQuantity OUT,获取未评价订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getIsEvaluatedOrderQuantity OUT,获取未评价订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        try {
-            Integer quantity;
-            if (0 == identityType || 4 == identityType || 2 == identityType) {
-                //导购或店长 装饰经理获取未评价订单数量
-                quantity = appOrderService.getIsEvaluatedOrderQuantityByEmpId(userId);
-            } else if (6 == identityType) {
-                //顾客获取未评价订单数量
-                quantity = appOrderService.getIsEvaluatedOrderQuantityByCusId(userId);
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getIsEvaluatedOrderQuantity OUT,获取未评价订单数量失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getIsEvaluatedOrderQuantity OUT,获取未评价订单数量成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取未评价订单数量失败", null);
-            logger.warn("getIsEvaluatedOrderQuantity EXCEPTION,获取未评价订单数量失败，出参 resultDTO:{}", resultDTO);
-            logger.warn("{}", e);
-            return resultDTO;
-        }
-    }
-
-    /**
-     * 获取退货中订单数量
-     *
-     * @param userId
-     * @param identityType
-     * @return
-     */
-    @PostMapping(value = "/returningOrderQuantity", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getReturningOrderQuantity(Long userId, Integer identityType) {
-        ResultDTO<Object> resultDTO;
-        logger.info("getReturningOrderQuantity CALLED,获取退货中订单数量，入参 userID:{}, identityType:{}", userId, identityType);
-        if (null == userId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getReturningOrderQuantity OUT,获取退货中订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getReturningOrderQuantity OUT,获取退货中订单数量失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        try {
-            Integer quantity;
-            if (0 == identityType || 4 == identityType|| 2 == identityType ) {
-                //导购或店长 装饰经理获取退货中订单数量
-                quantity = appOrderService.getReturningOrderQuantityByEmpId(userId);
-            } else if (6 == identityType) {
-                //顾客获取退货中订单数量
-                quantity = appOrderService.getReturningOrderQuantityByCusId(userId);
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getReturningOrderQuantity OUT,获取退货中订单数量失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getReturningOrderQuantity OUT,获取退货中订单数量成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取退货中订单数量失败", null);
-            logger.warn("getReturningOrderQuantity EXCEPTION,获取退货中订单数量失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App订单数量失败", null);
+            logger.warn("getAppOrderQuantity EXCEPTION,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

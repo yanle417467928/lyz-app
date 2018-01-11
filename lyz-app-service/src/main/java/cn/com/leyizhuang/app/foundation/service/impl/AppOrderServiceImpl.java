@@ -615,42 +615,31 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public Integer getUnpaidOrderQuantityByEmpId(Long id) {
-        return this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
+    public Map<String,Integer> getAppOrderQuantityByEmpId(Long id) {
+        Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
+        Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByEmpId(id);
+        Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
+        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByEmpId(id);
+        Map quantityMap = new HashMap();
+        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        return quantityMap;
     }
 
     @Override
-    public Integer getUnpaidOrderQuantityByCusId(Long id) {
-        return this.orderDAO.getUnpaidOrderQuantityByCusId(id);
+    public Map<String,Integer> getAppOrderQuantityByCusId(Long id) {
+        Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByCusId(id);
+        Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByCusId(id);
+        Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByCusId(id);
+        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByCusId(id);
+        Map quantityMap = new HashMap();
+        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        return quantityMap;
     }
 
-    @Override
-    public Integer getpendingReceiveOrderQuantityByEmpId(Long id) {
-        return this.orderDAO.getpendingReceiveOrderQuantityByEmpId(id);
-    }
-
-    @Override
-    public Integer getpendingReceiveOrderQuantityByCusId(Long id) {
-        return this.orderDAO.getpendingReceiveOrderQuantityByCusId(id);
-    }
-
-    @Override
-    public Integer getIsEvaluatedOrderQuantityByEmpId(Long id) {
-        return this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
-    }
-
-    @Override
-    public Integer getIsEvaluatedOrderQuantityByCusId(Long id) {
-        return this.orderDAO.getIsEvaluatedOrderQuantityByCusId(id);
-    }
-
-    @Override
-    public Integer getReturningOrderQuantityByEmpId(Long id) {
-        return this.orderDAO.getReturningOrderQuantityByEmpId(id);
-    }
-
-    @Override
-    public Integer getReturningOrderQuantityByCusId(Long id) {
-        return this.orderDAO.getReturningOrderQuantityByCusId(id);
-    }
 }

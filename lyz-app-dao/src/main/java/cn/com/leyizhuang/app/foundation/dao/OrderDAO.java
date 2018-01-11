@@ -113,9 +113,9 @@ public interface OrderDAO {
     Integer getUnpaidOrderQuantityByCusId(Long id);
 
 
-    Integer getpendingReceiveOrderQuantityByEmpId(Long id);
+    Integer getPendingReceiveOrderQuantityByEmpId(Long id);
 
-    Integer getpendingReceiveOrderQuantityByCusId(Long id);
+    Integer getPendingReceiveOrderQuantityByCusId(Long id);
 
     Integer getIsEvaluatedOrderQuantityByEmpId(Long id);
 
