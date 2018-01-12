@@ -24,9 +24,13 @@ public class GridDataVO<Data> implements Serializable {
     private Integer pageNum;
     private Integer pageSize;
 
-    public GridDataVO<Data> transform(List<Data> list, Long total) {
+    public GridDataVO<Data> transform(List<Data> list,PageInfo pageInfo) {
         this.setList(list);
-        this.setTotal(total);
+        this.setTotal(pageInfo.getTotal());
+        this.setPages(pageInfo.getPages());
+        this.setSize(pageInfo.getSize());
+        this.setPageNum(pageInfo.getPageNum());
+        this.setPageSize(pageInfo.getPageSize());
         return this;
     }
 

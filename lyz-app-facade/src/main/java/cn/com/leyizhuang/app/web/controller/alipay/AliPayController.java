@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -15,13 +16,16 @@ import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -231,6 +235,78 @@ public class AliPayController {
             logger.warn("orderAlipay EXCEPTION,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }
+    }
+
+    /**
+     * 支付宝退款接口
+     *
+     * @param orderNo      订单支付时传入的商户订单号,不能和 trade_no同时为空。
+     * @param refundNo     退单号
+     * @param refundAmount 需要退款的金额，该金额不能大于订单金额,单位为元，支持两位小数
+     * @return 将提示信息返回
+     * @throws AlipayApiException
+     * @throws IllegalAccessException
+     */
+    public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount) {
+        //取得支付宝交易流水号
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        PaymentDataDO dataDO = paymentDataDOList.get(0);
+        Map<String, String> map = new HashMap<>();
+        if (refundAmount > dataDO.getTotalFee()) {
+            map.put("code", "FAILURE");
+            map.put("msg", "退款金额不能超过订单金额");
+            return map;
+        }
+        String remarks = "订单退款";
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, refundNo, identityType, null,
+                refundAmount, PaymentDataStatus.WAIT_REFUND, OnlinePayType.ALIPAY, remarks);
+        this.paymentDataService.save(paymentDataDO);
+        //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
+        //appId 非空，应用ID
+        //privateKey 非空，私钥
+        AlipayClient alipayClient = new DefaultAlipayClient(
+                AlipayConfig.serverUrl, AlipayConfig.appId,
+                AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset,
+                AlipayConfig.aliPublicKey, AlipayConfig.signType);
+        //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+        AlipayRefund alipayRefund = new AlipayRefund();
+        //这个是商户的订单号
+        alipayRefund.setOut_trade_no(dataDO.getOutTradeNo());
+        //这个是支付宝的订单号
+        alipayRefund.setTrade_no(dataDO.getTradeNo());
+        //退款金额
+        alipayRefund.setRefund_amount(refundAmount);
+        //退款说明
+        alipayRefund.setRefund_reason(remarks);
+        alipayRefund.setOut_request_no(refundNo);
+        request.setBizContent(JSONObject.toJSONString(alipayRefund));
+        try {
+            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            if (response.isSuccess()) {
+
+                paymentDataDO.setTradeNo(response.getTradeNo());
+                paymentDataDO.setNotifyTime(new Date());
+                paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
+                this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
+                map.put("code", "SUCCESS");
+                return map;
+            } else {
+                paymentDataDO.setRemarks(response.getMsg());
+                paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
+                this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
+                map.put("code", "FAILURE");
+                map.put("msg", response.getMsg());
+                return map;
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            map.put("code", "FAILURE");
+            map.put("msg", "支付宝退款接口发生异常");
+            return map;
         }
     }
 

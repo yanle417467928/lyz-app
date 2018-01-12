@@ -78,9 +78,7 @@
                         <li class="list-group-item">
                             <b>标题</b> <a class="pull-right" id="title"></a>
                         </li>
-                        <li class="list-group-item">
-                            <b>价值</b> <a class="pull-right" id="denomination"></a>
-                        </li>
+
                         <li class="list-group-item">
                             <b>有效期开始</b> <a class="pull-right" id="effectiveStartTime"></a>
                         </li>

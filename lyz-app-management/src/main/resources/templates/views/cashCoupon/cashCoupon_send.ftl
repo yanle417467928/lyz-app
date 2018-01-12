@@ -31,30 +31,58 @@
 
 <body>
 <section class="content-header">
-    <h1>现金券发放</h1>
+    <h1>优惠券发放</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab_1-1" data-toggle="tab">现金券基本信息</a></li>
+            <li class="active"><a href="#tab_1-1" data-toggle="tab">优惠券基本信息</a></li>
         </ul>
         <input type="hidden" id="cashCouponId" value="<#if cashCoupon??>${cashCoupon.id?c}</#if>">
-        <div class="row">
-            <div class="col-md-2">
-                <h3>标题：<#if cashCoupon??>${cashCoupon.title}</#if></h3>
-            </div>
-            <div class="col-md-2">
-                <h3>面额￥：<#if cashCoupon??>${cashCoupon.denomination}</#if></h3>
-            </div>
-            <div class="col-md-2">
-                <h3>使用条件￥：<#if cashCoupon??>${cashCoupon.condition}</#if></h3>
-            </div>
-            <div class="col-md-2">
-                <h3>剩余数量：<#if cashCoupon??>${cashCoupon.remainingQuantity}</#if></h3>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1-1">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="title">标题：</label>
+                            <div class="input-group">
+                            <#if cashCoupon??>${cashCoupon.title}</#if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="title">剩余数量：</label>
+                            <div class="input-group">
+                            <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="title">面额￥：</label>
+                            <div class="input-group">
+                            <#if cashCoupon??>${cashCoupon.denomination}</#if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="title">使用条件￥：</label>
+                            <div class="input-group">
+                            <#if cashCoupon??>${cashCoupon.condition}</#if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
     <div class="nav-tabs-custom">
         <div class="row">
             <div class="col-xs-12">
@@ -91,8 +119,9 @@
                             <input id="common_qty" type="text" class="form-control"
                                    style="width:auto;" placeholder="请输入发放数量">
                             <span class="input-group-btn">
-                                  <button type="button" name="oneButtonSend" id="search-btn" class="btn btn-info btn-search"
-                                      onclick="sendBatch()">一键发送</button>
+                                  <button type="button" name="oneButtonSend" id="search-btn"
+                                          class="btn btn-info btn-search"
+                                          onclick="sendBatch()">一键发送</button>
                             </span>
                         </div>
 

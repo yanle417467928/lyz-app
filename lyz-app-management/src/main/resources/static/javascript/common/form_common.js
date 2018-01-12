@@ -38,7 +38,7 @@ var $commonForm = {
     /**
      * 初始化城市
      */
-    city: function (url,cityId) {
+    city: function (url,cityId,initVal) {
         var city = "";
         $.ajax({
             url: url,
@@ -52,9 +52,16 @@ var $commonForm = {
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    if (initVal == undefined || initVal == ''){
+                        city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    }else if (initVal == item.cityId){
+                        city += "<option value=" + item.cityId + " selected='true'>" + item.name + "</option>";
+                    }else{
+                        city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    }
                 })
                 $("#"+cityId).append(city);
+
                 $("#"+cityId).selectpicker('refresh');
             }
         });

@@ -1264,4 +1264,50 @@ public class OrderController {
         //选择了产品券影响了会员折扣，说有在优惠折扣中减去会员折扣
         return CountUtil.sub(totalGoodsPrice, productCouponDiscount);
     }
+
+    /**
+     * 获取待付款订单数量
+     *
+     * @param userId
+     * @param identityType
+     * @return
+     */
+    @PostMapping(value = "/AppOrderQuantity", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getAppOrderQuantity(Long userId, Integer identityType) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getAppOrderQuantity CALLED,获取App订单数量，入参 userID:{}, identityType:{}", userId, identityType);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            Map<String,Integer>  quantity;
+            if (0 == identityType || 4 == identityType|| 2 == identityType ) {
+                //导购或店长 装饰经理获取待付款订单数量
+                quantity = appOrderService.getAppOrderQuantityByEmpId(userId);
+            } else if (6 == identityType) {
+                //顾客获取待付款订单数量
+                quantity = appOrderService.getAppOrderQuantityByCusId(userId);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+                logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
+            logger.info("getAppOrderQuantity OUT,获取App订单数量成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App订单数量失败", null);
+            logger.warn("getAppOrderQuantity EXCEPTION,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }

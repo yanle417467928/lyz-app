@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -46,5 +47,21 @@ public interface ProductCouponService {
     void addProductCoupon(ProductCoupon productCoupon);
     void updateProductCoupon(ProductCoupon productCoupon);
     void deletedProductCoupon(List<Long> ids);
+
+    /**
+     * 产品券模版 分页查询
+     * @param page
+     * @param size
+     * @param keywords
+     * @return
+     */
+    PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords);
+
+    /**
+     * 根据id返回产品券模版结果
+     * @param id
+     * @return
+     */
+    ProductCoupon queryProductCouponById(Long id);
 
 }

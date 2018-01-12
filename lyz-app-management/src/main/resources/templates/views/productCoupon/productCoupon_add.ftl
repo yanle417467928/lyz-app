@@ -26,7 +26,7 @@
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
     <script type="text/javascript" src="/javascript/common/form_common.js"></script>
-    <script type="text/javascript" src="/javascript/cashCoupon/productCoupon_add.js"></script>
+    <script type="text/javascript" src="/javascript/productCoupon/productCoupon_add.js"></script>
 
 </head>
 
@@ -41,7 +41,7 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
-                <form id="cashCoupon_form">
+                <form id="productCoupon_form">
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -51,7 +51,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="title" type="text" class="form-control" id="title"
-                                           placeholder="30个字以内">
+                                           placeholder="请选择产品" readonly="readonly">
                                 </div>
                             </div>
                         </div>
@@ -95,108 +95,8 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-xs-12 col-md-2">
-                            <label for="title">
-                                城市
-                            </label>
-                            <select name="cityId" id="cityId" class="form-control select"
-                                    onchange="loadStore('/rest/stores/findStoresListByCityId','cityId','stores');">
-                            </select>
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-md-12">
-                            <label for="title">
-                            </label>
-                            <div class="box box-success ">
-                                <div class="box-header with-border">
-                                    <h3 class="box-title">选择门店</h3>
-                                    <div class="box-tools pull-right">
-                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
-                                                class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <!-- /.box-tools -->
-                                </div>
-                                <!-- /.box-header -->
-                                <div class="box-body">
-                                    <div class="row">
-                                        <div class="col-xs-12 col-md-2">
-                                            <button id="checkAllStoreButton" type="button" class="btn btn-default btn-xs"
-                                            >全选
-                                            </button>
-                                            <button id="unCheckAllStoreButton" type="button" class="btn btn-default btn-xs"
-                                            >反选
-                                            </button>
-                                        </div>
-
-                                        <div class="col-xs-12 col-md-1 pull-right">
-                                            <div class="input-group">
-                                                <input id="isSpecifiedStore" name="isSpecifiedStore" value=""
-                                                       type="checkbox" class="flat-red">不限门店
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="stores" style="margin-top: 10px;">
-
-                                    </div>
-                                </div>
-                                <!-- /.box-body -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-md-2">
-                            <div class="form-group">
-                                <label for="title">
-                                    现金券类型
-                                </label>
-                                <select name="type" id="type" class="form-control select"
-                                        onchange="changeType(this.value);">
-                                    <option value="GENERAL">通用现金券</option>
-                                    <option value="COMPANY">公司现金券</option>
-                                    <option value="BRAND">品牌现金券</option>
-                                    <option value="GOODS">指定商品现金券</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" id="company_div" style="display: none;">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="title">
-                                    选择限定公司
-                                </label>
-                                <select name="companySelect" id="companySelect" class="form-control select" multiple >
-                                    <option value="LYZ">乐易装</option>
-                                    <option value="HR">华润</option>
-                                    <option value="YR">莹润</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" id="brand_div" style="display: none;">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="title">
-                                    选择限定品牌
-                                </label>
-                                <select name="brandSelect" id="brandSelect" class="form-control select" multiple >
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- 选择本品table -->
-                    <div class="row" id="goods_div" style="display: none;">
+                    <div class="row" id="goods_div">
                         <div class="col-xs-12">
                             <div class="box box-success">
                                 <div class="box-header">
@@ -225,7 +125,6 @@
                                                 <th>ID</th>
                                                 <th>sku</th>
                                                 <th>商品名</th>
-                                                <th>数量</th>
                                                 <th>操作</th>
                                             </tr>
                                             </thead>
@@ -245,22 +144,7 @@
                         </div>
                     </div>
 
-                    <!-- 满足最低金额 -->
-                    <div class="row" >
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="title">
-                                    订单满足最低金额￥
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="condition" type="number" class="form-control" id="condition">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 面额 -->
+                    <!-- 面额
                     <div class="row"  >
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -274,6 +158,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                     <div class="row" id="fullAmount_div">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -385,12 +270,5 @@
     </div>
 </section>
 <script>
-
-    $(function () {
-        // 初始化城市、门店信息
-        $commonForm.cityAndStore("/rest/citys/findCitylist","cityId","/rest/stores/findStoresListByCityId","stores");
-
-    })
-
 </script>
 </body>

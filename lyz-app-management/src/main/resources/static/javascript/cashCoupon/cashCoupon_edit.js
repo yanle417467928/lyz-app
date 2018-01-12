@@ -50,7 +50,7 @@ function formValidate() {
                 message: '主标题校验失败',
                 validators: {
                     notEmpty: {
-                        message: '亲，现金券叫个啥玩意儿'
+                        message: '亲，优惠券叫个啥玩意儿'
                     },
                     stringLength: {
                         min: 1,
@@ -145,7 +145,7 @@ function formValidate() {
             }
         }
 
-        // 现金券类型
+        // 优惠券类型
         var type = $("#type").val();
 
         var companys = $("#companySelect").val();
@@ -197,7 +197,7 @@ function formValidate() {
         }
         if(!reg.test(denomination)){
             $('#cashCoupon_form').bootstrapValidator('disableSubmitButtons', false);
-            $notify.danger("现金券面额有误啊，亲");
+            $notify.danger("优惠券面额有误啊，亲");
             return false;
         }
 
@@ -262,7 +262,7 @@ function unlimitedStore() {
     }
 }
 
-// 选择现金券类型
+// 选择优惠券类型
 function changeType(val) {
     if(val == "GENERAL"){
         $("#company_div").fadeOut(1);

@@ -12,6 +12,7 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -46,6 +47,7 @@ public class ICallWms {
      * @param orderNumber 取消订单生成的退单信息
      * @throws Exception parseException
      */
+    @Async
     public void sendToWmsCancelOrder(String orderNumber) {
         if (StringUtils.isBlank(orderNumber)) {
             return;
@@ -84,6 +86,7 @@ public class ICallWms {
      * @param orderNumber
      * @return
      */
+    @Async
     public void sendToWmsRequisitionOrderAndGoods(String orderNumber) {
 
         if (StringUtils.isBlank(orderNumber)) {

@@ -19,8 +19,8 @@
     <h1>${selectedMenu.resourceName!'??'}</h1>
     <ol class="breadcrumb">
         <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-        <#if selectedMenu.parent??>
-            <li><a href="javascript:void(0);">${selectedMenu.parent.parentResourceName!'??'}</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
         </#if>
         <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
@@ -148,7 +148,7 @@
     $(function () {
         findCitylist()
         findStorelist();
-        initDateGird('/rest/customer/preDeposit/page/grid',null,null,null);
+        initDateGird(null,null,null);
     });
 
     function findCitylist() {
@@ -196,8 +196,8 @@
         });
     }
 
-    function initDateGird(url,keywords,cityId,storeId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
+    function initDateGird(keywords,cityId,storeId) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/customer/preDeposit/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -238,14 +238,14 @@
             align: 'center'
         }, {
             field: 'balance',
-            title: '预存款余额',
+            title: '预存款余额(￥)',
             align: 'center'
         }, {
             field: 'cusId',
             title: '预存款变更',
             align: 'center',
-            formatter: function (value) {
-                return '<a class="scan" href="/views/admin/customer/preDeposit/edit/' + value + '?parentMenuId=${(parentMenuId!'0')}">变更</a>';
+            formatter: function(value,row) {
+                return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.cusId+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="changePre('+row.cusId+')"> 变更</button>';
             }
         },
         ]);
@@ -500,25 +500,22 @@
     }
 
     function findCusByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
-        initDateGird('/rest/customer/preDeposit/page/grid',keywords,cityId,storeId)
+        initDateGird(keywords,cityId,storeId);
     }
 
     function findCusByStoreId() {
+        $("#queryCusInfo").val('');
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
         findCusByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
-        $("#queryCusInfo").val('');
+
     }
 
     function findCusByNameOrPhone() {
         var queryCusInfo = $("#queryCusInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
-        if (null == queryCusInfo || "" == queryCusInfo) {
-            initDateGird('/rest/customers/page/grid');
-            return false;
-        }
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
         findCusByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
@@ -529,6 +526,12 @@
         $(select).empty();
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
+    }
+    function showDetails(cusId){
+        window.location.href = '/views/admin/customer/preDeposit/log/list/'+cusId;
+    }
+    function changePre(cusId){
+        window.location.href = '/views/admin/customer/preDeposit/edit/'+cusId;
     }
 </script>
 </body>

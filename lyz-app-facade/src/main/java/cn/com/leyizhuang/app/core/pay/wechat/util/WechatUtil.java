@@ -204,7 +204,7 @@ public class WechatUtil {
         SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, MCH_ID.toCharArray()).build();
         //指定TLS版本
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new String[]{"TLSv1"},
-                null, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                null, SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
         //设置httpclient的SSLSocketFactory
         CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
         try {

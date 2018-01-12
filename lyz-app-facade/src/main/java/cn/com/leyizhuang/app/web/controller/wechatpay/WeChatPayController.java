@@ -290,16 +290,15 @@ public class WeChatPayController {
      * @param money
      * @return
      */
-    @PostMapping(value = "/refund", produces = "application/json;charset=UTF-8")
     public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
-        String subject = "微信退款";
+        String subject = "订单退款";
 
         Map<String, String> map = new HashMap<>();
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, refundNo, orderNo, identityType, null,
-                money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, "微信退款");
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, refundNo, identityType, null,
+                money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, subject);
         this.paymentDataService.save(paymentDataDO);
 
         try {
@@ -310,9 +309,9 @@ public class WeChatPayController {
                 //状态是否成功
                 if ("SUCCESS".equalsIgnoreCase(resultMap.get("return_code").toString())) {
                     if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
-                        response.getWriter().write(WechatUtil.setXML("SUCCESS", "OK"));
+                        response.getWriter().write(WechatUtil.setXML("SUCCESS", null));
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("out_trade_no").toString();
+                        String outTradeNo = resultMap.get("outTradeNo").toString();
                         logger.debug("******微信返回参数订单号***** OUT, 出参 outTradeNo:{}", outTradeNo);
                         //退单号
                         String outRefundNo = resultMap.get("out_refund_no").toString();
@@ -332,12 +331,10 @@ public class WeChatPayController {
                         //修改退单状态
                         returnOrderService.updateReturnOrderStatus(outRefundNo, AppReturnOrderStatus.FINISHED);
 
-                        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(refundNo, PaymentDataStatus.WAIT_REFUND);
-                        PaymentDataDO dataDO = paymentDataDOList.get(0);
-                        dataDO.setTradeNo(tradeNo);
-                        dataDO.setNotifyTime(new Date());
-                        dataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
-                        this.paymentDataService.updateByTradeStatusIsWaitPay(dataDO);
+                        paymentDataDO.setTradeNo(tradeNo);
+                        paymentDataDO.setNotifyTime(new Date());
+                        paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_SUCCESS);
+                        this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
 
                         map.put("code", "SUCCESS");
                         map.put("number", tradeNo);
@@ -346,10 +343,10 @@ public class WeChatPayController {
                     }
                 }
             }
+            response.getWriter().write(WechatUtil.setXML("FAIL", "参数格式校验错误"));
             paymentDataDO.setRemarks(resultMap.get("return_msg").toString());
             paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
-            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
-            response.getWriter().write(WechatUtil.setXML("FAIL", "参数格式校验错误"));
+            this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
             logger.warn("{}", resultMap.get("err_code").toString());
             logger.warn("{}", resultMap.get("err_code_des").toString());
             map.put("code", "FAILURE");
@@ -384,7 +381,7 @@ public class WeChatPayController {
                     if (WechatUtil.verifyNotify(resultMap)) {
                         logger.info("weChatReturnSync,微信支付异步回调接口,回调参数:{}", resultMap);
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("out_trade_no").toString();
+                        String outTradeNo = resultMap.get("outTradeNo").toString();
                         logger.info("weChatReturnSync,微信支付异步回调接口,订单号:{}", outTradeNo);
                         //微信交易号
                         String tradeNo = resultMap.get("transaction_id").toString();

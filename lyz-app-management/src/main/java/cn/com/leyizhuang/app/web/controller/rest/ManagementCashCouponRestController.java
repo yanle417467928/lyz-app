@@ -139,8 +139,8 @@ public class ManagementCashCouponRestController extends  BaseRestController{
                 }
             }
 
-            /* 持久化数据 */
-            cashCouponService.updateCashCouponTemplate(cashCoupon,companyList,brandList,goodsList,storeList);
+            /* 持久化数据 优惠券不能修改 */
+            //cashCouponService.updateCashCouponTemplate(cashCoupon,companyList,brandList,goodsList,storeList);
 
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "新增现金券模版成功！", null);
         } else {

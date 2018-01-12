@@ -253,7 +253,7 @@ function  send(customerId) {
 
     var re = /^[0-9]+.?[0-9]*$/;
     if(qty <= 0 || !re.test(qty)){
-        $notify.danger("券数量有误");
+        $notify.warning("券数量有误");
         return false;
     }
 
@@ -286,7 +286,7 @@ function  sendBatch() {
     }
 
     if (customerIds.length == 0){
-        $notify.danger("请选择顾客");
+        $notify.warning("请选择顾客");
         return false;
     }
 
@@ -294,7 +294,7 @@ function  sendBatch() {
 
     var re = /^[0-9]+.?[0-9]*$/;
     if(qty <= 0 || !re.test(qty)){
-        $notify.danger("券数量有误");
+        $notify.warning("券数量有误");
         return false;
     }
 

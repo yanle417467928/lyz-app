@@ -31,20 +31,24 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                        <select name="brandCode" id="brandCode" class="form-control select" style="width:auto;" onchange="screenGoods()">
-                            <option value="-1">选择品牌</option>
-                        </select>
-                        <select name="categoryCode" id="categoryCode" class="form-control select" style="width:auto;" onchange="screenGoods()">
-                            <option value="-1">选择分类</option>
-                        </select>
-                        <select name="companyCode" id="companyCode" class="form-control select" style="width:auto;" onchange="screenGoods()">
-                            <option value="-1">选择公司</option>
-                            <option value="LYZ">乐意装</option>
-                            <option value="HR">华润</option>
-                            <option value="YR">莹润</option>
-                        </select>
+                    <select name="brandCode" id="brandCode" class="form-control select" style="width:auto;"
+                            onchange="screenGoods()">
+                        <option value="-1">选择品牌</option>
+                    </select>
+                    <select name="categoryCode" id="categoryCode" class="form-control select" style="width:auto;"
+                            onchange="screenGoods()">
+                        <option value="-1">选择分类</option>
+                    </select>
+                    <select name="companyCode" id="companyCode" class="form-control select" style="width:auto;"
+                            onchange="screenGoods()">
+                        <option value="-1">选择公司</option>
+                        <option value="LYZ">乐意装</option>
+                        <option value="HR">华润</option>
+                        <option value="YR">莹润</option>
+                    </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryGoodsInfo" id="queryGoodsInfo" class="form-control" style="width:auto;"
+                        <input type="text" name="queryGoodsInfo" id="queryGoodsInfo" class="form-control"
+                               style="width:auto;"
                                placeholder="请输入要查找的物料编码或物料名称..">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -61,7 +65,7 @@
         </div>
     </div>
 </section>
-<div id="information" class="modal fade" tabindex="-1" role="dialog" >
+<div id="information" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">
@@ -112,16 +116,16 @@
                         <li class="list-group-item">
                             <b>排序号</b> <a class="pull-right" id="sortId"></a>
                         </li>
-                        <li class="list-group-item" style="height: 100px;" >
-                            <b>商品封面图</b> <a class="pull-right" id="coverImageUri"  ></a>
+                        <li class="list-group-item" style="height: 100px;">
+                            <b>商品封面图</b> <a class="pull-right" id="coverImageUri"></a>
                         </li>
-                        <li class="list-group-item"  style="height: 100px;">
-                            <b>商品轮播图</b> <a class="pull-right" id="rotationImageUri" >
+                        <li class="list-group-item" style="height: 100px;">
+                            <b>商品轮播图</b> <a class="pull-right" id="rotationImageUri">
                         </a>
                         </li>
-        <#--                <li class="list-group-item">
-                            <b>商品详情页</b> <a class="pull-right" id="goodsDetial"></a>
-                        </li>-->
+                    <#--                <li class="list-group-item">
+                                        <b>商品详情页</b> <a class="pull-right" id="goodsDetial"></a>
+                                    </li>-->
                         <li class="list-group-item">
                             <b>是否为热门商品</b> <a class="pull-right" id="isHot"></a>
                         </li>
@@ -145,28 +149,30 @@
             </div>
         </div>
     </div>
-    </div>
+</div>
 <script>
 
 
-    var sourceUrl ;
+    var sourceUrl;
     var rotationImage;
 
-    $(function() {
+    $(function () {
         findGoodsBrand();
         findGoodsPhysical();
         initDateGird('/rest/goods/page/grid');
-        $('#btn_edit').on('click', function() {
-            $grid.modify($('#dataGrid'), '/views/admin/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        $('#btn_edit').on('click', function () {
+            $grid.modify($('#dataGrid'), '/views/admin/goods/edit/{id}?parentMenuId=${parentMenuId!'0'}');
+        });
+        $('#btn_back').on('click', function () {
+            window.history.back();
         });
     });
 
 
-
-    function initDateGird(url){
-        $grid.init($('#dataGrid'), $('#toolbar'),url, 'get', false, function(params) {
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
-                offset: params.offset ,
+                offset: params.offset,
                 size: params.limit,
                 keywords: params.search
             }
@@ -182,22 +188,22 @@
             title: '物料名称',
             align: 'center',
             events: {
-                'click .scan': function(e, value, row) {
+                'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
                 }
             },
-            formatter: function(value) {
-                if(null==value){
+            formatter: function (value) {
+                if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
-                }else{
+                } else {
                     return '<a class="scan" href="#">' + value + '</a>';
                 }
             }
-        },{
+        }, {
             field: 'sku',
             title: '物料编码',
             align: 'center'
-        },{
+        }, {
             field: 'materialsEnable',
             title: '物料状态',
             align: 'center',
@@ -215,7 +221,7 @@
             show: function (id) {
                 var URL = '/rest/goods/' + id;
                 var success = function (result) {
-                    $('#rotationImageContainer').css('display','none')
+                    $('#rotationImageContainer').css('display', 'none')
                     if (0 === result.code) {
                         var data = result.content;
                         $('#goodsTitle').html("商品详情");
@@ -281,12 +287,12 @@
 
                         if ('LYZ' === data.companyFlag) {
                             data.companyFlag = '乐意装';
-                        }else if('HR' === data.companyFlag){
-                            data.companyFlag ='华润'
-                        } else if('YR' === data.companyFlag){
-                            data.companyFlag ='莹润'
-                        }else{
-                            data.companyFlag ='-'
+                        } else if ('HR' === data.companyFlag) {
+                            data.companyFlag = '华润'
+                        } else if ('YR' === data.companyFlag) {
+                            data.companyFlag = '莹润'
+                        } else {
+                            data.companyFlag = '-'
                         }
                         $('#companyFlag').html(data.companyFlag);
 
@@ -300,7 +306,7 @@
                             $('#coverImageUri').html('-');
                         } else {
                             sourceUrl = data.coverImageUri;
-                            $('#coverImageUri').html('<a href="'+data.coverImageUri+'" data-lightbox="image-1"><img src="' + data.coverImageUri + '"' + ' class="img-rounded" style="height: 80px;width: 80px;"/></a>');
+                            $('#coverImageUri').html('<a href="' + data.coverImageUri + '" data-lightbox="image-1"><img src="' + data.coverImageUri + '"' + ' class="img-rounded" style="height: 80px;width: 80px;"/></a>');
                         }
 
                         if (null === data.rotationImageUri || '' == data.rotationImageUri) {
@@ -308,32 +314,32 @@
                         } else {
                             $('#rotationImageUri').empty()
                             rotationImage = data.rotationImageUri.split(",");
-                            for(var a=0;a<rotationImage.length;a++){
-                                $('#rotationImageUri').append('<a href="'+rotationImage[a]+'" data-lightbox="group"><img src="' + rotationImage[a] + '"' + ' class="img-rounded" style="height: 80px;width: 80px;margin-left: 5px"  /></a>');
+                            for (var a = 0; a < rotationImage.length; a++) {
+                                $('#rotationImageUri').append('<a href="' + rotationImage[a] + '" data-lightbox="group"><img src="' + rotationImage[a] + '"' + ' class="img-rounded" style="height: 80px;width: 80px;margin-left: 5px"  /></a>');
                             }
-                      }
-  /*                      if (null === data.goodsDetial) {
-                            data.goodsDetial = '-';
                         }
-                        $('#goodsDetial').html(data.goodsDetial);*/
+                        /*                      if (null === data.goodsDetial) {
+                                                  data.goodsDetial = '-';
+                                              }
+                                              $('#goodsDetial').html(data.goodsDetial);*/
 
                         if (true === data.isHot) {
                             data.isHot = ' <span class="label label-primary">是</span>';
-                        }else if(false === data.isHot){
-                            data.isHot ='<span class="label label-danger">否</span>'
-                        }else{
-                            data.isColorMixing ='<span class="label label-danger">-</span>'
+                        } else if (false === data.isHot) {
+                            data.isHot = '<span class="label label-danger">否</span>'
+                        } else {
+                            data.isColorMixing = '<span class="label label-danger">-</span>'
                         }
                         $('#isHot').html(data.isHot);
 
                         if (true === data.isColorMixing) {
                             data.isColorMixing = ' <span class="label label-primary">是</span>';
-                        }else if(false === data.isColorMixing){
-                            data.isColorMixing ='<span class="label label-danger">否</span>'
-                        }else{
-                            data.isColorMixing ='<span class="label label-danger">-</span>'
+                        } else if (false === data.isColorMixing) {
+                            data.isColorMixing = '<span class="label label-danger">否</span>'
+                        } else {
+                            data.isColorMixing = '<span class="label label-danger">-</span>'
                         }
-                        $('#isColorMixing').html(''+data.isColorMixing);
+                        $('#isColorMixing').html('' + data.isColorMixing);
 
                         if (null === data.searchKeyword) {
                             data.searchKeyword = '-';
@@ -372,12 +378,12 @@
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryGoodsInfo || "" == queryGoodsInfo) {
             initDateGird('/rest/goods/page/grid');
-        }else{
+        } else {
             initDateGird('/rest/goods/page/goodsGrid/' + queryGoodsInfo);
         }
     }
 
-    function findGoodsBrand(){
+    function findGoodsBrand() {
         var brand;
         $.ajax({
             url: '/rest/goodsBrand/page/brandGrid',
@@ -391,7 +397,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                   brand += "<option value=" + item.brdId + ">" + item.brandName + "</option>";
+                    brand += "<option value=" + item.brdId + ">" + item.brandName + "</option>";
                 })
                 $("#brandCode").append(brand);
             }
@@ -399,7 +405,7 @@
     }
 
 
-    function findGoodsPhysical(){
+    function findGoodsPhysical() {
         var physical;
         $.ajax({
             url: '/rest/goods/page/physicalClassifyGrid',
@@ -422,11 +428,11 @@
 
 
     function screenGoods() {
-        var brandCode=$('#brandCode').val();
-        var categoryCode=$('#categoryCode').val();
-        var companyCode=$('#companyCode').val();
+        var brandCode = $('#brandCode').val();
+        var categoryCode = $('#categoryCode').val();
+        var companyCode = $('#companyCode').val();
         $("#dataGrid").bootstrapTable('destroy');
-        initDateGird('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode+'&categoryCode='+categoryCode+'&companyCode='+companyCode);
+        initDateGird('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode + '&categoryCode=' + categoryCode + '&companyCode=' + companyCode);
     }
 </script>
 </body>

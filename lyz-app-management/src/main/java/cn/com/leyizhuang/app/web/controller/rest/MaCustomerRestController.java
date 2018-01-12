@@ -43,12 +43,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/grid")
     public GridDataVO<CustomerVO> restCustomersPageGird(Integer offset, Integer size, String keywords) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPage = this.maCustomerService.queryPageVO(page, size);
-        List<CustomerDO> custmersList = custmersPage.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPage.getTotal());
+        logger.info("restCustomersPageGird 后台初始化顾客页面列表 ,入参 offset:{}, size:{}, kewords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPage = this.maCustomerService.queryPageVO(page, size);
+            List<CustomerDO> custmersList = custmersPage.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("restCustomersPageGird ,后台初始化顾客页面列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCustomersPageGird EXCEPTION,发生未知错误，后台初始化顾客页面列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -59,14 +68,23 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/{cusId}")
     public ResultDTO<CustomerDetailVO> restCusIdGet(@PathVariable(value = "cusId") Long cusId) {
-        CustomerDO customerDO = this.maCustomerService.queryCustomerVOById(cusId);
-        CustomerDetailVO customerVO =  CustomerDetailVO.transform(customerDO);
-        if (null == customerVO) {
-            logger.warn("查找顾客失败：Role(id = {}) == null", cusId);
-            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
-                    "指定数据不存在，请联系管理员", null);
-        } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerVO);
+        logger.info("restCusIdGet 后台查看顾客详细信息 ,入参 offset:{}, cusId:{}", cusId);
+        try {
+            CustomerDO customerDO = this.maCustomerService.queryCustomerVOById(cusId);
+            CustomerDetailVO customerVO = CustomerDetailVO.transform(customerDO);
+            if (null == customerVO) {
+                logger.warn("查找顾客失败：Role(id = {}) == null", cusId);
+                return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                        "指定数据不存在，请联系管理员", null);
+            } else {
+                logger.info("restCusIdGet ,后台查看顾客详细信息成功");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCusIdGet EXCEPTION,发生未知错误，后台查看顾客详细信息失败");
+            logger.warn("{}", e);
+            return null;
         }
     }
 
@@ -81,12 +99,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/cityGrid/{cityId}")
     public GridDataVO<CustomerVO> getCudByCityId(Integer offset, Integer size, String keywords, @PathVariable(value = "cityId") Long cityId) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
-        List<CustomerDO> custmersList = custmersPageByCityID.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByCityID.getTotal());
+        logger.info("getCudByCityId 查询城市顾客列表 ,入参 offset:{}, size:{}, kewords:{},cityId:{}", offset, size, keywords, cityId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
+            List<CustomerDO> custmersList = custmersPageByCityID.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("getCudByCityId ,查询城市顾客列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByCityID.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getCudByCityId EXCEPTION,发生未知错误，查询城市顾客列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -100,12 +127,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/storeGrid/{storeId}")
     public GridDataVO<CustomerVO> getCudByStoreId(Integer offset, Integer size, String keywords, @PathVariable(value = "storeId") Long storeId) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
-        List<CustomerDO> custmersList = custmersPageByStoreId.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByStoreId.getTotal());
+        logger.info("getCudByStoreId 查询门店顾客列表 ,入参 offset:{}, size:{}, kewords:{},storeId:{}", offset, size, keywords, storeId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPageByStoreId = this.maCustomerService.queryCustomerVOByStoreId(page, size, storeId);
+            List<CustomerDO> custmersList = custmersPageByStoreId.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("getCudByStoreId ,查询门店顾客列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByStoreId.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getCudByStoreId EXCEPTION,发生未知错误，查询门店顾客列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -119,12 +155,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/guideGrid/{guideId}")
     public GridDataVO<CustomerVO> getCudByGuideId(Integer offset, Integer size, String keywords, @PathVariable(value = "guideId") Long guideId) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
-        List<CustomerDO> custmersList = custmersPageByGuideId.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByGuideId.getTotal());
+        logger.info("getCudByGuideId 查询该导购下的顾客列表 ,入参 offset:{}, size:{}, kewords:{},guideId:{}", offset, size, keywords, guideId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPageByGuideId = this.maCustomerService.queryCustomerVOByGuideId(page, size, guideId);
+            List<CustomerDO> custmersList = custmersPageByGuideId.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("getCudByGuideId ,查询该导购下的顾客列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByGuideId.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getCudByGuideId EXCEPTION,发生未知错误，查询该导购下的顾客列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -138,12 +183,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/phoneGrid/{queryCusInfo}")
     public GridDataVO<CustomerVO> getCudByPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") Long queryCusInfo) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
-        List<CustomerDO> custmersList = custmersPageByPhone.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByPhone.getTotal());
+        logger.info("getCudByPhone 通过电话查询顾客列表 ,入参 offset:{}, size:{}, kewords:{},queryCusInfo:{}", offset, size, keywords, queryCusInfo);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
+            List<CustomerDO> custmersList = custmersPageByPhone.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("getCudByPhone ,通过电话查询顾客列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByPhone.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getCudByPhone EXCEPTION,发生未知错误，通过电话查询顾客列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -157,12 +211,21 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/nameGrid/{queryCusInfo}")
     public GridDataVO<CustomerVO> getCudByName(Integer offset, Integer size, String keywords, @PathVariable(value = "queryCusInfo") String queryCusInfo) {
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<CustomerDO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
-        List<CustomerDO> custmersList = custmersPageByName.getList();
-        List<CustomerVO> custmersVOList =   CustomerVO.transform(custmersList);
-        return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByName.getTotal());
+        logger.info("getCudByName 通过姓名查询顾客列表 ,入参 offset:{}, size:{}, kewords:{},queryCusInfo:{}", offset, size, keywords, queryCusInfo);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CustomerDO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
+            List<CustomerDO> custmersList = custmersPageByName.getList();
+            List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
+            logger.info("getCudByName ,通过姓名查询顾客列表成功", custmersVOList.size());
+            return new GridDataVO<CustomerVO>().transform(custmersVOList, custmersPageByName.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getCudByName EXCEPTION,发生未知错误，通过姓名查询顾客列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     /**
@@ -174,38 +237,57 @@ public class MaCustomerRestController extends BaseRestController {
      */
     @PostMapping
     public ResultDTO<Object> restCustomerVOPost(@Valid CustomerDetailVO customer, BindingResult result, MultipartFile file) {
-        if (!result.hasErrors()) {
-            if (!file.isEmpty()) {
-                //上传图片得到图片地址
-                String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");
-                customer.setPicUrl(picUrl);
+        logger.info("restCustomerVOPost 新增顾客信息 ,入参 customer:{}", customer);
+        try {
+            if (!result.hasErrors()) {
+                if (!file.isEmpty()) {
+                    //上传图片得到图片地址
+                    String picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");
+                    customer.setPicUrl(picUrl);
+                } else {
+                    //没有上传图片 返回默认头像地址
+                    customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
+                }
+                this.maCustomerService.saveCustomer(customer);
+                logger.info("restCustomerVOPost ,新增顾客信息成功");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
-                //没有上传图片 返回默认头像地址
-                customer.setPicUrl("http://img3.leyizhuang.com.cn/app/images/goods/3875/20171116165950104.png");
+                List<ObjectError> allErrors = result.getAllErrors();
+                logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                        errorMsgToHtml(allErrors), null);
             }
-            this.maCustomerService.saveCustomer(customer);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        } else {
-            List<ObjectError> allErrors = result.getAllErrors();
-            logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
-            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
-                    errorMsgToHtml(allErrors), null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCustomerVOPost EXCEPTION,发生未知错误，新增顾客信息失败");
+            logger.warn("{}", e);
+            return null;
         }
     }
 
     /**
-     * 新增顾客检验电话号码是否存在z
+     * 新增顾客检验电话号码是否存在
+     *
      * @param mobile
      * @return
      */
     @PostMapping(value = "/isExistPhoneNumber")
     public ValidatorResultDTO isExistPhoneNumber(@RequestParam(value = "mobile") Long mobile) {
-          if(null==mobile){
-            logger.warn("页面提交的数据有错误");
-            return new ValidatorResultDTO(false);
+        logger.info("isExistPhoneNumber 新增顾客检验电话号码是否存在 ,入参 mobile:{}", mobile);
+        try {
+            if (null == mobile) {
+                logger.warn("页面提交的数据有错误,号码为空");
+                return new ValidatorResultDTO(false);
+            }
+            Boolean result = this.maCustomerService.isExistPhoneNumber(mobile);
+            logger.info("isExistPhoneNumber 新增顾客检验电话号码是否存在判断成功");
+            return new ValidatorResultDTO(!result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("isExistPhoneNumber EXCEPTION,发生未知错误，新增顾客检验电话号码是否存在判断失败");
+            logger.warn("{}", e);
+            return null;
         }
-        Boolean result = this.maCustomerService.isExistPhoneNumber(mobile);
-        return new ValidatorResultDTO(!result);
     }
 
 }

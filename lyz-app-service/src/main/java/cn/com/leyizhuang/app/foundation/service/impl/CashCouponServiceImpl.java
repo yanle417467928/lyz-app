@@ -137,71 +137,72 @@ public class CashCouponServiceImpl implements CashCouponService{
      * @param cashCouponGoods
      * @param cashCouponStores
      */
-    @Override
-    @Transactional
-    public void updateCashCouponTemplate(CashCoupon cashCoupon, List<String> cashCouponCompanies,
-                                       List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
-                                       List<CashCouponStore> cashCouponStores){
-
-        AppCashCouponType type = cashCoupon.getType();
-        cashCouponDAO.updateCashCoupon(cashCoupon);
-
-        if (type.equals(AppCashCouponType.GENERAL)){
-
-        }else if (type.equals(AppCashCouponType.COMPANY)){
-            cashCouponDAO.deleteCompanyByccid(cashCoupon.getId());
-
-            List<CashCouponCompany> cashCouponCompanyList = new ArrayList<>();
-
-            for (String company : cashCouponCompanies){
-                CashCouponCompany cashCouponCompany = new CashCouponCompany();
-                cashCouponCompany.setCcid(cashCoupon.getId());
-                cashCouponCompany.setCompanyFlag(company);
-                if (company.equals("LYZ")){
-                    cashCouponCompany.setCompanyName("乐易装");
-                }else if (company.equals("HR")){
-                    cashCouponCompany.setCompanyName("华润");
-                }else if (company.equals("YR")){
-                    cashCouponCompany.setCompanyName("盈润");
-                }
-                cashCouponCompanyList.add(cashCouponCompany);
-            }
-
-            cashCouponDAO.addCashCouponCompany(cashCouponCompanyList);
-        }else if (type.equals(AppCashCouponType.BRAND)){
-            cashCouponDAO.deleteBrandByccid(cashCoupon.getId());
-
-            List<GoodsBrand> brandList = maGoodsBrandDAO.findGoodsBrandByIdList(cashCouponBrands);
-            List<CashCouponBrand> cashCouponBrandList = new ArrayList<>();
-            for (GoodsBrand brand : brandList){
-                CashCouponBrand cashCouponBrand = new CashCouponBrand();
-                cashCouponBrand.setCcid(cashCoupon.getId());
-                cashCouponBrand.setBrandId(brand.getBrdId());
-                cashCouponBrand.setBrandName(brand.getBrandName());
-                cashCouponBrandList.add(cashCouponBrand);
-            }
-            cashCouponDAO.addCashCouponBrand(cashCouponBrandList);
-
-        }else if (type.equals(AppCashCouponType.GOODS)){
-            cashCouponDAO.deleteGoodsByccid(cashCoupon.getId());
-
-            for (CashCouponGoods goods : cashCouponGoods){
-                goods.setCcid(cashCoupon.getId());
-            }
-            cashCouponDAO.addCashCouponGoods(cashCouponGoods);
-        }
-
-        if (cashCoupon.getIsSpecifiedStore()){
-            cashCouponDAO.deleteStoreByccid(cashCoupon.getId());
-
-            // 指定门店
-            for (CashCouponStore store : cashCouponStores){
-                store.setCcid(cashCoupon.getId());
-            }
-            cashCouponDAO.addCashCouponStores(cashCouponStores);
-        }
-
-    }
+//    现金券模版一旦生成后不能修改条件和结果，否则会影响到已发送的券
+//    @Override
+//    @Transactional
+//    public void updateCashCouponTemplate(CashCoupon cashCoupon, List<String> cashCouponCompanies,
+//                                       List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
+//                                       List<CashCouponStore> cashCouponStores){
+//
+//        AppCashCouponType type = cashCoupon.getType();
+//        cashCouponDAO.updateCashCoupon(cashCoupon);
+//
+//        if (type.equals(AppCashCouponType.GENERAL)){
+//
+//        }else if (type.equals(AppCashCouponType.COMPANY)){
+//            cashCouponDAO.deleteCompanyByccid(cashCoupon.getId());
+//
+//            List<CashCouponCompany> cashCouponCompanyList = new ArrayList<>();
+//
+//            for (String company : cashCouponCompanies){
+//                CashCouponCompany cashCouponCompany = new CashCouponCompany();
+//                cashCouponCompany.setCcid(cashCoupon.getId());
+//                cashCouponCompany.setCompanyFlag(company);
+//                if (company.equals("LYZ")){
+//                    cashCouponCompany.setCompanyName("乐易装");
+//                }else if (company.equals("HR")){
+//                    cashCouponCompany.setCompanyName("华润");
+//                }else if (company.equals("YR")){
+//                    cashCouponCompany.setCompanyName("盈润");
+//                }
+//                cashCouponCompanyList.add(cashCouponCompany);
+//            }
+//
+//            cashCouponDAO.addCashCouponCompany(cashCouponCompanyList);
+//        }else if (type.equals(AppCashCouponType.BRAND)){
+//            cashCouponDAO.deleteBrandByccid(cashCoupon.getId());
+//
+//            List<GoodsBrand> brandList = maGoodsBrandDAO.findGoodsBrandByIdList(cashCouponBrands);
+//            List<CashCouponBrand> cashCouponBrandList = new ArrayList<>();
+//            for (GoodsBrand brand : brandList){
+//                CashCouponBrand cashCouponBrand = new CashCouponBrand();
+//                cashCouponBrand.setCcid(cashCoupon.getId());
+//                cashCouponBrand.setBrandId(brand.getBrdId());
+//                cashCouponBrand.setBrandName(brand.getBrandName());
+//                cashCouponBrandList.add(cashCouponBrand);
+//            }
+//            cashCouponDAO.addCashCouponBrand(cashCouponBrandList);
+//
+//        }else if (type.equals(AppCashCouponType.GOODS)){
+//            cashCouponDAO.deleteGoodsByccid(cashCoupon.getId());
+//
+//            for (CashCouponGoods goods : cashCouponGoods){
+//                goods.setCcid(cashCoupon.getId());
+//            }
+//            cashCouponDAO.addCashCouponGoods(cashCouponGoods);
+//        }
+//
+//        if (cashCoupon.getIsSpecifiedStore()){
+//            cashCouponDAO.deleteStoreByccid(cashCoupon.getId());
+//
+//            // 指定门店
+//            for (CashCouponStore store : cashCouponStores){
+//                store.setCcid(cashCoupon.getId());
+//            }
+//            cashCouponDAO.addCashCouponStores(cashCouponStores);
+//        }
+//
+//    }
 
     /**
      * 删除现金券模版

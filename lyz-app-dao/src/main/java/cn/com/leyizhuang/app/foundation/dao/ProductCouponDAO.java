@@ -51,7 +51,7 @@ public interface ProductCouponDAO {
      * @param keywords
      * @return
      */
-    List<ProductCoupon> queryProductCouponByid(@Param("keywords") String keywords);
+    List<ProductCoupon> queryByKeywords(@Param("keywords") String keywords);
 
     /**
      * 根据id返回结果

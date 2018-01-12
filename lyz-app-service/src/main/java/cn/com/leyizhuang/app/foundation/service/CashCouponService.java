@@ -46,17 +46,6 @@ public interface CashCouponService {
                                 List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
                                 List<CashCouponStore> cashCouponStores);
 
-    /**
-     * 更新现金券
-     * @param cashCoupon
-     * @param cashCouponCompanies
-     * @param cashCouponBrands
-     * @param cashCouponGoods
-     * @param cashCouponStores
-     */
-    void updateCashCouponTemplate(CashCoupon cashCoupon, List<String> cashCouponCompanies,
-                                  List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
-                                  List<CashCouponStore> cashCouponStores);
 
     /**
      * 删除现金券
