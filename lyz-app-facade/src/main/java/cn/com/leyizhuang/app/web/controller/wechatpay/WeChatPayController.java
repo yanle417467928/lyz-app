@@ -8,6 +8,8 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -67,6 +69,15 @@ public class WeChatPayController {
 
     @Resource
     private SinkSender sinkSender;
+
+    @Resource
+    private RechargeService rechargeService;
+
+    @Resource
+    private CityService cityService;
+
+    @Resource
+    private TransactionalSupportService supportService;
 
     /**
      * 微信支付订单
@@ -182,6 +193,9 @@ public class WeChatPayController {
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, null, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "");
         this.paymentDataService.save(paymentDataDO);
+
+        RechargeOrder rechargeOrder = rechargeService.createRechargeOrder(identityType, userId, money, outTradeNo);
+        rechargeService.saveRechargeOrder(rechargeOrder);
 
         try {
             SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo,
@@ -400,6 +414,10 @@ public class WeChatPayController {
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    //创建充值单收款
+                                    RechargeReceiptInfo receiptInfo = rechargeService.createRechargeReceiptInfo(paymentDataDO, tradeStatus);
+                                    //保存充值收款记录,并更新充值单相关信息
+                                    supportService.handleRechargeOrderRelevantInfoAfterOnlinePauUp(receiptInfo, outTradeNo);
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
                                     if (paymentDataDO.getPaymentType().equals(PaymentDataType.CUS_PRE_DEPOSIT)) {

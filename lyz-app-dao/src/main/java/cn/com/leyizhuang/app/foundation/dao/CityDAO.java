@@ -1,9 +1,10 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -54,4 +55,7 @@ public interface CityDAO {
     CityInventory findCityInventoryByCityIdAndGoodsId(@Param(value = "cityId") Long cityId, @Param(value = "goodsId") Long goodsId);
 
     void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log);
+
+    City findCityByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                         @Param(value = "identityType") AppIdentityType identityType);
 }

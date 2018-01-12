@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
@@ -44,4 +45,6 @@ public interface CityService {
     CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId);
 
     void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log);
+
+    City findCityByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
 }

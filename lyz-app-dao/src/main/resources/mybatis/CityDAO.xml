@@ -144,4 +144,21 @@
                            #{changeType}, #{changeTypeDesc}, #{referenceNumber})
     </insert>
 
+    <select id="findCityByUserIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.city.City">
+        SELECT c.*
+        FROM city c
+        <if test="null != identityType and identityType.toString()=='CUSTOMER'">
+            INNER JOIN cus_customer cs on c.city_id = cs.city_id
+            where cs.cus_id = #{userId}
+        </if>
+        <if test="null != identityType and identityType.toString()=='SELLER'">
+            INNER JOIN emp_employee e on e.city_id = c.city_id
+            where e.emp_id = #{userId}
+        </if>
+        <if test="null != identityType and identityType.toString()=='DECORATE_MANAGER'">
+            INNER JOIN emp_employee e on e.city_id = c.city_id
+            where e.emp_id = #{userId}
+        </if>
+    </select>
+
 </mapper>
