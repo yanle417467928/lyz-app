@@ -36,6 +36,15 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     @Autowired
     private MaCusPreDepositLogService maCusPreDepositLogService;
 
+    /**
+     * @title   获取顾客预存款列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/11
+     */
     @GetMapping(value = "/page/grid")
     public GridDataVO<CustomerPreDepositVO> restCustomerPreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, Long storeId) {
         size = getSize(size);
@@ -44,6 +53,15 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
         return new GridDataVO<CustomerPreDepositVO>().transform(custmerPrePage.getList(), custmerPrePage.getTotal());
     }
 
+    /**
+     * @title   获取顾客预存款信息
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/11
+     */
     @PostMapping(value = "/edit")
     public ResultDTO<String> modifyEmployeeIdPut(@Valid CusPreDepositLogDTO cusPreDepositLogDTO, BindingResult result) {
         if (!result.hasErrors()) {

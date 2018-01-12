@@ -1,11 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,16 +127,16 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Timestamp version) {
-        if (null != cityId && null != goodsId && null != inventory){
-            return cityDAO.updateCityInventoryByCityIdAndGoodsIdAndInventory(cityId,goodsId,inventory,version);
+        if (null != cityId && null != goodsId && null != inventory) {
+            return cityDAO.updateCityInventoryByCityIdAndGoodsIdAndInventory(cityId, goodsId, inventory, version);
         }
         return null;
     }
 
     @Override
     public CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId) {
-        if (null != cityId && null != goodsId){
-            return cityDAO.findCityInventoryByCityIdAndGoodsId(cityId,goodsId);
+        if (null != cityId && null != goodsId) {
+            return cityDAO.findCityInventoryByCityIdAndGoodsId(cityId, goodsId);
         }
         return null;
     }
@@ -143,8 +144,16 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log) {
-        if (null != log){
+        if (null != log) {
             cityDAO.addCityInventoryAvailableQtyChangeLog(log);
         }
+    }
+
+    @Override
+    public City findCityByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType) {
+        return cityDAO.findCityByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
     }
 }

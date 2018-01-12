@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.RechargeDAO">
+
+    <insert id="saveRechargeOrder" parameterType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder">
+        INSERT INTO recharge_order (recharge_no, create_time, creator_identity_type, creator_id, recharge_account_type,
+                                    recharge_account_type_desc, store_id, amount, pay_type, pay_type_desc, payment_subject_type,
+                                    payment_subject_type_desc, customer_id, pay_up_time, status)
+        VALUES
+            (#{rechargeNo}, #{createTime}, #{creatorIdentityType}, #{creatorId}, #{rechargeAccountType},
+                            #{rechargeAccountTypeDesc},
+                            #{storeId},
+                            #{amount}, #{payType}, #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc},
+             #{customerId}, #{payUpTime}, #{status})
+    </insert>
+
+    <select id="saveRechargeReceiptInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo">
+        INSERT INTO recharge_receipt_info (recharge_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
+                                           payment_subject_type_desc, amount, reply_code, receipt_number)
+            SELECT
+                #{rechargeNo},
+                #{createTime},
+                #{payTime},
+                #{payType},
+                #{payTypeDesc},
+                #{paymentSubjectType},
+                #{paymentSubjectTypeDesc},
+                #{amount},
+                #{replyCode},
+                #{receiptNumber}
+            FROM dual
+            WHERE NOT exists(SELECT receipt_number
+                             FROM recharge_receipt_info
+                             WHERE receipt_number = #{receiptNumber})
+    </select>
+
+    <update id="updateRechargeOrderStatusAndPayUpTime">
+        UPDATE recharge_order
+        SET status = #{status}, pay_up_time = #{payUpTime}
+        WHERE recharge_no = #{rechargeNo}
+    </update>
+</mapper>

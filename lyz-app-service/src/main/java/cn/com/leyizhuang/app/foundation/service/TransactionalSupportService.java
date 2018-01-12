@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
@@ -21,4 +22,6 @@ public interface TransactionalSupportService {
                              List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
 
     void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList, List<OrderCouponInf> couponInfList);
+
+    void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 }

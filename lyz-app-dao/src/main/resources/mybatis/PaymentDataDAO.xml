@@ -17,14 +17,18 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         SELECT
             id,
+            create_time,
             out_trade_no,
+            ord_no order_number,
             total_fee,
             trade_status,
             user_id,
             identity_type appIdentityType,
             payment_type,
             notify_time,
-            notify_url
+            notify_url,
+            online_pay_type,
+            trade_no
         FROM payment_data
         WHERE out_trade_no = #{outTradeNo}
               AND trade_status = #{tradeStatus}

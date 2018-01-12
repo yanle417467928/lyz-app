@@ -1,17 +1,21 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
+import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +33,9 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
 
     @Resource
     private AppSeparateOrderService separateOrderService;
+
+    @Resource
+    private RechargeService rechargeService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -64,8 +71,16 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         }
 
         //保存订单券信息
-        for (OrderCouponInf couponInf:couponInfList){
+        for (OrderCouponInf couponInf : couponInfList) {
             separateOrderService.saveOrderCouponInf(couponInf);
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo,String rechargeNo) {
+        rechargeService.saveRechargeReceiptInfo(receiptInfo);
+        //更新充值单相关信息
+        rechargeService.updateRechargeOrderStatusAndPayUpTime(rechargeNo, new Date(), AppRechargeOrderStatus.PAID);
     }
 }

@@ -172,6 +172,7 @@
             AND (c.name LIKE concat(concat('%',#{keywords}),'%')
             OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
         </if>
+        ORDER BY c.create_time DESC
     </select>
 
     <select id="queryCusPredepositByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
