@@ -18,9 +18,17 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo">
         INSERT INTO recharge_receipt_info (recharge_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
                                            payment_subject_type_desc, amount, reply_code, receipt_number)
-            SELECT (#{rechargeNo}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
-                    #{paymentSubjectTypeDesc},
-                    #{amount}, #{replyCode}, #{receiptNumber})
+            SELECT
+                #{rechargeNo},
+                #{createTime},
+                #{payTime},
+                #{payType},
+                #{payTypeDesc},
+                #{paymentSubjectType},
+                #{paymentSubjectTypeDesc},
+                #{amount},
+                #{replyCode},
+                #{receiptNumber}
             FROM dual
             WHERE NOT exists(SELECT receipt_number
                              FROM recharge_receipt_info
