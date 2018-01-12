@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = MaCustomerPreDepositViewsController.PRE_URL, produces = "application/json;charset=utf-8")
 public class MaCustomerPreDepositViewsController extends BaseController {
 
-    protected final static String PRE_URL = "/views/admin/customer/preDeposit";
+    protected final static String PRE_URL = "/views/admin/store/preDeposit";
 
     private final Logger logger = LoggerFactory.getLogger(MaCustomerPreDepositViewsController.class);
 
