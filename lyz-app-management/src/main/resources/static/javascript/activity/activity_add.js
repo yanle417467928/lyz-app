@@ -399,8 +399,13 @@ function formValidate() {
 
         // 目标对象
         var target = "";
-        $("input:checkbox[name='target']:checked").each(function () {
-            target += $(this).val();
+        $("input:checkbox[name='target']:checked").each(function (i) {
+            if (i == 0){
+                target += $(this).val();
+            }else{
+                target += ","+$(this).val();
+            }
+
         })
         if (target == "" ){
 
@@ -603,22 +608,25 @@ function cheackGoodsDetail(details,tableId){
         goodsSkus.push(goodsSku);
 
         if(tableId == "selectedGoodsTable"){
-            // 是否任选数量
-            var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
+            var conditionType = $("#conditionType").val();
+            if(conditionType == "FQTY"){
+                // 是否任选数量
+                var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
 
-            if(isGoodsOptionalQty){
-                var num = $('#fullNumber').val();
-                if(num=='' || num == 0 ||!re.test(num)) {
-                    validateFlag = false;
-                    $notify.warning("亲，本品任选数量不正确");
-                    return false;
-                }
-            }else{
-                var num = $(n).find("#qty").val();
-                if(num=='' || num == 0 ||!re.test(num)) {
-                    validateFlag = false;
-                    $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
-                    return false;
+                if(isGoodsOptionalQty){
+                    var num = $('#fullNumber').val();
+                    if(num=='' || num == 0 ||!re.test(num)) {
+                        validateFlag = false;
+                        $notify.warning("亲，本品任选数量不正确");
+                        return false;
+                    }
+                }else{
+                    var num = $(n).find("#qty").val();
+                    if(num=='' || num == 0 ||!re.test(num)) {
+                        validateFlag = false;
+                        $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
+                        return false;
+                    }
                 }
             }
 

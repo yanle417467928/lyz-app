@@ -98,9 +98,9 @@
                                     目标对象
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="顾客" type="checkbox" class="flat-red" checked>顾客
-                                    <input name="target" value="导购" type="checkbox" class="flat-red" checked>导购
-                                    <input name="target" value="装饰公司经理" type="checkbox" class="flat-red">装饰公司经理
+                                    <input name="target" value="6" type="checkbox" class="flat-red" checked>顾客
+                                    <input name="target" value="0" type="checkbox" class="flat-red" checked>导购
+                                    <input name="target" value="2" type="checkbox" class="flat-red">装饰公司经理
                                 </div>
                             </div>
                         </div>

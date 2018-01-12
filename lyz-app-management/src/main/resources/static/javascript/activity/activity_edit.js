@@ -3,13 +3,13 @@ var deleteGoodsIds = new Array()
 
 $(function () {
     // 初始化时间控件
-    starAndEndDatetimepiker("beginTime","endTime");
+    starAndEndDatetimepiker("beginTime", "endTime");
 
     // 表单元素渲染
     //Flat red color scheme for iCheck
     $('input[type="checkbox"].flat-red').iCheck({
         checkboxClass: 'icheckbox_flat-green',
-        radioClass   : 'iradio_flat-green'
+        radioClass: 'iradio_flat-green'
     })
 
     // 初始化商品grid
@@ -59,38 +59,39 @@ function findStoreByCity(idArray) {
         success: function (result) {
             clearTimeout($global.timer);
             $.each(result, function (i, item) {
-                store += "<label id='"+item.storeId+"' class='label label-default' onclick='checkStore(this)'>"+item.storeName +"</label>";
+                store += "<label id='" + item.storeId + "' class='label label-default' onclick='checkStore(this)'>" + item.storeName + "</label>";
             })
             $("#stores").html(store);
         }
     });
 }
 
-function checkStore(eleDom){
+function checkStore(eleDom) {
     var classStr = $(eleDom).attr("class");
 
-    if(classStr == "label label-default"){
-        $(eleDom).attr("class","label label-success");
-    }else{
-        $(eleDom).attr("class","label label-default");
+    if (classStr == "label label-default") {
+        $(eleDom).attr("class", "label label-success");
+    } else {
+        $(eleDom).attr("class", "label label-default");
     }
 }
 
 function checkAllStore() {
     $("#stores>label").each(function () {
-        $(this).attr("class","label label-success");
+        $(this).attr("class", "label label-success");
     })
 }
+
 function unCheckAllStore() {
     $("#stores>label").each(function () {
         checkStore(this);
     })
 }
 
-function initGoodsGrid(){
+function initGoodsGrid() {
 
     var url = "/rest/goods/page/grid";
-    $grid.init($('#goodsDataGrid'), $('#toolbar'),url , 'get', false, function (params) {
+    $grid.init($('#goodsDataGrid'), $('#toolbar'), url, 'get', false, function (params) {
         return {
             offset: params.offset,
             size: params.limit,
@@ -99,28 +100,28 @@ function initGoodsGrid(){
     }, [{
         checkbox: true,
         title: '选择'
-    },{
+    }, {
         field: 'id',
         title: 'ID',
         align: 'center',
-        visible:false
-    },{
+        visible: false
+    }, {
         field: 'sku',
         title: 'sku',
         align: 'center'
-    },{
+    }, {
         field: 'skuName',
         title: '名称',
         align: 'center'
-    },{
+    }, {
         field: 'categoryName',
         title: '类型',
         align: 'center'
-    },{
+    }, {
         field: 'goodsSpecification',
         title: '规格',
         align: 'center'
-    },{
+    }, {
         field: 'materialsEnable',
         title: '状态',
         align: 'center',
@@ -133,19 +134,20 @@ function initGoodsGrid(){
 
     ]);
 }
+
 function openGoodsModal(id) {
-    $("#goodsModalConfirm").unbind('click').click(function(){
+    $("#goodsModalConfirm").unbind('click').click(function () {
         chooseGoods(id);
     });
     $('#goodsModal').modal('show');
 }
 
 function screenGoods() {
-    var brandCode=$('#brandCode').val();
-    var categoryCode=$('#categoryCode').val();
-    var companyCode=$('#companyCode').val();
+    var brandCode = $('#brandCode').val();
+    var categoryCode = $('#categoryCode').val();
+    var companyCode = $('#companyCode').val();
     $("#goodsDataGrid").bootstrapTable('destroy');
-    initGoodsGrid('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode+'&categoryCode='+categoryCode+'&companyCode='+companyCode);
+    initGoodsGrid('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode + '&categoryCode=' + categoryCode + '&companyCode=' + companyCode);
 }
 
 function findGoodsByNameOrCode() {
@@ -153,12 +155,12 @@ function findGoodsByNameOrCode() {
     $("#goodsDataGrid").bootstrapTable('destroy');
     if (null == queryGoodsInfo || "" == queryGoodsInfo) {
         initGoodsGrid('/rest/goods/page/grid');
-    }else{
+    } else {
         initGoodsGrid('/rest/goods/page/goodsGrid/' + queryGoodsInfo);
     }
 }
 
-function findGoodsBrand(){
+function findGoodsBrand() {
     var brand = '';
     $.ajax({
         url: '/rest/goodsBrand/page/brandGrid',
@@ -180,7 +182,7 @@ function findGoodsBrand(){
     });
 }
 
-function findGoodsPhysical(){
+function findGoodsPhysical() {
     var physical = '';
     $.ajax({
         url: '/rest/goods/page/physicalClassifyGrid',
@@ -204,39 +206,39 @@ function findGoodsPhysical(){
 function chooseGoods(tableId) {
     var tableData = $('#goodsDataGrid').bootstrapTable('getSelections');
 
-    if(tableData.length == 0){
+    if (tableData.length == 0) {
         $notify.warning('请先选择数据');
-    }else{
+    } else {
         //alert(tableData);
         var str = "";
-        for (var i = 0; i < tableData.length; i++){
+        for (var i = 0; i < tableData.length; i++) {
             var item = tableData[i];
 
             // 排除已选项
-            var trs = $("#"+tableId).find("tr");
+            var trs = $("#" + tableId).find("tr");
             var flag = true;
-            trs.each(function(i,n){
+            trs.each(function (i, n) {
                 var id = $(n).find("#gid").val();
-                if (id == item.id){
+                if (id == item.id) {
                     flag = false;
                     return false;
                 }
             })
 
             // 此商品未添加过
-            if(flag){
+            if (flag) {
                 str += "<tr>" +
 
-                    "<td><input type='text' id='gid' value=" +item.id+ " style='width:90%;border: none;' readonly /></td>" +
-                    "<td><input id='sku' type='text' value='"+item.sku+"' style='width:90%;border: none;' readonly></td>" +
-                    "<td><input id='title' type='text' value='"+item.skuName+"' style='width:90%;border: none;' readonly></td>" +
+                    "<td><input type='text' id='gid' value=" + item.id + " style='width:90%;border: none;' readonly /></td>" +
+                    "<td><input id='sku' type='text' value='" + item.sku + "' style='width:90%;border: none;' readonly></td>" +
+                    "<td><input id='title' type='text' value='" + item.skuName + "' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='qty' type='number' value='0'></td>" +
                     "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>" +
                     "</tr>"
             }
 
         }
-        $("#"+tableId).append(str);
+        $("#" + tableId).append(str);
 
         // 取消所以选中行
         $('#goodsDataGrid').bootstrapTable("uncheckAll");
@@ -246,7 +248,7 @@ function chooseGoods(tableId) {
 //删除商品节点
 function del_goods_comb(obj) {
     var deleteGoodsId = $(obj).parent().parent().find("#id").val()
-    if(deleteGoodsId != 0){
+    if (deleteGoodsId != 0) {
         deleteGoodsIds.push(deleteGoodsId);
     }
     $(obj).parent().parent().remove();
@@ -254,20 +256,20 @@ function del_goods_comb(obj) {
 
 // checkBox 绑定点击事件
 $(function () {
-    $('#is_goods_optional_qty').on('ifChecked', function(event){
+    $('#is_goods_optional_qty').on('ifChecked', function (event) {
         //alert($(this).prop('checked'));
         clickGoodsFixedQty();
     });
-    $('#is_goods_optional_qty').on('ifUnchecked', function(event){
+    $('#is_goods_optional_qty').on('ifUnchecked', function (event) {
         //alert($(this).prop('checked'));
         clickGoodsFixedQty();
     });
 
-    $('#is_gift_optional_qty').on('ifChecked', function(event){
+    $('#is_gift_optional_qty').on('ifChecked', function (event) {
         //alert($(this).prop('checked'));
         clickGiftFixedQty();
     });
-    $('#is_gift_optional_qty').on('ifUnchecked', function(event){
+    $('#is_gift_optional_qty').on('ifUnchecked', function (event) {
         //alert($(this).prop('checked'));
         clickGiftFixedQty();
     });
@@ -275,9 +277,9 @@ $(function () {
 
 function clickGoodsFixedQty() {
     var val = $('#is_goods_optional_qty').prop("checked");
-    if(val){
+    if (val) {
         $("#goods_optional_qty_div").fadeIn(1000);
-    }else{
+    } else {
         $("#fullNumber").val('');
         $("#goods_optional_qty_div").fadeOut(1);
     }
@@ -285,9 +287,9 @@ function clickGoodsFixedQty() {
 
 function clickGiftFixedQty() {
     var val = $('#is_gift_optional_qty').prop("checked");
-    if(val){
+    if (val) {
         $("#gift_optional_qty_div").fadeIn(1000);
-    }else{
+    } else {
         $("giftChooseNumber").val();
         $("#gift_optional_qty_div").fadeOut(1);
     }
@@ -300,30 +302,30 @@ function changeBaseType(val) {
 function changeConditionType(val) {
     var baseVal = $("#baseType").val();
 
-    if(baseVal == "COMMON"){
-        if(val == "FQTY"){
+    if (baseVal == "COMMON") {
+        if (val == "FQTY") {
             $("#fullAmount_div").fadeOut(1);
-        }else if(val == "FAMO"){
+        } else if (val == "FAMO") {
             $("#fullAmount_div").fadeIn(1000);
         }
-    }else{
+    } else {
 
     }
 }
 
 function changeResultType(val) {
 
-    if(val == "GOO"){
+    if (val == "GOO") {
         $("#subAmount_div").fadeOut(1);
         $("#Gift_div").fadeIn(1000);
         $("#giftChooseNumber_div").fadeIn(1000);
         $("#addAmount_div").fadeOut(1);
-    }else if(val == "SUB"){
+    } else if (val == "SUB") {
         $("#subAmount_div").fadeIn(1000);
         $("#Gift_div").fadeOut(1);
         $("#giftChooseNumber_div").fadeOut(1);
         $("#addAmount_div").fadeOut(1);
-    }else if(val == "ADD"){
+    } else if (val == "ADD") {
         $("#subAmount_div").fadeOut(1);
         $("#Gift_div").fadeIn(1000);
         $("#giftChooseNumber_div").fadeIn(1000);
@@ -360,16 +362,16 @@ function formValidate() {
                     }
                 }
             },
-            beginTime:{
-                validators:{
-                    notEmpty:{
+            beginTime: {
+                validators: {
+                    notEmpty: {
                         message: '请选择促销开始时间'
                     }
                 }
             },
-            endTime:{
-                validators:{
-                    notEmpty:{
+            endTime: {
+                validators: {
+                    notEmpty: {
                         message: '请选择促销结束时间'
                     }
                 }
@@ -391,10 +393,15 @@ function formValidate() {
 
         // 目标对象
         var target = "";
-        $("input:checkbox[name='target']:checked").each(function () {
-            target += $(this).val();
+        $("input:checkbox[name='target']:checked").each(function (i) {
+            if (i == 0) {
+                target += $(this).val();
+            } else {
+                target += "," + $(this).val();
+            }
+
         })
-        if (target == "" ){
+        if (target == "") {
 
             $notify.danger('请选择目标对象');
             return false;
@@ -410,25 +417,24 @@ function formValidate() {
         $("#stores > label[class='label label-success']").each(function () {
             stores.push(
                 {
-                    storeId:$(this).prop("id"),
-                    storeTitle:$(this).html()
+                    storeId: $(this).prop("id"),
+                    storeTitle: $(this).html()
                 }
-
             );
         })
-        if(stores.length == 0){
+        if (stores.length == 0) {
             $notify.danger("请选择门店");
             return false;
         }
 
         //检查商品添加详情
         var goodsDetails = new Array();
-        var checkFlag = cheackGoodsDetail(goodsDetails,'selectedGoodsTable');
+        var checkFlag = cheackGoodsDetail(goodsDetails, 'selectedGoodsTable');
         if (!checkFlag) {
             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             return false;
         }
-        if(goodsDetails.length == 0){
+        if (goodsDetails.length == 0) {
             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             $notify.danger("请选择本品");
             return false;
@@ -438,7 +444,7 @@ function formValidate() {
 
         // 赠品
         var giftDetails = new Array();
-        var checkFlag2 = cheackGoodsDetail(giftDetails,'selectedGiftTable');
+        var checkFlag2 = cheackGoodsDetail(giftDetails, 'selectedGiftTable');
         if (!checkFlag2) {
             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             return false;
@@ -453,79 +459,79 @@ function formValidate() {
         //单价正则
         var reg = /^(0|[1-9][0-9]{0,9})(\.[0-9]{1,2})?$/;
 
-        if (conditionType == "FAMO"){
+        if (conditionType == "FAMO") {
             var price = $("#fullAmount").val();
-            if(price == null || price.trim() == ""){
+            if (price == null || price.trim() == "") {
 
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请填写需满足最低金额");
                 return false;
             }
 
-            if(!reg.test(price)){
+            if (!reg.test(price)) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("最低金额有误");
                 return false;
             }
         }
-        else if (conditionType == "FQTY"){
-            if(isGoodsOptionalQty){
+        else if (conditionType == "FQTY") {
+            if (isGoodsOptionalQty) {
                 var num = $('#fullNumber').val();
-                if(num=='' || num == 0) {
+                if (num == '' || num == 0) {
                     $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                     $notify.warning("亲，本品任选数量不正确");
                     return false;
                 }
-            }else{
-                for (var i = 0 ;i < goodsDetails.length ; i++){
+            } else {
+                for (var i = 0; i < goodsDetails.length; i++) {
                     var item = goodsDetails[i];
-                    if(item.qty == 0){
+                    if (item.qty == 0) {
                         $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                        $notify.danger("本品"+item.gid+"数量为0，请设置数量，或者修改促销条件");
+                        $notify.danger("本品" + item.gid + "数量为0，请设置数量，或者修改促销条件");
                         return false;
                     }
                 }
             }
 
         }
-        if(resultType == "SUB"){
+        if (resultType == "SUB") {
             var price = $("#subAmount").val();
-            if(price == null || price.trim() == ""){
+            if (price == null || price.trim() == "") {
 
-                    $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-                    $notify.danger("请填写立减金额");
-                    return false;
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请填写立减金额");
+                return false;
             }
 
-            if(!reg.test(price)){
+            if (!reg.test(price)) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("立减金额有误");
                 return false;
             }
         }
-        else if (resultType == "GOO"){
-            if(giftDetails.length == 0){
+        else if (resultType == "GOO") {
+            if (giftDetails.length == 0) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
                 return false;
             }
 
-        }else if(resultType == "ADD"){
-            if(giftDetails.length == 0){
+        } else if (resultType == "ADD") {
+            if (giftDetails.length == 0) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
                 return false;
             }
 
             var price = $("#addAmount").val();
-            if(price == null || price.trim() == ""){
+            if (price == null || price.trim() == "") {
 
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请填写加价金额");
                 return false;
             }
 
-            if(!reg.test(price)){
+            if (!reg.test(price)) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("加价金额有误");
                 return false;
@@ -561,7 +567,7 @@ function formValidate() {
         });
     });
 
-    $('#btn-cancel').on('click', function() {
+    $('#btn-cancel').on('click', function () {
         history.go(-1);
     });
 }
@@ -569,79 +575,81 @@ function formValidate() {
 /**
  * 检查商品详情
  */
-function cheackGoodsDetail(details,tableId){
+function cheackGoodsDetail(details, tableId) {
     var goodRepeatFlag = false;
     var validateFlag = true;
 
     //商品sku
     var goodsSkus = new Array();
 
-    var trs = $("#"+tableId).find("tr");
+    var trs = $("#" + tableId).find("tr");
 
     var goodsSku;
     //数量正则
     var re = /^[0-9]+.?[0-9]*$/;
 
-    trs.each(function(i,n){
+    trs.each(function (i, n) {
         var id = $(n).find("#gid").val();
         goodsSku = $(n).find("#sku").val();
 
 
-        if($.inArray(goodsSku, goodsSkus) >= 0) {
+        if ($.inArray(goodsSku, goodsSkus) >= 0) {
             goodRepeatFlag = true;
             validateFlag = false;
-            $notify.warning( "亲，【" + goodsSku + "】重复，请删除！");
+            $notify.warning("亲，【" + goodsSku + "】重复，请删除！");
             return false;
         }
         goodsSkus.push(goodsSku);
 
-        if(tableId == "selectedGoodsTable"){
-            // 是否任选数量
-            var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
+        if (tableId == "selectedGoodsTable") {
+            var conditionType = $("#conditionType").val();
+            if (conditionType == "FQTY") {
+                // 是否任选数量
+                var isGoodsOptionalQty = $("#is_goods_optional_qty").prop('checked');
 
-            if(isGoodsOptionalQty){
-                var num = $('#fullNumber').val();
-                if(num=='' || num == 0 ||!re.test(num)) {
-                    validateFlag = false;
-                    $notify.warning("亲，本品任选数量不正确");
-                    return false;
-                }
-            }else{
-                var num = $(n).find("#qty").val();
-                if(num=='' || num == 0 ||!re.test(num)) {
-                    validateFlag = false;
-                    $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
-                    return false;
+                if (isGoodsOptionalQty) {
+                    var num = $('#fullNumber').val();
+                    if (num == '' || num == 0 || !re.test(num)) {
+                        validateFlag = false;
+                        $notify.warning("亲，本品任选数量不正确");
+                        return false;
+                    }
+                } else {
+                    var num = $(n).find("#qty").val();
+                    if (num == '' || num == 0 || !re.test(num)) {
+                        validateFlag = false;
+                        $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
+                        return false;
+                    }
                 }
             }
-
             details.push({
-                gid:id,
+                gid: id,
                 qty: $(n).find("#qty").val(),
                 sku: goodsSku,
                 goodsTitile: $(n).find("#title").val()
             });
-        }else if(tableId == "selectedGiftTable"){
+        } else if (tableId == "selectedGiftTable") {
             // 是否任选数量
             var isGiftOptionalQty = $("#is_gift_optional_qty").prop('checked');
 
-            if(isGiftOptionalQty){
+            if (isGiftOptionalQty) {
                 var num = $('#giftChooseNumber').val();
-                if(num=='' || num == 0 ||!re.test(num)) {
+                if (num == '' || num == 0 || !re.test(num)) {
                     validateFlag = false;
                     $notify.warning("亲，本品任选数量不正确");
                     return false;
                 }
-            }else{
+            } else {
                 var num = $(n).find("#qty").val();
-                if(num=='' || num == 0 ||!re.test(num)) {
+                if (num == '' || num == 0 || !re.test(num)) {
                     validateFlag = false;
                     $notify.warning("亲，赠品【" + goodsSku + "】数量不正确");
                     return false;
                 }
             }
             details.push({
-                giftId:id,
+                giftId: id,
                 giftFixedQty: $(n).find("#qty").val(),
                 giftSku: goodsSku,
                 giftTitle: $(n).find("#title").val()
@@ -657,27 +665,27 @@ function cheackGoodsDetail(details,tableId){
 /**
  *开始时间 -- 结束时间 渲染方法
  */
-function starAndEndDatetimepiker(startDateId,endDateId){
-    $("#"+startDateId).datetimepicker({
+function starAndEndDatetimepiker(startDateId, endDateId) {
+    $("#" + startDateId).datetimepicker({
         format: 'yyyy-mm-dd hh:ii:ss',
         language: 'zh-CN',
         autoclose: true
-    }).on('changeDate',function(e){
+    }).on('changeDate', function (e) {
         var startTime = e.date;
-        $('#'+endDateId).datetimepicker('setStartDate',startTime);
-    }).on('hide',function(e) {
-       // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(startDateId, 'NOT_VALIDATED',null) .validateField(startDateId);
+        $('#' + endDateId).datetimepicker('setStartDate', startTime);
+    }).on('hide', function (e) {
+        // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(startDateId, 'NOT_VALIDATED',null) .validateField(startDateId);
     });
 
 
-    $("#"+endDateId).datetimepicker({
+    $("#" + endDateId).datetimepicker({
         format: 'yyyy-mm-dd hh:ii:ss',
         language: 'zh-CN',
         autoclose: true
-    }).on('changeDate',function(e){
+    }).on('changeDate', function (e) {
         var startTime = e.date;
-        $('#'+startDateId).datetimepicker('setEndDate',startTime);
-    }).on('hide',function(e) {
-       // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
+        $('#' + startDateId).datetimepicker('setEndDate', startTime);
+    }).on('hide', function (e) {
+        // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
     });
 }

@@ -101,9 +101,9 @@
                                     目标对象
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="顾客" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('顾客')>checked</#if></#if>>顾客
-                                    <input name="target" value="导购" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('导购')>checked</#if></#if>>导购
-                                    <input name="target" value="装饰公司经理" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('装饰公司经理')>checked</#if></#if>>装饰公司经理
+                                    <input name="target" value="6" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('6')>checked</#if></#if>>顾客
+                                    <input name="target" value="0" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('0')>checked</#if></#if>>导购
+                                    <input name="target" value="2" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('2')>checked</#if></#if>>装饰公司经理
                                 </div>
 
                             </div>

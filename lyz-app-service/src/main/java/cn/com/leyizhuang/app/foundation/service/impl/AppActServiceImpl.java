@@ -191,6 +191,14 @@ public class AppActServiceImpl implements AppActService {
 
         //******************* 根据促销类型 计算促销 *************************
         for (ActBaseDO act : actList) {
+
+            // 判断当前用户身份
+            String target = act.getActTarget();
+            if (!target.contains(String.valueOf(userType.getValue()))){
+                /**不可参与此促销，计算下一个促销**/
+                continue;
+            }
+
             // 促销类型
             String actType = act.getActType();
 
@@ -299,7 +307,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = cus.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "顾客", storeId);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "6", storeId);
         return actList;
     }
 
@@ -318,7 +326,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = employee.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "导购", storeId);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "0", storeId);
         return actList;
     }
 
@@ -605,6 +613,7 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
+        logger.info("享受："+act.getTitle());
         response.setGiftList(giftListResponseGoods);
         return response;
     }
@@ -626,6 +635,7 @@ public class AppActServiceImpl implements AppActService {
         proDiscount.setDiscountPrice(CountUtil.mul(sub_amount.getSubAmount(), enjoyTimes));
         proDiscount.setEnjoyTimes(enjoyTimes);
 
+        logger.info("享受："+act.getTitle());
         return proDiscount;
     }
 

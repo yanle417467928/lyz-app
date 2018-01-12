@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo;
 
-import cn.com.leyizhuang.app.core.constant.ActBaseType;
-import cn.com.leyizhuang.app.core.constant.ActConditionType;
-import cn.com.leyizhuang.app.core.constant.ActPromotionType;
-import cn.com.leyizhuang.app.core.constant.ActStatusType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import lombok.*;
 
@@ -70,7 +67,7 @@ public class ActBaseVO {
     private String type;
 
     public static final ActBaseVO transform(ActBaseDO actBaseDO) {
-        if (actBaseDO != null){
+        if (actBaseDO != null) {
             ActBaseVO actBaseVO = new ActBaseVO();
 
             actBaseVO.setId(actBaseDO.getId());
@@ -79,30 +76,36 @@ public class ActBaseVO {
             actBaseVO.setTitle(actBaseDO.getTitle());
             actBaseVO.setBeginTime(actBaseDO.getBeginTime());
             actBaseVO.setEndTime(actBaseDO.getEndTime());
-
             actBaseVO.setCityName(actBaseDO.getCityName());
-            actBaseVO.setActTarget(actBaseDO.getActTarget());
+
+            String target = actBaseDO.getActTarget();
+            target = target.replace("0", "导购")
+                    .replace("2", "装饰公司经理")
+                    .replace("6", "顾客");
+
+            actBaseVO.setActTarget(target);
+
             actBaseVO.setBaseType(actBaseDO.getBaseType());
             actBaseVO.setPromotionType(actBaseDO.getPromotionType());
             actBaseVO.setConditionType(actBaseDO.getConditionType());
             actBaseVO.setIsDouble(actBaseDO.getIsDouble());
             actBaseVO.setIsReturnable(actBaseDO.getIsReturnable());
             actBaseVO.setSortId(actBaseDO.getSortId());
-            if (actBaseDO.getStatus() != null){
-                if(LocalDateTime.now().isAfter(actBaseDO.getEndTime())){
+            if (actBaseDO.getStatus() != null) {
+                if (LocalDateTime.now().isAfter(actBaseDO.getEndTime())) {
                     // 促销过期
                     actBaseVO.setStatus("过期");
-                }else{
+                } else {
                     actBaseVO.setStatus(actBaseDO.getStatus().getDescription());
                 }
-            }else{
+            } else {
                 actBaseVO.setStatus(ActStatusType.NEW.getDescription());
             }
 
-            actBaseVO.setType(actBaseDO.getBaseType().getDescription()+"_"+actBaseDO.getConditionType().getDescription()+"_"+actBaseDO.getPromotionType().getDescription());
+            actBaseVO.setType(actBaseDO.getBaseType().getDescription() + "_" + actBaseDO.getConditionType().getDescription() + "_" + actBaseDO.getPromotionType().getDescription());
 
             return actBaseVO;
-        }else{
+        } else {
             return null;
         }
 

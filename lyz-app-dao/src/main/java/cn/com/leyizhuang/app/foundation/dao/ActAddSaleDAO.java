@@ -2,12 +2,14 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActAddSaleDO;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Created by panjie on 2017/12/26.
  */
+@Repository
 public interface ActAddSaleDAO {
 
     void save(ActAddSaleDO DO);
