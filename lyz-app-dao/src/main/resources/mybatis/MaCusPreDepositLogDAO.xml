@@ -11,4 +11,40 @@
         #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber}, #{changeTypeDesc})
     </insert>
 
+    <select id="findAllCusPredepositLog" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO">
+        SELECT
+        l.id, c.name, c.mobile, s.store_name, l.create_time, l.change_money, l.remarks, l.change_type, l.order_number, l.balance,
+        l.transfer_time, l.merchant_order_number
+        FROM cus_pre_deposit_log l
+        LEFT JOIN cus_customer c on l.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE
+        (1 = 1)
+        <if test="null != cusId and cusId != 0">
+            AND  c.cus_id = #{cusId}
+        </if>
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND c.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (c.name LIKE concat(concat('%',#{keywords}),'%')
+            OR c.mobile LIKE concat(concat('%',#{keywords}),'%')
+            OR l.order_number LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY l.create_time DESC
+    </select>
+
+    <select id="findCusPredepositLogById" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO">
+        SELECT
+        l.id, c.name, c.mobile, s.store_name, l.create_time, l.change_money, l.remarks, l.change_type, l.order_number, l.balance,
+        l.transfer_time, l.merchant_order_number, l.operator_type, l.operator_ip, l.detail_reason
+        FROM cus_pre_deposit_log l
+        LEFT JOIN cus_customer c on l.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE l.id = #{id}
+    </select>
+
 </mapper>

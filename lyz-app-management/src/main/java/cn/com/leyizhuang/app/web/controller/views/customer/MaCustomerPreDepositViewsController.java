@@ -27,7 +27,7 @@ public class MaCustomerPreDepositViewsController extends BaseController {
     @Autowired
     private MaCustomerService maCustomerService;
     /**
-     * 跳转顾客列表
+     * 跳转顾客预存款列表
      * @return
      */
     @RequestMapping(value = "/list")
@@ -35,6 +35,15 @@ public class MaCustomerPreDepositViewsController extends BaseController {
         return "/views/customer/customer_pre_deposit_page";
     }
 
+    /**
+     * @title   跳转变更预存款页面
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/11
+     */
     @GetMapping(value = "/edit/{cusId}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
         CustomerPreDepositVO customerPreDepositVO = this.maCustomerService.queryCusPredepositByCusId(cusId);
