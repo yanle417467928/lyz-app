@@ -43,23 +43,23 @@ public class RechargeServiceImpl implements RechargeService {
         rechargeOrder.setCreatorId(userId);
         rechargeOrder.setCreatorIdentityType(AppIdentityType.
                 getAppIdentityTypeByValue(identityType));
-        if (identityType == 0) {
+        if (identityType == AppIdentityType.CUSTOMER.getValue()) {
             rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+            rechargeOrder.setCustomerId(userId);
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+
+        } else if (identityType == AppIdentityType.SELLER.getValue()) {
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
             AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
             rechargeOrder.setStoreId(store.getStoreId());
             rechargeOrder.setPaymentSubjectType(PaymentSubjectType.SELLER);
-
-        } else if (identityType == 6) {
+        } else if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
             rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
-            rechargeOrder.setCustomerId(userId);
-            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
-        } else if (identityType == 2) {
-            rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
             AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
             rechargeOrder.setStoreId(store.getStoreId());
             rechargeOrder.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
         }
-        rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectTypeDesc());
+        rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
         rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
         rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
         rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
@@ -128,8 +128,8 @@ public class RechargeServiceImpl implements RechargeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateRechargeOrderStatusAndPayUpTime(String rechargeNo, Date payUpTime, AppRechargeOrderStatus status) {
-        if (null != rechargeNo){
-            rechargeDAO.updateRechargeOrderStatusAndPayUpTime(rechargeNo,payUpTime,status);
+        if (null != rechargeNo) {
+            rechargeDAO.updateRechargeOrderStatusAndPayUpTime(rechargeNo, payUpTime, status);
         }
     }
 
