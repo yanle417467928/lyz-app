@@ -1,13 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
-import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import com.github.pagehelper.PageInfo;
-
-import java.util.List;
 
 public interface MaCustomerService {
 
@@ -33,6 +30,6 @@ public interface MaCustomerService {
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
-    void  changeCusPredepositByCusId(CusPreDepositLogDTO cusPreDepositLogDTO);
+    void  changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO);
 
 }

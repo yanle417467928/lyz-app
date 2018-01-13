@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
-import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -33,8 +32,6 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     @Autowired
     private MaCustomerService maCustomerService;
 
-    @Autowired
-    private MaCusPreDepositLogService maCusPreDepositLogService;
 
     /**
      * @title   获取顾客预存款列表
@@ -63,12 +60,11 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
      * @date 2018/1/11
      */
     @PostMapping(value = "/edit")
-    public ResultDTO<String> modifyEmployeeIdPut(@Valid CusPreDepositLogDTO cusPreDepositLogDTO, BindingResult result) {
+    public ResultDTO<String> modifyEmployeeIdPut(@Valid CusPreDepositDTO cusPreDepositDTO, BindingResult result) {
         if (!result.hasErrors()) {
-            if (null != cusPreDepositLogDTO && null != cusPreDepositLogDTO.getCusId() && cusPreDepositLogDTO.getCusId() != 0){
-                if (null != cusPreDepositLogDTO.getChangeMoney() && cusPreDepositLogDTO.getChangeMoney() != 0) {
-                    this.maCustomerService.changeCusPredepositByCusId(cusPreDepositLogDTO);
-                    this.maCusPreDepositLogService.save(cusPreDepositLogDTO);
+            if (null != cusPreDepositDTO && null != cusPreDepositDTO.getCusId() && cusPreDepositDTO.getCusId() != 0){
+                if (null != cusPreDepositDTO.getChangeMoney() && cusPreDepositDTO.getChangeMoney() != 0) {
+                    this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else{
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);

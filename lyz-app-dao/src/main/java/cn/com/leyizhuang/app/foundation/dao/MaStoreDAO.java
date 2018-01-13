@@ -1,14 +1,17 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -77,4 +80,14 @@ public interface MaStoreDAO {
      * @return  门店列表
      */
     List<StoreVO> findSelfDeliveryStoresList();
+
+    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
+
+    StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
+
+    StorePreDeposit findByStoreId(Long storeId);
+
+    void savePreDeposit(StorePreDeposit storePreDeposit);
+
+    int updateDepositByStoreId(@Param("storeId")Long storeId, @Param("money")Double money, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldUpdateTime")Timestamp oldUpdateTime);
 }

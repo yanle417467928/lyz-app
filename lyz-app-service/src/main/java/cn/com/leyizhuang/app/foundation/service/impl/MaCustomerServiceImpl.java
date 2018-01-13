@@ -2,23 +2,22 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
-import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
-import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.AssertTrue;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +27,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Resource
     private MaCustomerDAO maCustomerDAO;
+
+    @Autowired
+    private MaCusPreDepositLogService maCusPreDepositLogService;
 
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size) {
@@ -113,9 +115,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public void changeCusPredepositByCusId(CusPreDepositLogDTO cusPreDepositLogDTO) {
-        Long userId = cusPreDepositLogDTO.getCusId();
-        Double money = cusPreDepositLogDTO.getChangeMoney();
+    public void changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) {
+        Long userId = cusPreDepositDTO.getCusId();
+        Double money = cusPreDepositDTO.getChangeMoney();
         CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findByCusId(userId);
         if (null == customerPreDeposit) {
             customerPreDeposit = new CustomerPreDeposit();
@@ -130,6 +132,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 throw new AppConcurrentExcp("账号余额信息过期！");
             }
         }
+        this.maCusPreDepositLogService.save(cusPreDepositDTO);
     }
 }
 

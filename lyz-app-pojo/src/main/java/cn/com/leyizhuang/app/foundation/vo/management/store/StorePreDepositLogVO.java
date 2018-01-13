@@ -1,20 +1,23 @@
-package cn.com.leyizhuang.app.foundation.vo.management.customer;
+package cn.com.leyizhuang.app.foundation.vo.management.store;
 
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 /**
- * 顾客预存款变更明细类
  * @author GenerationRoad
- * @date 2018/1/11
+ * @date 2018/1/12
  */
 @Getter
 @Setter
 @ToString
-public class CusPreDepositLogVO {
+public class StorePreDepositLogVO {
+
     private Long id;
     /**
      * 生成时间
@@ -50,10 +53,8 @@ public class CusPreDepositLogVO {
     private String merchantOrderNumber;
     /*门店名称*/
     private String storeName;
-    /*真实姓名*/
-    private String name;
-    /*手机号码*/
-    private String mobile;
+    /*门店编码*/
+    private String storeCode;
     /*操作人id*/
     private String operatorName;
     /**
@@ -68,6 +69,12 @@ public class CusPreDepositLogVO {
      * 修改原因
      */
     private String detailReason;
+    /*市*/
+    private String city;
+    /**
+     * 门店类型
+     */
+    private String storeType;
 
     public void setChangeType(CustomerPreDepositChangeType changeType){
         this.changeType = changeType.getDescription();
@@ -78,5 +85,9 @@ public class CusPreDepositLogVO {
 
     public void setTransferTime(LocalDateTime transferTime){
         this.transferTime = TimeTransformUtils.df1.format(transferTime);
+    }
+
+    public void setStoreType(StoreType storeType){
+        this.storeType = storeType.getDescription();
     }
 }

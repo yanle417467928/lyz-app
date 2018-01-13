@@ -463,4 +463,54 @@
         s.is_self_delivery = TRUE
     </select>
 
+    <select id="findAllStorePredeposit" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
+        SELECT
+        sp.id, sp.balance, s.store_name, s.store_id, s.store_code, c.name city, s.store_type
+        FROM st_store s
+        LEFT JOIN st_pre_deposit sp on sp.store_id = s.store_id
+        LEFT JOIN city c ON c.code = s.city_code
+        WHERE
+        (1 = 1)
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeType and storeType != '-1'">
+            AND  s.store_type = #{storeType}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
+            OR s.store_name LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <select id="queryStorePredepositByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
+         SELECT
+        sp.id, sp.balance, s.store_name, s.store_id, s.store_code, c.name city, s.store_type
+        FROM st_store s
+        LEFT JOIN st_pre_deposit sp on sp.store_id = s.store_id
+        LEFT JOIN city c ON c.code = s.city_code
+        WHERE s.store_id = #{storeId}
+    </select>
+
+    <select id="findByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+        SELECT *
+        FROM st_pre_deposit
+        WHERE store_id = #{storeId}
+    </select>
+
+    <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+        INSERT INTO st_pre_deposit (store_id, balance, last_update_time, create_time) VALUES (#{storeId}, #{balance}, #{lastUpdateTime}, #{createTime})
+    </insert>
+
+    <update id="updateDepositByStoreId">
+        UPDATE st_pre_deposit
+        SET balance = balance + #{money},
+        last_update_time = #{lastUpdateTime}
+        WHERE store_id = #{storeId}
+        AND last_update_time = #{oldUpdateTime}
+    </update>
+
+
 </mapper>

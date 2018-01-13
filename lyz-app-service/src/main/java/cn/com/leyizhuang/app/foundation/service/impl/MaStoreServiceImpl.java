@@ -2,27 +2,39 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
+import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.service.MaStorePreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
+import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 public class MaStoreServiceImpl implements MaStoreService {
 
     @Autowired
     private MaStoreDAO mastoreDAO;
+
+    @Autowired
+    private MaStorePreDepositLogService maStorePreDepositLogService;
 
     @Override
     public PageInfo<StoreVO> queryPageVO(Integer page, Integer size) {
@@ -192,6 +204,39 @@ public class MaStoreServiceImpl implements MaStoreService {
     @Override
     public List<StoreVO> findSelfDeliveryStoresList() {
         return mastoreDAO.findSelfDeliveryStoresList();
+    }
+
+    @Override
+    public PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType) {
+        PageHelper.startPage(page, size);
+        List<StorePreDepositVO> list = this.mastoreDAO.findAllStorePredeposit(cityId, keywords, storeType);
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public StorePreDepositVO queryStorePredepositByStoreId(Long storeId) {
+        return this.mastoreDAO.queryStorePredepositByStoreId(storeId);
+    }
+
+    @Override
+    public void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) {
+        Long storeId = storePreDepositDTO.getStoreId();
+        Double money = storePreDepositDTO.getChangeMoney();
+        StorePreDeposit storePreDeposit = this.mastoreDAO.findByStoreId(storeId);
+        if (null == storePreDeposit) {
+            storePreDeposit = new StorePreDeposit();
+            storePreDeposit.setBalance(money);
+            storePreDeposit.setStoreId(storeId);
+            storePreDeposit.setCreateTime(new Date());
+            storePreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+            this.mastoreDAO.savePreDeposit(storePreDeposit);
+        } else {
+            int row = this.mastoreDAO.updateDepositByStoreId(storeId, money, new Timestamp(System.currentTimeMillis()), storePreDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new AppConcurrentExcp("账号余额信息过期！");
+            }
+        }
+        this.maStorePreDepositLogService.save(storePreDepositDTO);
     }
 
 }

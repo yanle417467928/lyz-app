@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = MaCustomerPreDepositLogRestController.PRE_URL, produces = "application/json;charset=utf-8")
-
 public class MaCustomerPreDepositLogRestController extends BaseRestController{
     protected static final String PRE_URL = "/rest/customer/preDeposit/log";
 

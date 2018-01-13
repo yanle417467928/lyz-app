@@ -2,15 +2,13 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.dao.MaCusPreDepositLogDAO;
-import cn.com.leyizhuang.app.foundation.dto.CusPreDepositLogDTO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
-import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
@@ -40,8 +38,8 @@ public class MaCusPreDepositLogServiceImpl implements MaCusPreDepositLogService 
     private MaCustomerService maCustomerService;
 
     @Override
-    public CusPreDepositLogDO save(CusPreDepositLogDTO cusPreDepositLogDTO) {
-        CusPreDepositLogDO cusPreDepositLogDO = this.transform(cusPreDepositLogDTO);
+    public CusPreDepositLogDO save(CusPreDepositDTO cusPreDepositDTO) {
+        CusPreDepositLogDO cusPreDepositLogDO = this.transform(cusPreDepositDTO);
         CustomerPreDepositVO customerPreDepositVO = this.maCustomerService.queryCusPredepositByCusId(cusPreDepositLogDO.getCusId());
         cusPreDepositLogDO.setBalance(Double.parseDouble(customerPreDepositVO.getBalance()));
 
@@ -61,17 +59,17 @@ public class MaCusPreDepositLogServiceImpl implements MaCusPreDepositLogService 
         return this.maCusPreDepositLogDAO.findCusPredepositLogById(id);
     }
 
-    public CusPreDepositLogDO transform(CusPreDepositLogDTO cusPreDepositLogDTO) {
-        if (null != cusPreDepositLogDTO){
+    public CusPreDepositLogDO transform(CusPreDepositDTO cusPreDepositDTO) {
+        if (null != cusPreDepositDTO){
             CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
-            cusPreDepositLogDO.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), cusPreDepositLogDTO.getChangeMoney(), cusPreDepositLogDTO.getChangeType());
+            cusPreDepositLogDO.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), cusPreDepositDTO.getChangeMoney(), cusPreDepositDTO.getChangeType());
             ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
 //            EmployeeDO employeeDO = this.maEmployeeService.findEmployeeDOByEmpId(shiroUser.getId());
-            cusPreDepositLogDO.setUserIdAndOperatorinfo(cusPreDepositLogDTO.getCusId(), shiroUser.getId(), null, "");
-            cusPreDepositLogDO.setMerchantOrderNumber(cusPreDepositLogDTO.getMerchantOrderNumber());
-            cusPreDepositLogDO.setRemarks(cusPreDepositLogDTO.getRemarks());
-            cusPreDepositLogDO.setTransferTime(LocalDateTime.parse(cusPreDepositLogDTO.getTransferTime() + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            cusPreDepositLogDO.setChangeTypeDesc(cusPreDepositLogDTO.getChangeType().getDescription());
+            cusPreDepositLogDO.setUserIdAndOperatorinfo(cusPreDepositDTO.getCusId(), shiroUser.getId(), null, "");
+            cusPreDepositLogDO.setMerchantOrderNumber(cusPreDepositDTO.getMerchantOrderNumber());
+            cusPreDepositLogDO.setRemarks(cusPreDepositDTO.getRemarks());
+            cusPreDepositLogDO.setTransferTime(LocalDateTime.parse(cusPreDepositDTO.getTransferTime() + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            cusPreDepositLogDO.setChangeTypeDesc(cusPreDepositDTO.getChangeType().getDescription());
             return cusPreDepositLogDO;
         } else {
             return null;

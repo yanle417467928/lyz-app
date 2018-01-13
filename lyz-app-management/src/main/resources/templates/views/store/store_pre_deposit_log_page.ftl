@@ -14,18 +14,18 @@
 <body>
 
 <section class="content-header">
-    <#if selectedMenu??>
-        <h1>${selectedMenu.resourceName!'??'}</h1>
-        <ol class="breadcrumb">
-            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-            <#if selectedMenu.parentResourceName??>
-                <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
-            </#if>
-            <li class="active">${selectedMenu.resourceName!'??'}</li>
-        </ol>
-    <#else>
-        <h1>加载中...</h1>
-    </#if>
+<#if selectedMenu??>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
+    <ol class="breadcrumb">
+        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
+        </#if>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
+    </ol>
+<#else>
+    <h1>加载中...</h1>
+</#if>
 </section>
 
 <section class="content">
@@ -33,33 +33,38 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <div id="toolbar" class="form-inline ">
-                    <#if cusId?? && cusId != 0>
-                        <button id="btn_back" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
-                        </button>
-                    </#if>
+                <#if storeId?? && storeId != 0>
+                    <button id="btn_back" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
+                    </button>
+                </#if>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByCity(this.value)">
+                            onchange="findStorePreByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
 
 
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findCusByStoreId()"   data-live-search="true" >
-                        <option value="-1">选择门店</option>
+                    <select name="storeType" id="storeType" class="form-control select" style="width:auto;"
+                            onchange="findStorePreByStoreType(this.value)">
+                        <option value="-1">选择门店类型</option>
+                    <#if storeTypes??>
+                        <#list storeTypes as storeType>
+                            <option value="${storeType.value}">${storeType.description}</option>
+                        </#list>
+                    </#if>
                     </select>
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的姓名或电话、单号">
+                               placeholder="请输入要查找的店名或编码、单号">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="return findCusByNameOrPhone()">查找</button>
+                                    onclick="return findStorePreByNameOrCode()">查找</button>
                         </span>
                     </div>
                 </div>
                 <div class="box-body table-reponsive">
-                    <input type="hidden" name="cusId" id="cusId" value="<#if cusId??>${cusId?c}<#else>0</#if>">
+                    <input type="hidden" name="storeId" id="storeId" value="<#if storeId??>${storeId?c}<#else>0</#if>">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
                     </table>
@@ -83,13 +88,16 @@
                     </span>
                     <ul id="cusDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>顾客姓名</b> <a class="pull-right" id="name"></a>
+                            <b>门店名称</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>顾客电话</b> <a class="pull-right" id="mobile"></a>
+                            <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>归属门店</b> <a class="pull-right" id="storeName"></a>
+                            <b>门店类型</b> <a class="pull-right" id="storeTypeName"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>城市</b> <a class="pull-right" id="city"></a>
                         </li>
                         <li class="list-group-item">
                             <b>变更类型</b> <a class="pull-right" id="changeType"></a>
@@ -142,8 +150,7 @@
 
     $(function () {
         findCitylist()
-        findStorelist();
-        showAvailableCredit(null,null,null);
+        showAvailableCredit(null,null,'-1');
         $('#btn_back').on('click', function () {
             window.history.back()
         });
@@ -171,40 +178,17 @@
     }
 
 
-    function findStorelist() {
-        var store = "";
-        $.ajax({
-            url: '/rest/stores/findStorelist',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-            }
-        });
-    }
-
-    function showAvailableCredit(keywords,cityId,storeId){
+    function showAvailableCredit(keywords,cityId,storeType){
         $("#dataGrid").bootstrapTable('destroy');
-        var cusId=$('#cusId').val();
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/customer/preDeposit/log/page/grid', 'get', false, function (params) {
+        var storeId=$('#storeId').val();
+        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/store/preDeposit/log/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: keywords,
                 cityId: cityId,
                 storeId: storeId,
-                cusId: cusId
+                storeType: storeType
             }
         }, [{
             checkbox: true,
@@ -227,17 +211,17 @@
                     }
                 }
             },{
-                field: 'name',
-                title: '顾客姓名',
+                field: 'storeName',
+                title: '门店名称',
                 align: 'center'
             },{
-                field: 'mobile',
-                title: '顾客电话',
+                field: 'storeCode',
+                title: '门店编码',
                 align: 'center'
             },
             {
-                field: 'storeName',
-                title: '归属门店',
+                field: 'storeType',
+                title: '门店类型',
                 align: 'center'
             },
             {
@@ -267,74 +251,41 @@
             }
         ]);
     }
-    function findCusByCity(cityId) {
-        initSelect("#storeCode", "选择门店");
+    function findStorePreByCity(cityId) {
         $("#queryCusInfo").val('');
-        var storeId = $("#storeCode").val();
         var keywords = $('#queryCusInfo').val();
         $("#dataGrid").bootstrapTable('destroy');
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
-        if(cityId==-1){
-            findStorelist();
-            return false;
-        };
-        var store;
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-            }
-        });
+        var storeType = $("#storeType").val();
+        findStorePreByCityIdOrKeywords(keywords,cityId,storeType);
     }
 
-    function findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
-        showAvailableCredit(keywords,cityId,storeId);
-    }
-
-    function findCusByStoreId() {
-        $("#queryCusInfo").val('');
-        var storeId = $("#storeCode").val();
-        var cityId = $("#cityCode").val();
-        $("#dataGrid").bootstrapTable('destroy');
-        var keywords = $('#queryCusInfo').val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
-
-    }
-
-    function findCusByNameOrPhone() {
+    function findStorePreByNameOrCode() {
         var queryCusInfo = $("#queryCusInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
-        var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
+        var storeType = $("#storeType").val();
+        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType);
     }
 
-
-    function initSelect(select, optionName) {
-        $(select).empty();
-        var selectOption = "<option value=-1>" + optionName + "</option>";
-        $(select).append(selectOption);
+    function findStorePreByStoreType(storeType) {
+        $("#queryCusInfo").val('');
+        var queryCusInfo = $("#queryCusInfo").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        var cityId = $("#cityCode").val();
+        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType);
     }
+
+    function findStorePreByCityIdOrKeywords(keywords,cityId,storeType){
+        showAvailableCredit(keywords,cityId,storeType);
+    }
+
     var $page = {
         information: {
             show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/customer/preDeposit/log/' + id,
+                        url: '/rest/store/preDeposit/log/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -349,22 +300,27 @@
                             if (0 === result.code) {
                                 $global.timer = null;
                                 var data = result.content;
-                                $('#menuTitle').html(" 顾客预存款变更详情");
+                                $('#menuTitle').html("门店预存款变更详情");
 
-                                if (null === data.name) {
-                                    data.name = '-';
-                                }
-                                $('#name').html(data.name);
-
-                                if (null === data.mobile) {
-                                    data.mobile = '-';
-                                }
-                                $('#mobile').html(data.mobile);
-
-                                if (null == data.storeName) {
+                                if (null === data.storeName) {
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
+
+                                if (null === data.storeCode) {
+                                    data.storeCode = '-';
+                                }
+                                $('#storeCode').html(data.storeCode);
+
+                                if (null == data.storeType) {
+                                    data.storeType = '-';
+                                }
+                                $('#storeTypeName').html(data.storeType);
+
+                                if (null == data.city) {
+                                    data.city = '-';
+                                }
+                                $('#city').html(data.city);
 
                                 if (null == data.changeType) {
                                     data.changeType = '-';

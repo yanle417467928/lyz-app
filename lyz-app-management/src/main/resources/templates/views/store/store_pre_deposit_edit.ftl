@@ -43,7 +43,7 @@
 
             $('.switch').bootstrapSwitch();
 
-            $('#cus_pre_deposit_edit').bootstrapValidator({
+            $('#store_pre_deposit_edit').bootstrapValidator({
                 framework: 'bootstrap',
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
@@ -95,10 +95,10 @@
                 var $form = $(e.target);
                 var origin = $form.serializeArray();
                 var data = {};
-                var formData = new FormData($("#cus_pre_deposit_edit")[0]);
+                var formData = new FormData($("#store_pre_deposit_edit")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
-                    var url = '/rest/customer/preDeposit/edit';
+                    var url = '/rest/store/preDeposit/edit';
                     $.ajax({
                         url: url,
                         method: 'POST',
@@ -112,7 +112,7 @@
                             $loading.close();
                             $global.timer = null;
                             $notify.danger('网络异常，请稍后重试或联系管理员');
-                            $('#cus_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
+                            $('#store_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
                         },
                         success: function (result) {
                             if (0 === result.code) {
@@ -122,7 +122,7 @@
                                 $loading.close();
                                 $global.timer = null;
                                 $notify.danger(result.message);
-                                $('#cus_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
+                                $('#store_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
                             }
                         }
                     });
@@ -148,34 +148,34 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
-                <form id="cus_pre_deposit_edit">
-                    <input type="hidden" name="cusId" id="cusId" <#if customerPreDepositVO?? && customerPreDepositVO.cusId??>
-                           value="${(customerPreDepositVO.cusId)?c}"
+                <form id="store_pre_deposit_edit">
+                    <input type="hidden" name="storeId" id="storeId" <#if storePreDepositVO?? && storePreDepositVO.storeId??>
+                           value="${(storePreDepositVO.storeId)?c}"
                     <#else>
                            value="0"
                     </#if>/>
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="name">
-                                    顾客姓名
+                                <label for="storeName">
+                                    门店名称
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="name" type="text" class="form-control" id="name" readonly
-                                           placeholder="顾客姓名" value="${(customerPreDepositVO.name)!''}">
+                                    <input name="storeName" type="text" class="form-control" id="storeName" readonly
+                                           placeholder="门店名称" value="${(storePreDepositVO.storeName)!''}">
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="mobile">
-                                    顾客电话
+                                <label for="storeCode">
+                                    门店编码
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="mobile" type="text" class="form-control" id="mobile"  readonly
-                                           placeholder="顾客电话" value="${(customerPreDepositVO.mobile)!''}">
+                                    <input name="storeCode" type="text" class="form-control" id="storeCode"  readonly
+                                           placeholder="门店编码" value="${(storePreDepositVO.storeCode)!''}">
                                 </div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="balance" type="text" class="form-control" id="balance"  readonly
-                                           placeholder="预存款余额" value="${(customerPreDepositVO.balance)!'0.00'}">
+                                           placeholder="预存款余额" value="${(storePreDepositVO.balance)!'0.00'}">
                                 </div>
                             </div>
                         </div>
@@ -213,23 +213,23 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                            <label for="changeType">
-                                变更类型
-                                <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                   data-content="选择预存款变更类型"></i>
-                            </label>
-                            <select class="form-control select" name="changeType" id="changeType">
-                                <option value="ADMIN_CHANGE">管理员修改</option>
-                                <option value="0">HR代收</option>
-                                <option value="1">交现金充值</option>
-                            </select>
-                        </div>
+                                <label for="changeType">
+                                    变更类型
+                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                       data-content="选择预存款变更类型"></i>
+                                </label>
+                                <select class="form-control select" name="changeType" id="changeType">
+                                    <option value="ADMIN_CHANGE">管理员修改</option>
+                                    <option value="0">HR代收</option>
+                                    <option value="1">交现金充值</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="transferTime">到账日期
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                           data-content="选择到账日期"></i>
+                                       data-content="选择到账日期"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>

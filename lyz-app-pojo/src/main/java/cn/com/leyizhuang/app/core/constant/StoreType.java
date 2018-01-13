@@ -10,7 +10,7 @@ import java.util.Objects;
  **/
 public enum StoreType {
 
-    ZY("ZY","直营门店"),JM("JM ","加盟门店"),FX("FX","分销公司"),ZS("ZS","装饰公司");
+    ZY("ZY","直营门店"),JM("JM","加盟门店"),FX("FX","分销公司"),ZS("ZS","装饰公司");
 
     private final String value;
     private final String description;

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaStorePreDepositLogDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
+        INSERT INTO st_pre_deposit_log
+        (create_time, change_money, remarks, change_type, store_id, operator_id, operator_type,
+        operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number, change_type_desc)
+        VALUES
+        (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{storeId}, #{operatorId}, #{operatorType},
+        #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber}, #{changeTypeDesc})
+    </insert>
+
+    <select id="findAllStorePredepositLog" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO">
+        SELECT
+        l.id, s.store_name, s.store_code, c.name city, s.store_type, l.create_time, l.change_money, l.remarks, l.change_type, l.order_number, l.balance,
+        l.transfer_time, l.merchant_order_number
+        FROM st_pre_deposit_log l
+        LEFT JOIN st_store s on l.store_id = s.store_id
+        LEFT JOIN city c ON c.code = s.city_code
+        WHERE
+        (1 = 1)
+        <if test="null != storeType and storeType != '-1'">
+            AND  s.store_type = #{storeType}
+        </if>
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != 0">
+            AND s.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
+            OR s.store_name LIKE concat(concat('%',#{keywords}),'%')
+            OR l.order_number LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY l.create_time DESC
+    </select>
+
+    <select id="findStorePredepositLogById" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO">
+        SELECT
+        l.id, s.store_name, s.store_code, c.name city, s.store_type, l.create_time, l.change_money, l.remarks, l.change_type, l.order_number, l.balance,
+        l.transfer_time, l.merchant_order_number
+        FROM st_pre_deposit_log l
+        LEFT JOIN st_store s on l.store_id = s.store_id
+        LEFT JOIN city c ON c.code = s.city_code
+        WHERE l.id = #{id}
+    </select>
+
+
+
+</mapper>
