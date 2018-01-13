@@ -31,12 +31,108 @@
     <div class="row">
         <div class=" col-xs-12">
             <div class="box box-primary">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    模糊查询
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="form-inline">
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input name="beginTime" type="text" class="form-control datepicker" id="beginTime" placeholder="开始时间">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">结束时间:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input name="endTime" type="text" class="form-control datepicker" id="endTime" placeholder="结束时间">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">下单人姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="creatorName" id="creatorName" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货地址:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="shippingAddress" id="shippingAddress" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货人姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="receiverName" id="receiverName" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">下单人电话:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="creatorPhone" id="creatorPhone" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货人电话:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="receiverPhone" id="receiverPhone" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">导购姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="sellerName" id="sellerName" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                        <button type="button" name="search" id="search-btn" class="btn btn-primary btn-search"
+                                                                onclick="findOrderByInfo()">查找</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="toolbar" class="form-inline">
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                    </button>
-                    <button id="btn_time" type="button" class="btn btn-default" onclick="showChangeDetail()">
-                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span> 修改记录
                     </button>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             data-live-search="true" onchange="findOrderByCity(this.value)">
@@ -55,7 +151,6 @@
                                     onclick="findOrderByInfo()">查找</button>
                         </span>
                     </div>
-
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -70,7 +165,7 @@
 
 
     $(function () {
-        initDateGird('/rest/order/selfTakeOrderReceivables/page/grid');
+        initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
         findCitySelection();
         findStoreSelection();
         $('#btn_edit').on('click', function () {
@@ -135,34 +230,39 @@
             checkbox: true,
             title: '选择'
         }, {
-            field: 'id',
-            title: 'ID',
-            align: 'center',
-            visible: false
-        }, {
             field: 'orderNumber',
             title: '订单号',
-            align: 'center'
-        }, {
-            field: 'meberNumber',
-            title: '会员号',
-            align: 'center'
-        }, {
-            field: 'meberName',
-            title: '会员姓名',
-            align: 'center'
-        }, {
-            field: 'deliveryType',
-            title: '配送方式',
             align: 'center',
+            formatter: function (value) {
+                if (null == value) {
+                    return '<a class="scan" href="#">' + '未知' + '</a>';
+                } else {
+                    return '<a class="scan" href="/views/admin/order/detail/' + value + '">' + value + '</a>';
+                }
+            }
         }, {
-            field: 'status',
-            title: '订单状态',
+            field: 'storeName',
+            title: '门店',
             align: 'center'
+        }, {
+            field: 'customerName',
+            title: '顾客姓名',
+            align: 'center'
+        }, {
+            field: 'creatorName',
+            title: '下单人',
+            align: 'center',
         }, {
             field: 'createTime',
             title: '订单创建时间',
-            align: 'center'
+            align: 'center',
+            formatter: function (value, row, index) {
+                if (null == value) {
+                    return '<span class="label label-danger">-</span>';
+                } else {
+                    return formatDateTime(value);
+                }
+            }
         }, {
             title: '操作',
             align: 'center',
@@ -230,11 +330,11 @@
         }
     }
 
-    function showDetails(id){
-        window.location.href = '/views/admin/freight/orderFreightDetail/'+id;
+    function showDetails(id) {
+        window.location.href = '/views/admin/freight/orderFreightDetail/' + id;
     }
 
-    function showChangeDetail(){
+    function showChangeDetail() {
         window.location.href = '/views/admin/freight/orderFreightChange';
     }
 
@@ -260,7 +360,7 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
-    var changeDecimalBuZero= function (number, bitNum) {
+    var changeDecimalBuZero = function (number, bitNum) {
         /// <summary>
         /// 小数位不够，用0补足位数
         /// </summary>

@@ -27,18 +27,13 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
 
     @Override
     public PageInfo<PreDepositLogResponse> findByUserIdAndType(Long userId, List<StorePreDepositChangeType> typeList, Integer page, Integer size) {
-        if(typeList.contains("ALIPAY_RECHARGE")&&typeList.contains("WECHAT_RECHARGE")&&typeList.contains("UNIONPAY_RECHARGE")){
             PageHelper.startPage(page, size);
             List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
             return new PageInfo<>(preDepositLogResponseList);
-        }else {
-        List<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogDAO.findByUserIdAndType(userId, typeList);
-        return new PageInfo<>(preDepositLogResponseList);
-    }
     }
 
     @Override
-    public PageInfo<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList,Integer page, Integer size) {
+    public PageInfo<PreDepositLogResponse> findPreDepositChangeLog(Long userId, List<StorePreDepositChangeType> typeList, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<PreDepositLogResponse> rreDepositLogResponseList = this.storePreDepositLogDAO.findPreDepositChangeLog(userId, typeList);
         return new PageInfo<>(rreDepositLogResponseList);
@@ -60,6 +55,6 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateStPreDepositByUserId(Double money, Long userId) {
-        this.storePreDepositLogDAO.updateStPreDepositByUserId(money,userId);
+        this.storePreDepositLogDAO.updateStPreDepositByUserId(money, userId);
     }
 }

@@ -191,7 +191,7 @@
     </select>
 
 
-     <update id="update" parameterType="SimpleOrderBillingDetails">
+     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.SimpleOrderBillingDetails">
          UPDATE
          ord_billing_details
          <set>
@@ -220,7 +220,7 @@
         DESC
     </select>
 
-    <insert id="saveOrderFreightChange" parameterType="OrderFreightChange">
+    <insert id="saveOrderFreightChange" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange">
         insert into ord_freight_change_log
         (oid,modifier,modify_time,modify_reason,freight_change_before,freight_change_after,freight_change_amount)
         values

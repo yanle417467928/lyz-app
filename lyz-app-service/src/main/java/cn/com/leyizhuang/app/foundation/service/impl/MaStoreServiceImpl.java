@@ -187,8 +187,8 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<StoreVO> findCompanyStoresList() {
-        return mastoreDAO.findCompanyStoresList();
+    public List<StoreVO> findDecorativeCompanyList() {
+        return mastoreDAO.findDecorativeCompanyList();
     }
 
     @Override

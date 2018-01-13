@@ -74,4 +74,6 @@ public interface AppEmployeeDAO {
     Long saveCreditLimitAvailableChange(EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog);
 
     Long saveTempCreditLimitChange(EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog);
+
+    String isSupervisor(Long id);
 }

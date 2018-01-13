@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.store;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.app.web.controller.user.UserHomePageController;
@@ -36,6 +37,9 @@ public class StoreController {
 
     @Autowired
     private StorePreDepositLogService storePreDepositLogService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
 
     /**
      * 获取门店赞助金余额
@@ -149,7 +153,7 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if (identityType == 0 || identityType == 2) {
+            if (identityType == 2) {
                 Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
                 logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
@@ -171,7 +175,7 @@ public class StoreController {
 
 
     /**
-     * 获取门店充值明细
+     * 获取门店预存款充值明细
      * @param userId
      * @param identityType
      * @return
@@ -206,7 +210,7 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if(identityType == 0 || identityType == 4){
+            if(identityType == 0){
                 List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
                 PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList, page, size);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
@@ -230,7 +234,7 @@ public class StoreController {
      * @param
      * @return
      * @throws
-     * @title 获取门店钱包消费记录
+     * @title 获取门店预存款消费记录
      * @descripe
      */
     @PostMapping(value = "/preDeposit/consumption/log", produces = "application/json;charset=UTF-8")
@@ -263,7 +267,7 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if(identityType == 0 || identityType == 4) {
+            if(identityType == 0) {
                 List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
                 PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList,page, size);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
@@ -308,10 +312,16 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if (identityType == 4) {
-                Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
-                logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
+            if (identityType == 0) {
+                //判断是否为店长
+                if("SUPERVISOR".equals(appEmployeeService.isSupervisor(userId))){
+                    Double balance = appStoreService.findPreDepositBalanceByUserId(userId);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, balance);
+                    logger.info("getStorePreDepositBalance OUT,获取门店预存款余额成功，出参 resultDTO:{}", resultDTO);
+                }else{
+                    logger.info("getStorePreDepositBalance OUT,获取门店预存款余额失败，没有权限");
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",null);
+                }
                 return resultDTO;
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",

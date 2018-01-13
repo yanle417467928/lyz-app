@@ -551,7 +551,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/find/company/stores',
+            url: '/rest/stores/find/decorativeCompany',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

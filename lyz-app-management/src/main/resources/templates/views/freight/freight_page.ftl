@@ -36,7 +36,7 @@
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
                     <button id="btn_time" type="button" class="btn btn-default" onclick="showChangeDetail()">
-                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span> 修改记录
+                        <span class="fa fa-inbox" aria-hidden="true"></span> 修改记录
                     </button>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             data-live-search="true" onchange="findOrderByCity(this.value)">

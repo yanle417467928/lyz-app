@@ -313,7 +313,7 @@ public class EmployeeController {
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
+        if (null == identityType || identityType != 2 ) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
@@ -366,7 +366,7 @@ public class EmployeeController {
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType == 6 || identityType == 1 || identityType == 3) {
+        if (null == identityType || identityType != 2) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录失败，出参 resultDTO:{}", resultDTO);
@@ -386,7 +386,7 @@ public class EmployeeController {
         }
         try {
             List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
-            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList,null,null);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList,page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

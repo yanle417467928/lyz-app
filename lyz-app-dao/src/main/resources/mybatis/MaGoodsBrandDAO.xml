@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGoodsBrandDAO">
 
 
-    <select id="findAllGoodsBrand"  resultType="GoodsBrand">
+    <select id="findAllGoodsBrand"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         SELECT
         brd_id,brand_name,sort_id
         FROM
@@ -15,7 +15,7 @@
     </select>
 
 
-    <select id="queryGoodsBrandList"  resultType="SimpaleGoodsBrandParam">
+    <select id="queryGoodsBrandList"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpaleGoodsBrandParam">
         SELECT
         brd_id,brand_name
         FROM
@@ -28,7 +28,7 @@
 
 
 
-    <select id="findGoodsBrandById"  parameterType="java.lang.Long" resultType="GoodsBrand">
+    <select id="findGoodsBrandById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
     select
     *
     FROM gds_goods_brand g
@@ -40,7 +40,7 @@
         ASC
 </select>
 
-    <select id="findGoodsBrandByName"  parameterType="java.lang.String" resultType="GoodsBrand">
+    <select id="findGoodsBrandByName"  parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         select
             brd_id,brand_name,sort_id
         FROM gds_goods_brand g
@@ -52,7 +52,7 @@
         ASC
     </select>
 
-    <select id="findGoodsBrandByCode"  parameterType="java.lang.String" resultType="GoodsBrand">
+    <select id="findGoodsBrandByCode"  parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         select
         *
         FROM gds_goods_brand g
@@ -64,7 +64,7 @@
         ASC
     </select>
 
-    <select id="findGoodsBrandByCodeList"  parameterType="java.util.List" resultType="GoodsBrand">
+    <select id="findGoodsBrandByCodeList"  parameterType="java.util.List" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         select
         *
         FROM gds_goods_brand g
@@ -79,7 +79,7 @@
         ASC
     </select>
 
-    <select id="findGoodsBrandByIdList"  parameterType="java.util.List" resultType="GoodsBrand">
+    <select id="findGoodsBrandByIdList"  parameterType="java.util.List" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         select
         *
         FROM gds_goods_brand g
@@ -94,7 +94,7 @@
         ASC
     </select>
 
-    <insert id="save" parameterType="GoodsBrand">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
     INSERT
     INTO
         gds_goods_brand (brand_name,brand_code,sort_id)
@@ -137,7 +137,7 @@
         )
     </select>
 
-    <select id="queryGoodsBrandVOById"  parameterType="java.lang.Long" resultType="GoodsBrand">
+    <select id="queryGoodsBrandVOById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         select
         *
         FROM gds_goods_brand g
@@ -150,7 +150,7 @@
     </select>
 
 
-    <update id="update" parameterType="GoodsBrand">
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
         UPDATE
         gds_goods_brand
         <set>

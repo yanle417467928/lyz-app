@@ -59,7 +59,7 @@ public interface MaStoreDAO {
      * 获取装饰公司门店列表
      * @return  门店列表
      */
-    List<StoreVO> findCompanyStoresList();
+    List<StoreVO> findDecorativeCompanyList();
 
     /**
      * 根据城市获取装饰公司门店列表

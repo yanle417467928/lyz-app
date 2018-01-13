@@ -112,7 +112,7 @@
         where s.store_id=#{storeId}
     </select>
 
-    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="SimpleStoreParam">
+    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -124,7 +124,7 @@
          s.store_type!="ZS"
     </select>
 
-    <select id="findAllStoresListByCityId" parameterType="java.lang.Long" resultType="SimpleStoreParam">
+    <select id="findAllStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -134,7 +134,7 @@
         WHERE c.city_id = #{cityId}
     </select>
 
-    <select id="findStoresList" resultType="SimpleStoreParam">
+    <select id="findStoresList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -145,7 +145,7 @@
     </select>
 
 
-    <select id="findAllStorelist" resultType="SimpleStoreParam">
+    <select id="findAllStorelist" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -242,7 +242,7 @@
     </select>
 
 
-    <select id="queryDecorativeCompanyVOList" resultType="SimpleDecorativeCompany">
+    <select id="queryDecorativeCompanyVOList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany">
         SELECT
         s.store_name,
         s.store_id as id
@@ -419,7 +419,7 @@
         DESC
     </select>
 
-    <select id="findCompanyStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
+    <select id="findCompanyStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name
@@ -431,7 +431,7 @@
         s.store_type = 'ZS'
     </select>
 
-    <select id="findCompanyStoresList" resultType="StoreVO">
+    <select id="findDecorativeCompanyList" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name
@@ -441,7 +441,7 @@
         s.store_type = 'ZS'
     </select>
 
-    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long" resultType="StoreVO">
+    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name
@@ -453,7 +453,7 @@
         s.is_self_delivery = TRUE
     </select>
 
-    <select id="findSelfDeliveryStoresList" resultType="StoreVO">
+    <select id="findSelfDeliveryStoresList" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name

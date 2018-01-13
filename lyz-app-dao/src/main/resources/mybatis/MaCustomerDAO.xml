@@ -139,7 +139,7 @@
     </select>
 
 
-    <insert id="save" parameterType="Customer">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO">
     INSERT INTO
     cus_customer (
     city_id,store_id,sales_consult_id,name,mobile,birthday,status,sex,open_id,pic_url,nick_name,is_cash_on_delivery,create_time,light,create_type,customer_type,last_sign_time,binding_time)

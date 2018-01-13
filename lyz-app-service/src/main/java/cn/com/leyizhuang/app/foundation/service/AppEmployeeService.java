@@ -71,4 +71,6 @@ public interface AppEmployeeService {
     EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId);
 
     void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log);
+
+    String isSupervisor(Long id);
 }

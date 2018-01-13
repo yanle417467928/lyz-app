@@ -43,7 +43,7 @@
                                 <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
                                 <div class=" col-xs-6" style="padding-left: 0px">
                                     <input name="beginTime" type="text" class="form-control datepicker" id="beginTime"
-                                        placeholder="开始时间">
+                                           placeholder="开始时间">
                                 </div>
                             </div>
                         </div>

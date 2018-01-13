@@ -88,7 +88,7 @@
         order by  emp_id asc
     </select>
 
-    <select id="findEmpTypeByStoreId" parameterType="java.lang.Long" resultType="EmployeeDO">
+    <select id="findEmpTypeByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
@@ -101,7 +101,7 @@
         emp_id asc
     </select>
 
-    <select id="findEmpTypeByCityId" parameterType="java.lang.Long" resultType="EmployeeDO">
+    <select id="findEmpTypeByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
@@ -113,7 +113,7 @@
         order by  emp_id asc
     </select>
 
-    <select id="findEmpTypeList"  resultType="EmployeeDO">
+    <select id="findEmpTypeList"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaDecorativeCompanyCreditDAO">
 
-    <update id="updateDecorativeCompanyCredit" parameterType="DecorativeCompanyCredit">
+    <update id="updateDecorativeCompanyCredit" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit">
         UPDATE
         st_credit_money
         <set>
@@ -15,7 +15,7 @@
 
 
 
-    <update id="updateDecorativeCompanySubvention" parameterType="DecorativeCompanySubvention">
+    <update id="updateDecorativeCompanySubvention" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention">
         UPDATE
         st_subvention
         <set>

@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGoodsCategoryDAO">
 
 
-    <select id="findAllGoodsCategory"  resultType="GoodsCategoryDO">
+    <select id="findAllGoodsCategory"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         SELECT
            cid,category_name,sort_id,p_category_code
         FROM
@@ -14,7 +14,7 @@
     </select>
 
 
-    <select id="findGoodsCategorySelection"  resultType="SimpleGoodsCategoryParam">
+    <select id="findGoodsCategorySelection"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.SimpleGoodsCategoryParam">
        select cid as id,category_name
        FROM gds_goods_category ggc
        where ggc.cid
@@ -25,7 +25,7 @@
         ASC
     </select>
 
-    <select id="findGoodsCategoryByPid"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
+    <select id="findGoodsCategoryByPid"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         select
         cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
@@ -36,7 +36,7 @@
         ASC
     </select>
 
-    <select id="findGoodsCategoryByPcode"  parameterType="java.lang.String" resultType="GoodsCategoryDO">
+    <select id="findGoodsCategoryByPcode"  parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         select
          cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
@@ -48,7 +48,7 @@
     </select>
 
 
-    <insert id="save" parameterType="GoodsCategoryDO">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
     INSERT
     INTO
         gds_goods_category (category_name,category_code,p_cid,p_category_code,sort_id)
@@ -88,7 +88,7 @@
         )
     </select>
 
-    <select id="queryGoodsCategoryVOById"  parameterType="java.lang.Long" resultType="GoodsCategoryDO">
+    <select id="queryGoodsCategoryVOById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         select
          cid,category_name,sort_id,p_category_code
         FROM gds_goods_category g
@@ -97,7 +97,7 @@
     </select>
 
 
-    <update id="update" parameterType="GoodsCategoryDO">
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         UPDATE
         gds_goods_category
         <set>
@@ -121,7 +121,7 @@
     </update>
 
 
-    <select id="findEditGoodsCategory"  resultType="GoodsCategoryDO">
+    <select id="findEditGoodsCategory"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
         select cid,category_name
         FROM gds_goods_category
         where p_cid is not null

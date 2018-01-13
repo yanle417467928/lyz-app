@@ -232,4 +232,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
             employeeDAO.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLogDO);
         }
     }
+
+
+    @Override
+    public String isSupervisor(Long id) {
+        return employeeDAO.isSupervisor(id);
+    }
 }

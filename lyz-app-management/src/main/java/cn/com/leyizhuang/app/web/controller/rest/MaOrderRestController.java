@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageHelper;
@@ -276,16 +277,16 @@ public class MaOrderRestController extends BaseRestController {
      * @param keywords
      * @return 订单列表
      */
-    @GetMapping(value = "/selfTakeOrderReceivables/page/grid")
-    public GridDataVO<MaOrderVO> restSelfTakeOrderReceivablesPageGird(Integer offset, Integer size, String keywords) {
+    @GetMapping(value = "/selfTakeOrederShipping/page/grid")
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderReceivablesPageGird(Integer offset, Integer size, String keywords) {
         logger.info("restSelfTakeOrderReceivablesPageGird 后台分页获取所有待出货自提订单列表 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaOrderVO> maOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingList(page,size);
-            List<MaOrderVO> maOrderVOList = maOrderVOPageInfo.getList();
-            logger.info("restOrderPageGird ,后台分页获取所有待出货自提订单列表成功",(maOrderVOList==null)?0:maOrderVOList.size());
-            return new GridDataVO<MaOrderVO>().transform(maOrderVOList, maOrderVOPageInfo.getTotal());
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingList(page,size);
+            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
+            logger.info("restOrderPageGird ,后台分页获取所有待出货自提订单列表成功",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("restOrderPageGird EXCEPTION,发生未知错误，后台分页获取所有待出货自提订单列表失败");

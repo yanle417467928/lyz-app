@@ -3,10 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -134,5 +131,5 @@ public interface MaOrderService {
 
 
 
-    PageInfo<MaOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size);
 }

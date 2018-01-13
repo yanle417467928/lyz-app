@@ -1288,8 +1288,8 @@ public class OrderController {
         }
         try {
             Map<String,Integer>  quantity;
-            if (0 == identityType || 4 == identityType|| 2 == identityType ) {
-                //导购或店长 装饰经理获取待付款订单数量
+            if (0 == identityType || 2 == identityType ) {
+                //导购 装饰经理获取待付款订单数量
                 quantity = appOrderService.getAppOrderQuantityByEmpId(userId);
             } else if (6 == identityType) {
                 //顾客获取待付款订单数量

@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVO
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -105,9 +102,9 @@ public class MaOrderServiceImpl implements MaOrderService{
     }
 
     @Override
-    public PageInfo<MaOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<MaOrderVO> MaOrderVOList = maOrderDAO.findSelfTakeOrderShippingList();
-        return  new PageInfo<>(MaOrderVOList);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderShippingList();
+        return  new PageInfo<>(maSelfTakeOrderVOList);
     }
 }

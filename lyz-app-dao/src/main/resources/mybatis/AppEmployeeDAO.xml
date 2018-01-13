@@ -306,4 +306,12 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange})
     </insert>
 
+
+    <select id="isSupervisor" parameterType="java.lang.Long">
+        SELECT
+        seller_type
+        FROM emp_employee
+        WHERE emp_id = #{id}
+    </select>
+
 </mapper>
