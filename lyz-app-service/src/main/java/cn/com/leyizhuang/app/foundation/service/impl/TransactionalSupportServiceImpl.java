@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
@@ -52,8 +53,8 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
-                                                List<OrderCouponInf> couponInfList) {
+    public void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+                                             List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -74,11 +75,16 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         for (OrderCouponInf couponInf : couponInfList) {
             separateOrderService.saveOrderCouponInf(couponInf);
         }
+
+        //保存收款信息
+        for (OrderReceiptInf receiptInf : receiptInfList){
+            separateOrderService.saveOrderReceiptInf(receiptInf);
+        }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo,String rechargeNo) {
+    public void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo) {
         rechargeService.saveRechargeReceiptInfo(receiptInfo);
         //更新充值单相关信息
         rechargeService.updateRechargeOrderStatusAndPayUpTime(rechargeNo, new Date(), AppRechargeOrderStatus.PAID);

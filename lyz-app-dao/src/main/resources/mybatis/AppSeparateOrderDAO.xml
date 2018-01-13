@@ -51,8 +51,32 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf">
         INSERT INTO inter_ate_order_coupon_inf (main_order_number, create_time, send_flag, error_msg, send_time, history_flag,
                                                 get_type, product_type, purchase_price, cost_price, coupon_id, sku, quantity)
-        VALUES (#{mainOrderNumber},#{createTime},#{sendFlag},#{errorMsg},#{sendTime},#{historyFlag},#{getType},#{productType},#{purchasePrice},
-        #{costPrice},#{couponId},#{sku},#{quantity})
+        VALUES (#{mainOrderNumber}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{historyFlag}, #{getType},
+                                    #{productType}, #{purchasePrice},
+                                    #{costPrice}, #{couponId}, #{sku}, #{quantity})
+    </insert>
+
+    <insert id="saveOrderReceiptInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
+        INSERT INTO inter_ate_order_receipt_inf (create_time, send_flag, error_msg, send_time, main_order_number, receipt_number,
+                                                 receipt_type, store_org_id, store_code, receipt_date, amount, description)
+            SELECT
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{mainOrderNumber},
+                #{receiptNumber},
+                #{receiptType},
+                #{storeOrgId},
+                #{storeCode},
+                #{receiptDate},
+                #{amount},
+                #{description}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM inter_ate_order_receipt_inf
+                             WHERE receipt_number = #{receiptNumber})
     </insert>
 
 </mapper>

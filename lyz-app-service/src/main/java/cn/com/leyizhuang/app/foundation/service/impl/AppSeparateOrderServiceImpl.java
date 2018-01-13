@@ -3,13 +3,11 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
@@ -205,7 +203,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         // todo 记录拆单错误日志
                     }
                 }
-
                 //生成订单券接口信息
                 List<OrderCouponInf> couponInfList = new ArrayList<>(10);
                 List<OrderCouponInfo> couponInfoList = orderService.getOrderCouponInfoByOrderNumber(orderNumber);
@@ -238,8 +235,26 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         couponInfList.add(couponInf);
                     }
                 }
+                //生成收款接口表信息
+                List<OrderReceiptInf> receiptInfList = new ArrayList<>(5);
+                List<OrderBillingPaymentDetails> billingPaymentDetailsList = orderService.getOrderBillingDetailListByOrderNo(orderNumber);
+                if (null != billingPaymentDetailsList && billingPaymentDetailsList.size() > 0) {
+                    for (OrderBillingPaymentDetails billing : billingPaymentDetailsList) {
+                        OrderReceiptInf receiptInf = new OrderReceiptInf();
+                        receiptInf.setMainOrderNumber(billing.getOrderNumber());
+                        receiptInf.setDescription(billing.getPayTypeDesc());
+                        receiptInf.setAmount(billing.getAmount());
+                        receiptInf.setCreateTime(new Date());
+                        receiptInf.setReceiptDate(billing.getPayTime());
+                        receiptInf.setReceiptType(billing.getPayType());
+                        receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
+                        receiptInf.setStoreCode(baseInfo.getStoreCode());
+                        receiptInf.setReceiptNumber(billing.getReceiptNumber());
+                        receiptInfList.add(receiptInf);
+                    }
+                }
                 //循环保存分单信息,分单商品信息及订单券信息
-                supportService.saveSeparateOrderInfAndGoodsInf(orderBaseInfList, orderGoodsInfList, couponInfList);
+                supportService.saveSeparateOrderRelevatnInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList);
 
             } else {
                 //todo 记录拆单错误日志
@@ -252,6 +267,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void saveOrderCouponInf(OrderCouponInf couponInf) {
         if (null != couponInf) {
             separateOrderDAO.saveOrderCouponInf(couponInf);
+        }
+    }
+
+    @Override
+    public void saveOrderReceiptInf(OrderReceiptInf receiptInf) {
+        if (null != receiptInf) {
+            separateOrderDAO.saveOrderReceiptInf(receiptInf);
         }
     }
 }

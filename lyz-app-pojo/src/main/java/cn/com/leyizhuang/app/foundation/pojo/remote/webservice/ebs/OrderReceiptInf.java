@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
-import cn.com.leyizhuang.app.core.constant.ProductType;
 import lombok.*;
 
 import java.util.Date;
@@ -23,29 +22,37 @@ public class OrderReceiptInf {
     private Long id;
 
     /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 发送成功标识
+     */
+    private AppWhetherFlag sendFlag;
+    /**
+     * 接口错误信息
+     */
+    private String errorMsg;
+    /**
+     * 发送成功时间
+     */
+    private Date sendTime;
+
+    /**
      * 订单（主单）号
      */
     private String mainOrderNumber;
 
     /**
-     * 分公司 id
+     * 收款单号
      */
-    private String sobId;
+    private String receiptNumber;
 
     /**
      * 收款方式
      */
     private OrderBillingPaymentType receiptType;
-
-    /**
-     * 顾客id
-     */
-    private Long userId;
-
-    /**
-     * 导购id
-     */
-    private Long salesConsultId;
 
     /**
      * 门店组织id
@@ -66,46 +73,12 @@ public class OrderReceiptInf {
     /**
      * 收款金额
      */
-    private Double orderAmt;
+    private Double amount;
 
     /**
      * 收款方式说明
      */
     private String description;
-    /**
-     * 应付金额
-     */
-    private Double recAmount;
-
-    /**
-     * 乐币折扣
-     */
-    private Double lebiDiscount;
-
-    /**
-     * 门店现金返利折扣
-     */
-    private Double storeSubventionDiscount;
-
-    /**
-     * 促销折扣
-     */
-    private Double promotionDiscount;
-
-    /**
-     * 会员折扣
-     */
-    private Double memberDiscount;
-
-    /**
-     * 优惠券折扣
-     */
-    private Double cashCouponDiscount;
-
-    /**
-     * 产品券折扣
-     */
-    private Double productCouponDiscount;
 
 
 }

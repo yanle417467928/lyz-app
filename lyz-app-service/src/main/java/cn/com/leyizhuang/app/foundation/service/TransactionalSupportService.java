@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public interface TransactionalSupportService {
                              List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
                              List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
 
-    void saveSeparateOrderInfAndGoodsInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList, List<OrderCouponInf> couponInfList);
+    void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+                                      List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList);
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 }

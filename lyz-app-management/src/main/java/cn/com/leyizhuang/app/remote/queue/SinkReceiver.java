@@ -44,7 +44,7 @@ public class SinkReceiver {
 
 
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @StreamListener(value = MqOrderChannel.RECEIVE_ORDER)
     public void receiveOrder(MqMessage message) {

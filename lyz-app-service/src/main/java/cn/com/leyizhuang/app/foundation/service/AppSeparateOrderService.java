@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
@@ -36,4 +37,6 @@ public interface AppSeparateOrderService {
     void separateOrder(String orderNumber);
 
     void saveOrderCouponInf(OrderCouponInf couponInf);
+
+    void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 }

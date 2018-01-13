@@ -51,5 +51,16 @@ public class AppConstant {
     /**
      * Integer 零值
      */
-    public static final Integer Integer_ZERO = 0;
+    public static final Integer INTEGER_ZERO = 0;
+
+    /**
+     * EBS接口发送地址
+     */
+    public static final String EBS_NEW_URL = "http://ebs.leyizhuang.com.cn:10001/ebs/";
+
+    /**
+     * WMS接口地址
+     */
+    public static final String WMS_URL = "http://120.76.214.99:8199/WmsInterServer.asmx?wsdl";
+
 }

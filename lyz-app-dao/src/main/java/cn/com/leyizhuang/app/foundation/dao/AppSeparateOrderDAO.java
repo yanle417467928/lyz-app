@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
@@ -32,4 +33,6 @@ public interface AppSeparateOrderDAO {
     void saveOrderGoodsInf(OrderGoodsInf goodsInf);
 
     void saveOrderCouponInf(OrderCouponInf couponInf);
+
+    void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 }
