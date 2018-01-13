@@ -109,11 +109,7 @@ deploy:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
     bucket: leyizhuang-dev
-  wms:
-    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
-  ebs:
-    url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
-    newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
+
 ---
 # 测试环境配置
 spring:

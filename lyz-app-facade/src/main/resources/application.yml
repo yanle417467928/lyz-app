@@ -114,8 +114,6 @@ deploy:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
     bucket: leyizhuang-dev
-  wms:
-    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
 
 ---
 # 测试环境配置
