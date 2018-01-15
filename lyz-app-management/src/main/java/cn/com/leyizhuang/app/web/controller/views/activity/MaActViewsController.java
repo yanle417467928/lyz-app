@@ -26,10 +26,10 @@ import java.util.List;
  * Created by panjie on 2017/12/15.
  */
 @Controller
-@RequestMapping(value = ManagementActViewsController.PRE_URL, produces = "application/json;charset=utf-8")
-public class ManagementActViewsController extends BaseController{
+@RequestMapping(value = MaActViewsController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaActViewsController extends BaseController{
     protected final static String PRE_URL = "/view/activity";
-    private final Logger logger = LoggerFactory.getLogger(ManagementActViewsController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaActViewsController.class);
 
     @Resource
     private AppActService appActService;

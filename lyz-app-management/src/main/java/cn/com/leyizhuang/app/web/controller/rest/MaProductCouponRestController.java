@@ -26,12 +26,12 @@ import java.util.List;
  * Created by panjie on 2018/1/10.
  */
 @RestController
-@RequestMapping(value = ManagementProductCouponRestController.PRE_URL, produces = "application/json;charset=utf-8")
-public class ManagementProductCouponRestController extends BaseRestController {
+@RequestMapping(value = MaProductCouponRestController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaProductCouponRestController extends BaseRestController {
 
     protected final static String PRE_URL = "/rest/productCoupon";
 
-    private final Logger logger = LoggerFactory.getLogger(ManagementProductCouponRestController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaProductCouponRestController.class);
 
     @Resource
     private ProductCouponService productCouponService;

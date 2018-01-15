@@ -29,12 +29,12 @@ import java.util.List;
  * Created by panjie on 2018/1/2.
  */
 @RestController
-@RequestMapping(value = ManagementCashCouponRestController.PRE_URL,produces = "application/json;charset=utf-8")
-public class ManagementCashCouponRestController extends  BaseRestController{
+@RequestMapping(value = MaCashCouponRestController.PRE_URL,produces = "application/json;charset=utf-8")
+public class MaCashCouponRestController extends  BaseRestController{
 
     protected final static String PRE_URL = "/rest/cashCoupon";
 
-    private final Logger logger = LoggerFactory.getLogger(ManagementCashCouponRestController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaCashCouponRestController.class);
 
     @Resource
     private CashCouponService cashCouponService;

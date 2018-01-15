@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.cashCoupon;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
-import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.CashCouponService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
@@ -24,11 +22,11 @@ import java.util.List;
  * Created by panjie on 2018/1/2.
  */
 @Controller
-@RequestMapping(value = ManagementCashCouponViewController.PRE_URL, produces = "application/json;charset=utf-8")
-public class ManagementCashCouponViewController {
+@RequestMapping(value = MaCashCouponViewController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaCashCouponViewController {
 
     protected final static String PRE_URL = "/view/cashCoupon";
-    private final Logger logger = LoggerFactory.getLogger(ManagementCashCouponViewController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaCashCouponViewController.class);
 
     @Resource
     private CashCouponService cashCouponService;
