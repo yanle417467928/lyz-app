@@ -2,9 +2,10 @@ package cn.com.leyizhuang.app.remote.webservice.utils;
 
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
@@ -87,6 +88,61 @@ public class AppXmlUtil {
                 "<TOTAL_GOODS_PRICE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getTotalGoodsPrice()) +
                 "</TOTAL_GOODS_PRICE>" +
                 "<AGENCY_FUND>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getAgencyFund()) + "</AGENCY_FUND>" +
+                "</TABLE></ERP>";
+
+        xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getRequisitionOrderXml OUT, 拼接订单XML数据, 出参 xmlStr:{}", xmlStr);
+        return Base64Utils.encode(xmlStr);
+    }
+
+    /**
+     * 获取退货单xml
+     *
+     * @param returnOrder 退单号
+     * @return xml
+     */
+    public static String getReturnOrderXml(AtwReturnOrder returnOrder) {
+        String orderTime = null;
+        String cancelTime = null;
+        String checkTime = null;
+        String returnTime = null;
+        if (returnOrder.getOrderTime() != null) {
+            orderTime = DateUtil.formatDate(returnOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        if (returnOrder.getCancelTime() != null) {
+            cancelTime = DateUtil.formatDate(returnOrder.getCancelTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        if (returnOrder.getReturnTime() != null) {
+            returnTime = DateUtil.formatDate(returnOrder.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        if (returnOrder.getCheckTime() != null) {
+            checkTime = DateUtil.formatDate(returnOrder.getCheckTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
+        String xmlStr = "<ERP><TABLE>" +
+                "<id>" + returnOrder.getId() + "</id>" +
+                "<cancel_time>" + cancelTime + "</cancel_time>" +
+                "<check_time>" + checkTime + "</check_time>" +
+                "<diy_site_address>" + returnOrder.getDiySiteAddress() + "</diy_site_address>" +
+                "<diy_site_id>" + returnOrder.getDiySiteId() + "</diy_site_id>" +
+                "<diy_site_tel>" + returnOrder.getDiySiteTel() + "</diy_site_tel>" +
+                "<diy_site_title>" + returnOrder.getDiySiteTitle() + "</diy_site_title>" +
+                "<manager_remark_info>" + returnOrder.getManagerRemarkInfo() + "</manager_remark_info>" +
+                "<order_number>" + returnOrder.getOrderNumber() + "</order_number>" +
+                "<order_time>" + orderTime + "</order_time>" +
+                "<pay_type_id>" + returnOrder.getPayTypeId() + "</pay_type_id>" +
+                "<pay_type_title>" + returnOrder.getPayTypeTitle() + "</pay_type_title>" +
+                "<remark_info>" + returnOrder.getRemarkInfo() + "</remark_info>" +
+                "<return_number>" + returnOrder.getReturnNumber() + "</return_number>" +
+                "<return_time>" + returnTime + "</return_time>" +
+                "<sort_id></sort_id>" +
+                "<status_id>" + returnOrder.getStatusId() + "</status_id>" +
+                "<username>" + returnOrder.getUserName() + "</username>" +
+                "<deliver_type_title>" + returnOrder.getDeliverTypeTitle() + "</deliver_type_title>" +
+                "<turn_price>" + returnOrder.getReturnPrice() + "</turn_price>" +
+                "<turn_type>" + returnOrder.getReturnType() + "</turn_type>" +
+                "<shopping_address>" + returnOrder.getShoppingAddress() + "</shopping_address>" +
+                "<seller_real_name>" + returnOrder.getSellerRealName() + "</seller_real_name>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");

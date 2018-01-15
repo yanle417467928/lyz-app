@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.WmsToAppOrderDAO">
 
     <insert id="saveWtaShippingOrderHeader"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderHeader">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
         INSERT INTO inter_wta_order_shipping_header (create_time, end_dt, wh_no, owner_no, task_no, c_task_type, car_no,
                                                      op_status, driver, order_no, send_flag, error_message, send_time)
             SELECT
@@ -29,10 +29,20 @@
     </insert>
 
     <insert id="saveWtaShippingOrderGoods"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderGoods">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
         INSERT INTO inter_wta_order_shipping_goods (create_time, send_time, send_flag, error_message, order_no, task_type,
                                                     task_no, g_code, d_ack_qty, op_status, source_no)
         VALUES (#{createTime}, #{sendTime}, #{sendFlag}, #{errorMessage}, #{orderNo}, #{taskType},
                                #{taskNo}, #{gCode}, #{dAckQty}, #{opStatus}, #{sourceNo});
+    </insert>
+
+    <insert id="saveWtaReturningOrderHeader"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
+
+    </insert>
+
+    <insert id="saveWtaReturningOrderGoods"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
+
     </insert>
 </mapper>

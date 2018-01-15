@@ -1002,21 +1002,8 @@ public class OrderController {
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
             }
-            PageInfo<OrderListResponse> pageInfo = new PageInfo<>(orderListResponses);
-            pageInfo.setEndRow(orderBaseInfoLists.getEndRow());
-            pageInfo.setNextPage(orderBaseInfoLists.getNextPage());
-            pageInfo.setPageNum(orderBaseInfoLists.getPageNum());
-            pageInfo.setPages(orderBaseInfoLists.getPages());
-            pageInfo.setPageSize(orderBaseInfoLists.getPageSize());
-            pageInfo.setPrePage(orderBaseInfoLists.getPrePage());
-            pageInfo.setSize(orderBaseInfoLists.getSize());
-            pageInfo.setStartRow(orderBaseInfoLists.getStartRow());
-            pageInfo.setTotal(orderBaseInfoLists.getTotal());
-            pageInfo.setNavigateFirstPage(orderBaseInfoLists.getNavigateFirstPage());
-            pageInfo.setNavigatepageNums(orderBaseInfoLists.getNavigatepageNums());
-            pageInfo.setNavigateLastPage(orderBaseInfoLists.getNavigateLastPage());
-            pageInfo.setNavigatePages(orderBaseInfoLists.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<OrderListResponse>().transform(pageInfo));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
             return resultDTO;
         } catch (Exception e) {

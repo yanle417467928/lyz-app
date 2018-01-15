@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
-import cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderHeader;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import lombok.*;
 
 import java.util.Date;

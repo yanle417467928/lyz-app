@@ -1,8 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -83,4 +84,26 @@ public interface AppToWmsOrderDAO {
      * @return 要货单商品单据
      */
     List<AtwRequisitionOrderGoods> findAtwRequisitionOrderGoodsByOrderNo(String orderNo);
+
+    /**
+     * 保存退货单单据
+     *
+     * @param returnOrder 退货单单据
+     */
+    void saveAtwReturnOrder(AtwReturnOrder returnOrder);
+
+    /**
+     * 修改退货单单据
+     *
+     * @param returnOrder 退货单单据
+     */
+    void modifyAtwReturnOrder(AtwReturnOrder returnOrder);
+
+    /**
+     * 查找退货单单据
+     *
+     * @param returnNumber 退单号
+     * @return 退货单单据
+     */
+    AtwReturnOrder findReturnOrderByReturnOrderNo(String returnNumber);
 }

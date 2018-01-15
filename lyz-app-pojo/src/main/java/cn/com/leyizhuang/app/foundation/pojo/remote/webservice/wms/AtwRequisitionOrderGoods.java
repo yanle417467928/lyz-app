@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.wms;
+package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class AtwRequisitionOrderGoods {
      */
     private Date createTime;
     /**
-     * 主单号
+     * 主单号(可以为订单号或者退单号)
      */
     private String orderNumber;
     /**

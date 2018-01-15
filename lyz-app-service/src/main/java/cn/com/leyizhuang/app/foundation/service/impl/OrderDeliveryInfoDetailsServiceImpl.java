@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -94,5 +95,18 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public void modifyOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
         orderDeliveryInfoDetailsDAO.modifyOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+    }
+
+    @Override
+    public int countAuditFinishOrderByOperatorNo(Long userId) {
+        return orderDeliveryInfoDetailsDAO.countAuditFinishOrderByOperatorNo(userId);
+    }
+
+    @Override
+    public OrderDeliveryInfoDetails findByTaskNo(String taskNo) {
+        if (StringUtils.isNotBlank(taskNo)) {
+            return orderDeliveryInfoDetailsDAO.findByTaskNo(taskNo);
+        }
+        return null;
     }
 }
