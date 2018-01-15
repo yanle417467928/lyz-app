@@ -703,7 +703,7 @@ public class CommonServiceImpl implements CommonService {
                     orderService.saveOrderBillingDetails(orderBillingDetails);
                 }
                 //保存订单账单支付明细信息
-                if (null != paymentDetails && paymentDetails.size() > AppConstant.Integer_ZERO) {
+                if (null != paymentDetails && paymentDetails.size() > AppConstant.INTEGER_ZERO) {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
                         orderService.saveOrderBillingPaymentDetail(paymentDetail);
