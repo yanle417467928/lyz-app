@@ -61,7 +61,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
             for (OrderGoodsInf info : orderGoodsInfList
                     ) {
                 if (info.getProductType() == baseInf.getProductType()) {
-                    info.setHeaderId(baseInf.getHeaderId());
+                    info.setOrderHeaderId(baseInf.getOrderHeaderId());
                 }
 
             }
@@ -77,7 +77,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         }
 
         //保存收款信息
-        for (OrderReceiptInf receiptInf : receiptInfList){
+        for (OrderReceiptInf receiptInf : receiptInfList) {
             separateOrderService.saveOrderReceiptInf(receiptInf);
         }
     }

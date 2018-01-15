@@ -24,7 +24,7 @@ public class OrderBaseInf {
     /**
      * 头id
      */
-    private Long headerId;
+    private Long orderHeaderId;
 
     /**
      * 创建时间
@@ -123,7 +123,7 @@ public class OrderBaseInf {
     /**
      * 门店编码
      */
-    private String storeCode;
+    private String diySiteCode;
 
     /**
      * 配送方式

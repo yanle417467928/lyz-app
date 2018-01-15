@@ -84,6 +84,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>
+            <artifactId>ebs-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

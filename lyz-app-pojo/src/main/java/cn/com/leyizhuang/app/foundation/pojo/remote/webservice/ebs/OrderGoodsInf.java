@@ -19,7 +19,7 @@ import java.util.Date;
 @ToString
 public class OrderGoodsInf {
 
-    private Long id;
+    private Long orderLineId;
 
     /**
      * 创建时间
@@ -44,12 +44,12 @@ public class OrderGoodsInf {
     /**
      * 原主单产品行id
      */
-    private Long orderLineId;
+    private Long mainOrderLineId;
 
     /**
      * 分单头id
      */
-    private Long headerId;
+    private Long orderHeaderId;
 
     /**
      * 主单号
@@ -84,7 +84,7 @@ public class OrderGoodsInf {
     /**
      * 零售价
      */
-    private Double retailPrice;
+    private Double lsPrice;
 
     /**
      * 会员价
@@ -140,5 +140,13 @@ public class OrderGoodsInf {
      * 促销id
      */
     private String promotionId;
+
+    private String attribute1;
+
+    private String attribute2;
+
+    private String attribute3;
+
+    private String attribute4;
 
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -34,6 +35,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private AppOrderService orderService;
+
+    @Resource
+    private EbsSenderService ebsSenderService;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -147,7 +151,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                             goodsInf.setGiftFlag(goodsInfo.getGoodsLineType() == AppGoodsLineType.PRESENT ? AppWhetherFlag.Y : AppWhetherFlag.N);
                             goodsInf.setSku(goodsInfo.getSku());
                             goodsInf.setGoodsTitle(goodsInfo.getSkuName());
-                            goodsInf.setRetailPrice(goodsInfo.getRetailPrice());
+                            goodsInf.setLsPrice(goodsInfo.getRetailPrice());
                             goodsInf.setHyPrice(goodsInfo.getVIPPrice());
                             goodsInf.setJxPrice(goodsInfo.getWholesalePrice());
                             goodsInf.setSettlementPrice(goodsInfo.getSettlementPrice());
@@ -174,7 +178,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         orderBaseInf.setPromotionDiscount(separateOrderPromotionDiscount);
                         orderBaseInf.setProductCouponDiscount(separateOrderProductCouponDiscount);
                         orderBaseInf.setSobId(baseInfo.getSobId());
-                        orderBaseInf.setStoreCode(baseInfo.getStoreCode());
+                        orderBaseInf.setDiySiteCode(baseInfo.getStoreCode());
                         orderBaseInf.setStoreOrgId(baseInfo.getStoreOrgId());
                         orderBaseInf.setOrderDate(orderBaseInf.getCreateTime());
                         //订单类型
@@ -274,6 +278,31 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void saveOrderReceiptInf(OrderReceiptInf receiptInf) {
         if (null != receiptInf) {
             separateOrderDAO.saveOrderReceiptInf(receiptInf);
+        }
+    }
+
+    @Override
+    public void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != orderNumber) {
+            separateOrderDAO.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderNumber, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(Long orderLineId, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != orderLineId) {
+            separateOrderDAO.updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(orderLineId, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void sendOrderBaseInfAndOrderGoodsInf(String orderNumber) {
+        if (null != orderNumber) {
+            List<OrderBaseInf> pendingSendOrderBaseInfs = separateOrderDAO.getPendingSendOrderBaseInf(orderNumber);
+            for (OrderBaseInf baseInf : pendingSendOrderBaseInfs) {
+                List<OrderGoodsInf> orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(baseInf.getOrderNumber());
+                ebsSenderService.sendOrderAndGoodsToEbsAndRecord(baseInf, orderGoodsInfList);
+            }
         }
     }
 }
