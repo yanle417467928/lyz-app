@@ -132,7 +132,7 @@ function initDateGird(url) {
             title: '操作',
             align: 'center',
             formatter:function (value,row,index) {
-                return "<a href='javascript:send("+row.cusId+");'>发券</a>";
+                return "<a id='send_"+row.cusId+"' href='javascript:send("+row.cusId+");'>发券</a>";
             }
         }
     ]);
@@ -248,6 +248,7 @@ function initSelect(select, optionName) {
  * 发券
  * **/
 function  send(customerId) {
+
     var cashCouponId = $("#cashCouponId").val();
     var qty = $("#qty_"+customerId).val();
 
@@ -256,8 +257,11 @@ function  send(customerId) {
         $notify.warning("券数量有误");
         return false;
     }
-
+    // 防止重复发送
+    $("#send_"+customerId).attr("href","#");
     $http.ajax('/rest/cashCoupon/send','POST',{'customerId':customerId,'cashCouponId':cashCouponId,'qty': qty},function (result) {
+        // 防止重复发送
+        $("#send_"+customerId).attr("href","javascript:send("+customerId+")");
         if (0 === result.code) {
             $notify.info(result.message);
 
@@ -275,6 +279,7 @@ function  send(customerId) {
  * 批量发券
  * **/
 function  sendBatch() {
+
     var cashCouponId = $("#cashCouponId").val();
     var qty = $("#common_qty").val();
     var customerIds = new Array();
@@ -297,8 +302,10 @@ function  sendBatch() {
         $notify.warning("券数量有误");
         return false;
     }
-
+    // 防止重复请求
+    $("#oneButtonSend").attr("onclick","");
     $http.ajax('/rest/cashCoupon/sendBatch','POST',{'customerIds':customerIds,'cashCouponId':cashCouponId,'qty': qty},function (result) {
+        $("#oneButtonSend").attr("onclick","sendBatch()");
         if (0 === result.code) {
             $notify.info(result.message);
 

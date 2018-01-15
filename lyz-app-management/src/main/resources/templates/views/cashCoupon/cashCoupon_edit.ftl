@@ -461,9 +461,11 @@
         var companyArr = new Array();
         <#if companyList??>
             <#list companyList as item>
-            companyArr.push(${item.companyId});
+            companyArr.push('${item.companyFlag}');
             </#list>
         </#if>
+        $("#companySelect").selectpicker('val',companyArr);
+        $("#companySelect").selectpicker('refresh');
 
         // 品牌
         var brandArr = new Array();

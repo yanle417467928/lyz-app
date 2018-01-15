@@ -150,7 +150,7 @@
                             <input id="common_qty" type="text" class="form-control"
                                    style="width:auto;" placeholder="请输入发放数量">
                             <span class="input-group-btn">
-                                  <button type="button" name="oneButtonSend" id="search-btn"
+                                  <button type="button" name="oneButtonSend" id="oneButtonSend"
                                           class="btn btn-info btn-search"
                                           onclick="sendBatch()">一键发送</button>
                             </span>
