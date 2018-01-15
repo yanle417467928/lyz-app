@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
@@ -99,7 +100,10 @@ public class ReturnOrderController {
     private CityService cityService;
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
-
+    @Resource
+    private AppToWmsOrderService appToWmsOrderService;
+    @Resource
+    private ICallWms callWms;
     /**
      * 取消订单
      *
@@ -214,8 +218,10 @@ public class ReturnOrderController {
             Long returnOrderId = returnOrderBaseInfo.getRoid();
             //判断收货类型和订单状态
             if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE) && orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
-                //TODO 通知WMS
-
+                // TODO wms 建好表后可使用通知WMS
+//                AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
+//                appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+//                callWms.sendToWmsCancelOrder(returnOrderBaseInfo.getOrderNo());
                 //修改订单状态为取消中
                 orderBaseInfo.setStatus(AppOrderStatus.CANCELING);
                 appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
@@ -1393,21 +1399,8 @@ public class ReturnOrderController {
                 returnOrderListResponses.add(response);
 
             }
-            PageInfo<ReturnOrderListResponse> pageInfo = new PageInfo<>(returnOrderListResponses);
-            pageInfo.setEndRow(baseInfo.getEndRow());
-            pageInfo.setNextPage(baseInfo.getNextPage());
-            pageInfo.setPageNum(baseInfo.getPageNum());
-            pageInfo.setPages(baseInfo.getPages());
-            pageInfo.setPageSize(baseInfo.getPageSize());
-            pageInfo.setPrePage(baseInfo.getPrePage());
-            pageInfo.setSize(baseInfo.getSize());
-            pageInfo.setStartRow(baseInfo.getStartRow());
-            pageInfo.setTotal(baseInfo.getTotal());
-            pageInfo.setNavigateFirstPage(baseInfo.getNavigateFirstPage());
-            pageInfo.setNavigatepageNums(baseInfo.getNavigatepageNums());
-            pageInfo.setNavigateLastPage(baseInfo.getNavigateLastPage());
-            pageInfo.setNavigatePages(baseInfo.getNavigatePages());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,  new GridDataVO<ReturnOrderListResponse>().transform(pageInfo));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new GridDataVO<ReturnOrderListResponse>().transform(returnOrderListResponses, baseInfo));
             logger.info("getReturnOrderList OUT,获取用户退货单列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
@@ -1595,8 +1588,12 @@ public class ReturnOrderController {
                 logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.CANCELED);
-            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+            //TODO wms那边建好表后可使用
+//            AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
+//            appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+            //发送取消退货单到WMS
+//            callWms.sendToWmsCancelOrder(returnNumber);
+            returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);

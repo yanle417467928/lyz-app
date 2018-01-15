@@ -13,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQt
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
@@ -20,8 +22,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
@@ -703,7 +703,7 @@ public class CommonServiceImpl implements CommonService {
                     orderService.saveOrderBillingDetails(orderBillingDetails);
                 }
                 //保存订单账单支付明细信息
-                if (null != paymentDetails && paymentDetails.size() > AppConstant.Integer_ZERO) {
+                if (null != paymentDetails && paymentDetails.size() > AppConstant.INTEGER_ZERO) {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
                         orderService.saveOrderBillingPaymentDetail(paymentDetail);

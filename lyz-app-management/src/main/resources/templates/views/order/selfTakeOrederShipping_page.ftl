@@ -4,6 +4,9 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
@@ -49,7 +52,9 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input name="beginTime" type="text" class="form-control datepicker" id="beginTime" placeholder="开始时间">
+                                                        <input name="beginTime" type="text"
+                                                               class="form-control datepicker" id="beginTime"
+                                                               placeholder="开始时间">
                                                     </div>
                                                 </div>
                                             </div>
@@ -57,15 +62,18 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">结束时间:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input name="endTime" type="text" class="form-control datepicker" id="endTime" placeholder="结束时间">
+                                                        <input name="endTime" type="text"
+                                                               class="form-control datepicker" id="endTime"
+                                                               placeholder="结束时间">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-xs-4 ">
                                                 <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">下单人姓名:</label>
+                                                    <label class="col-xs-5" style="padding-right: 0px">会员姓名:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="creatorName" id="creatorName" class="form-control" \>
+                                                        <input type="text" name="memberName" id="memberName"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
@@ -77,7 +85,8 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">收货地址:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="shippingAddress" id="shippingAddress" class="form-control" \>
+                                                        <input type="text" name="shippingAddress" id="shippingAddress"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
@@ -85,15 +94,17 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">收货人姓名:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="receiverName" id="receiverName" class="form-control" \>
+                                                        <input type="text" name="receiverName" id="receiverName"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-xs-4">
                                                 <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">下单人电话:</label>
+                                                    <label class="col-xs-5" style="padding-right: 0px">会员电话:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="creatorPhone" id="creatorPhone" class="form-control" \>
+                                                        <input type="text" name="memberPhone" id="memberPhone"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
@@ -105,7 +116,8 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">收货人电话:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="receiverPhone" id="receiverPhone" class="form-control" \>
+                                                        <input type="text" name="receiverPhone" id="receiverPhone"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
@@ -113,14 +125,17 @@
                                                 <div class="col-xs-12">
                                                     <label class="col-xs-5" style="padding-right: 0px">导购姓名:</label>
                                                     <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="sellerName" id="sellerName" class="form-control" \>
+                                                        <input type="text" name="sellerName" id="sellerName"
+                                                               class="form-control" \>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-xs-4">
                                                 <div class="col-xs-12">
-                                                        <button type="button" name="search" id="search-btn" class="btn btn-primary btn-search"
-                                                                onclick="findOrderByInfo()">查找</button>
+                                                    <button type="button" name="search" id="search-btn"
+                                                            class="btn btn-primary btn-search"
+                                                            onclick="findOrderByOrderNumber()">查找
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -145,7 +160,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入单号、下单人或下单人电话..">
+                               style="width:auto;" placeholder="请输入单号">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findOrderByInfo()">查找</button>
@@ -168,6 +183,12 @@
         initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
         findCitySelection();
         findStoreSelection();
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
+
         $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/freight/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
@@ -199,7 +220,7 @@
     function findStoreSelection() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findAllStorelist',
+            url: '/rest/stores/findStorelist',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -230,6 +251,10 @@
             checkbox: true,
             title: '选择'
         }, {
+            field: 'storeName',
+            title: '门店',
+            align: 'center'
+        }, {
             field: 'orderNumber',
             title: '订单号',
             align: 'center',
@@ -240,10 +265,6 @@
                     return '<a class="scan" href="/views/admin/order/detail/' + value + '">' + value + '</a>';
                 }
             }
-        }, {
-            field: 'storeName',
-            title: '门店',
-            align: 'center'
         }, {
             field: 'customerName',
             title: '顾客姓名',
@@ -279,11 +300,11 @@
         var cityId = $("#cityCode").val();
         var storeId = $("#storeCode").val();
         if (storeId == -1 && cityId == -1) {
-            initDateGird('/rest/orderFreight/page/grid');
+            initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
         } else if (storeId != -1) {
-            initDateGird('/rest/orderFreight/page/storeGrid?storeId=' + storeId);
+            initDateGird('/rest/order/selfTakeOrederShipping/page/storeGrid?storeId=' + storeId);
         } else if (storeId == -1 && cityId != -1) {
-            initDateGird('/rest/orderFreight/page/cityGrid?cityId=' + cityId);
+            initDateGird('/rest/order/selfTakeOrederShipping/page/cityGrid?cityId=' + cityId);
         }
     }
 
@@ -298,7 +319,7 @@
         ;
         var store;
         $.ajax({
-            url: '/rest/stores/findAllStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -324,9 +345,9 @@
         $('#enabled').val("-1");
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/orderFreight/page/grid');
+            initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
         } else {
-            initDateGird('/rest/orderFreight/page/infoGrid/' + queryOrderInfo);
+            initDateGird('/rest/order/selfTakeOrederShipping/page/infoGrid?info=' + queryOrderInfo);
         }
     }
 
@@ -360,26 +381,18 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
-    var changeDecimalBuZero = function (number, bitNum) {
-        /// <summary>
-        /// 小数位不够，用0补足位数
-        /// </summary>
-        /// <param name="number">要处理的数字</param>
-        /// <param name="bitNum">生成的小数位数</param>
-        var f_x = parseFloat(number);
-        if (isNaN(f_x)) {
-            return 0;
-        }
-        var s_x = number.toString();
-        var pos_decimal = s_x.indexOf('.');
-        if (pos_decimal < 0) {
-            pos_decimal = s_x.length;
-            s_x += '.';
-        }
-        while (s_x.length <= pos_decimal + bitNum) {
-            s_x += '0';
-        }
-        return s_x;
+    function findOrderByOrderNumber() {
+        var beginTime = $("#beginTime").val();
+        var endTime = $("#endTime").val();
+        var memberName = $("#memberName").val();
+        var shippingAddress = $("#shippingAddress").val();
+        var sellerName = $("#sellerName").val();
+        var memberPhone = $("#memberPhone").val();
+        var receiverName = $("#receiverName").val();
+        var receiverPhone = $("#receiverPhone").val();
+        $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/order/selfTakeOrederShipping/page/conditionGrid?beginTime='+beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
+                    + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone)
     }
 </script>
 </body>

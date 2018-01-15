@@ -2,9 +2,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,24 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
     public List<AtwRequisitionOrderGoods> findAtwRequisitionOrderGoodsByOrderNo(String orderNo) {
         if (StringUtils.isNotBlank(orderNo)) {
             return appToWmsOrderDAO.findAtwRequisitionOrderGoodsByOrderNo(orderNo);
+        }
+        return null;
+    }
+
+    @Override
+    public void saveAtwReturnOrder(AtwReturnOrder returnOrder) {
+        appToWmsOrderDAO.saveAtwReturnOrder(returnOrder);
+    }
+
+    @Override
+    public void modifyAtwReturnOrder(AtwReturnOrder returnOrder) {
+        appToWmsOrderDAO.modifyAtwReturnOrder(returnOrder);
+    }
+
+    @Override
+    public AtwReturnOrder findReturnOrderByReturnOrderNo(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            return appToWmsOrderDAO.findReturnOrderByReturnOrderNo(returnNumber);
         }
         return null;
     }

@@ -1,8 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 
 import java.util.List;
 
@@ -31,6 +32,13 @@ public interface AppToWmsOrderService {
     void saveAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder);
 
     /**
+     * 保存退货单单据
+     *
+     * @param returnOrder 退货单单据
+     */
+    void saveAtwReturnOrder(AtwReturnOrder returnOrder);
+
+    /**
      * 保存要货单商品单据
      *
      * @param atwRequisitionOrderGoods 要货单商品单据
@@ -50,6 +58,13 @@ public interface AppToWmsOrderService {
      * @param atwRequisitionOrder 要货单单据
      */
     void modifyAtwRequisitionOrder(AtwRequisitionOrder atwRequisitionOrder);
+
+    /**
+     * 修改退货单单据
+     *
+     * @param returnOrder 退货单单据
+     */
+    void modifyAtwReturnOrder(AtwReturnOrder returnOrder);
 
     /**
      * 修改要货单商品单据
@@ -81,4 +96,12 @@ public interface AppToWmsOrderService {
      * @return 要货单商品单据
      */
     List<AtwRequisitionOrderGoods> findAtwRequisitionOrderGoodsByOrderNo(String orderNo);
+
+    /**
+     * 查找退货单单据
+     *
+     * @param returnNumber 退单号
+     * @return 退货单单据
+     */
+    AtwReturnOrder findReturnOrderByReturnOrderNo(String returnNumber);
 }

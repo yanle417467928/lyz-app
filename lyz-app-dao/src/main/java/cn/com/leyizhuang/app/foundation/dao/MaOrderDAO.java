@@ -135,4 +135,12 @@ public interface MaOrderDAO {
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(@Param("orderNumber") String orderNmber);
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderShippingList();
+
+    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByCityId(Long cityId);
+
+    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByStoreId(Long storeId);
+
+    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByInfo(String info);
+
+    List<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(MaOrderVORequest maOrderVORequest);
 }

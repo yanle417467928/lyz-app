@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.foundation.pojo.wms;
+package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;

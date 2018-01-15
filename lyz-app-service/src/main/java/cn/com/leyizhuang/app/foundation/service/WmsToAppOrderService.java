@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.wms.WtaShippingOrderHeader;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 
 /**
  * @author Jerry.Ren
@@ -26,4 +28,18 @@ public interface WmsToAppOrderService {
      * @param goods 出货商品
      */
     void saveWtaShippingOrderGoods(WtaShippingOrderGoods goods);
+
+    /**
+     * 保存返配商品头档
+     *
+     * @param header 返配单头
+     */
+    void saveWtaReturningOrderHeader(WtaReturningOrderHeader header);
+
+    /**
+     * 保存返配单商品
+     *
+     * @param goods 返配单商品
+     */
+    void saveWtaReturningOrderGoods(WtaReturningOrderGoods goods);
 }

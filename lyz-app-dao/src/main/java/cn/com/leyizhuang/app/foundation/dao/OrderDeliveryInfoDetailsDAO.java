@@ -86,4 +86,20 @@ public interface OrderDeliveryInfoDetailsDAO {
      * @param orderDeliveryInfoDetails 物流信息
      */
     void modifyOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails);
+
+    /**
+     * 查询配送员已完成的数量
+     *
+     * @param userId
+     * @return
+     */
+    int countAuditFinishOrderByOperatorNo(Long userId);
+
+    /**
+     * 根据物流操作单号获取物流配送信息
+     *
+     * @param taskNo
+     * @return
+     */
+    OrderDeliveryInfoDetails findByTaskNo(String taskNo);
 }

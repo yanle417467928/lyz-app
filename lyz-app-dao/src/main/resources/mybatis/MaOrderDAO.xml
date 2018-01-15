@@ -120,7 +120,8 @@
         obi.create_time DESC
     </select>
 
-    <select id="findMaOrderVOByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest"
+    <select id="findMaOrderVOByCondition"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest"
             resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
         SELECT
         obi.ord_no orderNumber,
@@ -218,7 +219,8 @@
         obi.create_time DESC
     </select>
 
-    <select id="findCompanyOrderByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
+    <select id="findCompanyOrderByCondition"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
             resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
         SELECT
         obi.ord_no orderNumber,
@@ -289,7 +291,8 @@
         obi.create_time DESC
     </select>
 
-    <select id="findPendingShipmentOrderByCondition" parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
+    <select id="findPendingShipmentOrderByCondition"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
             resultType="cn.com.leyizhuang.app.foundation.vo.MaOrderVO">
         SELECT
         obi.ord_no orderNumber,
@@ -362,7 +365,8 @@
         obi.create_time DESC
     </select>
 
-    <select id="findMaOrderDetailByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse">
+    <select id="findMaOrderDetailByOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse">
        SELECT
             obi.ord_no orderNumber,
             obi.`status` orderStatus,
@@ -417,7 +421,8 @@
         ord_no = #{orderNumber}
     </select>
 
-    <select id="getDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse">
+    <select id="getDeliveryInfoByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse">
         SELECT
             oli.delivery_time deliveryTime,
             oli.delivery_clerk_name deliveryClerkName,
@@ -433,7 +438,8 @@
     </select>
 
 
-    <select id="findSelfTakeOrderShippingList" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
+    <select id="findSelfTakeOrderShippingList"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
         SELECT
         obi.ord_no orderNumber,
         obi.create_time createTime,
@@ -451,6 +457,131 @@
         obi.effective_end_time> NOW()
         AND
         obi.delivery_type= 'SELF_TAKE'
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findSelfTakeOrderShippingListByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName
+        FROM
+        ord_base_info AS obi
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND
+        obi.status='PENDING_SHIPMENT'
+        AND
+        obi.effective_end_time> NOW()
+        AND
+        obi.delivery_type= 'SELF_TAKE'
+          AND
+        obi.city_id=#{cityId}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findSelfTakeOrderShippingListByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName
+        FROM
+        ord_base_info AS obi
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND
+        obi.status='PENDING_SHIPMENT'
+        AND
+        obi.effective_end_time> NOW()
+        AND
+        obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.store_id=#{storeId}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <select id="findSelfTakeOrderShippingListByInfo"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName
+        FROM
+        ord_base_info AS obi
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND
+        obi.status='PENDING_SHIPMENT'
+        AND
+        obi.effective_end_time> NOW()
+        AND
+        obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.ord_no=#{info}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+    <select id="findSelfTakeOrderByCondition"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName
+        FROM
+        ord_base_info AS obi
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        WHERE
+        obi.order_subject_type = 'STORE'
+        AND
+        obi.status='PENDING_SHIPMENT'
+        AND
+        obi.effective_end_time> NOW()
+        AND
+        obi.delivery_type= 'SELF_TAKE'
+        <if test="beginTime != null and beginTime != ''">
+            AND obi.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND obi.effective_end_time &lt;= #{endTime}
+        </if>
+        <if test="memberName != null and memberName != ''">
+            AND obi.customer_name LIKE concat(concat('%',#{memberName}),'%')
+        </if>
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND obi.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="sellerName != null and sellerName != ''">
+            AND obi.sales_consult_name LIKE concat(concat('%',#{sellerName}),'%')
+        </if>
+        <if test="memberPhone != null and memberPhone != ''">
+            AND obi.customer_phone LIKE concat(concat('%',#{memberPhone}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND obi.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
         ORDER BY
         obi.create_time DESC
     </select>

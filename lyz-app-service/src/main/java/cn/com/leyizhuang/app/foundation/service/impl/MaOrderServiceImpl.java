@@ -107,4 +107,33 @@ public class MaOrderServiceImpl implements MaOrderService{
         List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderShippingList();
         return  new PageInfo<>(maSelfTakeOrderVOList);
     }
+
+    @Override
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByCityId(Integer page, Integer size,Long cityId) {
+        PageHelper.startPage(page, size);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderShippingListByCityId(cityId);
+        return  new PageInfo<>(maSelfTakeOrderVOList);
+    }
+
+    @Override
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByStoreId(Integer page, Integer size,Long storeId) {
+        PageHelper.startPage(page, size);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderShippingListByStoreId(storeId);
+        return  new PageInfo<>(maSelfTakeOrderVOList);
+    }
+
+
+    @Override
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByInfo(Integer page, Integer size,String info) {
+        PageHelper.startPage(page, size);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderShippingListByInfo(info);
+        return  new PageInfo<>(maSelfTakeOrderVOList);
+    }
+
+    @Override
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size,MaOrderVORequest maOrderVORequest) {
+        PageHelper.startPage(page, size);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderByCondition(maOrderVORequest);
+        return  new PageInfo<>(maSelfTakeOrderVOList);
+    }
 }

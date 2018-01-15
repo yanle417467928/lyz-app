@@ -7,7 +7,10 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
+import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,16 +49,7 @@ public class UserHomePageController {
     private DeliveryAddressService deliveryAddressService;
 
     @Resource
-    private AppOrderService appOrderService;
-
-    @Resource
-    private CityService cityService;
-
-    @Resource
-    private AppStoreService appStoreService;
-
-    @Resource
-    private GoodsService goodsServiceImpl;
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
 
     /**
      * 个人主页的信息
@@ -102,7 +95,11 @@ public class UserHomePageController {
                 return resultDTO;
             } else {
                 EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
-                // TODO 配送员还需要查询配送订单数量
+                // 配送员还需要查询配送订单数量
+                if (identityType == 1) {
+                    int count = orderDeliveryInfoDetailsService.countAuditFinishOrderByOperatorNo(userId);
+                    employeeHomePageResponse.setSendQty(count);
+                }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
                 logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -151,9 +148,9 @@ public class UserHomePageController {
         }
         try {
             PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
-            List<CustomerListResponse> CustomerListResponseList =CustomerListResponse.transform(appCustomerList.getList());
+            List<CustomerListResponse> customerlistresponselist = CustomerListResponse.transform(appCustomerList.getList());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (null!=appCustomerList&& null!=appCustomerList.getList()&&appCustomerList.getList().size() > 0) ? new GridDataVO<CustomerListResponse>().transform(CustomerListResponseList,appCustomerList) : null);
+                    null != appCustomerList.getList() && appCustomerList.getList().size() > 0 ? new GridDataVO<CustomerListResponse>().transform(customerlistresponselist, appCustomerList) : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

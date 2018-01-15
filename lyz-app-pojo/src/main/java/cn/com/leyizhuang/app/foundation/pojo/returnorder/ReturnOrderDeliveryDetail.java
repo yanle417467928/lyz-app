@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
 import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader;
 import lombok.*;
 
 /**
@@ -42,4 +43,11 @@ public class ReturnOrderDeliveryDetail {
      * 图片
      */
     private String picture;
+
+    public static ReturnOrderDeliveryDetail transform(WtaReturningOrderHeader header) {
+        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+
+
+        return returnOrderDeliveryDetail;
+    }
 }

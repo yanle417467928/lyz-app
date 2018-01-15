@@ -27,16 +27,40 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         INSERT INTO ord_delivery_info_details
         (order_no, logistic_status, create_time, description, operation_type, operator_no, warehouse_no, task_no, picture)
-        VALUES
-            (#{orderNo}, #{logisticStatus}, #{createTime}, #{description}, #{operationType}, #{operatorNo},
+            SELECT
+                #{orderNo},
+                #{logisticStatus},
+                #{createTime},
+                #{description},
+                #{operationType},
+                #{operatorNo},
              #{warehouseNo},
-             #{taskNo}, #{picture})
+                #{taskNo},
+                #{picture}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM ord_delivery_info_details
+                    WHERE order_no = #{orderNo} AND logistic_status = #{logisticStatus}
+            );
     </insert>
 
     <update id="modifyOrderDeliveryInfoDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
         UPDATE ord_delivery_info_details
         <set>
+            <if test="null != orderNo">
+                order_no = #{orderNo},
+            </if>
+            <if test="null != warehouseNo">
+                warehouse_no = #{warehouseNo},
+            </if>
+            <if test="null != operatorNo">
+                operator_no = #{operatorNo},
+            </if>
+            <if test="null != operationType">
+                operation_type = #{operationType},
+            </if>
             <if test="null != isRead">
                 is_read = #{isRead}
             </if>
@@ -250,6 +274,21 @@
         AND oaa.user_id = #{userId}
     </select>
 
+    <select id="countAuditFinishOrderByOperatorNo" parameterType="java.lang.Long"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM
+            ord_base_info AS obi
+            INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
+                                                            AND obi.delivery_status = odid.logistic_status
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+            INNER JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
+        WHERE
+            (oaa.`status` = 'AUDIT_NO' OR oaa.`status` = 'AUDIT_PASSED')
+            AND oaa.user_id = #{userId}
+    </select>
+
     <select id="countUnreadLogisticsMessage" resultType="java.lang.Integer">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT
@@ -298,4 +337,10 @@
         </if>
     </select>
 
+    <select id="findByTaskNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails">
+        SELECT *
+        FROM ord_delivery_info_details
+        WHERE task_no = #{taskNo};
+    </select>
 </mapper>

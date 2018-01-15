@@ -3,26 +3,26 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO">
 
     <insert id="saveAtwCancelOrderRequest" useGeneratedKeys="true" keyProperty="id"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest">
 
         INSERT INTO inter_atw_order_cancel_request
         (create_time, cancel_reason, cancel_time, order_no, order_status)
-            SELECT
-                #{createTime},
-                #{cancelReason},
-                #{cancelTime},
+        SELECT
+        #{createTime},
+        #{cancelReason},
+        #{cancelTime},
                 #{orderNo},
-                #{orderStatus}
-            FROM DUAL
-            WHERE NOT EXISTS(
-                    SELECT 'X'
-                    FROM inter_atw_order_cancel_request
-                    WHERE order_no = #{orderNo}
-            )
+        #{orderStatus}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_atw_order_cancel_request
+        WHERE order_no = #{orderNo}
+        )
     </insert>
 
     <insert id="saveAtwRequisitionOrder" useGeneratedKeys="true" keyProperty="id"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
         INSERT INTO inter_atw_order_requsition
         (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_number,
          reserve_time_quantum, receive_address, receive_name, receive_phone, city, detail_address, disctrict, province, subdistrict,
@@ -35,11 +35,27 @@
                 #{diySiteTitle},
                 #{diySiteTel},
                 #{remarkInfo},
-        #{customerName}, #{orderNumber}, #{reserveTimeQuantum},
-                            #{receiveAddress}, #{receiveName}, #{receivePhone}, #{city}, #{detailAddress}, #{disctrict},
-                                                               #{province}, #{subdistrict}, #{orderTime},
-                                                               #{sellerTel}, #{goodsQuantity}, #{upstairsAll},
-                #{sellerName}, #{deliveryFee}, #{colorFee}, #{discount}, #{otherPayed}, #{balanceUsed},
+        #{customerName},
+        #{orderNumber},
+        #{reserveTimeQuantum},
+        #{receiveAddress},
+        #{receiveName},
+        #{receivePhone},
+        #{city},
+        #{detailAddress},
+        #{disctrict},
+        #{province},
+        #{subdistrict},
+        #{orderTime},
+        #{sellerTel},
+        #{goodsQuantity},
+        #{upstairsAll},
+        #{sellerName},
+        #{deliveryFee},
+        #{colorFee},
+        #{discount},
+        #{otherPayed},
+        #{balanceUsed},
                 #{memberReceiver},
                 #{unpayed},
                 #{totalGoodsPrice},
@@ -52,8 +68,45 @@
             )
     </insert>
 
+    <insert id="saveAtwReturnOrder" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
+        INSERT INTO inter_atw_order_return
+        (create_time, cancel_time, check_time, diy_site_address, diy_site_id,
+         diy_site_tel, diy_site_title, manager_remark_info, order_time, order_number, pay_type_id, pay_type_title,
+         remark_info, return_number, return_time, status_id, user_name, deliver_type_title, return_price, return_type,
+         shopping_address, seller_real_name)
+            SELECT
+                #{createTime},
+                #{cancelTime},
+                #{checkTime},
+                #{diySiteAddress},
+                #{diySiteId},
+                #{diySiteTel},
+                #{diySiteTitle},
+                #{managerRemarkInfo},
+                #{orderTime},
+                #{orderNumber},
+                #{payTypeId},
+                #{payTypeTitle},
+                #{remarkInfo},
+                #{returnNumber},
+                #{returnTime},
+                #{statusId},
+                #{userName},
+                #{deliverTypeTitle},
+                #{returnPrice},
+                #{returnType},
+                #{shoppingAddress},
+                #{sellerRealName}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_atw_order_return
+                    WHERE return_number = #{returnNumber}
+            )
+    </insert>
     <insert id="saveAtwRequisitionOrderGoods" useGeneratedKeys="true" keyProperty="id"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods">
 
         INSERT INTO inter_atw_order_requisition_goods
         (create_time, order_number, goods_code, goods_title, quantity, price)
@@ -63,7 +116,7 @@
     </insert>
 
     <update id="updateAtwCancelOrderRequest"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest">
         UPDATE inter_atw_order_cancel_request
         <set>
             <if test="null != sendFlag">
@@ -80,7 +133,7 @@
     </update>
 
     <update id="updateAtwRequisitionOrder"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
         UPDATE inter_atw_order_requsition
         <set>
             <if test="null != sendFlag">
@@ -96,8 +149,25 @@
         WHERE order_number = #{orderNumber}
     </update>
 
+    <update id="modifyAtwReturnOrder"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
+        UPDATE inter_atw_order_return
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage},
+            </if>
+        </set>
+        WHERE return_number = #{returnNumber}
+    </update>
+
     <update id="updateAtwRequisitionOrderGoods"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods">
         UPDATE inter_atw_order_requisition_goods
         <set>
             <if test="null != sendFlag">
@@ -114,14 +184,14 @@
     </update>
 
     <select id="findAtwCancelOrderByOrderNo"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwCancelOrderRequest">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest">
         SELECT *
         FROM inter_atw_order_cancel_request
         WHERE order_no = #{orderNo};
     </select>
 
     <select id="findAtwRequisitionOrderByOrderNo"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
         SELECT
             id,
             create_time,
@@ -159,8 +229,15 @@
         WHERE order_number = #{orderNo};
     </select>
 
+    <select id="findReturnOrderByReturnOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
+        SELECT *
+        FROM inter_atw_order_return
+        WHERE return_number = #{returnNumber};
+    </select>
+
     <select id="findAtwRequisitionOrderGoodsByOrderNo"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods">
         SELECT *
         FROM inter_atw_order_requisition_goods
         WHERE order_number = #{orderNo};

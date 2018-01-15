@@ -278,18 +278,125 @@ public class MaOrderRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/selfTakeOrederShipping/page/grid")
-    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderReceivablesPageGird(Integer offset, Integer size, String keywords) {
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderShippingPageGird(Integer offset, Integer size, String keywords) {
         logger.info("restSelfTakeOrderReceivablesPageGird 后台分页获取所有待出货自提订单列表 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingList(page,size);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
-            logger.info("restOrderPageGird ,后台分页获取所有待出货自提订单列表成功",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
+            logger.info("restSelfTakeOrderReceivablesPageGird ,后台分页获取所有待出货自提订单列表成功",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("restOrderPageGird EXCEPTION,发生未知错误，后台分页获取所有待出货自提订单列表失败");
+            logger.warn("restSelfTakeOrderReceivablesPageGird EXCEPTION,发生未知错误，后台分页获取所有待出货自提订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台根据城市id分页查询所有待出货自提订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "selfTakeOrederShipping/page/cityGrid")
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderShippingPageGirdByCityId(Integer offset, Integer size, String keywords,@RequestParam(value = "cityId")Long cityId) {
+        logger.info("restSelfTakeOrderReceivablesPageGirdByCityId 后台根据城市id分页查询所有待出货自提订单 ,入参offsetL:{}, size:{}, kewords:{},cityId:{}", offset, size, keywords,cityId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingListByCityId(page,size,cityId);
+            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
+            logger.info("restSelfTakeOrderReceivablesPageGirdByCityId ,后台根据城市id分页查询所有待出货自提订单",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restSelfTakeOrderReceivablesPageGirdByCityId EXCEPTION,发生未知错误，后台根据城市id分页查询所有待出货自提订单");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台根据门店id分页查询所有待出货自提订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "selfTakeOrederShipping/page/storeGrid")
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderShippingPageGirdByStoreId(Integer offset, Integer size, String keywords,@RequestParam(value = "storeId")Long storeId) {
+        logger.info("restSelfTakeOrderReceivablesPageGirdByStoreId 后台根据门店id分页查询所有待出货自提订单 ,入参offsetL:{}, size:{}, kewords:{},storeId:{}", offset, size, keywords,storeId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingListByStoreId(page,size,storeId);
+            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
+            logger.info("restSelfTakeOrderReceivablesPageGirdByStoreId ,后台根据门店id分页查询所有待出货自提订单",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restSelfTakeOrderReceivablesPageGirdByStoreId EXCEPTION,发生未知错误，后台根据门店id分页查询所有待出货自提订单");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 后台订单信息分页查询所有待出货自提订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "selfTakeOrederShipping/page/infoGrid")
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderShippingPageGirdByInfo(Integer offset, Integer size, String keywords,@RequestParam(value = "info")String info) {
+        logger.info("restSelfTakeOrderReceivablesPageGirdByInfo 后台根据门店id分页查询所有待出货自提订单 ,入参offsetL:{}, size:{}, kewords:{},info:{}", offset, size, keywords,info);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderShippingListByInfo(page,size,info);
+            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
+            logger.info("restSelfTakeOrderReceivablesPageGirdByInfo ,后台根据门店id分页查询所有待出货自提订单",(maSelfTakeOrderVOList==null)?0:maSelfTakeOrderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restSelfTakeOrderReceivablesPageGirdByInfo EXCEPTION,发生未知错误，后台根据门店id分页查询所有待出货自提订单");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 多条件分页查询自提订单列表
+     *
+     * @param offset           当前页
+     * @param size             每页条数
+     * @param keywords
+     * @param maOrderVORequest 多条件查询请求参数类
+     * @return 订单列表
+     */
+    @GetMapping(value = "selfTakeOrederShipping/page/conditionGrid")
+    public GridDataVO<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer offset, Integer size, String keywords, MaOrderVORequest maOrderVORequest) {
+        logger.warn("findSelfTakeOrderByCondition 多条件分页查询订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}", offset, size, keywords, maOrderVORequest);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaSelfTakeOrderVO> maOrderVOList = this.maOrderService.findSelfTakeOrderByCondition(page,size,maOrderVORequest);
+            List<MaSelfTakeOrderVO> orderVOList = maOrderVOList.getList();
+            logger.warn("getOrderByStoreIdAndCityIdAndDeliveryType ,多条件分页查询订单列表成功", orderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(orderVOList, maOrderVOList.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findSelfTakeOrderByCondition EXCEPTION,发生未知错误，多条件分页查询订单列表失败");
             logger.warn("{}", e);
             return null;
         }

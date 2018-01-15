@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <!-- Ionicons -->
@@ -109,7 +108,7 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <b>订单号:</b>
+                <b style="margin-left: 15px">订单号:</b>
                 <spanp>${maOrderDetail.orderNumber!""}</spanp>
                 <b style="margin-left: 50px">创建时间:</b>
                 <spanp>${maOrderDetail.createTime?string("yyyy-MM-dd HH:mm:ss")!""}</spanp>
@@ -117,10 +116,13 @@
                 <spanp><#if maOrderDetail.orderStatus = 'UNPAID'>待付款
                 <#elseif maOrderDetail.orderStatus = 'PENDING_SHIPMENT'>
                     待发货<#elseif maOrderDetail.orderStatus = 'PENDING_RECEIVE'>
-                    待收货<#elseif maOrderDetail.orderStatus = 'FINISHED'>已完成<#elseif maOrderDetail.orderStatus = 'CLOSED'>
+                    待收货<#elseif maOrderDetail.orderStatus = 'FINISHED'>
+                    已完成<#elseif maOrderDetail.orderStatus = 'CLOSED'>
                     已结案<#elseif maOrderDetail.orderStatus = 'CANCELED'>
                     已取消<#elseif maOrderDetail.orderStatus = 'REJECTED'>
-                    拒签<#elseif maOrderDetail.orderStatus = 'CANCELING'>取消中</#if></spanp>
+                    拒签<#elseif maOrderDetail.orderStatus = 'CANCELING'>
+                    取消中</#if>
+                </spanp>
                 <br>
             </div>
         </div>
@@ -137,8 +139,11 @@
                     <spanp class="span">${maOrderDetail.creatorId!""}</spanp>
                     <br>
                     <b>配送方式:</b>
-                    <spanp class="span"><#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>送货上门
-                    <#elseif maOrderDetail.deliveryType = 'SELF_TAKE'>门店自提</#if></spanp>
+                    <spanp class="span">
+                    <#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>送货上门
+                    <#elseif maOrderDetail.deliveryType = 'SELF_TAKE'>门店自提
+                    </#if>
+                    </spanp>
                     <br>
                 <#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
                     <b>收货人:</b>
@@ -149,7 +154,6 @@
                             <b>送货地址:</b>
                             <spanp class="span">${maOrderDetail.shippingAddress!""}</spanp>
                             <input type="hidden" id="dfasd" value="${maOrderDetail.orderNumber!""}"/>
-                            <b></b>
                         </div>
                     </div>
                 </#if>
@@ -162,9 +166,6 @@
                     <spanp class="span">${maOrderDetail.orderRemarks!""}</spanp>
                 </div>
                 <div class="col-sm-3 invoice-col">
-                    <div class="box-header">
-                        <h3 class="box-title"></h3>
-                    </div>
                     <b>导购:</b>
                     <spanp class="span"> ${maOrderDetail.sellerName!""}</spanp>
                     <br>
@@ -193,9 +194,6 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-3 invoice-col">
-                    <div class="box-header">
-                        <h3 class="box-title"></h3>
-                    </div>
                     <b>下单人:</b>
                     <spanp class="span">${maOrderDetail.creatorName!""}</spanp>
                     <br>

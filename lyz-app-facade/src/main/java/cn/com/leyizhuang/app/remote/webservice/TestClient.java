@@ -1,13 +1,8 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.apache.cxf.endpoint.Client;
@@ -16,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -98,22 +91,38 @@ public class TestClient {
         goods1.setOrderNumber("CD_XN20180109112029014872");
 //        appToWmsOrderService.modifyAtwRequisitionOrderGoods(goods1);
 
+        AtwReturnOrder returnOrder = new AtwReturnOrder();
+        returnOrder.setCancelTime(new Date());
+        returnOrder.setCheckTime(new Date());
+        returnOrder.setCreateTime(new Date());
+        returnOrder.setDeliverTypeTitle("送货上门");
+        returnOrder.setDiySiteAddress("富森美家居城");
+        returnOrder.setDiySiteId("FZM007");
+        returnOrder.setDiySiteTel("123456678");
+        returnOrder.setDiySiteTitle("府河市场");
+        returnOrder.setManagerRemarkInfo("已收货");
+        returnOrder.setOrderNumber("CD_XN20180109112029014872");
+        returnOrder.setOrderTime(new Date());
+        returnOrder.setPayTypeId(0);
+        returnOrder.setPayTypeTitle("支付宝");
+        returnOrder.setRemarkInfo("下单下多了");
+        returnOrder.setReturnNumber("T201801121041875");
+        returnOrder.setReturnPrice(219.74);
+        returnOrder.setReturnTime(new Date());
+        returnOrder.setReturnType("上门提货");
+        returnOrder.setSellerRealName("刘老根");
+        returnOrder.setShoppingAddress("成都市新都区大丰街道订单");
+        returnOrder.setStatusId(3);
+        returnOrder.setUserName("王老实");
 
-        AppStore store = storeService.findStoreByUserIdAndIdentityType(1L, 0);
-        System.out.println(store.toString());
-        List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
-        OrderGoodsInfo orderGoodsInfo = new OrderGoodsInfo();
-        orderGoodsInfo.setOrderQuantity(10);
-        orderGoodsInfoList.add(orderGoodsInfo);
-        int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
-        OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
-        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-        OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
-        orderBaseInfo.setOrderNumber("CD_XN20180109144722742441");
-        orderBaseInfo.setCreatorId(1L);
-        orderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
-        AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
-                store, orderBillingDetails, goodsQuantity);
-        appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+        appToWmsOrderService.saveAtwReturnOrder(returnOrder);
+        System.out.println(returnOrder.getId());
+        returnOrder.setSendFlag(true);
+        returnOrder.setSendTime(new Date());
+        returnOrder.setErrorMessage("noun");
+        appToWmsOrderService.modifyAtwReturnOrder(returnOrder);
+        System.out.println("****************************************************");
+        AtwReturnOrder returnOrder1 = appToWmsOrderService.findReturnOrderByReturnOrderNo("T201801121041875");
+        System.out.println(returnOrder1.toString());
     }
 }

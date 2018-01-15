@@ -132,4 +132,12 @@ public interface MaOrderService {
 
 
     PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size);
+
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByCityId(Integer page, Integer size,Long cityId);
+
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByStoreId(Integer page, Integer size,Long storeId);
+
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByInfo(Integer page, Integer size,String info);
+
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size,MaOrderVORequest maOrderVORequest);
 }
