@@ -124,7 +124,7 @@
                             <b>商户订单号</b> <a class="pull-right" id="merchantOrderNumber"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>操作人</b> <a class="pull-right" id="operatorName"></a>
+                            <b>操作人</b> <a class="pull-right" id="operatorId"></a>
                         </li>
                         <li class="list-group-item">
                             <b>操作人员类型</b> <a class="pull-right" id="operatorType"></a>
@@ -363,10 +363,10 @@
                                 }
                                 $('#merchantOrderNumber').html(data.merchantOrderNumber);
 
-                                if (null === data.operatorName) {
-                                    data.operatorName = '-';
+                                if (null === data.operatorId) {
+                                    data.operatorId = '-';
                                 }
-                                $('#operatorName').html(data.operatorName);
+                                $('#operatorId').html(data.operatorId);
 
                                 if (null === data.operatorType) {
                                     data.operatorType = '-';

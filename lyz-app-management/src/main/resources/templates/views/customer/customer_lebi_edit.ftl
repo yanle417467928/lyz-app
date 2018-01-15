@@ -43,7 +43,7 @@
 
             $('.switch').bootstrapSwitch();
 
-            $('#cus_pre_deposit_edit').bootstrapValidator({
+            $('#cus_lebi_edit').bootstrapValidator({
                 framework: 'bootstrap',
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
@@ -53,30 +53,20 @@
                 verbose: false,
                 fields: {
                     changeMoney: {
-                        message: '变更金额校验失败',
+                        message: '变更数量校验失败',
                         validators: {
                             notEmpty: {
-                                message: '变更金额不能为空'
+                                message: '变更数量不能为空'
                             },
                             regexp: {
-                                regexp: /^[-+]?\d*[.]?\d{0,2}$/,
-                                message: '请输入正确的金额'
+                                regexp: /^[+-][1-9][0-9]*$/,
+                                message: '请输入正确的数量'
                             },
                             stringLength: {
                                 min: 1,
                                 max: 10,
-                                message: '金额的长度必须在1~10位之间'
-                            }
-                        }
-                    },
-                    merchantOrderNumber: {
-                        message: '商户订单号校验失败',
-                        validators: {
-                            stringLength: {
-                                min: 0,
-                                max: 6,
-                                message: '请输入6位的商户订单号'
-                            }
+                                message: '数量的长度必须在1~10位之间'
+                            },
                         }
                     },
                     remarks: {
@@ -95,10 +85,10 @@
                 var $form = $(e.target);
                 var origin = $form.serializeArray();
                 var data = {};
-                var formData = new FormData($("#cus_pre_deposit_edit")[0]);
+                var formData = new FormData($("#cus_lebi_edit")[0]);
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
-                    var url = '/rest/customer/preDeposit/edit';
+                    var url = '/rest/customer/lebi/edit';
                     $.ajax({
                         url: url,
                         method: 'POST',
@@ -112,7 +102,7 @@
                             $loading.close();
                             $global.timer = null;
                             $notify.danger('网络异常，请稍后重试或联系管理员');
-                            $('#cus_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
+                            $('#cus_lebi_edit').bootstrapValidator('disableSubmitButtons', false);
                         },
                         success: function (result) {
                             if (0 === result.code) {
@@ -122,7 +112,7 @@
                                 $loading.close();
                                 $global.timer = null;
                                 $notify.danger(result.message);
-                                $('#cus_pre_deposit_edit').bootstrapValidator('disableSubmitButtons', false);
+                                $('#cus_lebi_edit').bootstrapValidator('disableSubmitButtons', false);
                             }
                         }
                     });
@@ -148,9 +138,9 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
-                <form id="cus_pre_deposit_edit">
-                    <input type="hidden" name="cusId" id="cusId" <#if customerPreDepositVO?? && customerPreDepositVO.cusId??>
-                           value="${(customerPreDepositVO.cusId)?c}"
+                <form id="cus_lebi_edit">
+                    <input type="hidden" name="cusId" id="cusId" <#if customerLebiVO?? && customerLebiVO.cusId??>
+                           value="${(customerLebiVO.cusId)?c}"
                     <#else>
                            value="0"
                     </#if>/>
@@ -163,7 +153,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="name" type="text" class="form-control" id="name" readonly
-                                           placeholder="顾客姓名" value="${(customerPreDepositVO.name)!''}">
+                                           placeholder="顾客姓名" value="${(customerLebiVO.name)!''}">
                                 </div>
                             </div>
                         </div>
@@ -175,7 +165,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="mobile" type="text" class="form-control" id="mobile"  readonly
-                                           placeholder="顾客电话" value="${(customerPreDepositVO.mobile)!''}">
+                                           placeholder="顾客电话" value="${(customerLebiVO.mobile)!''}">
                                 </div>
                             </div>
                         </div>
@@ -184,26 +174,26 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="balance">
-                                    预存款余额
+                                <label for="quantity">
+                                    乐币数量
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="balance" type="text" class="form-control" id="balance"  readonly
-                                           placeholder="预存款余额" value="${(customerPreDepositVO.balance)!'0.00'}">
+                                    <input name="quantity" type="text" class="form-control" id="quantity"  readonly
+                                           placeholder="乐币数量" value="${(customerLebiVO.quantity)!'0.00'}">
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label for="changeMoney">变更金额
+                                <label for="changeNum">变更数量
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="输入变更金额"></i>
+                                       data-content="输入变更数量"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="changeMoney" type="text" class="form-control" id="changeMoney"
-                                           placeholder="变更金额">
+                                    <input name="changeNum" type="number" class="form-control" id="changeNum"
+                                           placeholder="变更数量">
                                 </div>
                             </div>
                         </div>
@@ -213,45 +203,14 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                            <label for="changeType">
-                                变更类型
-                                <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
-                                   data-content="选择预存款变更类型"></i>
-                            </label>
-                            <select class="form-control select" name="changeType" id="changeType">
-                                <option value="ADMIN_CHANGE">管理员修改</option>
-                                <option value="0">HR代收</option>
-                                <option value="1">交现金充值</option>
-                            </select>
-                        </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="transferTime">到账日期
-                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                           data-content="选择到账日期,不选则默认为当日"></i>
+                                <label for="changeType">
+                                    变更类型
+                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                       data-content="选择预存款变更类型"></i>
                                 </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="transferTime" type="text" class="form-control datepicker" id="transferTime"
-                                           readonly placeholder="到账日期">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="merchantOrderNumber">商户订单号
-                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="输入6位的商户订单号"></i>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="merchantOrderNumber" type="text" class="form-control" id="merchantOrderNumber"
-                                           placeholder="商户订单号">
-                                </div>
+                                <select class="form-control select" name="changeType" id="changeType">
+                                    <option value="ADMINISTRATORS_UPDATE">管理员修改</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">

@@ -55,7 +55,7 @@ public class CusPreDepositLogVO {
     /*手机号码*/
     private String mobile;
     /*操作人id*/
-    private String operatorName;
+    private String operatorId;
     /**
      * 操作人员类型
      */

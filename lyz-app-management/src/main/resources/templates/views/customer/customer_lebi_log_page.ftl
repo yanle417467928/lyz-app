@@ -14,18 +14,18 @@
 <body>
 
 <section class="content-header">
-    <#if selectedMenu??>
-        <h1>${selectedMenu.resourceName!'??'}</h1>
-        <ol class="breadcrumb">
-            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-            <#if selectedMenu.parentResourceName??>
-                <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
-            </#if>
-            <li class="active">${selectedMenu.resourceName!'??'}</li>
-        </ol>
-    <#else>
-        <h1>加载中...</h1>
-    </#if>
+<#if selectedMenu??>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
+    <ol class="breadcrumb">
+        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
+        </#if>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
+    </ol>
+<#else>
+    <h1>加载中...</h1>
+</#if>
 </section>
 
 <section class="content">
@@ -33,11 +33,11 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <div id="toolbar" class="form-inline ">
-                    <#if cusId?? && cusId != 0>
-                        <button id="btn_back" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
-                        </button>
-                    </#if>
+                <#if cusId?? && cusId != 0>
+                    <button id="btn_back" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
+                    </button>
+                </#if>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             onchange="findCusByCity(this.value)">
                         <option value="-1">选择城市</option>
@@ -92,28 +92,22 @@
                             <b>归属门店</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更类型</b> <a class="pull-right" id="changeType"></a>
+                            <b>变更类型</b> <a class="pull-right" id="leBiVariationType"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更金额(￥)</b> <a class="pull-right" id="changeMoney"></a>
+                            <b>变更金额</b> <a class="pull-right" id="variationQuantity"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更后余额(￥)</b> <a class="pull-right" id="balance"></a>
+                            <b>变更后余额</b> <a class="pull-right" id="afterVariationQuantity"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>使用订单号</b> <a class="pull-right" id="orderNumber"></a>
+                            <b>使用订单号</b> <a class="pull-right" id="orderNum"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更时间</b> <a class="pull-right" id="createTime"></a>
+                            <b>变更时间</b> <a class="pull-right" id="variationTime"></a>
                         </li>
                         <li class="list-group-item">
                             <b>备注</b> <a class="pull-right" id="remarks"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>到账时间</b> <a class="pull-right" id="transferTime"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>商户订单号</b> <a class="pull-right" id="merchantOrderNumber"></a>
                         </li>
                         <li class="list-group-item">
                             <b>操作人</b> <a class="pull-right" id="operatorId"></a>
@@ -123,9 +117,6 @@
                         </li>
                         <li class="list-group-item">
                             <b>操作人员ip</b> <a class="pull-right" id="operatorIp"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>修改原因</b> <a class="pull-right" id="detailReason"></a>
                         </li>
 
                     </ul>
@@ -197,7 +188,7 @@
     function showAvailableCredit(keywords,cityId,storeId){
         $("#dataGrid").bootstrapTable('destroy');
         var cusId=$('#cusId').val();
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/customer/preDeposit/log/page/grid', 'get', false, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/customer/lebi/log/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -241,27 +232,27 @@
                 align: 'center'
             },
             {
-                field: 'changeType',
+                field: 'leBiVariationType',
                 title: '变更类型',
                 align: 'center'
             },
             {
-                field: 'changeMoney',
-                title: '变更金额(￥)',
+                field: 'variationQuantity',
+                title: '变动数量',
                 align: 'center'
             },
             {
-                field: 'balance',
-                title: '变更后余额(￥)',
+                field: 'afterVariationQuantity',
+                title: '变动后乐币数量',
                 align: 'center'
             },
             {
-                field: 'orderNumber',
+                field: 'orderNum',
                 title: '使用单号',
                 align: 'center'
             },
             {
-                field: 'createTime',
+                field: 'variationTime',
                 title: '变更时间',
                 align: 'center'
             }
@@ -273,7 +264,7 @@
         var storeId = $("#storeCode").val();
         var keywords = $('#queryCusInfo').val();
         $("#dataGrid").bootstrapTable('destroy');
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
         if(cityId==-1){
             findStorelist();
             return false;
@@ -300,7 +291,7 @@
         });
     }
 
-    function findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
+    function findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
         showAvailableCredit(keywords,cityId,storeId);
     }
 
@@ -310,7 +301,7 @@
         var cityId = $("#cityCode").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
 
     }
 
@@ -319,7 +310,7 @@
         $("#dataGrid").bootstrapTable('destroy');
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
     }
 
 
@@ -334,7 +325,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/customer/preDeposit/log/' + id,
+                        url: '/rest/customer/lebi/log/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -349,7 +340,7 @@
                             if (0 === result.code) {
                                 $global.timer = null;
                                 var data = result.content;
-                                $('#menuTitle').html(" 顾客预存款变更详情");
+                                $('#menuTitle').html(" 顾客乐币变更详情");
 
                                 if (null === data.name) {
                                     data.name = '-';
@@ -366,46 +357,35 @@
                                 }
                                 $('#storeName').html(data.storeName);
 
-                                if (null == data.changeType) {
-                                    data.changeType = '-';
+                                if (null == data.leBiVariationType) {
+                                    data.leBiVariationType = '-';
                                 }
-                                $('#changeType').html(data.changeType);
+                                $('#leBiVariationType').html(data.leBiVariationType);
 
-                                if (null === data.changeMoney) {
-                                    data.changeMoney = '-';
+                                if (null === data.variationQuantity) {
+                                    data.variationQuantity = '-';
                                 }
-                                $('#changeMoney').html(data.changeMoney);
+                                $('#variationQuantity').html(data.variationQuantity);
 
-                                if (null === data.balance) {
-                                    data.balance = '-';
+                                if (null === data.afterVariationQuantity) {
+                                    data.afterVariationQuantity = '-';
                                 }
-                                $('#balance').html(data.balance);
+                                $('#afterVariationQuantity').html(data.afterVariationQuantity);
 
-                                if (null === data.orderNumber) {
-                                    data.orderNumber = '-';
+                                if (null === data.orderNum) {
+                                    data.orderNum = '-';
                                 }
-                                $('#orderNumber').html(data.orderNumber);
+                                $('#orderNum').html(data.orderNum);
 
-                                if (null === data.createTime) {
-                                    data.createTime = '-';
+                                if (null === data.variationTime) {
+                                    data.variationTime = '-';
                                 }
-                                $('#createTime').html(data.createTime);
+                                $('#variationTime').html(data.variationTime);
 
                                 if (null === data.remarks) {
                                     data.remarks = '-';
                                 }
                                 $('#remarks').html(data.remarks);
-
-                                if (null === data.transferTime) {
-                                    data.transferTime = '-';
-                                }
-                                $('#transferTime').html(data.transferTime);
-
-
-                                if (null === data.merchantOrderNumber) {
-                                    data.merchantOrderNumber = '-';
-                                }
-                                $('#merchantOrderNumber').html(data.merchantOrderNumber);
 
                                 if (null === data.operatorId) {
                                     data.operatorId = '-';
@@ -421,11 +401,6 @@
                                     data.operatorIp = '-';
                                 }
                                 $('#operatorIp').html(data.operatorIp);
-
-                                if (null === data.detailReason) {
-                                    data.detailReason = '-';
-                                }
-                                $('#detailReason').html(data.detailReason);
 
                                 $('#information').modal();
                             } else {

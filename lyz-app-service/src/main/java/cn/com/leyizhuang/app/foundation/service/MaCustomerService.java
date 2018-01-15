@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import com.github.pagehelper.PageInfo;
 
@@ -30,6 +32,12 @@ public interface MaCustomerService {
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
-    void  changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO);
+    void  changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) throws Exception;
+
+    PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords);
+
+    CustomerLebiVO queryCusLebiByCusId(Long cusId);
+
+    void  changeCusLebiByCusId(CusLebiDTO cusLebiDTO) throws Exception;
 
 }

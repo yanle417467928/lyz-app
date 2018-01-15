@@ -34,6 +34,15 @@ public class MaStorePreDepositRestController extends BaseRestController {
     @Autowired
     private MaStoreService maStoreService;
 
+    /**
+     * @title   获取门店预存款列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/15
+     */
     @GetMapping(value = "/page/grid")
     public GridDataVO<StorePreDepositVO> restCustomerPreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, String storeType) {
         size = getSize(size);
@@ -42,12 +51,26 @@ public class MaStorePreDepositRestController extends BaseRestController {
         return new GridDataVO<StorePreDepositVO>().transform(storePredeposit.getList(), storePredeposit.getTotal());
     }
 
+    /**
+     * @title   门店预存款变更及日志保存
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/15
+     */
     @PostMapping(value = "/edit")
-    public ResultDTO<String> modifyEmployeeIdPut(@Valid StorePreDepositDTO storePreDepositDTO, BindingResult result) {
+    public ResultDTO<String> modifyPreDeposit(@Valid StorePreDepositDTO storePreDepositDTO, BindingResult result) {
         if (!result.hasErrors()) {
             if (null != storePreDepositDTO && null != storePreDepositDTO.getStoreId() && storePreDepositDTO.getStoreId() != 0){
                 if (null != storePreDepositDTO.getChangeMoney() && storePreDepositDTO.getChangeMoney() != 0) {
-                    this.maStoreService.changeStorePredepositByStoreId(storePreDepositDTO);
+                    try {
+                        this.maStoreService.changeStorePredepositByStoreId(storePreDepositDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+                    }
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else{
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);
