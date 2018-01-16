@@ -181,6 +181,30 @@ public class OrderUtils {
     }
 
 
+    public static String generatePhotoOrderNumber(Long cityId) {
+        if (null != cityId) {
+            City city = cityService.findById(cityId);
+            StringBuilder orderNumberTemp = new StringBuilder();
+            if (null != city && null != city.getBriefSpell()) {
+                String orderNumber = city.getBriefSpell();
+                orderNumberTemp.append(orderNumber);
+            } else {
+                orderNumberTemp.append("MR");
+            }
+            orderNumberTemp.append("_PZ");
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            orderNumberTemp.append(timeStamp);
+            Random random = new Random();
+            orderNumberTemp.append(random.nextInt(900) + 100);
+            return orderNumberTemp.toString();
+        }
+        return null;
+    }
+
+
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);

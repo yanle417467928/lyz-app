@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.PhotoOrderMaterialListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -77,4 +79,8 @@ public interface MaterialListDAO {
     void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(@Param(value = "userId") Long userId,
                                                                                 @Param(value = "identityType") AppIdentityType identityType,
                                                                                 @Param(value = "couponGoodsIds") Set<Long> couponGoodsIds);
+
+    List<PhotoOrderMaterialListResponse> findByUserIdAndIdentityTypeAndMaterialListType(@Param(value = "userId") Long userId,
+                                                                                        @Param(value = "identityType") AppIdentityType identityType,
+                                                                                        @Param(value = "list")List<MaterialListType> materialListTypes);
 }

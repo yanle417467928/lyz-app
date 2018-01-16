@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.order;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderDetailsResponse;
@@ -43,17 +44,18 @@ public class PhotoOrderController {
     /**
      * @param userId           用户id
      * @param identityType     用户身份
-     * @param deliveryId       收货人地址
-     * @param isOwnerReceiving 是否主家收货
+//     * @param deliveryId       收货人地址
+//     * @param isOwnerReceiving 是否主家收货
+     * @param contactPhone 联系人电话
      * @param remark           备注
      * @param customerId       顾客id
      * @param request          http请求参数
      * @return 下单结果
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, /*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
-                                              Long deliveryId, Boolean isOwnerReceiving, String remark, Long customerId, HttpServletRequest request) {
-        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  deliveryId:{} isOwnerReceiving:{} remark:{} customerId:{}", userId, identityType, deliveryId, isOwnerReceiving, remark, customerId);
+    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, Long cityId, /*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
+                                              String contactPhone, String remark, Long customerId, HttpServletRequest request) {
+        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  contactPhone:{} remark:{} customerId:{} cityId:{}", userId, identityType, contactPhone, remark, customerId, cityId);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -67,18 +69,13 @@ public class PhotoOrderController {
                 logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == deliveryId) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址不能为空！",
+            if (null == contactPhone) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "联系人电话不能为空！",
                         null);
                 logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == isOwnerReceiving) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否主家收货不能为空！",
-                        null);
-                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+
             if (0 == identityType && null == customerId) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "客户信息不能为空！",
                         null);
@@ -118,14 +115,13 @@ public class PhotoOrderController {
             }
             PhotoOrderDO photoOrderDO = new PhotoOrderDO();
             photoOrderDO.setCreateTime(LocalDateTime.now());
-            photoOrderDO.setCustomerId(customerId);
-            photoOrderDO.setDeliveryId(deliveryId);
             photoOrderDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-            photoOrderDO.setIsOwnerReceiving(isOwnerReceiving);
+            photoOrderDO.setContactPhone(contactPhone);
             photoOrderDO.setPhotos(photos.toString());
             photoOrderDO.setRemark(remark);
             photoOrderDO.setStatus(PhotoOrderStatus.PENDING);
             photoOrderDO.setUserId(userId);
+            photoOrderDO.setPhotoOrderNo(OrderUtils.generatePhotoOrderNumber(cityId));
             this.photoOrderServiceImpl.save(photoOrderDO);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("submitPhotoOrder OUT,拍照下单提交成功，出参 resultDTO:{}", resultDTO);
@@ -164,6 +160,7 @@ public class PhotoOrderController {
         }
         List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
         photoOrderStatuses.add(PhotoOrderStatus.PENDING);
+        photoOrderStatuses.add(PhotoOrderStatus.PROCESSING);
         PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses,null,null);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList.getList());
         logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
@@ -206,8 +203,6 @@ public class PhotoOrderController {
             return resultDTO;
         }
         List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
-        photoOrderStatuses.add(PhotoOrderStatus.PLACORDER);
-        photoOrderStatuses.add(PhotoOrderStatus.PAYED);
         photoOrderStatuses.add(PhotoOrderStatus.FINISH);
         PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses, page,  size);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PhotoOrderListResponse>().transform(photoOrderListResponseList));

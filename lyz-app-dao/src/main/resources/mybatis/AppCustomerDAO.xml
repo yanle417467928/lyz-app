@@ -305,7 +305,10 @@
         SET balance = balance + #{deposit},
         last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        AND last_update_time = #{oldLastUpdateTime}
+        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+            AND last_update_time = #{oldLastUpdateTime}
+        </if>
+
     </update>
 
     <update id="updateLeBiByUserIdAndQuantity">
