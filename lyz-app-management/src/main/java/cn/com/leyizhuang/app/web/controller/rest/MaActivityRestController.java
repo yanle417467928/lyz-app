@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.core.constant.ActConditionType;
 import cn.com.leyizhuang.app.core.constant.ActPromotionType;
 import cn.com.leyizhuang.app.core.constant.ActStatusType;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO;
@@ -36,8 +35,8 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping(value = ManagementActivityRestController.PRE_URL,produces = "application/json;charset=utf-8")
-public class ManagementActivityRestController extends BaseRestController {
+@RequestMapping(value = MaActivityRestController.PRE_URL,produces = "application/json;charset=utf-8")
+public class MaActivityRestController extends BaseRestController {
 
     protected final static String PRE_URL = "/rest/activity";
 

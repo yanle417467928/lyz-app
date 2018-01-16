@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -33,10 +35,20 @@ public interface MaCustomerDAO {
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
-    CustomerPreDeposit findByCusId(Long cusId);
+    CustomerPreDeposit findPredepositByCusId(Long cusId);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
     int updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
+
+    List<CustomerLebiVO> findAllCusLebi(@Param("cityId") Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+
+    CustomerLebiVO queryCusLebiByCusId(Long cusId);
+
+    void saveLebi(CustomerLeBi customerLeBi);
+
+    int updateLebiByUserId(@Param("userId") Long userId, @Param("quantity") Integer quantity, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
+
+    CustomerLeBi findLebiByCusId(Long cusId);
 
 }

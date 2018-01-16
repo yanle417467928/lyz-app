@@ -83,7 +83,7 @@ public interface MaStoreService {
 
     StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
 
-    void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO);
+    void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) throws Exception;
 
 
 }

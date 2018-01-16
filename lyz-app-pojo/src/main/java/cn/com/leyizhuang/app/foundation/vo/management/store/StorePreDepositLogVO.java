@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.vo.management.store;
 
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import lombok.Getter;
@@ -56,7 +57,7 @@ public class StorePreDepositLogVO {
     /*门店编码*/
     private String storeCode;
     /*操作人id*/
-    private String operatorName;
+    private String operatorId;
     /**
      * 操作人员类型
      */
@@ -76,7 +77,7 @@ public class StorePreDepositLogVO {
      */
     private String storeType;
 
-    public void setChangeType(CustomerPreDepositChangeType changeType){
+    public void setChangeType(StorePreDepositChangeType changeType){
         this.changeType = changeType.getDescription();
     }
     public void setCreateTime(LocalDateTime createTime){

@@ -393,6 +393,30 @@
             obi.ord_no = #{orderNumber}
     </select>
 
+    <select id="findMaCompanyOrderDetailByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse">
+        SELECT
+            obi.ord_no orderNumber,
+            obi.`status` orderStatus,
+            obi.create_time createTime,
+            obi.store_code companyCode,
+            s.store_name companyName,
+            obi.creator_id creatorId,
+            obi.creator_name creatorName,
+            obi.audit_no auditNumber,
+            obi.delivery_type deliveryType,
+            oli.receiver receiverName,
+            oli.receiver_phone receiverPhone,
+            oli.shipping_address shippingAddress,
+            oli.is_owner_receiving isOwnerReceiving,
+            obi.remark orderRemarks
+        FROM
+            ord_base_info AS obi
+        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        WHERE
+            obi.ord_no = #{orderNumber}
+    </select>
+
     <select id="getMaOrderBillingDetailByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse">
         SELECT
@@ -402,6 +426,7 @@
         freight freight,
         lebi_cash_discount lebiCashDiscount,
         cash_coupon_discount cashCouponDiscount,
+        st_subvention subvention,
         order_amount_subtotal amountPayable
         FROM
         ord_billing_details

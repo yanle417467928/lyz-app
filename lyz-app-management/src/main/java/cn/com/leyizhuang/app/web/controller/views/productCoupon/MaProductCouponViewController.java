@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletRequest;
  * Created by panjie on 2018/1/10.
  */
 @Controller
-@RequestMapping(value = ManagementProductCouponViewController.PRE_URL, produces = "application/json;charset=utf-8")
-public class ManagementProductCouponViewController {
+@RequestMapping(value = MaProductCouponViewController.PRE_URL, produces = "application/json;charset=utf-8")
+public class MaProductCouponViewController {
 
     protected final static String PRE_URL = "/view/productCoupon";
-    private final Logger logger = LoggerFactory.getLogger(ManagementProductCouponViewController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaProductCouponViewController.class);
 
     @Resource
     private ProductCouponService productCouponService;

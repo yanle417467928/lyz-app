@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCusLebiLogDAO">
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
+        INSERT INTO cus_lb_variation_log
+        (cus_id, variation_time, le_bi_variation_type, variation_type_desc, variation_quantity, after_variation_quantity, order_num,
+        remarks, operator_id, operator_type, operator_ip)
+        VALUES
+        (#{cusId}, #{variationTime}, #{leBiVariationType}, #{variationTypeDesc}, #{variationQuantity}, #{afterVariationQuantity}, #{orderNum},
+        #{remarks}, #{operatorId}, #{operatorType}, #{operatorIp})
+    </insert>
+
+    <select id="findAllCusLebiLog" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusLebiLogVO">
+        SELECT
+        l.id, c.name, c.mobile, s.store_name, l.variation_time, l.le_bi_variation_type, l.variation_quantity, l.after_variation_quantity, l.order_num
+        FROM cus_lb_variation_log l
+        LEFT JOIN cus_customer c on l.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE
+        (1 = 1)
+        <if test="null != cusId and cusId != 0">
+            AND  c.cus_id = #{cusId}
+        </if>
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND c.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (c.name LIKE concat(concat('%',#{keywords}),'%')
+            OR c.mobile LIKE concat(concat('%',#{keywords}),'%')
+            OR l.order_num LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY l.variation_time DESC
+    </select>
+
+    <select id="findCusLebiLogById" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusLebiLogVO">
+        SELECT
+        l.id, c.name, c.mobile, s.store_name, l.variation_time, l.le_bi_variation_type, l.variation_quantity, l.after_variation_quantity, l.order_num,
+        l.remarks, l.operator_id, l.operator_type, l.operator_ip
+        FROM cus_lb_variation_log l
+        LEFT JOIN cus_customer c on l.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE l.id = #{id}
+    </select>
+
+</mapper>

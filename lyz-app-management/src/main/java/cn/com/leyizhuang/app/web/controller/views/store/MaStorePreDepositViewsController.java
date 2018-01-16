@@ -28,12 +28,30 @@ public class MaStorePreDepositViewsController extends BaseController {
     @Autowired
     private MaStoreService maStoreService;
 
+    /**
+     * @title 跳转门店预存款列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/15
+     */
     @RequestMapping(value = "/list")
-    public String getCustomerList(ModelMap map) {
+    public String getStoreList(ModelMap map) {
         map.addAttribute("storeTypes", StoreType.values());
         return "/views/store/store_pre_deposit_page";
     }
 
+    /**
+     * @title 跳转变更预存款页面
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/15
+     */
     @GetMapping(value = "/edit/{storeId}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "storeId") Long storeId) {
         StorePreDepositVO storePreDepositVO = this.maStoreService.queryStorePredepositByStoreId(storeId);

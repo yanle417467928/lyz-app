@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LeBiVariationType;
 import lombok.*;
 
@@ -47,4 +48,20 @@ public class CustomerLeBiVariationLog {
      * 乐币使用订单号
      */
     private String orderNum;
+    /**
+     * 备注
+     */
+    private String remarks;
+    /**
+     * 操作人员
+     */
+    private Long operatorId;
+    /**
+     * 操作人员类型
+     */
+    private AppIdentityType operatorType;
+    /**
+     * 操作人员ip
+     */
+    private String operatorIp;
 }

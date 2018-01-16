@@ -239,7 +239,6 @@ function screenGoods() {
     var companyCode=$('#companyCode').val();
     $("#goodsDataGrid").bootstrapTable('destroy');
     initGoodsGrid('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode+'&categoryCode='+categoryCode+'&companyCode='+companyCode,"goodsDataGrid");
-
 }
 
 function findGoodsByNameOrCode() {

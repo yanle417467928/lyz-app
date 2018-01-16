@@ -120,7 +120,7 @@
 
     <select id="queryCompanyByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
         SELECT
-        id,ccid,company_id,company_name
+        id,ccid,company_id,company_name,company_flag
         FROM cp_cash_coupon_company
         where ccid = #{ccid}
     </select>

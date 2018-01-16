@@ -4,14 +4,14 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO">
         INSERT INTO photo_order
-        (user_id, identity_type, photos, delivery_id, is_owner_receiving, remark, customer_id, status, create_time)
+        (user_id, identity_type, photos, contact_phone, remark, status, create_time, photo_order_no)
         VALUES
-        (#{userId}, #{identityType}, #{photos}, #{deliveryId}, #{isOwnerReceiving}, #{remark}, #{customerId}, #{status},
-        #{createTime});
+        (#{userId}, #{identityType}, #{photos}, #{contactPhone},#{remark}, #{status},
+        #{createTime}, #{photoOrderNo});
     </insert>
 
     <select id="findByUserIdAndIdentityTypeAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse">
-        SELECT id, photos, create_time, status
+        SELECT id, photos, create_time, status, photo_order_no
         FROM photo_order
         WHERE user_id = #{userId}
         AND identity_type = #{identityType}
@@ -29,13 +29,9 @@
         p.create_time,
         p.status,
         p.remark,
-        d.receiver deliveryName,
-        d.receiver_phone deliveryPhone,
-        p.is_owner_receiving,
-        CONCAT_WS('', d.delivery_city, d.delivery_county,
-        d.delivery_street, d.residence_name, d.detailed_address) detailedAddress
+        p.photo_order_no,
+        p.contact_phone
         FROM photo_order p
-        LEFT JOIN delivery_address d ON d.id = p.delivery_id
         WHERE p.id = #{id}
     </select>
 

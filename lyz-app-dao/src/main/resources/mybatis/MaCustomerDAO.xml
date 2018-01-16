@@ -184,7 +184,7 @@
         WHERE c.cus_id = #{cusId}
     </select>
 
-    <select id="findByCusId" parameterType="java.lang.Long"
+    <select id="findPreDepositByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
         SELECT *
         FROM cus_pre_deposit
@@ -200,7 +200,62 @@
         SET balance = balance + #{deposit},
           last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-         AND last_update_time = #{oldLastUpdateTime}
+        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+            AND last_update_time = #{oldLastUpdateTime}
+        </if>
+    </update>
+
+
+    <select id="findAllCusLebi" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO">
+        SELECT
+        c.cus_id, c.name, c.mobile, b.id, b.quantity, s.store_name
+        FROM cus_customer c
+        LEFT JOIN cus_lb b on b.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE
+        (1 = 1)
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND c.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (c.name LIKE concat(concat('%',#{keywords}),'%')
+            OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+
+    <select id="queryCusLebiByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO">
+        SELECT
+        c.cus_id, c.name, c.mobile, b.id, b.quantity, s.store_name
+        FROM cus_customer c
+        LEFT JOIN cus_lb b on b.cus_id = c.cus_id
+        LEFT JOIN st_store s ON s.store_id = c.store_id
+        WHERE c.cus_id = #{cusId}
+    </select>
+
+    <select id="findLebiByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
+        SELECT *
+        FROM cus_lb
+        WHERE cus_id = #{cusId}
+    </select>
+
+    <insert id="saveLebi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
+        INSERT INTO cus_lb (cus_id, quantity, last_update_time, create_time) VALUES (#{cusId}, #{quantity}, #{lastUpdateTime}, #{createTime})
+    </insert>
+
+    <update id="updateLebiByUserId">
+        UPDATE cus_lb
+        SET quantity = quantity + #{quantity},
+        last_update_time = #{lastUpdateTime}
+        WHERE cus_id = #{userId}
+        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+            AND last_update_time = #{oldLastUpdateTime}
+        </if>
     </update>
 
 </mapper>

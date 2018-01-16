@@ -209,8 +209,6 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    var url = "/rest/order/storeOrder/detail/" + value;
-//                    return '<a class="scan" href="/rest/order/storeOrder/detail/'+value+'">' + value + '</a>';
                     return '<a class="scan" href="/views/admin/order/detail/' + value + '">' + value + '</a>';
                 }
             }

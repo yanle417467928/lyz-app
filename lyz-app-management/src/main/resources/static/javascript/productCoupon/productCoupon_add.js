@@ -14,6 +14,12 @@ $(function () {
     $("#chooseGoodsButton").on('click', function () {
         $("#goodsModal").modal('show');
     })
+    $commonForm.goodsBrand("/rest/goodsBrand/page/brandGrid","brandCode");
+    $commonForm.goodsCategory("/rest/goods/page/physicalClassifyGrid","categoryCode");
+
+    $("select").each(function () {
+        $(this).selectpicker('refresh');
+    })
 
 })
 

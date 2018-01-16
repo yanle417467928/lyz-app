@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaStorePreDepositLogDAO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
@@ -62,10 +63,14 @@ public class MaStorePreDepositLogServiceImpl implements MaStorePreDepositLogServ
             stPreDepositLogDO.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), storePreDepositDTO.getChangeMoney(), storePreDepositDTO.getChangeType());
             ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
 //            EmployeeDO employeeDO = this.maEmployeeService.findEmployeeDOByEmpId(shiroUser.getId());
-            stPreDepositLogDO.setUserIdAndOperatorinfo(storePreDepositDTO.getStoreId(), shiroUser.getId(), null, "");
+            stPreDepositLogDO.setUserIdAndOperatorinfo(storePreDepositDTO.getStoreId(), shiroUser.getId(), AppIdentityType.ADMINISTRATOR, "");
             stPreDepositLogDO.setMerchantOrderNumber(storePreDepositDTO.getMerchantOrderNumber());
             stPreDepositLogDO.setRemarks(storePreDepositDTO.getRemarks());
-            stPreDepositLogDO.setTransferTime(LocalDateTime.parse(storePreDepositDTO.getTransferTime() + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            if (null != storePreDepositDTO.getTransferTime() && !("".equals(storePreDepositDTO.getTransferTime()))) {
+                stPreDepositLogDO.setTransferTime(LocalDateTime.parse(storePreDepositDTO.getTransferTime() + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            } else {
+                stPreDepositLogDO.setTransferTime(LocalDateTime.now());
+            }
             stPreDepositLogDO.setChangeTypeDesc(storePreDepositDTO.getChangeType().getDescription());
             return stPreDepositLogDO;
         } else {

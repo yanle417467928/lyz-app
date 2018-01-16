@@ -219,7 +219,7 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) {
+    public void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) throws Exception{
         Long storeId = storePreDepositDTO.getStoreId();
         Double money = storePreDepositDTO.getChangeMoney();
         StorePreDeposit storePreDeposit = this.mastoreDAO.findByStoreId(storeId);

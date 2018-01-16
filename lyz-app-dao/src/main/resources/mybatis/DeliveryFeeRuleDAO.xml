@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.DeliveryFeeRuleDAO">
+    <sql id="ALL_FIELDS">
+        id,create_date, city_id, city_name, `condition`, delivery_fee, toll_object, include_special_goods,
+    status
+    </sql>
+
+    <insert id="addDeliveryFeeRule"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule" useGeneratedKeys="true" keyProperty="id">
+    insert into delivery_fee_rule ( create_date,city_id, city_name,
+      `condition`, delivery_fee, toll_object,
+      include_special_goods, status)
+    values (#{createDate}, #{cityId,jdbcType=BIGINT}, #{cityName,jdbcType=VARCHAR},
+      #{condition,jdbcType=DECIMAL}, #{deliveryFee,jdbcType=DECIMAL}, #{tollObject,jdbcType=VARCHAR},
+      #{includeSpecialGoods,jdbcType=BIT}, #{status,jdbcType=BIT})
+
+    </insert>
+
+    <insert id="addSpecailGoods" parameterType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods">
+        INSERT INTO delivery_fee_rule_special_goods
+        (rule_id,goods_id,goods_name,sku)
+        VALUES (#{ruleId},#{goodsId},#{goodsName},#{sku})
+    </insert>
+
+    <update id="updateDeliveryFeeRule"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule">
+        update delivery_fee_rule
+        <set >
+            <if test="cityId != null" >
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="cityName != null" >
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="condition != null" >
+                `condition` = #{condition,jdbcType=DECIMAL},
+            </if>
+            <if test="deliveryFee != null" >
+                delivery_fee = #{deliveryFee,jdbcType=DECIMAL},
+            </if>
+            <if test="tollObject != null" >
+                toll_object = #{tollObject,jdbcType=VARCHAR},
+            </if>
+            <if test="includeSpecialGoods != null" >
+                include_special_goods = #{includeSpecialGoods,jdbcType=BIT},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="findRuleById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM delivery_fee_rule WHERE id = #{id}
+    </select>
+
+    <select id="findAllDeliveryFeeRule" resultType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM delivery_fee_rule
+        where status = TRUE
+    </select>
+
+    <select id="findRuleByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM delivery_fee_rule WHERE city_id = #{cityId}
+    </select>
+
+    <select id="findSpecailGoodsByRuleId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods">
+        select
+          id,rule_id,goods_id,goods_name,sku
+         FROM
+         delivery_fee_rule_special_goods
+         WHERE rule_id = #{ruleId}
+    </select>
+
+    <delete id="deleteDeliveryFeeRule" parameterType="java.lang.Long">
+        DELETE FROM  delivery_fee_rule
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSpecailGoodsByRuleId" parameterType="java.lang.Long">
+        DELETE FROM  delivery_fee_rule_special_goods
+        where rule_id = #{ruleId}
+    </delete>
+</mapper>

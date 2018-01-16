@@ -2,12 +2,16 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
+import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.service.MaCusLebiLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import com.github.pagehelper.PageHelper;
@@ -30,6 +34,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Autowired
     private MaCusPreDepositLogService maCusPreDepositLogService;
+
+    @Autowired
+    private MaCusLebiLogService maCusLebiLogService;
 
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size) {
@@ -115,10 +122,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public void changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) {
+    public void changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) throws Exception {
         Long userId = cusPreDepositDTO.getCusId();
         Double money = cusPreDepositDTO.getChangeMoney();
-        CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findByCusId(userId);
+        CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findPredepositByCusId(userId);
         if (null == customerPreDeposit) {
             customerPreDeposit = new CustomerPreDeposit();
             customerPreDeposit.setBalance(money);
@@ -134,5 +141,39 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }
         this.maCusPreDepositLogService.save(cusPreDepositDTO);
     }
+
+    @Override
+    public PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
+        PageHelper.startPage(page, size);
+        List<CustomerLebiVO> list = this.maCustomerDAO.findAllCusLebi(cityId, storeId, keywords);
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public CustomerLebiVO queryCusLebiByCusId(Long cusId) {
+        return this.maCustomerDAO.queryCusLebiByCusId(cusId);
+    }
+
+    @Override
+    public void changeCusLebiByCusId(CusLebiDTO cusLebiDTO) throws Exception{
+        Long userId = cusLebiDTO.getCusId();
+        Integer quantity = cusLebiDTO.getChangeNum();
+        CustomerLeBi customerLeBi = this.maCustomerDAO.findLebiByCusId(userId);
+        if (null == customerLeBi) {
+            customerLeBi = new CustomerLeBi();
+            customerLeBi.setQuantity(quantity);
+            customerLeBi.setCusId(userId);
+            customerLeBi.setCreateTime(new Date());
+            customerLeBi.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+            this.maCustomerDAO.saveLebi(customerLeBi);
+        } else {
+            int row = this.maCustomerDAO.updateLebiByUserId(userId, quantity, new Timestamp(System.currentTimeMillis()), customerLeBi.getLastUpdateTime());
+            if (1 != row) {
+                throw new AppConcurrentExcp("账号余额信息过期！");
+            }
+        }
+        this.maCusLebiLogService.save(cusLebiDTO);
+    }
+
 }
 

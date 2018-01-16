@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.dao.MaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.PhotoOrderMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaterialListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,4 +174,13 @@ public class MaterialListServiceImpl implements MaterialListService {
         }
         return null;
     }
+
+    @Override
+    public List<PhotoOrderMaterialListResponse> findByUserIdAndIdentityTypeAndMaterialListType(Long userId, AppIdentityType identityType, List<MaterialListType> materialListTypes) {
+        if (null != userId && null != identityType && null != materialListTypes) {
+            return materialListDAO.findByUserIdAndIdentityTypeAndMaterialListType(userId, identityType, materialListTypes);
+        }
+        return null;
+    }
+
 }

@@ -134,7 +134,7 @@ function initDateGird(url) {
             title: '操作',
             align: 'center',
             formatter:function (value,row,index) {
-                return "<a href='javascript:send("+row.cusId+");'>发券</a>";
+                return "<a id='send_"+row.cusId+"' href='javascript:send("+row.cusId+");'>发券</a>";
             }
         }
     ]);
@@ -300,6 +300,7 @@ function changeStore(val) {
  * 发券
  * **/
 function  send(customerId) {
+
     var productCouponId = $("#productCouponId").val();
     var qty = $("#qty_"+customerId).val();
 
@@ -316,7 +317,11 @@ function  send(customerId) {
         return false;
     }
 
+    // 防止重复发送
+    $("#send_"+customerId).attr("href","#");
     $http.ajax('/rest/productCoupon/send','POST',{'customerId':customerId,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
+        // 防止重复发送
+        $("#send_"+customerId).attr("href","javascript:send("+customerId+")");
         if (0 === result.code) {
             $notify.info(result.message);
 
@@ -334,6 +339,9 @@ function  send(customerId) {
  * 批量发券
  * **/
 function  sendBatch() {
+
+
+
     var productCouponId = $("#productCouponId").val();
     var qty = $("#common_qty").val();
     var customerIds = new Array();
@@ -363,8 +371,12 @@ function  sendBatch() {
         $notify.warning("券数量有误");
         return false;
     }
-
+    // 防止重复请求
+    $("#oneButtonSend").attr("onclick","");
     $http.ajax('/rest/productCoupon/sendBatch','POST',{'customerIds':customerIds,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
+        // 防止重复请求
+        $("#oneButtonSend").attr("onclick","sendBatch()");
+
         if (0 === result.code) {
             $notify.info(result.message);
 

@@ -51,7 +51,7 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     }
 
     /**
-     * @title   获取顾客预存款信息
+     * @title   顾客预存款变更及日志保存
      * @descripe
      * @param
      * @return
@@ -60,11 +60,16 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
      * @date 2018/1/11
      */
     @PostMapping(value = "/edit")
-    public ResultDTO<String> modifyEmployeeIdPut(@Valid CusPreDepositDTO cusPreDepositDTO, BindingResult result) {
+    public ResultDTO<String> modifyPreDeposit(@Valid CusPreDepositDTO cusPreDepositDTO, BindingResult result) {
         if (!result.hasErrors()) {
             if (null != cusPreDepositDTO && null != cusPreDepositDTO.getCusId() && cusPreDepositDTO.getCusId() != 0){
                 if (null != cusPreDepositDTO.getChangeMoney() && cusPreDepositDTO.getChangeMoney() != 0) {
-                    this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
+                    try {
+                        this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+                    }
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else{
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);

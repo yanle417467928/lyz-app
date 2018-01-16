@@ -25,6 +25,8 @@ public class PhotoOrderListResponse {
     private String createTime;
     //状态（待处理、已下单、已支付、完成）
     private String status;
+    //拍照下单单号
+    private String photoOrderNo;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();

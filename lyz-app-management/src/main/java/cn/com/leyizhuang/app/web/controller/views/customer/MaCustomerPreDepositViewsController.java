@@ -26,9 +26,15 @@ public class MaCustomerPreDepositViewsController extends BaseController {
 
     @Autowired
     private MaCustomerService maCustomerService;
+
     /**
-     * 跳转顾客预存款列表
+     * @title   跳转顾客预存款列表
+     * @descripe
+     * @param
      * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/1/15
      */
     @RequestMapping(value = "/list")
     public String getCustomerList() {

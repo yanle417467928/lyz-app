@@ -25,23 +25,13 @@ public class PhotoOrderDetailsResponse {
     private String status;
     //备注
     private String remark;
-    //收货人姓名
-    private String deliveryName;
-    //收货人号码
-    private String deliveryPhone;
-    //收货详细地址
-    private String detailedAddress;
-    /**
-     * 是否主家收货
-     */
-    private Boolean isOwnerReceiving;
+    //拍照下单单号
+    private String photoOrderNo;
+    //联系人电话
+    private String contactPhone;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();
-    }
-
-    public void setDetailedAddress(String detailedAddress){
-        this.detailedAddress = detailedAddress.replace(" ", "");
     }
 
     public void setPhotos(String photos){

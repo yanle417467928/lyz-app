@@ -229,7 +229,7 @@
                             <div class="form-group">
                                 <label for="transferTime">到账日期
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="选择到账日期"></i>
+                                       data-content="选择到账日期,不选则默认为当日"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>

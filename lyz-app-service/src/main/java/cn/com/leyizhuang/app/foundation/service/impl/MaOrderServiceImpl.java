@@ -87,6 +87,11 @@ public class MaOrderServiceImpl implements MaOrderService{
     }
 
     @Override
+    public MaCompanyOrderDetailResponse findMaCompanyOrderDetailByOrderNumber(String orderNmber) {
+        return maOrderDAO.findMaCompanyOrderDetailByOrderNumber(orderNmber);
+    }
+
+    @Override
     public MaOrderBillingDetailResponse getMaOrderBillingDetailByOrderNumber(String orderNmber) {
         return maOrderDAO.getMaOrderBillingDetailByOrderNumber(orderNmber);
     }
