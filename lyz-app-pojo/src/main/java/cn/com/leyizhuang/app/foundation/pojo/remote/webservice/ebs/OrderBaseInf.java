@@ -171,4 +171,18 @@ public class OrderBaseInf {
     private Double productCouponDiscount;
 
 
+    private String attribute1;
+
+    private String attribute2;
+
+    private String attribute3;
+
+    private String attribute4;
+
+    private String attribute5;
+
+    private String attribute6;
+
+    private String attribute7;
+
 }
