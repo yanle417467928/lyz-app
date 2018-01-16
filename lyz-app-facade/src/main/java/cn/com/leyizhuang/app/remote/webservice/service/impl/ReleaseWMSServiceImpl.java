@@ -111,6 +111,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
             }
+
             //出货订单商品明细
             else if ("tbw_send_task_d".equalsIgnoreCase(strTable)) {
 
@@ -133,6 +134,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
+
+                //退货单返配上架头
             } else if ("tbw_back_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
@@ -156,6 +159,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
+
+                //退货单返配上架明细
             } else if ("tbw_back_d".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
@@ -171,6 +176,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
+
+                //获取配送取货配送员
             } else if ("tbw_send_task_Driver".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
@@ -197,6 +204,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
+                //配送单物流详情
             } else if ("tbw_out_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
@@ -217,6 +225,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取wms物流信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
+                //获取仓库列表
+            } else if ("".equalsIgnoreCase(strTable)) {
+
             }
 
         } catch (ParserConfigurationException e) {

@@ -29,7 +29,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query) {
         PageHelper.startPage(offset, size);
         List<AllocationVO> allocationVOList;
-        if (null != query.getCity() || null != query.getEndTime() || null != query.getFormName() || null != query.getStatusNumber()
+        if (null != query.getCity() || null != query.getEndDateTime() || null != query.getFormName() || null != query.getStatusNumber()
                 || null != query.getToName() || null != query.getStartDateTime()) {
             query.transformAttribute();
             allocationVOList = ityAllocationDAO.queryByAllocationQuery(query);

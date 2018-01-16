@@ -120,7 +120,6 @@
                         <li class="list-group-item">
                             <b>调入门店名称</b> <a class="pull-right" id="allocationToName"></a>
                         </li>
-
                         <li class="list-group-item">
                             <b>状态</b> <a class="pull-right" id="status"></a>
                         </li>
@@ -140,12 +139,24 @@
                             <b>修改时间</b> <a class="pull-right" id="modifyTime"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>调拨明细</b> <a class="pull-right" id="details"></a>
-
-
+                            <b>调拨明细</b>
+                            <table id="details" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>商品编码</th>
+                                    <th>商品名称</th>
+                                    <th>数量</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </li>
                         <li class="list-group-item">
-                            <b>调拨轨迹</b> <a class="pull-right" id="trails"></a>
+                            <b>调拨轨迹</b> <a class="pull-right" id=""></a>
+                            <table id="trails" class="table table-bordered">
+
+                            </table>
                         </li>
                     </ul>
                 </div>
@@ -362,12 +373,20 @@
                                 if (null === data.details) {
                                     data.details = '-';
                                 }
-                                $('#details').html(data.details);
+                                var str = "";
+                                $.each(data.details, function (i, item) {
+                                    str += "<tr><td>" + item.sku + "</td><td>" + item.skuName + "</td><td>" + item.qty + "</td></tr>";
+                                });
+                                $('#details').find('tbody').append(str);
 
                                 if (null === data.trails) {
                                     data.trails = '-';
                                 }
-                                $('#trails').html(data.trails);
+                                var temp = "";
+                                $.each(data.trails, function (j, item) {
+                                    temp += "<tr><td>" + item.operator + "</td><td>" + item.operation + "</td><td>" + item.operateTime + "</td></tr>";
+                                });
+                                $('#trails').find('tbody').append(temp);
 
                                 $('#information').modal();
                             } else {

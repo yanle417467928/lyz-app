@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = MaAllocationRestController.PRE_URL, produces = "application/json;charset=utf8")
-public class MaAllocationRestController extends BaseRestController {
+public class MaAllocationRestController {
 
     protected final static String PRE_URL = "/rest/store/allocation";
 
@@ -39,9 +39,7 @@ public class MaAllocationRestController extends BaseRestController {
 
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存调拨分页查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords, query);
 
-        size = getSize(size);
-        Integer page = getPage(offset, size);
-        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(page, size, keywords, query);
+        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(offset, size, keywords, query);
         return new GridDataVO<AllocationVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
     }
 
