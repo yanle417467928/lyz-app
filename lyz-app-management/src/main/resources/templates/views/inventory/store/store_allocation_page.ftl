@@ -34,10 +34,10 @@
             <div class="box box-primary">
                 <form class="form-horizontal" id="formSearch">
                     <div id="" class="box-body form-inline">
-                        <input name="startTime" type="text" class="form-control datepicker" id="startTime"
+                        <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
                                placeholder="开始时间">
                         至
-                        <input name="endTime" type="text" class="form-control datepicker" id="endTime"
+                        <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
                                placeholder="结束时间">
                         <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
                             <i class="fa fa-search"></i> 查询
@@ -48,7 +48,7 @@
                         <input type="hidden" id="formName" name="formName">
                         <input type="hidden" id="toName" name="toName">
                         <input type="hidden" id="city" name="city">
-                        <input type="hidden" id="statusNumber" name="statusNumber">
+                        <input type="hidden" id="allocationTypeEnum" name="allocationTypeEnum">
                     </div>
                     <div id="toolbar" class="form-inline">
                         <button id="btn_add" type="button" class="btn btn-default">
@@ -60,20 +60,19 @@
                         </select>
                         <select name="selectFromName" id="selectFromName" class="form-control select"
                                 style="width:auto;" title="调出门店">
-                            <option value="-1">调出门店</option>
+                            <option value="-1">选择调出门店</option>
                         </select>
                         <select name="selectToName" id="selectToName" class="form-control select"
                                 style="width:auto;" title="调入门店">
-                            <option value="-1">调入门店</option>
+                            <option value="-1">选择调入门店</option>
                         </select>
                         <select name="selectStatus" id="selectStatus" class="form-control select"
                                 style="width:auto;" title="选择状态">
-                            <option value="-1">选择状态</option>
-                            <option value="1" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建
+                            <option value="NEW" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建
                             </option>
-                            <option value="2" <#if status?? && status==2>selected</#if>>已出库</option>
-                            <option value="3" <#if status?? && status==3>selected</#if>>已入库</option>
-                            <option value="4" <#if status?? && status==4>selected</#if>>已作废</option>
+                            <option value="SENT" <#if status?? && status==2>selected</#if>>已出库</option>
+                            <option value="ENTERED" <#if status?? && status==3>selected</#if>>已入库</option>
+                            <option value="CANCELLED" <#if status?? && status==4>selected</#if>>已作废</option>
                         </select>
                     </div>
                 </form>
@@ -209,7 +208,18 @@
         }, {
             field: 'status',
             title: '状态',
-            align: 'center'
+            align: 'center',
+            formatter: function (value, row, index) {
+                if ('NEW' === value) {
+                    return '<span class="">新建</span>';
+                } else if ('SENT' === value) {
+                    return '<span class="">已出库</span>';
+                } else if ('ENTERED' === value) {
+                    return '<span class="">已入库</span>';
+                } else if ('CANCELLED' === value) {
+                    return '<span class="">已作废</span>';
+                }
+            }
         }, {
             field: 'modifyTime',
             title: '修改时间',
@@ -224,7 +234,7 @@
             $('#city').val($('#selectCity').val());
             $('#formName').val($('#selectFromName').val());
             $('#toName').val($('#selectToName').val());
-            $('#statusNumber').val($('#selectStatus').val());
+            $('#allocationTypeEnum').val($('#selectStatus').val());
             $grid.searchTable('dataGrid', 'formSearch');
         });
 
@@ -335,8 +345,15 @@
                                 if (null === data.status) {
                                     data.status = '-';
                                 }
-                                $('#status').html(data.status);
-
+                                if ('NEW' === data.status) {
+                                    $('#status').html("新建")
+                                } else if ('SENT' === data.status) {
+                                    $('#status').html("已出库")
+                                } else if ('ENTERED' === data.status) {
+                                    $('#status').html("已入库")
+                                } else if ('CANCELLED' === data.status) {
+                                    $('#status').html("已作废")
+                                }
                                 if (null === data.allocationFromName) {
                                     data.allocationFromName = '-';
                                 }

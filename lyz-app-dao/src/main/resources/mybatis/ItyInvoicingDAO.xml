@@ -11,7 +11,7 @@
         sku goodsCode,
         sku_name goodsTitle,
         change_qty changeValue,
-        DATE_FORMAT(change_time,'%y-%m-%d %H:%i:%s') changeDate,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
         reference_number referenceOrder
         from city_inventory_available_qty_change_log
         <if test="null != keywords">
@@ -32,11 +32,11 @@
         sku goodsCode,
         sku_name goodsTitle,
         change_qty changeValue,
-        DATE_FORMAT(change_time,'%y-%m-%d %H:%i:%s') changeDate,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
         reference_number referenceOrder
         from city_inventory_available_qty_change_log
         WHERE TRUE
-        <if test="city != null">
+        <if test="city != null and city != -1">
             AND city_id = #{city}
         </if>
         <if test="startDateTime != null">
@@ -57,7 +57,7 @@
         sku goodsCode,
         sku_name goodsTitle,
         change_qty changeValue,
-        DATE_FORMAT(change_time,'%y-%m-%d %H:%i:%s') changeDate,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
         reference_number referenceOrder
         from st_inventory_available_qty_change_log
         <if test="null != keywords">
@@ -78,11 +78,11 @@
         sku goodsCode,
         sku_name goodsTitle,
         change_qty changeValue,
-        DATE_FORMAT(change_time,'%y-%m-%d %H:%i:%s') changeDate,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
         reference_number referenceOrder
         from st_inventory_available_qty_change_log
         WHERE TRUE
-        <if test="store != null">
+        <if test="store != null and store != -1">
             AND store_id = #{store}
         </if>
         <if test="startDateTime != null">

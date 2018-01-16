@@ -10,6 +10,8 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
 </head>
 <body>
 
@@ -34,25 +36,31 @@
             <div class="box box-primary">
                 <form class="form-horizontal" id="formSearch">
                     <div id="" class="box-body form-inline">
-                        <select size="5" name="city" id="city" class="form-control select" style="width:auto;"
-                                title="选择城市">
-                            <option value="-1">选择城市</option>
-                        </select>
-                        <select size="5" name="store" id="store" class="form-control select"
-                                style="width:auto;" title="调出门店">
-                            <option value="-1">选择门店</option>
-                        </select>
-                        <input name="startTime" type="text" class="form-control datepicker" id="startTime"
-                               placeholder="开始时间">
-                        至
-                        <input name="endTime" type="text" class="form-control datepicker" id="endTime"
-                               placeholder="结束时间">
-                        <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
-                            <i class="fa fa-search"></i> 查询
-                        </button>
-                        <button type="reset" class="btn btn-default">
-                            <i class="fa fa-print"></i> 重置
-                        </button>
+                        <div class="col-xs-2">
+                            <select size="5" name="city" id="city" class="form-control select" style="width:auto;"
+                                    title="选择城市">
+                                <option value="-1">选择城市</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-2">
+                            <select size="5" name="store" id="store" class="form-control select"
+                                    style="width:auto;" title="选择门店">
+                                <option value="-1">选择调出门店</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-8">
+                            <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
+                                   placeholder="开始时间">
+                            至
+                            <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
+                                   placeholder="结束时间">
+                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
+                                <i class="fa fa-search"></i> 查询
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-print"></i> 重置
+                            </button>
+                        </div>
                     </div>
                     <div id="toolbar" class="btn-group">
                     <#--<button id="btn_add" type="button" class="btn btn-default">
@@ -210,6 +218,7 @@
 
     function findCityList() {
         var city = "";
+        var $city = $('#city');
         $.ajax({
             url: '/rest/citys/findCitylist',
             method: 'GET',
@@ -224,7 +233,9 @@
                 $.each(result, function (i, item) {
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 });
-                $("#selectCity").append(city);
+                $city.append(city);
+                $city.selectpicker('refresh');
+                $city.selectpicker('render');
             }
         });
     }
@@ -232,8 +243,7 @@
 
     function findStoreList() {
         var store = "";
-        var fromName = $("#selectFromName");
-        var toName = $("#selectToName");
+        var $store = $('#store');
         $.ajax({
             url: '/rest/stores/findStorelist',
             method: 'GET',
@@ -248,8 +258,9 @@
                 $.each(result, function (i, item) {
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 });
-                fromName.append(store);
-                toName.append(store);
+                $store.append(store);
+                $store.selectpicker('refresh');
+                $store.selectpicker('render');
             }
         });
     }

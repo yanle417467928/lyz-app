@@ -4,10 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * @author Jerry.Ren
  * Notes:
@@ -30,42 +26,13 @@ public class InvoicingQuery {
      * 门店
      */
     private Long store;
-
-    /**
-     * 开始时间
-     */
-    private String startTime;
     /**
      * 开始时间date格式
      */
-    private Date startDateTime;
-    /**
-     * 结束时间
-     */
-    private String endTime;
+    private String startDateTime;
     /**
      * 结束时间date格式
      */
-    private Date endDateTime;
+    private String endDateTime;
 
-    public InvoicingQuery transformAttribute() {
-        if ("-1".equals(this.city.toString())) {
-            this.city = null;
-        }
-        if ("-1".equals(this.store.toString())) {
-            this.store = null;
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            if (null != startTime) {
-                this.startDateTime = sdf.parse(this.startTime);
-            }
-            if (null != endTime) {
-                this.endDateTime = sdf.parse(this.endTime);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
 }

@@ -11,7 +11,7 @@
         allocation_from_name,
         allocation_to_name,
         city_name,
-        DATE_FORMAT(modify_time,'%y-%m-%d %H:%i:%s') modify_time
+        DATE_FORMAT(modify_time,'%Y-%m-%d %H:%i:%s') modify_time
         from ity_allocation
         <if test="null != keywords">
             WHERE ity_allocation.number LIKE concat('%',#{keywords},'%')
@@ -30,12 +30,14 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
         SELECT *
         FROM ity_allocation_detail
+        WHERE allocation_id = #{id}
     </select>
 
     <select id="queryTrailsByAllocationId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationTrail">
         SELECT *
         FROM ity_allocation_trail
+        WHERE allocation_id = #{id}
     </select>
     <select id="queryByAllocationQuery"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery"
@@ -48,16 +50,16 @@
         allocation_from_name,
         allocation_to_name,
         city_name,
-        DATE_FORMAT(modify_time,'%y-%m-%d %H:%i:%s') modify_time
+        DATE_FORMAT(modify_time,'%Y-%m-%d %H:%i:%s') modify_time
         from ity_allocation
         WHERE TRUE
-        <if test="city != null">
+        <if test="null != city and city != -1">
             AND city_id = #{city}
         </if>
-        <if test="formName != null">
+        <if test="null != formName and formName != -1">
             AND allocation_from = #{formName}
         </if>
-        <if test="toName != null">
+        <if test=" null != toName and toName != -1">
             AND allocation_to = #{toName}
         </if>
         <if test="allocationTypeEnum != null">

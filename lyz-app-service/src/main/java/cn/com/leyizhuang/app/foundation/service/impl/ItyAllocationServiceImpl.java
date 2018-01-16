@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
@@ -29,13 +30,11 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query) {
         PageHelper.startPage(offset, size);
         List<AllocationVO> allocationVOList;
-        if (null != query.getCity() || null != query.getEndDateTime() || null != query.getFormName() || null != query.getStatusNumber()
-                || null != query.getToName() || null != query.getStartDateTime()) {
-            query.transformAttribute();
-            allocationVOList = ityAllocationDAO.queryByAllocationQuery(query);
-        } else {
+        if (StringUtils.isNotBlank(keywords)) {
             allocationVOList = ityAllocationDAO.queryListVO(keywords);
+            return new PageInfo<>(allocationVOList);
         }
+        allocationVOList = ityAllocationDAO.queryByAllocationQuery(query);
         return new PageInfo<>(allocationVOList);
     }
 
