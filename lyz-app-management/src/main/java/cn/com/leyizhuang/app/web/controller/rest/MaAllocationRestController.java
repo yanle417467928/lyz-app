@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDeta
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -32,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = MaAllocationRestController.PRE_URL, produces = "application/json;charset=utf8")
-public class MaAllocationRestController {
+public class MaAllocationRestController extends BaseRestController{
 
     protected final static String PRE_URL = "/rest/store/allocation";
 

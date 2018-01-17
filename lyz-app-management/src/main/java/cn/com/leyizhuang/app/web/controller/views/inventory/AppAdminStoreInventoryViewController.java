@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.inventory;
 
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
+import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,12 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AppAdminStoreInventoryViewController.class);
     protected final static String PRE_URL = "/views/admin/inventory";
+
     @Autowired
     private AppAdminStoreInventoryService storeInventoryService;
+
+    @Autowired
+    private ItyAllocationService allocationService;
 
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
@@ -55,6 +60,18 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     @RequestMapping("/allocation/add")
     public String addAllocation(Model model) {
         return "/views/inventory/store/store_allocation_add";
+    }
+
+    /**
+     * 调拨单详情
+     * @param id
+     * @param map
+     * @return
+     */
+    @RequestMapping("/allocation/detail")
+    public String allocationDetail(Long id,Model map){
+
+        return "/views/inventory/store/store_allocation_detail";
     }
     /**
      * 库存要货

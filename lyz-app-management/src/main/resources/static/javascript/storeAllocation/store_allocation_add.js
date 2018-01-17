@@ -79,7 +79,7 @@ function formValidate() {
         $http.POST(url, data, function (result) {
             if (0 === result.code) {
                 $notify.info(result.message);
-                window.location.href = "/view/store/allocation/allocation";
+                window.location.href = "/views/admin/inventory/allocation";
             } else {
                 $notify.danger(result.message);
                 $('#allocation_form').bootstrapValidator('disableSubmitButtons', false);
