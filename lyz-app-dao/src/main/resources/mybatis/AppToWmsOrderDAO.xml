@@ -229,6 +229,15 @@
         WHERE order_number = #{orderNo};
     </select>
 
+    <select id="findRequiringOrderList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
+        select *
+        from inter_atw_order_requsition
+        <if test="null != keywords">
+            WHERE inter_atw_order_requsition.order_number LIKE concat('%',#{keywords},'%')
+        </if>
+    </select>
+
     <select id="findReturnOrderByReturnOrderNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
         SELECT *
@@ -241,6 +250,13 @@
         SELECT *
         FROM inter_atw_order_requisition_goods
         WHERE order_number = #{orderNo};
+    </select>
+
+    <select id="findAtwRequisitionOrderById"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
+        SELECT *
+        FROM inter_atw_order_requsition
+        WHERE id = #{id};
     </select>
 
 </mapper>

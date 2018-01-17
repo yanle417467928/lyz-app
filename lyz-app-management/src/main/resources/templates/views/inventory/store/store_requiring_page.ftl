@@ -63,43 +63,45 @@
                     </span>
                     <ul id="structureAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>城市id</b> <a class="pull-right" id="cityId"></a>
+                            <b>订单编号</b> <a class="pull-right" id="orderNumber"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>城市编码</b> <a class="pull-right" id="cityCode"></a>
+                            <b>商品列表</b>
+
+                            <table id="goodsList" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>商品编码</th>
+                                    <th>商品名称</th>
+                                    <th>数量</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </li>
                         <li class="list-group-item">
-                            <b>城市名称</b> <a class="pull-right" id="cityName"></a>
+                            <b>收货地址</b>
+
+                            <table id="detailAddress" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>门店名称</th>
+                                    <th>门店地址</th>
+                                    <th>门店电话</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </li>
                         <li class="list-group-item">
-                            <b>门店id</b> <a class="pull-right" id="storeId"></a>
+                            <b>备注信息</b>
+                            <textarea id="remarkInfo"></textarea>
                         </li>
                         <li class="list-group-item">
-                            <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>门店名称</b> <a class="pull-right" id="storeName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>商品id</b> <a class="pull-right" id="gid"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>商品编码</b> <a class="pull-right" id="sku"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>商品名称</b> <a class="pull-right" id="skuName"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>可售门店库存</b> <a class="pull-right" id="availableIty"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>真实门店库存</b> <a class="pull-right" id="realIty"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                            <b>后台备注信息</b>
+                            <textarea id="managerRemarkInfo"></textarea>
                         </li>
                     </ul>
                 </div>
@@ -112,7 +114,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/requiring/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -176,7 +178,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/store/inventory/' + id,
+                        url: '/rest/store/requiring/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -190,72 +192,41 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html("门店库存详情");
+                                $('#menuTitle').html("要货单详情");
 
-                                if (null === data.cityId) {
-                                    data.cityId = '-';
+                                if (null === data.orderNumber) {
+                                    data.orderNumber = '-';
                                 }
-                                $('#cityId').html(data.cityId);
+                                $('#orderNumber').html(data.orderNumber);
 
-                                if (null === data.cityCode) {
-                                    data.cityCode = '-';
+                                if (null === data.goodsList) {
+                                    data.goodsList = '-';
                                 }
-                                $('#cityCode').html(data.cityCode);
+                                var str = "";
+                                $.each(data.goodsList, function (i, item) {
+                                    str += "<tr><td>" + item.sku + "</td><td>" + item.skuName + "</td><td>" + item.qty + "</td></tr>";
+                                });
+                                $('#goodsList').find('tbody').append(str);
 
-                                if (null === data.cityName) {
-                                    data.cityName = 'fa fa-circle-o';
-                                }
-                                $('#cityName').html(data.cityName);
 
-                                if (null === data.storeId) {
-                                    data.storeId = '-';
+                                if (null === data.detailAddress) {
+                                    data.detailAddress = '-';
                                 }
-                                $('#storeId').html(data.storeId);
+                                var $tr = "";
+                                $.each(data.detailAddress, function (i, item) {
+                                    str += "<tr><td>" + item.storeName + "</td><td>" + item.storeAddress + "</td><td>" + item.storePhone + "</td></tr>";
+                                });
+                                $('#detailAddress').find('tbody').append($tr);
 
-                                if (null === data.storeCode) {
-                                    data.storeCode = '-';
+                                if (null === data.remarkInfo) {
+                                    data.remarkInfo = '-';
                                 }
-                                $('#storeCode').html(data.storeCode);
+                                $('#remarkInfo').html(data.remarkInfo);
 
-                                if (null === data.storeName) {
-                                    data.storeName = '-';
+                                if (null === data.managerRemarkInfo) {
+                                    data.managerRemarkInfo = '-';
                                 }
-                                $('#storeName').html(data.storeName);
-
-                                if (null === data.gid) {
-                                    data.gid = '-';
-                                }
-                                $('#gid').html(data.gid);
-
-                                if (null === data.sku) {
-                                    data.sku = '-';
-                                }
-                                $('#sku').html(data.sku);
-
-                                if (null === data.skuName) {
-                                    data.skuName = '-';
-                                }
-                                $('#skuName').html(data.skuName);
-
-                                if (null === data.availableIty) {
-                                    data.availableIty = '-';
-                                }
-                                $('#availableIty').html(data.availableIty);
-
-                                if (null === data.realIty) {
-                                    data.realIty = '-';
-                                }
-                                $('#realIty').html(data.realIty);
-
-                                if (null === data.lastUpdateTime) {
-                                    data.lastUpdateTime = '-';
-                                }
-                                $('#lastUpdateTime').html(data.lastUpdateTime);
-
-                                if (null === data.createTime) {
-                                    data.createTime = '-';
-                                }
-                                $('#createTime').html(data.createTime);
+                                $('#managerRemarkInfo').html(data.managerRemarkInfo);
 
                                 $('#information').modal();
                             } else {

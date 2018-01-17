@@ -30,13 +30,17 @@ public class StoreResponse {
      * 门店地址
      */
     private String storeAddress;
+    /**
+     * 门店电话
+     */
+    private String storePhone;
 
 
     public static StoreResponse transform(AppStore store) {
         StoreResponse storeResponse = new StoreResponse();
         storeResponse.setStoreId(store.getStoreId());
         storeResponse.setStoreName(store.getStoreName());
-
+        storeResponse.setStorePhone(store.getPhone());
         if (null != store.getDetailedAddress()) {
             String address = CharactersUtils.generateString(true,
                     store.getProvince(), store.getCity(), store.getArea(), store.getDetailedAddress());

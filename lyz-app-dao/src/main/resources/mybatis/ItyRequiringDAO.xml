@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.ItyRequiringDAO">
+
+    <select id="queryCityInventoryChangeLogList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
+        select
+        id,
+        change_type_desc changType,
+        city_name changeTarget,
+        sku goodsCode,
+        sku_name goodsTitle,
+        change_qty changeValue,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
+        reference_number referenceOrder
+        from city_inventory_available_qty_change_log
+        <if test="null != keywords">
+            WHERE city_inventory_available_qty_change_log.sku_name LIKE concat('%',#{keywords},'%')
+            OR city_inventory_available_qty_change_log.sku LIKE concat('%',#{keywords},'%')
+            OR city_inventory_available_qty_change_log.reference_number LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY changeDate DESC
+    </select>
+
+    <select id="queryInvoicingCityBySelectParam"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingQuery"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
+        select
+        id,
+        change_type_desc changType,
+        city_name changeTarget,
+        sku goodsCode,
+        sku_name goodsTitle,
+        change_qty changeValue,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
+        reference_number referenceOrder
+        from city_inventory_available_qty_change_log
+        WHERE TRUE
+        <if test="city != null and city != -1">
+            AND city_id = #{city}
+        </if>
+        <if test="startDateTime != null">
+            AND change_time &gt;= #{startDateTime}
+        </if>
+        <if test="endDateTime != null">
+            AND change_time &lt;= #{endDateTime}
+        </if>
+        ORDER BY change_time DESC
+    </select>
+
+    <select id="queryStoreInventoryChangeLogList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
+        select
+        id,
+        change_type_desc changType,
+        store_name changeTarget,
+        sku goodsCode,
+        sku_name goodsTitle,
+        change_qty changeValue,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
+        reference_number referenceOrder
+        from st_inventory_available_qty_change_log
+        <if test="null != keywords">
+            WHERE st_inventory_available_qty_change_log.sku_name LIKE concat('%',#{keywords},'%')
+            OR st_inventory_available_qty_change_log.sku LIKE concat('%',#{keywords},'%')
+            OR st_inventory_available_qty_change_log.reference_number LIKE concat('%',#{keywords},'%')
+        </if>
+        ORDER BY changeDate DESC
+    </select>
+
+    <select id="queryInvoicingStoreBySelectParam"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingQuery"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
+        select
+        id,
+        change_type_desc changType,
+        store_name changeTarget,
+        sku goodsCode,
+        sku_name goodsTitle,
+        change_qty changeValue,
+        DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
+        reference_number referenceOrder
+        from st_inventory_available_qty_change_log
+        WHERE TRUE
+        <if test="store != null and store != -1">
+            AND store_id = #{store}
+        </if>
+        <if test="startDateTime != null">
+            AND change_time &gt;= #{startDateTime}
+        </if>
+        <if test="endDateTime != null">
+            AND change_time &lt;= #{endDateTime}
+        </if>
+        ORDER BY change_time DESC
+    </select>
+
+</mapper>

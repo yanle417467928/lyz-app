@@ -96,4 +96,14 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
         }
         return null;
     }
+
+    @Override
+    public List<AtwRequisitionOrder> findRequiringOrderList(String keywords) {
+        return appToWmsOrderDAO.findRequiringOrderList(keywords);
+    }
+
+    @Override
+    public AtwRequisitionOrder findAtwRequisitionOrderById(Long id) {
+        return appToWmsOrderDAO.findAtwRequisitionOrderById(id);
+    }
 }

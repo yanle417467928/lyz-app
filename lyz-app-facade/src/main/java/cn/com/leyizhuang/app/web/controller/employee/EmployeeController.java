@@ -124,7 +124,7 @@ public class EmployeeController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new EmployeeLoginResponse(employee.getIdentityType().getValue(), employee.getEmpId(), employee.getCityId()));
+                    new EmployeeLoginResponse(employee.getIdentityType().getValue(), employee.getSellerType().getValue(), employee.getEmpId(), employee.getCityId()));
             logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

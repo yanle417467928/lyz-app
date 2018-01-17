@@ -104,4 +104,19 @@ public interface AppToWmsOrderService {
      * @return 退货单单据
      */
     AtwReturnOrder findReturnOrderByReturnOrderNo(String returnNumber);
+
+    /**
+     * 获取所有要货单列表
+     *
+     * @return
+     */
+    List<AtwRequisitionOrder> findRequiringOrderList(String keywords);
+
+    /**
+     * 根据ID获取要货单
+     *
+     * @param id
+     * @return
+     */
+    AtwRequisitionOrder findAtwRequisitionOrderById(Long id);
 }
