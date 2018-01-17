@@ -119,6 +119,7 @@ public class PhotoOrderController {
             photoOrderDO.setCreateTime(LocalDateTime.now());
             photoOrderDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             photoOrderDO.setContactPhone(contactPhone);
+            photoOrderDO.setContactName(contactName);
             photoOrderDO.setPhotos(photos.toString());
             photoOrderDO.setRemark(remark);
             photoOrderDO.setStatus(PhotoOrderStatus.PENDING);
