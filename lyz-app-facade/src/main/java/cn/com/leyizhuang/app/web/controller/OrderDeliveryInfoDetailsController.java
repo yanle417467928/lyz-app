@@ -58,7 +58,11 @@ public class OrderDeliveryInfoDetailsController {
             //配送员编号
             String deliveryNumber= null;
             if (null != orderDeliveryInfoDetailsList && orderDeliveryInfoDetailsList.size() > 0 ){
-                 deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
+                deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有物流记录", null);
+                logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
             //创建物流详情list
             List<LogisticsDetailResponse> logisticsDetailResponseList = new ArrayList<>();
@@ -71,8 +75,9 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsDetailResponseList.add(logisticsDetailResponse);
             }
             LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber, orderNumber);
-            logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
-
+            if (null != logisticsInformationResponse1) {
+                logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
             logger.info("getOrderDelicery OUT,获取物流详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
