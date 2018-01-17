@@ -377,21 +377,21 @@
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-        cccc.denomination,
-        cccc.CONDITION,
-        cccc.title
+            cccc.denomination,
+            cccc.CONDITION,
+            cccc.title
         FROM
-        cus_customer_cash_coupon cccc
+            cus_customer_cash_coupon cccc
         WHERE
-        cccc.id = #{ccId}
-        AND cccc.cus_id = #{cusId}
-        AND cccc.qty >= #{qty}
-        AND cccc.is_used = FALSE
-        AND cccc.effective_start_time &lt; NOW()
-        AND (
-        cccc.effective_end_time IS NULL
-        OR cccc.effective_end_time &gt; NOW()
-        )
+            cccc.id = #{ccId}
+            AND cccc.cus_id = #{cusId}
+            AND cccc.qty >= #{qty}
+            AND cccc.is_used = FALSE
+            AND cccc.effective_start_time &lt; NOW()
+            AND (
+                cccc.effective_end_time IS NULL
+                OR cccc.effective_end_time &gt; NOW()
+            )
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
@@ -580,6 +580,7 @@
             description
         FROM cus_sign_log
         WHERE cus_id = #{cusId}
+        ORDER BY sign_time DESC;
     </select>
 
     <insert id="saveSignLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog">
