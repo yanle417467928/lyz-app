@@ -304,34 +304,34 @@ public class MaterialListController {
             }
             materialCustomerCouponResponse.setCouponsList(listResponses);
         }
-        List<MaterialListType> materialListTypes = new ArrayList<MaterialListType>();
-        materialListTypes.add(MaterialListType.PHOTO_ORDER);
-        List<PhotoOrderMaterialListResponse> photoOrderMaterialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityTypeAndMaterialListType(userId, appIdentityType, materialListTypes);
-        List<MaterialPhotoOrderResponse> materialPhotoOrderResponses = new ArrayList<MaterialPhotoOrderResponse>();
-        if (null != photoOrderMaterialListResponses) {
-            for (int i = 0; i < photoOrderMaterialListResponses.size(); i++) {
-                PhotoOrderMaterialListResponse photoOrderMaterialListResponse = photoOrderMaterialListResponses.get(i);
-                if (null != photoOrderMaterialListResponse && null != photoOrderMaterialListResponse.getPhotoOrderNo()) {
-                    Boolean flag = true;
-                    for (int j = 0; j < materialPhotoOrderResponses.size(); j++) {
-                        if (photoOrderMaterialListResponse.getPhotoOrderNo().equals(materialPhotoOrderResponses.get(j).getPhotoOrderNo())) {
-                            materialPhotoOrderResponses.get(j).getGoodsList().add(photoOrderMaterialListResponse);
-                            flag = false;
-                        }
-                    }
-                    if (flag) {
-                        MaterialPhotoOrderResponse materialPhotoOrderResponse = new MaterialPhotoOrderResponse();
-                        materialPhotoOrderResponse.setPhotoOrderNo(photoOrderMaterialListResponse.getPhotoOrderNo());
-                        List<PhotoOrderMaterialListResponse> goodsList = new ArrayList<PhotoOrderMaterialListResponse>();
-                        goodsList.add(photoOrderMaterialListResponse);
-                        materialPhotoOrderResponse.setGoodsList(goodsList);
-                        materialPhotoOrderResponses.add(materialPhotoOrderResponse);
-                    }
-                }
-            }
-        }
+//        List<MaterialListType> materialListTypes = new ArrayList<MaterialListType>();
+//        materialListTypes.add(MaterialListType.PHOTO_ORDER);
+//        List<PhotoOrderMaterialListResponse> photoOrderMaterialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityTypeAndMaterialListType(userId, appIdentityType, materialListTypes);
+//        List<MaterialPhotoOrderResponse> materialPhotoOrderResponses = new ArrayList<MaterialPhotoOrderResponse>();
+//        if (null != photoOrderMaterialListResponses) {
+//            for (int i = 0; i < photoOrderMaterialListResponses.size(); i++) {
+//                PhotoOrderMaterialListResponse photoOrderMaterialListResponse = photoOrderMaterialListResponses.get(i);
+//                if (null != photoOrderMaterialListResponse && null != photoOrderMaterialListResponse.getPhotoOrderNo()) {
+//                    Boolean flag = true;
+//                    for (int j = 0; j < materialPhotoOrderResponses.size(); j++) {
+//                        if (photoOrderMaterialListResponse.getPhotoOrderNo().equals(materialPhotoOrderResponses.get(j).getPhotoOrderNo())) {
+//                            materialPhotoOrderResponses.get(j).getGoodsList().add(photoOrderMaterialListResponse);
+//                            flag = false;
+//                        }
+//                    }
+//                    if (flag) {
+//                        MaterialPhotoOrderResponse materialPhotoOrderResponse = new MaterialPhotoOrderResponse();
+//                        materialPhotoOrderResponse.setPhotoOrderNo(photoOrderMaterialListResponse.getPhotoOrderNo());
+//                        List<PhotoOrderMaterialListResponse> goodsList = new ArrayList<PhotoOrderMaterialListResponse>();
+//                        goodsList.add(photoOrderMaterialListResponse);
+//                        materialPhotoOrderResponse.setGoodsList(goodsList);
+//                        materialPhotoOrderResponses.add(materialPhotoOrderResponse);
+//                    }
+//                }
+//            }
+//        }
 
-        returnMap.put("photoListRes",materialPhotoOrderResponses);
+//        returnMap.put("photoListRes",materialPhotoOrderResponses);
         returnMap.put("couponListRes",materialCustomerCouponResponse);
         returnMap.put("auditListRes", materialWorkerAuditResponse);
         returnMap.put("materialListRes", normalMaterialListRespons);
