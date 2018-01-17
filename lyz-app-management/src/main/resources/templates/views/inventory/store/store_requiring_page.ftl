@@ -126,8 +126,8 @@
             title: 'ID',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
+            field: 'orderNumber',
+            title: '订单号',
             events: {
                 'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
@@ -138,20 +138,20 @@
             },
             align: 'center'
         }, {
-            field: 'goodsName',
-            title: '商品名称',
+            field: 'city',
+            title: '城市',
             align: 'center'
         }, {
-            field: 'goodsCode',
-            title: '商品编码',
+            field: 'storeName',
+            title: '门店名称',
             align: 'center'
         }, {
-            field: 'realInventory',
-            title: '真实库存',
+            field: 'remarkInfo',
+            title: '商户备注',
             align: 'center'
         }, {
-            field: 'soldInventory',
-            title: '可售库存',
+            field: 'orderTime',
+            title: '下单时间',
             align: 'center'
         }]);
 

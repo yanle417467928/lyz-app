@@ -19,7 +19,12 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderReceiptInf {
 
-    private Long id;
+    private Long receiptId;
+
+    /**
+     * 分公司id
+     */
+    private Long sobId;
 
     /**
      * 创建时间
@@ -62,7 +67,7 @@ public class OrderReceiptInf {
     /**
      * 门店编码
      */
-    private String storeCode;
+    private String diySiteCode;
 
     /**
      * 收款时间
@@ -79,6 +84,36 @@ public class OrderReceiptInf {
      * 收款方式说明
      */
     private String description;
+
+    /**
+     * 用户id
+     */
+    private Long userId;
+
+    /**
+     * 用户姓名
+     */
+    private String username;
+
+    /**
+     * 用户电话
+     */
+    private String userPhone;
+
+    /**
+     * 导购id
+     */
+    private Long guideId;
+
+    private String attribute1;
+
+    private String attribute2;
+
+    private String attribute3;
+
+    private String attribute4;
+
+    private String attribute5;
 
 
 }

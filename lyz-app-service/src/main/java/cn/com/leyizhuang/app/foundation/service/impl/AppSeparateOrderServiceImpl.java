@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -10,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,12 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private AppOrderService orderService;
+
+    @Resource
+    private EbsSenderService ebsSenderService;
+
+    @Resource
+    private AppStoreService storeService;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -137,7 +145,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                             goodsInf.setCreateTime(orderBaseInf.getCreateTime());
                             goodsInf.setMainOrderNumber(orderNumber);
                             goodsInf.setOrderNumber(orderBaseInf.getOrderNumber());
-                            goodsInf.setOrderLineId(goodsInfo.getId());
+                            goodsInf.setMainOrderLineId(goodsInfo.getId());
                             goodsInf.setCashCouponDiscount(goodsInfo.getCashCouponSharePrice());
                             goodsInf.setLebiDiscount(goodsInfo.getLbSharePrice());
                             goodsInf.setPromotionDiscount(goodsInfo.getPromotionSharePrice());
@@ -147,7 +155,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                             goodsInf.setGiftFlag(goodsInfo.getGoodsLineType() == AppGoodsLineType.PRESENT ? AppWhetherFlag.Y : AppWhetherFlag.N);
                             goodsInf.setSku(goodsInfo.getSku());
                             goodsInf.setGoodsTitle(goodsInfo.getSkuName());
-                            goodsInf.setRetailPrice(goodsInfo.getRetailPrice());
+                            goodsInf.setLsPrice(goodsInfo.getRetailPrice());
                             goodsInf.setHyPrice(goodsInfo.getVIPPrice());
                             goodsInf.setJxPrice(goodsInfo.getWholesalePrice());
                             goodsInf.setSettlementPrice(goodsInfo.getSettlementPrice());
@@ -174,7 +182,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         orderBaseInf.setPromotionDiscount(separateOrderPromotionDiscount);
                         orderBaseInf.setProductCouponDiscount(separateOrderProductCouponDiscount);
                         orderBaseInf.setSobId(baseInfo.getSobId());
-                        orderBaseInf.setStoreCode(baseInfo.getStoreCode());
+                        orderBaseInf.setDiySiteCode(baseInfo.getStoreCode());
                         orderBaseInf.setStoreOrgId(baseInfo.getStoreOrgId());
                         orderBaseInf.setOrderDate(orderBaseInf.getCreateTime());
                         //订单类型
@@ -229,7 +237,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                             }
                             couponInf.setSku(info.getSku());
                         }
-                        couponInf.setPurchasePrice(info.getPurchasePrice());
+                        couponInf.setBuyPrice(info.getPurchasePrice());
                         couponInf.setCostPrice(info.getCostPrice());
                         couponInf.setQuantity(1);
                         couponInfList.add(couponInf);
@@ -248,8 +256,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         receiptInf.setReceiptDate(billing.getPayTime());
                         receiptInf.setReceiptType(billing.getPayType());
                         receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
-                        receiptInf.setStoreCode(baseInfo.getStoreCode());
+                        receiptInf.setDiySiteCode(baseInfo.getStoreCode());
                         receiptInf.setReceiptNumber(billing.getReceiptNumber());
+                        receiptInf.setSobId(baseInfo.getSobId());
+                        receiptInf.setUserId(null == baseInfo.getCustomerId() ? baseInfo.getCreatorId() : baseInfo.getCustomerId());
+                        receiptInf.setUserPhone(null == baseInfo.getCustomerPhone() ? baseInfo.getCreatorPhone() : baseInfo.getCustomerPhone());
+                        receiptInf.setUsername(null == baseInfo.getCustomerName() ? baseInfo.getCreatorName() : baseInfo.getCustomerName());
+                        receiptInf.setGuideId(baseInfo.getSalesConsultId());
                         receiptInfList.add(receiptInf);
                     }
                 }
@@ -274,6 +287,75 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void saveOrderReceiptInf(OrderReceiptInf receiptInf) {
         if (null != receiptInf) {
             separateOrderDAO.saveOrderReceiptInf(receiptInf);
+        }
+    }
+
+    @Override
+    public void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != orderNumber) {
+            separateOrderDAO.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderNumber, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(Long orderLineId, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != orderLineId) {
+            separateOrderDAO.updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(orderLineId, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void sendOrderBaseInfAndOrderGoodsInf(String orderNumber) {
+        if (null != orderNumber) {
+            //发送订单头、商品行
+            List<OrderBaseInf> pendingSendOrderBaseInfs = separateOrderDAO.getPendingSendOrderBaseInf(orderNumber);
+            for (OrderBaseInf baseInf : pendingSendOrderBaseInfs) {
+                List<OrderGoodsInf> orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(baseInf.getOrderNumber());
+                ebsSenderService.sendOrderAndGoodsToEbsAndRecord(baseInf, orderGoodsInfList);
+            }
+
+        }
+    }
+
+    @Override
+    public void sendOrderReceiptInf(String orderNumber) {
+        if (null != orderNumber) {
+            List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInf(orderNumber);
+            if (null != receiptInfList && receiptInfList.size() > 0) {
+                ebsSenderService.sendOrderReceiptInfAndRecord(receiptInfList);
+            }
+        }
+    }
+
+    @Override
+    public void sendOrderCouponInf(String orderNumber) {
+        if (null != orderNumber) {
+            List<OrderCouponInf> orderCouponInfList = separateOrderDAO.getOrderCouponInf(orderNumber);
+            if (null != orderCouponInfList && orderCouponInfList.size() > 0) {
+                ebsSenderService.sendOrderCouponInfAndRecord(orderCouponInfList);
+            }
+
+        }
+    }
+
+    @Override
+    public void updateOrderCouponFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != couponInfIds && couponInfIds.size() > 0) {
+            separateOrderDAO.updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void updateOrderGoodsInfByOrderNumber(String orderNumber, AppWhetherFlag flag, String message, Date sendTime) {
+        if (null != orderNumber) {
+            separateOrderDAO.updateOrderGoodsInfByOrderNumber(orderNumber, flag, message, sendTime);
+        }
+    }
+
+    @Override
+    public void updateOrderReceiptFlagAndSendTimeAndErrorMsg(List<Long> receiptInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiptInfIds && receiptInfIds.size() > 0) {
+            separateOrderDAO.updateOrderReceiptFlagAndSendTimeAndErrorMsg(receiptInfIds, msg, sendTime, flag);
         }
     }
 }

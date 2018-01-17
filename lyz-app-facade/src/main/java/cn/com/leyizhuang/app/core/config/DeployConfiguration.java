@@ -40,11 +40,6 @@ public class DeployConfiguration {
     @Value("${deploy.oss.bucket}")
     private String ossBucket;
 
-    @Value("${deploy.wms.url}")
-    private String wmsUrl;
-
-    @Value("${deploy.ebs.newUrl}")
-    private String ebsNewUrl;
 
 
     @Bean
@@ -57,8 +52,6 @@ public class DeployConfiguration {
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
-        LOG.info("wmsUrl : {}", wmsUrl);
-        LOG.info("ebsNewUrl : {}", ebsNewUrl);
 
         AppApplicationConstant constant = new AppApplicationConstant();
         constant.setImagePath(imagePath);
@@ -69,8 +62,6 @@ public class DeployConfiguration {
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
-        constant.setWmsUrl(wmsUrl);
-        constant.setEbsUrl(ebsNewUrl);
         return constant;
     }
 
@@ -138,19 +129,4 @@ public class DeployConfiguration {
         this.ossBucket = ossBucket;
     }
 
-    public String getWmsUrl() {
-        return wmsUrl;
-    }
-
-    public void setWmsUrl(String wmsUrl) {
-        this.wmsUrl = wmsUrl;
-    }
-
-    public String getEbsNewUrl() {
-        return ebsNewUrl;
-    }
-
-    public void setEbsNewUrl(String ebsNewUrl) {
-        this.ebsNewUrl = ebsNewUrl;
-    }
 }

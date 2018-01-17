@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.PhotoOrderMaterialListResponse;
 
 import java.util.List;
 import java.util.Set;
@@ -51,4 +53,7 @@ public interface MaterialListService {
     void deleteMaterialListByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> goodsIds);
 
     void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> couponGoodsIds);
+
+    List<PhotoOrderMaterialListResponse> findByUserIdAndIdentityTypeAndMaterialListType(Long userId, AppIdentityType identityType, List<MaterialListType> materialListTypes);
+
 }

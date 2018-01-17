@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public enum MaterialListType {
 
-    NORMAL("正常"), AUDIT_TRANSFORM("料单审核转化"), COUPON_TRANSFORM("产品券转化");
+    NORMAL("正常"), AUDIT_TRANSFORM("料单审核转化"), COUPON_TRANSFORM("产品券转化"), PHOTO_ORDER("拍照订单转化");
 
     private String value;
 

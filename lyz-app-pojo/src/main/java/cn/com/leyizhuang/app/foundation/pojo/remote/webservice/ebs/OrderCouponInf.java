@@ -22,11 +22,19 @@ import java.util.Date;
 public class OrderCouponInf {
 
     private Long id;
-
+    /**
+     * 分公司id
+     */
+    private Long sobId;
     /**
      * 订单号
      */
     private String mainOrderNumber;
+
+    /**
+     * 券类型id
+     */
+    private Long couponTypeId;
 
     /**
      * 券类型: 产品券、现金券
@@ -54,10 +62,14 @@ public class OrderCouponInf {
     private Date sendTime;
 
     /**
-     * 是否传输成功
+     * 是否历史券
      */
     private AppWhetherFlag historyFlag;
 
+    /**
+     * 无用字段，适应EBS接口表
+     */
+    private String promotion;
 
     /**
      * 券id
@@ -67,7 +79,7 @@ public class OrderCouponInf {
     /**
      * 券购买时价值
      */
-    private Double purchasePrice;
+    private Double buyPrice;
 
     /**
      * 券使用时价值
@@ -93,4 +105,13 @@ public class OrderCouponInf {
      * 数量
      */
     private Integer quantity;
+
+    private String attribute1;
+
+    private String attribute2;
+
+    private String attribute3;
+
+    private String attribute4;
+
 }

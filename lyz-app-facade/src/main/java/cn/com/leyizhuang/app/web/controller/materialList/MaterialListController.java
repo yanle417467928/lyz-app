@@ -6,10 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialCustomerCouponResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialWorkerAuditResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -255,7 +252,7 @@ public class MaterialListController {
         //创建顾客产品券返回对象
         MaterialCustomerCouponResponse materialCustomerCouponResponse = new MaterialCustomerCouponResponse();
 
-        Map<String, Object> returnMap = new HashMap<>(3);
+        Map<String, Object> returnMap = new HashMap<>(4);
         AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
 
         if (identityType == 2) {
@@ -307,6 +304,34 @@ public class MaterialListController {
             }
             materialCustomerCouponResponse.setCouponsList(listResponses);
         }
+        List<MaterialListType> materialListTypes = new ArrayList<MaterialListType>();
+        materialListTypes.add(MaterialListType.PHOTO_ORDER);
+        List<PhotoOrderMaterialListResponse> photoOrderMaterialListResponses = this.materialListServiceImpl.findByUserIdAndIdentityTypeAndMaterialListType(userId, appIdentityType, materialListTypes);
+        List<MaterialPhotoOrderResponse> materialPhotoOrderResponses = new ArrayList<MaterialPhotoOrderResponse>();
+        if (null != photoOrderMaterialListResponses) {
+            for (int i = 0; i < photoOrderMaterialListResponses.size(); i++) {
+                PhotoOrderMaterialListResponse photoOrderMaterialListResponse = photoOrderMaterialListResponses.get(i);
+                if (null != photoOrderMaterialListResponse && null != photoOrderMaterialListResponse.getPhotoOrderNo()) {
+                    Boolean flag = true;
+                    for (int j = 0; j < materialPhotoOrderResponses.size(); j++) {
+                        if (photoOrderMaterialListResponse.getPhotoOrderNo().equals(materialPhotoOrderResponses.get(j).getPhotoOrderNo())) {
+                            materialPhotoOrderResponses.get(j).getGoodsList().add(photoOrderMaterialListResponse);
+                            flag = false;
+                        }
+                    }
+                    if (flag) {
+                        MaterialPhotoOrderResponse materialPhotoOrderResponse = new MaterialPhotoOrderResponse();
+                        materialPhotoOrderResponse.setPhotoOrderNo(photoOrderMaterialListResponse.getPhotoOrderNo());
+                        List<PhotoOrderMaterialListResponse> goodsList = new ArrayList<PhotoOrderMaterialListResponse>();
+                        goodsList.add(photoOrderMaterialListResponse);
+                        materialPhotoOrderResponse.setGoodsList(goodsList);
+                        materialPhotoOrderResponses.add(materialPhotoOrderResponse);
+                    }
+                }
+            }
+        }
+
+        returnMap.put("photoListRes",materialPhotoOrderResponses);
         returnMap.put("couponListRes",materialCustomerCouponResponse);
         returnMap.put("auditListRes", materialWorkerAuditResponse);
         returnMap.put("materialListRes", normalMaterialListRespons);

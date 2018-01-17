@@ -1,5 +1,6 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
@@ -7,6 +8,10 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
 </head>
 <body>
 
@@ -29,17 +34,46 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
-                <#--<button id="btn_add" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                    </button>
-                    <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                    </button>
-                    <button id="btn_delete" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
-                    </button>-->
-                </div>
+                <form class="form-horizontal" id="formSearch">
+                    <div id="" class="box-body form-inline">
+                        <div class="col-xs-2">
+                            <select size="5" name="city" id="city" class="form-control select" style="width:auto;"
+                                    title="选择城市">
+                                <option value="-1">选择城市</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-2">
+                            <select size="5" name="store" id="store" class="form-control select"
+                                    style="width:auto;" title="选择门店">
+                                <option value="-1">选择调出门店</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-8">
+                            <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
+                                   placeholder="开始时间">
+                            至
+                            <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
+                                   placeholder="结束时间">
+                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
+                                <i class="fa fa-search"></i> 查询
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-print"></i> 重置
+                            </button>
+                        </div>
+                    </div>
+                    <div id="toolbar" class="btn-group">
+                    <#--<button id="btn_add" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                        <button id="btn_edit" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+                        </button>
+                        <button id="btn_delete" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
+                        </button>-->
+                    </div>
+                </form>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
@@ -66,9 +100,6 @@
                             <b>城市id</b> <a class="pull-right" id="cityId"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>城市编码</b> <a class="pull-right" id="cityCode"></a>
-                        </li>
-                        <li class="list-group-item">
                             <b>城市名称</b> <a class="pull-right" id="cityName"></a>
                         </li>
                         <li class="list-group-item">
@@ -90,16 +121,19 @@
                             <b>商品名称</b> <a class="pull-right" id="skuName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>可售门店库存</b> <a class="pull-right" id="availableIty"></a>
+                            <b>变动数量</b> <a class="pull-right" id="changeQty"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>真实门店库存</b> <a class="pull-right" id="realIty"></a>
+                            <b>变动后数量</b> <a class="pull-right" id="afterChangeQty"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
+                            <b>变动类型</b> <a class="pull-right" id="changeTypeDesc"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                            <b>关联单号</b> <a class="pull-right" id="referenceNumber"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>变动时间</b> <a class="pull-right" id="changeTime"></a>
                         </li>
                     </ul>
                 </div>
@@ -112,7 +146,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/log/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -126,32 +160,32 @@
             title: 'ID',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
-            events: {
-                'click .scan': function (e, value, row) {
-                    $page.information.show(row.id);
-                }
-            },
-            formatter: function (value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            },
+            field: 'changeType',
+            title: '变动类型',
             align: 'center'
         }, {
-            field: 'goodsName',
-            title: '商品名称',
+            field: 'changeTarget',
+            title: '门店/城市',
             align: 'center'
         }, {
             field: 'goodsCode',
             title: '商品编码',
             align: 'center'
         }, {
-            field: 'realInventory',
-            title: '真实库存',
+            field: 'goodsTitle',
+            title: '商品名称',
             align: 'center'
         }, {
-            field: 'soldInventory',
-            title: '可售库存',
+            field: 'changeValue',
+            title: '变动数量',
+            align: 'center'
+        }, {
+            field: 'changeDate',
+            title: '变动时间',
+            align: 'center'
+        }, {
+            field: 'referenceOrder',
+            title: '关联单号',
             align: 'center'
         }]);
 
@@ -168,15 +202,75 @@
                 $('#btn_delete').on('click', function() {
                     $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
                 });*/
+
+        $('#btn_query').on('click', function () {
+            $grid.searchTable('dataGrid', 'formSearch');
+        });
+
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
+        findCityList();
+        findStoreList()
     });
 
+    function findCityList() {
+        var city = "";
+        var $city = $('#city');
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $city.append(city);
+                $city.selectpicker('refresh');
+                $city.selectpicker('render');
+            }
+        });
+    }
+
+
+    function findStoreList() {
+        var store = "";
+        var $store = $('#store');
+        $.ajax({
+            url: '/rest/stores/findStorelist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $store.append(store);
+                $store.selectpicker('refresh');
+                $store.selectpicker('render');
+            }
+        });
+    }
     var $page = {
         information: {
             show: function (id) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/store/inventory/' + id,
+                        url: '/rest/inventory/log' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -190,20 +284,15 @@
                             $global.timer = null;
                             if (0 === result.code) {
                                 var data = result.content;
-                                $('#menuTitle').html("门店库存详情");
+                                $('#menuTitle').html("库存变动详情");
 
                                 if (null === data.cityId) {
                                     data.cityId = '-';
                                 }
                                 $('#cityId').html(data.cityId);
 
-                                if (null === data.cityCode) {
-                                    data.cityCode = '-';
-                                }
-                                $('#cityCode').html(data.cityCode);
-
                                 if (null === data.cityName) {
-                                    data.cityName = 'fa fa-circle-o';
+                                    data.cityName = '-';
                                 }
                                 $('#cityName').html(data.cityName);
 
@@ -237,25 +326,30 @@
                                 }
                                 $('#skuName').html(data.skuName);
 
-                                if (null === data.availableIty) {
-                                    data.availableIty = '-';
+                                if (null === data.changeQty) {
+                                    data.changeQty = '-';
                                 }
-                                $('#availableIty').html(data.availableIty);
+                                $('#changeQty').html(data.changeQty);
 
-                                if (null === data.realIty) {
-                                    data.realIty = '-';
+                                if (null === data.afterChangeQty) {
+                                    data.afterChangeQty = '-';
                                 }
-                                $('#realIty').html(data.realIty);
+                                $('#afterChangeQty').html(data.afterChangeQty);
 
-                                if (null === data.lastUpdateTime) {
-                                    data.lastUpdateTime = '-';
+                                if (null === data.changeTypeDesc) {
+                                    data.changeTypeDesc = '-';
                                 }
-                                $('#lastUpdateTime').html(data.lastUpdateTime);
+                                $('#changeTypeDesc').html(data.changeTypeDesc);
 
-                                if (null === data.createTime) {
-                                    data.createTime = '-';
+                                if (null === data.referenceNumber) {
+                                    data.referenceNumber = '-';
                                 }
-                                $('#createTime').html(data.createTime);
+                                $('#referenceNumber').html(data.referenceNumber);
+
+                                if (null === data.changeTime) {
+                                    data.changeTime = '-';
+                                }
+                                $('#changeTime').html(data.changeTime);
 
                                 $('#information').modal();
                             } else {

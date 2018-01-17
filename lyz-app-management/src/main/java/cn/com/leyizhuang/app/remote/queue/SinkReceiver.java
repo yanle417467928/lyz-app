@@ -1,21 +1,10 @@
 package cn.com.leyizhuang.app.remote.queue;
 
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppOrderSubjectType;
-import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
-import cn.com.leyizhuang.app.core.constant.ProductType;
 import cn.com.leyizhuang.app.core.utils.JsonUtils;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
-import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -24,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.*;
 
 /**
  * @author Richard
@@ -43,7 +31,6 @@ public class SinkReceiver {
     private AppSeparateOrderService separateOrderService;
 
 
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @StreamListener(value = MqOrderChannel.RECEIVE_ORDER)
@@ -59,11 +46,24 @@ public class SinkReceiver {
                     Boolean isExist = separateOrderService.isOrderExist(orderNumber);
                     if (isExist) {
                         log.info("该订单已拆单，不能重复拆单!");
-                    }else{
+                    } else {
+                        //拆单
                         separateOrderService.separateOrder(orderNumber);
+                        //拆单完成之后发送订单和订单商品信息到EBS
+                        separateOrderService.sendOrderBaseInfAndOrderGoodsInf(orderNumber);
+                        //发送订单券儿信息
+                        separateOrderService.sendOrderCouponInf(orderNumber);
+                        //发送订单收款信息
+                        separateOrderService.sendOrderReceiptInf(orderNumber);
+
+
+
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
                     e.printStackTrace();
                 }
                 break;

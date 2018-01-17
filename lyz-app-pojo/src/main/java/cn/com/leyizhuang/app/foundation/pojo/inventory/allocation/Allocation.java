@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory.allocation;
 
-import cn.com.leyizhuang.app.core.constant.AllocationType;
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,7 +52,7 @@ public class Allocation {
     /**
      * 状态
      */
-    private AllocationType status;
+    private AllocationTypeEnum status;
     /**
      * 注释
      */
