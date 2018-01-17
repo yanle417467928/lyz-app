@@ -177,7 +177,6 @@ function formValidate() {
 
         }else if (type == "GOODS"){
             //检查商品添加详情
-
             var checkFlag = cheackGoodsDetail(goodsDetails,'selectedGoodsTable');
             if (!checkFlag) {
                 $('#cashCoupon_form').bootstrapValidator('disableSubmitButtons', false);

@@ -250,7 +250,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body table-responsive no-padding">
-                                    <table class="table table-hover" >
+                                    <table class="table table-bordered" >
                                         <thead>
                                         <tr>
 
@@ -353,7 +353,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body table-responsive no-padding">
-                                    <table class="table table-hover" >
+                                    <table class="table table-bordered" >
                                         <thead>
                                         <tr>
                                             <th>GID</th>

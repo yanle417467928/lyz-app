@@ -1,9 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 /**
  * @author Jerry.Ren
@@ -47,5 +51,12 @@ public interface ItyAllocationService {
 
     void resendAllAllocation();
 
+    /**
+     * 新增调拨单
+     * @param allocation
+     * @param goodsDetails
+     * @param shiroUser
+     */
+    void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser);
 
 }

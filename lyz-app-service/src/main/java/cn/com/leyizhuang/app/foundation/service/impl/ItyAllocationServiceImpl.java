@@ -1,15 +1,22 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AllocationType;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.RandomUtil;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.catalina.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +31,9 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Autowired
     private ItyAllocationDAO ityAllocationDAO;
+
+    @Autowired
+    private MaStoreService maStoreService;
 
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query) {
@@ -145,7 +155,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     /**
      * 从门店库存记录创建一条新的门店库存记录
      *
-     * @param from
+     * @param
      * @return
      */
 //    private TdDiySiteInventory copyTdDiySiteInventoryFromAnother(TdDiySiteInventory from) {
@@ -160,4 +170,42 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 //        tdDiySiteInventory.setRegionName(from.getRegionName());
 //        return tdDiySiteInventory;
 //    }
+
+    @Override
+    @Transactional
+    public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser) {
+
+        // 调出门店id
+        Long storeId = allocation.getAllocationFrom();
+        StoreDetailVO store = maStoreService.queryStoreVOById(storeId);
+
+        allocation.setNumber(this.getAllocationNumber());
+        allocation.setCreateTime(new Date());
+        allocation.setCreator(shiroUser.getLoginName());
+        allocation.setAllocationFromName(store.getStoreName());
+        allocation.setStatus(AllocationType.NEW);
+        // TODO 城市 门店信息
+
+        ityAllocationDAO.insertAllocation(allocation);
+        for (AllocationDetail detail : goodsDetails) {
+            detail.setAllocationId(allocation.getId());
+            ityAllocationDAO.insertAllocationDetails(detail);
+        }
+
+        // 记录调拨轨迹
+        AllocationTrail trail = new AllocationTrail();
+        trail.setAllocationId(allocation.getId());
+        trail.setOperator(shiroUser.getLoginName());
+        trail.setOperateTime(new Date());
+        trail.setOperation(AllocationType.NEW);
+        ityAllocationDAO.insertAllocationTrail(trail);
+    }
+
+    private String getAllocationNumber() {
+        StringBuilder number = new StringBuilder();
+        number.append("DB_");
+        number.append(DateUtil.getCurrentTimeStr("yyyyMMddHHmmssSSS"));
+        number.append(RandomUtil.randomNumCode(3));
+        return number.toString();
+    }
 }
