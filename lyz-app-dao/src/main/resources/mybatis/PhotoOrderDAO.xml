@@ -4,9 +4,9 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO">
         INSERT INTO photo_order
-        (user_id, identity_type, photos, contact_phone, remark, status, create_time, photo_order_no)
+        (user_id, identity_type, photos, contact_name, contact_phone, remark, status, create_time, photo_order_no)
         VALUES
-        (#{userId}, #{identityType}, #{photos}, #{contactPhone},#{remark}, #{status},
+        (#{userId}, #{identityType}, #{photos}, #{contactName}, #{contactPhone},#{remark}, #{status},
         #{createTime}, #{photoOrderNo});
     </insert>
 
@@ -30,7 +30,8 @@
         p.status,
         p.remark,
         p.photo_order_no,
-        p.contact_phone
+        p.contact_phone,
+        p.contact_name
         FROM photo_order p
         WHERE p.id = #{id}
     </select>

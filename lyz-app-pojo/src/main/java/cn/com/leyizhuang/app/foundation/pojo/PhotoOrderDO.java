@@ -28,6 +28,8 @@ public class PhotoOrderDO {
 //    private Long deliveryId;
     //是否主家收货
 //    private Boolean isOwnerReceiving;
+    //联系人姓名
+    private String contactName;
     //联系人电话
     private String contactPhone;
     //备注

@@ -29,7 +29,8 @@ public class PhotoOrderDetailsResponse {
     private String photoOrderNo;
     //联系人电话
     private String contactPhone;
-
+    //联系人姓名
+    private String contactName;
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();
     }

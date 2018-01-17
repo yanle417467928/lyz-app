@@ -691,6 +691,7 @@ public class CommonServiceImpl implements CommonService {
                         orderService.saveOrderGoodsInfo(goodsInfo);
                     }
                 }
+                //保存订单券信息
                 if (null != orderCouponInfoList && orderCouponInfoList.size() > 0) {
                     for (OrderCouponInfo couponInfo : orderCouponInfoList) {
                         couponInfo.setOid(orderBaseInfo.getId());
