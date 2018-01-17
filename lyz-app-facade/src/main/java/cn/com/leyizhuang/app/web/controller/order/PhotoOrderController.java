@@ -46,16 +46,17 @@ public class PhotoOrderController {
      * @param identityType     用户身份
 //     * @param deliveryId       收货人地址
 //     * @param isOwnerReceiving 是否主家收货
+     * @param contactName 联系人姓名
      * @param contactPhone 联系人电话
      * @param remark           备注
-     * @param customerId       顾客id
+//     * @param customerId       顾客id
      * @param request          http请求参数
      * @return 下单结果
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, Long cityId, String contactName,/*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
-                                              String contactPhone, String remark, Long customerId, HttpServletRequest request) {
-        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  contactName:{} contactPhone:{} remark:{} customerId:{} cityId:{}", userId, identityType, contactName, contactPhone, remark, customerId, cityId);
+                                              String contactPhone, String remark, HttpServletRequest request) {
+        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  contactName:{} contactPhone:{} remark:{} cityId:{}", userId, identityType, contactName, contactPhone, remark, cityId);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -83,12 +84,6 @@ public class PhotoOrderController {
                 return resultDTO;
             }
 
-            if (0 == identityType && null == customerId) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "客户信息不能为空！",
-                        null);
-                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
             StringBuilder photos = new StringBuilder();
             CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
                     request.getSession().getServletContext());
