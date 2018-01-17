@@ -88,6 +88,9 @@ public class CommonServiceImpl implements CommonService {
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
 
+    @Resource
+    private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveUserAndUserRoleByUserVO(UserVO userVO) {
@@ -673,6 +676,14 @@ public class CommonServiceImpl implements CommonService {
                     customerService.update(customer);
                 }
                 //TODO 返还经销差价
+
+                //物流信息初始化
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                    OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+                    deliveryInfoDetails.setDeliveryInfo(orderBaseInfo.getOrderNumber(), LogisticStatus.INITIAL, LogisticStatus.INITIAL.getDescription(),
+                            null, null, null, null, null);
+                    deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+                }
             }
             /* ******************* 保存订单相关一系列信息 ******************* */
             //保存订单基础信息
@@ -831,6 +842,13 @@ public class CommonServiceImpl implements CommonService {
             } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                 baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
                 baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+
+                //物流信息初始化
+                OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+                deliveryInfoDetails.setDeliveryInfo(baseInfo.getOrderNumber(), LogisticStatus.INITIAL, LogisticStatus.INITIAL.getDescription(),
+                        null, null, null, null, null);
+                deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+
                 // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
                 //保存传wms配送单头档
                 AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),

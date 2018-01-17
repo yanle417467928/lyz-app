@@ -139,8 +139,13 @@ public class CityController {
     public List<String> transformDeliveryTimeToString(List<CityDeliveryTime> deliveryTimeList) {
         List<String> resultList = new ArrayList<>();
         for (CityDeliveryTime deliveryTime : deliveryTimeList) {
-            String s = deliveryTime.getStartHour() + ":" + deliveryTime.getStartMinute() + "-" +
-                    deliveryTime.getEndHour() + ":" + deliveryTime.getEndMinute();
+            String s = (deliveryTime.getStartHour() < 10 ? "0" + deliveryTime.getStartHour() : deliveryTime.getStartHour()) +
+                    ":" +
+                    (deliveryTime.getStartMinute() < 10 ? "0" + deliveryTime.getStartMinute() : deliveryTime.getStartMinute()) +
+                    "-" +
+                    (deliveryTime.getEndHour() < 10 ? "0" + deliveryTime.getEndHour() : deliveryTime.getEndHour()) +
+                    ":" +
+                    (deliveryTime.getEndMinute() < 10 ? "0" + deliveryTime.getEndMinute() : deliveryTime.getEndMinute());
             resultList.add(s);
         }
         return resultList;
