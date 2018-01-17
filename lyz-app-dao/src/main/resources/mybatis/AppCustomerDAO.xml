@@ -574,13 +574,20 @@
 
     <select id="findCustomerSignDetailByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignLogBrief">
-        SELECT
-            sign_time,
-            award_lebi_qty award,
-            description
-        FROM cus_sign_log
-        WHERE cus_id = #{cusId}
-        ORDER BY sign_time DESC;
+        SELECT t.*
+        FROM
+            (
+                SELECT
+                    s.sign_time,
+                    s.award_lebi_qty award,
+                    s.description
+                FROM
+                    cus_sign_log s
+                WHERE
+                    s.cus_id = #{cusId}
+                ORDER BY
+                    s.sign_time DESC
+            ) t
     </select>
 
     <insert id="saveSignLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog">
