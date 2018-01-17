@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.core.constant.AllocationType;
-import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.core.utils.RandomUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
@@ -12,13 +11,14 @@ import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.catalina.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+
+import static cn.com.leyizhuang.app.core.utils.DateUtil.*;
 
 /**
  * @author Jerry.Ren
@@ -182,7 +182,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         allocation.setCreateTime(new Date());
         allocation.setCreator(shiroUser.getLoginName());
         allocation.setAllocationFromName(store.getStoreName());
-        allocation.setStatus(AllocationType.NEW);
+        allocation.setStatus(AllocationTypeEnum.NEW);
         // TODO 城市 门店信息
 
         ityAllocationDAO.insertAllocation(allocation);
@@ -196,14 +196,14 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         trail.setAllocationId(allocation.getId());
         trail.setOperator(shiroUser.getLoginName());
         trail.setOperateTime(new Date());
-        trail.setOperation(AllocationType.NEW);
+        trail.setOperation(AllocationTypeEnum.NEW);
         ityAllocationDAO.insertAllocationTrail(trail);
     }
 
     private String getAllocationNumber() {
         StringBuilder number = new StringBuilder();
         number.append("DB_");
-        number.append(DateUtil.getCurrentTimeStr("yyyyMMddHHmmssSSS"));
+        number.append(getCurrentTimeStr("yyyyMMddHHmmssSSS"));
         number.append(RandomUtil.randomNumCode(3));
         return number.toString();
     }
