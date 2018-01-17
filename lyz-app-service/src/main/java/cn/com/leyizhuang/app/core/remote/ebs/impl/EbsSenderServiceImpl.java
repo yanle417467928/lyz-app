@@ -178,7 +178,6 @@ public class EbsSenderServiceImpl implements EbsSenderService {
                 orderCouponSecond.setHistoryFlag(toString(couponInf.getHistoryFlag()));
                 orderCouponSecond.setMainOrderNumber(toString(couponInf.getMainOrderNumber()));
                 orderCouponSecond.setProductType(toString(couponInf.getProductType()));
-                orderCouponSecond.setPromotion(toString(couponInf.getProductType()));
                 orderCouponSecond.setQuantity(toString(couponInf.getQuantity()));
                 orderCouponSecond.setSku(toString(couponInf.getSku()));
                 orderCouponSecond.setSobId(toString(couponInf.getSobId()));
@@ -232,7 +231,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
         OrderSecond orderSecond = new OrderSecond();
         orderSecond.setMainOrderNumber(toString(orderInf.getMainOrderNumber()));
-        orderSecond.setOrderNumber(toString(orderInf.getMainOrderNumber()));
+        orderSecond.setOrderNumber(toString(orderInf.getOrderNumber()));
         orderSecond.setOrderDate(toString(DateFormatUtils.format(orderInf.getOrderDate(), "yyyy-MM-dd HH:mm:ss")));
         orderSecond.setSobId(toString(orderInf.getSobId()));
         orderSecond.setCouponFlag(toString(orderInf.getCouponFlag()));

@@ -236,10 +236,14 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 }
                             }
                             couponInf.setSku(info.getSku());
+                            couponInf.setCouponTypeId(1L);
+                        } else {
+                            couponInf.setCouponTypeId(2L);
                         }
                         couponInf.setBuyPrice(info.getPurchasePrice());
                         couponInf.setCostPrice(info.getCostPrice());
                         couponInf.setQuantity(1);
+                        couponInf.setSobId(baseInfo.getSobId());
                         couponInfList.add(couponInf);
                     }
                 }

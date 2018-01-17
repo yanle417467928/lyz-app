@@ -63,7 +63,8 @@
     <insert id="saveOrderReceiptInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
         INSERT INTO inter_ate_order_receipt_inf (create_time, send_flag, error_msg, send_time, main_order_number, receipt_number,
-                                                 receipt_type, store_org_id, diy_site_code, receipt_date, amount, description)
+                                                 receipt_type, store_org_id, diy_site_code, receipt_date, amount, description,
+                                                 sob_id, user_id, username, user_phone, guide_id, attribute1, attribute2, attribute3, attribute4, attribute5)
             SELECT
                 #{createTime},
                 #{sendFlag},
@@ -76,7 +77,17 @@
                 #{diySiteCode},
                 #{receiptDate},
                 #{amount},
-                #{description}
+                #{description},
+                #{sobId},
+                #{userId},
+                #{username},
+                #{userPhone},
+                #{guideId},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5}
             FROM dual
             WHERE NOT exists(SELECT 1
                              FROM inter_ate_order_receipt_inf
@@ -228,7 +239,17 @@
             diy_site_code,
             receipt_date,
             amount,
-            description
+            description,
+            sob_id,
+            user_id,
+            username,
+            user_phone,
+            guide_id,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5
         FROM inter_ate_order_receipt_inf
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -265,17 +286,17 @@
         UPDATE inter_ate_order_coupon_inf
         <set>
             <if test="null != flag">
-                send_flag = #{flag}
+                send_flag = #{flag},
             </if>
             <if test="null != sendTime">
-                send_time = #{sendTime}
+                send_time = #{sendTime},
             </if>
             <if test="null != msg">
                 error_msg = #{msg}
             </if>
         </set>
         WHERE id in
-        <foreach collection="couponInfIds" open="(" close=")" separator="," item=" id" index="index">
+        <foreach collection="couponInfIds" item="id" index="index" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </update>
@@ -300,17 +321,17 @@
         UPDATE inter_ate_order_receipt_inf
         <set>
             <if test="null != flag">
-                send_flag = #{flag}
+                send_flag = #{flag},
             </if>
             <if test="null != sendTime">
-                send_time = #{sendTime}
+                send_time = #{sendTime},
             </if>
             <if test="null != errorMsg">
                 error_msg = #{errorMsg}
             </if>
         </set>
         WHERE receipt_id in
-        <foreach collection="receiptInfIds" open="(" close=")" separator="," item=" id" index="index">
+        <foreach collection="receiptInfIds" open="(" close=")" separator="," item="id" index="index">
             #{id}
         </foreach>
     </update>
