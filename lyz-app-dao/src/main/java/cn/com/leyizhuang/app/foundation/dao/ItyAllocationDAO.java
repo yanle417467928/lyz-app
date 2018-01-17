@@ -55,4 +55,10 @@ public interface ItyAllocationDAO {
      * @return
      */
     List<AllocationVO> queryByAllocationQuery(AllocationQuery query);
+
+    int insertAllocation(Allocation allocation);
+
+    int insertAllocationDetails(AllocationDetail goodsDetails);
+
+    int insertAllocationTrail(AllocationTrail allocationTrail);
 }

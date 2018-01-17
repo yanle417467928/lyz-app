@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO">
+    <sql id="ALLOCATION_FIELDS">
+        id, `number`, city_id, city_name, allocation_from, allocation_from_name, allocation_to,
+    allocation_to_name, `status`, `comment`, creator, create_time, modifier, modify_time
+    </sql>
+    <sql id="TRAIL_FIELDS">
+        id, allocation_id, g_id, sku_name, sku, qty, real_qty
+    </sql>
+    <sql id="DETAILS_FIELDS">
+        id, allocation_id, operation, operator, operate_time
+    </sql>
 
     <select id="queryListVO" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO">
@@ -72,4 +82,33 @@
             AND modify_time &lt;= #{endDateTime}
         </if>
     </select>
+
+    <insert id="insertAllocation" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation" useGeneratedKeys="true" keyProperty="id">
+        insert into ity_allocation (id, `number`, city_id,
+      city_name, allocation_from, allocation_from_name,
+      allocation_to, allocation_to_name, `status`,
+      comment, creator, create_time,
+      modifier, modify_time)
+    values (#{id,jdbcType=BIGINT}, #{number,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT},
+      #{cityName,jdbcType=VARCHAR}, #{allocationFrom,jdbcType=BIGINT}, #{allocationFromName,jdbcType=VARCHAR},
+      #{allocationTo,jdbcType=BIGINT}, #{allocationToName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+      #{comment,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{modifier,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertAllocationDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
+        insert into ity_allocation_detail (id, allocation_id, g_id,
+      sku_name, sku, qty,
+      real_qty)
+    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{gId,jdbcType=BIGINT},
+      #{skuName,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{qty,jdbcType=INTEGER},
+      #{realQty,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="insertAllocationTrail" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationTrail">
+        insert into ity_allocation_trail (id, allocation_id, operation,
+      operator, operate_time)
+    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{operation,jdbcType=VARCHAR},
+      #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP})
+    </insert>
 </mapper>

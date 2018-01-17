@@ -219,7 +219,7 @@
                                 <div class="box-body table-responsive no-padding">
 
                                     <div class="col-xs-12">
-                                        <table class="table table-hover">
+                                        <table class="table table-bordered">
                                             <thead>
                                             <tr>
                                                 <th>ID</th>

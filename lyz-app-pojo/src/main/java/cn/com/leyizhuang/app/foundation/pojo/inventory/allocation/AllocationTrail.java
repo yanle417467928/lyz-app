@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory.allocation;
 
+import cn.com.leyizhuang.app.core.constant.AllocationType;
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,7 +27,7 @@ public class AllocationTrail {
     /**
      * 操作
      */
-    private String operation;
+    private AllocationTypeEnum operation;
     /**
      * 操作人
      */
