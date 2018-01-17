@@ -53,9 +53,9 @@ public class PhotoOrderController {
      * @return 下单结果
      */
     @PostMapping(value = "/add", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, Long cityId, /*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
+    public ResultDTO<Object> submitPhotoOrder(Long userId, Integer identityType, Long cityId, String contactName,/*@RequestParam(value = "myfiles", required = false) MultipartFile[] files,*/
                                               String contactPhone, String remark, Long customerId, HttpServletRequest request) {
-        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  contactPhone:{} remark:{} customerId:{} cityId:{}", userId, identityType, contactPhone, remark, customerId, cityId);
+        logger.info("submitPhotoOrder CALLED,拍照下单提交，入参 userId:{} identityType:{}  contactName:{} contactPhone:{} remark:{} customerId:{} cityId:{}", userId, identityType, contactName, contactPhone, remark, customerId, cityId);
         ResultDTO<Object> resultDTO;
         try {
             if (null == userId) {
@@ -69,6 +69,13 @@ public class PhotoOrderController {
                 logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (null == contactName) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "联系人姓名不能为空！",
+                        null);
+                logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             if (null == contactPhone) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "联系人电话不能为空！",
                         null);
