@@ -45,7 +45,7 @@ public class WechatPrePay {
         String ip = request.getRemoteAddr();
         ip = "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip) ? "127.0.0.1" : ip;
         parameterMap.put("spbill_create_ip", ip);
-        parameterMap.put("notify_url", AppApplicationConstant.wmsUrl);
+        parameterMap.put("notify_url", AppApplicationConstant.wechatReturnUrlAsnyc);
         parameterMap.put("trade_type", "APP");
         String sign = WechatUtil.createSign("UTF-8", parameterMap);
         parameterMap.put("sign", sign);
