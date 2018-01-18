@@ -123,7 +123,7 @@
     </update>
 
     <select id="findArrearsByUserIdAndOrderNumber"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         SELECT *
         FROM
             ord_arrears_audit
