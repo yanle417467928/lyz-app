@@ -9,7 +9,9 @@ import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -337,6 +339,38 @@ public class MaEmployeeRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("queryGuideVOByInfo,发生未知错误，后台根根据搜索信息查询导购额度");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台购买产品券选择导购
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param cityId
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/select/seller")
+    public GridDataVO<EmployeeDO> selectSeller(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId) {
+        logger.info("selectSeller 后台购买产品券选择导购,入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords, cityId, storeId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageHelper.startPage(page, size);
+            List<EmployeeDO> employeeDOList = this.maEmployeeService.findEmployeeByCityIdAndStoreId(cityId, storeId);
+
+            PageInfo<EmployeeDO> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
+            List<EmployeeDO> EmployeeDOList = maEmployeeDOPageInfo.getList();
+            logger.warn("selectSeller ,后台购买产品券选择导购成功", EmployeeDOList.size());
+            return new GridDataVO<EmployeeDO>().transform(EmployeeDOList, maEmployeeDOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("selectSeller EXCEPTION,发生未知错误，后台购买产品券选择导购失败");
             logger.warn("{}", e);
             return null;
         }

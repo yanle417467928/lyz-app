@@ -8,6 +8,8 @@ import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 public interface MaCustomerService {
 
     PageInfo<CustomerDO> queryPageVO(Integer page, Integer size);
@@ -39,5 +41,13 @@ public interface MaCustomerService {
     CustomerLebiVO queryCusLebiByCusId(Long cusId);
 
     void  changeCusLebiByCusId(CusLebiDTO cusLebiDTO) throws Exception;
+
+    /**
+     * 后台购买产品券选择顾客
+     * @param cityId    城市id
+     * @param storeId   门店id
+     * @return  顾客列表
+     */
+    List<CustomerDO> findCustomerByCityIdAndStoreId(Long cityId,Long storeId);
 
 }

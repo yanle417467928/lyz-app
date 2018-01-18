@@ -175,5 +175,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         this.maCusLebiLogService.save(cusLebiDTO);
     }
 
+    @Override
+    public List<CustomerDO> findCustomerByCityIdAndStoreId(Long cityId, Long storeId) {
+        return this.maCustomerDAO.findCustomerByCityIdAndStoreId(cityId, storeId);
+    }
+
 }
 

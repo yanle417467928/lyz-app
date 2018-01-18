@@ -51,4 +51,12 @@ public interface MaCustomerDAO {
 
     CustomerLeBi findLebiByCusId(Long cusId);
 
+    /**
+     * 后台购买产品券选择顾客
+     * @param cityId    城市id
+     * @param storeId   门店id
+     * @return  顾客列表
+     */
+    List<CustomerDO> findCustomerByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("storeId")Long storeId);
+
 }

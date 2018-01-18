@@ -35,7 +35,7 @@ public class WaitPickUpResponse {
     /**
      * 取货地址
      */
-    private String PickUpAddress;
+    private String pickUpAddress;
     /**
      * 取货时间
      */
