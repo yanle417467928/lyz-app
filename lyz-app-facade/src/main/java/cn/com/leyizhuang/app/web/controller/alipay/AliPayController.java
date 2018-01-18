@@ -7,9 +7,9 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -376,7 +376,7 @@ public class AliPayController {
                             paymentDataDO.setNotifyTime(new Date());
                             this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                             //创建充值单收款
-                            RechargeReceiptInfo receiptInfo = rechargeService.createRechargeReceiptInfo(paymentDataDO, tradeStatus);
+                            RechargeReceiptInfo receiptInfo = rechargeService.createOnlinePayRechargeReceiptInfo(paymentDataDO, tradeStatus);
                             //保存充值收款记录,并更新充值单相关信息
                             supportService.handleRechargeOrderRelevantInfoAfterOnlinePauUp(receiptInfo, outTradeNo);
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
@@ -387,6 +387,8 @@ public class AliPayController {
                                     || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
                                 this.appStoreService.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.ALIPAY_RECHARGE);
                             }
+                            //将收款记录入拆单消息队列
+                            sinkSender.sendRechargeReceipt(outTradeNo);
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
                         }
@@ -466,6 +468,7 @@ public class AliPayController {
             logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+
         OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
         if (null == orderArrearsAuditDO) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此欠款记录！", null);

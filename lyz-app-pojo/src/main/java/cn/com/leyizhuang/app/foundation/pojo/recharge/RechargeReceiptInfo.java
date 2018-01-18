@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.recharge;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
+import cn.com.leyizhuang.app.core.constant.RechargeAccountType;
+import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeType;
 import lombok.*;
 
 import java.util.Date;
@@ -56,6 +58,25 @@ public class RechargeReceiptInfo {
      */
     private String paymentSubjectTypeDesc;
 
+    /**
+     * 充值账户类型
+     */
+    private RechargeAccountType rechargeAccountType;
+
+    /**
+     * 充值账户类型描述
+     */
+    private String rechargeAccountTypeDesc;
+
+    /**
+     * 充值银行
+     */
+    private ChargeType chargeType;
+
+    /**
+     * 充值银行描述
+     */
+    private String chargeTypeDesc;
     /**
      * 金额
      */

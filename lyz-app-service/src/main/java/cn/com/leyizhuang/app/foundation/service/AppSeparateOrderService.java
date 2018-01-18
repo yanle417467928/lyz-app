@@ -45,4 +45,12 @@ public interface AppSeparateOrderService {
     void updateOrderGoodsInfByOrderNumber(String orderNumber, AppWhetherFlag flag, String message, Date sendTime);
 
     void updateOrderReceiptFlagAndSendTimeAndErrorMsg(List<Long> receiptInfIds, String msg, Date sendTime, AppWhetherFlag flag);
+
+    Boolean isRechargeReceiptExist(String rechargeNo);
+
+    void separateRechargeReceipt(String rechargeNo);
+
+    void sendRechargeReceiptInf(String rechargeNo);
+
+    void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(Long receiptId, String msg, Date sendTime, AppWhetherFlag flag);
 }

@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 
 import java.util.Date;
 
@@ -19,9 +20,13 @@ public interface RechargeService {
 
     void saveRechargeOrder(RechargeOrder rechargeOrder);
 
-    RechargeReceiptInfo createRechargeReceiptInfo(PaymentDataDO paymentDataDO, String tradeStatus);
+    RechargeReceiptInfo createOnlinePayRechargeReceiptInfo(PaymentDataDO paymentDataDO, String tradeStatus);
 
     void saveRechargeReceiptInfo(RechargeReceiptInfo receiptInfo);
 
     void updateRechargeOrderStatusAndPayUpTime(String rechargeNo, Date payUpTime, AppRechargeOrderStatus status);
+
+    RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo);
+
+    RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo);
 }

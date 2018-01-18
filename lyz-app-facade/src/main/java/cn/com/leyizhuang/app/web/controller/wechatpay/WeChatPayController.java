@@ -412,7 +412,7 @@ public class WeChatPayController {
                                     paymentDataDO.setNotifyTime(new Date());
                                     this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
                                     //创建充值单收款
-                                    RechargeReceiptInfo receiptInfo = rechargeService.createRechargeReceiptInfo(paymentDataDO, tradeStatus);
+                                    RechargeReceiptInfo receiptInfo = rechargeService.createOnlinePayRechargeReceiptInfo(paymentDataDO, tradeStatus);
                                     //保存充值收款记录,并更新充值单相关信息
                                     supportService.handleRechargeOrderRelevantInfoAfterOnlinePauUp(receiptInfo, outTradeNo);
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",

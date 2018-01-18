@@ -335,4 +335,89 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="isRechargeReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+                      FROM inter_ate_recharge_receipt_inf
+                      WHERE charge_number = #{rechargeNo})
+    </select>
+
+    <insert id="saveRechargeReceiptInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
+        INSERT INTO inter_ate_recharge_receipt_inf (charge_number, sob_id, charge_obj, charge_type, receiptType,
+                                                    userid, store_org_code, diy_site_code, receipt_date, amount, description, attribute1,
+                                                    attribute2, attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time,
+                                                    receipt_number)
+            SELECT
+                #{chargeNumber},
+                #{sobId},
+                #{chargeObj},
+                #{chargeType},
+                #{receiptType},
+                #{userid},
+                #{storeOrgCode},
+                #{diySiteCode},
+                #{receiptDate},
+                #{amount},
+                #{description},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{receiptNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM inter_ate_recharge_receipt_inf
+                             WHERE charge_number = #{chargeNumber})
+    </insert>
+
+    <select id="getRechargeReceiptInfByRechargeNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
+        SELECT
+            receipt_id,
+            charge_number,
+            sob_id,
+            charge_obj,
+            charge_type,
+            receiptType,
+            userid,
+            store_org_code,
+            diy_site_code,
+            receipt_date,
+            amount,
+            description,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            receipt_number
+        FROM inter_ate_recharge_receipt_inf
+        WHERE charge_number = #{rechargeNo}
+    </select>
+
+    <update id="updateRechargeReceiptFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_recharge_receipt_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != errorMsg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE receipt_id = #{receiptId}
+    </update>
 </mapper>

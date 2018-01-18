@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.core.remote.ebs;
 
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 
 import java.util.List;
 
@@ -20,4 +17,6 @@ public interface EbsSenderService {
     void sendOrderReceiptInfAndRecord(List<OrderReceiptInf> receiptInfs);
 
     void sendOrderCouponInfAndRecord(List<OrderCouponInf> orderCouponInfs);
+
+    void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf);
 }

@@ -78,7 +78,7 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public RechargeReceiptInfo createRechargeReceiptInfo(PaymentDataDO paymentDataDO, String tradeStatus) {
+    public RechargeReceiptInfo createOnlinePayRechargeReceiptInfo(PaymentDataDO paymentDataDO, String tradeStatus) {
         RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
         receiptInfo.setCreateTime(new Date());
         receiptInfo.setPayTime(new Date());
@@ -86,17 +86,21 @@ public class RechargeServiceImpl implements RechargeService {
         switch (paymentDataDO.getAppIdentityType()) {
             case CUSTOMER:
                 receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
                 break;
             case DECORATE_MANAGER:
                 receiptInfo.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
                 break;
             case SELLER:
                 receiptInfo.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
                 break;
             default:
                 break;
         }
         receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+        receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
         switch (paymentDataDO.getOnlinePayType()) {
             case ALIPAY:
                 receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
@@ -133,4 +137,19 @@ public class RechargeServiceImpl implements RechargeService {
         }
     }
 
+    @Override
+    public RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo) {
+        if (null != rechargeNo) {
+            return rechargeDAO.findRechargeReceiptInfoByRechargeNo(rechargeNo);
+        }
+        return null;
+    }
+
+    @Override
+    public RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo) {
+        if (null != rechargeNo) {
+            return rechargeDAO.findRechargeOrderByRechargeNo(rechargeNo);
+        }
+        return null;
+    }
 }

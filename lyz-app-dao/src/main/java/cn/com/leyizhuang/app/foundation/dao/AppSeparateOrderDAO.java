@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -66,4 +63,15 @@ public interface AppSeparateOrderDAO {
                                                       @Param(value = "errorMsg") String msg,
                                                       @Param(value = "sendTime") Date sendTime,
                                                       @Param(value = "flag") AppWhetherFlag flag);
+
+    Boolean isRechargeReceiptExist(String rechargeNo);
+
+    void saveRechargeReceiptInf(RechargeReceiptInf rechargeReceiptInf);
+
+    RechargeReceiptInf getRechargeReceiptInfByRechargeNo(String rechargeNo);
+
+    void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(@Param(value = "receiptId") Long receiptId,
+                                                         @Param(value = "msg") String msg,
+                                                         @Param(value = "sendTime") Date sendTime,
+                                                         @Param(value = "flag") AppWhetherFlag flag);
 }
