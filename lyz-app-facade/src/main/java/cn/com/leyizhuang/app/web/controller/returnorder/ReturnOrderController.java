@@ -782,6 +782,11 @@ public class ReturnOrderController {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
+                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()){
+                                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
+                                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                                    return resultDTO;
+                                }
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
                                 goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - simpleInfo.getQty());
