@@ -310,12 +310,12 @@
 
                                                         <div class="input-group col-md-3"
                                                              style="margin-top:0px positon:relative">
-                                                            <input type="text" name="queryGoodsInfo" id="queryGoodsInfo"
+                                                            <input type="text" name="sellerQueryConditions" id="sellerQueryConditions"
                                                                    class="form-control" style="width:auto;"
                                                                    placeholder="请输入导购姓名或电话">
                                                             <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="return findGoodsByNameOrCode()">查找</button>
+                                    onclick="return findSellerByNameOrMobil()">查找</button>
                         </span>
                                                         </div>
                                                     </div>
@@ -483,19 +483,29 @@
 
     function openSellerModal() {
         //查询导购列表
-        initSeller();
+        initSeller('/rest/employees/select/seller');
         $("#sellerModalConfirm").unbind('click').click(function () {
         });
         $('#selectSeller').modal('show');
     }
 
+    //条件查询导购
+    function findSellerByNameOrMobil() {
+        var sellerQueryConditions = $("#sellerQueryConditions").val();
+        $("#sellerDataGrid").bootstrapTable('destroy');
+        if (null == sellerQueryConditions || "" == sellerQueryConditions) {
+            initSeller();
+        }else{
+            initGoodsGrid('/rest/goods/page/goodsGrid/' + sellerQueryConditions);
+        }
+    }
+
 
     //初始化导购选择框
-    function initSeller() {
+    function initSeller(url) {
         var cityId = $('#cityId').val();
         var storeId = $('#storeId').val();
         $("#sellerDataGrid").bootstrapTable('destroy');
-        var url = '/rest/employees/select/seller?cityId=' + cityId + '&storeId=' + storeId;
         $grid.init($('#sellerDataGrid'), $('#sellerToolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
