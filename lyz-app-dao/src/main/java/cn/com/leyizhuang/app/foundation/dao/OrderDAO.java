@@ -124,4 +124,6 @@ public interface OrderDAO {
     Integer getReturningOrderQuantityByEmpId(Long id);
 
     Integer getReturningOrderQuantityByCusId(Long id);
+
+    void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
 }

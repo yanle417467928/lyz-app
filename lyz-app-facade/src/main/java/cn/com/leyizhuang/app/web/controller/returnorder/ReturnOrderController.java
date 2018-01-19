@@ -1052,19 +1052,14 @@ public class ReturnOrderController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             //设置基础信息
-            if (returnBaseInfo.getReturnStatus() != null) {
-                detailResponse.setReturnStatus(returnBaseInfo.getReturnStatus().getDescription());
-            }
             detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
             detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
             detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
-            if (returnBaseInfo.getReturnType() != null) {
-                detailResponse.setReturnType(returnBaseInfo.getReturnType().getDescription());
-            }
             detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
-            if (returnOrderLogisticInfo.getDeliveryType() != null) {
-                detailResponse.setDeliveryType(returnOrderLogisticInfo.getDeliveryType().getValue());
-            }
+            detailResponse.setReturnStatus(null != returnBaseInfo.getReturnStatus()?returnBaseInfo.getReturnStatus().getDescription():null);
+            detailResponse.setReturnType(null != returnBaseInfo.getReturnType()?returnBaseInfo.getReturnType().getDescription():null);
+            detailResponse.setDeliveryType(null != returnOrderLogisticInfo.getDeliveryType()?returnOrderLogisticInfo.getDeliveryType().getValue():null);
+
             //取货方式（上门取货，送货到店）
             if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
                 detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
@@ -1183,7 +1178,11 @@ public class ReturnOrderController {
 //            appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
             //发送取消退货单到WMS
 //            callWms.sendToWmsCancelOrder(returnNumber);
+            // TODO 修改回原订单的可退和已退！
             returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
+            List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+            returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
+                    returnOrderGoodsInfo.getReturnQty(),returnOrderGoodsInfo.getOrderGoodsId()));
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
@@ -1438,6 +1437,7 @@ public class ReturnOrderController {
 
     private ReturnOrderGoodsInfo transform(OrderGoodsInfo goodsInfo, Integer qty, String returnNo) {
         ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
+        returnOrderGoodsInfo.setOrderGoodsId(goodsInfo.getId());
         returnOrderGoodsInfo.setGid(goodsInfo.getGid());
         returnOrderGoodsInfo.setRetailPrice(goodsInfo.getRetailPrice());
         returnOrderGoodsInfo.setReturnPrice(goodsInfo.getReturnPrice());
