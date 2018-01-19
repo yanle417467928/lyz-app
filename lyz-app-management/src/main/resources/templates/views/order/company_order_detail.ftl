@@ -145,7 +145,7 @@
                     <spanp class="span"> ${maOrderDetail.companyName!""}</spanp>
                     <br>
                     <b>下单人:</b>
-                    <spanp class="span">${maOrderDetail.customerId!""}</spanp>
+                    <spanp class="span">${maOrderDetail.creatorName!""}</spanp>
                     <br>
                     <b></b>
                     <spanp class="span"></spanp>

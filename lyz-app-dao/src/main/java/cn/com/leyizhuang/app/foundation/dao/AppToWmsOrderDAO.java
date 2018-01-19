@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrde
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -106,4 +107,20 @@ public interface AppToWmsOrderDAO {
      * @return 退货单单据
      */
     AtwReturnOrder findReturnOrderByReturnOrderNo(String returnNumber);
+
+    /**
+     * 查询所有要货单
+     *
+     * @param keywords
+     * @return
+     */
+    List<AtwRequisitionOrder> findRequiringOrderList(@Param("keywords") String keywords);
+
+    /**
+     * 根据ID查询要货单
+     *
+     * @param id
+     * @return
+     */
+    AtwRequisitionOrder findAtwRequisitionOrderById(Long id);
 }

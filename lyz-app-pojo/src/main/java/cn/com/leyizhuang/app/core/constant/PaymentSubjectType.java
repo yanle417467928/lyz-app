@@ -11,6 +11,7 @@ public enum PaymentSubjectType {
     DECORATE_MANAGER("DECORATE_MANAGER", "装饰公司经理"),
     SELLER("SELLER", "导购"),
     DELIVERY_CLERK("DELIVERY_CLERK", "配送员"),
+    ADMINISTRATOR("ADMINISTRATOR","管理员"),
     STORE("STORE", "门店");
 
 

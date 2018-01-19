@@ -35,7 +35,7 @@ public interface MaCustomerDAO {
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
-    CustomerPreDeposit findPredepositByCusId(Long cusId);
+    CustomerPreDeposit findPreDepositByCusId(Long cusId);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
@@ -50,5 +50,13 @@ public interface MaCustomerDAO {
     int updateLebiByUserId(@Param("userId") Long userId, @Param("quantity") Integer quantity, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
 
     CustomerLeBi findLebiByCusId(Long cusId);
+
+    /**
+     * 后台购买产品券选择顾客
+     * @param cityId    城市id
+     * @param storeId   门店id
+     * @return  顾客列表
+     */
+    List<CustomerDO> findCustomerByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("storeId")Long storeId);
 
 }

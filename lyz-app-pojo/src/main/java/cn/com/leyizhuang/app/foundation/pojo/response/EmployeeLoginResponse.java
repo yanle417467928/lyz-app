@@ -21,6 +21,8 @@ public class EmployeeLoginResponse implements Serializable {
 
     //身份类型
     private int type;
+    //导购的类型
+    private String sellerType;
 
     private Long userId;
 

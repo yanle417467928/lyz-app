@@ -146,10 +146,10 @@
     <insert id="saveReturnOrderGoodsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         INSERT INTO ord_return_goods_info
-        (roid, return_no, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty,
+        (roid, return_no, order_goods_id, gid, sku, sku_name, retail_price, vip_price, wholesale_price, return_price, return_qty,
         goods_Line_type)
         VALUES
-        (#{roid}, #{returnNo}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
+        (#{roid}, #{returnNo}, #{orderGoodsId}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice}, #{wholesalePrice},
         #{returnPrice}, #{returnQty},#{goodsLineType})
     </insert>
 
@@ -239,5 +239,13 @@
         UPDATE ord_return_base_info
         SET return_status = #{status}
         WHERE return_no = #{returnNo}
+    </update>
+    
+    <update id="updateReturnableQuantityAndReturnQuantityById">
+        UPDATE ord_goods_info
+        SET return_qty = #{returnQty},
+         returnable_qty = #{returnableQty}
+        WHERE
+            id = #{id}
     </update>
 </mapper>

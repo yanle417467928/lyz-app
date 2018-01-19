@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
@@ -39,7 +39,7 @@ public class ICallWms {
 
     private static Client getWmsClient() {
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-        return dcf.createClient(AppConstant.WMS_URL);
+        return dcf.createClient(AppApplicationConstant.wmsUrl);
     }
 
     /**

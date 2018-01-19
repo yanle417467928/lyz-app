@@ -45,4 +45,10 @@ public interface MaEmployeeDAO {
 
     EmployeeDO findEmployeeDOByEmpId(Long id);
 
+    /**
+     * 后台购买产品券选择导购查询
+     * @return
+     */
+    List<EmployeeDO> findEmployeeByCityIdAndStoreId (@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+
 }

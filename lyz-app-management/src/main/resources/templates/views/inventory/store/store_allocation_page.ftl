@@ -152,7 +152,7 @@
                             </table>
                         </li>
                         <li class="list-group-item">
-                            <b>调拨轨迹</b> <a class="pull-right" id=""></a>
+                            <b>调拨经办人</b> <a class="pull-right" id=""></a>
                             <table id="trails" class="table table-bordered">
 
                             </table>

@@ -200,7 +200,7 @@
         SET balance = balance + #{deposit},
           last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+        <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
     </update>
@@ -253,9 +253,26 @@
         SET quantity = quantity + #{quantity},
         last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+        <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
     </update>
+
+    <select id="findCustomerByCityIdAndStoreId" resultMap="customerVoResultMap">
+        SELECT
+            cus_id,
+            `name`,
+            mobile
+        FROM
+            cus_customer
+        WHERE
+        1 = 1
+        <if test="cityId != -1 and cityId != null">
+            AND  city_id = #{cityId}
+        </if>
+        <if test="storeId != -1 and storeId != null">
+            AND store_id = #{storeId}
+        </if>
+    </select>
 
 </mapper>

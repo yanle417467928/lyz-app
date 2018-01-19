@@ -1,18 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
+import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +40,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private AppStoreService storeService;
+
+    @Resource
+    private RechargeService rechargeService;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -360,6 +361,74 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void updateOrderReceiptFlagAndSendTimeAndErrorMsg(List<Long> receiptInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != receiptInfIds && receiptInfIds.size() > 0) {
             separateOrderDAO.updateOrderReceiptFlagAndSendTimeAndErrorMsg(receiptInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public Boolean isRechargeReceiptExist(String rechargeNo) {
+        if (null != rechargeNo) {
+            return separateOrderDAO.isRechargeReceiptExist(rechargeNo);
+        }
+        return true;
+    }
+
+    @Override
+    public void separateRechargeReceipt(String rechargeNo) {
+        RechargeReceiptInfo rechargeReceiptInfo = rechargeService.findRechargeReceiptInfoByRechargeNo(rechargeNo);
+        RechargeOrder rechargeOrder = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
+        AppStore store = storeService.findById(rechargeOrder.getStoreId());
+        if (null != rechargeReceiptInfo) {
+            RechargeReceiptInf rechargeReceiptInf = new RechargeReceiptInf();
+            rechargeReceiptInf.setAmount(rechargeReceiptInfo.getAmount());
+            rechargeReceiptInf.setChargeNumber(rechargeReceiptInfo.getRechargeNo());
+            rechargeReceiptInf.setReceiptNumber(rechargeReceiptInfo.getReceiptNumber());
+            switch (rechargeReceiptInfo.getRechargeAccountType()) {
+                case CUS_PREPAY:
+                    rechargeReceiptInf.setChargeObj(ChargeObjType.CUSTOMER);
+                    break;
+                case ST_PREPAY:
+                    rechargeReceiptInf.setChargeObj(ChargeObjType.STORE);
+                    break;
+                case PRODUCT_COUPON:
+                    rechargeReceiptInf.setChargeObj(ChargeObjType.PRODUCT_COUPON);
+                    break;
+                case BOND:
+                    rechargeReceiptInf.setChargeObj(ChargeObjType.BOND);
+                default:
+                    break;
+            }
+            rechargeReceiptInf.setChargeType(rechargeReceiptInfo.getChargeType());
+            rechargeReceiptInf.setReceiptType(rechargeReceiptInfo.getPayType());
+            rechargeReceiptInf.setDescription(rechargeReceiptInf.getReceiptType().getDescription());
+            rechargeReceiptInf.setDiySiteCode(store.getStoreCode());
+            rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
+            rechargeReceiptInf.setSobId(store.getSobId());
+            rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
+            if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY) {
+                rechargeReceiptInf.setUserid(rechargeOrder.getCustomerId());
+            }
+            separateOrderDAO.saveRechargeReceiptInf(rechargeReceiptInf);
+        } else {
+            //todo 记录充值收款拆单错误日志
+        }
+
+
+    }
+
+    @Override
+    public void sendRechargeReceiptInf(String rechargeNo) {
+        if (null != rechargeNo) {
+            RechargeReceiptInf receiptInf = separateOrderDAO.getRechargeReceiptInfByRechargeNo(rechargeNo);
+            if (null != receiptInf) {
+                ebsSenderService.sendRechargeReceiptInfAndRecord(receiptInf);
+            }
+        }
+    }
+
+    @Override
+    public void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(Long receiptId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiptId){
+            separateOrderDAO.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId,msg,sendTime,flag);
         }
     }
 }

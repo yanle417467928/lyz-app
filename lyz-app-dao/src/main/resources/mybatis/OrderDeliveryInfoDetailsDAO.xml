@@ -189,7 +189,7 @@
             orli.rejecter_phone receiverPhone,
             obi.sales_consult_name sellerName,
             obi.sales_consult_phone sellerPhone,
-            orli.return_full_address PickUpAddress,
+            orli.return_full_address pickUpAddress,
             orli.delivery_time pickUpTime
         FROM
             ord_return_logistic_info AS orli
@@ -209,7 +209,7 @@
             orli.rejecter_phone receiverPhone,
             obi.sales_consult_name sellerName,
             obi.sales_consult_phone sellerPhone,
-            orli.return_full_address PickUpAddress,
+            orli.return_full_address pickUpAddress,
             orli.delivery_time pickUpTime
         FROM
             ord_return_logistic_info AS orli

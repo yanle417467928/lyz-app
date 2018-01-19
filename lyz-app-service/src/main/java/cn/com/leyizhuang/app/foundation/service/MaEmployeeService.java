@@ -45,4 +45,10 @@ public interface MaEmployeeService {
     PageInfo<GuideVO>  queryGuideVOByInfo(Integer page,Integer size,String queryGuideVOInfo);
 
     EmployeeDO findEmployeeDOByEmpId(Long id);
+
+    /**
+     * 后台购买产品券选择导购查询
+     * @return
+     */
+    List<EmployeeDO> findEmployeeByCityIdAndStoreId (Long cityId,Long storeId);
 }

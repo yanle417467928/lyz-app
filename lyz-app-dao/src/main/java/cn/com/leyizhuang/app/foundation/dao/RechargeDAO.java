@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -24,4 +25,8 @@ public interface RechargeDAO {
     public void updateRechargeOrderStatusAndPayUpTime(@Param(value = "rechargeNo") String rechargeNo,
                                                       @Param(value = "payUpTime") Date payUpTime,
                                                       @Param(value = "status") AppRechargeOrderStatus status);
+
+    RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo);
+
+    RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo);
 }

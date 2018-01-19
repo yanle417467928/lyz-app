@@ -112,9 +112,9 @@ public class EmployeeController {
             AppUserDevice device = userDeviceService.findByClientIdAndDeviceId(loginParam.getClientId(), loginParam.getDeviceId());
             if (null == device) {
                 device = new AppUserDevice(null, employee.getEmpId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(loginParam.getSystemType()),
-                        loginParam.getClientId(), loginParam.getDeviceId(), new Date(),new Date());
+                        loginParam.getClientId(), loginParam.getDeviceId(), new Date(), new Date());
                 userDeviceService.addUserDevice(device);
-            }else{
+            } else {
                 device.setLastLoginTime(new Date());
                 userDeviceService.updateLastLoginTime(device);
             }
@@ -124,8 +124,8 @@ public class EmployeeController {
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new EmployeeLoginResponse(employee.getIdentityType().getValue(), employee.getEmpId(), employee.getCityId()));
-            logger.info("employeeLogin OUT,员工登录成功，出参 resultDTO:{}", resultDTO);
+                    new EmployeeLoginResponse(employee.getIdentityType().getValue(), null == employee.getSellerType() ? "" : employee.getSellerType().getValue(),
+                            employee.getEmpId(), employee.getCityId()));
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,7 +305,7 @@ public class EmployeeController {
     @PostMapping(value = "/PreDeposit/recharge/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreRechargePreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getStoreRechargePreDepositLog CALLED,获取装饰公司钱包充值记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -313,7 +313,7 @@ public class EmployeeController {
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType != 2 ) {
+        if (null == identityType || identityType != 2) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getStoreRechargePreDepositLog OUT,获取装饰公司钱包充值记录失败，出参 resultDTO:{}", resultDTO);
@@ -356,9 +356,9 @@ public class EmployeeController {
      * @date 2017/11/7
      */
     @PostMapping(value = "/PreDeposit/consumption/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType,Integer page, Integer size) {
+    public ResultDTO getStoreConsumptionPreDepositLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getStoreConsumptionPreDepositLog CALLED, 获取装饰公司钱包消费记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -386,7 +386,7 @@ public class EmployeeController {
         }
         try {
             List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
-            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList,page, size);
+            PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogServiceImpl.findByUserIdAndType(userId, preDepositChangeTypeList, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
             logger.info("getStoreConsumptionPreDepositLog OUT, 获取装饰公司钱包消费记录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -400,11 +400,11 @@ public class EmployeeController {
     }
 
     /**
-     * @title   获取装饰公司信用金变更记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取装饰公司信用金变更记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/27
      */
@@ -497,18 +497,18 @@ public class EmployeeController {
     }
 
     /**
-     * @title   获取装饰公司现金返利变更记录
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取装饰公司现金返利变更记录
+     * @descripe
      * @author GenerationRoad
      * @date 2017/11/27
      */
     @PostMapping(value = "/subvention/log", produces = "application/json;charset=UTF-8")
-    public ResultDTO getStoreSubventionLog(Long userId, Integer identityType,Integer page, Integer size) {
+    public ResultDTO getStoreSubventionLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getStoreSubventionLog CALLED, 获取装饰公司现金返利变更记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getStoreSubventionLog CALLED, 获取装饰公司现金返利变更记录，入参 userId {},identityType{},page:{},size:{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -550,12 +550,13 @@ public class EmployeeController {
 
     /**
      * 获取导购二维码
-     * @param userID    用户id
-     * @param identityType  用户类型
-     * @return  返回二维码
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 返回二维码
      */
     @PostMapping(value = "/qr/code", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getQrCodeByUserID(Long userID,Integer identityType){
+    public ResultDTO<Object> getQrCodeByUserID(Long userID, Integer identityType) {
         logger.info("getQrCodeByUserID CALLED, 获取导购二维码，入参 userID {},identityType{}", userID, identityType);
         ResultDTO<Object> resultDTO;
 
@@ -570,7 +571,7 @@ public class EmployeeController {
             logger.info("getQrCodeByUserID OUT, 获取导购二维码失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 0){
+        if (identityType != 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
                     null);
             logger.info("getQrCodeByUserID OUT, 获取导购二维码失败，出参 resultDTO:{}", resultDTO);
@@ -584,7 +585,7 @@ public class EmployeeController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, qrCodeResponse);
             logger.info("getQrCodeByUserID OUT, 获取导购二维码成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取导购二维码失败", null);
             logger.warn("getQrCodeByUserID EXCEPTION, 获取导购二维码失败，出参 resultDTO:{}", resultDTO);

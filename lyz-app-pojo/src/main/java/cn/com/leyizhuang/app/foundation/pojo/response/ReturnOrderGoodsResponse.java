@@ -18,6 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ReturnOrderGoodsResponse implements Serializable {
 
+    private Long id;
     /**
      * 商品id
      */

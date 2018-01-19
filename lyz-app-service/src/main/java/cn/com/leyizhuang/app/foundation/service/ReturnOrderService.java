@@ -8,7 +8,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -34,7 +33,7 @@ public interface ReturnOrderService {
      * @param returnNo  退单号
      * @return  退单基础信息
      */
-    ReturnOrderBaseInfo queryByReturnNo(@Param("returnNo") String returnNo);
+    ReturnOrderBaseInfo queryByReturnNo(String returnNo);
 
     /**
      * 添加保存退单退款总情况
@@ -145,4 +144,12 @@ public interface ReturnOrderService {
      * @param finished
      */
     void updateReturnOrderStatus(String outRefundNo, AppReturnOrderStatus finished);
+
+    /**
+     * 取消、拒签订单修改订单商品可退数量和已退数量
+     * @param returnQty     已退数量
+     * @param returnableQty 可退数量
+     * @param id   订单商品行id
+     */
+    void updateReturnableQuantityAndReturnQuantityById(Integer returnQty,Integer returnableQty,Long id);
 }

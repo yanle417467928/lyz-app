@@ -46,6 +46,8 @@ public interface ArrearsAuditDAO {
      */
     OrderArrearsAuditDO findArrearsByUserIdAndOrderNumber(@Param("userID") Long userID,@Param("orderNumber") String orderNumber);
 
+
+
     /**
      * 导购欠款还款后修改欠款审核表
      * @param repaymentTime 还款时间

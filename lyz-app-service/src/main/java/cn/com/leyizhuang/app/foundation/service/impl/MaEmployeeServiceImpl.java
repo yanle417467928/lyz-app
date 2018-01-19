@@ -180,5 +180,10 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         return this.maEmployeeDAO.findEmployeeDOByEmpId(id);
     }
 
+    @Override
+    public List<EmployeeDO> findEmployeeByCityIdAndStoreId(Long cityId, Long storeId) {
+        return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(cityId, storeId);
+    }
+
 
 }

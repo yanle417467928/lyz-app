@@ -305,7 +305,7 @@
         SET balance = balance + #{deposit},
         last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+        <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
 
@@ -377,21 +377,21 @@
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
-        cccc.denomination,
-        cccc.CONDITION,
-        cccc.title
+            cccc.denomination,
+            cccc.CONDITION,
+            cccc.title
         FROM
-        cus_customer_cash_coupon cccc
+            cus_customer_cash_coupon cccc
         WHERE
-        cccc.id = #{ccId}
-        AND cccc.cus_id = #{cusId}
-        AND cccc.qty >= #{qty}
-        AND cccc.is_used = FALSE
-        AND cccc.effective_start_time &lt; NOW()
-        AND (
-        cccc.effective_end_time IS NULL
-        OR cccc.effective_end_time &gt; NOW()
-        )
+            cccc.id = #{ccId}
+            AND cccc.cus_id = #{cusId}
+            AND cccc.qty >= #{qty}
+            AND cccc.is_used = FALSE
+            AND cccc.effective_start_time &lt; NOW()
+            AND (
+                cccc.effective_end_time IS NULL
+                OR cccc.effective_end_time &gt; NOW()
+            )
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
@@ -574,12 +574,20 @@
 
     <select id="findCustomerSignDetailByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignLogBrief">
-        SELECT
-            sign_time,
-            award_lebi_qty award,
-            description
-        FROM cus_sign_log
-        WHERE cus_id = #{cusId}
+        SELECT t.*
+        FROM
+            (
+                SELECT
+                    s.sign_time,
+                    s.award_lebi_qty award,
+                    s.description
+                FROM
+                    cus_sign_log s
+                WHERE
+                    s.cus_id = #{cusId}
+                ORDER BY
+                    s.sign_time DESC
+            ) t
     </select>
 
     <insert id="saveSignLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog">

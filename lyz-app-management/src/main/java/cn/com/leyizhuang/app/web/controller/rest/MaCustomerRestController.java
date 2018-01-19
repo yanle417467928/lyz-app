@@ -10,7 +10,11 @@ import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -290,4 +294,34 @@ public class MaCustomerRestController extends BaseRestController {
         }
     }
 
+    /**
+     * 后台购买产品券选择顾客
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param cityId
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/select/customer")
+    public GridDataVO<CustomerDO> selectCustomer(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId) {
+        logger.info("selectCustomer 后台购买产品券选择顾客,入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords, cityId, storeId);
+        try {
+            String userName = this.getShiroUser().getLoginName();
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageHelper.startPage(page, size);
+            List<CustomerDO> employeeDOList = this.maCustomerService.findCustomerByCityIdAndStoreId(cityId, storeId);
+            PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(employeeDOList);
+            List<CustomerDO> customerDOList = customerDOPageInfo.getList();
+            logger.warn("selectCustomer ,后台购买产品券选择顾客成功", customerDOList.size());
+            return new GridDataVO<CustomerDO>().transform(customerDOList, customerDOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("selectCustomer EXCEPTION,发生未知错误，后台购买产品券选择顾客失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
 }

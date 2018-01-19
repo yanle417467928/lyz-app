@@ -139,4 +139,5 @@ public interface AppOrderService {
 
     Map<String,Integer> getAppOrderQuantityByCusId(Long id);
 
+    void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId);
 }

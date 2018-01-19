@@ -783,4 +783,12 @@
               AND creator_identityType = 'CUSTOMER'
               AND return_status = 'RETURNING'
     </select>
+
+    <update id="updateReturnableQuantityAndReturnQuantityById">
+        UPDATE ord_goods_info
+        SET return_qty = return_qty - #{qty},
+         returnable_qty = returnable_qty + #{qty}
+        WHERE
+            id = #{ogi}
+    </update>
 </mapper>

@@ -307,7 +307,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </insert>
 
 
-    <select id="isSupervisor" parameterType="java.lang.Long">
+    <select id="isSupervisor" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT
         seller_type
         FROM emp_employee

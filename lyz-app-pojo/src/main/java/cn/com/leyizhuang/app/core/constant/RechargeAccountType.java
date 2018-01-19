@@ -11,7 +11,9 @@ import java.util.Objects;
 public enum RechargeAccountType {
 
     CUS_PREPAY("CUS_PREPAY", "顾客预存款"),
-    ST_PREPAY("ST_PREPAY", "门店预存款");
+    ST_PREPAY("ST_PREPAY", "门店预存款"),
+    PRODUCT_COUPON("PRODUCT_COUPON", "产品券"),
+    BOND("BOND", "保证金");
 
     private String value;
 
