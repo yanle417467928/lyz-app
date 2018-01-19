@@ -246,6 +246,6 @@
         SET return_qty = #{returnQty},
          returnable_qty = #{returnableQty}
         WHERE
-            id = #{gid}
+            id = #{id}
     </update>
 </mapper>

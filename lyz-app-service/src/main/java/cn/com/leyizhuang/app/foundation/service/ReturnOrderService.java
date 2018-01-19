@@ -149,7 +149,7 @@ public interface ReturnOrderService {
      * 取消、拒签订单修改订单商品可退数量和已退数量
      * @param returnQty     已退数量
      * @param returnableQty 可退数量
-     * @param gid   商品id
+     * @param id   订单商品行id
      */
-    void updateReturnableQuantityAndReturnQuantityById(Integer returnQty,Integer returnableQty,Long gid);
+    void updateReturnableQuantityAndReturnQuantityById(Integer returnQty,Integer returnableQty,Long id);
 }
