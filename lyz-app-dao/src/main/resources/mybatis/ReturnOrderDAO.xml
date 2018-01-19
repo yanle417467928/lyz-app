@@ -240,4 +240,12 @@
         SET return_status = #{status}
         WHERE return_no = #{returnNo}
     </update>
+    
+    <update id="updateReturnableQuantityAndReturnQuantityById">
+        UPDATE ord_goods_info
+        SET return_qty = #{returnQty},
+         returnable_qty = #{returnableQty}
+        WHERE
+            id = #{gid}
+    </update>
 </mapper>

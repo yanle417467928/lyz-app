@@ -248,4 +248,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderDAO.updateReturnOrderStatus(returnNumber, finished);
         }
     }
+
+    @Override
+    public void updateReturnableQuantityAndReturnQuantityById(Integer returnQty, Integer returnableQty, Long gid) {
+        returnOrderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty, returnableQty, gid);
+    }
 }
