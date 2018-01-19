@@ -35,7 +35,7 @@ public interface MaCustomerDAO {
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
-    CustomerPreDeposit findPredepositByCusId(Long cusId);
+    CustomerPreDeposit findPreDepositByCusId(Long cusId);
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 

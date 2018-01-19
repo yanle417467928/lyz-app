@@ -509,7 +509,7 @@
         SET balance = balance + #{money},
         last_update_time = #{lastUpdateTime}
         WHERE store_id = #{storeId}
-          <if test="null != oldUpdateTime and oldUpdateTime != ''">
+          <if test="null != oldUpdateTime">
             AND last_update_time = #{oldUpdateTime}
           </if>
     </update>
