@@ -100,9 +100,14 @@ public class ProductCouponServiceImpl implements ProductCouponService {
      * 删除产品券模版
      */
     @Override
+    @Transactional
     public void deletedProductCoupon(List<Long> ids){
         if (ids != null && ids.size() > 0){
-            productCouponDAO.deleteProductCoupon(ids);
+            for (Long id : ids){
+                ProductCoupon productCoupon = productCouponDAO.queryProductCouponById(id);
+                productCoupon.setStatus(false);
+                productCouponDAO.updateProductCoupon(productCoupon);
+            }
         }
     }
 

@@ -19,6 +19,8 @@ import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +31,8 @@ import java.util.*;
  */
 @Service
 public class AppActDutchServiceImpl implements AppActDutchService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppActDutchServiceImpl.class);
 
     @Resource
     private ActBaseDAO actBaseDAO;
@@ -130,7 +134,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     if(giftNum == 0){
                         enjoyTimes = 0;
                     }else{
-                        // 向上取整 得出用户加价次数
+                        // 向上取整 得出用户参加次数
                         enjoyTimes = (int) Math.ceil(Double.valueOf(giftNum)/Double.valueOf(giftMaxChooseNum));
                     }
 
@@ -416,36 +420,26 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @return
      */
     private List<OrderGoodsInfo> countDutchPrice(List<OrderGoodsInfo> orderGoodsInfos, Double totalPrice, Double subPrice, AppIdentityType type, AppCustomerType customerType) {
-        // 记录已经分摊的金额  最后一个分摊价采取总价-已经分摊的方式 避免误差
+        // 记录已经分摊的金额  倒挤算法
         Double dutchedPrice = 0.00;
         for (int i =0 ;i<orderGoodsInfos.size();i++) {
             OrderGoodsInfo info = orderGoodsInfos.get(i);
-//            Double price = this.returnCountPrice(info, type, customerType);
-//            Double dutchPrice = CountUtil.mul(CountUtil.div(price, totalPrice), subPrice);
-//            info.setIsPriceShare(true);
-//            info.setSharePrice(CountUtil.div(dutchPrice,info.getOrderQuantity()));
-//            info.setReturnPrice(CountUtil.div(CountUtil.sub(price, dutchPrice),info.getOrderQuantity()));
+
             if(i < (orderGoodsInfos.size() - 1)){
-                Double price = this.returnCountPrice(info, type, customerType);
-                Double dutchPrice = (price / totalPrice) * subPrice;
+                Double price = info.getSettlementPrice();
+                //四舍五入
+                Double dutchPrice = CountUtil.HALF_UP_SCALE_2((price / totalPrice) * subPrice);
+
                 info.setIsPriceShare(true);
-                info.setPromotionSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
-                info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
-                dutchedPrice += dutchPrice;
+                info.setPromotionSharePrice(dutchPrice);
+                dutchedPrice += CountUtil.mul(dutchPrice , info.getOrderQuantity());
             }else{
-                Double price = this.returnCountPrice(info, type, customerType);
+                Double price = info.getSettlementPrice();
                 Double dutchPrice =  subPrice - dutchedPrice;
                 info.setIsPriceShare(true);
-                info.setPromotionSharePrice(CountUtil.div(dutchPrice , info.getOrderQuantity()));
-                info.setReturnPrice(CountUtil.div((price-dutchPrice) , info.getOrderQuantity()));
-
+                info.setPromotionSharePrice(CountUtil.div(dutchPrice,info.getOrderQuantity()));
             }
 
-//            if (info.getId() == null) {
-//                orderDAO.saveOrderGoodsInfo(info);
-//            } else {
-//                orderDAO.updateOrderGoodsInfo(info);
-//            }
         }
 
         return orderGoodsInfos;
@@ -484,7 +478,51 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         result.setGoodsLineType(lineType);
         result.setPriceItemId(goods.getPriceItemId());
         result.setCompanyFlag(goods.getCompanyFlag());
-
+        result.setSettlementPrice(info.getSettlementPrice());
         return result;
+    }
+
+    /**
+     * 所有分摊完毕后计算退款单价
+     * @return
+     */
+    public List<OrderGoodsInfo> countReturnPrice(List<OrderGoodsInfo> goodsInfoList){
+
+        Double totalDutchPrice = 0.00;
+        Double totalReturnPrice = 0.00;
+        Double totalPrice = 0.00;
+
+        for (OrderGoodsInfo goodsInfo : goodsInfoList){
+            // 促销分摊金额
+            Double promotionPrice = goodsInfo.getPromotionSharePrice() == null ? 0.00 : goodsInfo.getPromotionSharePrice();
+            // 乐币分摊金额
+            Double lbPrice = goodsInfo.getLbSharePrice() == null ? 0.00 : goodsInfo.getLbSharePrice();
+            // 现金券分摊金额
+            Double cashCouponPrice = goodsInfo.getCashCouponSharePrice() == null ? 0.00 : goodsInfo.getCashCouponSharePrice();
+            // 现金返利分摊金额
+            Double cashReturnPrice = goodsInfo.getCashReturnSharePrice() == null ? 0.00 : goodsInfo.getCashReturnSharePrice();
+
+            // 商品单价
+            Double price = goodsInfo.getSettlementPrice() == null ? 0.00 : goodsInfo.getSettlementPrice();
+
+            if (price.equals(0.00)){
+                goodsInfo.setReturnPrice(0.00);
+            }else {
+                Double returnPrice = CountUtil.sub(price , promotionPrice , lbPrice , cashCouponPrice , cashReturnPrice);
+                goodsInfo.setReturnPrice(returnPrice);
+                totalReturnPrice = CountUtil.add(totalReturnPrice,CountUtil.mul(returnPrice , goodsInfo.getOrderQuantity()));
+            }
+
+            totalPrice += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
+            totalDutchPrice = CountUtil.add(totalDutchPrice , CountUtil.mul((promotionPrice + lbPrice + cashCouponPrice + cashReturnPrice) , goodsInfo.getOrderQuantity()));
+
+        }
+
+        // 打印订单分摊信息
+        logger.debug("订单总价值："+ totalPrice);
+        logger.debug("退款总额："+ totalReturnPrice);
+        logger.debug("分摊总额："+ totalDutchPrice);
+
+        return goodsInfoList;
     }
 }

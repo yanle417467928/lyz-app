@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -56,9 +57,16 @@ public interface ItyAllocationDAO {
      */
     List<AllocationVO> queryByAllocationQuery(AllocationQuery query);
 
+    int updateAllocation(Allocation allocation);
+
     int insertAllocation(Allocation allocation);
 
     int insertAllocationDetails(AllocationDetail goodsDetails);
 
     int insertAllocationTrail(AllocationTrail allocationTrail);
+
+    int chagneAllocationStatus(@Param("id") Long id, @Param("status") AllocationTypeEnum status);
+
+    int setDetailDRealQty(@Param("allcationId") Long allcationId, @Param("goodsId") Long goodsId,@Param("realQty") Integer realQty);
+
 }

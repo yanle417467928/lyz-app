@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
 import com.github.pagehelper.PageInfo;
+import org.springframework.ui.Model;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public interface ItyAllocationService {
 
     Allocation insert(Allocation allocation, String operaterdBy);
 
-    void update(Allocation allocation, String operaterdBy);
+    void update(Allocation allocation);
 
     /**
      * 查询调拨单
@@ -45,7 +47,7 @@ public interface ItyAllocationService {
 
     void cancel(Allocation allocation, String username);
 
-    void send(Allocation allocation, String realNums, String username);
+    void sent(Allocation allocation, List<AllocationDetail> details, String username);
 
     void receive(Allocation allocation, String username);
 
@@ -58,5 +60,22 @@ public interface ItyAllocationService {
      * @param shiroUser
      */
     void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser);
+
+    Model queryAllocationDetail(Long id, Model model);
+
+    /**
+     * 调拨单状态
+     * @param allocationId
+     * @param status
+     */
+    void chagneAllocationStatus(Long allocationId , AllocationTypeEnum status);
+
+    /**
+     * 设置出库数量
+     * @param allocationId
+     * @param goodsId
+     * @param realQty
+     */
+    void setDetailDRealQty(Long allocationId,Long goodsId,Integer realQty);
 
 }

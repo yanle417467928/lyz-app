@@ -1,12 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -41,6 +43,9 @@ public class MaAllocationRestController extends BaseRestController{
 
     @Autowired
     private ItyAllocationService ityAllocationService;
+
+    @Autowired
+    private AppOrderService orderService;
 
     @GetMapping(value = "/page/grid")
     public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, AllocationQuery query) {
@@ -90,5 +95,111 @@ public class MaAllocationRestController extends BaseRestController{
 
         ityAllocationService.addAllocation(allocation,allocationDetailList,shiroUser);
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "调拨单新增成功！", allocation);
+    }
+
+    /**
+     * 出库
+     * @param allocationId
+     * @param details
+     * @return
+     */
+    @PutMapping("/sent")
+    public ResultDTO<?> sent(Long allocationId, String details) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, AllocationDetail.class);
+        List<AllocationDetail> allocationDetailList = objectMapper.readValue(details,javaType1);
+
+        // 当前登录帐号
+        ShiroUser user = super.getShiroUser();
+        Allocation allocation = ityAllocationService.queryAllocationById(allocationId);
+        allocation.setModifier(user.getLoginName());
+        allocation.setModifyTime(new Date());
+
+        if (allocation == null){
+            logger.info("ID:"+allocationId+",调拨单数据不存在");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单数据不存在，请联系关理员", null);
+        }
+
+        if (!allocation.getStatus().equals(AllocationTypeEnum.NEW)){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单无法出库，请联系管理员", null);
+        }
+
+        for (AllocationDetail goods : allocationDetailList){
+            // 检查门店库存
+            Boolean inventoryFlag = orderService.existGoodsStoreInventory(allocation.getAllocationFrom(),goods.getGoodsId(),goods.getRealQty());
+
+            if (!inventoryFlag){
+                logger.info(goods.getSku()+" 库存不足");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "调拨产品："+goods.getSkuName() +" 库存不足", null);
+            }
+        }
+
+        ityAllocationService.sent(allocation,allocationDetailList,user.getLoginName());
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                "出库成功", null);
+    }
+
+    /**
+     * 入库
+     * @param allocationId
+     * @return
+     */
+    @PutMapping("/entered")
+    public ResultDTO<?> entered(Long allocationId){
+        // 当前登录帐号
+        ShiroUser user = super.getShiroUser();
+
+        Allocation allocation = ityAllocationService.queryAllocationById(allocationId);
+        allocation.setModifier(user.getLoginName());
+        allocation.setModifyTime(new Date());
+
+        if (allocation == null){
+            logger.info("ID:"+allocationId+",调拨单数据不存在");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单数据不存在，请联系关理员", null);
+        }
+
+        if (!allocation.getStatus().equals(AllocationTypeEnum.SENT)){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单未出库，请联系管理员", null);
+        }
+
+        ityAllocationService.receive(allocation,user.getLoginName());
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                "入库成功", null);
+    }
+
+    /**
+     * 作废
+     * @param allocationId
+     * @return
+     */
+    @PutMapping("/cancelled")
+    public ResultDTO<?> cancelled(Long allocationId){
+        // 当前登录帐号
+        ShiroUser user = super.getShiroUser();
+
+        Allocation allocation = ityAllocationService.queryAllocationById(allocationId);
+        allocation.setModifier(user.getLoginName());
+        allocation.setModifyTime(new Date());
+
+        if (allocation == null){
+            logger.info("ID:"+allocationId+",调拨单数据不存在");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单数据不存在，请联系关理员", null);
+        }
+
+        if (allocation.getStatus().equals(AllocationTypeEnum.SENT)){
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "调拨单已出库", null);
+        }
+
+        ityAllocationService.cancel(allocation,user.getLoginName());
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                "作废成功", null);
     }
 }

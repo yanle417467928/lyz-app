@@ -1,6 +1,24 @@
 $(function () {
 
     initDateGird('/rest/activity/page/grid');
+    $('#btn_add').on('click', function () {
+        $grid.add('/view/activity/add/0');
+    });
+    $('#btn_edit').on('click', function () {
+        $grid.modify($('#dataGrid'),'/view/activity/edit/{id}');
+    });
+
+    $('#btn_copy').on('click',function () {
+        $grid.modify($('#dataGrid'),'/view/activity/add/{id}');
+    })
+
+    $('#btn_publish').on('click', function () {
+        $modal.danger("发布","确认发布此促销？",publish);
+    });
+
+    $('#btn_delete').on('click', function () {
+        $modal.danger("失效","确认失效？失效后不可恢复！！！",invalid);
+    });
 });
 
 function initDateGird(url) {
@@ -77,25 +95,6 @@ function initDateGird(url) {
     },
 
     ]);
-
-    $('#btn_add').on('click', function () {
-        $grid.add('/view/activity/add/0');
-    });
-    $('#btn_edit').on('click', function () {
-        $grid.modify($('#dataGrid'),'/view/activity/edit/{id}');
-    });
-
-    $('#btn_copy').on('click',function () {
-        $grid.modify($('#dataGrid'),'/view/activity/add/{id}');
-    })
-
-    $('#btn_publish').on('click', function () {
-        $modal.danger("发布","确认发布此促销？",publish);
-    });
-
-    $('#btn_delete').on('click', function () {
-        $modal.danger("失效","确认失效？失效后不可恢复！！！",invalid);
-    });
 
 }
 

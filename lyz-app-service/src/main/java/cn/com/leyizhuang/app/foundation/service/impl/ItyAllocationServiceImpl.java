@@ -9,11 +9,13 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.Date;
 import java.util.List;
@@ -65,8 +67,10 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     }
 
     @Override
-    public void update(Allocation allocation, String operaterdBy) {
-
+    public void update(Allocation allocation) {
+        if (allocation != null) {
+            ityAllocationDAO.updateAllocation(allocation);
+        }
     }
 
     @Override
@@ -75,18 +79,46 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     }
 
     @Override
+    @Transactional
     public void cancel(Allocation allocation, String username) {
 
+        // 调拨单状态设置为作废
+        allocation.setStatus(AllocationTypeEnum.CANCELLED);
+        ityAllocationDAO.updateAllocation(allocation);
+
+        // 新建调拨轨迹
+        this.createAllocationRecord(allocation.getId(),username,AllocationTypeEnum.CANCELLED);
+
     }
 
     @Override
-    public void send(Allocation allocation, String realNums, String username) {
+    @Transactional
+    public void sent(Allocation allocation, List<AllocationDetail> allocationDetailList, String username) {
+        for (AllocationDetail goods : allocationDetailList) {
+            ityAllocationDAO.setDetailDRealQty(allocation.getId(), goods.getGoodsId(), goods.getRealQty());
+        }
 
+        // 调拨单状态设置为出库
+        allocation.setStatus(AllocationTypeEnum.SENT);
+        ityAllocationDAO.updateAllocation(allocation);
+
+        // 新建调拨轨迹
+        this.createAllocationRecord(allocation.getId(), username, AllocationTypeEnum.SENT);
+
+        // TODO 调用ebs接口
     }
 
     @Override
+    @Transactional
     public void receive(Allocation allocation, String username) {
+        // 调拨单状态设置为入库
+        allocation.setStatus(AllocationTypeEnum.ENTERED);
+        ityAllocationDAO.updateAllocation(allocation);
 
+        // 新建调拨轨迹
+        this.createAllocationRecord(allocation.getId(), username, AllocationTypeEnum.ENTERED);
+
+        // TODO 调用ebs接口
     }
 
     @Override
@@ -169,7 +201,6 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 //        tdDiySiteInventory.setRegionName(from.getRegionName());
 //        return tdDiySiteInventory;
 //    }
-
     @Override
     @Transactional
     public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser) {
@@ -181,6 +212,8 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         allocation.setNumber(this.getAllocationNumber());
         allocation.setCreateTime(new Date());
         allocation.setCreator(shiroUser.getLoginName());
+        allocation.setModifier(shiroUser.getLoginName());
+        allocation.setModifyTime(new Date());
         allocation.setAllocationFromName(store.getStoreName());
         allocation.setStatus(AllocationTypeEnum.NEW);
         // TODO 城市 门店信息
@@ -194,11 +227,35 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         // 记录调拨轨迹
         AllocationTrail trail = new AllocationTrail();
         trail.setAllocationId(allocation.getId());
-        trail.setOperator(shiroUser.getLoginName());
+        trail.setOperator(shiroUser.getName());
         trail.setOperateTime(new Date());
         trail.setOperation(AllocationTypeEnum.NEW);
         ityAllocationDAO.insertAllocationTrail(trail);
     }
+
+    @Override
+    public Model queryAllocationDetail(Long id, Model model) {
+
+        Allocation allocation = ityAllocationDAO.queryAllocationById(id);
+        List<AllocationDetail> details = ityAllocationDAO.queryDetailsByAllocationId(id);
+        List<AllocationTrail> trails = ityAllocationDAO.queryTrailsByAllocationId(id);
+
+
+        model.addAttribute("allocation", allocation);
+        model.addAttribute("details", details);
+        model.addAttribute("trails", trails);
+
+        return model;
+    }
+
+    public void chagneAllocationStatus(Long allocationId, AllocationTypeEnum status) {
+        ityAllocationDAO.chagneAllocationStatus(allocationId, status);
+    }
+
+    public void setDetailDRealQty(Long allocationId, Long goodsId, Integer realQty) {
+        ityAllocationDAO.setDetailDRealQty(allocationId, goodsId, realQty);
+    }
+
 
     private String getAllocationNumber() {
         StringBuilder number = new StringBuilder();
@@ -206,5 +263,15 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         number.append(getCurrentTimeStr("yyyyMMddHHmmssSSS"));
         number.append(RandomUtil.randomNumCode(3));
         return number.toString();
+    }
+
+    private void createAllocationRecord(Long allocationId, String username, AllocationTypeEnum status) {
+        AllocationTrail trail = new AllocationTrail();
+        trail.setAllocationId(allocationId);
+        trail.setOperator(username);
+        trail.setOperateTime(new Date());
+        trail.setOperation(status);
+
+        ityAllocationDAO.insertAllocationTrail(trail);
     }
 }

@@ -97,10 +97,10 @@
     </insert>
 
     <insert id="insertAllocationDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
-        insert into ity_allocation_detail (id, allocation_id, g_id,
+        insert into ity_allocation_detail (id, allocation_id, goods_id,
       sku_name, sku, qty,
       real_qty)
-    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{gId,jdbcType=BIGINT},
+    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT},
       #{skuName,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{qty,jdbcType=INTEGER},
       #{realQty,jdbcType=INTEGER})
     </insert>
@@ -111,4 +111,59 @@
     values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{operation,jdbcType=VARCHAR},
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP})
     </insert>
+
+    <update id="updateAllocation" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation">
+        update ity_allocation
+        <set >
+            <if test="number != null" >
+                `number` = #{number,jdbcType=VARCHAR},
+            </if>
+            <if test="cityId != null" >
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="cityName != null" >
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="allocationFrom != null" >
+                allocation_from = #{allocationFrom,jdbcType=BIGINT},
+            </if>
+            <if test="allocationFromName != null" >
+                allocation_from_name = #{allocationFromName,jdbcType=VARCHAR},
+            </if>
+            <if test="allocationTo != null" >
+                allocation_to = #{allocationTo,jdbcType=BIGINT},
+            </if>
+            <if test="allocationToName != null" >
+                allocation_to_name = #{allocationToName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="comment != null" >
+                comment = #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null" >
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifier != null" >
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+            <if test="modifyTime != null" >
+                modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="chagneAllocationStatus">
+        UPDATE ity_allocation set `status` = #{status} where id = #{id}
+    </update>
+
+    <update id="setDetailDRealQty">
+        UPDATE ity_allocation_detail set real_qty = #{realQty} where allcation_id = #{allocationId} and goods_id = #{goodsId}
+
+    </update>
 </mapper>

@@ -5,7 +5,7 @@
     <sql id="product_coupon_all_fields">
         id, create_time, gid, denomination, effective_start_time, effective_end_time, description,
     initial_quantity, remaining_quantity, title, city_id, city_name, store_id, seller_id,
-    sort_id
+    sort_id,`status`
 
     </sql>
 
@@ -82,13 +82,13 @@
       denomination, effective_start_time, effective_end_time,
       description, initial_quantity, remaining_quantity,
       title, city_id, city_name,
-      store_id, seller_id, sort_id
+      store_id, seller_id, sort_id,`status`
       )
     values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{gid,jdbcType=BIGINT},
       #{denomination,jdbcType=DECIMAL}, #{effectiveStartTime,jdbcType=TIMESTAMP}, #{effectiveEndTime,jdbcType=TIMESTAMP},
       #{description,jdbcType=VARCHAR}, #{initialQuantity,jdbcType=INTEGER}, #{remainingQuantity,jdbcType=INTEGER},
       #{title,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT}, #{cityName,jdbcType=VARCHAR},
-      #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT}, #{sortId,jdbcType=INTEGER}
+      #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT}, #{sortId,jdbcType=INTEGER},#{status}
       )
 
     </insert>
@@ -138,6 +138,9 @@
             <if test="sortId != null" >
                 sort_id = #{sortId,jdbcType=INTEGER},
             </if>
+            <if test="status != null" >
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
 
@@ -150,6 +153,7 @@
         <if test="keywords != null">
             AND  title LIKE concat("%",#{keywords},"%")
         </if>
+        and status = 1
         ORDER by create_time DESC
     </select>
 

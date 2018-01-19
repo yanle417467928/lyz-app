@@ -208,10 +208,13 @@ public class CashCouponServiceImpl implements CashCouponService{
      * 删除现金券模版
      * @param ids
      */
+    @Transactional
     public void deleteCashCouponTemplate(List<Long> ids){
         if (ids != null || ids.size() != 0){
             for (Long id : ids){
-                cashCouponDAO.deleteCashCouponByid(id);
+                CashCoupon cashCoupon = cashCouponDAO.queryById(id);
+                cashCoupon.setStatus(false);
+                cashCouponDAO.updateCashCoupon(cashCoupon);
             }
         }
     }

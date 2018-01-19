@@ -89,6 +89,11 @@ public class ProductCoupon implements Serializable {
     private Long sellerId;
 
     /**
+     * 状态 0：删除 1：正常
+     */
+    private Boolean status = true;
+
+    /**
      * 排序号
      */
     private Integer sortId;

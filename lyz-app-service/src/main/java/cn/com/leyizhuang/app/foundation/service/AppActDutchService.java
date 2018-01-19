@@ -22,4 +22,11 @@ public interface AppActDutchService {
      * @return
      */
     List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList);
+
+    /**
+     * 计算并 设置退货单价
+     * @param goodsInfoList
+     * @return
+     */
+    List<OrderGoodsInfo> countReturnPrice(List<OrderGoodsInfo> goodsInfoList);
 }

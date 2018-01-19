@@ -1,6 +1,22 @@
 $(function () {
 
     initDateGird('/rest/productCoupon/grid');
+
+    $('#btn_add').on('click', function () {
+        $grid.add('/view/productCoupon/add/0');
+    });
+
+    $('#btn_edit').on('click', function () {
+        $grid.modify($('#dataGrid'),'/view/productCoupon/edit/{id}');
+    });
+
+    $('#btn_copy').on('click',function () {
+        //$grid.modify($('#dataGrid'),'/view/productCoupon/add/{id}');
+    })
+
+    $('#btn_delete').on('click', function () {
+        $modal.danger("删除","确认删除？删除后不可恢复！！！",deleteproductCoupon);
+    });
 })
 
 function initDateGird(url) {
@@ -59,22 +75,6 @@ function initDateGird(url) {
     }
 
     ]);
-
-    $('#btn_add').on('click', function () {
-        $grid.add('/view/productCoupon/add/0');
-    });
-
-    $('#btn_edit').on('click', function () {
-        $grid.modify($('#dataGrid'),'/view/productCoupon/edit/{id}');
-    });
-
-    $('#btn_copy').on('click',function () {
-        //$grid.modify($('#dataGrid'),'/view/productCoupon/add/{id}');
-    })
-
-    $('#btn_delete').on('click', function () {
-        $modal.danger("删除","确认删除？删除后不可恢复！！！",deleteproductCoupon);
-    });
 
 }
 
