@@ -314,6 +314,7 @@ public class ReturnOrderController {
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
+                returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());
                 returnGoodsInfo.setReturnNo(returnNumber);
                 returnGoodsInfo.setSku(orderGoodsInfo.getSku());
                 returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
@@ -1521,6 +1522,7 @@ public class ReturnOrderController {
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
+                returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());
                 returnGoodsInfo.setReturnNo(returnNumber);
                 returnGoodsInfo.setSku(orderGoodsInfo.getSku());
                 returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
