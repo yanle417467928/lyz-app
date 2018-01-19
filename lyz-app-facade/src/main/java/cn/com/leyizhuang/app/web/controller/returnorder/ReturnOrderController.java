@@ -1190,7 +1190,7 @@ public class ReturnOrderController {
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
                 for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        if (goodsInfo.getGid().equals(simpleInfo.getId())) {
+                        if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
@@ -1830,6 +1830,7 @@ public class ReturnOrderController {
 
     private ReturnOrderGoodsResponse transform(OrderGoodsInfo goodsInfo) {
         ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
+        returnOrderGoodsResponse.setId(goodsInfo.getId());
         returnOrderGoodsResponse.setSku(goodsInfo.getSku());
         returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
         returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
