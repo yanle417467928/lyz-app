@@ -411,7 +411,7 @@
             <if test="null != flag">
                 send_flag = #{flag},
             </if>
-            <if test="null != errorMsg">
+            <if test="null != msg">
                 error_msg = #{msg},
             </if>
             <if test="null != sendTime">
@@ -420,4 +420,81 @@
         </set>
         WHERE receipt_id = #{receiptId}
     </update>
+
+    <insert id="saveOrderJxPriceDifferenceReturnInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceReturnInf">
+        INSERT INTO inter_ate_order_jx_price_difference_return_inf (main_order_number, sob_id, store_org_code, diy_site_code, receipt_date, sku,
+                                                                    amount, description, attribute1, attribute2, attribute3, attribute4, attribute5,
+                                                                    create_time, send_flag, error_msg, send_time, receipt_number)
+            SELECT
+                #{mainOrderNumber},
+                #{sobId},
+                #{storeOrgCode},
+                #{diySiteCode},
+                #{receiptDate},
+                #{sku},
+                #{amount},
+                #{description},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{receiptNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM inter_ate_order_jx_price_difference_return_inf
+                             WHERE main_order_number = #{mainOrderNumber}
+                                   AND sku = #{sku})
+
+    </insert>
+
+    <select id="getOrderJxPriceDifferenceReturnInf" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceReturnInf">
+        SELECT
+            receipt_id,
+            main_order_number,
+            sob_id,
+            store_org_code,
+            diy_site_code,
+            receipt_date,
+            sku,
+            amount,
+            description,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            receipt_number
+        FROM inter_ate_order_jx_price_difference_return_inf
+        WHERE main_order_number = #{orderNumber}
+    </select>
+
+    <select id="updateOrderJxPriceDifferenceReturnInf">
+        UPDATE inter_ate_order_jx_price_difference_return_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE receipt_id in
+        <foreach collection="returnInfIds" open="(" close=")" separator="," item="id" index="index">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

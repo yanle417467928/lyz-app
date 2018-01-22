@@ -44,7 +44,8 @@ public interface CommonService {
             LockStoreSubventionException, SystemBusyException;
 
     void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                        List<OrderCouponInfo> orderCouponInfoList, OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails)
+                                        List<OrderCouponInfo> orderCouponInfoList, OrderBillingDetails orderBillingDetails,
+                                        List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails)
             throws OrderSaveException;
 
     /**
@@ -64,4 +65,6 @@ public interface CommonService {
                                                  List<ProductCouponSimpleInfo> productCouponList, String orderNumber);
 
     List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
+
+    List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList);
 }

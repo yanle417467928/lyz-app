@@ -124,4 +124,8 @@ public interface OrderDAO {
     Integer getReturningOrderQuantityByEmpId(Long id);
 
     Integer getReturningOrderQuantityByCusId(Long id);
+
+    void saveOrderJxPriceDifferenceReturnDetails(OrderJxPriceDifferenceReturnDetails returnDetails);
+
+    List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
 }

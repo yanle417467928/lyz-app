@@ -3,10 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
@@ -43,18 +40,22 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     public void createOrderBusiness(DeliverySimpleInfo deliverySimpleInfo, Map<Long, Integer> inventoryCheckMap, Long cityId, Integer identityType,
                                     Long userId, Long customerId, List<Long> cashCouponList, List<OrderCouponInfo> orderProductCouponInfoList,
                                     OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
-                                    List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress) {
+                                    List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
+                                    List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails,
+                                    String ipAddress) {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, cityId, identityType,
                 userId, customerId, cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
-        commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, orderBillingDetails, paymentDetails);
+        commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, orderBillingDetails,
+                paymentDetails, jxPriceDifferenceReturnDetails);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
-                                             List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList) {
+                                             List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
+                                             List<OrderJxPriceDifferenceReturnInf> returnInfs) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -80,6 +81,12 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         for (OrderReceiptInf receiptInf : receiptInfList) {
             separateOrderService.saveOrderReceiptInf(receiptInf);
         }
+
+        //保存经销差价收款信息
+        for (OrderJxPriceDifferenceReturnInf returnInf : returnInfs) {
+            separateOrderService.saveOrderJxPriceDifferenceReturnInf(returnInf);
+        }
+
     }
 
     @Override

@@ -1,7 +1,5 @@
 package cn.com.leyizhuang.app.remote.queue;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,5 +18,10 @@ public class MqMessageTest {
     @RequestMapping(value = "/send/message/order")
     public void testSendOrder(String mainOrderNumber) throws Exception {
         sinkSender.sendOrder(mainOrderNumber);
+    }
+
+    @RequestMapping(value = "/send/message/recharge")
+    public void testSendRecharge(String rechargeNumber) {
+        sinkSender.sendRechargeReceipt(rechargeNumber);
     }
 }

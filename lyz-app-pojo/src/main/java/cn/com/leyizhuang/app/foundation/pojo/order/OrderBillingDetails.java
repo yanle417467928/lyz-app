@@ -130,4 +130,9 @@ public class OrderBillingDetails {
      */
     private Date payUpTime;
 
+    /**
+     * 订单经销差价返还总额
+     */
+    private Double jxPriceDifferenceAmount;
+
 }
