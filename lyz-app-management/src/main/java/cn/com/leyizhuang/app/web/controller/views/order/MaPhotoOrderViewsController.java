@@ -16,4 +16,10 @@ public class MaPhotoOrderViewsController extends BaseController {
     protected final static String PRE_URL = "/views/admin/order/photo";
 
     private final Logger logger = LoggerFactory.getLogger(MaPhotoOrderViewsController.class);
+
+    @RequestMapping(value = "/list")
+    public String getPhotoOrderList() {
+        return "/views/order/photo_order_page";
+    }
+
 }
