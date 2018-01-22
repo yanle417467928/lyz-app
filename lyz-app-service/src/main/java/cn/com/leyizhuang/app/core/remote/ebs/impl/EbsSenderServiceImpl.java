@@ -476,7 +476,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
                 returnSecond.setSku(toString(returnInf.getSku()));
                 returnSecond.setReceiptNumber(toString(returnInf.getReceiptNumber()));
                 returnSecond.setReceiptId(toString(returnInf.getReceiptId()));
-                returnSecond.setReceiptDate(toString(returnInf.getReceiptDate()));
+                returnSecond.setReceiptDate(toString(DateFormatUtils.format(returnInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
                 orderJxPriceDifferenceReturnSeconds.add(returnSecond);
             }
         }
