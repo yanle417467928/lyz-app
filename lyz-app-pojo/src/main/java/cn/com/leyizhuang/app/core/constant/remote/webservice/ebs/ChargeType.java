@@ -7,7 +7,7 @@ package cn.com.leyizhuang.app.core.constant.remote.webservice.ebs;
  * Created on 2018-01-18 9:48
  **/
 public enum ChargeType {
-    ;
+    ICBC(1, "工商银行");
 
 
     private int value;

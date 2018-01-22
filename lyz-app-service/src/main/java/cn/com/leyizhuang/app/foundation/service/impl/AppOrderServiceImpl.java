@@ -593,7 +593,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public PageInfo<OrderListResponse> getPendingEvaluationOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer page, Integer size) {
-        if (null != userID && null != identityType && null != page && null !=size ){
+        if (null != userID && null != identityType && null != page && null != size) {
             PageHelper.startPage(page, size);
             List<OrderListResponse> orderListResponses = orderDAO.getPendingEvaluationOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType));
             return new PageInfo<>(orderListResponses);
@@ -603,7 +603,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public List<OrderCouponInfo> getOrderCouponInfoByOrderNumber(String orderNumber) {
-        if (StringUtils.isNotBlank(orderNumber)){
+        if (StringUtils.isNotBlank(orderNumber)) {
             return orderDAO.getOrderCouponInfoByOrderNumber(orderNumber);
         }
         return null;
@@ -615,31 +615,47 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public Map<String,Integer> getAppOrderQuantityByEmpId(Long id) {
+    public Map<String, Integer> getAppOrderQuantityByEmpId(Long id) {
         Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
         Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByEmpId(id);
         Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
-        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByEmpId(id);
+        Integer returningOrderQuantity = this.orderDAO.getReturningOrderQuantityByEmpId(id);
         Map quantityMap = new HashMap();
-        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
-        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
-        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
-        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        quantityMap.put("unpaidOrderQuantity", unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity", pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity", isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity", returningOrderQuantity);
         return quantityMap;
     }
 
     @Override
-    public Map<String,Integer> getAppOrderQuantityByCusId(Long id) {
+    public Map<String, Integer> getAppOrderQuantityByCusId(Long id) {
         Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByCusId(id);
         Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByCusId(id);
         Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByCusId(id);
-        Integer returningOrderQuantity =  this.orderDAO.getReturningOrderQuantityByCusId(id);
+        Integer returningOrderQuantity = this.orderDAO.getReturningOrderQuantityByCusId(id);
         Map quantityMap = new HashMap();
-        quantityMap.put("unpaidOrderQuantity",unpaidOrderQuantity);
-        quantityMap.put("pendingReceiveOrderQuantity",pendingReceiveOrderQuantity);
-        quantityMap.put("isEvaluatedOrderQuantity",isEvaluatedOrderQuantity);
-        quantityMap.put("returningOrderQuantity",returningOrderQuantity);
+        quantityMap.put("unpaidOrderQuantity", unpaidOrderQuantity);
+        quantityMap.put("pendingReceiveOrderQuantity", pendingReceiveOrderQuantity);
+        quantityMap.put("isEvaluatedOrderQuantity", isEvaluatedOrderQuantity);
+        quantityMap.put("returningOrderQuantity", returningOrderQuantity);
         return quantityMap;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderJxPriceDifferenceReturnDetails(OrderJxPriceDifferenceReturnDetails returnDetails) {
+        if (null != returnDetails) {
+            orderDAO.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
+        }
+    }
+
+    @Override
+    public List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber) {
+        if (null != orderNumber) {
+            return orderDAO.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(orderNumber);
+        }
+        return null;
     }
 
     @Override

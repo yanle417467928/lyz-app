@@ -19,4 +19,6 @@ public interface EbsSenderService {
     void sendOrderCouponInfAndRecord(List<OrderCouponInf> orderCouponInfs);
 
     void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf);
+
+    void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs);
 }
