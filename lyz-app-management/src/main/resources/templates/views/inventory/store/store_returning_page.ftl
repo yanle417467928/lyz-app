@@ -39,6 +39,14 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>-->
+                    <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
+                            title="选择城市">
+                        <option value="-1">选择城市</option>
+                    </select>
+                    <select name="selectStore" id="selectStore" class="form-control select"
+                            style="width:auto;" title="选择门店">
+                        <option value="-1">选择门店</option>
+                    </select>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -126,8 +134,8 @@
             title: 'ID',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
+            field: 'returnNumber',
+            title: '退货单号',
             events: {
                 'click .scan': function (e, value, row) {
                     $page.information.show(row.id);
@@ -138,20 +146,28 @@
             },
             align: 'center'
         }, {
-            field: 'goodsName',
-            title: '商品名称',
+            field: 'orderStatus',
+            title: '订单状态',
             align: 'center'
         }, {
-            field: 'goodsCode',
-            title: '商品编码',
+            field: 'creatorPhone',
+            title: '申请用户',
             align: 'center'
         }, {
-            field: 'realInventory',
-            title: '真实库存',
+            field: 'customerName',
+            title: '用户名称',
             align: 'center'
         }, {
-            field: 'soldInventory',
-            title: '可售库存',
+            field: 'returnType',
+            title: '退货类型',
+            align: 'center'
+        }, {
+            field: 'reasonInfo',
+            title: '退货原因',
+            align: 'center'
+        }, {
+            field: 'returnTime',
+            title: '申请时间',
             align: 'center'
         }]);
 

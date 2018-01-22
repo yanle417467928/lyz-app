@@ -39,8 +39,11 @@ public class DeployConfiguration {
 
     @Value("${deploy.oss.bucket}")
     private String ossBucket;
-
-
+    /**
+     * wmsUrl再给我合并掉了，我要咬你啊 = =！！！
+     */
+    @Value("${deploy.wms.url}")
+    private String wmsUrl;
 
     @Bean
     public AppApplicationConstant applicationConstant() {
@@ -52,6 +55,7 @@ public class DeployConfiguration {
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
+        LOG.info("wmsUrl : {}", wmsUrl);
 
         AppApplicationConstant constant = new AppApplicationConstant();
         constant.setImagePath(imagePath);
@@ -62,6 +66,7 @@ public class DeployConfiguration {
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
+        constant.setWmsUrl(wmsUrl);
         return constant;
     }
 
@@ -129,4 +134,11 @@ public class DeployConfiguration {
         this.ossBucket = ossBucket;
     }
 
+    public String getWmsUrl() {
+        return wmsUrl;
+    }
+
+    public void setWmsUrl(String wmsUrl) {
+        this.wmsUrl = wmsUrl;
+    }
 }

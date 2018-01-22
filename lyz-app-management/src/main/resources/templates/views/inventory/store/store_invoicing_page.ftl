@@ -45,7 +45,7 @@
                         <div class="col-xs-2">
                             <select size="5" name="store" id="store" class="form-control select"
                                     style="width:auto;" title="选择门店">
-                                <option value="-1">选择调出门店</option>
+                                <option value="-1">选择门店</option>
                             </select>
                         </div>
                         <div class="col-xs-8">

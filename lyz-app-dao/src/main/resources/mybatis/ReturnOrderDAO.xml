@@ -203,6 +203,17 @@
         AND orbi.creator_identityType = #{identityType}
     </select>
 
+    <select id="findReturnOrderList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+
+        SELECT *
+        FROM ord_return_base_info orbi
+        <if test="null != keywords">
+            WHERE orbi.return_no LIKE concat('%',#{keywords},'%')
+            OR orbi.creator_phone LIKE concat('%',#{keywords},'%')
+        </if>
+    </select>
+
     <select id="findReturnOrderGoodsInfoByOrderNumber"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         SELECT *
