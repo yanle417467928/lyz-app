@@ -200,7 +200,7 @@
         SET balance = balance + #{deposit},
           last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+        <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
     </update>
@@ -253,7 +253,7 @@
         SET quantity = quantity + #{quantity},
         last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
-        <if test="null != oldLastUpdateTime and oldLastUpdateTime != ''">
+        <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
     </update>

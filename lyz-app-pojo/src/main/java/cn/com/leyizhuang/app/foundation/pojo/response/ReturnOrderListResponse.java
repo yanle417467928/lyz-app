@@ -32,6 +32,10 @@ public class ReturnOrderListResponse {
      */
     private String status;
     /**
+     * 状态描述
+     */
+    private String statusDesc;
+    /**
      * 商品图片
      */
     private List<String> goodsImgList;

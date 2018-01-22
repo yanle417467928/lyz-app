@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory.allocation;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author Jerry.Ren
@@ -14,6 +12,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AllocationDetail {
 
     private Long id;
@@ -24,7 +24,7 @@ public class AllocationDetail {
     /**
      * 商品id
      */
-    private Long gId;
+    private Long goodsId;
     /**
      * 商品名称
      */
@@ -36,9 +36,9 @@ public class AllocationDetail {
     /**
      * 数量
      */
-    private Long qty;
+    private Integer qty;
     /**
      * 真实数量
      */
-    private Long realQty;
+    private Integer realQty;
 }

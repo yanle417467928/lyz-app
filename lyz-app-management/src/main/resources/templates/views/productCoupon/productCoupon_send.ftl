@@ -31,6 +31,9 @@
 
 <body>
 <section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="javascript:history.go(-1);"><i class="fa fa-reply"></i> 返回上一页</a></li>
+    </ol>
     <h1>产品券发放</h1>
 </section>
 <section class="content">

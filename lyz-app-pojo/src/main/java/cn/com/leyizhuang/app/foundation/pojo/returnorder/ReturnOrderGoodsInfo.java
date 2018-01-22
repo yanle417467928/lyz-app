@@ -15,6 +15,11 @@ import lombok.*;
 public class ReturnOrderGoodsInfo {
 
     private Long id;
+
+    /**
+     * 订单商品行Id
+     */
+    private Long orderGoodsId;
     /**
      * 退单Id
      */

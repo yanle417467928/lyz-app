@@ -2,8 +2,6 @@ $(function () {
     //表单验证初始化
     formValidate();
 
-    findStorelist();
-
     // 初始化商品弹出框
     $commonForm.goodsGridModal("/rest/goods/page/grid", "goodsDataGrid", "selectedGoodsTable", "chooseGoodsButton");
     $commonForm.goodsBrand("/rest/goodsBrand/page/brandGrid", "brandCode");
@@ -169,7 +167,7 @@ function cheackGoodsDetail(details,tableId){
                 return false;
             }
             details.push({
-                gid:id,
+                goodsId:id,
                 qty: $(n).find("#qty").val(),
                 sku: goodsSku,
                 skuName: $(n).find("#title").val()

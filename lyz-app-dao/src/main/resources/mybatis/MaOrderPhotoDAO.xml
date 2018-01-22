@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaOrderPhotoDAO">
+
+    <select id="findAll" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
+        SELECT p.id, p.photos, p.remark, p.`status`, p.create_time, p.photo_order_no, IFNULL(e.`name`,c.`name`) username,
+        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
+        FROM photo_order p
+        LEFT JOIN cus_customer c ON c.cus_id = p.user_id AND p.identity_type = 'CUSTOMER'
+        LEFT JOIN emp_employee e ON e.emp_id = p.user_id AND p.identity_type = e.identity_type
+        LEFT JOIN st_store s ON c.store_id = s.store_id OR e.store_id = s.store_id
+        WHERE (1 = 1)
+        <if test="null != cityId and cityId != -1">
+            AND  c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND c.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (p.photo_order_no LIKE concat(concat('%',#{keywords}),'%')
+            OR s.store_name LIKE concat(concat('%',#{keywords}),'%')
+            OR e.mobile LIKE concat(concat('%',#{keywords}),'%')
+            OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <select id="findById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
+        SELECT p.id, p.photos, p.remark, p.`status`, p.create_time, p.photo_order_no, p.contact_name, p.contact_phone, IFNULL(e.`name`,c.`name`) username,
+        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
+        FROM photo_order p
+        LEFT JOIN cus_customer c ON c.cus_id = p.user_id AND p.identity_type = 'CUSTOMER'
+        LEFT JOIN emp_employee e ON e.emp_id = p.user_id AND p.identity_type = e.identity_type
+        LEFT JOIN st_store s ON c.store_id = s.store_id OR e.store_id = s.store_id
+        WHERE p.id = #{id}
+    </select>
+
+
+</mapper>

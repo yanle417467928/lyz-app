@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -18,8 +20,8 @@ import java.time.LocalDateTime;
 @ToString
 public class PhotoOrderVO {
     private Long id;
-    //下单人ID
-    private Long userId;
+    //下单人门店
+    private String storeName;
     //下单人真实姓名
     private String username;
     //下单人手机号码
@@ -27,25 +29,19 @@ public class PhotoOrderVO {
     //下单人身份类型
     private String identityType;
     //下单照片，多张照片用逗号分隔
-    private String photos;
-    //收货人地址
-    private Long deliveryId;
-    //是否主家收货
-    private Boolean isOwnerReceiving;
+    private List<String> photos;
     //备注
     private String remark;
-    //导购代下单时填写的客户信息
-    private Long customerId;
-    //客户真实姓名
-    private String customerName;
-    //客户手机号码
-    private String customerMobile;
     //状态（待处理、已下单、已支付、完成）
     private String status;
     //创建时间
     private String createTime;
-    //关联单号
-    private Long ordId;
+    //拍照下单单号
+    private String photoOrderNo;
+    //联系人姓名
+    private String contactName;
+    //联系人电话
+    private String contactPhone;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();
@@ -57,5 +53,13 @@ public class PhotoOrderVO {
 
     public void setCreateTime(LocalDateTime createTime){
         this.createTime = TimeTransformUtils.df.format(createTime);
+    }
+
+    public void setPhotos(String photos){
+        this.photos = new ArrayList<>();
+        String uri[] = photos.split(",");
+        for (int i = 0; i < uri.length; i++) {
+            this.photos.add(uri[i]);
+        }
     }
 }

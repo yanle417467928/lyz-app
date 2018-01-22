@@ -142,4 +142,5 @@ public interface AppOrderService {
     void saveOrderJxPriceDifferenceReturnDetails(OrderJxPriceDifferenceReturnDetails returnDetails);
 
     List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
+    void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId);
 }

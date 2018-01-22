@@ -658,4 +658,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         return null;
     }
 
+    @Override
+    public void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId) {
+        orderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty,orderGoodsId);
+    }
 }

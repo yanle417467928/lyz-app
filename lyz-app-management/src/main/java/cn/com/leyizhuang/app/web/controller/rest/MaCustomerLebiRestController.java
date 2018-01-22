@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
-import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;

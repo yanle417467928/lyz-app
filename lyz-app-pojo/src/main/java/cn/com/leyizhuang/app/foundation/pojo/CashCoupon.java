@@ -92,6 +92,11 @@ public class CashCoupon implements Serializable {
     private Boolean isSpecifiedStore;
 
     /**
+     * 状态 0：删除 1：正常
+     */
+    private Boolean status = true;
+
+    /**
      * 排序号
      */
     private Integer sortId;

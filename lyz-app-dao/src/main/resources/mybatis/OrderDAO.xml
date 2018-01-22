@@ -821,4 +821,12 @@
         FROM ord_jx_price_difference_return_details
         WHERE ord_no = #{orderNumber}
     </select>
+
+    <update id="updateReturnableQuantityAndReturnQuantityById">
+        UPDATE ord_goods_info
+        SET return_qty = return_qty - #{qty},
+         returnable_qty = returnable_qty + #{qty}
+        WHERE
+            id = #{ogi}
+    </update>
 </mapper>

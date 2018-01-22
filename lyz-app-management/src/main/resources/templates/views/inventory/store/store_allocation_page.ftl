@@ -186,7 +186,7 @@
             title: '单号',
             events: {
                 'click .scan': function (e, value, row) {
-                    $page.information.show(row.id);
+                    turnDetail(row.id);
                 }
             },
             formatter: function (value) {
@@ -419,5 +419,8 @@
         }
     }
 
+    function turnDetail(id) {
+        window.location.href = "/views/admin/inventory/allocation/detail/"+id;
+    }
 </script>
 </body>

@@ -125,7 +125,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     public void changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) throws Exception {
         Long userId = cusPreDepositDTO.getCusId();
         Double money = cusPreDepositDTO.getChangeMoney();
-        CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findPredepositByCusId(userId);
+        CustomerPreDeposit customerPreDeposit = this.maCustomerDAO.findPreDepositByCusId(userId);
         if (null == customerPreDeposit) {
             customerPreDeposit = new CustomerPreDeposit();
             customerPreDeposit.setBalance(money);

@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
 import java.util.List;
@@ -37,6 +36,10 @@ public class OrderListResponse {
      * 订单状态
      */
     private String status;
+    /**
+     * 状态描述
+     */
+    private String statusDesc;
     /**
      * 是否已评价
      */

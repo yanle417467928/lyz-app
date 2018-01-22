@@ -100,6 +100,12 @@ public class OrderController {
     @Resource
     private CashCouponService cashCouponService;
 
+    @Resource
+    private AppLeBiDutchService leBiDutchService;
+
+    @Resource
+    private AppCashReturnDutchService cashReturnDutchService;
+
     /**
      * 创建订单方法
      *
@@ -249,11 +255,22 @@ public class OrderController {
 
             List<OrderGoodsInfo> orderGoodsInfoList;
 
-            //******** 分摊现金券 *********************
-            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, support.getOrderGoodsInfoList());
+            /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
 
-            //******** 分摊促销 ***********************
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, orderGoodsInfoList);
+            //******** 分摊现乐币 策略：均摊 *********************
+            Integer leBiQty = billing.getLeBiQuantity();
+            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty,orderGoodsInfoList);
+
+            //******** 分摊现现金返利 策略：均摊 *********************
+            Double cashReturnAmount = billing.getStoreSubvention();
+            orderGoodsInfoList = cashReturnDutchService.cashReturnDutch(cashReturnAmount,orderGoodsInfoList);
+
+            //******** 分摊现金券 策略：使用范围商品 *********************
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
+
+            //******** 分摊完毕 计算退货 单价 ***************************
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
@@ -994,6 +1011,8 @@ public class OrderController {
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getValue() : orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
                         AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
@@ -1074,7 +1093,8 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));

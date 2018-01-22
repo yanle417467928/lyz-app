@@ -209,7 +209,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                 goods.setCashCouponSharePrice(dutchPrice + sharePrice);
 
                 // 记录
-                dutchedPrice += dutchPrice * goods.getOrderQuantity();
+                dutchedPrice += CountUtil.mul(dutchPrice , goods.getOrderQuantity());
             }else{
                 Double dutchPrice = CountUtil.sub(denomination,dutchedPrice);
 

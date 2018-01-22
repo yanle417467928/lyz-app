@@ -1,14 +1,21 @@
 package cn.com.leyizhuang.app.web.controller.views.inventory;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * APP后端库存视图控制器
@@ -28,6 +35,9 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
     @Autowired
     private ItyAllocationService allocationService;
+
+    @Autowired
+    private MaStoreService storeService;
 
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
@@ -59,18 +69,26 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
     @RequestMapping("/allocation/add")
     public String addAllocation(Model model) {
+
+        // 获取当前登录帐号
+        ShiroUser user = super.getShiroUser();
+        // TODO 获取用户下城市信息
+        List<SimpleStoreParam> storeList =  storeService.findStoresListByCityId(1L);
+        model.addAttribute("stores",storeList);
         return "/views/inventory/store/store_allocation_add";
     }
 
     /**
      * 调拨单详情
      * @param id
-     * @param map
+     * @param model
      * @return
      */
-    @RequestMapping("/allocation/detail")
-    public String allocationDetail(Long id,Model map){
+    @RequestMapping("/allocation/detail/{id}")
+    public String allocationDetail(@PathVariable Long id, Model model){
 
+        // 获取调拨单详情
+        allocationService.queryAllocationDetail(id,model);
         return "/views/inventory/store/store_allocation_detail";
     }
     /**

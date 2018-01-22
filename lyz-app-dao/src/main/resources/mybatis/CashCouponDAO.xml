@@ -9,7 +9,7 @@
 
     <sql id="CASH_COUPON_FIELDS">
         ccid as id,create_time,`condition`,denomination,effective_start_time,effective_end_time,description,initial_quantity,remaining_quantity,title,
-        city_id,city_name,`type`,is_specified_store,sort_id
+        city_id,city_name,`type`,is_specified_store,`status`,sort_id
     </sql>
 
     <select id="findCashCouponByOrderNumber" parameterType="java.lang.String"
@@ -34,10 +34,10 @@
                      keyProperty="id">
     INSERT INTO cp_cash_coupon
     (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
-    title, city_id , city_name , `type` ,is_specified_store,sort_id)
+    title, city_id , city_name , `type` ,is_specified_store,sort_id,`status`)
     VALUES
     (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title}
-    ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId})
+    ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId},#{status})
 </insert>
 
     <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
@@ -108,6 +108,7 @@
         <if test="keywords != null">
             AND  title LIKE concat("%",#{keywords},"%")
         </if>
+        and status = 1
         ORDER by create_time DESC
     </select>
 
@@ -211,6 +212,9 @@
             </if>
             <if test="sortId != null" >
                 sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                `status` = #{status,jdbcType=INTEGER},
             </if>
         </set>
         WHERE

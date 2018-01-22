@@ -52,6 +52,11 @@
                                 <select name="allocationFrom" id="storeCode" class="form-control selectpicker"
                                          data-live-search="true">
                                     <option value="-1">选择门店</option>
+                                <#if stores??>
+                                    <#list stores as item>
+                                        <option value="${item.storeId}">${item.storeName}</option>
+                                    </#list>
+                                </#if>
                                 </select>
                             </div>
                         </div>

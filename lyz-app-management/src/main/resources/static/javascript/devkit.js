@@ -246,6 +246,33 @@ var $modal = {
             method();
         });
         $('#dangerModal').modal('show', {backdrop: 'static', keyboard: false});
+    },
+    info: function (title, content, method) {
+        $('#infoModalTitle').html(' ' + title);
+        $('#infoModalContent').html(' ' + content);
+        $('#infoModalCheckBtn').one('click', function () {
+            $('#infoModal').modal('hide');
+            method();
+        });
+        $('#infoModal').modal('show', {backdrop: 'static', keyboard: false});
+    },
+    warning: function (title, content, method) {
+        $('#warningModalTitle').html(' ' + title);
+        $('#warningModalContent').html(' ' + content);
+        $('#warningModalCheckBtn').one('click', function () {
+            $('#warningModal').modal('hide');
+            method();
+        });
+        $('#warningModal').modal('show', {backdrop: 'static', keyboard: false});
+    },
+    success: function (title, content, method) {
+        $('#successModalTitle').html(' ' + title);
+        $('#successModalContent').html(' ' + content);
+        $('#successModalCheckBtn').one('click', function () {
+            $('#successModal').modal('hide');
+            method();
+        });
+        $('#successModal').modal('show', {backdrop: 'static', keyboard: false});
     }
 };
 
