@@ -38,6 +38,8 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
     private MaEmployeeDAO maEmployeeDAO;
 
 
+    @Override
+    @Transactional
     public ResultDTO<String> send(Long customerId, Long productCouponId,Long sellerId, Integer qty){
 
         AppCustomer appCustomer = cusertomerDAO.findById(customerId);
@@ -57,17 +59,20 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
         CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
         customerProductCoupon.setCustomerId(customerId);
         customerProductCoupon.setGoodsId(productCoupon.getGid());
-        customerProductCoupon.setQuantity(qty);
+        customerProductCoupon.setQuantity(1);
         customerProductCoupon.setGetType(CouponGetType.MANUAL_GRANT);
         customerProductCoupon.setGetTime(new Date());
         customerProductCoupon.setEffectiveStartTime(productCoupon.getEffectiveStartTime());
         customerProductCoupon.setEffectiveEndTime(productCoupon.getEffectiveEndTime());
         customerProductCoupon.setIsUsed(false);
+
         customerProductCoupon.setStoreId(employeeDO.getStoreId().getStoreId());
         customerProductCoupon.setSellerId(employeeDO.getEmpId());
         customerProductCoupon.setStatus(true);
 
-        productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
+        for (int i = 0;i < qty ; i++){
+            productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
+        }
 
         // 扣除券模版数量
         Integer remainingQuantity = productCoupon.getRemainingQuantity();

@@ -44,5 +44,24 @@ public class SinkSender {
         log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,End", JSON.toJSONString(rechargeNo));
     }
 
+    public void sendAllocationToEBSAndRecord(String number) {
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号：",number);
+        if (StringUtils.isNotBlank(number)){
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ALLOCATION_OUTBOUND);
+            message.setContent(JSON.toJSONString(number));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+    }
+
+    public void sendAllocationReceivedToEBSAndRecord(String number) {
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号：",number);
+        if (StringUtils.isNotBlank(number)){
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ALLOCATION_INBOUND);
+            message.setContent(JSON.toJSONString(number));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+    }
 
 }

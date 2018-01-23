@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
+import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -30,6 +31,8 @@ public class SinkReceiver {
     @Resource
     private AppSeparateOrderService separateOrderService;
 
+    @Resource
+    private ItyAllocationService ityAllocationService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -77,6 +80,34 @@ public class SinkReceiver {
                         //发送充值收款信息
                         separateOrderService.sendRechargeReceiptInf(rechargeNo);
                     }
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
+            case ALLOCATION_OUTBOUND:
+                try {
+                    String number = objectMapper.readValue(message.getContent(), String.class);
+                    // 调拨出库
+                    log.info("调拨单出库队列消费开始");
+                    ityAllocationService.sendAllocationToEBSAndRecord(number);
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
+            case ALLOCATION_INBOUND:
+                try {
+                    String number = objectMapper.readValue(message.getContent(), String.class);
+                    // 调拨出库
+                    log.info("调拨单入库队列消费开始");
+                    ityAllocationService.sendAllocationReceivedToEBSAndRecord(number);
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();

@@ -16,6 +16,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jerry.Ren
@@ -125,19 +127,20 @@ public class MaAllocationRestController extends BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "调拨单无法出库，请联系管理员", null);
         }
-
-        for (AllocationDetail goods : allocationDetailList){
-            // 检查门店库存
-            Boolean inventoryFlag = orderService.existGoodsStoreInventory(allocation.getAllocationFrom(),goods.getGoodsId(),goods.getRealQty());
-
-            if (!inventoryFlag){
-                logger.info(goods.getSku()+" 库存不足");
+        try{
+            ityAllocationService.sent(allocation,allocationDetailList,user.getLoginName());
+        }catch (Exception e){
+            if (e.getMessage().contains("库存不足")) {
+                logger.info(e.getMessage());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
-                        "调拨产品："+goods.getSkuName() +" 库存不足", null);
+                        e.getMessage(), null);
+            } else {
+                logger.error("调拨单出库错误,id=" + allocationId + ", err=" + e.getMessage(), e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "调拨出错，请联系关联员", null);
             }
         }
 
-        ityAllocationService.sent(allocation,allocationDetailList,user.getLoginName());
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                 "出库成功", null);
     }

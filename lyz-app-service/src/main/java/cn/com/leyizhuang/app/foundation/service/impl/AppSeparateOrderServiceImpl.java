@@ -431,4 +431,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             separateOrderDAO.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId,msg,sendTime,flag);
         }
     }
+
+
 }

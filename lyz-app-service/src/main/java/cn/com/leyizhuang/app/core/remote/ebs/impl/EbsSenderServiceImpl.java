@@ -3,8 +3,12 @@ package cn.com.leyizhuang.app.core.remote.ebs.impl;
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
+import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.ebs.entity.dto.second.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -42,6 +46,12 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     @Resource
     private AppSeparateOrderService separateOrderService;
 
+    @Resource
+    private ItyAllocationService ityAllocationService;
+
+    @Resource
+    private ItyAllocationDAO allocationDAO;
+    
     /**
      * 配置请求的超时设置
      */
@@ -384,6 +394,100 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             }*/
         }
 
+    }
+
+    /**
+     * 发送【调拨单(出库)】信息到EBS，并保存发送结果
+     * @param allocation
+     */
+    public void sendAllocationToEBSAndRecord(final Allocation allocation){
+        Map<String, Object> result = sendAllocationToEBS(allocation);
+        if (!(Boolean) result.get("success")) {
+            AllocationInf allocationInf = new AllocationInf();
+            Date now = new Date();
+            allocationInf.setAllocationId(allocation.getId());
+            allocationInf.setContent((String) result.get("content"));
+            allocationInf.setCreatedTime(now);
+            allocationInf.setMsg((String) result.get("msg"));
+            allocationInf.setNumber(allocation.getNumber());
+            allocationInf.setStatus(1);
+            allocationInf.setTimes(1);
+            allocationInf.setType(1);
+            allocationInf.setUpdatedTime(now);
+            allocationDAO.insertAllocationInf(allocationInf);
+        }
+    }
+
+    /**
+     * 发送【调拨单(出库)】信息到EBS
+     * @param allocation
+     * @return
+     */
+    public Map<String, Object> sendAllocationToEBS(Allocation allocation){
+        log.info("sendAllocationToEBS, allocation = "+ allocation );
+
+        String header = ityAllocationService.genHeaderJson(allocation);
+        String details = ityAllocationService.genDetailJson(allocation);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("allcationHeaderJson", header));
+        parameters.add(new BasicNameValuePair("allocationDetailsJson", details));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationSecond", parameters);
+
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("allcationHeaderJson", header);
+            content.put("allocationDetailsJson", details);
+            result.put("content", JSON.toJSONString(content));
+        }
+
+        log.info("sendAllocationToEBS, result=" + result);
+        return result;
+    }
+
+    /**
+     * 发送【调拨单(入库)】信息到EBS
+     *
+     * @param
+     */
+    public void sendAllocationReceivedToEBSAndRecord(final Allocation allocation){
+        Map<String, Object> result = sendAllocationReceivedToEBS(allocation);
+        if (!(Boolean) result.get("success")) {
+            AllocationInf allocationInf = new AllocationInf();
+            Date now = new Date();
+            allocationInf.setAllocationId(allocation.getId());
+            allocationInf.setContent((String) result.get("content"));
+            allocationInf.setCreatedTime(now);
+            allocationInf.setMsg((String) result.get("msg"));
+            allocationInf.setNumber(allocation.getNumber());
+            allocationInf.setStatus(1);
+            allocationInf.setTimes(1);
+            allocationInf.setType(3);
+            allocationInf.setUpdatedTime(now);
+            allocationDAO.insertAllocationInf(allocationInf);
+        }
+    }
+
+    /**
+     * 发送【调拨单(入库)】信息到EBS
+     *
+     * @param
+     */
+    public Map<String, Object> sendAllocationReceivedToEBS(Allocation allocation) {
+        log.info("sendAllocationReceivedToEBS, allocation=" + allocation);
+
+        String allocationReceiveJson = ityAllocationService.genReceiveJson(allocation);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("allocationReceiveJson", allocationReceiveJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationReceiveSecond", parameters);
+
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("allocationReceiveJson", allocationReceiveJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+
+        log.info("sendAllocationReceivedToEBS, result=" + result);
+        return result;
     }
 
     private Map<String, Object> postToEbs(String url, List<NameValuePair> parameters) {

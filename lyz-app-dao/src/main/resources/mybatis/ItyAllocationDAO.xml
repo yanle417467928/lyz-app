@@ -36,6 +36,13 @@
         WHERE id = #{id}
     </select>
 
+    <select id="queryAllocationByNumber" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation">
+        SELECT *
+        FROM ity_allocation
+        WHERE `NUMBER` = #{number}
+    </select>
+
     <select id="queryDetailsByAllocationId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
         SELECT *
@@ -97,19 +104,30 @@
     </insert>
 
     <insert id="insertAllocationDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail">
-        insert into ity_allocation_detail (id, allocation_id, goods_id,
+        insert into ity_allocation_detail ( allocation_id, goods_id,
       sku_name, sku, qty,
       real_qty)
-    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT},
+    values ( #{allocationId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT},
       #{skuName,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{qty,jdbcType=INTEGER},
       #{realQty,jdbcType=INTEGER})
     </insert>
 
     <insert id="insertAllocationTrail" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationTrail">
-        insert into ity_allocation_trail (id, allocation_id, operation,
+        insert into ity_allocation_trail ( allocation_id, operation,
       operator, operate_time)
-    values (#{id,jdbcType=BIGINT}, #{allocationId,jdbcType=BIGINT}, #{operation,jdbcType=VARCHAR},
+    values ( #{allocationId,jdbcType=BIGINT}, #{operation,jdbcType=VARCHAR},
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertAllocationInf" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
+        insert into inter_ate_allocation_inf ( allocation_id, `number`,
+      `type`, `status`, msg,
+      times, created_time, updated_time,
+      content)
+    values ( #{allocationId,jdbcType=BIGINT}, #{number,jdbcType=VARCHAR},
+      #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{msg,jdbcType=VARCHAR},
+      #{times,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP},
+      #{content,jdbcType=LONGVARCHAR})
     </insert>
 
     <update id="updateAllocation" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation">
@@ -165,5 +183,25 @@
     <update id="setDetailDRealQty">
         UPDATE ity_allocation_detail set real_qty = #{realQty} where allcation_id = #{allocationId} and goods_id = #{goodsId}
 
+    </update>
+
+    <!-- 接口回调信息设置 -->
+    <update id="updateSendFlagAndErrorMessage">
+        UPDATE inter_ate_allocation_inf
+        <set>
+            <if test="null != flag">
+                status = #{flag},
+            </if>
+            <if test="null != sendTime">
+                updated_time = #{sendTime},
+            </if>
+            <if test="null != errorMsg">
+                msg = #{errorMsg}
+            </if>
+        </set>
+        WHERE id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id" index="index">
+            #{id}
+        </foreach>
     </update>
 </mapper>

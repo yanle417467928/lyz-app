@@ -106,4 +106,8 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService{
     public List<DeliveryFeeRuleSpecailGoods> findSpecailGoodsByRuleId(Long ruleId){
         return deliveryFeeRuleDAO.findSpecailGoodsByRuleId(ruleId);
     }
+
+    public Double countDeliveryFee(){
+       return null;
+    }
 }
