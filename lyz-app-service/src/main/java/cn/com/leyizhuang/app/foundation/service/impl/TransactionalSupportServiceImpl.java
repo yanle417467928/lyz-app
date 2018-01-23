@@ -1,18 +1,22 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import cn.com.leyizhuang.app.foundation.service.TransactionalSupportService;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -95,5 +99,32 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         rechargeService.saveRechargeReceiptInfo(receiptInfo);
         //更新充值单相关信息
         rechargeService.updateRechargeOrderStatusAndPayUpTime(rechargeNo, new Date(), AppRechargeOrderStatus.PAID);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo,
+                                                                   List<OrderJxPriceDifferenceReturnDetails> detailsList) {
+
+
+        List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
+        if (AssertUtil.isNotEmpty(detailsList)) {
+            for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
+
+                OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
+                inf.setAmount(details.getAmount());
+                inf.setCreateTime(details.getCreateTime());
+                inf.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
+                inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
+                inf.setSku(details.getSku());
+                inf.setSobId(orderBaseInfo.getSobId());
+                inf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                inf.setDiySiteCode(details.getStoreCode());
+                inf.setRefundNumber(OrderUtils.getRefundNumber());
+                separateOrderService.saveOrderJxPriceDifferenceRefundInf(inf);
+            }
+        }
+        separateOrderService.sendOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
     }
 }

@@ -57,6 +57,10 @@ public class ReturnOrderGoodsInfo {
      */
     private Double returnPrice;
     /**
+     * 结算价
+     */
+    private Double settlementPrice;
+    /**
      * 退单数量
      */
     private int returnQty;
@@ -64,4 +68,8 @@ public class ReturnOrderGoodsInfo {
      * 商品行类型（暂定）
      */
     private AppGoodsLineType goodsLineType;
+    /**
+     * 公司标识
+     */
+    private String companyFlag;
 }

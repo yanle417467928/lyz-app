@@ -4,18 +4,19 @@
 
     <select id="isOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT exists(SELECT 1
-                      FROM inter_ate_order_base_inf
+        FROM inter_ate_order_base_inf
                       WHERE main_order_number = #{orderNumber})
     </select>
 
     <insert id="saveOrderBaseInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf"
             useGeneratedKeys="true" keyProperty="orderHeaderId">
-        INSERT INTO inter_ate_order_base_inf (create_time, order_subject_type, send_flag, error_msg, send_time, main_order_number, order_number,
-                                              sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
-                                              coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
-                                              order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
-                                              member_discount, cash_coupon_discount, product_coupon_discount)
+        INSERT INTO inter_ate_order_base_inf (create_time, order_subject_type, send_flag, error_msg, send_time,
+        main_order_number, order_number,
+        sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
+        coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
+        order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
+        member_discount, cash_coupon_discount, product_coupon_discount)
         VALUES (
             #{createTime}, #{orderSubjectType}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber},
                            #{orderNumber}, #{sobId},
@@ -453,6 +454,39 @@
 
     </insert>
 
+    <insert id="saveOrderJxPriceDifferenceRefundInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceRefundInf">
+        INSERT INTO inter_ate_order_jx_price_difference_refund_inf (main_order_number, return_number, sob_id, store_org_code, diy_site_code, refund_date, sku,
+                                                                    amount, description, attribute1, attribute2, attribute3, attribute4, attribute5,
+                                                                    create_time, send_flag, error_msg, send_time, refund_number)
+            SELECT
+                #{mainOrderNumber},
+                #{sobId},
+                #{storeOrgCode},
+                #{diySiteCode},
+                #{refundDate},
+                #{sku},
+                #{amount},
+                #{description},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{refundNumber},
+                #{returnNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM inter_ate_order_jx_price_difference_refund_inf
+                             WHERE return_number = #{returnNumber}
+                                   AND sku = #{sku})
+
+    </insert>
+
     <select id="getOrderJxPriceDifferenceReturnInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceReturnInf">
         SELECT
@@ -479,7 +513,14 @@
         WHERE main_order_number = #{orderNumber}
     </select>
 
-    <select id="updateOrderJxPriceDifferenceReturnInf">
+    <select id="getOrderJxPriceDifferenceRefundInf" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceRefundInf">
+        SELECT *
+        FROM inter_ate_order_jx_price_difference_refund_inf
+        WHERE return_number = #{returnNumber}
+    </select>
+
+    <update id="updateOrderJxPriceDifferenceReturnInf">
         UPDATE inter_ate_order_jx_price_difference_return_inf
         <set>
             <if test="null != flag">
@@ -496,5 +537,24 @@
         <foreach collection="returnInfIds" open="(" close=")" separator="," item="id" index="index">
             #{id}
         </foreach>
-    </select>
+    </update>
+
+    <update id="updateOrderJxPriceDifferenceRefundInf">
+        UPDATE inter_ate_order_jx_price_difference_refund_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE receipt_id in
+        <foreach collection="refundInfIds" open="(" close=")" separator="," item="id" index="index">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

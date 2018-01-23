@@ -18,6 +18,8 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitio
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -26,6 +28,8 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
+import cn.com.leyizhuang.common.util.AssertUtil;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +94,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Resource
     private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
+
+    @Resource
+    private TransactionalSupportService transactionalSupportService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -642,9 +649,8 @@ public class CommonServiceImpl implements CommonService {
                     //保存传wms配送单头档
                     AppStore store = storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(),
                             orderBaseInfo.getCreatorIdentityType().getValue());
-                    int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
                     AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
-                            store, orderBillingDetails, goodsQuantity);
+                            store, orderBillingDetails, orderGoodsInfoList.size());
                     appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
                     //保存传wms配送单商品信息
                     if (orderGoodsInfoList.size() > 0) {
@@ -805,13 +811,13 @@ public class CommonServiceImpl implements CommonService {
                 AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
                         baseInfo.getCreatorIdentityType().getValue());
                 List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+                int orderGoodsSize = orderGoodsInfoList.size();
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
-                int goodsQuantity = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
                 AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
-                        store, billingDetails, goodsQuantity);
+                        store, billingDetails, orderGoodsSize);
                 appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
                 //保存传wms配送单商品信息
-                if (orderGoodsInfoList.size() > 0) {
+                if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
@@ -1187,6 +1193,78 @@ public class CommonServiceImpl implements CommonService {
             }
         }
         return null;
+    }
+
+    /**
+     * 订单经销差价退还
+     *
+     * @param returnOrderBaseInfo
+     * @param orderBaseInfo
+     * @param goodsInfos          可传也可查，看实际情况
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deductionOrderJxPriceDifferenceRefund(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo,
+                                                      List<ReturnOrderGoodsInfo> goodsInfos) {
+
+        List<OrderJxPriceDifferenceReturnDetails> detailsList = orderService.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(returnOrderBaseInfo.getOrderNo());
+//        OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+
+        List<OrderJxPriceDifferenceReturnDetails> returnDetailsList = new ArrayList<>(20);
+        double jxPrice = 0.00;
+
+        if (AssertUtil.isNotEmpty(detailsList)) {
+            for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
+                for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
+                    if (goodsInfo.getSku().equals(details.getSku())) {
+                        Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
+                        jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
+                        OrderJxPriceDifferenceReturnDetails returnDetails = new OrderJxPriceDifferenceReturnDetails();
+                        returnDetails.setAmount(returnGoodsJxPriceAmount);
+                        returnDetails.setCreateTime(new Date());
+                        returnDetails.setOid(returnOrderBaseInfo.getOrderId());
+                        returnDetails.setOrderNumber(returnOrderBaseInfo.getOrderNo());
+                        returnDetails.setQuantity(goodsInfo.getReturnQty());
+                        returnDetails.setSku(details.getSku());
+                        returnDetails.setStoreCode(details.getStoreCode());
+                        returnDetails.setStoreId(details.getStoreId());
+                        returnDetails.setUnitPrice(details.getUnitPrice());
+                        returnDetailsList.add(returnDetails);
+                    }
+                }
+            }
+
+            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(returnOrderBaseInfo.getCreatorId());
+                if (null != preDeposit) {
+                    int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
+                            returnOrderBaseInfo.getCreatorId(), jxPrice, preDeposit.getLastUpdateTime());
+                    if (affectLine > 0) {
+                        StPreDepositLogDO log = new StPreDepositLogDO();
+                        log.setStoreId(preDeposit.getStoreId());
+                        log.setChangeMoney(jxPrice);
+                        log.setBalance(preDeposit.getBalance() - jxPrice);
+                        log.setCreateTime(LocalDateTime.now());
+                        log.setOrderNumber(returnOrderBaseInfo.getReturnNo());
+                        log.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                        log.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                        //TODO 退单中是否加退单操作人Ip
+                        log.setOperatorIp("");
+                        log.setChangeType(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION);
+                        log.setChangeTypeDesc(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION.getDescription());
+                        storeService.addStPreDepositLog(log);
+                        break;
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        }
+                    }
+                } else {
+                    throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
+                }
+            }
+        }
+        transactionalSupportService.handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(returnOrderBaseInfo, orderBaseInfo, returnDetailsList);
     }
 
     public String sendPickUpCodeAndRemindMessageAfterPayUp(OrderBaseInfo orderBaseInfo) {
