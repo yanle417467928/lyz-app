@@ -45,6 +45,8 @@ public class RechargeServiceImpl implements RechargeService {
                 getAppIdentityTypeByValue(identityType));
         if (identityType == AppIdentityType.CUSTOMER.getValue()) {
             rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+            AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
+            rechargeOrder.setStoreId(store.getStoreId());
             rechargeOrder.setCustomerId(userId);
             rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
 

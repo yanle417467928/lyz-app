@@ -261,7 +261,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         receiptSecond.setReceiptNumber(toString(receiptInf.getReceiptNumber()));
         receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
         receiptSecond.setSobId(toString(receiptInf.getSobId()));
-        receiptSecond.setStoreCode(toString(receiptInf.getStoreOrgCode()));
+        receiptSecond.setStoreOrgCode(toString(receiptInf.getStoreOrgCode()));
         receiptSecond.setUserid(toString(receiptInf.getUserid()));
         String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
