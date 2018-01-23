@@ -161,7 +161,7 @@ public class OrderController {
             JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
             JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
 
-            //************** 转化前台提交过来的json类型参数 ***************
+            //*************************** 转化前台提交过来的json类型参数 ************************
 
             //商品信息
             List<GoodsSimpleInfo> goodsList = objectMapper.readValue(orderParam.getGoodsInfo(), goodsSimpleInfo);
@@ -204,50 +204,56 @@ public class OrderController {
             //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
-            //*********************** 开始创建订单 **************************
+            //**********************************开始创建订单 **************************
 
-            //***** 创建订单基础信息 *****
+            //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
 
-            //***** 创建订单物流信息 *****
+            //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
             orderLogisticsInfo.setOrdNo(orderBaseInfo.getOrderNumber());
 
-            //***** 创建订单商品信息 *****
+            //****************** 创建订单商品信息 ******************
             CreateOrderGoodsSupport support = commonService.createOrderGoodsInfo(goodsList, orderParam.getUserId(), orderParam.getIdentityType(),
                     orderParam.getCustomerId(), productCouponList, orderBaseInfo.getOrderNumber());
 
-            //********* 创建订单券信息 *********
+            //****************** 创建订单经销差价返还明细 ***********
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList());
+
+            //****************** 创建订单券信息 *********************
             List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
 
-            //创建订单优惠券信息
+            //****************** 创建订单优惠券信息 *****************
             List<OrderCouponInfo> orderCashCouponInfoList = commonService.createOrderCashCouponInfo(orderBaseInfo, cashCouponList);
             if (null != orderCashCouponInfoList && orderCashCouponInfoList.size() > 0) {
                 orderCouponInfoList.addAll(orderCashCouponInfoList);
             }
-            //创建订单产品券信息
+            //****************** 创建订单产品券信息 *****************
             List<OrderCouponInfo> orderProductCouponInfoList = commonService.createOrderProductCouponInfo(orderBaseInfo, support.getProductCouponGoodsList());
             if (null != orderProductCouponInfoList && orderProductCouponInfoList.size() > 0) {
                 orderCouponInfoList.addAll(orderProductCouponInfoList);
             }
 
-            //********* 处理订单账单相关信息 *********
+            //****************** 处理订单账单相关信息 ***************
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
             orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
             orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
             orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
             orderBillingDetails.setPromotionDiscount(support.getPromotionDiscount());
+            if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
+                orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
+            }
             orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, cashCouponList, support.getProductCouponGoodsList());
 
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
-            //******** 处理订单账单支付明细信息 *********
+            //****************** 处理订单账单支付明细信息 ************
             List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
-            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+            List<OrderGoodsInfo> orderGoodsInfoList;
 
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
@@ -270,7 +276,7 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails,jxPriceDifferenceReturnDetailsList, ipAddress);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
@@ -1005,6 +1011,8 @@ public class OrderController {
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getValue() : orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
                         AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
@@ -1085,7 +1093,8 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1291,8 +1300,8 @@ public class OrderController {
             return resultDTO;
         }
         try {
-            Map<String,Integer>  quantity;
-            if (0 == identityType || 2 == identityType ) {
+            Map<String, Integer> quantity;
+            if (0 == identityType || 2 == identityType) {
                 //导购 装饰经理获取待付款订单数量
                 quantity = appOrderService.getAppOrderQuantityByEmpId(userId);
             } else if (6 == identityType) {

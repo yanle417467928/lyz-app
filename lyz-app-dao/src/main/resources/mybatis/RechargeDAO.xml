@@ -59,9 +59,13 @@
             payment_subject_type_desc,
             amount,
             reply_code,
-            receipt_number
+            receipt_number,
+            recharge_account_type,
+            recharge_account_type_desc,
+            charge_type,
+            charge_type_desc
         FROM recharge_receipt_info
-        WHERE recharge_no = #{rechargeNo}
+        WHERE recharge_no = #{rechargeNo};
     </select>
 
     <select id="findRechargeOrderByRechargeNo" parameterType="java.lang.String"

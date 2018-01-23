@@ -58,6 +58,8 @@ public class SinkReceiver {
                         separateOrderService.sendOrderCouponInf(orderNumber);
                         //发送订单收款信息
                         separateOrderService.sendOrderReceiptInf(orderNumber);
+                        //发送经销差价返还信息
+                        separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");

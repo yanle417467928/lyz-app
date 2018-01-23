@@ -201,8 +201,9 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
-    @Transactional
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate) {
         if ((null != materialListSave && materialListSave.size() > 0) || (null != materialListUpdate && materialListUpdate.size() > 0)) {
             materialListService.batchSave(materialListSave);
@@ -534,42 +535,69 @@ public class CommonServiceImpl implements CommonService {
             }
             //扣减现金返利
             if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
-                if (null != billingDetails.getStoreSubvention() && billingDetails.getStoreSubvention() > 0) {
-                    for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                        StoreSubvention subvention = storeService.findStoreSubventionByEmpId(userId);
-                        if (null != subvention) {
-                            if (subvention.getBalance() < billingDetails.getStoreSubvention()) {
-                                throw new LockStoreSubventionException("该门店现金返利余额不足！");
-                            }
-                            int affectLine = storeService.lockStoreSubventionByUserIdAndSubvention(
-                                    userId, billingDetails.getStoreSubvention(), subvention.getLastUpdateTime());
-                            if (affectLine > 0) {
-                                StoreSubventionChangeLog log = new StoreSubventionChangeLog();
-                                log.setStoreId(subvention.getStoreId());
-                                log.setChangeAmount(billingDetails.getStoreSubvention());
-                                log.setBalance(subvention.getBalance() - billingDetails.getStoreSubvention());
-                                log.setCreateTime(Calendar.getInstance().getTime());
-                                log.setChangeType(StoreSubventionChangeType.PLACE_ORDER);
-                                log.setChangeTypeDesc(StoreSubventionChangeType.PLACE_ORDER.getDescription());
-                                log.setOperatorId(userId);
-                                log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                                log.setOperatorIp(ipAddress);
-                                log.setReferenceNumber(orderNumber);
-                                storeService.addStoreSubventionChangeLog(log);
-                                break;
-                            } else {
-                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
-                                }
-                            }
-                        } else {
-                            throw new LockStoreSubventionException("该门店现金返利余额不足!");
+                for (int i = 0; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    StoreSubvention subvention = storeService.findStoreSubventionByEmpId(userId);
+                    if (null != subvention) {
+                        if (subvention.getBalance() < billingDetails.getStoreSubvention()) {
+                            throw new LockStoreSubventionException("该门店现金返利余额不足！");
                         }
+                        int affectLine = storeService.lockStoreSubventionByUserIdAndSubvention(
+                                userId, billingDetails.getStoreSubvention(), subvention.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            StoreSubventionChangeLog log = new StoreSubventionChangeLog();
+                            log.setStoreId(subvention.getStoreId());
+                            log.setChangeAmount(billingDetails.getStoreSubvention());
+                            log.setBalance(subvention.getBalance() - billingDetails.getStoreSubvention());
+                            log.setCreateTime(Calendar.getInstance().getTime());
+                            log.setChangeType(StoreSubventionChangeType.PLACE_ORDER);
+                            log.setChangeTypeDesc(StoreSubventionChangeType.PLACE_ORDER.getDescription());
+                            log.setOperatorId(userId);
+                            log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                            log.setOperatorIp(ipAddress);
+                            log.setReferenceNumber(orderNumber);
+                            storeService.addStoreSubventionChangeLog(log);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockStoreSubventionException("该门店现金返利余额不足!");
                     }
                 }
             }
-
-
+        }
+        //经销差价返还
+        if (null != billingDetails.getJxPriceDifferenceAmount() && billingDetails.getJxPriceDifferenceAmount() > AppConstant.DOUBLE_ZERO) {
+            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(userId);
+                if (null != preDeposit) {
+                    int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
+                            userId, -billingDetails.getJxPriceDifferenceAmount(), preDeposit.getLastUpdateTime());
+                    if (affectLine > 0) {
+                        StPreDepositLogDO log = new StPreDepositLogDO();
+                        log.setStoreId(preDeposit.getStoreId());
+                        log.setChangeMoney(billingDetails.getJxPriceDifferenceAmount());
+                        log.setBalance(preDeposit.getBalance() + billingDetails.getJxPriceDifferenceAmount());
+                        log.setCreateTime(LocalDateTime.now());
+                        log.setOrderNumber(orderNumber);
+                        log.setOperatorId(userId);
+                        log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                        log.setOperatorIp(ipAddress);
+                        log.setChangeType(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_RETURN);
+                        log.setChangeTypeDesc(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_RETURN.getDescription());
+                        storeService.addStPreDepositLog(log);
+                        break;
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        }
+                    }
+                } else {
+                    throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
+                }
+            }
         }
     }
 
@@ -577,7 +605,8 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
                                                List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
-                                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) {
+                                               OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
+                                               List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) {
 
         if (null != orderBaseInfo) {
             if (null != orderBillingDetails && orderBillingDetails.getIsPayUp()) {
@@ -670,6 +699,13 @@ public class CommonServiceImpl implements CommonService {
                     for (OrderBillingPaymentDetails paymentDetail : paymentDetails) {
                         paymentDetail.setOrderId(orderBaseInfo.getId());
                         orderService.saveOrderBillingPaymentDetail(paymentDetail);
+                    }
+                }
+                //保存订单经销差价返还明细
+                if (null != jxPriceDifferenceReturnDetails && jxPriceDifferenceReturnDetails.size() > AppConstant.INTEGER_ZERO) {
+                    for (OrderJxPriceDifferenceReturnDetails returnDetails : jxPriceDifferenceReturnDetails) {
+                        returnDetails.setOid(orderBaseInfo.getId());
+                        orderService.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
                     }
                 }
             } else {
@@ -1124,6 +1160,35 @@ public class CommonServiceImpl implements CommonService {
         return billingPaymentDetails;
     }
 
+    @Override
+    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList) {
+        AppStore store = storeService.findById(orderBaseInfo.getStoreId());
+        if (null != store && null != store.getStoreType()) {
+            if (store.getStoreType() == StoreType.FX || store.getStoreType() == StoreType.JM) {
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    List<OrderJxPriceDifferenceReturnDetails> detailsList = new ArrayList<>(20);
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
+                            OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
+                            details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
+                            details.setCreateTime(new Date());
+                            details.setOrderNumber(orderBaseInfo.getOrderNumber());
+                            details.setQuantity(orderGoodsInfo.getOrderQuantity());
+                            details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
+                            details.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                            details.setSku(orderGoodsInfo.getSku());
+                            details.setStoreId(orderBaseInfo.getStoreId());
+                            details.setStoreCode(orderBaseInfo.getStoreCode());
+                            detailsList.add(details);
+                        }
+                    }
+                    return detailsList;
+                }
+            }
+        }
+        return null;
+    }
+
     public String sendPickUpCodeAndRemindMessageAfterPayUp(OrderBaseInfo orderBaseInfo) {
         String pickUpCode = "";
         if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
@@ -1182,7 +1247,7 @@ public class CommonServiceImpl implements CommonService {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                String mobile = null;
+                String mobile;
                 if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
                     mobile = orderBaseInfo.getCreatorPhone();
                 } else {

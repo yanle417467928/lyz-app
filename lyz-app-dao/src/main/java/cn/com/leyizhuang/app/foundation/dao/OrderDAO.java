@@ -125,5 +125,9 @@ public interface OrderDAO {
 
     Integer getReturningOrderQuantityByCusId(Long id);
 
+    void saveOrderJxPriceDifferenceReturnDetails(OrderJxPriceDifferenceReturnDetails returnDetails);
+
+    List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
+
     void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
 }

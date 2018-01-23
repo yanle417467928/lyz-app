@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.remote.ebs;
 
-import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 
 import java.util.List;
@@ -34,4 +33,6 @@ public interface EbsSenderService {
      */
     void sendAllocationReceivedToEBSAndRecord(final Allocation allocation);
 
+
+    void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs);
 }

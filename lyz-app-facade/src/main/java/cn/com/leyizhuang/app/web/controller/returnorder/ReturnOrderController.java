@@ -35,7 +35,6 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -979,7 +978,8 @@ public class ReturnOrderController {
                     count = count + returnGoodsInfo.getReturnQty();
                 }
                 response.setReturnNo(returnBaseInfo.getReturnNo());
-                response.setStatus(returnBaseInfo.getReturnStatus().getDescription());
+                response.setStatus(returnBaseInfo.getReturnStatus().toString());
+                response.setStatusDesc(returnBaseInfo.getReturnStatus().getDescription());
                 response.setCount(count);
                 response.setReturnPrice(returnBaseInfo.getReturnPrice());
                 response.setReturnType(returnBaseInfo.getReturnType().getDescription());

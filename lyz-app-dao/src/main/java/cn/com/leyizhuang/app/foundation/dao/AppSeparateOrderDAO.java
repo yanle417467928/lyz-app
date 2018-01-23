@@ -74,4 +74,13 @@ public interface AppSeparateOrderDAO {
                                                          @Param(value = "msg") String msg,
                                                          @Param(value = "sendTime") Date sendTime,
                                                          @Param(value = "flag") AppWhetherFlag flag);
+
+    void saveOrderJxPriceDifferenceReturnInf(OrderJxPriceDifferenceReturnInf returnInf);
+
+    List<OrderJxPriceDifferenceReturnInf> getOrderJxPriceDifferenceReturnInf(String orderNumber);
+
+    void updateOrderJxPriceDifferenceReturnInf(@Param(value = "returnInfIds") List<Long> returnInfIds,
+                                               @Param(value = "msg") String msg,
+                                               @Param(value = "sendTime") Date sendTime,
+                                               @Param(value = "flag") AppWhetherFlag flag);
 }

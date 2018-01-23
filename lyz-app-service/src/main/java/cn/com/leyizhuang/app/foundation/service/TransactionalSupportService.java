@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 
 import java.util.List;
@@ -20,10 +17,12 @@ public interface TransactionalSupportService {
                              Long userId, Long customerId, List<Long> cashCouponList, List<OrderCouponInfo> orderProductCouponInfoList,
                              OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
                              List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
-                             List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
+                             List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails,
+                             String ipAddress);
 
     void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
-                                      List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList);
+                                      List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
+                                      List<OrderJxPriceDifferenceReturnInf> returnInfs);
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 }

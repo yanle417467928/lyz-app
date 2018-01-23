@@ -784,6 +784,44 @@
               AND return_status = 'RETURNING'
     </select>
 
+    <insert id="saveOrderJxPriceDifferenceReturnDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails">
+        INSERT INTO ord_jx_price_difference_return_details (oid, ord_no, create_time, store_id, store_code, sku, unit_price, quantity, amount, receipt_number)
+            SELECT
+                #{oid},
+                #{orderNumber},
+                #{createTime},
+                #{storeId},
+                #{storeCode},
+                #{sku},
+                #{unitPrice},
+                #{quantity},
+                #{amount},
+                #{receiptNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM ord_jx_price_difference_return_details
+                             WHERE receipt_number = #{receiptNumber})
+    </insert>
+
+    <select id="getOrderJxPriceDifferenceReturnDetailsByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails">
+        SELECT
+            id,
+            oid,
+            ord_no order_number,
+            create_time,
+            store_id,
+            store_code,
+            sku,
+            unit_price,
+            quantity,
+            amount,
+            receipt_number
+        FROM ord_jx_price_difference_return_details
+        WHERE ord_no = #{orderNumber}
+    </select>
+
     <update id="updateReturnableQuantityAndReturnQuantityById">
         UPDATE ord_goods_info
         SET return_qty = return_qty - #{qty},

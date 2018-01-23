@@ -51,16 +51,17 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     @Resource
     private ItyAllocationDAO allocationDAO;
-    
+
     /**
      * 配置请求的超时设置
      */
     private final RequestConfig REQUEST_CONFIG = RequestConfig.custom().setConnectionRequestTimeout(5000).setConnectTimeout(1000)
             .setSocketTimeout(5000).build();
 
+    //************************************ 发送订单收款信息 begin *************************************
 
     /**
-     * 发送订单收款到EBS
+     * 发送订单收款到EBS 并记录发送结果
      *
      * @param receiptInfs 收款信息
      */
@@ -78,12 +79,12 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
     }
 
-    private void updateOrderReceiptFlagAndSendTimeAndErrorMsg(List<Long> receiptInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (null != receiptInfIds && receiptInfIds.size() > 0) {
-            separateOrderService.updateOrderReceiptFlagAndSendTimeAndErrorMsg(receiptInfIds, msg, sendTime, flag);
-        }
-    }
-
+    /**
+     * 发送订单收款信息到EBS
+     *
+     * @param receiptInfs 订单收款信息
+     * @return 发送结果
+     */
     private Map<String, Object> sendOrderReceiptToEbs(List<OrderReceiptInf> receiptInfs) {
         log.info("sendOrderReceiptToEbs, receiptInfs=" + receiptInfs);
         List<OrderReceiptSecond> orderReceiptSeconds = new ArrayList<>();
@@ -127,6 +128,25 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
 
     /**
+     * 更新订单收款传输信息
+     *
+     * @param receiptInfIds 订单收款信息
+     * @param msg           接口返回错误信息
+     * @param sendTime      发送成功时间
+     * @param flag          是否发送成功标识
+     */
+    private void updateOrderReceiptFlagAndSendTimeAndErrorMsg(List<Long> receiptInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiptInfIds && receiptInfIds.size() > 0) {
+            separateOrderService.updateOrderReceiptFlagAndSendTimeAndErrorMsg(receiptInfIds, msg, sendTime, flag);
+        }
+    }
+
+    //************************************ 发送订单收款信息 end *************************************
+
+
+    //************************************ 发送订单券信息 begin *************************************
+
+    /**
      * 发送订单券信息到EBS并记录返回结果
      *
      * @param orderCouponInfs 订单券信息
@@ -142,71 +162,6 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
         } else {
             updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, null, new Date(), AppWhetherFlag.Y);
-        }
-    }
-
-    @Override
-    public void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf) {
-        Map<String, Object> result = sendRechargeReceiptToEbs(receiptInf);
-        if (!(Boolean) result.get("success")) {
-            updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptInf.getReceiptId(), (String) result.get("msg"), null, AppWhetherFlag.N);
-        } else {
-            updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptInf.getReceiptId(), null, new Date(), AppWhetherFlag.Y);
-        }
-
-    }
-
-    private Map<String, Object> sendRechargeReceiptToEbs(RechargeReceiptInf receiptInf) {
-        log.info("sendRechargeReceiptToEbs, receiptInf=" + receiptInf);
-        RechargeReceiptSecond receiptSecond = new RechargeReceiptSecond();
-        receiptSecond.setAmount(toString(receiptInf.getAmount()));
-        receiptSecond.setAttribute1(toString(receiptInf.getAttribute1()));
-        receiptSecond.setAttribute2(toString(receiptInf.getAttribute2()));
-        receiptSecond.setAttribute3(toString(receiptInf.getAttribute3()));
-        receiptSecond.setAttribute4(toString(receiptInf.getAttribute4()));
-        receiptSecond.setAttribute5(toString(receiptInf.getAttribute5()));
-        receiptSecond.setChargeNumber(toString(receiptInf.getChargeNumber()));
-        receiptSecond.setChargeObj(toString(receiptInf.getChargeObj()));
-        receiptSecond.setChargeType(toString(receiptInf.getChargeType()));
-        receiptSecond.setDescription(toString(receiptInf.getDescription()));
-        receiptSecond.setDiySiteCode(toString(receiptInf.getDiySiteCode()));
-        receiptSecond.setReceiptDate(toString(DateFormatUtils.format(receiptInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
-        receiptSecond.setReceiptId(toString(receiptInf.getReceiptId()));
-        receiptSecond.setReceiptNumber(toString(receiptInf.getReceiptNumber()));
-        receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
-        receiptSecond.setSobId(toString(receiptInf.getSobId()));
-        receiptSecond.setStoreCode(toString(receiptInf.getStoreOrgCode()));
-        receiptSecond.setUserid(toString(receiptInf.getUserid()));
-        String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        parameters.add(new BasicNameValuePair("rechargeReceiptJson", rechargeReceiptSecondJson));
-        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callChargeReceiptSecond", parameters);
-        if (!(Boolean) result.get("success")) {
-            JSONObject content = new JSONObject();
-            content.put("rechargeReceiptSecondJson", rechargeReceiptSecondJson);
-            result.put("content", JSON.toJSONString(content));
-        }
-        log.info("sendRechargeReceiptToEbs, result=" + result);
-        return result;
-    }
-
-    private void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(Long receiptId, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (null != receiptId) {
-            separateOrderService.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId, msg, sendTime, flag);
-        }
-    }
-
-    /**
-     * 更新订单券接口信息
-     *
-     * @param couponInfIds 订单券行id
-     * @param msg          错误信息
-     * @param sendTime     发送成功时间
-     * @param flag         标识
-     */
-    private void updateOrderCouponFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (null != couponInfIds && couponInfIds.size() > 0) {
-            separateOrderService.updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
         }
     }
 
@@ -254,6 +209,101 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         return result;
     }
 
+
+    /**
+     * 更新订单券接口发送信息
+     *
+     * @param couponInfIds 订单券行id
+     * @param msg          错误信息
+     * @param sendTime     发送成功时间
+     * @param flag         标识
+     */
+    private void updateOrderCouponFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != couponInfIds && couponInfIds.size() > 0) {
+            separateOrderService.updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
+        }
+    }
+
+
+    //************************************ 发送订单券信息 end *************************************
+
+
+    //************************************ 发送充值收款信息begin *************************************
+
+    /**
+     * 发送充值收款信息到EBS 并记录传输结果
+     *
+     * @param receiptInf 充值收款信息
+     */
+    @Override
+    public void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf) {
+        Map<String, Object> result = sendRechargeReceiptToEbs(receiptInf);
+        if (!(Boolean) result.get("success")) {
+            updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptInf.getReceiptId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptInf.getReceiptId(), null, new Date(), AppWhetherFlag.Y);
+        }
+
+    }
+
+    /**
+     * 发送充值收款信息到EBS
+     *
+     * @param receiptInf 充值收款信息
+     * @return 传输结果
+     */
+    private Map<String, Object> sendRechargeReceiptToEbs(RechargeReceiptInf receiptInf) {
+        log.info("sendRechargeReceiptToEbs, receiptInf=" + receiptInf);
+        RechargeReceiptSecond receiptSecond = new RechargeReceiptSecond();
+        receiptSecond.setAmount(toString(receiptInf.getAmount()));
+        receiptSecond.setAttribute1(toString(receiptInf.getAttribute1()));
+        receiptSecond.setAttribute2(toString(receiptInf.getAttribute2()));
+        receiptSecond.setAttribute3(toString(receiptInf.getAttribute3()));
+        receiptSecond.setAttribute4(toString(receiptInf.getAttribute4()));
+        receiptSecond.setAttribute5(toString(receiptInf.getAttribute5()));
+        receiptSecond.setChargeNumber(toString(receiptInf.getChargeNumber()));
+        receiptSecond.setChargeObj(toString(receiptInf.getChargeObj()));
+        receiptSecond.setChargeType(toString(receiptInf.getChargeType()));
+        receiptSecond.setDescription(toString(receiptInf.getDescription()));
+        receiptSecond.setDiySiteCode(toString(receiptInf.getDiySiteCode()));
+        receiptSecond.setReceiptDate(toString(DateFormatUtils.format(receiptInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
+        receiptSecond.setReceiptId(toString(receiptInf.getReceiptId()));
+        receiptSecond.setReceiptNumber(toString(receiptInf.getReceiptNumber()));
+        receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
+        receiptSecond.setSobId(toString(receiptInf.getSobId()));
+        receiptSecond.setStoreCode(toString(receiptInf.getStoreOrgCode()));
+        receiptSecond.setUserid(toString(receiptInf.getUserid()));
+        String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("rechargeReceiptJson", rechargeReceiptSecondJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callChargeReceiptSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("rechargeReceiptSecondJson", rechargeReceiptSecondJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendRechargeReceiptToEbs, result=" + result);
+        return result;
+    }
+
+    /**
+     * 更新充值收款接口传输信息
+     *
+     * @param receiptId 收款id
+     * @param msg       接口返回错误信息
+     * @param sendTime  成功发送时间
+     * @param flag      是否发送成功标识
+     */
+    private void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(Long receiptId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiptId) {
+            separateOrderService.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId, msg, sendTime, flag);
+        }
+    }
+
+    //************************************ 发送充值收款信息 end *************************************
+
+
+    //************************************ 发送订单（订单头、商品信息）信息 begin *******************
 
     /**
      * 发送订单（订单头、商品信息）到EBS并记录返回结果
@@ -374,7 +424,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
 
     /**
-     * 更新订单状态
+     * 更新订单接口传输状态
      *
      * @param orderInf  订单头信息
      * @param goodsInfs 订单商品信息
@@ -383,18 +433,78 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         if (AppWhetherFlag.Y == flag) {
             separateOrderService.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, null, new Date());
             separateOrderService.updateOrderGoodsInfByOrderNumber(orderInf.getOrderNumber(), flag, null, new Date());
-            /*for (OrderGoodsInf orderGoodsInf : goodsInfs) {
-                separateOrderService.updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(orderGoodsInf.getOrderLineId(), flag, null, new Date());
-            }*/
         } else {
             separateOrderService.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, orderInf.getErrorMsg(), null);
             separateOrderService.updateOrderGoodsInfByOrderNumber(orderInf.getOrderNumber(), flag, orderInf.getErrorMsg(), null);
-            /*for (OrderGoodsInf orderGoodsInf : goodsInfs) {
-                separateOrderService.updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(orderGoodsInf.getOrderLineId(), flag, orderInf.getErrorMsg(), null);
-            }*/
         }
 
     }
+
+    //************************************ 发送订单（订单头、商品信息）信息 end *******************
+
+
+    //************************************ 发送订单经销差价返还信息 begin *************************
+
+    @Override
+    public void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs) {
+        Map<String, Object> result = sendJxPriceDifferenceReturnToEbs(jxPriceDifferenceReturnInfs);
+        List<Long> returnInfIds = new ArrayList<>(10);
+        for (OrderJxPriceDifferenceReturnInf returnInf : jxPriceDifferenceReturnInfs) {
+            returnInfIds.add(returnInf.getReceiptId());
+        }
+        if (!(Boolean) result.get("success")) {
+            updateOrderJxPriceDifferenceReturnInf(returnInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateOrderJxPriceDifferenceReturnInf(returnInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+
+    }
+
+    private void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != returnInfIds && returnInfIds.size() > 0) {
+            separateOrderService.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
+        }
+    }
+
+    private Map<String, Object> sendJxPriceDifferenceReturnToEbs(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs) {
+        log.info("sendJxPriceDifferenceReturnToEbs, jxPriceDifferenceReturnInfs=" + jxPriceDifferenceReturnInfs);
+        List<OrderJxPriceDifferenceReturnSecond> orderJxPriceDifferenceReturnSeconds = new ArrayList<>(20);
+        if (null != jxPriceDifferenceReturnInfs && jxPriceDifferenceReturnInfs.size() > 0) {
+            for (OrderJxPriceDifferenceReturnInf returnInf : jxPriceDifferenceReturnInfs) {
+                OrderJxPriceDifferenceReturnSecond returnSecond = new OrderJxPriceDifferenceReturnSecond();
+                returnSecond.setAmount(toString(returnInf.getAmount()));
+                returnSecond.setAttribute1(toString(returnInf.getAttribute1()));
+                returnSecond.setAttribute2(toString(returnInf.getAttribute2()));
+                returnSecond.setAttribute3(toString(returnInf.getAttribute3()));
+                returnSecond.setAttribute4(toString(returnInf.getAttribute4()));
+                returnSecond.setAttribute5(toString(returnInf.getAttribute5()));
+                returnSecond.setDescription(toString(returnInf.getDescription()));
+                returnSecond.setDiySiteCode(toString(returnInf.getDiySiteCode()));
+                returnSecond.setMainOrderNumber(toString(returnInf.getMainOrderNumber()));
+                returnSecond.setStoreOrgCode(toString(returnInf.getStoreOrgCode()));
+                returnSecond.setSobId(toString(returnInf.getSobId()));
+                returnSecond.setSku(toString(returnInf.getSku()));
+                returnSecond.setReceiptNumber(toString(returnInf.getReceiptNumber()));
+                returnSecond.setReceiptId(toString(returnInf.getReceiptId()));
+                returnSecond.setReceiptDate(toString(DateFormatUtils.format(returnInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
+                orderJxPriceDifferenceReturnSeconds.add(returnSecond);
+            }
+        }
+        String orderJxPriceDifferenceReturnJson = JSON.toJSONString(orderJxPriceDifferenceReturnSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("orderJxPriceDifferenceReturnJson", orderJxPriceDifferenceReturnJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callOrderJxPriceDifferenceReturnSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("orderJxPriceDifferenceReturnJson", orderJxPriceDifferenceReturnJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendJxPriceDifferenceReturnToEbs, result=" + result);
+        return result;
+    }
+
+
+    //************************************ 发送订单经销差价返还信息 end ***************************
 
     /**
      * 发送【调拨单(出库)】信息到EBS，并保存发送结果

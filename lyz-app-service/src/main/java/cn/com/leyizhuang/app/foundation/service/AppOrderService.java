@@ -139,5 +139,8 @@ public interface AppOrderService {
 
     Map<String,Integer> getAppOrderQuantityByCusId(Long id);
 
+    void saveOrderJxPriceDifferenceReturnDetails(OrderJxPriceDifferenceReturnDetails returnDetails);
+
+    List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
     void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId);
 }

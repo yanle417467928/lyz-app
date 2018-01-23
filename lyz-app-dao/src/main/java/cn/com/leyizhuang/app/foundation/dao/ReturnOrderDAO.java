@@ -101,4 +101,12 @@ public interface ReturnOrderDAO {
     void updateReturnableQuantityAndReturnQuantityById(@Param("returnQty") Integer returnQty,
                                                        @Param("returnableQty") Integer returnableQty,
                                                        @Param("id")Long id);
+
+    /**
+     * app后台获取所有退单列表
+     *
+     * @param keywords
+     * @return
+     */
+    List<ReturnOrderBaseInfo> findReturnOrderList(String keywords);
 }

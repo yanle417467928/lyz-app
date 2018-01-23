@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -248,7 +249,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         couponInfList.add(couponInf);
                     }
                 }
-                //生成收款接口表信息
+                //生成订单收款接口表信息
                 List<OrderReceiptInf> receiptInfList = new ArrayList<>(5);
                 List<OrderBillingPaymentDetails> billingPaymentDetailsList = orderService.getOrderBillingDetailListByOrderNo(orderNumber);
                 if (null != billingPaymentDetailsList && billingPaymentDetailsList.size() > 0) {
@@ -271,8 +272,26 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         receiptInfList.add(receiptInf);
                     }
                 }
+                //订单经销差价返还 接口拆单
+                List<OrderJxPriceDifferenceReturnDetails> returnDetails = orderService.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(orderNumber);
+                List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs = new ArrayList<>(20);
+                if (null != returnDetails && returnDetails.size() > AppConstant.INTEGER_ZERO) {
+                    for (OrderJxPriceDifferenceReturnDetails jxPriceDifferenceReturnDetails : returnDetails) {
+                        OrderJxPriceDifferenceReturnInf returnInf = new OrderJxPriceDifferenceReturnInf();
+                        returnInf.setAmount(jxPriceDifferenceReturnDetails.getAmount());
+                        returnInf.setCreateTime(new Date());
+                        returnInf.setMainOrderNumber(jxPriceDifferenceReturnDetails.getOrderNumber());
+                        returnInf.setReceiptDate(jxPriceDifferenceReturnDetails.getCreateTime());
+                        returnInf.setSku(jxPriceDifferenceReturnDetails.getSku());
+                        returnInf.setSobId(baseInfo.getSobId());
+                        returnInf.setStoreOrgCode(baseInfo.getStoreStructureCode());
+                        returnInf.setDiySiteCode(jxPriceDifferenceReturnDetails.getStoreCode());
+                        returnInf.setReceiptNumber(jxPriceDifferenceReturnDetails.getReceiptNumber());
+                        jxPriceDifferenceReturnInfs.add(returnInf);
+                    }
+                }
                 //循环保存分单信息,分单商品信息及订单券信息
-                supportService.saveSeparateOrderRelevatnInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList);
+                supportService.saveSeparateOrderRelevatnInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList, jxPriceDifferenceReturnInfs);
 
             } else {
                 //todo 记录拆单错误日志
@@ -427,8 +446,32 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(Long receiptId, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (null != receiptId){
-            separateOrderDAO.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId,msg,sendTime,flag);
+        if (null != receiptId) {
+            separateOrderDAO.updateRechargeReceiptFlagAndSendTimeAndErrorMsg(receiptId, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void saveOrderJxPriceDifferenceReturnInf(OrderJxPriceDifferenceReturnInf returnInf) {
+        if (null != returnInf) {
+            separateOrderDAO.saveOrderJxPriceDifferenceReturnInf(returnInf);
+        }
+    }
+
+    @Override
+    public void sendOrderJxPriceDifferenceReturnInf(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs = separateOrderDAO.getOrderJxPriceDifferenceReturnInf(orderNumber);
+            if (null != jxPriceDifferenceReturnInfs && jxPriceDifferenceReturnInfs.size() > 0) {
+                ebsSenderService.sendOrderJxPriceDifferenceReturnInfAndRecord(jxPriceDifferenceReturnInfs);
+            }
+        }
+    }
+
+    @Override
+    public void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != returnInfIds && returnInfIds.size() > 0) {
+            separateOrderDAO.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
         }
     }
 
