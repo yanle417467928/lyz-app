@@ -12,35 +12,32 @@ import org.springframework.messaging.support.MessageBuilder;
 import javax.annotation.Resource;
 
 /**
- * @author Created on 2017-12-26 18:16
- **/
+ * Created by panjie on 2018/1/23.
+ */
 @EnableBinding(value = {MqOrderChannel.class})
 @Slf4j
-public class SinkSender {
+public class MaSinkSender {
 
     @Resource
     private MqOrderChannel orderChannel;
 
-    public void sendOrder(String orderNumber) {
-        log.info("sendOrder,发送需拆单订单到拆单队列,Begin\n 订单号:{}", orderNumber);
-        if (StringUtils.isNotBlank(orderNumber)) {
+    public void sendAllocationToEBSAndRecord(String number) {
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号：",number);
+        if (StringUtils.isNotBlank(number)){
             MqMessage message = new MqMessage();
-            message.setType(MqMessageType.ORDER);
-            message.setContent(JSON.toJSONString(orderNumber));
+            message.setType(MqMessageType.ALLOCATION_OUTBOUND);
+            message.setContent(JSON.toJSONString(number));
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
-        log.info("sendOrder,发送需拆单订单到拆单队列,End", JSON.toJSONString(orderNumber));
     }
 
-    public void sendRechargeReceipt(String rechargeNo) {
-        log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,Begin\n 充值单号:{}", rechargeNo);
-        if (StringUtils.isNotBlank(rechargeNo)) {
+    public void sendAllocationReceivedToEBSAndRecord(String number) {
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号：",number);
+        if (StringUtils.isNotBlank(number)){
             MqMessage message = new MqMessage();
-            message.setType(MqMessageType.RECHARGE_RECEIPT);
-            message.setContent(JSON.toJSONString(rechargeNo));
+            message.setType(MqMessageType.ALLOCATION_INBOUND);
+            message.setContent(JSON.toJSONString(number));
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
-        log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,End", JSON.toJSONString(rechargeNo));
     }
-
 }

@@ -18,7 +18,6 @@ import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 
-import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationDetailSecond;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationHeaderSecond;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationReceiveSecond;
@@ -63,9 +62,6 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Autowired
     private EbsSenderService ebsSenderService;
-
-    @Resource
-    private SinkSender sinkSender;
 
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query) {
@@ -167,8 +163,6 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         // 新建调拨轨迹
         this.createAllocationRecord(allocation.getId(), username, AllocationTypeEnum.SENT);
 
-        // 调用ebs接口 将调拨出库消息加入队列
-        sinkSender.sendAllocationToEBSAndRecord(allocation.getNumber());
     }
 
     @Override
@@ -221,7 +215,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         this.createAllocationRecord(allocation.getId(), username, AllocationTypeEnum.ENTERED);
 
         // 调用ebs接口 将调拨出库消息加入队列
-        sinkSender.sendAllocationReceivedToEBSAndRecord(allocation.getNumber());
+        //sinkSender.sendAllocationReceivedToEBSAndRecord(allocation.getNumber());
     }
 
     @Override
