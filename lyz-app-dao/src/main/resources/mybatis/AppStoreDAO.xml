@@ -358,7 +358,7 @@
             real_ity,
             last_update_time
         FROM st_inventory
-        WHERE store_id = #{storeCode} AND gid = #{goodsId}
+        WHERE store_code = #{storeCode} AND gid = #{goodsId}
     </select>
 
     <insert id="addStoreInventoryAvailableQtyChangeLog" parameterType=

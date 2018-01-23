@@ -181,7 +181,7 @@
     </update>
 
     <update id="setDetailDRealQty">
-        UPDATE ity_allocation_detail set real_qty = #{realQty} where allcation_id = #{allocationId} and goods_id = #{goodsId}
+        UPDATE ity_allocation_detail set real_qty = #{realQty} where allocation_id = #{allcationId} and goods_id = #{goodsId}
 
     </update>
 

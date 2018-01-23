@@ -22,7 +22,7 @@ public class MaSinkSender {
     private MqOrderChannel orderChannel;
 
     public void sendAllocationToEBSAndRecord(String number) {
-        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号：",number);
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号："+number);
         if (StringUtils.isNotBlank(number)){
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.ALLOCATION_OUTBOUND);
@@ -32,7 +32,7 @@ public class MaSinkSender {
     }
 
     public void sendAllocationReceivedToEBSAndRecord(String number) {
-        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号：",number);
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号："+number);
         if (StringUtils.isNotBlank(number)){
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.ALLOCATION_INBOUND);
