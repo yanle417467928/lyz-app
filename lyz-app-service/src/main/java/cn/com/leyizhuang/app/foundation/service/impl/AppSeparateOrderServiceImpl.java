@@ -475,4 +475,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             separateOrderDAO.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
         }
     }
+
+
 }

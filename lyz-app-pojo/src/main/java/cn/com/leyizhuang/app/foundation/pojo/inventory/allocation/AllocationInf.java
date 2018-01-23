@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class AllocationCallRecord {
+public class AllocationInf {
     private Long id;
     /**
      * 调拨单ID

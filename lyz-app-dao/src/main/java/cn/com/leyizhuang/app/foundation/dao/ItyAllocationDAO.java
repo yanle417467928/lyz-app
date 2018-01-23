@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
+import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +34,8 @@ public interface ItyAllocationDAO {
      * @return
      */
     Allocation queryAllocationById(Long id);
+
+    Allocation queryAllocationByNumber(@Param("number") String number);
 
     /**
      * 查询一个调拨单的商品明细
@@ -65,8 +69,22 @@ public interface ItyAllocationDAO {
 
     int insertAllocationTrail(AllocationTrail allocationTrail);
 
+    int insertAllocationInf(AllocationInf inf);
+
     int chagneAllocationStatus(@Param("id") Long id, @Param("status") AllocationTypeEnum status);
 
     int setDetailDRealQty(@Param("allcationId") Long allcationId, @Param("goodsId") Long goodsId,@Param("realQty") Integer realQty);
+
+    /**
+     * 接口回调
+     * @param ids
+     * @param msg
+     * @param sendTime
+     * @param flag
+     */
+    void updateSendFlagAndErrorMessage(@Param(value = "ids") List<Long> ids,
+                                       @Param(value = "errorMsg") String msg,
+                                       @Param(value = "sendTime") Date sendTime,
+                                       @Param(value = "flag") AppWhetherFlag flag);
 
 }

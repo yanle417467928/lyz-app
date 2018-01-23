@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
-import cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
@@ -10,7 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuer
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
-import cn.com.leyizhuang.app.web.controller.BaseController;
+import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -46,6 +45,9 @@ public class MaAllocationRestController extends BaseRestController{
 
     @Autowired
     private AppOrderService orderService;
+
+    @Autowired
+    private MaSinkSender maSinkSender;
 
     @GetMapping(value = "/page/grid")
     public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, AllocationQuery query) {
@@ -125,19 +127,23 @@ public class MaAllocationRestController extends BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "调拨单无法出库，请联系管理员", null);
         }
+        try{
+            ityAllocationService.sent(allocation,allocationDetailList,user.getLoginName());
 
-        for (AllocationDetail goods : allocationDetailList){
-            // 检查门店库存
-            Boolean inventoryFlag = orderService.existGoodsStoreInventory(allocation.getAllocationFrom(),goods.getGoodsId(),goods.getRealQty());
-
-            if (!inventoryFlag){
-                logger.info(goods.getSku()+" 库存不足");
+            // 发送接口
+            maSinkSender.sendAllocationToEBSAndRecord(allocation.getNumber());
+        }catch (Exception e){
+            if (e.getMessage().contains("库存不足")) {
+                logger.info(e.getMessage());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
-                        "调拨产品："+goods.getSkuName() +" 库存不足", null);
+                        e.getMessage(), null);
+            } else {
+                logger.error("调拨单出库错误,id=" + allocationId + ", err=" + e.getMessage(), e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "调拨出错，请联系关联员", null);
             }
         }
 
-        ityAllocationService.sent(allocation,allocationDetailList,user.getLoginName());
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                 "出库成功", null);
     }
@@ -167,7 +173,18 @@ public class MaAllocationRestController extends BaseRestController{
                     "调拨单未出库，请联系管理员", null);
         }
 
-        ityAllocationService.receive(allocation,user.getLoginName());
+        try{
+            ityAllocationService.receive(allocation,user.getLoginName());
+
+            // 发送接口
+            maSinkSender.sendAllocationReceivedToEBSAndRecord(allocation.getNumber());
+        }catch (Exception e){
+
+                logger.error("调拨单入库错误,id=" + allocationId + ", err=" + e.getMessage(), e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "调拨单入库出错，请联系关联员", null);
+
+        }
 
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                 "入库成功", null);

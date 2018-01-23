@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.core.remote.ebs;
 
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 
 import java.util.List;
@@ -19,6 +20,19 @@ public interface EbsSenderService {
     void sendOrderCouponInfAndRecord(List<OrderCouponInf> orderCouponInfs);
 
     void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf);
+
+    /**
+     * 发送【调拨单(出库)】信息到EBS，并保存发送结果
+     * @param allocation
+     */
+    void sendAllocationToEBSAndRecord(final Allocation allocation);
+
+    /**
+     * 发送【调拨单(入库)】信息到EBS
+     * @param allocation
+     */
+    void sendAllocationReceivedToEBSAndRecord(final Allocation allocation);
+
 
     void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs);
 }
