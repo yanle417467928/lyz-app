@@ -413,6 +413,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                     break;
                 case BOND:
                     rechargeReceiptInf.setChargeObj(ChargeObjType.BOND);
+                    break;
                 default:
                     break;
             }
