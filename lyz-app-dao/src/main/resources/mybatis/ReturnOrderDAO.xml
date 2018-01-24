@@ -122,9 +122,9 @@
     <insert id="saveReturnOrderBillingDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
         INSERT INTO ord_return_billing_detail
-        (roid, return_pay_type, return_money, into_amount_time, reply_code, refund_number)
+        (roid, return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time)
         VALUES
-        (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber})
+        (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber},#{createTime})
     </insert>
 
     <insert id="saveReturnOrderCashCoupon"

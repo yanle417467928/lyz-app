@@ -644,6 +644,7 @@ public class ReturnOrderController {
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                    returnOrderBillingDetail.setCreateTime(new Date());
                     returnOrderBillingDetail.setRoid(returnOrderId);
                     returnOrderBillingDetail.setRefundNumber(returnNumber);
                     //TODO 时间待定
@@ -813,20 +814,24 @@ public class ReturnOrderController {
             List<ReturnOrderProductCoupon> productCouponList = new ArrayList<>();
             //获取订单使用产品
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndUserId(userId, OrderCouponType.PRODUCT_COUPON);
-            if (null != orderProductCouponList && !orderProductCouponList.isEmpty()) {
+            if (AssertUtil.isNotEmpty(orderProductCouponList)) {
                 for (OrderCouponInfo couponInfo : orderProductCouponList) {
-                    //查询使用产品券信息
-                    CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(couponInfo.getCouponId());
+                    for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
+                        if (AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()) &&
+                                goodsInfo.getSku().equals(couponInfo.getSku())) {
 
-                    ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
-                    productCoupon.setGid(customerProductCoupon.getGoodsId());
-                    productCoupon.setIsReturn(Boolean.FALSE);
-                    productCoupon.setOrderNo(orderNo);
-                    productCoupon.setPcid(customerProductCoupon.getId());
-                    productCoupon.setQty(1);
-                    productCoupon.setReturnQty(1);
-                    productCoupon.setReturnNo(returnNo);
-                    productCouponList.add(productCoupon);
+                            ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
+                            productCoupon.setGid(goodsInfo.getGid());
+                            productCoupon.setIsReturn(Boolean.FALSE);
+                            productCoupon.setOrderNo(orderNo);
+                            productCoupon.setPcid(couponInfo.getCouponId());
+                            productCoupon.setQty(1);
+                            productCoupon.setSku(goodsInfo.getSku());
+                            productCoupon.setReturnQty(1);
+                            productCoupon.setReturnNo(returnNo);
+                            productCouponList.add(productCoupon);
+                        }
+                    }
                 }
             }
             //******************* 创建退货单金额信息 ************************
@@ -1390,6 +1395,7 @@ public class ReturnOrderController {
         if (aliPayResponse.isSuccess()) {
             //创建退单退款详情实体
             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+            returnOrderBillingDetail.setCreateTime(new Date());
             returnOrderBillingDetail.setRoid(returnOrderId);
             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
             returnOrderBillingDetail.setIntoAmountTime(aliPayResponse.getGmtRefundPay());
@@ -1414,6 +1420,7 @@ public class ReturnOrderController {
         if ("SUCCESS".equals(map.get("code"))) {
             //创建退单退款详情实体
             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+            returnOrderBillingDetail.setCreateTime(new Date());
             returnOrderBillingDetail.setRoid(returnOrderId);
             returnOrderBillingDetail.setRefundNumber(returnNumber);
             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1897,6 +1904,7 @@ public class ReturnOrderController {
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                    returnOrderBillingDetail.setCreateTime(new Date());
                     returnOrderBillingDetail.setRoid(returnOrderId);
                     returnOrderBillingDetail.setRefundNumber(returnNumber);
                     //TODO 时间待定
