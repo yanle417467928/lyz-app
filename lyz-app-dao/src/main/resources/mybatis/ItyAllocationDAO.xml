@@ -36,7 +36,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="queryAllocationByNumber" parameterType="java.lang.Long"
+    <select id="queryAllocationByNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation">
         SELECT *
         FROM ity_allocation

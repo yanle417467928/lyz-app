@@ -1351,18 +1351,18 @@ public class ReturnOrderController {
 
     private OrderLogisticsInfo transform(OrderLogisticsInfo orderLogisticsInfo, DeliveryAddressResponse defaultDeliveryAddress) {
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
-        orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getDeliveryName());
+        orderLogisticsInfo.setReceiver(defaultDeliveryAddress.getDeliveryName());
         orderLogisticsInfo.setReceiverPhone(defaultDeliveryAddress.getDeliveryPhone());
         orderLogisticsInfo.setDeliveryCity(defaultDeliveryAddress.getDeliveryCity());
         orderLogisticsInfo.setDeliveryCounty(defaultDeliveryAddress.getDeliveryCounty());
         orderLogisticsInfo.setDeliveryStreet(defaultDeliveryAddress.getDeliveryStreet());
         orderLogisticsInfo.setDetailedAddress(defaultDeliveryAddress.getDetailedAddress());
         orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getVillageName());
-        String shippingAddress = defaultDeliveryAddress.getDeliveryCity() +
-                defaultDeliveryAddress.getDeliveryCounty() +
-                defaultDeliveryAddress.getDeliveryStreet() +
-                defaultDeliveryAddress.getVillageName() +
-                defaultDeliveryAddress.getDetailedAddress();
+        String shippingAddress = defaultDeliveryAddress.getDeliveryCity().trim() +
+                defaultDeliveryAddress.getDeliveryCounty().trim() +
+                defaultDeliveryAddress.getDeliveryStreet().trim() +
+                defaultDeliveryAddress.getVillageName().trim() +
+                defaultDeliveryAddress.getDetailedAddress().trim();
         orderLogisticsInfo.setShippingAddress(shippingAddress);
         return orderLogisticsInfo;
     }
