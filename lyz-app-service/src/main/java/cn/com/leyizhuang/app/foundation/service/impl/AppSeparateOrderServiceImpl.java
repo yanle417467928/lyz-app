@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private RechargeService rechargeService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -470,11 +474,51 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void sendOrderJxPriceDifferenceRefundInf(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = separateOrderDAO.getOrderJxPriceDifferenceRefundInf(returnNumber);
+            if (null != jxPriceDifferenceRefundInfs && jxPriceDifferenceRefundInfs.size() > 0) {
+                ebsSenderService.sendOrderJxPriceDifferenceRefundInfAndRecord(jxPriceDifferenceRefundInfs);
+            }
+        }
+    }
+
+    @Override
     public void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != returnInfIds && returnInfIds.size() > 0) {
             separateOrderDAO.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
         }
     }
 
+    @Override
+    public Boolean isReturnOrderExist(String returnNumber) {
+        if (null != returnNumber) {
+            return separateOrderDAO.isReturnOrderExist(returnNumber);
+        }
+        return false;
+    }
 
+    @Override
+    public void separateReturnOrder(String returnNumber) {
+
+        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+        if (null != returnOrderBaseInfo){
+
+        }
+    }
+
+
+    @Override
+    public void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != refundInfIds && refundInfIds.size() > 0) {
+            separateOrderDAO.updateOrderJxPriceDifferenceRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf) {
+        if (null != refundInf) {
+            separateOrderDAO.saveOrderJxPriceDifferenceRefundInf(refundInf);
+        }
+    }
 }

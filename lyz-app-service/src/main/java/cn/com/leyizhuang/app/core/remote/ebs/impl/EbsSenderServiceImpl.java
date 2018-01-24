@@ -600,6 +600,69 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         return result;
     }
 
+
+    //************************************ 发送订单经销差价退还信息 begin *************************
+
+    @Override
+    public void sendOrderJxPriceDifferenceRefundInfAndRecord(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+        Map<String, Object> result = sendJxPriceDifferenceRefundToEbs(jxPriceDifferenceRefundInfs);
+        List<Long> refundInfIds = new ArrayList<>(10);
+        for (OrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
+            refundInfIds.add(refundInf.getRefundId());
+        }
+        if (!(Boolean) result.get("success")) {
+            updateOrderJxPriceDifferenceRefundInf(refundInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateOrderJxPriceDifferenceRefundInf(refundInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+
+    }
+
+    private void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != refundInfIds && refundInfIds.size() > 0) {
+            separateOrderService.updateOrderJxPriceDifferenceRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    private Map<String, Object> sendJxPriceDifferenceRefundToEbs(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+        log.info("sendJxPriceDifferenceRefundToEbs, jxPriceDifferenceRefundInfs=" + jxPriceDifferenceRefundInfs);
+        List<OrderJxPriceDifferenceRefundSecond> orderJxPriceDifferenceRefundSeconds = new ArrayList<>(20);
+        if (null != jxPriceDifferenceRefundInfs && jxPriceDifferenceRefundInfs.size() > 0) {
+            for (OrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
+                OrderJxPriceDifferenceRefundSecond refundSecond = new OrderJxPriceDifferenceRefundSecond();
+                refundSecond.setAmount(toString(refundInf.getAmount()));
+                refundSecond.setAttribute1(toString(refundInf.getAttribute1()));
+                refundSecond.setAttribute2(toString(refundInf.getAttribute2()));
+                refundSecond.setAttribute3(toString(refundInf.getAttribute3()));
+                refundSecond.setAttribute4(toString(refundInf.getAttribute4()));
+                refundSecond.setAttribute5(toString(refundInf.getAttribute5()));
+                refundSecond.setDescription(toString(refundInf.getDescription()));
+                refundSecond.setDiySiteCode(toString(refundInf.getDiySiteCode()));
+                refundSecond.setMainOrderNumber(toString(refundInf.getMainOrderNumber()));
+                refundSecond.setStoreOrgCode(toString(refundInf.getStoreOrgCode()));
+                refundSecond.setSobId(toString(refundInf.getSobId()));
+                refundSecond.setSku(toString(refundInf.getSku()));
+                refundSecond.setRefundNumber(toString(refundInf.getRefundNumber()));
+                refundSecond.setReturnNumber(toString(refundInf.getReturnNumber()));
+                refundSecond.setRefundId(toString(refundInf.getRefundId()));
+                refundSecond.setRefundDate(toString(refundInf.getRefundDate()));
+                orderJxPriceDifferenceRefundSeconds.add(refundSecond);
+            }
+        }
+        String orderJxPriceDifferenceRefundJson = JSON.toJSONString(orderJxPriceDifferenceRefundSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("orderJxPriceDifferenceRefundJson", orderJxPriceDifferenceRefundJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callOrderJxPriceDifferenceRefundSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("orderJxPriceDifferenceRefundJson", orderJxPriceDifferenceRefundJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendJxPriceDifferenceRefundToEbs, result=" + result);
+        return result;
+    }
+    //************************************ 发送订单经销差价退还信息 end ***************************
+
     private Map<String, Object> postToEbs(String url, List<NameValuePair> parameters) {
         Map<String, Object> result = Maps.newHashMap();
         HttpPost httppost = new HttpPost(url);
