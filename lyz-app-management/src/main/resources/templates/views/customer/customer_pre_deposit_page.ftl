@@ -242,12 +242,12 @@
             align: 'center'
         }, {
             field: 'cusId',
-            title: '预存款变更',
+            title: '操作',
             align: 'center',
             formatter: function(value,row) {
-                return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.cusId+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="changePre('+row.cusId+')"> 变更</button>';
+                return '<button class="btn btn-primary btn-xs" onclick="showDetails('+row.cusId+')"> 查看明细</button><button class="btn  btn-danger btn-xs" style="margin-left: 10px" onclick="changePre('+row.cusId+')"> 变更</button>';
             }
-        },
+        }
         ]);
     }
 
