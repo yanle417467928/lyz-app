@@ -393,7 +393,8 @@
             obi.ord_no = #{orderNumber}
     </select>
 
-    <select id="findMaCompanyOrderDetailByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse">
+    <select id="findMaCompanyOrderDetailByOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse">
         SELECT
             obi.ord_no orderNumber,
             obi.`status` orderStatus,
@@ -463,97 +464,110 @@
     </select>
 
 
-    <select id="findSelfTakeOrderShippingList"
+    <select id="findSelfTakeOrderList"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
         SELECT
         obi.ord_no orderNumber,
         obi.create_time createTime,
         obi.creator_name creatorName,
         obi.customer_name customerName,
-        s.store_name storeName
+        s.store_name storeName,
+        obi.status status,
+        obi.creator_identity_type creatorIdentityType,
+        obd.is_pay_up isPayUp
         FROM
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        INNER JOIN  ord_billing_details obd ON obi.oid=obd.oid
         WHERE
         obi.order_subject_type = 'STORE'
-        AND
-        obi.status='PENDING_SHIPMENT'
-        AND
-        obi.effective_end_time> NOW()
         AND
         obi.delivery_type= 'SELF_TAKE'
         ORDER BY
         obi.create_time DESC
     </select>
 
-    <select id="findSelfTakeOrderShippingListByCityId" parameterType="java.lang.Long"
+    <select id="findSelfTakeOrderListByScreen" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
         SELECT
         obi.ord_no orderNumber,
         obi.create_time createTime,
         obi.creator_name creatorName,
         obi.customer_name customerName,
-        s.store_name storeName
+        s.store_name storeName,
+        obi.status status,
+        obi.creator_identity_type creatorIdentityType,
+        obd.is_pay_up isPayUp
         FROM
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        INNER JOIN ord_billing_details obd ON obi.oid=obd.oid
         WHERE
         obi.order_subject_type = 'STORE'
         AND
-        obi.status='PENDING_SHIPMENT'
-        AND
-        obi.effective_end_time> NOW()
-        AND
         obi.delivery_type= 'SELF_TAKE'
-          AND
-        obi.city_id=#{cityId}
+        <choose>
+            <when test=" null!= status and 1==status">
+                AND
+                obi.status !='PENDING_RECEIVE'
+                AND
+                obi.status !='UNPAID'
+                AND
+                obi.status !='CANCELED'
+                AND
+                obi.status !='CANCELING'
+            </when>
+            <when test=" null!= status and 0==status">
+                AND
+                (obi.status ='PENDING_RECEIVE'
+                OR
+                obi.status ='UNPAID'
+                OR
+                obi.status ='CANCELED'
+                OR
+                obi.status ='CANCELING')
+            </when>
+        </choose>
+        <choose>
+            <when test=" null!= isPayUp and 1==isPayUp">
+                AND
+                obd.is_pay_up =TRUE
+            </when>
+            <when test=" null!= isPayUp and 0==isPayUp">
+                AND
+                obd.is_pay_up =FALSE
+            </when>
+        </choose>
+        <if test=" null!= storeId and -1!=storeId ">
+            AND
+            s.store_id =#{storeId}
+        </if>
+        <if test=" null!= cityId and -1!=cityId ">
+            AND
+            obi.city_id =#{cityId}
+        </if>
         ORDER BY
         obi.create_time DESC
     </select>
 
-    <select id="findSelfTakeOrderShippingListByStoreId" parameterType="java.lang.Long"
+
+    <select id="findSelfTakeOrderListByInfo"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
         SELECT
         obi.ord_no orderNumber,
         obi.create_time createTime,
         obi.creator_name creatorName,
         obi.customer_name customerName,
-        s.store_name storeName
+        s.store_name storeName,
+        obi.status status,
+        obi.creator_identity_type creatorIdentityType,
+        obd.is_pay_up isPayUp
         FROM
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        INNER JOIN ord_billing_details obd ON obi.oid=obd.oid
         WHERE
         obi.order_subject_type = 'STORE'
-        AND
-        obi.status='PENDING_SHIPMENT'
-        AND
-        obi.effective_end_time> NOW()
-        AND
-        obi.delivery_type= 'SELF_TAKE'
-        AND
-        obi.store_id=#{storeId}
-        ORDER BY
-        obi.create_time DESC
-    </select>
-
-
-    <select id="findSelfTakeOrderShippingListByInfo"
-            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
-        SELECT
-        obi.ord_no orderNumber,
-        obi.create_time createTime,
-        obi.creator_name creatorName,
-        obi.customer_name customerName,
-        s.store_name storeName
-        FROM
-        ord_base_info AS obi
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
-        WHERE
-        obi.order_subject_type = 'STORE'
-        AND
-        obi.status='PENDING_SHIPMENT'
-        AND
-        obi.effective_end_time> NOW()
         AND
         obi.delivery_type= 'SELF_TAKE'
         AND
@@ -562,7 +576,7 @@
         obi.create_time DESC
     </select>
 
-    <select id="findSelfTakeOrderByCondition"
+    <select id="findSelfTakeOrderListByCondition"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO">
         SELECT
@@ -570,17 +584,17 @@
         obi.create_time createTime,
         obi.creator_name creatorName,
         obi.customer_name customerName,
-        s.store_name storeName
+        s.store_name storeName,
+        obi.status status,
+        obi.creator_identity_type creatorIdentityType,
+        obd.is_pay_up isPayUp
         FROM
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        INNER JOIN ord_billing_details obd ON obi.oid=obd.oid
         INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         WHERE
         obi.order_subject_type = 'STORE'
-        AND
-        obi.status='PENDING_SHIPMENT'
-        AND
-        obi.effective_end_time> NOW()
         AND
         obi.delivery_type= 'SELF_TAKE'
         <if test="beginTime != null and beginTime != ''">
@@ -610,4 +624,81 @@
         ORDER BY
         obi.create_time DESC
     </select>
+
+    <select id="getOrderInfoByOrderNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo">
+        SELECT
+            oid id,
+            ord_no orderNumber,
+            pick_up_code,
+            store_id,
+            store_code,
+            city_id,
+            city_name,
+            creator_identity_type,
+            sob_id,
+            create_time
+        FROM ord_base_info obi
+        WHERE obi.ord_no = #{orderNo}
+    </select>
+
+
+    <select id="findOrderGoodsList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
+        SELECT
+        ogi.gid gid,
+        ogi.sku  sku,
+        ogi.sku_name  skuName,
+        ogi.sku  sku,
+        ogi.order_qty orderQty,
+        ogi.return_price returnPrice
+        FROM ord_goods_info ogi
+        WHERE ogi.ord_no = #{orderNo}
+    </select>
+
+
+    <update id="updateOrderStatus" parameterType="java.lang.String">
+        UPDATE ord_base_info
+        SET
+        status = 'FINISHED'
+        WHERE ord_no = #{orderNo}
+    </update>
+
+
+    <update id="updateorderReceivablesStatus" parameterType="java.lang.String">
+        UPDATE ord_billing_details
+        SET
+        is_pay_up = 1
+        WHERE ord_no = #{orderNo}
+    </update>
+
+
+    <select id="isPayUp" parameterType="java.lang.String"
+            resultType="java.lang.Boolean">
+        SELECT
+        obd.is_pay_up
+        FROM ord_billing_details obd
+        WHERE obd.ord_no = #{orderNo}
+    </select>
+
+    <insert id="saveOrderBillingPaymentDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails">
+        INSERT INTO ord_billing_payment_details (oid, ord_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
+                                                 payment_subject_type_desc, amount, reply_code, receipt_number)
+        VALUES
+            (#{oid}, #{ordNo}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
+                         #{paymentSubjectTypeDesc},
+                         #{amount}, #{replyCode}, #{receiptNumber})
+    </insert>
+
+
+    <insert id="saveAppToEbsOrderReceiveInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,
+        send_time, created_by, last_update_date, last_updated_by,init_date)
+        VALUES
+        (#{deliverTypeTitle}, #{headerId}, #{orderNumber}, #{receiveDate}, #{sobId}, #{errorMsg}, #{sendFlag},
+        #{sendTime},#{createdBy}, #{lastUpdateDate}, #{lastUpdatedBy}, #{initDate})
+    </insert>
+
 </mapper>

@@ -51,4 +51,8 @@ public interface MaEmployeeDAO {
      */
     List<EmployeeDO> findEmployeeByCityIdAndStoreId (@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
 
+    List<GuideVO> queryGuideArrears();
+
+    List<GuideVO> queryGuideRepayment();
+
 }

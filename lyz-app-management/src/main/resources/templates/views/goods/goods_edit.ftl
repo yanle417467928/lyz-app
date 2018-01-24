@@ -247,8 +247,8 @@
                                 <label for="leftNumber">商品详情页
                                 </label>
                                 <div>
-                                    <textarea name="goodsDetial"
-                                              class="editor"><#if goodsVO??>${goodsVO.goodsDetial!""}</#if></textarea>
+                                    <textarea name="goodsDetail"
+                                              class="editor"><#if goodsVO??>${goodsVO.goodsDetail!""}</#if></textarea>
                                 </div>
                             </div>
                         </div>
@@ -404,7 +404,12 @@
                                     id: $('#id').val(),
                                 }
                             }
-                        }
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 20,
+                            message: '电商名称的长度必须在2~20位之间'
+                        },
                     }
                 }, categoryName: {
                     message: '分类名称校验失败',
@@ -434,6 +439,20 @@
                                     id: $('#id').val(),
                                 }
                             }
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '电商名称的长度必须在1~10位之间'
+                        },
+                    }, searchKeyword: {
+                        message: '关键字校验失败',
+                        validators: {
+                            stringLength: {
+                                min: 1,
+                                max: 30,
+                                message: '关键字长度必须在1~30位之间'
+                            },
                         }
                     }
                 }

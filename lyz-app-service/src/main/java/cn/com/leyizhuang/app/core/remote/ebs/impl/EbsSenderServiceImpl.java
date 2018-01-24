@@ -7,6 +7,11 @@ import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.ebs.entity.dto.second.*;
@@ -110,7 +115,6 @@ public class EbsSenderServiceImpl implements EbsSenderService {
                 orderReceiptSecond.setUsername(toString(receiptInf.getUsername()));
                 orderReceiptSecond.setUserphone(toString(receiptInf.getUserPhone()));
                 orderReceiptSeconds.add(orderReceiptSecond);
-
             }
 
         }
@@ -692,6 +696,64 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             result.put("success", false);
             result.put("msg", e.getMessage());
         }
+        return result;
+    }
+
+
+    /**
+     * 发送门店自提单发货到EBS
+     *
+     * @param receiveInfs 门店自提单信息
+     */
+    @Override
+    public void sendOrderReceiveInfAndRecord(MaOrderReceiveInf receiveInfs) {
+        Map<String, Object> result = sendOrderReceiveToEbs(receiveInfs);
+        if (!(Boolean) result.get("success")) {
+            updateOrderReceiveFlagAndSendTimeAndErrorMsg(receiveInfs.getId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateOrderReceiveFlagAndSendTimeAndErrorMsg(receiveInfs.getId(), null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+
+    /**
+     * 更新门店自提单接口信息
+     *
+     * @param receiveInfsId 订单券行id
+     * @param msg          错误信息
+     * @param sendTime     发送成功时间
+     * @param flag         标识
+     */
+    private void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiveInfsId) {
+            separateOrderService.updateOrderReceiveFlagAndSendTimeAndErrorMsg(receiveInfsId, msg, sendTime, flag);
+        }
+    }
+
+    private Map<String, Object> sendOrderReceiveToEbs(MaOrderReceiveInf receiveInfs) {
+        log.info("sendOrderReceiveToEbs, receiveInfs=" + receiveInfs);
+        StorePickUpSecond storePickUpSecond = new StorePickUpSecond();
+        if (null != receiveInfs) {
+            storePickUpSecond.setAttribute1(toString(receiveInfs.getAttribute1()));
+            storePickUpSecond.setAttribute2(toString(receiveInfs.getAttribute2()));
+            storePickUpSecond.setAttribute3(toString(receiveInfs.getAttribute3()));
+            storePickUpSecond.setAttribute4(toString(receiveInfs.getAttribute4()));
+            storePickUpSecond.setAttribute5(toString(receiveInfs.getAttribute5()));
+            storePickUpSecond.setSobId(toString(receiveInfs.getSobId()));
+            storePickUpSecond.setMainOrderNumber(receiveInfs.getOrderNumber());
+            storePickUpSecond.setReceiveDate(toString(receiveInfs.getReceiveDate()));
+        }
+        String storePickUpSecondJson = JSON.toJSONString(storePickUpSecond);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("storePickUpJsonSecond", storePickUpSecondJson));
+        String url = AppConstant.EBS_NEW_URL + "callStorePickUpSecond";
+        Map<String, Object> result = this.postToEbs(url, parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("storePickUpSecondJson", storePickUpSecondJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendOrderReceiveToEbs, result=" + result);
         return result;
     }
 

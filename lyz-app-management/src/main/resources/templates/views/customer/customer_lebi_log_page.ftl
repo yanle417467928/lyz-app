@@ -81,7 +81,7 @@
                         </a>
 
                     </span>
-                    <ul id="cusDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="lebiLogDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
                             <b>顾客姓名</b> <a class="pull-right" id="name"></a>
                         </li>

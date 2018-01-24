@@ -37,7 +37,7 @@ public class MaCustomerPreDepositViewsController extends BaseController {
      * @date 2018/1/15
      */
     @RequestMapping(value = "/list")
-    public String getCustomerList() {
+    public String customerListPage() {
         return "/views/customer/customer_pre_deposit_page";
     }
 
@@ -51,7 +51,7 @@ public class MaCustomerPreDepositViewsController extends BaseController {
      * @date 2018/1/11
      */
     @GetMapping(value = "/edit/{cusId}")
-    public String resourceEdit(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
+    public String customerPreDepositEditPage(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
         CustomerPreDepositVO customerPreDepositVO = this.maCustomerService.queryCusPredepositByCusId(cusId);
         if (null == customerPreDepositVO) {
             logger.warn("跳转变更预存款页面失败，customerPreDepositVO(cusId = {}) == null", cusId);

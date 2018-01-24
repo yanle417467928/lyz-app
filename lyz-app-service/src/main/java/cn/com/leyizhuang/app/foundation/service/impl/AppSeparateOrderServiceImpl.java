@@ -637,4 +637,11 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             separateOrderDAO.saveOrderJxPriceDifferenceRefundInf(refundInf);
         }
     }
+
+    @Override
+    public void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != receiveInfsId) {
+            separateOrderDAO.updateOrderReceiveFlagAndSendTimeAndErrorMsg(receiveInfsId, msg, sendTime, flag);
+        }
+    }
 }

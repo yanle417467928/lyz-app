@@ -33,7 +33,7 @@ public class MaGuideViewsController extends BaseController {
     /**
      * 跳转导购列表页面
      */
-    public String getGuideLineList() {
+    public String guideLineListPage() {
         return "/views/employee/guide_page";
     }
 
@@ -44,7 +44,7 @@ public class MaGuideViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String creditEdit(ModelMap map, @PathVariable(value = "id") Long id) {
+    public String creditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
             if (null == guideVO) {
@@ -66,7 +66,7 @@ public class MaGuideViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/creditChangesList/{id}")
-    public String empCreditMoneyChangesList (ModelMap map, @PathVariable(value = "id") Long id) {
+    public String empCreditMoneyChangesListPage (ModelMap map, @PathVariable(value = "id") Long id) {
         if (id.equals(0L)) {
             return "/error/404";
         } else {
@@ -81,10 +81,31 @@ public class MaGuideViewsController extends BaseController {
      * @return
      */
      @RequestMapping(value = "/clearTimeEdit")
-     public String clearTime(ModelMap map) {
-        String cron = maClearTempCreditService.getCron();
+     public String clearTimePage(ModelMap map) {
+        String cron = maClearTempCreditService.getCron((long)1);
         map.addAttribute("cron",cron);
         return "/views/employee/guideClearTime_edit";
+    }
+
+
+    /**
+     * 跳转导购欠款审核页面
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/arrears/list")
+    public String guideArrearsPage() {
+        return "/views/employee/guideArrears_page";
+    }
+
+    /**
+     * 跳转导购欠款还款页面
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/repayment/list")
+    public String guideRepaymentPage() {
+        return "/views/employee/guideRepayment_page";
     }
 }
 

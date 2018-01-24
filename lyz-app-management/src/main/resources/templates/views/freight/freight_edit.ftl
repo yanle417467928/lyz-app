@@ -200,6 +200,10 @@
                         }, different: {
                             field: 'originalFreight',
                             message: '运费未改变'
+                        },stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '运费长度必须在1~10位之间'
                         }
                     }
                 }

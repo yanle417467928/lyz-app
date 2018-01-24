@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.goods;
 
 
-import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import lombok.*;
 
 import java.util.Date;
@@ -85,7 +85,7 @@ public class GoodsDO {
     private String searchKeyword;
 
     //商品详情
-    private String goodsDetail;
+    private String goodsDetial;
 
     //物料状态
     private Boolean materialsEnable;
@@ -116,7 +116,7 @@ public class GoodsDO {
             goodsDO.setRotationImageUri(goodsVO.getRotationImageUri());
             goodsDO.setSortId(goodsVO.getSortId());
             goodsDO.setCompanyFlag(goodsVO.getCompanyFlag());
-            goodsDO.setGoodsDetail(goodsVO.getGoodsDetial());
+            goodsDO.setGoodsDetial(goodsVO.getGoodsDetail());
             goodsDO.setIsColorMixing(goodsVO.getIsColorMixing());
             goodsDO.setMaterialsName(goodsVO.getMaterialsName());
             goodsDO.setMaterialsCode(goodsVO.getMaterialsCode());

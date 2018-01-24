@@ -1,5 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
@@ -148,13 +154,60 @@ public interface MaOrderService {
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber);
 
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingList(Integer page, Integer size);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByCityId(Integer page, Integer size,Long cityId);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,Integer status,Integer isPayUp);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByStoreId(Integer page, Integer size,Long storeId);
-
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByInfo(Integer page, Integer size,String info);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size,String info);
 
     PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size,MaOrderVORequest maOrderVORequest);
+
+    MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
+
+    void orderShipping(String orderNumber,ShiroUser shiroUser);
+
+    void orderReceivables(MaOrderAmount maOrderAmount);
+
+    /**
+     * 更新订单基础表订单状态
+     *
+     * @param orderNumber 订单号
+     * @return
+     */
+    void updateOrderStatus(String orderNumber);
+
+    /**
+     * 更新订单费用表订单状态
+     *
+     * @param orderNumber 订单号
+     * @return
+     */
+    void updateorderReceivablesStatus(String orderNumber);
+
+    List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber);
+
+    Boolean judgmentVerification(String code,String orderNumber);
+    /**
+     * 后台判断订单是否已收款
+     *
+     * @param orderNumber 订单号
+     * @return 物流详情
+     */
+    Boolean isPayUp(String orderNumber);
+
+    /**
+     * 新增订单收款记录
+     *
+     * @param maOrderBillingPaymentDetails 订单号
+     * @return
+     */
+    void saveOrderBillingPaymentDetails( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
+
+    /**
+     * 新增自提单接口表数据
+     *
+     * @param maOrderReceiveInf
+     * @return
+     */
+    Long saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf);
 }

@@ -25,7 +25,7 @@
         <result column="materials_code" property="materialsCode"/>
         <result column="physical_classify" property="physicalClassify"/>
         <result column="materials_enable" property="materialsEnable"/>
-        <result column="goods_detail" property="goodsDetail"/>
+        <result column="goods_detail" property="goodsDetial"/>
         <result column="search_keyword" property="searchKeyword"/>
         <result column="product_grade" property="productGrade"/>
         <result column="materials_name" property="materialsName"/>
@@ -53,7 +53,7 @@
         INSERT INTO gds_goods
         (create_time, brd_id, brand_name, cid, category_name, gtid, type_name, sku, sku_name, cover_image_uri,
          rotation_image_uri, goods_specification, goods_unit, is_index_recommend, is_hot, is_new, is_color_mixing,
-         sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detial, search_keyword,
+         sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detail, search_keyword,
          product_grade, materials_name)
         VALUES
             (#{createTime}, #{brdId}, #{brdName}, #{cId}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
@@ -130,7 +130,7 @@
                 materials_enable = #{materialsEnable},
             </if>
             <if test="null != goodsDetial">
-                goods_detial = #{goodsDetial},
+                goods_detail = #{goodsDetial},
             </if>
             <if test="null != searchKeyword">
                 search_keyword = #{searchKeyword},
@@ -868,7 +868,7 @@
         </foreach>
     </select>
 
-    <select id="screenGoodsGrid" resultType="GoodsDO">
+    <select id="screenGoodsGrid" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
         *
         FROM
@@ -887,7 +887,7 @@
     </select>
 
 
-    <update id="updateGoods" parameterType="GoodsDO">
+    <update id="updateGoods" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         UPDATE gds_goods
         <set>
             <if test="null != cid">
@@ -919,7 +919,7 @@
                 sort_id = #{sortId},
             </if>
             <if test="null != goodsDetial">
-                goods_detial = #{goodsDetial},
+                goods_detail = #{goodsDetial},
             </if>
             <if test="null != searchKeyword">
                 search_keyword = #{searchKeyword},

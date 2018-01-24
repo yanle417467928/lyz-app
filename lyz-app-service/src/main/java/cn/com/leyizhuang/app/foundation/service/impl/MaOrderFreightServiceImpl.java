@@ -83,20 +83,26 @@ public class MaOrderFreightServiceImpl implements MaOrderFreightService {
         return  null;
     }
 
+    @Transactional
     @Override
     public void update(SimpleOrderBillingDetails simpleOrderBillingDetails,OrderFreightChange orderFreightChange){
         if(null !=simpleOrderBillingDetails){
             this.maOrderFreightDAO.update(simpleOrderBillingDetails);
+            this.updateOrderPrice(orderFreightChange.getOrderId(),BigDecimal.valueOf(simpleOrderBillingDetails.getFreight()));
             this.saveOrderFreightChange(orderFreightChange);
         }
     }
-
 
     @Override
     public PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size){
         PageHelper.startPage(page, size);
         List<OrderFreightChangeVO> orderFreightChangePageList = this.maOrderFreightDAO.queryOrderFreightChangeList();
         return new PageInfo<>(orderFreightChangePageList);
+    }
+
+    @Override
+    public void updateOrderPrice(Long orderId, BigDecimal freight){
+       this.maOrderFreightDAO.updateOrderPrice(orderId, freight);
     }
 
     @Override

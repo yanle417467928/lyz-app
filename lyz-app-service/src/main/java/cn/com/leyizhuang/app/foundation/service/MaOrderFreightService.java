@@ -7,6 +7,8 @@ import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetail
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
 import com.github.pagehelper.PageInfo;
 
+import java.math.BigDecimal;
+
 public interface MaOrderFreightService {
 
     PageInfo<OrderFreightVO> queryPageVO(Integer page, Integer size);
@@ -22,6 +24,8 @@ public interface MaOrderFreightService {
     OrderFreightVO queryOrderFreightVOById(Long id);
 
     void update(SimpleOrderBillingDetails simpleOrderBillingDetails,OrderFreightChange orderFreightChange);
+
+    void updateOrderPrice(Long orderId, BigDecimal freight);
 
     PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size);
 

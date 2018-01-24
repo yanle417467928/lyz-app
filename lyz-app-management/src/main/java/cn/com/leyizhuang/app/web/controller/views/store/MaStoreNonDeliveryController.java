@@ -36,7 +36,7 @@ public class MaStoreNonDeliveryController extends BaseController {
      * @return
      */
     @GetMapping(value = "/storeNonDeliveryDetail/{id}")
-    public String getStoreNonDellivertDetail(Model model, @PathVariable(value = "id") Long storeId) {
+    public String storeNonDellivertDetailPage(Model model, @PathVariable(value = "id") Long storeId) {
         if (!storeId.equals(0L)) {
             model.addAttribute("id", storeId);
         } else {
@@ -54,7 +54,7 @@ public class MaStoreNonDeliveryController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String storeEdit(Model model, @PathVariable(value = "id") Long storeId) {
+    public String storeEditPage(Model model, @PathVariable(value = "id") Long storeId) {
         if (!storeId.equals(0L)) {
             StoreDetailVO storeVO = maStoreService.queryStoreVOById(storeId);
             if (null == storeVO) {

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaStoreInventoryDAO">
+
+    <select id="findStoreInventoryByStoreCodeAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory">
+        SELECT
+        id,
+        city_id,
+        city_name,
+        city_code,
+        store_id,
+        store_name,
+        store_code,
+        gid,
+        sku,
+        sku_name,
+        available_ity,
+        real_ity,
+        last_update_time
+        FROM st_inventory
+        WHERE store_id = #{storeId} AND gid = #{goodsId}
+    </select>
+
+
+    <update id="updateStoreInventory">
+        UPDATE st_inventory
+        <if test="null != goodsQty">
+        SET available_ity = #{goodsQty},
+        </if>
+        <if test="null != date">
+            last_update_time = #{date}
+        </if>
+        WHERE
+            gid = #{goodsId}
+            AND store_id = #{storeId}
+    </update>
+
+    <insert id="addInventoryChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange">
+        INSERT st_inventory_available_qty_change_log
+        (city_id,city_name,store_id,store_name,store_code,gid,sku,sku_name,change_time,change_qty,after_change_qty,reference_number,change_type,change_type_desc)
+        VALUES
+        (#{cityId},#{cityName},#{storeId},#{storeName},#{storeCode},#{gid},#{sku},#{skuName},#{changeTime},#{changeQty},#{afterChangeQty},#{referenceNumber},#{changeType},#{changeTypeDesc})
+    </insert>
+
+</mapper>

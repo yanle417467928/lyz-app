@@ -17,6 +17,10 @@ import java.util.Date;
 public class ReturnOrderBillingDetail {
     private Long id;
     /**
+     * 创建时间
+     */
+    private Date createTime;
+    /**
      * 退款单id
      */
     private Long roid;

@@ -113,7 +113,7 @@ public class HqAppGoodsController {
                 goods.setPhysicalClassify(hqAppGoodsDTO.getPhysicalClassify());
                 goods.setMaterialsEnable(hqAppGoodsDTO.getMaterialsEnable());
                 goods.setCompanyFlag(hqAppGoodsDTO.getCompanyFlag());
-                goods.setGoodsDetail(hqAppGoodsDTO.getGoodsDetial());
+                goods.setGoodsDetial(hqAppGoodsDTO.getGoodsDetial());
                 goods.setSearchKeyword(hqAppGoodsDTO.getSearchKeyword());
                 goods.setProductGrade(hqAppGoodsDTO.getProductGrade());
                 goods.setMaterialsName(hqAppGoodsDTO.getMaterialsName());
@@ -212,7 +212,7 @@ public class HqAppGoodsController {
                     goodsDO.setCompanyFlag(hqAppGoodsDTO.getCompanyFlag());
                 }
                 if (!StringUtils.isBlank(hqAppGoodsDTO.getGoodsDetial())){
-                    goodsDO.setGoodsDetail(hqAppGoodsDTO.getGoodsDetial());
+                    goodsDO.setGoodsDetial(hqAppGoodsDTO.getGoodsDetial());
                 }
                 if (!StringUtils.isBlank(hqAppGoodsDTO.getSearchKeyword())){
                     goodsDO.setSearchKeyword(hqAppGoodsDTO.getSearchKeyword());
