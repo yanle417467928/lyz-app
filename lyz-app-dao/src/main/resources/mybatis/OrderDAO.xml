@@ -804,6 +804,29 @@
                              WHERE receipt_number = #{receiptNumber})
     </insert>
 
+    <insert id="saveOrderJxPriceDifferenceRefundDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceRefundDetails">
+
+        insert into ord_jx_price_difference_refund_details (roid, ord_no, return_no, create_time, store_id, store_code,
+        sku, unit_price, return_qty, amount, refund_number)
+        SELECT
+        #{roid},
+        #{orderNumber},
+        #{orderNumber},
+        #{createTime},
+        #{storeId},
+        #{storeCode},
+        #{sku},
+        #{unitPrice},
+        #{returnQty},
+        #{amount},
+        #{refundNumber}
+        FROM dual
+        WHERE NOT exists(SELECT 1
+        FROM ord_jx_price_difference_refund_details
+        WHERE refund_number = #{refundNumber})
+    </insert>
+
     <select id="getOrderJxPriceDifferenceReturnDetailsByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails">
         SELECT

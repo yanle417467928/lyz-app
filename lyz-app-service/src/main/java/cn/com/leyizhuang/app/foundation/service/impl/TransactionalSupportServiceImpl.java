@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
@@ -104,12 +103,12 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo,
-                                                                   List<OrderJxPriceDifferenceReturnDetails> detailsList) {
+                                                                   List<OrderJxPriceDifferenceRefundDetails> detailsList) {
 
 
         List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
         if (AssertUtil.isNotEmpty(detailsList)) {
-            for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
+            for (OrderJxPriceDifferenceRefundDetails details : detailsList) {
 
                 OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
                 inf.setAmount(details.getAmount());
@@ -121,7 +120,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
                 inf.setSobId(orderBaseInfo.getSobId());
                 inf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
                 inf.setDiySiteCode(details.getStoreCode());
-                inf.setRefundNumber(OrderUtils.getRefundNumber());
+                inf.setRefundNumber(details.getRefundNumber());
                 separateOrderService.saveOrderJxPriceDifferenceRefundInf(inf);
             }
         }

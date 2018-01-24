@@ -660,6 +660,14 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderJxPriceDifferenceRefundDetails(OrderJxPriceDifferenceRefundDetails refundDetails) {
+        if (null != refundDetails) {
+            orderDAO.saveOrderJxPriceDifferenceRefundDetails(refundDetails);
+        }
+    }
+
+    @Override
     public void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId) {
         orderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty,orderGoodsId);
     }
