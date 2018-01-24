@@ -43,4 +43,14 @@ public class SinkSender {
         log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,End", JSON.toJSONString(rechargeNo));
     }
 
+    public void sendReturnOrder(String returnNumber) {
+        log.info("sendOrder,发送需拆单退单到拆单队列,Begin\n 退单号:{}", returnNumber);
+        if (StringUtils.isNotBlank(returnNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.RETURN_ORDER);
+            message.setContent(JSON.toJSONString(returnNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendOrder,发送需拆单退单到拆单队列,End", JSON.toJSONString(returnNumber));
+    }
 }

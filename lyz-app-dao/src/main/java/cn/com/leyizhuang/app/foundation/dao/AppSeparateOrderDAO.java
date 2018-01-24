@@ -84,6 +84,8 @@ public interface AppSeparateOrderDAO {
                                                @Param(value = "sendTime") Date sendTime,
                                                @Param(value = "flag") AppWhetherFlag flag);
 
+    Boolean isReturnOrderExist(String returnNumber);
+
     void updateOrderJxPriceDifferenceRefundInf(@Param(value = "refundInfIds") List<Long> refundInfIds,
                                                @Param(value = "msg") String msg,
                                                @Param(value = "sendTime") Date sendTime,
@@ -92,4 +94,7 @@ public interface AppSeparateOrderDAO {
     void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
 
     List<OrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
+
+    OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
+                                                               @Param(value = "flag") String flag);
 }

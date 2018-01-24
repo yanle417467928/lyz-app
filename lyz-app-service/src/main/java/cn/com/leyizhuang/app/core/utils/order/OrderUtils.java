@@ -52,6 +52,20 @@ public class OrderUtils {
     }
 
     /**
+     * 生成分退单号
+     *
+     * @param companyFlag      分公司
+     * @param mainReturnNumber 主单号
+     * @return 分单号
+     */
+    public static String generateSeparateReturnOrderNumber(String companyFlag, String mainReturnNumber) {
+        if (null != companyFlag && null != mainReturnNumber) {
+            return mainReturnNumber.substring(0, 1) + "_" + companyFlag + mainReturnNumber.substring(1);
+        }
+        return null;
+    }
+
+    /**
      * 生成订单号
      *
      * @param cityId 城市id

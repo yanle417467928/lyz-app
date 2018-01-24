@@ -95,6 +95,10 @@ public class AtwRequisitionOrder {
      */
     private String subdistrict;
     /**
+     * 小区名
+     */
+    private String residenceName;
+    /**
      * 下单时间
      */
     private Date orderTime;
@@ -172,16 +176,17 @@ public class AtwRequisitionOrder {
         requisitionOrder.setDiySiteTitle(store.getStoreName());
         requisitionOrder.setDiySiteTel(store.getPhone());
         requisitionOrder.setRemarkInfo(orderBaseInfo.getRemark());
-        requisitionOrder.setCustomerName(orderBaseInfo.getCreatorName());
+        requisitionOrder.setCustomerName(orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER) ? orderBaseInfo.getCustomerName() : orderBaseInfo.getCreatorName());
         requisitionOrder.setOrderNumber(orderBaseInfo.getOrderNumber());
         requisitionOrder.setReserveTimeQuantum(logisticsInfo.getDeliveryTime());
-        requisitionOrder.setReceiveAddress(logisticsInfo.getDetailedAddress());
-        requisitionOrder.setReceiveName(logisticsInfo.getResidenceName());
+        requisitionOrder.setReceiveAddress(logisticsInfo.getShippingAddress());
+        requisitionOrder.setReceiveName(logisticsInfo.getReceiver());
         requisitionOrder.setReceivePhone(logisticsInfo.getReceiverPhone());
         requisitionOrder.setCity(orderBaseInfo.getCityName());
-        requisitionOrder.setDetailAddress(logisticsInfo.getShippingAddress());
+        requisitionOrder.setDetailAddress(logisticsInfo.getDetailedAddress());
         requisitionOrder.setDisctrict(logisticsInfo.getDeliveryCounty());
-        requisitionOrder.setProvince(logisticsInfo.getDeliveryCity());
+//        requisitionOrder.setProvince();
+        requisitionOrder.setResidenceName(logisticsInfo.getResidenceName());
         requisitionOrder.setSubdistrict(logisticsInfo.getDeliveryStreet());
         requisitionOrder.setSellerTel(orderBaseInfo.getSalesConsultPhone());
         requisitionOrder.setGoodsQuantity(goodsQuantity);

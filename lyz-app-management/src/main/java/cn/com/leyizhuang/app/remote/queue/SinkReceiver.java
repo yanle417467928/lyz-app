@@ -118,6 +118,32 @@ public class SinkReceiver {
                     e.printStackTrace();
                 }
                 break;
+            case RETURN_ORDER:
+                try {
+                    String returnNumber = objectMapper.readValue(message.getContent(), String.class);
+                    Boolean isExist = separateOrderService.isReturnOrderExist(returnNumber);
+                    if (isExist) {
+                        log.info("该退单已拆单，不能重复拆单!");
+                    } else {
+                        //拆退单
+                        separateOrderService.separateReturnOrder(returnNumber);
+                      /*  //拆单完成之后发送订单和订单商品信息到EBS
+                        separateOrderService.sendOrderBaseInfAndOrderGoodsInf(orderNumber);
+                        //发送订单券儿信息
+                        separateOrderService.sendOrderCouponInf(orderNumber);
+                        //发送订单收款信息
+                        separateOrderService.sendOrderReceiptInf(orderNumber);
+                        //发送经销差价返还信息
+                        separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);*/
+                    }
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
             default:
                 break;
         }

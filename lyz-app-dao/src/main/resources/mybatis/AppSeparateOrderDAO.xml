@@ -4,7 +4,7 @@
 
     <select id="isOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT exists(SELECT 1
-        FROM inter_ate_order_base_inf
+                      FROM inter_ate_order_base_inf
                       WHERE main_order_number = #{orderNumber})
     </select>
 
@@ -12,11 +12,11 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf"
             useGeneratedKeys="true" keyProperty="orderHeaderId">
         INSERT INTO inter_ate_order_base_inf (create_time, order_subject_type, send_flag, error_msg, send_time,
-        main_order_number, order_number,
-        sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
-        coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
-        order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
-        member_discount, cash_coupon_discount, product_coupon_discount)
+                                              main_order_number, order_number,
+                                              sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
+                                              coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
+                                              order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
+                                              member_discount, cash_coupon_discount, product_coupon_discount)
         VALUES (
             #{createTime}, #{orderSubjectType}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber},
                            #{orderNumber}, #{sobId},
@@ -539,6 +539,12 @@
         </foreach>
     </update>
 
+    <select id="isReturnOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+                      FROM inter_ate_return_order_base_inf
+                      WHERE main_return_number = #{returnNumber})
+    </select>
+
     <update id="updateOrderJxPriceDifferenceRefundInf">
         UPDATE inter_ate_order_jx_price_difference_refund_inf
         <set>
@@ -557,4 +563,47 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="getOrderBaseInfByMainOrderNumberAndCompanFlag"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf">
+        SELECT
+            order_header_id,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            main_order_number,
+            order_number,
+            sob_id,
+            order_date,
+            order_subject_type,
+            product_type,
+            order_type_id,
+            user_id,
+            sales_consult_id,
+            decorate_manager_id,
+            coupon_flag,
+            invoice_flag,
+            credit_flag,
+            store_org_id,
+            diy_site_code,
+            delivery_type_title,
+            order_amt,
+            rec_amt,
+            lebi_discount,
+            store_subvention_discount,
+            promotion_discount,
+            member_discount,
+            cash_coupon_discount,
+            product_coupon_discount,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            attribute6,
+            attribute7
+        FROM inter_ate_order_base_inf
+        WHERE main_order_number = #{orderNumber} AND product_type = #{companyFlag}
+    </select>
 </mapper>

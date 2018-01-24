@@ -46,6 +46,10 @@ public class AtwRequisitionOrderGoods {
      */
     private Integer quantity;
     /**
+     * 公司标识
+     */
+    private String companyFlag;
+    /**
      * 接口传输标识
      */
     private Boolean sendFlag;
@@ -66,6 +70,7 @@ public class AtwRequisitionOrderGoods {
         requisitionOrderGoods.setGoodsTitle(goodsInfo.getSkuName());
         requisitionOrderGoods.setPrice(goodsInfo.getRetailPrice());
         requisitionOrderGoods.setQuantity(goodsInfo.getOrderQuantity());
+        requisitionOrderGoods.setCompanyFlag(goodsInfo.getCompanyFlag());
         return requisitionOrderGoods;
     }
 }

@@ -104,6 +104,8 @@ public class ReturnOrderController {
     private AppToWmsOrderService appToWmsOrderService;
     @Resource
     private ICallWms callWms;
+    @Resource
+    private CommonService commonService;
 
     /**
      * 取消订单
@@ -162,23 +164,17 @@ public class ReturnOrderController {
             }
             if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
                     || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
-                //判断收货类型和订单状态
-                if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
-                    // TODO wms 建好表后可使用通知WMS
-//                AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
-//                appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
-//                callWms.sendToWmsCancelOrder(returnOrderBaseInfo.getOrderNo());
-                    //修改订单状态为取消中
-                    orderBaseInfo.setStatus(AppOrderStatus.CANCELING);
-                    appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消订单提交成功，等待确认！", null);
-                    logger.info("canselOrder OUT,取消订单提交成功！，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
                 ReturnOrderController r = new ReturnOrderController();
                 //调用取消订单通用方法
                 Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
                 if (b) {
+                    //判断收货类型和订单状态
+                    if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
+                        // TODO wms 建好表后可使用通知WMS
+//                AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
+//                appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+//                callWms.sendToWmsCancelOrder(returnOrderBaseInfo.getOrderNo());
+                    }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                     logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -310,6 +306,7 @@ public class ReturnOrderController {
             Date date = new Date();
             //创建退货商品实体类
             ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
+            List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
@@ -325,6 +322,7 @@ public class ReturnOrderController {
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
+                returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 //更改订单头商品已退数量和可退数量
@@ -623,6 +621,12 @@ public class ReturnOrderController {
 
                     }
                 }
+            }
+            //********************************退经销差价退还*************************
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+
+            if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
+                commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
 
             //********************************退第三方支付**************************
@@ -1351,18 +1355,18 @@ public class ReturnOrderController {
 
     private OrderLogisticsInfo transform(OrderLogisticsInfo orderLogisticsInfo, DeliveryAddressResponse defaultDeliveryAddress) {
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
-        orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getDeliveryName());
+        orderLogisticsInfo.setReceiver(defaultDeliveryAddress.getDeliveryName());
         orderLogisticsInfo.setReceiverPhone(defaultDeliveryAddress.getDeliveryPhone());
         orderLogisticsInfo.setDeliveryCity(defaultDeliveryAddress.getDeliveryCity());
         orderLogisticsInfo.setDeliveryCounty(defaultDeliveryAddress.getDeliveryCounty());
         orderLogisticsInfo.setDeliveryStreet(defaultDeliveryAddress.getDeliveryStreet());
         orderLogisticsInfo.setDetailedAddress(defaultDeliveryAddress.getDetailedAddress());
         orderLogisticsInfo.setResidenceName(defaultDeliveryAddress.getVillageName());
-        String shippingAddress = defaultDeliveryAddress.getDeliveryCity() +
-                defaultDeliveryAddress.getDeliveryCounty() +
-                defaultDeliveryAddress.getDeliveryStreet() +
-                defaultDeliveryAddress.getVillageName() +
-                defaultDeliveryAddress.getDetailedAddress();
+        String shippingAddress = defaultDeliveryAddress.getDeliveryCity().trim() +
+                defaultDeliveryAddress.getDeliveryCounty().trim() +
+                defaultDeliveryAddress.getDeliveryStreet().trim() +
+                defaultDeliveryAddress.getVillageName().trim() +
+                defaultDeliveryAddress.getDetailedAddress().trim();
         orderLogisticsInfo.setShippingAddress(shippingAddress);
         return orderLogisticsInfo;
     }
@@ -1523,6 +1527,7 @@ public class ReturnOrderController {
             Date date = new Date();
             //创建退货商品实体类
             ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
+            List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
@@ -1537,6 +1542,7 @@ public class ReturnOrderController {
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
+                returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 //更改订单头商品已退数量和可退数量
@@ -1867,6 +1873,12 @@ public class ReturnOrderController {
 
                     }
                 }
+            }
+            //********************************退经销差价退还*************************
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+
+            if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
+                commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
 
             ReturnOrderController returnOrderController = new ReturnOrderController();
