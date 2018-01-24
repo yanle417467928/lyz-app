@@ -12,12 +12,14 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 拆单服务实现
@@ -81,14 +83,14 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
             if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                 //获取所有companyFlag并加入到set中
-                Set<String> companyFlag = new HashSet<>();
-                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                Set<String> companyFlag = orderGoodsInfoList.stream().map(OrderGoodsInfo::getCompanyFlag).collect(Collectors.toSet());
+                /*for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     if (null != orderGoodsInfo.getCompanyFlag()) {
                         companyFlag.add(orderGoodsInfo.getCompanyFlag());
                     } else {
                         //todo 记录拆单错误日志
                     }
-                }
+                }*/
                 //创建一个map存放按companyFlag分组的商品信息
                 Map<String, List<OrderGoodsInfo>> goodsMap = new HashMap<>(5);
                 //分单List
@@ -500,9 +502,36 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void separateReturnOrder(String returnNumber) {
-
+        //查找主退单信息
         ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
-        if (null != returnOrderBaseInfo){
+        if (null != returnOrderBaseInfo) {
+            //查找主退单对应的主订单信息
+            OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+            if (null != orderBaseInfo) {
+                //根据主退单号获取主退单下所有商品
+                List<ReturnOrderGoodsInfo> orderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+                //提取主退单下所有companyFlag
+                Set<String> companyFlag = orderGoodsInfoList.stream().map(ReturnOrderGoodsInfo::getCompanyFlag).collect(Collectors.toSet());
+                //创建一个map,用来存储各个companyFlag下对应的商品信息
+                Map<String, List<ReturnOrderGoodsInfo>> separateReturnOrderGoodsInfoMap = new HashMap<>(5);
+                for (String flag : companyFlag) {
+                    //查找退单该flag对应的原分单信息
+                    OrderBaseInf orderBaseInf = separateOrderDAO.getOrderBaseInfByMainOrderNumberAndCompanFlag(orderBaseInfo.getOrderNumber(), flag);
+                    List<ReturnOrderGoodsInfo> separateReturnOrderGoodsInfoList = orderGoodsInfoList.parallelStream().
+                            filter(p -> p.getCompanyFlag().equals(flag)).collect(Collectors.toList());
+                    separateReturnOrderGoodsInfoMap.put(flag, separateReturnOrderGoodsInfoList);
+
+                    ReturnOrderBaseInf returnOrderBaseInf = new ReturnOrderBaseInf();
+                    returnOrderBaseInf.setCreateTime(new Date());
+                    returnOrderBaseInf.setDeliverTypeTitle(orderBaseInfo.getDeliveryType());
+                    returnOrderBaseInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                    returnOrderBaseInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                    returnOrderBaseInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                    returnOrderBaseInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                    returnOrderBaseInf.setReturnNumber(OrderUtils.generateSeparateReturnOrderNumber(flag, returnOrderBaseInfo.getReturnNo()));
+
+                }
+            }
 
         }
     }

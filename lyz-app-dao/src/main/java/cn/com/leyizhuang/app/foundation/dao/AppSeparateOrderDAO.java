@@ -94,4 +94,7 @@ public interface AppSeparateOrderDAO {
     void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
 
     List<OrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
+
+    OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
+                                                               @Param(value = "flag") String flag);
 }
