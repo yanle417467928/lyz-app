@@ -42,6 +42,14 @@ public class ReturnOrderProductCoupon {
      */
     private int returnQty;
     /**
+     * 商品编码
+     */
+    private String sku;
+    /**
+     * 购买时价格
+     */
+    private Double purchasePrice;
+    /**
      * 是否已退
      */
     private Boolean isReturn;

@@ -26,6 +26,10 @@ public class ReturnOrderCashCoupon {
      */
     private String ccid;
     /**
+     * 购买时价格
+     */
+    private Double purchasePrice;
+    /**
      * 是否已退
      */
     private Boolean isReturn;
