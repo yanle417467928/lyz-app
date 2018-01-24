@@ -255,9 +255,17 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public List<ReturnOrderCashCoupon> getReturnOrderCashCoupon(String returnNumber) {
-        if (null != returnNumber) {
-            return returnOrderDAO.getReturnOrderCashCoupon(returnNumber);
+    public List<ReturnOrderCashCoupon> getReturnOrderCashCouponByRoid(Long roid) {
+        if (null != roid) {
+            return returnOrderDAO.getReturnOrderCashCouponByRoid(roid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReturnOrderProductCoupon> getReturnOrderProductCouponByRoid(Long roid) {
+        if (null != roid){
+            return returnOrderDAO.getReturnOrderProductCouponByRoid(roid);
         }
         return null;
     }

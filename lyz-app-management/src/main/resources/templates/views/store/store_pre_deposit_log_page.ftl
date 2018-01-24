@@ -86,7 +86,7 @@
                         </a>
 
                     </span>
-                    <ul id="cusDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="storePreDepositLogDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
                             <b>门店名称</b> <a class="pull-right" id="storeName"></a>
                         </li>

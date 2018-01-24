@@ -58,13 +58,13 @@ public class MaCustomerLebiLogRestController extends BaseRestController {
      */
     @GetMapping(value = "/{id}")
     public ResultDTO<CusLebiLogVO> restCusPreDepositLogGet(@PathVariable(value = "id") Long id) {
-        CusLebiLogVO cusLebiLogById = this.maCusLebiLogService.findCusLebiLogById(id);
-        if (null == cusLebiLogById) {
+        CusLebiLogVO cusLebiLogVO = this.maCusLebiLogService.findCusLebiLogById(id);
+        if (null == cusLebiLogVO) {
             logger.warn("查找顾客乐币变更明细失败：Role(id = {}) == null", id);
             return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
                     "指定数据不存在，请联系管理员", null);
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusLebiLogById);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, cusLebiLogVO);
         }
     }
 }

@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderProductCoupon;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -581,7 +582,39 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
 
                 //************************************* 生成退订单券信息 begin *****************************************
-                List<ReturnOrderCashCoupon> returnOrderCashCouponList = returnOrderService.getReturnOrderCashCoupon(returnNumber);
+
+                List<ReturnOrderCouponInf> returnOrderCouponInfList = new ArrayList<>(20);
+                //生成退单优惠券列表
+                List<ReturnOrderCashCoupon> returnOrderCashCouponList = returnOrderService.
+                        getReturnOrderCashCouponByRoid(returnOrderBaseInfo.getRoid());
+                if (null != returnOrderCashCouponList && returnOrderCashCouponList.size() > 0) {
+                    for (ReturnOrderCashCoupon cashCoupon : returnOrderCashCouponList) {
+                        ReturnOrderCouponInf returnOrderCouponInf = new ReturnOrderCouponInf();
+                        returnOrderCouponInf.setBuyPrice(cashCoupon.getPurchasePrice());
+                        returnOrderCouponInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                        returnOrderCouponInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        returnOrderCouponInf.setCouponTypeId(2L);
+                        returnOrderCouponInf.setQuantity(1);
+                        returnOrderCouponInfList.add(returnOrderCouponInf);
+                    }
+                }
+                //生成退单产品券列表
+                List<ReturnOrderProductCoupon> returnOrderProductCouponList = returnOrderService.getReturnOrderProductCouponByRoid(returnOrderBaseInfo.getRoid());
+                if (null != returnOrderProductCouponList && returnOrderProductCouponList.size() > 0) {
+                    for (ReturnOrderProductCoupon productCoupon : returnOrderProductCouponList) {
+                        ReturnOrderCouponInf returnOrderCouponInf = new ReturnOrderCouponInf();
+                        returnOrderCouponInf.setBuyPrice(productCoupon.getPurchasePrice());
+                        returnOrderCouponInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                        returnOrderCouponInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        returnOrderCouponInf.setCouponTypeId(1L);
+                        returnOrderCouponInf.setQuantity(1);
+                        returnOrderCouponInf.setSku(productCoupon.getSku());
+                        returnOrderCouponInfList.add(returnOrderCouponInf);
+                    }
+                }
+                //************************************* 生成退订单券信息 end *******************************************
+
+
 
             } else {
                 throw new RuntimeException("为找到原主单信息,退单拆单失败!");

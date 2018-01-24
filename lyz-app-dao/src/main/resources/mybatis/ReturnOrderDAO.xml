@@ -5,29 +5,29 @@
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
-        roid,
-        oid orderId,
-        ord_no orderNo,
-        order_time,
-        return_time,
-        return_no,
-        return_type,
-        return_price,
-        remarks_info,
-        creator_id,
-        creator_identityType,
-        creator_phone,
-        cus_id customerId,
-        cus_name customerName,
-        cus_phone customerPhone,
-        cus_type customerType,
-        reason_info,
-        return_pic,
-        ord_type orderType,
-        return_status
+            roid,
+            oid       orderId,
+            ord_no    orderNo,
+            order_time,
+            return_time,
+            return_no,
+            return_type,
+            return_price,
+            remarks_info,
+            creator_id,
+            creator_identityType,
+            creator_phone,
+            cus_id    customerId,
+            cus_name  customerName,
+            cus_phone customerPhone,
+            cus_type  customerType,
+            reason_info,
+            return_pic,
+            ord_type  orderType,
+            return_status
         FROM ord_return_base_info
         WHERE
-        return_no = #{returnNo}
+            return_no = #{returnNo}
     </select>
 
 
@@ -36,16 +36,16 @@
             useGeneratedKeys="true" keyProperty="roid">
         INSERT INTO ord_return_base_info
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
-        creator_identityType, creator_phone, cus_id, cus_name,cus_phone,cus_type, reason_info, return_pic, ord_type,
-        return_status)
+         creator_identityType, creator_phone, cus_id, cus_name, cus_phone, cus_type, reason_info, return_pic, ord_type,
+         return_status)
         VALUES
-        (#{orderId}, #{orderNo}, #{orderTime},
-        #{returnTime}, #{returnNo}, #{returnType},
-        #{returnPrice}, #{remarksInfo},
-        #{creatorId}, #{creatorIdentityType},
-        #{creatorPhone},
-        #{customerId}, #{customerName},#{customerPhone},#{customerType},#{reasonInfo},
-        #{returnPrice}, #{orderType}, #{returnStatus})
+            (#{orderId}, #{orderNo}, #{orderTime},
+                         #{returnTime}, #{returnNo}, #{returnType},
+                         #{returnPrice}, #{remarksInfo},
+                         #{creatorId}, #{creatorIdentityType},
+                         #{creatorPhone},
+             #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
+             #{returnPrice}, #{orderType}, #{returnStatus})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -115,8 +115,9 @@
         INSERT INTO ord_return_billing
         (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash, lb_quantity)
         VALUES
-        (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention}, #{onlinePay},
-        #{cash}, #{LeBiQuantity})
+            (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention},
+             #{onlinePay},
+             #{cash}, #{LeBiQuantity})
     </insert>
 
     <insert id="saveReturnOrderBillingDetail"
@@ -140,33 +141,36 @@
         INSERT INTO ord_return_product_coupon
         (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return, purchase_price, sku)
         VALUES
-        (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn},#{purchasePrice},#{sku})
+            (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn}, #{purchasePrice},
+             #{sku})
     </insert>
 
     <insert id="saveReturnOrderGoodsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
         INSERT INTO ord_return_goods_info
         (roid, return_no, order_goods_id, gid, sku, sku_name, retail_price, vip_price, wholesale_price,
-        settlement_price, return_price, return_qty,
-        goods_Line_type,company_flag)
+         settlement_price, return_price, return_qty,
+         goods_Line_type, company_flag)
         VALUES
-        (#{roid}, #{returnNo}, #{orderGoodsId}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice},
-        #{wholesalePrice}, #{settlementPrice},
-        #{returnPrice}, #{returnQty},#{goodsLineType},#{companyFlag})
+            (#{roid}, #{returnNo}, #{orderGoodsId}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice},
+                      #{wholesalePrice}, #{settlementPrice},
+                      #{returnPrice}, #{returnQty}, #{goodsLineType}, #{companyFlag})
     </insert>
 
     <insert id="saveReturnOrderLogisticsInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo">
         INSERT INTO ord_return_logistic_info
         (roid, return_no, delivery_type, return_store_code, return_store_name, return_store_address, delivery_time,
-        delivery_clerk_no,
-        delivery_clerk_id, delivery_clerk_name, rejecter, rejecter_phone, return_full_address, residence_name,
-        delivery_city,
-        delivery_county, delivery_street, detailed_address)
+         delivery_clerk_no,
+         delivery_clerk_id, delivery_clerk_name, rejecter, rejecter_phone, return_full_address, residence_name,
+         delivery_city,
+         delivery_county, delivery_street, detailed_address)
         VALUES
-        (#{roid},#{returnNO},#{deliveryType},#{returnStoreCode},#{returnStoreName},#{returnStoreAddress},#{deliveryTime},#{deliveryClerkNo},
-        #{deliveryClerkId},#{deliveryClerkName},#{rejecter},#{rejecterPhone},#{returnFullAddress},#{residenceName},#{deliveryCity},
-        #{deliveryCounty},#{deliveryStreet},#{detailedAddress})
+            (#{roid}, #{returnNO}, #{deliveryType}, #{returnStoreCode}, #{returnStoreName}, #{returnStoreAddress},
+                      #{deliveryTime}, #{deliveryClerkNo},
+                      #{deliveryClerkId}, #{deliveryClerkName}, #{rejecter}, #{rejecterPhone}, #{returnFullAddress},
+             #{residenceName}, #{deliveryCity},
+             #{deliveryCounty}, #{deliveryStreet}, #{detailedAddress})
     </insert>
 
     <update id="modifyReturnOrderBillingDetail"
@@ -201,8 +205,8 @@
         SELECT *
         FROM ord_return_base_info orbi
         WHERE
-        orbi.creator_id = #{userId}
-        AND orbi.creator_identityType = #{identityType}
+            orbi.creator_id = #{userId}
+            AND orbi.creator_identityType = #{identityType}
     </select>
 
     <select id="findReturnOrderList" parameterType="java.lang.String"
@@ -228,7 +232,7 @@
         SELECT
             ogi.return_qty qty,
             ogi.retail_price,
-        ogi.goods_line_type,
+            ogi.goods_line_type,
             gg.sku_name,
             gg.gid         goodsId,
             gg.goods_specification,
@@ -253,16 +257,43 @@
         SET return_status = #{status}
         WHERE return_no = #{returnNo}
     </update>
-    
+
     <update id="updateReturnableQuantityAndReturnQuantityById">
         UPDATE ord_goods_info
-        SET return_qty = #{returnQty},
-         returnable_qty = #{returnableQty}
+        SET return_qty     = #{returnQty},
+            returnable_qty = #{returnableQty}
         WHERE
             id = #{id}
     </update>
 
-    <select id="getReturnOrderCashCoupon" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderCashCoupon">
-        SELECT 1 FROM ord_return_cash_coupon
+    <select id="getReturnOrderCashCouponByRoid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderCashCoupon">
+        SELECT
+            id,
+            ord_no,
+            roid,
+            ccid,
+            is_return,
+            purchase_price
+        FROM ord_return_cash_coupon
+        WHERE roid = #{roid}
+    </select>
+
+    <select id="getReturnOrderProductCouponByRoid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderProductCoupon">
+        SELECT
+            id,
+            ord_no,
+            roid,
+            return_no,
+            pcid,
+            gid,
+            sku,
+            qty,
+            purchase_price,
+            return_qty,
+            is_return
+        FROM ord_return_product_coupon
+        WHERE roid = #{roid}
     </select>
 </mapper>

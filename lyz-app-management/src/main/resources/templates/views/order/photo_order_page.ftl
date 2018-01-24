@@ -75,42 +75,39 @@
                         </a>
 
                     </span>
-                    <ul id="cusDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="photoOrder" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>顾客姓名</b> <a class="pull-right" id="name"></a>
+                            <b>下单人姓名</b> <a class="pull-right" id="username"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>顾客电话</b> <a class="pull-right" id="mobile"></a>
+                            <b>下单人手机号码</b> <a class="pull-right" id="userMobile"></a>
                         </li>
                         <li class="list-group-item">
                             <b>归属门店</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更类型</b> <a class="pull-right" id="leBiVariationType"></a>
+                            <b>下单人身份类型</b> <a class="pull-right" id="identityType"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更金额</b> <a class="pull-right" id="variationQuantity"></a>
+                            <b>联系人姓名</b> <a class="pull-right" id="contactName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更后余额</b> <a class="pull-right" id="afterVariationQuantity"></a>
+                            <b>联系人电话</b> <a class="pull-right" id="contactPhone"></a>
+                        </li>
+                        <li class="list-group-item" style="height: 200px;">
+                            <b>图片</b> <a class="pull-right" id="photos"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>使用订单号</b> <a class="pull-right" id="orderNum"></a>
+                            <b>拍照下单单号</b> <a class="pull-right" id="photoOrderNo"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>变更时间</b> <a class="pull-right" id="variationTime"></a>
+                            <b>下单时间</b> <a class="pull-right" id="createTime"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>备注</b> <a class="pull-right" id="remarks"></a>
+                            <b>备注</b> <a class="pull-right" id="remark"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>操作人</b> <a class="pull-right" id="operatorId"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>操作人员类型</b> <a class="pull-right" id="operatorType"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>操作人员ip</b> <a class="pull-right" id="operatorIp"></a>
+                            <b>状态</b> <a class="pull-right" id="status"></a>
                         </li>
 
                     </ul>
@@ -159,7 +156,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findAllStorelist',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -242,6 +239,17 @@
                 field: 'createTime',
                 title: '下单时间',
                 align: 'center'
+            },{
+                field: 'statusEnum',
+                title: '操作',
+                align: 'center',
+                formatter: function(value, row, index){
+                    if('PENDING' === value || 'PROCESSING' === value) {
+                        return '<button class="btn btn-primary btn-xs" onclick="handle(' + row.id + ')"> 处理</button>';
+                    } else {
+                        return '-';
+                    }
+                }
             }
         ]);
     }
@@ -258,7 +266,7 @@
         };
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            url: '/rest/stores/findAllStoresListByCityId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -312,7 +320,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/customer/lebi/log/' + id,
+                        url: '/rest/order/photo/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -327,67 +335,71 @@
                             if (0 === result.code) {
                                 $global.timer = null;
                                 var data = result.content;
-                                $('#menuTitle').html(" 顾客乐币变更详情");
+                                $('#menuTitle').html(" 拍照下单详情");
 
-                                if (null === data.name) {
-                                    data.name = '-';
+                                if (null === data.userMobile) {
+                                    data.userMobile = '-';
                                 }
-                                $('#name').html(data.name);
+                                $('#userMobile').html(data.userMobile);
 
-                                if (null === data.mobile) {
-                                    data.mobile = '-';
+                                if (null === data.username) {
+                                    data.username = '-';
                                 }
-                                $('#mobile').html(data.mobile);
+                                $('#username').html(data.username);
 
                                 if (null == data.storeName) {
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
 
-                                if (null == data.leBiVariationType) {
-                                    data.leBiVariationType = '-';
+                                if (null == data.identityType) {
+                                    data.identityType = '-';
                                 }
-                                $('#leBiVariationType').html(data.leBiVariationType);
+                                $('#identityType').html(data.identityType);
 
-                                if (null === data.variationQuantity) {
-                                    data.variationQuantity = '-';
+                                if (null === data.remark) {
+                                    data.remark = '-';
                                 }
-                                $('#variationQuantity').html(data.variationQuantity);
+                                $('#remark').html(data.remark);
 
-                                if (null === data.afterVariationQuantity) {
-                                    data.afterVariationQuantity = '-';
+                                if (null === data.status) {
+                                    data.status = '-';
                                 }
-                                $('#afterVariationQuantity').html(data.afterVariationQuantity);
+                                $('#status').html(data.status);
 
-                                if (null === data.orderNum) {
-                                    data.orderNum = '-';
+                                if (null === data.createTime) {
+                                    data.createTime = '-';
                                 }
-                                $('#orderNum').html(data.orderNum);
+                                $('#createTime').html(data.createTime);
 
-                                if (null === data.variationTime) {
-                                    data.variationTime = '-';
+                                if (null === data.photoOrderNo) {
+                                    data.photoOrderNo = '-';
                                 }
-                                $('#variationTime').html(data.variationTime);
+                                $('#photoOrderNo').html(data.photoOrderNo);
 
-                                if (null === data.remarks) {
-                                    data.remarks = '-';
+                                if (null === data.contactName) {
+                                    data.contactName = '-';
                                 }
-                                $('#remarks').html(data.remarks);
+                                $('#contactName').html(data.contactName);
 
-                                if (null === data.operatorId) {
-                                    data.operatorId = '-';
+                                if (null === data.contactPhone) {
+                                    data.contactPhone = '-';
                                 }
-                                $('#operatorId').html(data.operatorId);
-
-                                if (null === data.operatorType) {
-                                    data.operatorType = '-';
+                                $('#contactPhone').html(data.contactPhone);
+                                if (null === data.photos || '' == data.photos) {
+                                    $('#photos').html('-');
+                                } else {
+                                    var img = '';
+                                    for(var i = 0; i < data.photos.length; i ++){
+                                        img += '<img  src="';
+                                        img += data.photos[i];
+                                        img += '" class="img-rounded" style="height: 80px;width: 80px;" >';
+                                        if (i == 6){
+                                            img += '<br/>';
+                                        }
+                                    }
+                                    $('#photos').html(img);
                                 }
-                                $('#operatorType').html(data.operatorType);
-
-                                if (null === data.operatorIp) {
-                                    data.operatorIp = '-';
-                                }
-                                $('#operatorIp').html(data.operatorIp);
 
                                 $('#information').modal();
                             } else {
@@ -402,7 +414,9 @@
             }
         }
     }
-
+    function handle(id){
+        window.location.href = '/views/admin/order/photo/edit/'+id;
+    }
 
 </script>
 </body>

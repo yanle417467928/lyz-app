@@ -34,6 +34,7 @@ public class PhotoOrderVO {
     private String remark;
     //状态（待处理、已下单、已支付、完成）
     private String status;
+    private String statusEnum;
     //创建时间
     private String createTime;
     //拍照下单单号

@@ -81,7 +81,7 @@
                         </a>
 
                     </span>
-                    <ul id="storeDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                    <ul id="storePreDepositDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
                             <b>门店id</b> <a class="pull-right" id="storeId"></a>
                         </li>
@@ -209,12 +209,12 @@
             align: 'center'
         }, {
             field: 'storeId',
-            title: '预存款变更',
+            title: '操作',
             align: 'center',
             formatter: function(value,row) {
-                return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.storeId+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="changePre('+row.storeId+')"> 变更</button>';
+                return '<button class="btn btn-primary btn-xs" onclick="showDetails('+row.storeId+')"> 查看明细</button><button class="btn  btn-danger btn-xs" style="margin-left: 10px" onclick="changePre('+row.storeId+')"> 变更</button>';
             }
-        },
+        }
         ]);
     }
 
