@@ -152,4 +152,6 @@ public interface ReturnOrderService {
      * @param id   订单商品行id
      */
     void updateReturnableQuantityAndReturnQuantityById(Integer returnQty,Integer returnableQty,Long id);
+
+    List<ReturnOrderCashCoupon> getReturnOrderCashCoupon(String returnNumber);
 }

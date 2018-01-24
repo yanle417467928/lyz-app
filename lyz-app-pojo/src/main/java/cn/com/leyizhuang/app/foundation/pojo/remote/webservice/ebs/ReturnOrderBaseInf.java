@@ -18,6 +18,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class ReturnOrderBaseInf {
 
     /**
@@ -89,7 +90,7 @@ public class ReturnOrderBaseInf {
     /**
      * 门店组织编码
      */
-    private Long storeOrgCode;
+    private String storeOrgCode;
 
     /**
      * 销售单类型

@@ -261,4 +261,8 @@
         WHERE
             id = #{id}
     </update>
+
+    <select id="getReturnOrderCashCoupon" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderCashCoupon">
+        SELECT 1 FROM ord_return_cash_coupon
+    </select>
 </mapper>

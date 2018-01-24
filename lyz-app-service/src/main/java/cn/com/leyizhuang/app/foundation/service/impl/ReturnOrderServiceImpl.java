@@ -211,7 +211,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     public PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (userId != null && identityType != null) {
             PageHelper.startPage(page, size);
-           List<ReturnOrderBaseInfo> returnOrderList =returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
+            List<ReturnOrderBaseInfo> returnOrderList = returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
                     AppIdentityType.getAppIdentityTypeByValue(identityType));
             return new PageInfo<>(returnOrderList);
         }
@@ -252,5 +252,13 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Override
     public void updateReturnableQuantityAndReturnQuantityById(Integer returnQty, Integer returnableQty, Long id) {
         returnOrderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty, returnableQty, id);
+    }
+
+    @Override
+    public List<ReturnOrderCashCoupon> getReturnOrderCashCoupon(String returnNumber) {
+        if (null != returnNumber) {
+            return returnOrderDAO.getReturnOrderCashCoupon(returnNumber);
+        }
+        return null;
     }
 }
