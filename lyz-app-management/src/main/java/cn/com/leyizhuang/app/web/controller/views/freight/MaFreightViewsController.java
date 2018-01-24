@@ -34,7 +34,7 @@ public class MaFreightViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getOrderFreightList() {
+    public String orderFreightListPage() {
         return "/views/freight/freight_page";
     }
 
@@ -44,7 +44,7 @@ public class MaFreightViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/orderFreightChange")
-    public String getOrderFreightChangeList() {
+    public String orderFreightChangeListPage() {
         return "/views/freight/orderFreightChange_page";
     }
 
@@ -55,7 +55,7 @@ public class MaFreightViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String creditEdit(ModelMap map, @PathVariable(value = "id") Long id) {
+    public String freightEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         OrderFreightVO orderFreightVO = this.maOrderFreightService.queryOrderFreightVOById(id);
         if (id.equals(0L)) {
             logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
@@ -74,7 +74,7 @@ public class MaFreightViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/orderFreightDetail/{id}")
-    public String getOrderFreightDetail(ModelMap map,@PathVariable(value = "id") Long id) {
+    public String orderFreightDetailPage(ModelMap map,@PathVariable(value = "id") Long id) {
         OrderFreightDetailVO orderFreightDetailVO = this.maOrderFreightService.queryOrderFreightDetailVOById(id);
         if (id.equals(0L)) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);

@@ -101,7 +101,12 @@
                     validators: {
                         notEmpty: {
                             message:'cron不能为空'
-                        }
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 30,
+                            message: 'cron长度必须在2~30位之间'
+                        },
                     }
                 }
             }

@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -29,4 +30,6 @@ public interface MaOrderFreightDAO {
     List<OrderFreightChangeVO> queryOrderFreightChangeList();
 
     void saveOrderFreightChange(OrderFreightChange orderFreightChange);
+
+    void updateOrderPrice(@Param(value ="orderId" ) Long orderId,@Param(value ="freight" )  BigDecimal freight);
 }

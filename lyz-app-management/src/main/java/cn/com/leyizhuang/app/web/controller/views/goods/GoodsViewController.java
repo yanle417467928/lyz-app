@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.goods;
 
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class GoodsViewController extends BaseController{
      * @date 2017/9/9
      */
     @GetMapping(value = "/list")
-    public String storePage(HttpServletRequest request, ModelMap map) {
+    public String goodsPage(HttpServletRequest request, ModelMap map) {
         return "/views/goods/goods_page";
     }
 
@@ -54,7 +54,7 @@ public class GoodsViewController extends BaseController{
      * @date 2017/9/9
      */
     @GetMapping(value = "/edit/{id}")
-    public String goodsEdit(ModelMap map, @PathVariable(value = "id") Long id) {
+    public String goodsEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GoodsDO goodsDO = this.goodsService.queryById(id);
             if (null == goodsDO) {

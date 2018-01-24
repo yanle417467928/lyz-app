@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGoodsDAO">
+
+    <insert id="saveGoodsShippingInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo">
+        INSERT
+        INTO
+        gds_goods_shipping_log (gid,sku,price,sku_name,shipping_time,qty,change_type,change_type_desc,reference_number,creator,delivery_type,store,city)
+        VALUES
+        (#{gid},#{sku},#{price},#{skuName},#{shippingTime},#{qty},#{changeType},#{changeTypeDesc},#{referenceNumber},#{creator},#{deliveryType},#{store},#{city})
+    </insert>
+</mapper>

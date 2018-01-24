@@ -23,7 +23,7 @@ public class MaEmployeeViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getEmployeesList() {
+    public String employeesListPage() {
         return "/views/employee/employee_page";
     }
 

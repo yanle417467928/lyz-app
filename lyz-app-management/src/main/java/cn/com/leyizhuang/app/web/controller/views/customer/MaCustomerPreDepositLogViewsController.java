@@ -29,7 +29,7 @@ public class MaCustomerPreDepositLogViewsController extends BaseController {
      * @date 2018/1/11
      */
     @RequestMapping(value = "/list/{cusId}")
-    public String getCusPreDepositLogList(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
+    public String cusPreDepositLogListPage(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
         map.addAttribute("cusId",cusId);
         return "/views/customer/customer_pre_deposit_log_page";
     }

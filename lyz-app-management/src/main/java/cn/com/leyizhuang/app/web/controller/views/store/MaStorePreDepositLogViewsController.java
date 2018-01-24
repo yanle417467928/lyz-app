@@ -31,7 +31,7 @@ public class MaStorePreDepositLogViewsController  extends BaseController {
      * @date 2018/1/11
      */
     @RequestMapping(value = "/list/{storeId}")
-    public String getStorePreDepositLogList(ModelMap map, @PathVariable(value = "storeId") Long storeId) {
+    public String storePreDepositLogListPage(ModelMap map, @PathVariable(value = "storeId") Long storeId) {
         map.addAttribute("storeId",storeId);
         map.addAttribute("storeTypes", StoreType.values());
         return "/views/store/store_pre_deposit_log_page";

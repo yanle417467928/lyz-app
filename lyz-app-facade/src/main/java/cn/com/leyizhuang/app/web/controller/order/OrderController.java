@@ -287,6 +287,7 @@ public class OrderController {
                     iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
                 }
                 //将该订单入拆单消息队列
+
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

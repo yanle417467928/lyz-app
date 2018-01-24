@@ -97,6 +97,11 @@
                                         sortId: $('#sortId').val(),
                                     }
                                 }
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 10,
+                                message: '排序号的长度必须在1~10位之间'
                             }
                         }
                     }

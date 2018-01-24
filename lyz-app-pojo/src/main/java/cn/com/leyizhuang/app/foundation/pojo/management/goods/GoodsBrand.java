@@ -8,8 +8,8 @@ import lombok.ToString;
 /**
  * 商品品牌
  *
- * @author Richard
- * Created on 2017-09-25 9:54
+ * @author liuh
+ * Created on 2017-11-25 9:54
  **/
 @Getter
 @Setter

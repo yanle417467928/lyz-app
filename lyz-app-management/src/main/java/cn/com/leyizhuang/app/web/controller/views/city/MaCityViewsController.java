@@ -26,12 +26,12 @@ public class MaCityViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getCitysList() {
+    public String citysListPage() {
         return "/views/city/city_page";
     }
 
     @RequestMapping(value = "/available/inventory")
-    public String getCitysAvaliableIty() {
+    public String citysAvaliableItyPage() {
         return "/views/city/city_available_inventory";
     }
 }

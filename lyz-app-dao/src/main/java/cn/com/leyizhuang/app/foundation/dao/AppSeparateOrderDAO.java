@@ -95,6 +95,12 @@ public interface AppSeparateOrderDAO {
 
     List<OrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
 
+
+    void updateOrderReceiveFlagAndSendTimeAndErrorMsg(@Param(value = "receiveInfsId") Long receiveInfsId,
+                                                      @Param(value = "errorMsg") String msg,
+                                                      @Param(value = "sendTime") Date sendTime,
+                                                      @Param(value = "flag") AppWhetherFlag flag);
+
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
 }

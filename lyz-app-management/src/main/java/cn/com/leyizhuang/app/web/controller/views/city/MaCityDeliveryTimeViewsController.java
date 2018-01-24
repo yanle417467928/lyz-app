@@ -29,7 +29,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/list")
-    public String getCitysDeliveryTime() {
+    public String citysDeliveryTimePage() {
         return "/views/city/cityDeliveryTime";
     }
 
@@ -41,7 +41,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @return
      */
    @GetMapping(value = "/cityDeliveryTimeList/{cityId}")
-    public String getCitysDeliveryTimeList(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
+    public String citysDeliveryTimeListPage(@PathVariable(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
        if (cityId.equals(0L)||StringUtils.isBlank(cityName)) {
            error404();
            return "/error/404";
@@ -60,7 +60,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/add")
-    public String addCitysDeliveryTime(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
+    public String addCitysDeliveryTimePage(@RequestParam(value="cityId") Long cityId,@RequestParam(value="cityName") String cityName,Model model) {
         if (cityId.equals(0L)|| StringUtils.isBlank(cityName)) {
                 error404();
                 return "/error/404";
@@ -78,7 +78,7 @@ public class MaCityDeliveryTimeViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String cityDeliveryTimeEdit(Model model, @PathVariable(value = "id") Long id) {
+    public String cityDeliveryTimeEditPage(Model model, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
         CityDeliveryTimeVO  cityDeliveryTimeVO = maCityDeliveryTimeService.queryById(id);
         if (null == cityDeliveryTimeVO) {

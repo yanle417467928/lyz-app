@@ -21,7 +21,7 @@ public class MaDecorativeCompanyEmpViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getDecorativeEmpList() {
+    public String decorativeEmpListPage() {
         return "/views/decorativeCompany/decorativeCompanyEmp_page";
     }
 }

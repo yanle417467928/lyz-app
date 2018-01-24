@@ -25,7 +25,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
     protected static final String PRE_URL = "/rest/employees";
 
-    private final Logger logger = LoggerFactory.getLogger(MaCustomerRestController.class);
+    private final Logger logger = LoggerFactory.getLogger(MaEmployeeRestController.class);
 
     @Autowired
     private MaEmployeeService maEmployeeService;
@@ -371,6 +371,60 @@ public class MaEmployeeRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("selectSeller EXCEPTION,发生未知错误，后台购买产品券选择导购失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 显示导购欠款列表
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/guideArrearsPage/grid")
+    public GridDataVO<GuideVO> restGuideArrearsPagePageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restGuideArrearsPagePageGird 后台显示导购欠款列表,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideArrearsPage(page, size);
+            List<GuideVO> guideVOList = guideVOPage.getList();
+            logger.info("restGuideArrearsPagePageGird ,后台显示导购欠款列表成功", guideVOList.size());
+            return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restGuideArrearsPagePageGird EXCEPTION,发生未知错误，后台显示导购欠款列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 显示导购还款列表
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/guideRepaymentPage/grid")
+    public GridDataVO<GuideVO> restGuideRepaymentPagePageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restGuideRepaymentPagePageGird 后台显示导购还款列表,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideRepaymentPage(page, size);
+            List<GuideVO> guideVOList = guideVOPage.getList();
+            logger.info("restGuideRepaymentPagePageGird ,后台显示导购还款列表成功", guideVOList.size());
+            return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restGuideRepaymentPagePageGird EXCEPTION,发生未知错误，后台显示导购还款列表失败");
             logger.warn("{}", e);
             return null;
         }

@@ -66,4 +66,6 @@ public interface AppSeparateOrderService {
     void separateReturnOrder(String returnNumber);
 
     void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
+
+    void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag);
 }
