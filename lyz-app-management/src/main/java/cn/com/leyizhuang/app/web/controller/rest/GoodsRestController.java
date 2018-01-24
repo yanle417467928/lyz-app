@@ -7,7 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.goods.PhysicalClassify;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaPhysicalClassifyService;
-import cn.com.leyizhuang.app.foundation.vo.MaGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;

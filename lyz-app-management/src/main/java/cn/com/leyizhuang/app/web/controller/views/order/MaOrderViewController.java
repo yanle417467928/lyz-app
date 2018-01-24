@@ -219,24 +219,70 @@ public class MaOrderViewController {
     }
 
     /**
-     * 跳转门店自提单出货页面
+     * 跳转门店自提单页面
      *
      * @return
      */
-    @RequestMapping(value = "/selfTakeOrederShipping/list")
-    public String getSelfTakeOrederShippingList() {
-        return "/views/order/selfTakeOrederShipping_page";
+    @RequestMapping(value = "/selfTakeOrder/list")
+    public String selfTakeOrderShippingListPage() {
+        return "/views/order/selfTakeOrder_page";
     }
 
 
     /**
-     * 跳转门店自提单收款页面
+     * 自提单订单详情
      *
-     * @return
+     * @return 自提单订单详情页面
      */
-    @RequestMapping(value = "/selfTakeOrederReceivables/list")
-    public String getSelfTakeOrederReceivablesList() {
-        return "/views/order/selfTakeOrederReceivables_page";
+    @RequestMapping(value = "/selfTakeOrderDetail/{orderNumber}")
+    public String selfTakeOrderDetail(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber) {
+        logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 orderNumber:{}", orderNumber);
+        if (!StringUtils.isBlank(orderNumber)) {
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
+                MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+                maOrderDetailResponse.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+                //创建商品返回list
+                List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = new ArrayList<>();
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    //创建商品返回对象
+                    MaOrderGoodsDetailResponse maOrderGoodsDetailResponse = new MaOrderGoodsDetailResponse();
+                    maOrderGoodsDetailResponse.setSku(orderGoodsInfo.getSku());
+                    maOrderGoodsDetailResponse.setGoodsName(orderGoodsInfo.getSkuName());
+                    maOrderGoodsDetailResponse.setQty(orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity());
+                    maOrderGoodsDetailResponse.setUnitPrice(orderGoodsInfo.getRetailPrice() == null ? 0.00 : orderGoodsInfo.getRetailPrice());
+                    //计算商品小计（零售）
+                    Double subTotalPrice = (orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity()) * (orderGoodsInfo.getRetailPrice() == null ? 0.00 : orderGoodsInfo.getRetailPrice());
+                    maOrderGoodsDetailResponse.setSubTotalPrice(subTotalPrice);
+                    //计算商品实付金额（分摊）
+                    Double reslPayment = (orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity()) * (orderGoodsInfo.getReturnPrice() == null ? 0.00 : orderGoodsInfo.getReturnPrice());
+                    maOrderGoodsDetailResponse.setRealPayment(reslPayment);
+                    if ("本品".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
+                        maOrderGoodsDetailResponse.setGoodsType("本品");
+                    } else if ("赠品".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
+                        maOrderGoodsDetailResponse.setGoodsType("赠品");
+                    } else if ("产品券".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
+                        maOrderGoodsDetailResponse.setGoodsType("产品券");
+                    }
+                    maOrderGoodsDetailResponseList.add(maOrderGoodsDetailResponse);
+                }
+                maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
+                //获取订单账目明细
+                MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
+                //获取订单支付明细列表
+                List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+                if (null != maOrderBillingDetailResponse) {
+                    map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
+                }
+                if (null != maOrderBillingPaymentDetailResponseList) {
+                    map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
+                }
+                map.addAttribute("maOrderDetail", maOrderDetailResponse);
+                Boolean isPayUp = maOrderService.isPayUp(orderNumber);
+                map.addAttribute("isPayUp", isPayUp);
+            }
+        }
+        return "/views/order/selfTakeOrder_detail";
     }
-
 }

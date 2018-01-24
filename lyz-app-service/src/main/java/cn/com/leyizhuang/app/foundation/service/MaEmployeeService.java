@@ -51,4 +51,9 @@ public interface MaEmployeeService {
      * @return
      */
     List<EmployeeDO> findEmployeeByCityIdAndStoreId (Long cityId,Long storeId);
+
+    PageInfo<GuideVO> queryGuideArrearsPage(Integer page, Integer size);
+
+    PageInfo<GuideVO> queryGuideRepaymentPage(Integer page, Integer size);
+
 }

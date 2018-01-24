@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaClearTempCreditDAO {
-    String getCron();
+    String getCron(Long id);
 
     Boolean update(@Param(value = "cronTime") String cronTime, @Param(value = "jobName") String jobName);
 

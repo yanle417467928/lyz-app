@@ -28,7 +28,7 @@ public class MaGoodsCategoryViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/list")
-    public String getGoodsCategoryList() {
+    public String goodsCategoryListPage() {
         return "/views/goodsCategory/goodsCategory_page";
     }
 
@@ -37,7 +37,7 @@ public class MaGoodsCategoryViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/add")
-    public String addGoodsCategory() {
+    public String addGoodsCategoryPage() {
         return "/views/goodsCategory/goodsCategory_add";
     }
 
@@ -48,7 +48,7 @@ public class MaGoodsCategoryViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String goodsCategoryEdit(Model model, @PathVariable(value = "id") Long goodsCategoryId) {
+    public String goodsCategoryEditPage(Model model, @PathVariable(value = "id") Long goodsCategoryId) {
         if (!goodsCategoryId.equals(0L)) {
             GoodsCategoryVO goodsCategoryVO = maGoodsCategoryService.queryGoodsCategoryVOById(goodsCategoryId);
             if (null == goodsCategoryVO) {

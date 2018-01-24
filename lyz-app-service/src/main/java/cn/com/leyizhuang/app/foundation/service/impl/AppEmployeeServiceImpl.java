@@ -236,6 +236,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public String isSupervisor(Long id) {
-        return employeeDAO.isSupervisor(id);
+        String isSupervisor = employeeDAO.isSupervisor(id);
+        return isSupervisor;
     }
 }

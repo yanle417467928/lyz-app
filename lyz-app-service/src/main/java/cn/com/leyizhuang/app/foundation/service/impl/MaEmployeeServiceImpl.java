@@ -185,5 +185,19 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(cityId, storeId);
     }
 
+    @Override
+    public PageInfo<GuideVO> queryGuideArrearsPage(Integer page, Integer size){
+        PageHelper.startPage(page, size);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideArrears();
+        return new PageInfo<>(pageGuideVOList);
+    }
+
+    @Override
+    public PageInfo<GuideVO> queryGuideRepaymentPage(Integer page, Integer size){
+        PageHelper.startPage(page, size);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideRepayment();
+        return new PageInfo<>(pageGuideVOList);
+    }
+
 
 }

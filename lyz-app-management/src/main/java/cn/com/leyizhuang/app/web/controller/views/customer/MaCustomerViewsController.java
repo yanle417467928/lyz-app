@@ -22,7 +22,7 @@ public class MaCustomerViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getCustomerList() {
+    public String customerListPage() {
         return "/views/customer/customer_page";
     }
 
@@ -31,7 +31,7 @@ public class MaCustomerViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/add")
-    public String add() {
+    public String addPage() {
         logger.info("新增顾客");
         return "/views/customer/customer_add";
     }

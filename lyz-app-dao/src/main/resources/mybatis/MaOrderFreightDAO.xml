@@ -203,6 +203,17 @@
 
      </update>
 
+    <update id="updateOrderPrice">
+        UPDATE
+        ord_base_info
+        <set>
+            <if test="null != freight">
+                total_goods_price =total_goods_price - #{freight},
+            </if>
+        </set>
+        WHERE oid = #{orderId}
+    </update>
+
     <select id="queryOrderFreightChangeList" resultMap="orderFreightChangeResultMap">
         SELECT
         obi.ord_no,obi.creator_name,obi.city_name,

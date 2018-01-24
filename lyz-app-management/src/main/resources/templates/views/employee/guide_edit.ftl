@@ -30,9 +30,9 @@
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
             <li><a href="#tab_1-2" data-toggle="tab" ">变更描述</a></li>
         </ul>
-                <form id="guideCredit_edit">
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="tab_1-1">
+        <form id="guideCredit_edit">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1-1">
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -136,39 +136,39 @@
                             </div>
                         </div>
                     </div>
-                        </div>
-                    <div class="tab-pane" id="tab_1-2">
-                        <div class="box-body table-reponsive">
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-xs-12">
-                                <div class="form-group">
-                                    <label for="cityName">变更原因
-                                        <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
-                                    </label>
-                                    <div>
+                </div>
+                <div class="tab-pane" id="tab_1-2">
+                    <div class="box-body table-reponsive">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="cityName">变更原因
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
+                                </label>
+                                <div>
                                     <textarea id="modifyReason" class="form-control" rows="8"
                                               style="border-color:#808080">
                                     </textarea>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-md-8"></div>
-                        <div class="col-xs-12 col-md-2">
-                            <button type="submit" class="btn btn-primary footer-btn">
-                                <i class="fa fa-check"></i> 保存
-                            </button>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                                <i class="fa fa-close"></i> 取消
-                            </button>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-md-8"></div>
+                    <div class="col-xs-12 col-md-2">
+                        <button type="submit" class="btn btn-primary footer-btn">
+                            <i class="fa fa-check"></i> 保存
+                        </button>
                     </div>
-                </form>
+                    <div class="col-xs-12 col-md-2">
+                        <button type="button" class="btn btn-danger footer-btn btn-cancel">
+                            <i class="fa fa-close"></i> 取消
+                        </button>
+                    </div>
+                </div>
+        </form>
     </div>
 </section>
 <script>
@@ -224,6 +224,10 @@
                         regexp: {
                             regexp: /^((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '固定额度只能输入数字'
+                        }, stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '固定额度的长度必须在1~10位之间'
                         }
                     }
                 }, tempCreditLimit: {
@@ -235,10 +239,14 @@
                         regexp: {
                             regexp: /^((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '临时额度只能输入数字'
+                        }, stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '临时额度的长度必须在1~10位之间'
                         }
                     }
                 }, creditLimitAvailable: {
-                    message: '可用校验失败',
+                    message: '可用额度校验失败',
                     validators: {
                         notEmpty: {
                             message: '可用额度不能为空'
@@ -246,7 +254,11 @@
                         regexp: {
                             regexp: /^([-]?)((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '可用额度只能输入数字'
-                        },
+                        }, stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '可用额度的长度必须在1~10位之间'
+                        }
                     }
                 }
             }

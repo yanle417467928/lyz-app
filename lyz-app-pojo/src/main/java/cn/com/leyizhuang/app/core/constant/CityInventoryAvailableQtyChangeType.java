@@ -18,7 +18,8 @@ public enum CityInventoryAvailableQtyChangeType {
     HOUSE_DELIVERY_ORDER("HOUSE_DELIVERY_ORDER","配送下单"),
     HOUSE_DELIVERY_ORDER_RETURN("HOUSE_DELIVERY_ORDER_RETURN","配送单退货"),
     HOUSE_DELIVERY_ORDER_CANCEL("HOUSE_DELIVERY_ORDER_CANCEL","配送单取消"),
-    PICKING_ORDER("PICKING_ORDER","领用单");
+    PICKING_ORDER("PICKING_ORDER","领用单"),
+    SELF_TAKE_ORDER("SELF_TAKE_ORDER", "自提单下单");
 
     private final String value;
     private final String description;

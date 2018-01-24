@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class MaOrderGoodsInfo {
     private Long id;
+    //商品id
+    private Long gid;
     //商品编码
     private String sku;
     //商品名称

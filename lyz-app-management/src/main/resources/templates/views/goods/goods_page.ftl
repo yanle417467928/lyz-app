@@ -124,7 +124,7 @@
                         </a>
                         </li>
         <#--                <li class="list-group-item">
-                            <b>商品详情页</b> <a class="pull-right" id="goodsDetial"></a>
+                            <b>商品详情页</b> <a class="pull-right" id="goodsDetail"></a>
                         </li>-->
                         <li class="list-group-item">
                             <b>是否为热门商品</b> <a class="pull-right" id="isHot"></a>
@@ -317,10 +317,10 @@
                                 $('#rotationImageUri').append('<a href="'+rotationImage[a]+'" data-lightbox="group"><img src="' + rotationImage[a] + '"' + ' class="img-rounded" style="height: 80px;width: 80px;margin-left: 5px"  /></a>');
                             }
                       }
-  /*                      if (null === data.goodsDetial) {
-                            data.goodsDetial = '-';
+  /*                      if (null === data.goodsDetail) {
+                            data.goodsDetail = '-';
                         }
-                        $('#goodsDetial').html(data.goodsDetial);*/
+                        $('#goodsDetail').html(data.goodsDetail);*/
 
                         if (true === data.isHot) {
                             data.isHot = ' <span class="label label-primary">是</span>';

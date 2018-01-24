@@ -1,5 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
@@ -154,13 +158,26 @@ public interface MaOrderDAO {
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(@Param("orderNumber") String orderNmber);
 
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingList();
+    List<MaSelfTakeOrderVO> findSelfTakeOrderList();
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByCityId(Long cityId);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByStoreId(Long storeId);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderShippingListByInfo(String info);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(String info);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(MaOrderVORequest maOrderVORequest);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByCondition(MaOrderVORequest maOrderVORequest);
+
+    MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
+
+    void updateOrderStatus(String orderNo);
+
+    void updateorderReceivablesStatus(String orderNo);
+
+    List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo);
+
+   Boolean isPayUp(String orderNo);
+
+   void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
+
+    void saveAppToEbsOrderReceiveInf (MaOrderReceiveInf maOrderReceiveInf);
 }

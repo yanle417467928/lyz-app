@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo.management.order;
 
-import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import lombok.*;
 
 import java.util.Date;
@@ -35,4 +35,19 @@ public class MaSelfTakeOrderVO {
      * 订单创建时间
      */
     private Date createTime;
+
+    /**
+     * 创单人身份类型
+     */
+    private String creatorIdentityType;
+
+    /**
+     * 订单状态
+     */
+    private AppOrderStatus status;
+
+    /**
+     * 收款状态
+     */
+    private Boolean isPayUp;
 }

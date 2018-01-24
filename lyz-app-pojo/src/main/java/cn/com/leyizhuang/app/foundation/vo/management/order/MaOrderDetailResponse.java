@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.vo.management.order;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import lombok.*;
@@ -59,6 +60,11 @@ public class MaOrderDetailResponse {
      */
     private AppDeliveryType deliveryType;
     /**
+     * 下单人身份类型
+     */
+    private AppIdentityType creatorIdentityType;
+
+    /**
      * 收货人姓名
      */
     private String receiverName;
@@ -94,7 +100,6 @@ public class MaOrderDetailResponse {
      * 订单商品
      */
     private List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList;
-
 
 
 }

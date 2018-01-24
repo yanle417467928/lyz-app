@@ -83,6 +83,11 @@
                         validators: {
                             notEmpty: {
                                 message: '品牌编码不能为空'
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 10,
+                                message: '品牌编码的长度必须在1~10位之间'
                             }
                         }
                     },
@@ -102,6 +107,11 @@
                                         sortId: $('#sortId').val(),
                                     }
                                 }
+                            },
+                            stringLength: {
+                                min: 1,
+                                max: 10,
+                                message: '排序号的长度必须在1~10位之间'
                             }
                         }
                     }

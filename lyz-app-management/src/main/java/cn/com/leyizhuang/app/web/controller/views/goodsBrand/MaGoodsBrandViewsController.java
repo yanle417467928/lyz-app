@@ -28,7 +28,7 @@ public class MaGoodsBrandViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/list")
-    public String getGoodBrandList() {
+    public String goodBrandListPage() {
         return "/views/goodsBrand/goodsBrand_page";
     }
 
@@ -37,7 +37,7 @@ public class MaGoodsBrandViewsController extends BaseController {
      * @return
      */
      @GetMapping(value = "/add")
-     public String addGoodBrand() {
+     public String addGoodBrandPage() {
         return "/views/goodsBrand/goodsBrand_add";
     }
 
@@ -48,7 +48,7 @@ public class MaGoodsBrandViewsController extends BaseController {
      * @return
      */
     @GetMapping(value = "/edit/{id}")
-    public String goodsBrandEdit(Model model, @PathVariable(value = "id") Long goodsBrandId) {
+    public String goodsBrandEditPage(Model model, @PathVariable(value = "id") Long goodsBrandId) {
         if (!goodsBrandId.equals(0L)) {
             GoodsBrand goodsBrand = maGoodsBrandService.queryGoodsBrandVOById(goodsBrandId);
             if (null == goodsBrand) {

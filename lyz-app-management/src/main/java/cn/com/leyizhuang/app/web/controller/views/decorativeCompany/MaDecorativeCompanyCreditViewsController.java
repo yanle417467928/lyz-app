@@ -29,7 +29,7 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list")
-    public String getDecorativeCreditList() {
+    public String decorativeCreditListPage() {
         return "/views/decorativeCompany/decorativeCompanyCredit_page";
     }
 
@@ -40,7 +40,7 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/edit/{id}")
-    public String DecorativeCreditEdit(ModelMap map, @PathVariable(value = "id") Long id) {
+    public String decorativeCreditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             DecorativeCompanyInfo decorativeCompanyInfo = this.maStoreService.queryDecorativeCompanyCreditById(id);
             if (null == decorativeCompanyInfo) {

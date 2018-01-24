@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaClearTempCreditDAO">
 
-    <select id="getCron" resultType="java.lang.String">
-         select cron_express from timed_task  WHERE is_open = 1 limit 1
+    <select id="getCron" parameterType="java.lang.Long" resultType="java.lang.String">
+         select cron_express from timed_task  WHERE id = #{id}
     </select>
 
     <update id="update" >

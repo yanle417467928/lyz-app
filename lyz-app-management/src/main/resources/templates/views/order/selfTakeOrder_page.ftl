@@ -134,7 +134,7 @@
                                                 <div class="col-xs-12">
                                                     <button type="button" name="search" id="search-btn"
                                                             class="btn btn-primary btn-search"
-                                                            onclick="findOrderByOrderNumber()">查找
+                                                            onclick="findOrderByFilterCondition()">查找
                                                     </button>
                                                 </div>
                                             </div>
@@ -146,17 +146,25 @@
                     </div>
                 </div>
                 <div id="toolbar" class="form-inline">
-                    <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                    </button>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             data-live-search="true" onchange="findOrderByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
                             onchange="findOrderByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
+                    </select>
+                    <select name="status" id="status" class="form-control" style="width:auto;"
+                            onchange="findOrderByCondition()" data-live-search="true">
+                        <option value="-1">出货状态</option>
+                        <option value="1">已出货</option>
+                        <option value="0">未出货</option>
+                    </select>
+                    <select name="isPayUp" id="isPayUp" class="form-control" style="width:auto;"
+                            onchange="findOrderByCondition()" data-live-search="true">
+                        <option value="-1">收款状态</option>
+                        <option value="1">已付清</option>
+                        <option value="0">未付清</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
@@ -180,17 +188,13 @@
 
 
     $(function () {
-        initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
+        initDateGird('/rest/order/selfTakeOrder/page/grid');
         findCitySelection();
         findStoreSelection();
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             language: 'zh-CN',
             autoclose: true
-        });
-
-        $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/views/admin/freight/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
     });
 
@@ -258,11 +262,11 @@
             field: 'orderNumber',
             title: '订单号',
             align: 'center',
-            formatter: function (value) {
+            formatter: function (value, row, index) {
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/order/detail/' + value + '">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/selfTakeOrderDetail/' + value + '">' + value + '</a>';
                 }
             }
         }, {
@@ -285,12 +289,57 @@
                 }
             }
         }, {
-            title: '操作',
+            field: 'status',
+            title: '订单状态',
             align: 'center',
-            formatter: function (value, row) {
-                return '<button class="btn btn-primary btn-xs" onclick="showDetails(' + row.id + ')"> 订单详情</button>';
+            formatter: function (value, row, index) {
+                if ('UNPAID' === value) {
+                    return '<span class="">待付款</span>';
+                } else if ('PENDING_SHIPMENT' === value) {
+                    return '<span class="">待发货</span>';
+                } else if ('PENDING_RECEIVE' === value) {
+                    return '<span class="">待收货</span>';
+                } else if ('FINISHED' === value) {
+                    return '<span class="">已完成</span>';
+                } else if ('CLOSED' === value) {
+                    return '<span class="">已结案</span>';
+                } else if ('CANCELED' === value) {
+                    return '<span class="">已取消</span>';
+                } else if ('REJECTED' === value) {
+                    return '<span class="">拒签</span>';
+                } else if ('CANCELING' === value) {
+                    return '<span class="">取消中</span>';
+                }
             }
+        }, {
+            field: 'isPayUp',
+            title: '收款状态',
+            align: 'center',
+            formatter: function (value, row, index) {
+                if (false == value) {
+                    return '未收款';
+                } else if (true == value) {
+                    return '已收款';
+                } else {
+                    return '-';
+                }
+            }
+        }, {
+            field: 'creatorIdentityType',
+            title: '下单人类型',
+            align: 'center',
+            visible: false
         }]);
+    }
+
+    function shipShop(orderNumber, creatorIdentityType) {
+        if ('SELLER' == creatorIdentityType) {
+            $('#confirmShip').modal();
+            $("#confirmShipId").val(orderNumber);
+        } else if ('CUSTOMER' == creatorIdentityType) {
+            $('#PickUpCode').modal();
+            $("#codeOrderId").val(orderNumber);
+        }
     }
 
 
@@ -299,13 +348,9 @@
         $("#dataGrid").bootstrapTable('destroy');
         var cityId = $("#cityCode").val();
         var storeId = $("#storeCode").val();
-        if (storeId == -1 && cityId == -1) {
-            initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
-        } else if (storeId != -1) {
-            initDateGird('/rest/order/selfTakeOrederShipping/page/storeGrid?storeId=' + storeId);
-        } else if (storeId == -1 && cityId != -1) {
-            initDateGird('/rest/order/selfTakeOrederShipping/page/cityGrid?cityId=' + cityId);
-        }
+        var status = $("#status").val();
+        var isPayUp = $("#isPayUp").val();
+        initDateGird('/rest/order/selfTakeOrder/page/screenGrid?cityId=' + cityId + '&storeId=' + storeId + '&status=' + status + '&isPayUp=' + isPayUp);
     }
 
 
@@ -345,19 +390,12 @@
         $('#enabled').val("-1");
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/order/selfTakeOrederShipping/page/grid');
+            initDateGird('/rest/order/selfTakeOrder/page/grid');
         } else {
-            initDateGird('/rest/order/selfTakeOrederShipping/page/infoGrid?info=' + queryOrderInfo);
+            initDateGird('/rest/order/selfTakeOrder/page/infoGrid?info=' + queryOrderInfo);
         }
     }
 
-    function showDetails(id) {
-        window.location.href = '/views/admin/freight/orderFreightDetail/' + id;
-    }
-
-    function showChangeDetail() {
-        window.location.href = '/views/admin/freight/orderFreightChange';
-    }
 
     function initSelect(select, optionName) {
         $(select).empty();
@@ -381,7 +419,7 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
-    function findOrderByOrderNumber() {
+    function findOrderByFilterCondition() {
         var beginTime = $("#beginTime").val();
         var endTime = $("#endTime").val();
         var memberName = $("#memberName").val();
@@ -391,8 +429,10 @@
         var receiverName = $("#receiverName").val();
         var receiverPhone = $("#receiverPhone").val();
         $("#dataGrid").bootstrapTable('destroy');
-            initDateGird('/rest/order/selfTakeOrederShipping/page/conditionGrid?beginTime='+beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
-                    + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone)
+        initDateGird('/rest/order/selfTakeOrder/page/conditionGrid?beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
+                + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone)
     }
+
+
 </script>
 </body>

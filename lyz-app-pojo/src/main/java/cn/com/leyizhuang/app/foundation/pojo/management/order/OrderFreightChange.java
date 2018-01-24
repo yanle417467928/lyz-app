@@ -1,9 +1,13 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.order;
 
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
+/**
+ * 订单运费变更类
+ * @author liuh
+ * @date 2018/1/15
+ */
 @Getter
 @Setter
 @ToString

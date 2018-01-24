@@ -109,4 +109,6 @@ public interface ReturnOrderDAO {
      * @return
      */
     List<ReturnOrderBaseInfo> findReturnOrderList(String keywords);
+
+    List<ReturnOrderCashCoupon> getReturnOrderCashCoupon(String returnNumber);
 }
