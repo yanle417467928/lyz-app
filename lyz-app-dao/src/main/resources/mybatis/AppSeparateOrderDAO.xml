@@ -497,4 +497,10 @@
             #{id}
         </foreach>
     </select>
+
+    <select id="isReturnOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+                      FROM inter_ate_return_order_base_inf
+                      WHERE main_return_number = #{returnNumber})
+    </select>
 </mapper>

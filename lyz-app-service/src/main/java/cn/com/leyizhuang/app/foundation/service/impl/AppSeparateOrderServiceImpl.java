@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private RechargeService rechargeService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -473,6 +477,23 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != returnInfIds && returnInfIds.size() > 0) {
             separateOrderDAO.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public Boolean isReturnOrderExist(String returnNumber) {
+        if (null != returnNumber) {
+            return separateOrderDAO.isReturnOrderExist(returnNumber);
+        }
+        return false;
+    }
+
+    @Override
+    public void separateReturnOrder(String returnNumber) {
+
+        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+        if (null != returnOrderBaseInfo){
+
         }
     }
 
