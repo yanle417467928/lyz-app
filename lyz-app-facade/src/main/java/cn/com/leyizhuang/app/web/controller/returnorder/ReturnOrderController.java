@@ -320,9 +320,11 @@ public class ReturnOrderController {
                 returnGoodsInfo.setRetailPrice(orderGoodsInfo.getRetailPrice());
                 returnGoodsInfo.setVipPrice(orderGoodsInfo.getVIPPrice());
                 returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
+                returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+                returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 //更改订单头商品已退数量和可退数量
@@ -1454,6 +1456,8 @@ public class ReturnOrderController {
         returnOrderGoodsInfo.setVipPrice(goodsInfo.getVIPPrice());
         returnOrderGoodsInfo.setWholesalePrice(goodsInfo.getWholesalePrice());
         returnOrderGoodsInfo.setGoodsLineType(goodsInfo.getGoodsLineType());
+        returnOrderGoodsInfo.setSettlementPrice(goodsInfo.getSettlementPrice());
+        returnOrderGoodsInfo.setCompanyFlag(goodsInfo.getCompanyFlag());
         return returnOrderGoodsInfo;
     }
 
@@ -1531,6 +1535,8 @@ public class ReturnOrderController {
                 returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
                 returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
+                returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
+                returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
                 //更改订单头商品已退数量和可退数量

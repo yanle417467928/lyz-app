@@ -53,11 +53,17 @@ public interface AppSeparateOrderService {
 
     void saveOrderJxPriceDifferenceReturnInf(OrderJxPriceDifferenceReturnInf returnInf);
 
+    void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
+
     void sendOrderJxPriceDifferenceReturnInf(String orderNumber);
+
+    void sendOrderJxPriceDifferenceRefundInf(String returnNumber);
 
     void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 
     Boolean isReturnOrderExist(String returnNumber);
 
     void separateReturnOrder(String returnNumber);
+
+    void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 }

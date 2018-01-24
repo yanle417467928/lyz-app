@@ -474,6 +474,16 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void sendOrderJxPriceDifferenceRefundInf(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = separateOrderDAO.getOrderJxPriceDifferenceRefundInf(returnNumber);
+            if (null != jxPriceDifferenceRefundInfs && jxPriceDifferenceRefundInfs.size() > 0) {
+                ebsSenderService.sendOrderJxPriceDifferenceRefundInfAndRecord(jxPriceDifferenceRefundInfs);
+            }
+        }
+    }
+
+    @Override
     public void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != returnInfIds && returnInfIds.size() > 0) {
             separateOrderDAO.updateOrderJxPriceDifferenceReturnInf(returnInfIds, msg, sendTime, flag);
@@ -498,4 +508,17 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
 
+    @Override
+    public void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != refundInfIds && refundInfIds.size() > 0) {
+            separateOrderDAO.updateOrderJxPriceDifferenceRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf) {
+        if (null != refundInf) {
+            separateOrderDAO.saveOrderJxPriceDifferenceRefundInf(refundInf);
+        }
+    }
 }
