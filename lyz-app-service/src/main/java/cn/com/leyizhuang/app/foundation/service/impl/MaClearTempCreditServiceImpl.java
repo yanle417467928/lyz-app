@@ -13,8 +13,8 @@ public class MaClearTempCreditServiceImpl implements MaClearTempCreditService {
     private MaClearTempCreditDAO clearTempCreditDAO;
 
      @Override
-    public String getCron(){
-        return  clearTempCreditDAO.getCron();
+    public String getCron(Long id){
+        return  clearTempCreditDAO.getCron(id);
     }
 
     @Override

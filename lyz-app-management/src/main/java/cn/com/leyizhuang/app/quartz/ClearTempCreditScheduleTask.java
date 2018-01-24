@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class ScheduleTask implements Job {
+public class ClearTempCreditScheduleTask implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

@@ -5,18 +5,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MyCommandLineRunner implements CommandLineRunner {
+public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
 
     @Autowired
     private MaClearTempCreditService maClearTempCreditService;
 
     @Override
     public void run(String... var1) throws Exception{
-        String cron =maClearTempCreditService.getCron();
-        if(null!=cron){
-            QuartzManager.addJob("clearTempCredit","jobGroup","trigger","triggerGroup", ScheduleTask.class,cron);
+        String clearTempCreditCron =maClearTempCreditService.getCron((long)1);
+        if(null!=clearTempCreditCron){
+            QuartzManager.addJob("clearTempCredit","jobGroup","trigger","triggerGroup", ClearTempCreditScheduleTask.class,clearTempCreditCron);
         }else{
-            throw new RuntimeException("cron为空");
+            throw new RuntimeException("clearTempCreditCron为空");
         }
     }
 }

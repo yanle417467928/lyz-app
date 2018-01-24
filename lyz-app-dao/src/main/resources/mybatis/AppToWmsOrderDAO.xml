@@ -109,9 +109,9 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods">
 
         INSERT INTO inter_atw_order_requisition_goods
-        (create_time, order_number, goods_code, goods_title, quantity, price)
+        (create_time, order_number, goods_code, goods_title, quantity, price, company_flag)
         VALUES
-            (#{createTime}, #{orderNumber}, #{goodsCode}, #{goodsTitle}, #{quantity}, #{price})
+            (#{createTime}, #{orderNumber}, #{goodsCode}, #{goodsTitle}, #{quantity}, #{price}, #{companyFlag})
 
     </insert>
 
