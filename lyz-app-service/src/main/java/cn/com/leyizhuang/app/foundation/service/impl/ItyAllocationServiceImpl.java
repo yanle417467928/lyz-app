@@ -214,8 +214,6 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         // 新建调拨轨迹
         this.createAllocationRecord(allocation.getId(), username, AllocationTypeEnum.ENTERED);
 
-        // 调用ebs接口 将调拨出库消息加入队列
-        //sinkSender.sendAllocationReceivedToEBSAndRecord(allocation.getNumber());
     }
 
     @Override
