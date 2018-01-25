@@ -29,10 +29,10 @@ public interface AppSeparateOrderDAO {
 
     void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 
-    void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(@Param(value = "orderNumber") String orderNumber,
-                                                               @Param(value = "flag") AppWhetherFlag flag,
-                                                               @Param(value = "errorMsg") String errorMsg,
-                                                               @Param(value = "sendTime") Date sendTime);
+    void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(@Param(value = "orderNumber") String orderNumber,
+                                                              @Param(value = "flag") AppWhetherFlag flag,
+                                                              @Param(value = "errorMsg") String errorMsg,
+                                                              @Param(value = "sendTime") Date sendTime);
 
     void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(@Param(value = "orderLineId") Long orderLineId,
                                                                 @Param(value = "flag") AppWhetherFlag flag,
@@ -103,4 +103,26 @@ public interface AppSeparateOrderDAO {
 
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
+
+    void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
+
+    void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf);
+
+    void saveReturnOrderCouponInf(ReturnOrderCouponInf returnOrderCouponInf);
+
+    void saveReturnOrderRefundInf(ReturnOrderRefundInf returnOrderRefundInf);
+
+    List<ReturnOrderBaseInf> getReturnOrderBaseInfByReturnNumber(String returnNumber);
+
+    List<ReturnOrderGoodsInf> getReturnOrderGoodsInfByReturnNumber(String returnNumber);
+
+    void updateReturnOrderBaseInf(@Param(value = "returnNumber") String returnNumber,
+                                  @Param(value = "flag") AppWhetherFlag flag,
+                                  @Param(value = "errorMsg") String errorMsg,
+                                  @Param(value = "sendTime") Date sendTime);
+
+    void updateReturnOrderGoodsInf(@Param(value = "returnNumber") String returnNumber,
+                                   @Param(value = "flag") AppWhetherFlag flag,
+                                   @Param(value = "errorMsg") String errorMsg,
+                                   @Param(value = "sendTime") Date sendTime);
 }

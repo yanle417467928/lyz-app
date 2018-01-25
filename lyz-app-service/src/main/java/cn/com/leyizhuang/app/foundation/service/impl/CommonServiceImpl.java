@@ -1208,7 +1208,6 @@ public class CommonServiceImpl implements CommonService {
                                                       List<ReturnOrderGoodsInfo> goodsInfos) {
 
         List<OrderJxPriceDifferenceReturnDetails> detailsList = orderService.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(returnOrderBaseInfo.getOrderNo());
-//        OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
 
         List<OrderJxPriceDifferenceRefundDetails> returnDetailsList = new ArrayList<>(20);
         double jxPrice = 0.00;
