@@ -174,7 +174,7 @@
         WHERE order_number = #{orderNumber}
     </select>
 
-    <update id="updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime">
+    <update id="updateOrderBaseInfSendFlagAndErrorMessageAndSendTime">
         UPDATE inter_ate_order_base_inf
         <set>
             <if test="null != flag">
