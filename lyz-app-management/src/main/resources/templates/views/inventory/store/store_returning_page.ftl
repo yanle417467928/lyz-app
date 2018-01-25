@@ -39,6 +39,15 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>-->
+                    <select name="selectStatus" id="selectStatus" class="form-control select" style="width:auto;"
+                            title="退单状态">
+                        <option value="-1">退单状态</option>
+                        <option value="1">退货中</option>
+                        <option value="2">已取消</option>
+                        <option value="3">待退货</option>
+                        <option value="4">待退款</option>
+                        <option value="5">已完成</option>
+                    </select>
                     <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
                             title="选择城市">
                         <option value="-1">选择城市</option>
@@ -71,25 +80,25 @@
                     </span>
                     <ul id="structureAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>城市id</b> <a class="pull-right" id="cityId"></a>
+                            <b>退单号</b> <a class="pull-right" id="returnNo"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>城市编码</b> <a class="pull-right" id="cityCode"></a>
+                            <b>订单号</b> <a class="pull-right" id="orderNo"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>城市名称</b> <a class="pull-right" id="cityName"></a>
+                            <b>退货类型</b> <a class="pull-right" id="returnType"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店id</b> <a class="pull-right" id="storeId"></a>
+                            <b>门店电话</b> <a class="pull-right" id="storePhone"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
+                            <b>门店电话</b> <a class="pull-right" id="storeAddress"></a>
                         </li>
                         <li class="list-group-item">
                             <b>门店名称</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品id</b> <a class="pull-right" id="gid"></a>
+                            <b>申请用户</b> <a class="pull-right" id="creatorPhone"></a>
                         </li>
                         <li class="list-group-item">
                             <b>商品编码</b> <a class="pull-right" id="sku"></a>
@@ -120,7 +129,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/returning/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -192,7 +201,7 @@
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
-                        url: '/rest/store/inventory/' + id,
+                        url: '/rest/store/returning/' + id,
                         method: 'GET',
                         error: function () {
                             clearTimeout($global.timer);
@@ -208,40 +217,40 @@
                                 var data = result.content;
                                 $('#menuTitle').html("门店库存详情");
 
-                                if (null === data.cityId) {
-                                    data.cityId = '-';
+                                if (null === data.returnNo) {
+                                    data.returnNo = '-';
                                 }
-                                $('#cityId').html(data.cityId);
+                                $('#returnNo').html(data.returnNo);
 
-                                if (null === data.cityCode) {
-                                    data.cityCode = '-';
+                                if (null === data.orderNo) {
+                                    data.orderNo = '-';
                                 }
-                                $('#cityCode').html(data.cityCode);
+                                $('#orderNo').html(data.orderNo);
 
-                                if (null === data.cityName) {
-                                    data.cityName = 'fa fa-circle-o';
+                                if (null === data.returnType) {
+                                    data.returnType = 'fa fa-circle-o';
                                 }
-                                $('#cityName').html(data.cityName);
+                                $('#returnType').html(data.returnType);
 
-                                if (null === data.storeId) {
-                                    data.storeId = '-';
+                                if (null === data.storePhone) {
+                                    data.storePhone = '-';
                                 }
-                                $('#storeId').html(data.storeId);
+                                $('#storePhone').html(data.storePhone);
 
-                                if (null === data.storeCode) {
-                                    data.storeCode = '-';
+                                if (null === data.storeAddress) {
+                                    data.storeAddress = '-';
                                 }
-                                $('#storeCode').html(data.storeCode);
+                                $('#storeAddress').html(data.storeAddress);
 
                                 if (null === data.storeName) {
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
 
-                                if (null === data.gid) {
-                                    data.gid = '-';
+                                if (null === data.creatorPhone) {
+                                    data.creatorPhone = '-';
                                 }
-                                $('#gid').html(data.gid);
+                                $('#creatorPhone').html(data.creatorPhone);
 
                                 if (null === data.sku) {
                                     data.sku = '-';

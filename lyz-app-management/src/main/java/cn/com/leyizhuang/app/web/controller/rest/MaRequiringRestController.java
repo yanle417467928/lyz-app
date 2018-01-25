@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.Requiring;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.RequiringVO;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.service.ItyRequiringService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -10,10 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Jerry.Ren
@@ -68,6 +66,26 @@ public class MaRequiringRestController {
                     "指定数据不存在，请联系管理员", null);
         } else {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, requiring);
+        }
+    }
+
+    /**
+     * 修改管理员备注信息
+     *
+     * @param atwRequisitionOrder
+     * @return
+     */
+    @PostMapping(value = "/update")
+    public ResultDTO<Object> updateInfo(AtwRequisitionOrder atwRequisitionOrder) {
+
+        int count = this.ityRequiringService.updateManagerRemarkInfo(atwRequisitionOrder);
+
+        if (count > 0) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        } else {
+            logger.warn("修改管理员备注信息失败：Role(managerRemarkInfo = {}) == null", atwRequisitionOrder);
+            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
+                    "修改失败！请再次尝试", null);
         }
     }
 }

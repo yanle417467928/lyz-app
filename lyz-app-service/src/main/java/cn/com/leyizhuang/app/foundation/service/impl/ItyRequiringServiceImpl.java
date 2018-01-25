@@ -51,6 +51,7 @@ public class ItyRequiringServiceImpl implements ItyRequiringService {
         requiring.setId(id);
         requiring.setOrderNumber(atwRequisitionOrder.getOrderNumber());
         requiring.setRemarkInfo(atwRequisitionOrder.getRemarkInfo());
+        requiring.setManagerRemarkInfo(atwRequisitionOrder.getManagerRemarkInfo());
         requiring.setGoodsList(goods);
 
         StoreResponse storeResponse = new StoreResponse();
@@ -60,5 +61,14 @@ public class ItyRequiringServiceImpl implements ItyRequiringService {
         requiring.setDetailAddress(storeResponse);
 
         return requiring;
+    }
+
+    @Override
+    public int updateManagerRemarkInfo(AtwRequisitionOrder atwRequisitionOrder) {
+        if (null != atwRequisitionOrder && null != atwRequisitionOrder.getOrderNumber()) {
+            appToWmsOrderDAO.updateAtwRequisitionOrder(atwRequisitionOrder);
+            return 1;
+        }
+        return 0;
     }
 }

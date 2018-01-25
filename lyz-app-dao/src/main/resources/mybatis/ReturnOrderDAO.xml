@@ -330,4 +330,30 @@
         FROM ord_return_jx_price_difference_refund_details
         WHERE return_no = #{returnNo}
     </select>
+
+    <select id="queryReturnOrderByRoid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+        oid,
+        ord_no,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_identityType,
+        creator_phone,
+        cus_id,
+        cus_name,
+        cus_phone,
+        cus_type,
+        reason_info,
+        return_pic,
+        ord_type,
+        return_status
+        FROM ord_return_base_info WHERE roid = #{roid};
+
+    </select>
 </mapper>
