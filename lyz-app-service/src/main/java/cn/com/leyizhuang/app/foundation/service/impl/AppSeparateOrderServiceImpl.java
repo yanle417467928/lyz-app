@@ -11,11 +11,9 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -299,7 +297,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                     }
                 }
                 //循环保存分单信息,分单商品信息及订单券信息
-                supportService.saveSeparateOrderRelevatnInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList, jxPriceDifferenceReturnInfs);
+                supportService.saveSeparateOrderRelevantInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList, jxPriceDifferenceReturnInfs);
 
             } else {
                 //todo 记录拆单错误日志
@@ -323,18 +321,12 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
-    public void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+    public void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
         if (null != orderNumber) {
-            separateOrderDAO.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderNumber, flag, errorMsg, sendTime);
+            separateOrderDAO.updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(orderNumber, flag, errorMsg, sendTime);
         }
     }
 
-    @Override
-    public void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(Long orderLineId, AppWhetherFlag flag, String errorMsg, Date sendTime) {
-        if (null != orderLineId) {
-            separateOrderDAO.updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(orderLineId, flag, errorMsg, sendTime);
-        }
-    }
 
     @Override
     public void sendOrderBaseInfAndOrderGoodsInf(String orderNumber) {
@@ -502,6 +494,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         return false;
     }
 
+
     @Override
     public void separateReturnOrder(String returnNumber) {
         //查找主退单信息
@@ -581,7 +574,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 //*********************************** 拆退单头及退单商品信息 end ***************************************
 
 
-                //************************************* 生成退订单券信息 begin *****************************************
+                //************************************* 生成退单券信息 begin *****************************************
 
                 List<ReturnOrderCouponInf> returnOrderCouponInfList = new ArrayList<>(20);
                 //生成退单优惠券列表
@@ -612,9 +605,61 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         returnOrderCouponInfList.add(returnOrderCouponInf);
                     }
                 }
-                //************************************* 生成退订单券信息 end *******************************************
+                //************************************* 生成退单券信息 end *******************************************
 
 
+                //************************************ 生成退单退款信息 begin ******************************************
+
+                List<ReturnOrderRefundInf> returnOrderRefundInfList = new ArrayList<>(10);
+                List<ReturnOrderBillingDetail> returnOrderBillingDetailList = returnOrderService.
+                        getReturnOrderBillingDetailByRoid(returnOrderBaseInfo.getRoid());
+                if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() > 0) {
+                    for (ReturnOrderBillingDetail billingDetail : returnOrderBillingDetailList) {
+                        ReturnOrderRefundInf refundInf = new ReturnOrderRefundInf();
+                        refundInf.setAmount(billingDetail.getReturnMoney());
+                        refundInf.setCreateTime(billingDetail.getCreateTime());
+                        refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                        refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                        refundInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        refundInf.setUserId(returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
+                                returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
+                        refundInf.setRefundDate(billingDetail.getIntoAmountTime());
+                        refundInf.setRefundNumber(OrderUtils.getRefundNumber());
+                        refundInf.setRefundType(billingDetail.getReturnPayType());
+                        refundInf.setSobId(orderBaseInfo.getSobId());
+                        refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
+                        returnOrderRefundInfList.add(refundInf);
+                    }
+                }
+
+                //************************************ 生成退单退款信息 end ********************************************
+
+                //******************************* 生成退订单退经销差价信息 begin ***************************************
+                List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList = new ArrayList<>(20);
+                List<OrderJxPriceDifferenceRefundDetails> detailsList = returnOrderService.
+                        getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(returnOrderBaseInfo.getReturnNo());
+                if (AssertUtil.isNotEmpty(detailsList)) {
+                    for (OrderJxPriceDifferenceRefundDetails details : detailsList) {
+
+                        OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
+                        inf.setAmount(details.getAmount());
+                        inf.setCreateTime(details.getCreateTime());
+                        inf.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
+                        inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
+                        inf.setSku(details.getSku());
+                        inf.setSobId(orderBaseInfo.getSobId());
+                        inf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        inf.setDiySiteCode(details.getStoreCode());
+                        inf.setRefundNumber(details.getRefundNumber());
+                        jxPriceDifferenceRefundInfList.add(inf);
+                    }
+                }
+                //******************************* 生成退订单退经销差价信息 end ***************************************
+
+                //保存退单拆单信息
+                supportService.saveSeparateReturnOrderRelevantInf(returnOrderParamMap, returnOrderCouponInfList, returnOrderRefundInfList, jxPriceDifferenceRefundInfList);
 
             } else {
                 throw new RuntimeException("为找到原主单信息,退单拆单失败!");
@@ -622,7 +667,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
         }
     }
-
 
     @Override
     public void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
@@ -644,4 +688,60 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             separateOrderDAO.updateOrderReceiveFlagAndSendTimeAndErrorMsg(receiveInfsId, msg, sendTime, flag);
         }
     }
+
+    @Override
+    public void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf) {
+        if (null != returnOrderBaseInf) {
+            separateOrderDAO.saveReturnOrderBaseInf(returnOrderBaseInf);
+        }
+    }
+
+    @Override
+    public void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf) {
+        if (null != returnOrderGoodsInf) {
+            separateOrderDAO.saveReturnOrderGoodsInf(returnOrderGoodsInf);
+        }
+    }
+
+    @Override
+    public void saveReturnOrderCouponInf(ReturnOrderCouponInf returnOrderCouponInf) {
+        if (null != returnOrderCouponInf) {
+            separateOrderDAO.saveReturnOrderCouponInf(returnOrderCouponInf);
+        }
+    }
+
+    @Override
+    public void saveReturnOrderRefundInf(ReturnOrderRefundInf returnOrderRefundInf) {
+        if (null != returnOrderRefundInf) {
+            separateOrderDAO.saveReturnOrderRefundInf(returnOrderRefundInf);
+        }
+    }
+
+    @Override
+    public void sendReturnOrderBaseInfAndReturnOrderGoodsInf(String returnNumber) {
+        if (null != returnNumber) {
+            //发送退单头、商品行
+            List<ReturnOrderBaseInf> returnOrderBaseInfList = separateOrderDAO.getReturnOrderBaseInfByReturnNumber(returnNumber);
+            for (ReturnOrderBaseInf baseInf : returnOrderBaseInfList) {
+                List<ReturnOrderGoodsInf> returnOrderGoodsInfList = separateOrderDAO.getReturnOrderGoodsInfByReturnNumber(baseInf.getReturnNumber());
+                ebsSenderService.sendReturnOrderAndReturnGoodsToEbsAndRecord(baseInf, returnOrderGoodsInfList);
+            }
+
+        }
+    }
+
+    @Override
+    public void updateReturnOrderBaseInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != returnNumber) {
+            separateOrderDAO.updateReturnOrderBaseInf(returnNumber, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void updateReturnOrderGoodsInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
+        if (null != returnNumber) {
+            separateOrderDAO.updateReturnOrderGoodsInf(returnNumber, flag, errorMsg, sendTime);
+        }
+    }
+
 }

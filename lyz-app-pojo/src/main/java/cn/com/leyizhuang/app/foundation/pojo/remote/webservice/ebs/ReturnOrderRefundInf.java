@@ -2,13 +2,14 @@ package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import lombok.*;
 
 import java.util.Date;
 
 /**
- * 退单基础信息
+ * 退单退款信息
  *
  * @author Richard
  * Created on 2018-01-02 13:39
@@ -19,10 +20,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ReturnOrderCouponInf {
+public class ReturnOrderRefundInf {
 
+    /**
+     * 退款id
+     */
+    private Long refundId;
 
-    private Long lineId;
 
     /**
      * 主退单号
@@ -33,28 +37,53 @@ public class ReturnOrderCouponInf {
     /**
      * 原主单号
      */
-
     private String mainOrderNumber;
 
     /**
-     * 券类型（1.产品券 2.优惠券）
+     * 退款单号
      */
-    private Long couponTypeId;
+    private String refundNumber;
 
     /**
-     * 商品编码
+     * 顾客id
      */
-    private String sku;
+    private Long userId;
 
     /**
-     * 数量
+     * 门店编码
      */
-    private Integer quantity;
+    private String diySiteCode;
+
 
     /**
-     * 券价格
+     * 门店组织编码
      */
-    private Double buyPrice;
+    private String storeOrgCode;
+
+    /**
+     * 退款类型
+     */
+    private OrderBillingPaymentType refundType;
+
+    /**
+     * 退款日期
+     */
+    private Date refundDate;
+
+    /**
+     * 退款金额
+     */
+    private Double amount;
+
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * 分公司 id
+     */
+    private Long sobId;
 
     /**
      * 创建时间

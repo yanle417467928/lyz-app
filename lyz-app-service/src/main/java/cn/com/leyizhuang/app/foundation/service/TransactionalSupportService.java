@@ -21,11 +21,13 @@ public interface TransactionalSupportService {
                              List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails,
                              String ipAddress);
 
-    void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+    void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                       List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
                                       List<OrderJxPriceDifferenceReturnInf> returnInfs);
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 
     void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<OrderJxPriceDifferenceRefundDetails> detailsList);
+
+    void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap, List<ReturnOrderCouponInf> returnOrderCouponInfList, List<ReturnOrderRefundInf> returnOrderRefundInfList, List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList);
 }

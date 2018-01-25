@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -52,10 +53,10 @@ import java.util.Map;
 
 /**
  * @author Jerry.Ren
- *         Notes: 退货单接口
- *         Created with IntelliJ IDEA.
- *         Date: 2017/12/4.
- *         Time: 9:34.
+ * Notes: 退货单接口
+ * Created with IntelliJ IDEA.
+ * Date: 2017/12/4.
+ * Time: 9:34.
  */
 
 @RestController
@@ -106,6 +107,9 @@ public class ReturnOrderController {
     private ICallWms callWms;
     @Resource
     private CommonService commonService;
+
+    @Resource
+    private SinkSender sinkSender;
 
     /**
      * 取消订单
@@ -159,7 +163,7 @@ public class ReturnOrderController {
             }
             if (null == orderBillingDetails) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
-                logger.info("canselOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
@@ -167,6 +171,8 @@ public class ReturnOrderController {
                 ReturnOrderController r = new ReturnOrderController();
                 //调用取消订单通用方法
                 Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
+                //发送退单拆单消息到拆单消息队列
+                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                 if (b) {
                     //判断收货类型和订单状态
                     if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
@@ -183,7 +189,7 @@ public class ReturnOrderController {
                     logger.info("getReturnOrderList OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-            }else {
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单状态不能取消！", null);
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -652,7 +658,7 @@ public class ReturnOrderController {
                     //TODO 第三方回复码
                     returnOrderBillingDetail.setReplyCode("");
                     returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OnlinePayType.UNION_PAY);
+                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                 }
 
             }
@@ -672,6 +678,9 @@ public class ReturnOrderController {
             orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
             //修改订单状态为拒签,物流状态拒签
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED, LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
+            //发送拆单消息到消息队列
+            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
@@ -789,7 +798,7 @@ public class ReturnOrderController {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()){
+                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()) {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
@@ -1073,9 +1082,9 @@ public class ReturnOrderController {
             detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
             detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
             detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
-            detailResponse.setReturnStatus(null != returnBaseInfo.getReturnStatus()?returnBaseInfo.getReturnStatus().getDescription():null);
-            detailResponse.setReturnType(null != returnBaseInfo.getReturnType()?returnBaseInfo.getReturnType().getDescription():null);
-            detailResponse.setDeliveryType(null != returnOrderLogisticInfo.getDeliveryType()?returnOrderLogisticInfo.getDeliveryType().getValue():null);
+            detailResponse.setReturnStatus(null != returnBaseInfo.getReturnStatus() ? returnBaseInfo.getReturnStatus().getDescription() : null);
+            detailResponse.setReturnType(null != returnBaseInfo.getReturnType() ? returnBaseInfo.getReturnType().getDescription() : null);
+            detailResponse.setDeliveryType(null != returnOrderLogisticInfo.getDeliveryType() ? returnOrderLogisticInfo.getDeliveryType().getValue() : null);
 
             //取货方式（上门取货，送货到店）
             if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
@@ -1199,7 +1208,7 @@ public class ReturnOrderController {
             returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
             returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
-                    returnOrderGoodsInfo.getReturnQty(),returnOrderGoodsInfo.getOrderGoodsId()));
+                    returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getOrderGoodsId()));
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
@@ -1401,7 +1410,7 @@ public class ReturnOrderController {
             returnOrderBillingDetail.setIntoAmountTime(aliPayResponse.getGmtRefundPay());
             returnOrderBillingDetail.setReplyCode(aliPayResponse.getTradeNo());
             returnOrderBillingDetail.setReturnMoney(Double.valueOf(aliPayResponse.getRefundFee()));
-            returnOrderBillingDetail.setReturnPayType(OnlinePayType.ALIPAY);
+            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ALIPAY);
             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
         } else {
             logger.info("refusedOrder OUT,支付宝退款失败！，出参 resultDTO:{}");
@@ -1426,7 +1435,7 @@ public class ReturnOrderController {
             returnOrderBillingDetail.setIntoAmountTime(new Date());
             returnOrderBillingDetail.setReplyCode(map.get("number"));
             returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
-            returnOrderBillingDetail.setReturnPayType(OnlinePayType.WE_CHAT);
+            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
         } else {
             logger.info("refusedOrder OUT,微信退款失败！，出参 resultDTO:{}");
@@ -1912,7 +1921,7 @@ public class ReturnOrderController {
                     //TODO 第三方回复码
                     returnOrderBillingDetail.setReplyCode("");
                     returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OnlinePayType.UNION_PAY);
+                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                 }
             }
             //修改订单状态为已取消

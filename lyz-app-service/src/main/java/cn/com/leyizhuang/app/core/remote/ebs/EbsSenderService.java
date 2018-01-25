@@ -44,4 +44,6 @@ public interface EbsSenderService {
     void sendOrderJxPriceDifferenceRefundInfAndRecord(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs);
 
     void sendOrderReceiveInfAndRecord(MaOrderReceiveInf receiveInfs);
+
+    void sendReturnOrderAndReturnGoodsToEbsAndRecord(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList);
 }

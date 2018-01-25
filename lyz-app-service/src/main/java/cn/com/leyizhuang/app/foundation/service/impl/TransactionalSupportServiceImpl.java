@@ -56,7 +56,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+    public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
                                              List<OrderJxPriceDifferenceReturnInf> returnInfs) {
         //循环保存分单基础信息
@@ -125,5 +125,35 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
             }
         }
         separateOrderService.sendOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap,
+                                                   List<ReturnOrderCouponInf> returnOrderCouponInfList,
+                                                   List<ReturnOrderRefundInf> returnOrderRefundInfList,
+                                                   List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList) {
+        //保存退单头及商品信息
+        if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
+            for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
+                separateOrderService.saveReturnOrderBaseInf(entry.getKey());
+                entry.getValue().forEach(p -> p.setRtHeaderId(entry.getKey().getRtHeaderId()));
+                for (ReturnOrderGoodsInf returnOrderGoodsInf : entry.getValue()) {
+                    separateOrderService.saveReturnOrderGoodsInf(returnOrderGoodsInf);
+                }
+            }
+        }
+        //保存退单券信息
+        if (AssertUtil.isNotEmpty(returnOrderCouponInfList)) {
+            returnOrderCouponInfList.forEach(p -> separateOrderService.saveReturnOrderCouponInf(p));
+        }
+        //保存退单退款信息
+        if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
+            returnOrderRefundInfList.forEach(p->separateOrderService.saveReturnOrderRefundInf(p));
+        }
+        //保存退单经销差价扣除信息
+        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)){
+            jxPriceDifferenceRefundInfList.forEach(p-> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
+        }
     }
 }

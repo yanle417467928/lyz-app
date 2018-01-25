@@ -27,9 +27,8 @@ public interface AppSeparateOrderService {
 
     void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 
-    void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
+    void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
 
-    void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(Long orderLineId, AppWhetherFlag flag, String errorMsg, Date sendTime);
 
     void sendOrderBaseInfAndOrderGoodsInf(String orderNumber);
 
@@ -68,4 +67,18 @@ public interface AppSeparateOrderService {
     void updateOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 
     void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag);
+
+    void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
+
+    void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf);
+
+    void saveReturnOrderCouponInf(ReturnOrderCouponInf returnOrderCouponInf);
+
+    void saveReturnOrderRefundInf(ReturnOrderRefundInf p);
+
+    void sendReturnOrderBaseInfAndReturnOrderGoodsInf(String returnNumber);
+
+    void updateReturnOrderBaseInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
+
+    void updateReturnOrderGoodsInf(String returnNumber, AppWhetherFlag flag,String errorMsg, Date sendTime);
 }

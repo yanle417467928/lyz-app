@@ -6,12 +6,8 @@ import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.ebs.entity.dto.second.*;
@@ -435,10 +431,10 @@ public class EbsSenderServiceImpl implements EbsSenderService {
      */
     public void updateOrderFlag(final OrderBaseInf orderInf, final List<OrderGoodsInf> goodsInfs, AppWhetherFlag flag) {
         if (AppWhetherFlag.Y == flag) {
-            separateOrderService.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, null, new Date());
+            separateOrderService.updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, null, new Date());
             separateOrderService.updateOrderGoodsInfByOrderNumber(orderInf.getOrderNumber(), flag, null, new Date());
         } else {
-            separateOrderService.updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, orderInf.getErrorMsg(), null);
+            separateOrderService.updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(orderInf.getOrderNumber(), flag, orderInf.getErrorMsg(), null);
             separateOrderService.updateOrderGoodsInfByOrderNumber(orderInf.getOrderNumber(), flag, orderInf.getErrorMsg(), null);
         }
 
@@ -512,9 +508,11 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     /**
      * 发送【调拨单(出库)】信息到EBS，并保存发送结果
+     *
      * @param allocation
      */
-    public void sendAllocationToEBSAndRecord(final Allocation allocation){
+    @Override
+    public void sendAllocationToEBSAndRecord(final Allocation allocation) {
         Map<String, Object> result = sendAllocationToEBS(allocation);
         if (!(Boolean) result.get("success")) {
             AllocationInf allocationInf = new AllocationInf();
@@ -534,11 +532,12 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     /**
      * 发送【调拨单(出库)】信息到EBS
+     *
      * @param allocation
      * @return
      */
-    public Map<String, Object> sendAllocationToEBS(Allocation allocation){
-        log.info("sendAllocationToEBS, allocation = "+ allocation );
+    public Map<String, Object> sendAllocationToEBS(Allocation allocation) {
+        log.info("sendAllocationToEBS, allocation = " + allocation);
 
         String header = ityAllocationService.genHeaderJson(allocation);
         String details = ityAllocationService.genDetailJson(allocation);
@@ -563,7 +562,8 @@ public class EbsSenderServiceImpl implements EbsSenderService {
      *
      * @param
      */
-    public void sendAllocationReceivedToEBSAndRecord(final Allocation allocation){
+    @Override
+    public void sendAllocationReceivedToEBSAndRecord(final Allocation allocation) {
         Map<String, Object> result = sendAllocationReceivedToEBS(allocation);
         if (!(Boolean) result.get("success")) {
             AllocationInf allocationInf = new AllocationInf();
@@ -667,38 +667,6 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
     //************************************ 发送订单经销差价退还信息 end ***************************
 
-    private Map<String, Object> postToEbs(String url, List<NameValuePair> parameters) {
-        Map<String, Object> result = Maps.newHashMap();
-        HttpPost httppost = new HttpPost(url);
-        httppost.setConfig(REQUEST_CONFIG);
-        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-
-        try {
-            httppost.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
-            CloseableHttpResponse response = httpclient.execute(httppost);
-            log.info("postToEbs, response=" + response.toString());
-            if (response.getStatusLine().getStatusCode() == 200) {
-                HttpEntity entity = response.getEntity();
-                String jsonResult = EntityUtils.toString(entity, "utf-8");
-                log.info("postToEbs, jsonResult=" + jsonResult);
-                JSONObject ebsResult = JSON.parseObject(jsonResult);
-                if ("0".equals(ebsResult.getString("code"))) {
-                    result.put("success", true);
-                } else {
-                    result.put("success", false);
-                    result.put("msg", ebsResult.getString("message"));
-                }
-            } else {
-                result.put("success", false);
-                result.put("msg", "Http code:" + response.getStatusLine().getStatusCode());
-            }
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("msg", e.getMessage());
-        }
-        return result;
-    }
-
 
     /**
      * 发送门店自提单发货到EBS
@@ -720,9 +688,9 @@ public class EbsSenderServiceImpl implements EbsSenderService {
      * 更新门店自提单接口信息
      *
      * @param receiveInfsId 订单券行id
-     * @param msg          错误信息
-     * @param sendTime     发送成功时间
-     * @param flag         标识
+     * @param msg           错误信息
+     * @param sendTime      发送成功时间
+     * @param flag          标识
      */
     private void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != receiveInfsId) {
@@ -757,6 +725,147 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         return result;
     }
 
+    //************************************ 发送退单头及商品信息 begin *************************
+
+    /**
+     * 发送退单头及商品信息到EBS并记录
+     *
+     * @param baseInf                 退单头
+     * @param returnOrderGoodsInfList 退单商品
+     */
+    @Override
+    public void sendReturnOrderAndReturnGoodsToEbsAndRecord(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList) {
+        Map<String, Object> result = sendReturnOrderAndReturnGoodsToEbs(baseInf, returnOrderGoodsInfList);
+        if (!(Boolean) result.get("success")) {
+            baseInf.setErrorMsg((String) result.get("msg"));
+            updateReturnOrderFlag(baseInf, returnOrderGoodsInfList, AppWhetherFlag.N);
+        } else {
+            updateReturnOrderFlag(baseInf, returnOrderGoodsInfList, AppWhetherFlag.Y);
+        }
+    }
+
+
+    private Map<String, Object> sendReturnOrderAndReturnGoodsToEbs(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList) {
+        log.info("sendReturnOrderAndReturnGoodsToEbs, returnOrderInf=" + baseInf);
+        log.info("sendReturnOrderAndReturnGoodsToEbs,returnOrderGoodsInfList=" + returnOrderGoodsInfList);
+
+        ReturnOrderSecond returnOrderSecond = new ReturnOrderSecond();
+        returnOrderSecond.setDeliverTypeTitle(toString(baseInf.getDeliverTypeTitle()));
+        returnOrderSecond.setDiySiteCode(toString(baseInf.getDiySiteCode()));
+        returnOrderSecond.setMainOrderNumber(toString(baseInf.getMainOrderNumber()));
+        returnOrderSecond.setMainReturnNumber(toString(baseInf.getMainReturnNumber()));
+        returnOrderSecond.setOrderNumber(toString(baseInf.getOrderNumber()));
+        returnOrderSecond.setOrderTypeId(toString(baseInf.getOrderTypeId()));
+        returnOrderSecond.setRefundAmount(toString(baseInf.getRefundAmount()));
+        returnOrderSecond.setReturnDate(toString(DateFormatUtils.format(baseInf.getReturnDate(), "yyyy-MM-dd HH:mm:ss")));
+        returnOrderSecond.setReturnNumber(toString(baseInf.getReturnNumber()));
+        returnOrderSecond.setReturnType(toString(baseInf.getReturnType()));
+        returnOrderSecond.setRtFullFlag(toString(baseInf.getRtFullFlag()));
+        returnOrderSecond.setRtHeaderId(toString(baseInf.getRtHeaderId()));
+        returnOrderSecond.setSellerId(toString(baseInf.getSellerId()));
+        returnOrderSecond.setSobId(toString(baseInf.getSobId()));
+        returnOrderSecond.setStoreOrgCode(toString(baseInf.getStoreOrgCode()));
+        returnOrderSecond.setUserId(toString(baseInf.getUserId()));
+        returnOrderSecond.setAttribute1(toString(baseInf.getAttribute1()));
+        returnOrderSecond.setAttribute2(toString(baseInf.getAttribute2()));
+        returnOrderSecond.setAttribute3(toString(baseInf.getAttribute3()));
+        returnOrderSecond.setAttribute4(toString(baseInf.getAttribute4()));
+        returnOrderSecond.setAttribute5(toString(baseInf.getAttribute5()));
+
+
+        List<ReturnOrderGoodsSecond> returnOrderGoodsSecondList = new ArrayList<>();
+        if (null != returnOrderGoodsInfList && returnOrderGoodsInfList.size() > 0) {
+            for (ReturnOrderGoodsInf returnOrderGoodsInf : returnOrderGoodsInfList) {
+                ReturnOrderGoodsSecond returnOrderGoodsSecond = new ReturnOrderGoodsSecond();
+                returnOrderGoodsSecond.setAttribute1(toString(returnOrderGoodsInf.getAttribute1()));
+                returnOrderGoodsSecond.setAttribute2(toString(returnOrderGoodsInf.getAttribute2()));
+                returnOrderGoodsSecond.setAttribute3(toString(returnOrderGoodsInf.getAttribute3()));
+                returnOrderGoodsSecond.setAttribute4(toString(returnOrderGoodsInf.getAttribute4()));
+                returnOrderGoodsSecond.setAttribute5(toString(returnOrderGoodsInf.getAttribute5()));
+                returnOrderGoodsSecond.setGoodsTitle(toString(returnOrderGoodsInf.getGoodsTitle()));
+                returnOrderGoodsSecond.setHyPrice(toString(returnOrderGoodsInf.getHyPrice()));
+                returnOrderGoodsSecond.setJxPrice(toString(returnOrderGoodsInf.getJxPrice()));
+                returnOrderGoodsSecond.setLsPrice(toString(returnOrderGoodsInf.getLsPrice()));
+                returnOrderGoodsSecond.setSettlementPrice(toString(returnOrderGoodsInf.getSettlementPrice()));
+                returnOrderGoodsSecond.setMainOrderNumber(toString(returnOrderGoodsInf.getMainOrderNumber()));
+                returnOrderGoodsSecond.setMainReturnNumber(toString(returnOrderGoodsInf.getMainReturnNumber()));
+                returnOrderGoodsSecond.setOrderLineId(toString(returnOrderGoodsInf.getOrderLineId()));
+                returnOrderGoodsSecond.setOrderNumber(toString(returnOrderGoodsInf.getOrderNumber()));
+                returnOrderGoodsSecond.setQuantity(toString(returnOrderGoodsInf.getQuantity()));
+                returnOrderGoodsSecond.setReturnNumber(toString(returnOrderGoodsInf.getReturnNumber()));
+                returnOrderGoodsSecond.setReturnPrice(toString(returnOrderGoodsInf.getReturnPrice()));
+                returnOrderGoodsSecond.setRtHeaderId(toString(returnOrderGoodsInf.getRtHeaderId()));
+                returnOrderGoodsSecond.setRtLineId(toString(returnOrderGoodsInf.getRtLineId()));
+                returnOrderGoodsSecond.setSku(toString(returnOrderGoodsInf.getSku()));
+
+                returnOrderGoodsSecondList.add(returnOrderGoodsSecond);
+            }
+        }
+
+        String returnOrderJson = JSON.toJSONString(returnOrderSecond);
+        String returnOrderGoodsJson = JSON.toJSONString(returnOrderGoodsSecondList);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("returnOrderJson", returnOrderJson));
+        parameters.add(new BasicNameValuePair("returnOrderGoodsJson", returnOrderGoodsJson));
+
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callReturnOrderSecond", parameters);
+
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("returnOrderJson", returnOrderJson);
+            content.put("returnOrderGoodsJson", returnOrderGoodsJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+
+        log.info("sendReturnOrderAndReturnGoodsToEbs, result=" + result);
+        return result;
+    }
+
+    private void updateReturnOrderFlag(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList, AppWhetherFlag flag) {
+        if (AppWhetherFlag.Y == flag) {
+            separateOrderService.updateReturnOrderBaseInf(baseInf.getReturnNumber(), flag, null, new Date());
+            separateOrderService.updateReturnOrderGoodsInf(baseInf.getReturnNumber(), flag, null, new Date());
+        } else {
+            separateOrderService.updateReturnOrderBaseInf(baseInf.getReturnNumber(), flag, baseInf.getErrorMsg(), null);
+            separateOrderService.updateReturnOrderGoodsInf(baseInf.getReturnNumber(), flag, baseInf.getErrorMsg(), null);
+        }
+    }
+
+
+    //************************************ 发送退单头及商品信息 end *************************
+
+
+    private Map<String, Object> postToEbs(String url, List<NameValuePair> parameters) {
+        Map<String, Object> result = Maps.newHashMap();
+        HttpPost httppost = new HttpPost(url);
+        httppost.setConfig(REQUEST_CONFIG);
+        CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+
+        try {
+            httppost.setEntity(new UrlEncodedFormEntity(parameters, "UTF-8"));
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            log.info("postToEbs, response=" + response.toString());
+            if (response.getStatusLine().getStatusCode() == 200) {
+                HttpEntity entity = response.getEntity();
+                String jsonResult = EntityUtils.toString(entity, "utf-8");
+                log.info("postToEbs, jsonResult=" + jsonResult);
+                JSONObject ebsResult = JSON.parseObject(jsonResult);
+                if ("0".equals(ebsResult.getString("code"))) {
+                    result.put("success", true);
+                } else {
+                    result.put("success", false);
+                    result.put("msg", ebsResult.getString("message"));
+                }
+            } else {
+                result.put("success", false);
+                result.put("msg", "Http code:" + response.getStatusLine().getStatusCode());
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("msg", e.getMessage());
+        }
+        return result;
+    }
 
     private String toString(Object obj) {
         if (obj == null) {

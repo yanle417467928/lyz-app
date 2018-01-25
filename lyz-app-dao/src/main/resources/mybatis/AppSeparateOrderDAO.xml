@@ -606,4 +606,236 @@
         FROM inter_ate_order_base_inf
         WHERE main_order_number = #{orderNumber} AND product_type = #{companyFlag}
     </select>
+
+    <insert id="saveReturnOrderBaseInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf"
+            keyColumn="rt_header_id" keyProperty="rtHeaderId" useGeneratedKeys="true">
+        INSERT INTO inter_ate_return_order_base_inf (rt_header_id, return_number, main_return_number, order_number,
+                                                     main_order_number, sob_id, return_date, rt_full_flag, refund_amount, return_type,
+                                                     userid, seller_id, diy_site_code, store_org_code, order_type_id, deliver_type_title,
+                                                     attribute1, attribute2, attribute3, attribute4, attribute5, create_time, send_flag,
+                                                     error_msg, send_time)
+            SELECT
+                #{rtHeaderId},
+                #{returnNumber},
+                #{mainReturnNumber},
+                #{orderNumber},
+                #{mainOrderNumber},
+                #{sobId},
+                #{returnDate},
+                #{rtFullFlag},
+                #{refundAmount},
+                #{returnType},
+                #{userId},
+                #{sellerId},
+                #{diySiteCode},
+                #{storeOrgCode},
+                #{orderTypeId},
+                #{deliverTypeTitle},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime}
+            FROM dual
+            WHERE NOT exists(
+                    SELECT 1
+                    FROM inter_ate_return_order_base_inf
+                    WHERE return_number = #{returnNumber}
+            )
+
+    </insert>
+
+    <insert id="saveReturnOrderGoodsInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf">
+        INSERT INTO inter_ate_return_order_goods_inf (rt_header_id, return_number, main_return_number, order_number, main_order_number, order_line_id,
+                                                      goods_title, sku, quantity, ls_price, hy_price, jx_price, settlement_price,
+                                                      return_price, attribute1, attribute2, attribute3, attribute4, attribute5, create_time,
+                                                      send_flag, error_msg, send_time)
+            SELECT
+                #{rtHeaderId},
+                #{returnNumber},
+                #{mainReturnNumber},
+                #{orderNumber},
+                #{mainOrderNumber},
+                #{orderLineId},
+                #{goodsTitle},
+                #{sku},
+                #{quantity},
+                #{lsPrice},
+                #{hyPrice},
+                #{jxPrice},
+                #{settlementPrice},
+                #{returnPrice},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime}
+            FROM dual
+            WHERE NOT exists(
+                    SELECT 1
+                    FROM inter_ate_return_order_goods_inf
+                    WHERE order_line_id = #{orderLineId}
+            )
+    </insert>
+
+    <insert id="saveReturnOrderCouponInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderCouponInf">
+        INSERT INTO inter_ate_return_order_coupon_inf (main_return_number, main_order_number, coupon_type_id, sku, buy_price, quantity,
+                                                       attribute1, attribute2, attribute3, attribute4, attribute5, error_msg, send_flag, send_time,
+                                                       create_time)
+        VALUES (
+            #{mainReturnNumber},
+            #{mainOrderNumber},
+            #{couponTypeId},
+            #{sku},
+            #{buyPrice},
+            #{quantity},
+            #{attribute1},
+            #{attribute2},
+            #{attribute3},
+            #{attribute4},
+            #{attribute5},
+            #{errorMsg},
+            #{sendFlag},
+            #{sendTime},
+            #{createTime})
+    </insert>
+
+    <insert id="saveReturnOrderRefundInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf">
+        INSERT INTO inter_ate_return_order_refund_inf (main_order_number, main_return_number, refund_number, user_id, diy_site_code, store_org_code,
+                                                       refund_type, refund_date, amount, description, sob_id, attribute1, attribute2, attribute3,
+                                                       attribute4, attribute5, create_time, send_flag, error_msg, send_time)
+            SELECT
+                #{mainOrderNumber},
+                #{mainReturnNumber},
+                #{refundNumber},
+                #{userId},
+                #{diySiteCode},
+                #{storeOrgCode},
+                #{refundType},
+                #{refundDate},
+                #{amount},
+                #{description},
+                #{sobId},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime}
+            FROM dual
+            WHERE NOT exists(
+                    SELECT 1
+                    FROM inter_ate_return_order_refund_inf
+                    WHERE refund_number = #{refundNumber}
+            )
+    </insert>
+
+    <select id="getReturnOrderBaseInfByReturnNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf">
+        SELECT
+            rt_header_id,
+            return_number,
+            main_return_number,
+            order_number,
+            main_order_number,
+            sob_id,
+            return_date,
+            rt_full_flag,
+            refund_amount,
+            return_type,
+            userid,
+            seller_id,
+            diy_site_code,
+            store_org_code,
+            order_type_id,
+            deliver_type_title,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time
+        FROM inter_ate_return_order_base_inf
+        WHERE main_return_number = #{returnNumber}
+    </select>
+
+    <select id="getReturnOrderGoodsInfByReturnNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf">
+        SELECT
+            rt_header_id,
+            return_number,
+            main_return_number,
+            order_number,
+            main_order_number,
+            order_line_id,
+            goods_title,
+            sku,
+            quantity,
+            ls_price,
+            hy_price,
+            jx_price,
+            settlement_price,
+            return_price,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time
+        FROM inter_ate_return_order_goods_inf
+        WHERE return_number = #{returnNumber}
+    </select>
+
+    <update id="updateReturnOrderBaseInf" >
+        UPDATE inter_ate_return_order_base_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != errorMsg">
+                error_msg = #{errorMsg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE return_number = #{returnNumber}
+    </update>
+
+    <update id="updateReturnOrderGoodsInf" >
+        UPDATE inter_ate_return_order_goods_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != errorMsg">
+                error_msg = #{errorMsg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE return_number = #{returnNumber}
+    </update>
 </mapper>
