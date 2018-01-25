@@ -15,7 +15,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderJxPriceDifferenceRefundDetails {
+public class ReturnOrderJxPriceDifferenceRefundDetails {
 
     private Long id;
 

@@ -52,11 +52,11 @@ public interface AppSeparateOrderService {
 
     void saveOrderJxPriceDifferenceReturnInf(OrderJxPriceDifferenceReturnInf returnInf);
 
-    void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
+    void saveOrderJxPriceDifferenceRefundInf(ReturnOrderJxPriceDifferenceRefundInf refundInf);
 
     void sendOrderJxPriceDifferenceReturnInf(String orderNumber);
 
-    void sendOrderJxPriceDifferenceRefundInf(String returnNumber);
+   /* void sendOrderJxPriceDifferenceRefundInf(String returnNumber);*/
 
     void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 
@@ -81,4 +81,16 @@ public interface AppSeparateOrderService {
     void updateReturnOrderBaseInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
 
     void updateReturnOrderGoodsInf(String returnNumber, AppWhetherFlag flag,String errorMsg, Date sendTime);
+
+    void sendReturnOrderCouponInf(String returnNumber);
+
+    void updateReturnOrderCouponInf(List<Long> returnCouponInfLineId, String msg, Date sendTime, AppWhetherFlag flag);
+
+    void sendReturnOrderRefundInf(String returnNumber);
+
+    void updateReturnOrderRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
+
+    void sendReturnOrderJxPriceDifferenceRefundInf(String returnNumber);
+
+    void updateReturnOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 }

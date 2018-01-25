@@ -1209,7 +1209,7 @@ public class CommonServiceImpl implements CommonService {
 
         List<OrderJxPriceDifferenceReturnDetails> detailsList = orderService.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(returnOrderBaseInfo.getOrderNo());
 
-        List<OrderJxPriceDifferenceRefundDetails> returnDetailsList = new ArrayList<>(20);
+        List<ReturnOrderJxPriceDifferenceRefundDetails> returnDetailsList = new ArrayList<>(20);
         double jxPrice = 0.00;
 
         if (AssertUtil.isNotEmpty(detailsList)) {
@@ -1218,7 +1218,7 @@ public class CommonServiceImpl implements CommonService {
                     if (goodsInfo.getSku().equals(details.getSku())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
                         jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
-                        OrderJxPriceDifferenceRefundDetails returnDetails = new OrderJxPriceDifferenceRefundDetails();
+                        ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                         returnDetails.setAmount(returnGoodsJxPriceAmount);
                         returnDetails.setCreateTime(new Date());
                         returnDetails.setRoid(returnOrderBaseInfo.getRoid());
@@ -1231,7 +1231,7 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setUnitPrice(details.getUnitPrice());
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
                         returnDetailsList.add(returnDetails);
-                        orderService.saveOrderJxPriceDifferenceRefundDetails(returnDetails);
+                        orderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                     }
                 }
             }
@@ -1266,7 +1266,7 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
         }
-        transactionalSupportService.handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(returnOrderBaseInfo, orderBaseInfo, returnDetailsList);
+        /*transactionalSupportService.handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(returnOrderBaseInfo, orderBaseInfo, returnDetailsList);*/
     }
 
     public String sendPickUpCodeAndRemindMessageAfterPayUp(OrderBaseInfo orderBaseInfo) {

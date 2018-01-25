@@ -661,9 +661,9 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrderJxPriceDifferenceRefundDetails(OrderJxPriceDifferenceRefundDetails refundDetails) {
+    public void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails) {
         if (null != refundDetails) {
-            orderDAO.saveOrderJxPriceDifferenceRefundDetails(refundDetails);
+            orderDAO.saveReturnOrderJxPriceDifferenceRefundDetails(refundDetails);
         }
     }
 

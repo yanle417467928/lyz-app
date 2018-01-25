@@ -41,9 +41,15 @@ public interface EbsSenderService {
 
     void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs);
 
-    void sendOrderJxPriceDifferenceRefundInfAndRecord(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs);
+   /* void sendOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs);*/
 
     void sendOrderReceiveInfAndRecord(MaOrderReceiveInf receiveInfs);
 
     void sendReturnOrderAndReturnGoodsToEbsAndRecord(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList);
+
+    void sendReturnOrderCouponInfAndRecord(List<ReturnOrderCouponInf> returnOrderCouponInfList);
+
+    void sendReturnOrderRefundInfAndRecord(List<ReturnOrderRefundInf> returnOrderRefundInfList);
+
+    void sendReturnOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs);
 }

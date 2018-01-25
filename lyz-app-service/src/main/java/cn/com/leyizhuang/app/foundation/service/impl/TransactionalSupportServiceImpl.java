@@ -100,20 +100,20 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         rechargeService.updateRechargeOrderStatusAndPayUpTime(rechargeNo, new Date(), AppRechargeOrderStatus.PAID);
     }
 
-    @Override
+   /* @Override
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo,
-                                                                   List<OrderJxPriceDifferenceRefundDetails> detailsList) {
+                                                                   List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList) {
 
 
-        List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
+        List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
         if (AssertUtil.isNotEmpty(detailsList)) {
-            for (OrderJxPriceDifferenceRefundDetails details : detailsList) {
+            for (ReturnOrderJxPriceDifferenceRefundDetails details : detailsList) {
 
-                OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
+                ReturnOrderJxPriceDifferenceRefundInf inf = new ReturnOrderJxPriceDifferenceRefundInf();
                 inf.setAmount(details.getAmount());
                 inf.setCreateTime(details.getCreateTime());
-                inf.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                inf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                 inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
                 inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
                 inf.setSku(details.getSku());
@@ -124,15 +124,15 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
                 separateOrderService.saveOrderJxPriceDifferenceRefundInf(inf);
             }
         }
-        separateOrderService.sendOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
-    }
+        separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
+    }*/
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap,
                                                    List<ReturnOrderCouponInf> returnOrderCouponInfList,
                                                    List<ReturnOrderRefundInf> returnOrderRefundInfList,
-                                                   List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList) {
+                                                   List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList) {
         //保存退单头及商品信息
         if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
             for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {

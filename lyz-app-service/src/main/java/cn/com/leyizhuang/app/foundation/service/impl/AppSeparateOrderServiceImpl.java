@@ -358,7 +358,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             if (null != orderCouponInfList && orderCouponInfList.size() > 0) {
                 ebsSenderService.sendOrderCouponInfAndRecord(orderCouponInfList);
             }
-
         }
     }
 
@@ -469,15 +468,15 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
-    @Override
+  /*  @Override
     public void sendOrderJxPriceDifferenceRefundInf(String returnNumber) {
         if (StringUtils.isNotBlank(returnNumber)) {
-            List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = separateOrderDAO.getOrderJxPriceDifferenceRefundInf(returnNumber);
+            List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = separateOrderDAO.getOrderJxPriceDifferenceRefundInf(returnNumber);
             if (null != jxPriceDifferenceRefundInfs && jxPriceDifferenceRefundInfs.size() > 0) {
                 ebsSenderService.sendOrderJxPriceDifferenceRefundInfAndRecord(jxPriceDifferenceRefundInfs);
             }
         }
-    }
+    }*/
 
     @Override
     public void updateOrderJxPriceDifferenceReturnInf(List<Long> returnInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
@@ -636,16 +635,15 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 //************************************ 生成退单退款信息 end ********************************************
 
                 //******************************* 生成退订单退经销差价信息 begin ***************************************
-                List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList = new ArrayList<>(20);
-                List<OrderJxPriceDifferenceRefundDetails> detailsList = returnOrderService.
+                List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList = new ArrayList<>(20);
+                List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList = returnOrderService.
                         getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(returnOrderBaseInfo.getReturnNo());
                 if (AssertUtil.isNotEmpty(detailsList)) {
-                    for (OrderJxPriceDifferenceRefundDetails details : detailsList) {
-
-                        OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
+                    for (ReturnOrderJxPriceDifferenceRefundDetails details : detailsList) {
+                        ReturnOrderJxPriceDifferenceRefundInf inf = new ReturnOrderJxPriceDifferenceRefundInf();
                         inf.setAmount(details.getAmount());
                         inf.setCreateTime(details.getCreateTime());
-                        inf.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        inf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                         inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
                         inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
                         inf.setSku(details.getSku());
@@ -676,7 +674,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
-    public void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf) {
+    public void saveOrderJxPriceDifferenceRefundInf(ReturnOrderJxPriceDifferenceRefundInf refundInf) {
         if (null != refundInf) {
             separateOrderDAO.saveOrderJxPriceDifferenceRefundInf(refundInf);
         }
@@ -741,6 +739,57 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void updateReturnOrderGoodsInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
         if (null != returnNumber) {
             separateOrderDAO.updateReturnOrderGoodsInf(returnNumber, flag, errorMsg, sendTime);
+        }
+    }
+
+    @Override
+    public void sendReturnOrderCouponInf(String returnNumber) {
+        if (null != returnNumber) {
+            List<ReturnOrderCouponInf> returnOrderCouponInfList = separateOrderDAO.getReturnOrderCouponInf(returnNumber);
+            if (AssertUtil.isNotEmpty(returnOrderCouponInfList)) {
+                ebsSenderService.sendReturnOrderCouponInfAndRecord(returnOrderCouponInfList);
+            }
+        }
+    }
+
+    @Override
+    public void updateReturnOrderCouponInf(List<Long> returnCouponInfLineId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(returnCouponInfLineId)){
+            separateOrderDAO.updateReturnOrderCouponInf(returnCouponInfLineId, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void sendReturnOrderRefundInf(String returnNumber) {
+        if (null != returnNumber) {
+            List<ReturnOrderRefundInf> returnOrderRefundInfList = separateOrderDAO.getReturnOrderRefundInf(returnNumber);
+            if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
+                ebsSenderService.sendReturnOrderRefundInfAndRecord(returnOrderRefundInfList);
+            }
+        }
+    }
+
+    @Override
+    public void updateReturnOrderRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(refundInfIds)){
+            separateOrderDAO.updateReturnOrderRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void sendReturnOrderJxPriceDifferenceRefundInf(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = separateOrderDAO.getReturnOrderJxPriceDifferenceRefundInf(returnNumber);
+            if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfs)) {
+                ebsSenderService.sendReturnOrderJxPriceDifferenceRefundInfAndRecord(jxPriceDifferenceRefundInfs);
+            }
+        }
+    }
+
+    @Override
+    public void updateReturnOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(refundInfIds)){
+            separateOrderDAO.updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds,msg,sendTime,flag);
         }
     }
 

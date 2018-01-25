@@ -15,7 +15,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderJxPriceDifferenceRefundInf {
+public class ReturnOrderJxPriceDifferenceRefundInf {
 
     /**
      * 创建时间
@@ -37,21 +37,39 @@ public class OrderJxPriceDifferenceRefundInf {
      */
     private Date sendTime;
 
-    private Long refundId;
-
     /**
      * 退单号
      */
-    private String returnNumber;
+    private String mainReturnNumber;
+
     /**
      * 订单号
      */
     private String mainOrderNumber;
 
+
+    private Long refundId;
+
+    /**
+     * 退款编号
+     */
+    private String refundNumber;
+
+
     /**
      * 分公司id
      */
     private Long sobId;
+
+    /**
+     * 门店组织编码
+     */
+    private String storeOrgCode;
+
+    /**
+     * 门店编码
+     */
+    private String diySiteCode;
 
     /**
      * 退还日期
@@ -72,21 +90,6 @@ public class OrderJxPriceDifferenceRefundInf {
      * 描述
      */
     private String description;
-
-    /**
-     * 门店组织编码
-     */
-    private String storeOrgCode;
-
-    /**
-     * 门店编码
-     */
-    private String diySiteCode;
-
-    /**
-     * 收款编号
-     */
-    private String refundNumber;
 
     private String attribute1;
 

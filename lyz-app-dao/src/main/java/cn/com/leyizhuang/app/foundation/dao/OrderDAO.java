@@ -131,5 +131,5 @@ public interface OrderDAO {
 
     void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
 
-    void saveOrderJxPriceDifferenceRefundDetails(OrderJxPriceDifferenceRefundDetails refundDetails);
+    void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails);
 }

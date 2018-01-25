@@ -313,7 +313,7 @@
     </select>
 
     <select id="getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceRefundDetails">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails">
         SELECT
             id,
             roid,
@@ -327,7 +327,7 @@
             return_qty,
             amount,
             refund_number
-        FROM ord_jx_price_difference_refund_details
+        FROM ord_return_jx_price_difference_refund_details
         WHERE return_no = #{returnNo}
     </select>
 </mapper>

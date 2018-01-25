@@ -91,9 +91,9 @@ public interface AppSeparateOrderDAO {
                                                @Param(value = "sendTime") Date sendTime,
                                                @Param(value = "flag") AppWhetherFlag flag);
 
-    void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
+    void saveOrderJxPriceDifferenceRefundInf(ReturnOrderJxPriceDifferenceRefundInf refundInf);
 
-    List<OrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
+    List<ReturnOrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
 
 
     void updateOrderReceiveFlagAndSendTimeAndErrorMsg(@Param(value = "receiveInfsId") Long receiveInfsId,
@@ -125,4 +125,25 @@ public interface AppSeparateOrderDAO {
                                    @Param(value = "flag") AppWhetherFlag flag,
                                    @Param(value = "errorMsg") String errorMsg,
                                    @Param(value = "sendTime") Date sendTime);
+
+    List<ReturnOrderCouponInf> getReturnOrderCouponInf(String returnNumber);
+
+    void updateReturnOrderCouponInf(@Param(value = "returnCouponInfLineId") List<Long> returnCouponInfLineId,
+                                    @Param(value = "msg") String msg,
+                                    @Param(value = "sendTime") Date sendTime,
+                                    @Param(value = "flag") AppWhetherFlag flag);
+
+    List<ReturnOrderRefundInf> getReturnOrderRefundInf(String returnNumber);
+
+    void updateReturnOrderRefundInf(@Param(value = "refundInfIds") List<Long> refundInfIds,
+                                    @Param(value = "msg") String msg,
+                                    @Param(value = "sendTime") Date sendTime,
+                                    @Param(value = "flag") AppWhetherFlag flag);
+
+    List<ReturnOrderJxPriceDifferenceRefundInf> getReturnOrderJxPriceDifferenceRefundInf(String returnNumber);
+
+    void updateReturnOrderJxPriceDifferenceRefundInf(@Param(value = "refundInfIds") List<Long> refundInfIds,
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "flag") AppWhetherFlag flag);
 }

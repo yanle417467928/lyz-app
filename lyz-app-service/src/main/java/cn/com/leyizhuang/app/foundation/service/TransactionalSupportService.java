@@ -27,7 +27,7 @@ public interface TransactionalSupportService {
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 
-    void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<OrderJxPriceDifferenceRefundDetails> detailsList);
+   /* void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList);*/
 
-    void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap, List<ReturnOrderCouponInf> returnOrderCouponInfList, List<ReturnOrderRefundInf> returnOrderRefundInfList, List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList);
+    void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap, List<ReturnOrderCouponInf> returnOrderCouponInfList, List<ReturnOrderRefundInf> returnOrderRefundInfList, List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList);
 }

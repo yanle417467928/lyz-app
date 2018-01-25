@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderRe
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.ebs.entity.dto.second.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * EBS接口发送服务实现
@@ -447,7 +449,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     @Override
     public void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs) {
-        Map<String, Object> result = sendJxPriceDifferenceReturnToEbs(jxPriceDifferenceReturnInfs);
+        Map<String, Object> result = sendOrderJxPriceDifferenceReturnToEbs(jxPriceDifferenceReturnInfs);
         List<Long> returnInfIds = new ArrayList<>(10);
         for (OrderJxPriceDifferenceReturnInf returnInf : jxPriceDifferenceReturnInfs) {
             returnInfIds.add(returnInf.getReceiptId());
@@ -466,7 +468,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
     }
 
-    private Map<String, Object> sendJxPriceDifferenceReturnToEbs(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs) {
+    private Map<String, Object> sendOrderJxPriceDifferenceReturnToEbs(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs) {
         log.info("sendJxPriceDifferenceReturnToEbs, jxPriceDifferenceReturnInfs=" + jxPriceDifferenceReturnInfs);
         List<OrderJxPriceDifferenceReturnSecond> orderJxPriceDifferenceReturnSeconds = new ArrayList<>(20);
         if (null != jxPriceDifferenceReturnInfs && jxPriceDifferenceReturnInfs.size() > 0) {
@@ -605,13 +607,13 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
 
 
-    //************************************ 发送订单经销差价退还信息 begin *************************
+    /*//************************************ 发送订单经销差价退还信息 begin *************************
 
     @Override
-    public void sendOrderJxPriceDifferenceRefundInfAndRecord(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+    public void sendOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
         Map<String, Object> result = sendJxPriceDifferenceRefundToEbs(jxPriceDifferenceRefundInfs);
         List<Long> refundInfIds = new ArrayList<>(10);
-        for (OrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
+        for (ReturnOrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
             refundInfIds.add(refundInf.getRefundId());
         }
         if (!(Boolean) result.get("success")) {
@@ -628,11 +630,11 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
     }
 
-    private Map<String, Object> sendJxPriceDifferenceRefundToEbs(List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+    private Map<String, Object> sendJxPriceDifferenceRefundToEbs(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
         log.info("sendJxPriceDifferenceRefundToEbs, jxPriceDifferenceRefundInfs=" + jxPriceDifferenceRefundInfs);
         List<OrderJxPriceDifferenceRefundSecond> orderJxPriceDifferenceRefundSeconds = new ArrayList<>(20);
         if (null != jxPriceDifferenceRefundInfs && jxPriceDifferenceRefundInfs.size() > 0) {
-            for (OrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
+            for (ReturnOrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
                 OrderJxPriceDifferenceRefundSecond refundSecond = new OrderJxPriceDifferenceRefundSecond();
                 refundSecond.setAmount(toString(refundInf.getAmount()));
                 refundSecond.setAttribute1(toString(refundInf.getAttribute1()));
@@ -647,7 +649,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
                 refundSecond.setSobId(toString(refundInf.getSobId()));
                 refundSecond.setSku(toString(refundInf.getSku()));
                 refundSecond.setRefundNumber(toString(refundInf.getRefundNumber()));
-                refundSecond.setReturnNumber(toString(refundInf.getReturnNumber()));
+                refundSecond.setMainReturnNumber(toString(refundInf.getReturnNumber()));
                 refundSecond.setRefundId(toString(refundInf.getRefundId()));
                 refundSecond.setRefundDate(toString(refundInf.getRefundDate()));
                 orderJxPriceDifferenceRefundSeconds.add(refundSecond);
@@ -665,7 +667,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         log.info("sendJxPriceDifferenceRefundToEbs, result=" + result);
         return result;
     }
-    //************************************ 发送订单经销差价退还信息 end ***************************
+    //************************************ 发送订单经销差价退还信息 end ****************************/
 
 
     /**
@@ -834,6 +836,203 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     //************************************ 发送退单头及商品信息 end *************************
 
+
+    //************************************ 发送退单券信息 begin *************************
+
+
+    /**
+     * 发送退单券信息到EBS并记录发送结果
+     *
+     * @param returnOrderCouponInfList 退单退券信息
+     */
+    @Override
+    public void sendReturnOrderCouponInfAndRecord(List<ReturnOrderCouponInf> returnOrderCouponInfList) {
+        Map<String, Object> result = sendReturnOrderCouponsToEbs(returnOrderCouponInfList);
+        List<Long> returnCouponInfLineId = returnOrderCouponInfList.stream().map(ReturnOrderCouponInf::getLineId).collect(Collectors.toList());
+        if (!(Boolean) result.get("success")) {
+            updateReturnOrderCouponInf(returnCouponInfLineId, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateReturnOrderCouponInf(returnCouponInfLineId, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+
+    private Map<String, Object> sendReturnOrderCouponsToEbs(List<ReturnOrderCouponInf> returnOrderCouponInfList) {
+        log.info("sendReturnOrderCouponsToEbs, returnOrderCouponInfList=" + returnOrderCouponInfList);
+        List<ReturnOrderCouponSecond> returnOrderCouponSeconds = new ArrayList<>();
+        if (null != returnOrderCouponInfList && returnOrderCouponInfList.size() > 0) {
+            for (ReturnOrderCouponInf couponInf : returnOrderCouponInfList) {
+                ReturnOrderCouponSecond returnOrderCouponSecond = new ReturnOrderCouponSecond();
+                returnOrderCouponSecond.setAttribute1(toString(couponInf.getAttribute1()));
+                returnOrderCouponSecond.setAttribute2(toString(couponInf.getAttribute2()));
+                returnOrderCouponSecond.setAttribute3(toString(couponInf.getAttribute3()));
+                returnOrderCouponSecond.setAttribute4(toString(couponInf.getAttribute4()));
+                returnOrderCouponSecond.setAttribute5(toString(couponInf.getAttribute5()));
+                returnOrderCouponSecond.setBuyPrice(toString(couponInf.getBuyPrice()));
+                returnOrderCouponSecond.setCouponTypeId(toString(couponInf.getCouponTypeId()));
+                returnOrderCouponSecond.setLineId(toString(couponInf.getLineId()));
+                returnOrderCouponSecond.setMainOrderNumber(toString(couponInf.getMainOrderNumber()));
+                returnOrderCouponSecond.setMainReturnNumber(toString(couponInf.getMainReturnNumber()));
+                returnOrderCouponSecond.setQuantity(toString(couponInf.getQuantity()));
+                returnOrderCouponSecond.setSku(toString(couponInf.getSku()));
+                returnOrderCouponSeconds.add(returnOrderCouponSecond);
+            }
+
+        }
+        String returnOrderCouponJson = JSON.toJSONString(returnOrderCouponSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("returnOrderCouponJson", returnOrderCouponJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callReturnOrderCouponSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("returnOrderCouponJson", returnOrderCouponJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendReturnOrderCouponsToEbs, result=" + result);
+        return result;
+    }
+
+    private void updateReturnOrderCouponInf(List<Long> returnCouponInfLineId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(returnCouponInfLineId)) {
+            separateOrderService.updateReturnOrderCouponInf(returnCouponInfLineId, msg, sendTime, flag);
+        }
+    }
+
+
+    //************************************ 发送退单券信息 begin *******************************
+
+    //************************************ 发送退单退款信息 begin *****************************
+
+
+    /**
+     * 发送退单退款信息到EBS并记录发送结果
+     *
+     * @param returnOrderRefundInfList 退单退款信息
+     */
+    @Override
+    public void sendReturnOrderRefundInfAndRecord(List<ReturnOrderRefundInf> returnOrderRefundInfList) {
+        Map<String, Object> result = sendReturnOrderRefundToEbs(returnOrderRefundInfList);
+        List<Long> refundInfIds = returnOrderRefundInfList.stream().map(ReturnOrderRefundInf::getRefundId).collect(Collectors.toList());
+        if (!(Boolean) result.get("success")) {
+            updateReturnOrderRefundInf(refundInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateReturnOrderRefundInf(refundInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+
+    private Map<String, Object> sendReturnOrderRefundToEbs(List<ReturnOrderRefundInf> returnOrderRefundInfList) {
+        log.info("sendReturnOrderRefundToEbs, returnOrderRefundInfList=" + returnOrderRefundInfList);
+        List<ReturnOrderRefundSecond> returnOrderRefundSeconds = new ArrayList<>();
+        if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
+            for (ReturnOrderRefundInf refundInf : returnOrderRefundInfList) {
+                ReturnOrderRefundSecond returnOrderRefundSecond = new ReturnOrderRefundSecond();
+                returnOrderRefundSecond.setAttribute1(toString(refundInf.getAttribute1()));
+                returnOrderRefundSecond.setAttribute2(toString(refundInf.getAttribute2()));
+                returnOrderRefundSecond.setAttribute3(toString(refundInf.getAttribute3()));
+                returnOrderRefundSecond.setAttribute4(toString(refundInf.getAttribute4()));
+                returnOrderRefundSecond.setAttribute5(toString(refundInf.getAttribute5()));
+                returnOrderRefundSecond.setAmount(toString(refundInf.getAmount()));
+                returnOrderRefundSecond.setDescription(toString(refundInf.getDescription()));
+                returnOrderRefundSecond.setDiySiteCode(toString(refundInf.getDiySiteCode()));
+                returnOrderRefundSecond.setMainOrderNumber(toString(refundInf.getMainOrderNumber()));
+                returnOrderRefundSecond.setMainReturnNumber(toString(refundInf.getMainReturnNumber()));
+                returnOrderRefundSecond.setRefundDate(toString(DateFormatUtils.format(refundInf.getRefundDate(), "yyyy-MM-dd HH:mm:ss")));
+                returnOrderRefundSecond.setRefundId(toString(refundInf.getRefundId()));
+                returnOrderRefundSecond.setRefundNumber(toString(refundInf.getRefundNumber()));
+                returnOrderRefundSecond.setRefundType(toString(refundInf.getRefundType()));
+                returnOrderRefundSecond.setSobId(toString(refundInf.getSobId()));
+                returnOrderRefundSecond.setStoreOrgCode(toString(refundInf.getStoreOrgCode()));
+                returnOrderRefundSecond.setUserId(toString(refundInf.getUserId()));
+                returnOrderRefundSeconds.add(returnOrderRefundSecond);
+            }
+        }
+        String returnOrderRefundJson = JSON.toJSONString(returnOrderRefundSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("returnOrderRefundJson", returnOrderRefundJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callReturnOrderRefundSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("returnOrderRefundJson", returnOrderRefundJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendReturnOrderRefundToEbs, result=" + result);
+        return result;
+    }
+
+    private void updateReturnOrderRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(refundInfIds)) {
+            separateOrderService.updateReturnOrderRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    //************************************ 发送退单退款信息 end *****************************
+
+
+    //************************************ 发送退单经销差价退款信息 begin *****************************
+
+    /**
+     * 发送退单经销差价退款信息到EBS并记录发送结果
+     *
+     * @param jxPriceDifferenceRefundInfs 退单经销差价退款信息
+     */
+    @Override
+    public void sendReturnOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+        Map<String, Object> result = sendReturnOrderJxPriceDifferenceRefundToEbs(jxPriceDifferenceRefundInfs);
+        List<Long> refundInfIds = jxPriceDifferenceRefundInfs.stream().map(ReturnOrderJxPriceDifferenceRefundInf::getRefundId).collect(Collectors.toList());
+        if (!(Boolean) result.get("success")) {
+            updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+    private void updateReturnOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (AssertUtil.isNotEmpty(refundInfIds)) {
+            separateOrderService.updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    private Map<String, Object> sendReturnOrderJxPriceDifferenceRefundToEbs(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
+        log.info("sendReturnOrderJxPriceDifferenceRefundToEbs, jxPriceDifferenceRefundInfs=" + jxPriceDifferenceRefundInfs);
+        List<ReturnOrderJxPriceDifferenceRefundSecond> returnOrderJxPriceDifferenceRefundSeconds = new ArrayList<>(20);
+        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfs)) {
+            for (ReturnOrderJxPriceDifferenceRefundInf refundInf : jxPriceDifferenceRefundInfs) {
+                ReturnOrderJxPriceDifferenceRefundSecond returnOrderJxPriceDifferenceRefundSecond = new ReturnOrderJxPriceDifferenceRefundSecond();
+                returnOrderJxPriceDifferenceRefundSecond.setAmount(toString(refundInf.getAmount()));
+                returnOrderJxPriceDifferenceRefundSecond.setAttribute1(toString(refundInf.getAttribute1()));
+                returnOrderJxPriceDifferenceRefundSecond.setAttribute2(toString(refundInf.getAttribute2()));
+                returnOrderJxPriceDifferenceRefundSecond.setAttribute3(toString(refundInf.getAttribute3()));
+                returnOrderJxPriceDifferenceRefundSecond.setAttribute4(toString(refundInf.getAttribute4()));
+                returnOrderJxPriceDifferenceRefundSecond.setAttribute5(toString(refundInf.getAttribute5()));
+                returnOrderJxPriceDifferenceRefundSecond.setRefundDate(toString(DateFormatUtils.format(refundInf.getRefundDate(), "yyyy-MM-dd HH:mm:ss")));
+                returnOrderJxPriceDifferenceRefundSecond.setDescription(toString(refundInf.getDescription()));
+                returnOrderJxPriceDifferenceRefundSecond.setDiySiteCode(toString(refundInf.getDiySiteCode()));
+                returnOrderJxPriceDifferenceRefundSecond.setMainOrderNumber(toString(refundInf.getMainOrderNumber()));
+                returnOrderJxPriceDifferenceRefundSecond.setMainReturnNumber(toString(refundInf.getMainReturnNumber()));
+                returnOrderJxPriceDifferenceRefundSecond.setRefundId(toString(refundInf.getRefundId()));
+                returnOrderJxPriceDifferenceRefundSecond.setRefundNumber(toString(refundInf.getRefundNumber()));
+                returnOrderJxPriceDifferenceRefundSecond.setSku(toString(refundInf.getSku()));
+                returnOrderJxPriceDifferenceRefundSecond.setStoreOrgCode(toString(refundInf.getStoreOrgCode()));
+                returnOrderJxPriceDifferenceRefundSecond.setSobId(toString(refundInf.getSobId()));
+                returnOrderJxPriceDifferenceRefundSeconds.add(returnOrderJxPriceDifferenceRefundSecond);
+            }
+        }
+        String returnOrderJxPriceDifferenceRefundJson = JSON.toJSONString(returnOrderJxPriceDifferenceRefundSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("returnOrderJxPriceDifferenceRefundJson", returnOrderJxPriceDifferenceRefundJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callReturnOrderJxPriceDifferenceRefundSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("returnOrderJxPriceDifferenceRefundJson", returnOrderJxPriceDifferenceRefundJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendReturnOrderJxPriceDifferenceRefundToEbs, result=" + result);
+        return result;
+
+    }
+
+    //************************************ 发送退单经销差价退款信息 end *****************************
 
     private Map<String, Object> postToEbs(String url, List<NameValuePair> parameters) {
         Map<String, Object> result = Maps.newHashMap();
