@@ -97,7 +97,7 @@ public interface AppSeparateOrderDAO {
 
 
     void updateOrderReceiveFlagAndSendTimeAndErrorMsg(@Param(value = "receiveInfsId") Long receiveInfsId,
-                                                      @Param(value = "errorMsg") String msg,
+                                                      @Param(value = "msg") String msg,
                                                       @Param(value = "sendTime") Date sendTime,
                                                       @Param(value = "flag") AppWhetherFlag flag);
 

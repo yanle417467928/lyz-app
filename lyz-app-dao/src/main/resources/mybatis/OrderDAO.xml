@@ -779,8 +779,8 @@
     <select id="getReturningOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT count(1)
         FROM ord_return_base_info
-        WHERE creator_id = #{id}
-              AND creator_identityType = 'CUSTOMER'
+        WHERE(cus_id = #{id}
+              OR (creator_id = #{id} AND creator_identityType = 'CUSTOMER'))
               AND return_status = 'RETURNING'
     </select>
 
