@@ -539,9 +539,12 @@
 
     function confirmShip() {
         var creatorIdentityType = $("#type").val();
+        $('#code').val('');
+        $('#msg').html('')
+        $('#secondCode').val('');
         if ('SELLER' == creatorIdentityType) {
             $('#confirmShipForGuide').modal();
-        } else if ('CUSTOMER' == creatorIdentityType) {
+        } else if ('SELLER' != creatorIdentityType) {
             $('#confirmShipForCustomer').modal();
         }
     }

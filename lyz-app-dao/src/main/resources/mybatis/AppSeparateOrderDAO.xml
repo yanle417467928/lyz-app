@@ -606,4 +606,21 @@
         FROM inter_ate_order_base_inf
         WHERE main_order_number = #{orderNumber} AND product_type = #{companyFlag}
     </select>
+
+
+    <update id="updateOrderReceiveFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_order_receive_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE id = #{receiveInfsId}
+    </update>
 </mapper>

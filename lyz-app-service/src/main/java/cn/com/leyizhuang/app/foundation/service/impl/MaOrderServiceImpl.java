@@ -196,9 +196,8 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void orderShipping(String orderNumber,ShiroUser shiroUser) {
+    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) {
         Date date = new Date();
-        MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(orderNumber);
         if (null == maOrderTempInfo || null == maOrderTempInfo.getCityId()) {
             throw new RuntimeException("该订单城市ID为空,无法更新城市库存");
         }
@@ -210,7 +209,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         //查询该订单下的所有商品
         List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber);
         //生成出货记录
-        for(MaOrderGoodsInfo maOrderGoodsInfo:MaOrderGoodsInfoList){
+        for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
             GoodsShippingInfo goodsShippingInfo = new GoodsShippingInfo();
             goodsShippingInfo.setStore(maOrderTempInfo.getStoreCode());
             goodsShippingInfo.setCity(maOrderTempInfo.getCityName());
@@ -286,23 +285,20 @@ public class MaOrderServiceImpl implements MaOrderService {
             cityInventoryChange.setChangeType(CityInventoryAvailableQtyChangeType.SELF_TAKE_ORDER);
             cityInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.getDescription());
             maCityInventoryService.addInventoryChangeLog(cityInventoryChange);
-
-            //生成ebs接口表数据
-            MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
-            maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
-            maOrderReceiveInf.setOrderNumber(orderNumber);
-            maOrderReceiveInf.setReceiveDate(date);
-            maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
-            maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
-            maOrderReceiveInf.setCreatedBy(shiroUser.getId());
-            maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
-            maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
-            maOrderReceiveInf.setSendTime(date);
-            Long id =this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-            maOrderReceiveInf.setId(id);
-            //调用ebsSenderService接口传ebs
-            this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
         }
+        //生成ebs接口表数据
+        MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
+        maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
+        maOrderReceiveInf.setOrderNumber(orderNumber);
+        maOrderReceiveInf.setReceiveDate(date);
+        maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
+        maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
+        maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
+        maOrderReceiveInf.setSendTime(new Date());
+        Long id = this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
+        maOrderReceiveInf.setId(id);
+        //调用ebsSenderService接口传ebs
+        this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
     }
 
 
@@ -358,14 +354,14 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public void saveOrderBillingPaymentDetails( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails) {
+    public void saveOrderBillingPaymentDetails(MaOrderBillingPaymentDetails maOrderBillingPaymentDetails) {
         this.maOrderDAO.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
     }
 
     @Override
     public Long saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf) {
         this.maOrderDAO.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-        if(null!=maOrderReceiveInf){
+        if (null != maOrderReceiveInf) {
             return maOrderReceiveInf.getId();
         }
         return null;
