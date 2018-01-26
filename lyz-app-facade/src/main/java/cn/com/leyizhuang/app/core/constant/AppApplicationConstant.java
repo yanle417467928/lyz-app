@@ -108,18 +108,8 @@ public class AppApplicationConstant {
      */
     public static final int CHANGE_SELLER_DATE = 60;
 
-    /**
-     * 个推相关参数
-     */
-    public static final String GE_TUI_HOST = "http://sdk.open.api.igexin.com/apiex.htm";
-    public static final String APP_ID = "I5pt99Lp5t7zrN98wU7Nt1";
-    public static final String APP_KEY = "IWMq9NbOTJ9dhJUYEg5KV5";
-    public static final String MASTER_SECRET = "T0qUSvYycU8TOZHeTWEGk1";
 
-    /**
-     * APP logo地址
-     */
-    public static final String APP_LOGO = "http://leyizhuang.oss-cn-shenzhen.aliyuncs.com/lyz-app/logo/Icon-256.png";
+
 
 
 
