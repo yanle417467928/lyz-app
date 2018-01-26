@@ -68,19 +68,6 @@ public class MaOrderReceiveInf {
     private Date sendTime;
 
 
-    /**
-     * 上一次更新时间
-     */
-    private Date lastUpdateDate;
-
-    /**
-     * 上一次更新人id
-     */
-    private Long lastUpdatedBy;
-
-
-
-
     private String attribute1;
 
     private String attribute2;

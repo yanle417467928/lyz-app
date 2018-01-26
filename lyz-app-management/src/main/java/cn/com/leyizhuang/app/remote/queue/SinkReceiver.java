@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -32,6 +33,8 @@ public class SinkReceiver {
 
     @Resource
     private ItyAllocationService ityAllocationService;
+    @Resource
+    private MaOrderService maOrderService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -136,6 +139,19 @@ public class SinkReceiver {
                         separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
                     }
                 } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+            case ORDER_RECEIVE:
+                try{
+                    String orderNumber = objectMapper.readValue(message.getContent(), String.class);
+                    // 门店自提单发货
+                    log.info("门店自提单发货队列消费开始");
+                    maOrderService.sendOrderReceiveInfAndRecord(orderNumber);
+                }catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
                 } catch (Exception e) {

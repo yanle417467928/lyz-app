@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
+import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageHelper;
@@ -42,6 +43,9 @@ public class MaOrderRestController extends BaseRestController {
 
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
+
+    @Resource
+    private MaSinkSender maSinkSender;
 
 
     /**
@@ -393,12 +397,12 @@ public class MaOrderRestController extends BaseRestController {
     public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber,@RequestParam(value = "code") String code) {
         logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}",orderNumber,code);
         ResultDTO<Object> resultDTO;
-        MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(orderNumber);
         if (null == orderNumber&&"".equals(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空", null);
             logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(orderNumber);
         if("SELLER".equals(maOrderTempInfo.getCreatorIdentityType())){
             if (null == code&&"".equals(code)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
@@ -413,7 +417,10 @@ public class MaOrderRestController extends BaseRestController {
         }
         try {
             ShiroUser shiroUser =this.getShiroUser();
-            this.maOrderService.orderShipping(orderNumber,shiroUser,maOrderTempInfo);
+            //后台发货并返回插入接口表数据的id
+            maOrderService.orderShipping(orderNumber,shiroUser,maOrderTempInfo);
+            //发送门店自提单消息队列
+            maSinkSender.sendStorePickUpReceivedToEBSAndRecord(orderNumber);
             logger.info("orderShipping ,后台自提单发货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台自提单发货成功", null);
@@ -515,6 +522,33 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "后台订单收款失败", null);
+        }
+    }
+
+
+    /**
+     * 后台分页查询所有未收款订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/arrearsAndAgencyOrder/page/grid")
+    public GridDataVO<MaSelfTakeOrderVO> restarrearsAndAgencyOrderPageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restarrearsAndAgencyOrderPageGird 后台分页查询所有未收款订单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findArrearsAndAgencyOrderList(page, size);
+            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
+            logger.info("restarrearsAndAgencyOrderPageGird ,后台分页查询所有未收款订单", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
+            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restarrearsAndAgencyOrderPageGird EXCEPTION,发生未知错误，后台分页查询所有未收款订单");
+            logger.warn("{}", e);
+            return null;
         }
     }
 }

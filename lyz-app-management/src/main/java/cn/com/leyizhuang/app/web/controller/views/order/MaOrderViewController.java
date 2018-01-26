@@ -285,4 +285,15 @@ public class MaOrderViewController {
         }
         return "/views/order/selfTakeOrder_detail";
     }
+
+
+    /**
+     * 跳转欠款还款订单页面
+     *
+     * @return
+     */
+    @RequestMapping(value = "/arrearsAndRepaymentsOrder/list")
+    public String arrearsAndRepaymentsShippingListPage() {
+        return "/views/order/arrearsAndRepaymentsOrder_page";
+    }
 }

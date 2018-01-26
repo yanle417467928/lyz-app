@@ -50,9 +50,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Resource
     private MaCityInventoryService maCityInventoryService;
     @Resource
-    private EbsSenderService ebsSenderService;
-    @Resource
     private MaGoodsDAO maGoodsDAO;
+    @Resource
+    private EbsSenderService ebsSenderService;
 
 
     @Override
@@ -295,11 +295,27 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
         maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
         maOrderReceiveInf.setSendTime(new Date());
-        Long id = this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-        maOrderReceiveInf.setId(id);
+        this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
+
+    }
+
+    @Override
+    public MaOrderReceiveInf queryOrderReceiveInf(String orderNumber){
+        MaOrderReceiveInf maOrderReceiveInf  =this.maOrderDAO.queryOrderReceiveInf(orderNumber);
+        return  maOrderReceiveInf;
+    }
+
+    @Override
+    public void sendOrderReceiveInfAndRecord(String orderNumber){
+        if(null==orderNumber){
+            throw  new RuntimeException("发送接口失败，订单ID为空");
+        }
+        MaOrderReceiveInf maOrderReceiveInf  =this.queryOrderReceiveInf(orderNumber);
         //调用ebsSenderService接口传ebs
         this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
     }
+
+
 
 
     @Override
@@ -359,11 +375,15 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public Long saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf) {
+    public void saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf) {
         this.maOrderDAO.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-        if (null != maOrderReceiveInf) {
-            return maOrderReceiveInf.getId();
-        }
-        return null;
+    }
+
+
+    @Override
+    public PageInfo<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findArrearsAndAgencyOrderList();
+        return new PageInfo<>(maSelfTakeOrderVOList);
     }
 }

@@ -730,8 +730,8 @@
         FROM ord_base_info
         WHERE creator_id = #{id}
               AND creator_identity_type != 'CUSTOMER'
-              AND status = 'PENDING_RECEIVE'
-              AND effective_end_time &gt; NOW()
+              AND (status = 'PENDING_RECEIVE'
+              OR  status = 'PENDING_SHIPMENT')
     </select>
 
 
@@ -740,8 +740,8 @@
         FROM ord_base_info
         WHERE (customer_id = #{id}
                OR (creator_id = #{id} AND creator_identity_type = 'CUSTOMER'))
-              AND status = 'PENDING_RECEIVE'
-              AND effective_end_time &gt; NOW()
+               AND (status = 'PENDING_RECEIVE'
+               OR  status = 'PENDING_SHIPMENT')
     </select>
 
 
@@ -752,7 +752,6 @@
               AND creator_identity_type != 'CUSTOMER'
               AND status = 'FINISHED'
               AND is_evaluated = FALSE
-              AND effective_end_time &gt; NOW()
     </select>
 
 
@@ -763,7 +762,6 @@
                OR (creator_id = #{id} AND creator_identity_type = 'CUSTOMER'))
               AND status = 'FINISHED'
               AND is_evaluated = FALSE
-              AND effective_end_time &gt; NOW()
     </select>
 
 

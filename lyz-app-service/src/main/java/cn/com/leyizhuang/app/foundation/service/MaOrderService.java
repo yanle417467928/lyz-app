@@ -209,5 +209,19 @@ public interface MaOrderService {
      * @param maOrderReceiveInf
      * @return
      */
-    Long saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf);
+    void saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf);
+
+    /**
+     * 根据查询自提单接口表数据
+     */
+    MaOrderReceiveInf queryOrderReceiveInf(String orderNumber);
+
+    /**
+     * 发送自提单接口表数据到ebs
+     */
+    void sendOrderReceiveInfAndRecord(String orderNumber);
+
+
+    PageInfo<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
+
 }
