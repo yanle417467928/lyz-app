@@ -128,4 +128,15 @@
         AND e.emp_id = #{userId}
     </select>
 
+    <select id="findGoodsPriceByGoodsIDAndStoreID" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT
+        *
+        FROM
+        gds_goods_price
+        WHERE
+        gid = #{goodsID}
+        AND store_id = #{storeID}
+        AND start_time &lt; NOW()
+        AND (end_time IS NULL OR end_time &gt; NOW())
+    </select>
 </mapper>

@@ -39,4 +39,8 @@ public class Requiring {
      * 订单备注
      */
     private String remarkInfo;
+    /**
+     * 管理员备注信息
+     */
+    private String managerRemarkInfo;
 }

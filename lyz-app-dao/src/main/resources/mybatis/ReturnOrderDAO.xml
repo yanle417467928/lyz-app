@@ -125,7 +125,7 @@
         INSERT INTO ord_return_billing_detail
         (roid, return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time)
         VALUES
-        (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber},#{createTime})
+            (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber}, #{createTime})
     </insert>
 
     <insert id="saveReturnOrderCashCoupon"
@@ -295,5 +295,65 @@
             is_return
         FROM ord_return_product_coupon
         WHERE roid = #{roid}
+    </select>
+
+    <select id="getReturnOrderBillingDetailByRoid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
+        SELECT
+            id,
+            creat_time,
+            roid,
+            return_pay_type,
+            return_money,
+            into_amount_time,
+            reply_code,
+            refund_number
+        FROM ord_return_billing_detail
+        WHERE roid = #{roid}
+    </select>
+
+    <select id="getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails">
+        SELECT
+            id,
+            roid,
+            ord_no,
+            return_no,
+            create_time,
+            store_id,
+            store_code,
+            sku,
+            unit_price,
+            return_qty,
+            amount,
+            refund_number
+        FROM ord_return_jx_price_difference_refund_details
+        WHERE return_no = #{returnNo}
+    </select>
+
+    <select id="queryReturnOrderByRoid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+        oid,
+        ord_no,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_identityType,
+        creator_phone,
+        cus_id,
+        cus_name,
+        cus_phone,
+        cus_type,
+        reason_info,
+        return_pic,
+        ord_type,
+        return_status
+        FROM ord_return_base_info WHERE roid = #{roid};
+
     </select>
 </mapper>

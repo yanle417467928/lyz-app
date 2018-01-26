@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
@@ -351,23 +352,21 @@ public class MaEmployeeRestController extends BaseRestController {
      * @param offset
      * @param size
      * @param keywords
-     * @param cityId
-     * @param storeId
      * @return
      */
     @GetMapping(value = "/select/seller")
-    public GridDataVO<EmployeeDO> selectSeller(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId) {
-        logger.info("selectSeller 后台购买产品券选择导购,入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords, cityId, storeId);
+    public GridDataVO<MaEmployeeResponse> selectSeller(Integer offset, Integer size, String keywords) {
+        logger.info("selectSeller 后台购买产品券选择导购,入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<EmployeeDO> employeeDOList = this.maEmployeeService.findEmployeeByCityIdAndStoreId(cityId, storeId);
+            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findMaEmployeeByCityIdAndStoreId(null, null);
 
-            PageInfo<EmployeeDO> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
-            List<EmployeeDO> EmployeeDOList = maEmployeeDOPageInfo.getList();
+            PageInfo<MaEmployeeResponse> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
+            List<MaEmployeeResponse> EmployeeDOList = maEmployeeDOPageInfo.getList();
             logger.warn("selectSeller ,后台购买产品券选择导购成功", EmployeeDOList.size());
-            return new GridDataVO<EmployeeDO>().transform(EmployeeDOList, maEmployeeDOPageInfo.getTotal());
+            return new GridDataVO<MaEmployeeResponse>().transform(EmployeeDOList, maEmployeeDOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("selectSeller EXCEPTION,发生未知错误，后台购买产品券选择导购失败");
@@ -425,6 +424,37 @@ public class MaEmployeeRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("restGuideRepaymentPagePageGird EXCEPTION,发生未知错误，后台显示导购还款列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 后台购买产品券条件查询导购
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param sellerQueryConditions
+     * @return
+     */
+    @GetMapping(value = "/select/seller/{sellerQueryConditions}")
+    public GridDataVO<MaEmployeeResponse> selectSellerBySellerNameOrSellerPhone(Integer offset, Integer size, String keywords,@PathVariable(value = "sellerQueryConditions") String sellerQueryConditions) {
+        logger.info("selectSellerBySellerNameOrSellerPhone 后台购买产品券条件查询导购,入参 offset:{},size:{},keywords:{},sellerQueryConditions:{}", offset, size, keywords, sellerQueryConditions);
+        try {
+            Long cityId = null;
+            Long storeId = null;
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageHelper.startPage(page, size);
+            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(sellerQueryConditions,cityId, storeId);
+            PageInfo<MaEmployeeResponse> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
+            List<MaEmployeeResponse> EmployeeDOList = maEmployeeDOPageInfo.getList();
+            logger.warn("selectSellerBySellerNameOrSellerPhone ,后台购买产品券条件查询导购成功", EmployeeDOList.size());
+            return new GridDataVO<MaEmployeeResponse>().transform(EmployeeDOList, maEmployeeDOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("selectSellerBySellerNameOrSellerPhone EXCEPTION,发生未知错误，后台购买产品券条件查询导购失败");
             logger.warn("{}", e);
             return null;
         }

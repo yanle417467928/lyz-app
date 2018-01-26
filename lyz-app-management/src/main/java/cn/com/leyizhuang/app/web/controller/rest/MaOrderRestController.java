@@ -384,42 +384,45 @@ public class MaOrderRestController extends BaseRestController {
 
 
     /**
-     * 后台下单发货
+     * 后台自提单发货
      *
      * @param orderNumber
      * @return
      */
     @GetMapping(value = "/orderShipping")
     public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber,@RequestParam(value = "code") String code) {
-        logger.warn("orderForGuide 后台导购代下单发货 ,入参orderNumbe:{}",orderNumber);
+        logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}",orderNumber,code);
         ResultDTO<Object> resultDTO;
+        MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(orderNumber);
         if (null == orderNumber&&"".equals(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空", null);
-            logger.warn("orderForGuide OUT,后台导购代下单发货失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == code&&"".equals(code)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
-            logger.warn("orderForGuide OUT,后台导购代下单发货失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (!code.equals(this.maOrderService.getOrderInfoByOrderNo(orderNumber).getPickUpCode())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码错误", null);
-            logger.warn("orderForGuide OUT,后台导购代下单发货失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+        if("SELLER".equals(maOrderTempInfo.getCreatorIdentityType())){
+            if (null == code&&"".equals(code)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
+                logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (!code.equals(maOrderTempInfo.getPickUpCode())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码错误", null);
+                logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         }
         try {
             ShiroUser shiroUser =this.getShiroUser();
-            this.maOrderService.orderShipping(orderNumber,shiroUser);
-            logger.warn("orderForGuide ,后台导购代下单发货成功");
+            this.maOrderService.orderShipping(orderNumber,shiroUser,maOrderTempInfo);
+            logger.info("orderShipping ,后台自提单发货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
-                    "后台导购代下单发货成功", null);
+                    "后台自提单发货成功", null);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("orderForGuide EXCEPTION,发生未知错误，后台顾客下单发货失败");
+            logger.warn("orderShipping EXCEPTION,发生未知错误，后台自提单发货失败");
             logger.warn("{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
-                    "后台导购代下单发货失败", null);
+                    "后台自提单发货失败", null);
         }
     }
 

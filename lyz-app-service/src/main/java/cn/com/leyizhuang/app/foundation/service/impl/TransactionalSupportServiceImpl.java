@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
@@ -57,7 +56,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveSeparateOrderRelevatnInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
+    public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
                                              List<OrderJxPriceDifferenceReturnInf> returnInfs) {
         //循环保存分单基础信息
@@ -101,30 +100,60 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         rechargeService.updateRechargeOrderStatusAndPayUpTime(rechargeNo, new Date(), AppRechargeOrderStatus.PAID);
     }
 
-    @Override
+   /* @Override
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo,
-                                                                   List<OrderJxPriceDifferenceReturnDetails> detailsList) {
+                                                                   List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList) {
 
 
-        List<OrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
+        List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs = new ArrayList<>(20);
         if (AssertUtil.isNotEmpty(detailsList)) {
-            for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
+            for (ReturnOrderJxPriceDifferenceRefundDetails details : detailsList) {
 
-                OrderJxPriceDifferenceRefundInf inf = new OrderJxPriceDifferenceRefundInf();
+                ReturnOrderJxPriceDifferenceRefundInf inf = new ReturnOrderJxPriceDifferenceRefundInf();
                 inf.setAmount(details.getAmount());
                 inf.setCreateTime(details.getCreateTime());
-                inf.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                inf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                 inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
                 inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
                 inf.setSku(details.getSku());
                 inf.setSobId(orderBaseInfo.getSobId());
                 inf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
                 inf.setDiySiteCode(details.getStoreCode());
-                inf.setRefundNumber(OrderUtils.getRefundNumber());
+                inf.setRefundNumber(details.getRefundNumber());
                 separateOrderService.saveOrderJxPriceDifferenceRefundInf(inf);
             }
         }
-        separateOrderService.sendOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
+        separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnOrderBaseInfo.getReturnNo());
+    }*/
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap,
+                                                   List<ReturnOrderCouponInf> returnOrderCouponInfList,
+                                                   List<ReturnOrderRefundInf> returnOrderRefundInfList,
+                                                   List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList) {
+        //保存退单头及商品信息
+        if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
+            for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
+                separateOrderService.saveReturnOrderBaseInf(entry.getKey());
+                entry.getValue().forEach(p -> p.setRtHeaderId(entry.getKey().getRtHeaderId()));
+                for (ReturnOrderGoodsInf returnOrderGoodsInf : entry.getValue()) {
+                    separateOrderService.saveReturnOrderGoodsInf(returnOrderGoodsInf);
+                }
+            }
+        }
+        //保存退单券信息
+        if (AssertUtil.isNotEmpty(returnOrderCouponInfList)) {
+            returnOrderCouponInfList.forEach(p -> separateOrderService.saveReturnOrderCouponInf(p));
+        }
+        //保存退单退款信息
+        if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
+            returnOrderRefundInfList.forEach(p->separateOrderService.saveReturnOrderRefundInf(p));
+        }
+        //保存退单经销差价扣除信息
+        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)){
+            jxPriceDifferenceRefundInfList.forEach(p-> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
+        }
     }
 }

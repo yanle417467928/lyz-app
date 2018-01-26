@@ -1208,9 +1208,8 @@ public class CommonServiceImpl implements CommonService {
                                                       List<ReturnOrderGoodsInfo> goodsInfos) {
 
         List<OrderJxPriceDifferenceReturnDetails> detailsList = orderService.getOrderJxPriceDifferenceReturnDetailsByOrderNumber(returnOrderBaseInfo.getOrderNo());
-//        OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
 
-        List<OrderJxPriceDifferenceReturnDetails> returnDetailsList = new ArrayList<>(20);
+        List<ReturnOrderJxPriceDifferenceRefundDetails> returnDetailsList = new ArrayList<>(20);
         double jxPrice = 0.00;
 
         if (AssertUtil.isNotEmpty(detailsList)) {
@@ -1219,17 +1218,20 @@ public class CommonServiceImpl implements CommonService {
                     if (goodsInfo.getSku().equals(details.getSku())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
                         jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
-                        OrderJxPriceDifferenceReturnDetails returnDetails = new OrderJxPriceDifferenceReturnDetails();
+                        ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                         returnDetails.setAmount(returnGoodsJxPriceAmount);
                         returnDetails.setCreateTime(new Date());
-                        returnDetails.setOid(returnOrderBaseInfo.getOrderId());
+                        returnDetails.setRoid(returnOrderBaseInfo.getRoid());
                         returnDetails.setOrderNumber(returnOrderBaseInfo.getOrderNo());
-                        returnDetails.setQuantity(goodsInfo.getReturnQty());
+                        returnDetails.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        returnDetails.setReturnQty(goodsInfo.getReturnQty());
                         returnDetails.setSku(details.getSku());
                         returnDetails.setStoreCode(details.getStoreCode());
                         returnDetails.setStoreId(details.getStoreId());
                         returnDetails.setUnitPrice(details.getUnitPrice());
+                        returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
                         returnDetailsList.add(returnDetails);
+                        orderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                     }
                 }
             }
@@ -1264,7 +1266,7 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
         }
-        transactionalSupportService.handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(returnOrderBaseInfo, orderBaseInfo, returnDetailsList);
+        /*transactionalSupportService.handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(returnOrderBaseInfo, orderBaseInfo, returnDetailsList);*/
     }
 
     public String sendPickUpCodeAndRemindMessageAfterPayUp(OrderBaseInfo orderBaseInfo) {

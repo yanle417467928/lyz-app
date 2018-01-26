@@ -164,7 +164,7 @@ public interface MaOrderService {
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
-    void orderShipping(String orderNumber,ShiroUser shiroUser);
+    void orderShipping(String orderNumber,ShiroUser shiroUser,MaOrderTempInfo maOrderTempInfo);
 
     void orderReceivables(MaOrderAmount maOrderAmount);
 

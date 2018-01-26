@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
+import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import org.apache.ibatis.annotations.Param;
@@ -113,4 +114,10 @@ public interface ReturnOrderDAO {
     List<ReturnOrderCashCoupon> getReturnOrderCashCouponByRoid(Long roid);
 
     List<ReturnOrderProductCoupon> getReturnOrderProductCouponByRoid(Long roid);
+
+    List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRoid(Long roid);
+
+    List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo);
+
+    ReturnOrderBaseInfo queryReturnOrderByRoid(Long roid);
 }

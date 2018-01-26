@@ -8,7 +8,7 @@ import lombok.*;
 import java.util.Date;
 
 /**
- * 订单收款信息
+ * 订单发货信息
  *
  * @author liuh
  * Created on 2018-01-20 13:39
@@ -67,10 +67,6 @@ public class MaOrderReceiveInf {
      */
     private Date sendTime;
 
-    /**
-     * 创建人id
-     */
-    private Long createdBy;
 
     /**
      * 上一次更新时间

@@ -779,8 +779,8 @@
     <select id="getReturningOrderQuantityByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT count(1)
         FROM ord_return_base_info
-        WHERE creator_id = #{id}
-              AND creator_identityType = 'CUSTOMER'
+        WHERE (cus_id = #{id}
+               OR (creator_id = #{id} AND creator_identityType = 'CUSTOMER'))
               AND return_status = 'RETURNING'
     </select>
 
@@ -804,6 +804,29 @@
                              WHERE receipt_number = #{receiptNumber})
     </insert>
 
+    <insert id="saveReturnOrderJxPriceDifferenceRefundDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails">
+
+        INSERT INTO ord_return_jx_price_difference_refund_details (roid, ord_no, return_no, create_time, store_id, store_code,
+                                                                   sku, unit_price, return_qty, amount, refund_number)
+            SELECT
+                #{roid},
+                #{orderNumber},
+                #{returnNumber},
+                #{createTime},
+                #{storeId},
+                #{storeCode},
+                #{sku},
+                #{unitPrice},
+                #{returnQty},
+                #{amount},
+                #{refundNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM ord_return_jx_price_difference_refund_details
+                             WHERE refund_number = #{refundNumber})
+    </insert>
+
     <select id="getOrderJxPriceDifferenceReturnDetailsByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails">
         SELECT
@@ -824,8 +847,8 @@
 
     <update id="updateReturnableQuantityAndReturnQuantityById">
         UPDATE ord_goods_info
-        SET return_qty = return_qty - #{qty},
-         returnable_qty = returnable_qty + #{qty}
+        SET return_qty     = return_qty - #{qty},
+            returnable_qty = returnable_qty + #{qty}
         WHERE
             id = #{ogi}
     </update>

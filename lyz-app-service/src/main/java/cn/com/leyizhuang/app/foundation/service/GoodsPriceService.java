@@ -27,4 +27,11 @@ public interface GoodsPriceService {
 
     List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(List<Long> goodsIdList, Long userId,
                                                                                      AppIdentityType identityType);
+    /**
+     * 根据商品id + 门店id 查询商品价格
+     * @param goodsID   商品id
+     * @param storeID   门店id
+     * @return
+     */
+    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID,Long storeID);
 }

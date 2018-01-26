@@ -3,8 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo.inventory.returning;
 
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
-import cn.com.leyizhuang.app.foundation.pojo.response.ReturnOrderDetailResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.ReturnOrderGoodsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,9 +40,17 @@ public class Returning {
     private ReturnOrderType returnType;
 
     /**
-     * 物流相关信息
+     * 门店名称
      */
-    private ReturnOrderDetailResponse returnOrderDetailResponse;
+    private String storeName;
+    /**
+     * 门店地址
+     */
+    private String storeAddress;
+    /**
+     * 门店电话
+     */
+    private String storePhone;
 
     /**
      * 创建退单人电话号码
@@ -55,7 +62,7 @@ public class Returning {
     private String customerName;
 
     /**
-     * 退货物流状态
+     * 退货单状态
      */
     private AppReturnOrderStatus returnStatus;
 
@@ -71,5 +78,5 @@ public class Returning {
     /**
      * 商品信息
      */
-    private List<ReturnOrderGoodsResponse> returnOrderGoodsList;
+    private List<ReturnOrderGoodsInfo> returnOrderGoodsList;
 }

@@ -39,9 +39,7 @@ public class DeployConfiguration {
 
     @Value("${deploy.oss.bucket}")
     private String ossBucket;
-    /**
-     * wmsUrl再给我合并掉了，我要咬你啊 = =！！！
-     */
+
     @Value("${deploy.wms.url}")
     private String wmsUrl;
 

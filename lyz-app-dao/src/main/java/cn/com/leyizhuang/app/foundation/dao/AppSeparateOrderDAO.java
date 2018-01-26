@@ -29,10 +29,10 @@ public interface AppSeparateOrderDAO {
 
     void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 
-    void updateOrderBaseInfoSendFlagAndErrorMessageAndSendTime(@Param(value = "orderNumber") String orderNumber,
-                                                               @Param(value = "flag") AppWhetherFlag flag,
-                                                               @Param(value = "errorMsg") String errorMsg,
-                                                               @Param(value = "sendTime") Date sendTime);
+    void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(@Param(value = "orderNumber") String orderNumber,
+                                                              @Param(value = "flag") AppWhetherFlag flag,
+                                                              @Param(value = "errorMsg") String errorMsg,
+                                                              @Param(value = "sendTime") Date sendTime);
 
     void updateOrderGoodsInfoSendFlagAndErrorMessageAndSendTime(@Param(value = "orderLineId") Long orderLineId,
                                                                 @Param(value = "flag") AppWhetherFlag flag,
@@ -91,16 +91,59 @@ public interface AppSeparateOrderDAO {
                                                @Param(value = "sendTime") Date sendTime,
                                                @Param(value = "flag") AppWhetherFlag flag);
 
-    void saveOrderJxPriceDifferenceRefundInf(OrderJxPriceDifferenceRefundInf refundInf);
+    void saveOrderJxPriceDifferenceRefundInf(ReturnOrderJxPriceDifferenceRefundInf refundInf);
 
-    List<OrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
+    List<ReturnOrderJxPriceDifferenceRefundInf> getOrderJxPriceDifferenceRefundInf(String returnNumber);
 
 
     void updateOrderReceiveFlagAndSendTimeAndErrorMsg(@Param(value = "receiveInfsId") Long receiveInfsId,
-                                                      @Param(value = "errorMsg") String msg,
+                                                      @Param(value = "msg") String msg,
                                                       @Param(value = "sendTime") Date sendTime,
                                                       @Param(value = "flag") AppWhetherFlag flag);
 
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
+
+    void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
+
+    void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf);
+
+    void saveReturnOrderCouponInf(ReturnOrderCouponInf returnOrderCouponInf);
+
+    void saveReturnOrderRefundInf(ReturnOrderRefundInf returnOrderRefundInf);
+
+    List<ReturnOrderBaseInf> getReturnOrderBaseInfByReturnNumber(String returnNumber);
+
+    List<ReturnOrderGoodsInf> getReturnOrderGoodsInfByReturnNumber(String returnNumber);
+
+    void updateReturnOrderBaseInf(@Param(value = "returnNumber") String returnNumber,
+                                  @Param(value = "flag") AppWhetherFlag flag,
+                                  @Param(value = "errorMsg") String errorMsg,
+                                  @Param(value = "sendTime") Date sendTime);
+
+    void updateReturnOrderGoodsInf(@Param(value = "returnNumber") String returnNumber,
+                                   @Param(value = "flag") AppWhetherFlag flag,
+                                   @Param(value = "errorMsg") String errorMsg,
+                                   @Param(value = "sendTime") Date sendTime);
+
+    List<ReturnOrderCouponInf> getReturnOrderCouponInf(String returnNumber);
+
+    void updateReturnOrderCouponInf(@Param(value = "returnCouponInfLineId") List<Long> returnCouponInfLineId,
+                                    @Param(value = "msg") String msg,
+                                    @Param(value = "sendTime") Date sendTime,
+                                    @Param(value = "flag") AppWhetherFlag flag);
+
+    List<ReturnOrderRefundInf> getReturnOrderRefundInf(String returnNumber);
+
+    void updateReturnOrderRefundInf(@Param(value = "refundInfIds") List<Long> refundInfIds,
+                                    @Param(value = "msg") String msg,
+                                    @Param(value = "sendTime") Date sendTime,
+                                    @Param(value = "flag") AppWhetherFlag flag);
+
+    List<ReturnOrderJxPriceDifferenceRefundInf> getReturnOrderJxPriceDifferenceRefundInf(String returnNumber);
+
+    void updateReturnOrderJxPriceDifferenceRefundInf(@Param(value = "refundInfIds") List<Long> refundInfIds,
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "flag") AppWhetherFlag flag);
 }

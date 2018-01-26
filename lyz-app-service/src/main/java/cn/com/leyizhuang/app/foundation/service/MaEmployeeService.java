@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
@@ -50,7 +51,14 @@ public interface MaEmployeeService {
      * 后台购买产品券选择导购查询
      * @return
      */
-    List<EmployeeDO> findEmployeeByCityIdAndStoreId (Long cityId,Long storeId);
+    List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId (Long cityId, Long storeId);
+
+    /**
+     * 后台购买产品券条件查询导购
+     *
+     * @return
+     */
+    List<MaEmployeeResponse> findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(String sellerQueryConditions,Long cityId,Long storeId);
 
     PageInfo<GuideVO> queryGuideArrearsPage(Integer page, Integer size);
 

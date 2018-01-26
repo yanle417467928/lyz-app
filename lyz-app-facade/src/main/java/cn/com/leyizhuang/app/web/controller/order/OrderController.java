@@ -1101,8 +1101,10 @@ public class OrderController {
                     }
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
-                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getValue() : orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1163,7 +1165,8 @@ public class OrderController {
                 //设值
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
-                orderDetailsResponse.setStatus(orderBaseInfo.getStatus().getDescription());
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
+                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
@@ -1287,7 +1290,7 @@ public class OrderController {
     }
 
     /**
-     * 获取待付款订单数量
+     * 获取各状态订单数量
      *
      * @param userId
      * @param identityType
@@ -1296,37 +1299,37 @@ public class OrderController {
     @PostMapping(value = "/AppOrderQuantity", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getAppOrderQuantity(Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getAppOrderQuantity CALLED,获取App订单数量，入参 userID:{}, identityType:{}", userId, identityType);
+        logger.info("getAppOrderQuantity CALLED,获取App各状态订单数量，入参 userID:{}, identityType:{}", userId, identityType);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
             Map<String, Integer> quantity;
             if (0 == identityType || 2 == identityType) {
-                //导购 装饰经理获取待付款订单数量
+                //导购 装饰经理获取各状态订单数量
                 quantity = appOrderService.getAppOrderQuantityByEmpId(userId);
             } else if (6 == identityType) {
-                //顾客获取待付款订单数量
+                //顾客获取各状态订单数量
                 quantity = appOrderService.getAppOrderQuantityByCusId(userId);
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-                logger.info("getAppOrderQuantity OUT,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getAppOrderQuantity OUT,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
-            logger.info("getAppOrderQuantity OUT,获取App订单数量成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App订单数量失败", null);
-            logger.warn("getAppOrderQuantity EXCEPTION,获取App订单数量失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App各状态订单数量失败", null);
+            logger.warn("getAppOrderQuantity EXCEPTION,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

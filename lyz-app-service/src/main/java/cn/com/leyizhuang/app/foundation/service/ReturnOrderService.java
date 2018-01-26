@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -168,4 +169,8 @@ public interface ReturnOrderService {
     List<ReturnOrderCashCoupon> getReturnOrderCashCouponByRoid(Long roid);
 
     List<ReturnOrderProductCoupon> getReturnOrderProductCouponByRoid(Long roid);
+
+    List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRoid(Long roid);
+
+    List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo);
 }

@@ -126,14 +126,14 @@ public class SinkReceiver {
                     } else {
                         //拆退单
                         separateOrderService.separateReturnOrder(returnNumber);
-                      /*  //拆单完成之后发送订单和订单商品信息到EBS
-                        separateOrderService.sendOrderBaseInfAndOrderGoodsInf(orderNumber);
-                        //发送订单券儿信息
-                        separateOrderService.sendOrderCouponInf(orderNumber);
+                        //拆单完成之后发送退单和退单商品信息到EBS
+                        separateOrderService.sendReturnOrderBaseInfAndReturnOrderGoodsInf(returnNumber);
+                       //发送退单券儿信息
+                        separateOrderService.sendReturnOrderCouponInf(returnNumber);
                         //发送订单收款信息
-                        separateOrderService.sendOrderReceiptInf(orderNumber);
+                        separateOrderService.sendReturnOrderRefundInf(returnNumber);
                         //发送经销差价返还信息
-                        separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);*/
+                        separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");

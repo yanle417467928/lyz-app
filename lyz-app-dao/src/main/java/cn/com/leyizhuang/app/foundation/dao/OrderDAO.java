@@ -130,4 +130,6 @@ public interface OrderDAO {
     List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
 
     void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
+
+    void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails);
 }

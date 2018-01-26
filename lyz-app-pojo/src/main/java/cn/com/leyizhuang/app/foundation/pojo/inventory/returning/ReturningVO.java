@@ -55,6 +55,7 @@ public class ReturningVO {
 
     public static ReturningVO transform(ReturnOrderBaseInfo baseInfo) {
         ReturningVO vo = new ReturningVO();
+        vo.setId(baseInfo.getRoid());
         vo.setCreatorPhone(baseInfo.getCreatorPhone());
         vo.setCustomerName(baseInfo.getCustomerName());
         vo.setOrderStatus(baseInfo.getReturnStatus().getDescription());

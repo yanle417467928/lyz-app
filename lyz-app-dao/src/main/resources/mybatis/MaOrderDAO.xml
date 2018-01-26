@@ -694,11 +694,10 @@
 
     <insert id="saveAppToEbsOrderReceiveInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,
-        send_time, created_by, last_update_date, last_updated_by,init_date)
+        INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,send_time,init_date)
         VALUES
         (#{deliverTypeTitle}, #{headerId}, #{orderNumber}, #{receiveDate}, #{sobId}, #{errorMsg}, #{sendFlag},
-        #{sendTime},#{createdBy}, #{lastUpdateDate}, #{lastUpdatedBy}, #{initDate})
+        #{sendTime}, #{initDate})
     </insert>
 
 </mapper>

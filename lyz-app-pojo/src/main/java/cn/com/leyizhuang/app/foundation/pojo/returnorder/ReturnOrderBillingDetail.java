@@ -1,13 +1,15 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import lombok.*;
 
 import java.util.Date;
 
 /**
  * 退款明细
- * Created by caiyu on 2017/12/2.
+ *
+ * @author caiyu
+ * @date 2017/12/2
  */
 @Getter
 @Setter
@@ -15,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReturnOrderBillingDetail {
+
     private Long id;
     /**
      * 创建时间
@@ -25,9 +28,9 @@ public class ReturnOrderBillingDetail {
      */
     private Long roid;
     /**
-     * 退款类型（ ALIPAY(0, "支付宝"), WE_CHAT(1, "微信"), UNION_PAY(2, "银联"), NO(3, "无");）
+     * 退款类型
      */
-    private OnlinePayType returnPayType;
+    private OrderBillingPaymentType returnPayType;
     /**
      * 退款金额
      */

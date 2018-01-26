@@ -180,5 +180,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         return this.maCustomerDAO.findCustomerByCityIdAndStoreId(cityId, storeId);
     }
 
+    @Override
+    public List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions, Long cityId, Long storeId) {
+        return this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions, cityId, storeId);
+    }
+
 }
 

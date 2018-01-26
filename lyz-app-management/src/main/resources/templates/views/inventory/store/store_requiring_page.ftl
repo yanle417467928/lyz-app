@@ -63,17 +63,17 @@
                     </span>
                     <ul id="structureAttributes" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>订单编号</b> <a class="pull-right" id="orderNumber"></a>
+                            <b>订单编号:</b> <a id="orderNumber"></a>
                         </li>
                         <li class="list-group-item">
                             <b>商品列表</b>
 
-                            <table id="goodsList" class="table table-bordered">
+                            <table id="goodsList" class="table table-bordered table-responsive">
                                 <thead>
                                 <tr>
-                                    <th>商品编码</th>
-                                    <th>商品名称</th>
-                                    <th>数量</th>
+                                    <th style="text-align: center">商品编码</th>
+                                    <th style="text-align: center">商品名称</th>
+                                    <th style="text-align: center">数量</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -85,10 +85,10 @@
 
                             <table id="detailAddress" class="table table-bordered">
                                 <thead>
-                                <tr>
-                                    <th>门店名称</th>
-                                    <th>门店地址</th>
-                                    <th>门店电话</th>
+                                <tr style="text-align: center">
+                                    <th style="text-align: center">门店名称</th>
+                                    <th style="text-align: center">门店地址</th>
+                                    <th style="text-align: center">门店电话</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -96,17 +96,22 @@
                             </table>
                         </li>
                         <li class="list-group-item">
-                            <b>备注信息</b>
-                            <textarea id="remarkInfo"></textarea>
+                            <b><label for="remarkInfo">备注信息</label></b>
+                            <div>
+                                <textarea id="remarkInfo" class="form-control" readonly></textarea>
+                            </div>
                         </li>
                         <li class="list-group-item">
-                            <b>后台备注信息</b>
-                            <textarea id="managerRemarkInfo"></textarea>
+                            <b><label for="managerRemarkInfo">后台备注信息</label></b>
+                            <div>
+                                <textarea id="managerRemarkInfo" class="form-control"></textarea>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="modal-footer">
+                <a role="button" class="btn btn-primary pull-left" href="javascript:$page.information.update();">修改</a>
                 <a href="javascript:$page.information.close();" role="button" class="btn btn-primary">关闭</a>
             </div>
         </div>
@@ -204,29 +209,27 @@
                                 }
                                 var str = "";
                                 $.each(data.goodsList, function (i, item) {
-                                    str += "<tr><td>" + item.sku + "</td><td>" + item.skuName + "</td><td>" + item.qty + "</td></tr>";
+                                    str += "<tr><td>" + item.goodsCode + "</td><td>" + item.goodsTitle + "</td><td>" + item.quantity + "</td></tr>";
                                 });
+                                $('#goodsList').find('tbody').empty();
                                 $('#goodsList').find('tbody').append(str);
-
 
                                 if (null === data.detailAddress) {
                                     data.detailAddress = '-';
                                 }
-                                var $tr = "";
-                                $.each(data.detailAddress, function (i, item) {
-                                    str += "<tr><td>" + item.storeName + "</td><td>" + item.storeAddress + "</td><td>" + item.storePhone + "</td></tr>";
-                                });
+                                var $tr = "<tr><td>" + data.detailAddress.storeName + "</td><td>" + data.detailAddress.storeAddress + "</td><td>" + data.detailAddress.storePhone + "</td></tr>";
+                                $('#detailAddress').find('tbody').empty();
                                 $('#detailAddress').find('tbody').append($tr);
 
                                 if (null === data.remarkInfo) {
-                                    data.remarkInfo = '-';
+                                    data.remarkInfo = '';
                                 }
                                 $('#remarkInfo').html(data.remarkInfo);
 
                                 if (null === data.managerRemarkInfo) {
-                                    data.managerRemarkInfo = '-';
+                                    data.managerRemarkInfo = '';
                                 }
-                                $('#managerRemarkInfo').html(data.managerRemarkInfo);
+                                $('#managerRemarkInfo').val(data.managerRemarkInfo);
 
                                 $('#information').modal();
                             } else {
@@ -238,6 +241,20 @@
             },
             close: function () {
                 $('#information').modal('hide');
+            },
+            update: function () {
+                var info = $('#managerRemarkInfo').val();
+                var orderNumber = $('#orderNumber').text();
+                $http.POST('/rest/store/requiring/update', {
+                    "managerRemarkInfo": info,
+                    "orderNumber": orderNumber
+                }, function (result) {
+                    if (0 === result.code) {
+                        $notify.success("修改成功！")
+                    } else {
+                        $notify.danger(result.message);
+                    }
+                })
             }
         }
     }

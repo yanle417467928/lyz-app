@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -264,8 +265,24 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
     @Override
     public List<ReturnOrderProductCoupon> getReturnOrderProductCouponByRoid(Long roid) {
-        if (null != roid){
+        if (null != roid) {
             return returnOrderDAO.getReturnOrderProductCouponByRoid(roid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRoid(Long roid) {
+        if (null != roid) {
+            return returnOrderDAO.getReturnOrderBillingDetailByRoid(roid);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo) {
+        if (null != returnNo){
+            return returnOrderDAO.getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(returnNo);
         }
         return null;
     }
