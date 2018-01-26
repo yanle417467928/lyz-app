@@ -693,11 +693,54 @@
 
 
     <insert id="saveAppToEbsOrderReceiveInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf" useGeneratedKeys="true" keyProperty="id">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf" >
         INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,send_time,init_date)
         VALUES
         (#{deliverTypeTitle}, #{headerId}, #{orderNumber}, #{receiveDate}, #{sobId}, #{errorMsg}, #{sendFlag},
         #{sendTime}, #{initDate})
     </insert>
 
+    <select id="queryOrderReceiveInf" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf">
+     SELECT
+     id,
+     deliver_type_title,
+     header_id,
+     order_number,
+     receive_date,
+     sob_id,
+     init_date
+     FROM
+     inter_ate_order_receive_inf
+     WHERE
+     order_number = #{orderNumber}
+     ORDER BY id DESC
+     limit 1
+    </select>
+
+
+    <select id="findArrearsAndAgencyOrderList"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName,
+        oaa.status,
+        oaf.id,
+        oaf.agency_money,
+        oaf.order_money,
+        FROM
+        ord_base_info AS obi
+        INNER JOIN
+        ord_arrears_audit oaa ON obi.ord_no =oaa.ord_no
+        LEFT JOIN
+        st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN
+        ord_agency_fund oaf ON obi.ord_no =oaf.ord_no
+        WHERE
+        1=1
+        ORDER BY
+        obi.create_time DESC
+    </select>
 </mapper>

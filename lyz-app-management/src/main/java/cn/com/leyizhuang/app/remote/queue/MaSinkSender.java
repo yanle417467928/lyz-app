@@ -40,4 +40,15 @@ public class MaSinkSender {
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
     }
+
+
+    public void sendStorePickUpReceivedToEBSAndRecord(String number) {
+        log.info("sendStorePickUpReceivedToEBSAndRecord,发送门店自提单发货接口，调拨单号："+number);
+        if (null !=number){
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER_RECEIVE);
+            message.setContent(JSON.toJSONString(number));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+    }
 }

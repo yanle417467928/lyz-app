@@ -1,12 +1,13 @@
 package cn.com.leyizhuang.app.foundation.vo.management.order;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import lombok.*;
 
 import java.util.Date;
 
 /**
- * 门店自提单VO
+ * 自提单返回类
  * Created by liuh on 2017/12/29.
  */
 @Getter
@@ -14,7 +15,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class MaSelfTakeOrderVO {
+public class MaAgencyAndArrearsOrderVO {
     /**
      * 门店
      */
@@ -35,19 +36,13 @@ public class MaSelfTakeOrderVO {
      * 订单创建时间
      */
     private Date createTime;
-
     /**
-     * 创单人身份类型
+     * 审批状态
      */
-    private String creatorIdentityType;
-
-    /**
-     * 订单状态
-     */
-    private AppOrderStatus status;
-
+    private ArrearsAuditStatus arrearsAuditStatus;
     /**
      * 收款状态
      */
-    private Boolean isPayUp;
+    private String agencyStatus;
+
 }

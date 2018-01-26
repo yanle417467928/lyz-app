@@ -177,7 +177,11 @@ public interface MaOrderDAO {
 
    Boolean isPayUp(String orderNo);
 
-   void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
+    void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
 
     void saveAppToEbsOrderReceiveInf (MaOrderReceiveInf maOrderReceiveInf);
+
+    MaOrderReceiveInf queryOrderReceiveInf(String orderNumber);
+
+    List<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList();
 }
