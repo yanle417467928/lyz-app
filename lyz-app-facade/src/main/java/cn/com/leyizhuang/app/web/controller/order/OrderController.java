@@ -287,12 +287,12 @@ public class OrderController {
 
             if (orderBillingDetails.getIsPayUp()) {
                 //如果预存款或信用金已支付完成直接发送到WMS出货单
-//                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-//                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
-//                }
-//                //将该订单入拆单消息队列
-//
-//                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+               if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                  iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
+                }
+                //将该订单入拆单消息队列
+
+                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
                 // 记录销量明细
                 sellDetailsSender.sendOrderSellDetailsTOManagement(orderBaseInfo.getOrderNumber());

@@ -117,6 +117,7 @@ public class MessagePushTest {
         return template;
     }
 
+
     public static TransmissionTemplate transmissionTemplateDemo() {
         TransmissionTemplate template = new TransmissionTemplate();
         template.setAppId(AppConstant.APP_ID);
