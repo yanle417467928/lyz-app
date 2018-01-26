@@ -118,4 +118,6 @@ public interface ReturnOrderDAO {
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRoid(Long roid);
 
     List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo);
+
+    ReturnOrderBaseInfo queryReturnOrderByRoid(Long roid);
 }

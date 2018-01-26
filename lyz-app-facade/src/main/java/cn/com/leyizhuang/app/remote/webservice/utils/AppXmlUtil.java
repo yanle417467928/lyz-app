@@ -54,7 +54,7 @@ public class AppXmlUtil {
                 "<DIY_SITE_ID>" + requisitionOrder.getDiySiteId() + "</DIY_SITE_ID>" +
                 "<DIY_SITE_TEL>" + requisitionOrder.getDiySiteTel() + "</DIY_SITE_TEL>" +
                 "<DIY_SITE_TITLE>" + requisitionOrder.getDiySiteTitle() + "</DIY_SITE_TITLE>" +
-                "<MANAGER_REMARK_INFO></MANAGER_REMARK_INFO>" +
+                "<MANAGER_REMARK_INFO>" + requisitionOrder.getManagerRemarkInfo() + "</MANAGER_REMARK_INFO>" +
                 "<REMARK_INFO>" + requisitionOrder.getRemarkInfo() + "</REMARK_INFO>" +
                 "<REQUISITION_NUMBER></REQUISITION_NUMBER>" +
                 "<STATUS_ID></STATUS_ID>" +
@@ -195,9 +195,9 @@ public class AppXmlUtil {
                 "<goods_title>" + orderGoods.getGoodsTitle() + "</goods_title>" +
                 "<price>" + orderGoods.getPrice() + "</price>" +
                 "<quantity>" + orderGoods.getQuantity() + "</quantity>" +
-                "<td_requisition_id>" + orderGoods.getCompanyFlag() + "</td_requisition_id>" +
+                "<td_requisition_id></td_requisition_id>" +
                 "<order_number>" + orderGoods.getOrderNumber() + "</order_number>" +
-                "<sub_order_number></sub_order_number>" +
+                "<sub_order_number>" + orderGoods.getCompanyFlag() + "</sub_order_number>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");

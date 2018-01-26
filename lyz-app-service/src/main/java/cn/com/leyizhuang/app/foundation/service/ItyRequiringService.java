@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.Requiring;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.RequiringVO;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -31,4 +32,12 @@ public interface ItyRequiringService {
      * @return
      */
     Requiring queryRequiringById(Long id);
+
+    /**
+     * 修改管理员备注信息
+     *
+     * @param atwRequisitionOrder
+     * @return
+     */
+    int updateManagerRemarkInfo(AtwRequisitionOrder atwRequisitionOrder);
 }

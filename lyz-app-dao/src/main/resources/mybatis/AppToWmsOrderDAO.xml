@@ -145,6 +145,9 @@
             <if test="null != errorMessage">
                 error_message = #{errorMessage},
             </if>
+            <if test="null != managerRemarkInfo">
+                manager_remark_info = #{managerRemarkInfo},
+            </if>
         </set>
         WHERE order_number = #{orderNumber}
     </update>
@@ -200,6 +203,7 @@
             diy_site_title,
             diy_site_tel,
             remark_info,
+        manager_remark_info,
             customer_name,
             order_number,
             reserve_time_quantum,
