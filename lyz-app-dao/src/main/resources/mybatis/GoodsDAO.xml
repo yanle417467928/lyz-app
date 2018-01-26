@@ -970,4 +970,72 @@
                             AND gid != #{id}
         )
     </select>
+
+    <select id="findMaStoreGoodsByStoreId" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+            gg.gid,
+            gg.sku,
+            gg.sku_name,
+            gg.goods_specification,
+            gg.brand_name,
+            gg.type_name,
+            gg.company_flag,
+            ggp.retail_price,
+            ggp.vip_price
+        FROM
+            gds_goods AS gg
+        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+        WHERE
+            ggp.store_id = #{storeId}
+        ORDER BY gid DESC
+    </select>
+
+    <select id="screenMaGoodsGrid" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+        gg.gid,
+        gg.sku,
+        gg.sku_name,
+        gg.goods_specification,
+        gg.brand_name,
+        gg.type_name,
+        gg.company_flag,
+        ggp.retail_price,
+        ggp.vip_price
+        FROM
+        gds_goods AS gg
+        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+        WHERE
+        ggp.store_id = #{storeId}
+        <if test="null != brandCode and -1 != brandCode">
+            AND gg.brd_id = #{brandCode}
+        </if>
+        <if test="null != categoryCode and -1 != categoryCode">
+            AND gg.physical_classify = #{categoryCode}
+        </if>
+        <if test="null != companyCode and -1 != companyCode">
+            AND gg.company_flag = #{companyCode}
+        </if>
+        ORDER BY gid DESC
+    </select>
+
+    <select id="queryGoodsPageByStoreIdAndInfo" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+        gg.gid,
+        gg.sku,
+        gg.sku_name,
+        gg.goods_specification,
+        gg.brand_name,
+        gg.type_name,
+        gg.company_flag,
+        ggp.retail_price,
+        ggp.vip_price
+        FROM
+        gds_goods AS gg
+        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+        WHERE
+        ggp.store_id = #{storeId}
+        <if test="null != queryGoodsInfo">
+            AND (gg.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR gg.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
+        </if>
+    </select>
 </mapper>

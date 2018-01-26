@@ -1,16 +1,29 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.PhysicalClassify;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaPhysicalClassifyService;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +33,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author GenerationRoad
@@ -39,6 +50,14 @@ public class GoodsRestController extends BaseRestController {
     @Autowired
     private GoodsService goodsService;
 
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private GoodsPriceService goodsPriceService;
+
+    @Autowired
+    private AppActService appActService;
 
     @Autowired
     private MaPhysicalClassifyService physicalClassifyService;
@@ -83,6 +102,7 @@ public class GoodsRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsVO);
         }
     }
+
     /**
      * @param ids
      * @return
@@ -121,22 +141,23 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 更新商品图片信息
+     *
      * @param file
      * @return
      */
     @PostMapping(value = "updateImg")
     public ResultDTO<Object> updateImg(MultipartFile file) {
-        String picUrl =null;
-        if(!file.isEmpty()){
-             picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "goods/");
-        }else {
+        String picUrl = null;
+        if (!file.isEmpty()) {
+            picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "goods/");
+        } else {
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
                     "图片上传失败", null);
         }
             /*FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");*/
-            if (null != picUrl || "".equals(picUrl)) {
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
-            } else {
+        if (null != picUrl || "".equals(picUrl)) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
+        } else {
             return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
                     "图片上传失败", null);
         }
@@ -145,16 +166,17 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 更新商品详情页
+     *
      * @param imgFile
      * @return
      */
     @PostMapping(value = "updateGoodsDetial")
     public Map<String, Object> updateGoodsDetial(MultipartFile imgFile) {
-        String url =null;
+        String url = null;
         Map<String, Object> res = new HashMap<String, Object>();
-        if(!imgFile.isEmpty()){
+        if (!imgFile.isEmpty()) {
             url = FileUploadOSSUtils.uploadProfilePhoto(imgFile, "goods/");
-        }else {
+        } else {
             res.put("msg", "图片不存在");
             return res;
         }
@@ -188,6 +210,7 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 根据搜索查询商品信息
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -206,6 +229,7 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 根据筛选条件查询商品信息
+     *
      * @param offset
      * @param size
      * @param keywords
@@ -226,6 +250,7 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 查询物理分类信息
+     *
      * @return
      */
     @GetMapping(value = "/page/physicalClassifyGrid")
@@ -237,34 +262,151 @@ public class GoodsRestController extends BaseRestController {
 
     /**
      * 修改商品检验电商名称是否存在
+     *
      * @param skuName
      * @param id
      * @return
      */
     @PostMapping(value = "/isExistSkuName")
-    public ValidatorResultDTO isExistSkuName(@RequestParam(value = "skuName") String skuName,@RequestParam(value = "id")Long id) {
-        if(StringUtils.isBlank(skuName)||null==id){
+    public ValidatorResultDTO isExistSkuName(@RequestParam(value = "skuName") String skuName, @RequestParam(value = "id") Long id) {
+        if (StringUtils.isBlank(skuName) || null == id) {
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }
-        Boolean result = this.goodsService.isExistSkuName(skuName,id);
+        Boolean result = this.goodsService.isExistSkuName(skuName, id);
         return new ValidatorResultDTO(!result);
     }
 
     /**
      * 修改商品检验排序号是否存在
+     *
      * @param sortId
      * @param id
      * @return
      */
     @PostMapping(value = "/isExistSortId")
-    public ValidatorResultDTO isExistSortId(@RequestParam(value = "sortId") Long sortId,@RequestParam(value = "id")Long id) {
-        if(null==sortId||null==id){
+    public ValidatorResultDTO isExistSortId(@RequestParam(value = "sortId") Long sortId, @RequestParam(value = "id") Long id) {
+        if (null == sortId || null == id) {
             logger.warn("页面提交的数据有错误");
             return new ValidatorResultDTO(false);
         }
-        Boolean result = this.goodsService.isExistSortId(sortId,id);
+        Boolean result = this.goodsService.isExistSortId(sortId, id);
         return new ValidatorResultDTO(!result);
     }
 
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 门店商品信息分页查询
+     * @descripe
+     * @author GenerationRoad
+     * @date 2017/9/8
+     */
+    @GetMapping(value = "/page/grid/{storeId}")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> restStoreGoodsPageGird(Integer offset, Integer size, String keywords,@PathVariable(value = "storeId") Long storeId) {
+        logger.info("restStoreGoodsPageGird 门店商品信息分页查询,入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords, storeId);
+        //获取用户登录名
+        String userName = this.getShiroUser().getLoginName();
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageHelper.startPage(page, size);
+        List<MaBuyProductCouponGoodsResponse> goodsResponses = goodsService.findMaStoreGoodsByStoreId(storeId);
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
+        logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
+    }
+
+    /**
+     * 门店商品信息分页条件查询
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @return
+     */
+    @GetMapping(value = "/page/screen/maGoods")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(Integer offset, Integer size, String keywords, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "brandCode") Long brandCode, @RequestParam(value = "categoryCode") String categoryCode, @RequestParam(value = "companyCode") String companyCode) {
+        logger.info("screenMaGoodsGrid 门店商品信息分页条件查询,入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords, storeId);
+        //获取用户登录名
+        String userName = this.getShiroUser().getLoginName();
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageHelper.startPage(page, size);
+        List<MaBuyProductCouponGoodsResponse> goodsResponses = goodsService.screenMaGoodsGrid(storeId, brandCode, categoryCode, companyCode);
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
+        logger.warn("screenMaGoodsGrid ,门店商品信息分页条件查询", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
+    }
+
+    /**
+     * 根据导购id查询门店赠品列表
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @PostMapping(value = "/page/gifts")
+    public ResultDTO<PromotionsListResponse> restGiftsPageBySellerId(Integer offset, Integer size, String keywords, Long sellerId, Long customerId, String goodsDetails) throws IOException {
+        logger.info("restGiftsPageBySellerId 根据导购id查询门店赠品列表,入参 offset:{},size:{},keywords:{},sellerId:{},customerId:{},giftDateils:{}", offset, size, keywords, sellerId, customerId, goodsDetails);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, MaActGoodsMapping.class);
+        List<MaActGoodsMapping> goodsList = objectMapper.readValue(goodsDetails, javaType1);
+        if (goodsList == null) {
+            logger.warn("本品为空");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品为空", null);
+        }
+        //查询导购
+        AppEmployee appEmployee = appEmployeeService.findById(sellerId);
+        //创建促销查询所需商品参数list
+        List<OrderGoodsSimpleResponse> orderGoodsSimpleResponseList = new ArrayList<>();
+        for (MaActGoodsMapping goodsMappingDO : goodsList) {
+            OrderGoodsSimpleResponse orderGoodsSimpleResponse = new OrderGoodsSimpleResponse();
+            //根据商品id和门店id查询商品价格
+            GoodsPrice goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(goodsMappingDO.getGid(), appEmployee.getStoreId());
+            orderGoodsSimpleResponse.setId(goodsMappingDO.getGid());
+            orderGoodsSimpleResponse.setSku(goodsMappingDO.getSku());
+            orderGoodsSimpleResponse.setGoodsQty(goodsMappingDO.getQty());
+            orderGoodsSimpleResponse.setVipPrice(goodsPrice.getVIPPrice());
+            orderGoodsSimpleResponse.setRetailPrice(goodsPrice.getRetailPrice());
+            //将参数添加到list中
+            orderGoodsSimpleResponseList.add(orderGoodsSimpleResponse);
+        }
+        //查询所有符合条件的促销
+        PromotionsListResponse promotionsListResponse = appActService.countAct(sellerId, AppIdentityType.SELLER, orderGoodsSimpleResponseList);
+        if (promotionsListResponse == null) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"无促销活动可参加！",null);
+        }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "促销查询成功", promotionsListResponse);
+    }
+
+    /**
+     * 根据搜索查询商品信息
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param queryGoodsInfo
+     * @return
+     */
+    @GetMapping(value = "/page/query/goodsInfo")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Integer offset, Integer size, String keywords, Long storeId ,String queryGoodsInfo) {
+        logger.info("queryGoodsPageByStoreIdAndInfo 根据搜索查询商品信息,入参 offset:{},size:{},keywords:{},storeId:{},queryGoodsInfo:{}", offset, size, keywords, storeId, queryGoodsInfo);
+        //获取用户登录名
+        String userName = this.getShiroUser().getLoginName();
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageHelper.startPage(page, size);
+        List<MaBuyProductCouponGoodsResponse> goodsResponses = goodsService.queryGoodsPageByStoreIdAndInfo(storeId, queryGoodsInfo);
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
+        logger.warn("queryGoodsPageByStoreIdAndInfo ,根据搜索查询商品信息成功", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
+    }
 }

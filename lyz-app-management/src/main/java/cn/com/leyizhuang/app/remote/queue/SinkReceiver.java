@@ -24,7 +24,6 @@ import java.io.IOException;
 @Component
 public class SinkReceiver {
 
-
     @Resource
     private AppOrderService orderService;
 

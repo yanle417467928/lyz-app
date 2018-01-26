@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
@@ -181,8 +182,18 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public List<EmployeeDO> findEmployeeByCityIdAndStoreId(Long cityId, Long storeId) {
+    public List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId(Long cityId, Long storeId) {
         return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(cityId, storeId);
+    }
+
+    /**
+     * 后台购买产品券条件查询导购
+     *
+     * @return
+     */
+    @Override
+    public List<MaEmployeeResponse> findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(String sellerQueryConditions, Long cityId, Long storeId){
+        return this.maEmployeeDAO.findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(sellerQueryConditions, cityId, storeId);
     }
 
     @Override

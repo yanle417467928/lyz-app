@@ -32,4 +32,12 @@ public interface GoodsPriceDAO {
 
     List<GiftListResponseGoods> findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(@Param(value = "list") List<Long> goodsIdList,
                                                                                              @Param(value = "userId") Long userId);
+
+    /**
+     * 根据商品id + 门店id 查询商品价格
+     * @param goodsID   商品id
+     * @param storeID   门店id
+     * @return
+     */
+    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID);
 }

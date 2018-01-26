@@ -98,7 +98,7 @@ public class AppStore {
     /**
      * 门店组织id
      */
-    private String storeOrgId;
+    private Long storeOrgId;
     /**
      * 分公司id
      */

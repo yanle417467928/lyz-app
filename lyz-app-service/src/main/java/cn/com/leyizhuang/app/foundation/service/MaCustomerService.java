@@ -50,4 +50,11 @@ public interface MaCustomerService {
      */
     List<CustomerDO> findCustomerByCityIdAndStoreId(Long cityId,Long storeId);
 
+    /**
+     * 后台购买产品券条件查询顾客
+     *
+     * @return
+     */
+    List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions,Long cityId,Long storeId);
+
 }

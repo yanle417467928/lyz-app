@@ -47,8 +47,16 @@ spring:
             consumer:
               backOffInitialInterval: 10000
               backOffMaxInterval: 30000
+          receiveDetails:
+            destination: sellDetails
+            group: sellDetails
+            consumer:
+              backOffInitialInterval: 10000
+              backOffMaxInterval: 30000
           sendOrder:
             destination: separateOrder
+          sendDetailsToHQ:
+            destination: sendDetailsToHQ
 
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
