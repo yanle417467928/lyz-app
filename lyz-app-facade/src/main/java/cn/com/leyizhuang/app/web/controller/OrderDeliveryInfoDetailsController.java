@@ -56,8 +56,8 @@ public class OrderDeliveryInfoDetailsController {
             //查询该订单所有物流状态
             List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber);
             //配送员编号
-            String deliveryNumber= null;
-            if (null != orderDeliveryInfoDetailsList && orderDeliveryInfoDetailsList.size() > 0 ){
+            String deliveryNumber = null;
+            if (null != orderDeliveryInfoDetailsList && orderDeliveryInfoDetailsList.size() > 0) {
                 deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有物流记录", null);
@@ -74,8 +74,13 @@ public class OrderDeliveryInfoDetailsController {
 
                 logisticsDetailResponseList.add(logisticsDetailResponse);
             }
-            LogisticsInformationResponse logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber, orderNumber);
+            LogisticsInformationResponse logisticsInformationResponse1;
+            logisticsInformationResponse1 = orderDeliveryInfoDetailsService.getDeliveryByOperatorNoAndOrderNumber(deliveryNumber, orderNumber);
             if (null != logisticsInformationResponse1) {
+                logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
+            } else {
+                logisticsInformationResponse1 = new LogisticsInformationResponse();
+                logisticsInformationResponse1.setOrderNumber(orderNumber);
                 logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
@@ -165,7 +170,7 @@ public class OrderDeliveryInfoDetailsController {
      * @param identityType 用户类型
      * @param orderNumber  订单号
      * @param description  描述
-     * @return  成功或失败
+     * @return 成功或失败
      */
     @RequestMapping(value = "/update/status", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> updateLogisticsStatus(Long userID, Integer identityType, String orderNumber, String description) {
@@ -192,14 +197,14 @@ public class OrderDeliveryInfoDetailsController {
             logger.info("updateLogisticsStatus OUT,配送员修改物流状态失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 1){
+        if (identityType != 1) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只有配送员能进行此操作", null);
             logger.info("updateLogisticsStatus OUT,配送员修改物流状态失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
             AppEmployee appEmployee = appEmployeeService.findById(userID);
-            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.queryByOrderNumberAndOperatorNumber(orderNumber,appEmployee.getDeliveryClerkNo());
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.queryByOrderNumberAndOperatorNumber(orderNumber, appEmployee.getDeliveryClerkNo());
             OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
             deliveryInfoDetails.setCreateTime(new Date());
             deliveryInfoDetails.setLogisticStatus(LogisticStatus.SENDING);
