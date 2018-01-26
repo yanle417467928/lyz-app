@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -429,6 +430,21 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     @Override
     public Boolean isExistSortId(Long sortId, Long id) {
         return goodsDAO.isExistSortId(sortId, id);
+    }
+
+    @Override
+    public List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(Long storeId) {
+        return goodsDAO.findMaStoreGoodsByStoreId(storeId);
+    }
+
+    @Override
+    public List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(Long storeId, Long brandCode, String categoryCode, String companyCode) {
+        return goodsDAO.screenMaGoodsGrid(storeId, brandCode, categoryCode, companyCode);
+    }
+
+    @Override
+    public List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Long storeId, String queryGoodsInfo) {
+        return goodsDAO.queryGoodsPageByStoreIdAndInfo(storeId, queryGoodsInfo);
     }
 
 }

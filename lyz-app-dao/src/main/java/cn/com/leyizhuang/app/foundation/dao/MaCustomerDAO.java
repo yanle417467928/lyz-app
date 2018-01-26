@@ -59,4 +59,13 @@ public interface MaCustomerDAO {
      */
     List<CustomerDO> findCustomerByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("storeId")Long storeId);
 
+    /**
+     * 后台购买产品券条件查询顾客
+     *
+     * @return
+     */
+    List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(@Param(value = "customerQueryConditions") String customerQueryConditions,
+                                                                               @Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+
+
 }

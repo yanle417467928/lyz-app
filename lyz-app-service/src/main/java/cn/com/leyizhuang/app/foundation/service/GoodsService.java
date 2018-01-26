@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -99,4 +100,29 @@ public interface GoodsService {
     Boolean isExistSkuName(String skuName,Long id);
 
     Boolean isExistSortId(Long sortId,Long id);
+
+    /**
+     * 后台购买产品券查询商品信息
+     * @param storeId   门店id
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(Long storeId);
+
+    /**
+     * 后台购买产品券条件查询商品信息
+     * @param storeId
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(Long storeId,Long brandCode,String categoryCode,String companyCode);
+
+    /**
+     * 搜索条件查询商品
+     * @param storeId
+     * @param queryGoodsInfo
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Long storeId,String queryGoodsInfo);
 }

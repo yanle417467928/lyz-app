@@ -326,20 +326,46 @@
         WHERE emp_id = #{id}
     </select>
 
-    <select id="findEmployeeByCityIdAndStoreId"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmployeeByCityIdAndStoreId"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
         SELECT
-         emp_id,
-        `name`,
-        mobile
+        ee.emp_id,
+        ee.`name`,
+        ee.mobile,
+        ss.store_type,
+        spd.balance
         FROM
-            emp_employee
+        emp_employee AS ee
+        INNER JOIN st_store AS ss ON ee.store_id = ss.store_id
+        INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
          1 = 1
-        <if test="cityId != -1 and cityId != null">
-          AND  city_id = #{cityId}
+        <if test="cityId != null and cityId != -1">
+          AND  ee.city_id = #{cityId}
         </if>
-        <if test="storeId != -1 and storeId != null">
-        AND store_id = #{storeId}
+        <if test="storeId != null and storeId != -1">
+        AND ee.store_id = #{storeId}
+        </if>
+    </select>
+
+    <select id="findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
+        SELECT
+        ee.emp_id,
+        ee.`name`,
+        ee.mobile,
+        ss.store_type,
+        spd.balance
+        FROM
+        emp_employee AS ee
+        INNER JOIN st_store AS ss ON ee.store_id = ss.store_id
+        INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
+        WHERE
+        1 = 1
+        AND  (ee.`name` LIKE CONCAT('%' ,#{sellerQueryConditions},'%') OR ee.mobile LIKE CONCAT('%' ,#{sellerQueryConditions},'%') )
+        <if test="cityId != null and cityId != -1">
+            AND  ee.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND ee.store_id = #{storeId}
         </if>
     </select>
 </mapper>

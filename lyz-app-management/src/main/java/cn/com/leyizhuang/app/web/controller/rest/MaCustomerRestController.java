@@ -300,26 +300,56 @@ public class MaCustomerRestController extends BaseRestController {
      * @param offset
      * @param size
      * @param keywords
-     * @param cityId
-     * @param storeId
      * @return
      */
     @GetMapping(value = "/select/customer")
-    public GridDataVO<CustomerDO> selectCustomer(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId) {
-        logger.info("selectCustomer 后台购买产品券选择顾客,入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords, cityId, storeId);
+    public GridDataVO<CustomerDO> selectCustomer(Integer offset, Integer size, String keywords) {
+        logger.info("selectCustomer 后台购买产品券选择顾客,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
         try {
             String userName = this.getShiroUser().getLoginName();
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<CustomerDO> employeeDOList = this.maCustomerService.findCustomerByCityIdAndStoreId(cityId, storeId);
-            PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(employeeDOList);
+            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreId(null, null);
+            PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(customerList);
             List<CustomerDO> customerDOList = customerDOPageInfo.getList();
             logger.warn("selectCustomer ,后台购买产品券选择顾客成功", customerDOList.size());
             return new GridDataVO<CustomerDO>().transform(customerDOList, customerDOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("selectCustomer EXCEPTION,发生未知错误，后台购买产品券选择顾客失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 后台购买产品券条件查询顾客
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param customerQueryConditions
+     * @return
+     */
+    @GetMapping(value = "/select/customer/{customerQueryConditions}")
+    public GridDataVO<CustomerDO> selectCustomerBySellerNameOrSellerPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "customerQueryConditions") String customerQueryConditions) {
+        logger.info("selectCustomerBySellerNameOrSellerPhone 后台购买产品券条件查询顾客,入参 offset:{},size:{},keywords:{},customerQueryConditions:{}", offset, size, keywords, customerQueryConditions);
+        try {
+            String userName = this.getShiroUser().getLoginName();
+            Long cityId = null;
+            Long storeId = null;
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageHelper.startPage(page, size);
+            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions,cityId, storeId);
+            PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(customerList);
+            List<CustomerDO> customerDOList = customerDOPageInfo.getList();
+            logger.warn("selectCustomerBySellerNameOrSellerPhone ,后台购买产品券条件查询顾客成功", customerDOList.size());
+            return new GridDataVO<CustomerDO>().transform(customerDOList, customerDOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("selectCustomerBySellerNameOrSellerPhone EXCEPTION,发生未知错误，后台购买产品券条件查询顾客失败");
             logger.warn("{}", e);
             return null;
         }

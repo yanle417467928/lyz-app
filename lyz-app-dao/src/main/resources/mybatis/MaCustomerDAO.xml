@@ -262,15 +262,35 @@
         SELECT
             cus_id,
             `name`,
-            mobile
+            mobile,
+            customer_type
         FROM
             cus_customer
         WHERE
         1 = 1
-        <if test="cityId != -1 and cityId != null">
+        <if test="cityId != null and cityId != -1">
             AND  city_id = #{cityId}
         </if>
-        <if test="storeId != -1 and storeId != null">
+        <if test="storeId != null and storeId != -1">
+            AND store_id = #{storeId}
+        </if>
+    </select>
+
+    <select id="findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone" resultMap="customerVoResultMap">
+        SELECT
+        cus_id,
+        `name`,
+        mobile,
+        customer_type
+        FROM
+        cus_customer
+        WHERE
+        1 = 1
+        AND  (`name` LIKE CONCAT('%' ,#{customerQueryConditions},'%') OR mobile LIKE CONCAT('%' ,#{customerQueryConditions},'%') )
+        <if test="cityId != null and cityId != -1">
+            AND  city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
             AND store_id = #{storeId}
         </if>
     </select>

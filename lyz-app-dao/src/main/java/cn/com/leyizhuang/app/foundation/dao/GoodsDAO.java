@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -138,4 +139,29 @@ public interface GoodsDAO {
     Boolean isExistSkuName(@Param(value = "skuName") String skuName,@Param(value = "id") Long id);
 
     Boolean isExistSortId(@Param(value = "sortId") Long sortId,@Param(value = "id") Long id);
+
+    /**
+     * 后台购买产品券查询商品信息
+     * @param storeId   门店id
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(@Param("storeId") Long storeId);
+
+    /**
+     * 后台购买产品券条件查询商品信息
+     * @param storeId
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(@Param("storeId")Long storeId,@Param("brandCode")Long brandCode,@Param("categoryCode")String categoryCode,@Param("companyCode")String companyCode);
+
+    /**
+     * 搜索条件查询商品
+     * @param storeId
+     * @param queryGoodsInfo
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId,@Param("queryGoodsInfo") String queryGoodsInfo);
 }
