@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableEurekaClient
 @MapperScan(basePackages = "cn.com.leyizhuang.app.foundation.dao")
 @EnableTransactionManagement
-public class ApplicationStarter{
+public class ApplicationStarter {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStarter.class, args);
     }
@@ -32,7 +32,7 @@ public class ApplicationStarter{
         registrationBean.addUrlPatterns("/app/*");
         registrationBean.addInitParameter("excludedPages", "/app/employee/login,/app/customer/login," +
                 "/app/customer/registry,/app/city/list,/app/employee/password/modify,/app/sms/verifyCode/send," +
-                "/app/alipay/return/async,/app/wechatpay/return/async");
+                "/app/alipay/return/async,/app/wechatpay/return/async,/app/system/setting/weChatLoginStatus");
         return registrationBean;
     }
 
