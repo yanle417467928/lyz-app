@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO">
+
+    <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+    insert into sell_details ( company_id, `year`,
+      `month`, store_id, seller_id,
+      customer_phone, customer_name, `number`,
+      goods_grade, sku, quantity,
+      amount, single_rewards ,city_id,goods_line_id)
+    values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
+      #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},
+      #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
+      #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
+      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId})
+    </insert>
+
+    <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+      select * from sell_details where
+      `year` = #{year} and `month` = #{month}
+    </select>
+
+    <select id="isExitByNumberAndGoodsLineId" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+                select 1 from sell_details where `number` = #{number} and goods_line_id = #{lineId}
+        )
+    </select>
+
+</mapper>

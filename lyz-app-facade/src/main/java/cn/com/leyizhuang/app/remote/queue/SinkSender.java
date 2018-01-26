@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessageType;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
+import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqSellDetailsChannel;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -20,6 +21,9 @@ public class SinkSender {
 
     @Resource
     private MqOrderChannel orderChannel;
+
+    @Resource
+    private MqSellDetailsChannel sellDetailsChannel;
 
     public void sendOrder(String orderNumber) {
         log.info("sendOrder,发送需拆单订单到拆单队列,Begin\n 订单号:{}", orderNumber);
@@ -53,4 +57,8 @@ public class SinkSender {
         }
         log.info("sendOrder,发送需拆单退单到拆单队列,End", JSON.toJSONString(returnNumber));
     }
+
+    /**
+     * 发送销售记录到
+     */
 }

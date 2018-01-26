@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -96,6 +97,9 @@ public class OrderController {
 
     @Resource
     private SinkSender sinkSender;
+
+    @Resource
+    private SellDetailsSender sellDetailsSender;
 
     @Resource
     private CashCouponService cashCouponService;
@@ -283,12 +287,15 @@ public class OrderController {
 
             if (orderBillingDetails.getIsPayUp()) {
                 //如果预存款或信用金已支付完成直接发送到WMS出货单
-                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
-                }
-                //将该订单入拆单消息队列
+//                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+//                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
+//                }
+//                //将该订单入拆单消息队列
+//
+//                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
-                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+                // 记录销量明细
+                sellDetailsSender.sendOrderSellDetailsTOManagement(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
