@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.Requiring;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.RequiringVO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import com.github.pagehelper.PageInfo;
 
@@ -23,7 +22,7 @@ public interface ItyRequiringService {
      * @param keywords
      * @return
      */
-    PageInfo<RequiringVO> queryPage(Integer offset, Integer size, String keywords);
+    PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords);
 
     /**
      * 根据ID查看详情

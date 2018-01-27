@@ -96,7 +96,7 @@ public class CommonServiceImpl implements CommonService {
     private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
 
     @Resource
-    private TransactionalSupportService transactionalSupportService;
+    private ReturnOrderService returnOrderService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -1231,7 +1231,7 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setUnitPrice(details.getUnitPrice());
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
                         returnDetailsList.add(returnDetails);
-                        orderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
+                        returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                     }
                 }
             }

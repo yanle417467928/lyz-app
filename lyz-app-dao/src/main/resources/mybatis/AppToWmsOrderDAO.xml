@@ -27,7 +27,7 @@
         (create_time, diy_site_address, diy_site_id, diy_site_title, diy_site_tel, remark_info, customer_name, order_number,
          reserve_time_quantum, receive_address, receive_name, receive_phone, city, detail_address, disctrict, province, subdistrict,
          order_time, seller_tel, goods_quantity, upstairs_all, seller_name, delivery_fee, color_fee, discount, other_payed, balance_used,
-         member_receiver, unpayed, total_goods_price, agency_fund)
+        member_receiver, unpayed, total_goods_price, agency_fund, residence_name)
             SELECT
                 #{createTime},
                 #{diySiteAddress},
@@ -59,7 +59,8 @@
                 #{memberReceiver},
                 #{unpayed},
                 #{totalGoodsPrice},
-        #{agencyFund}
+        #{agencyFund},
+        #{residenceName}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -70,38 +71,36 @@
 
     <insert id="saveAtwReturnOrder" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
-        INSERT INTO inter_atw_order_return
-        (create_time, cancel_time, check_time, diy_site_address, diy_site_id,
-         diy_site_tel, diy_site_title, manager_remark_info, order_time, order_number, pay_type_id, pay_type_title,
-         remark_info, return_number, return_time, status_id, user_name, deliver_type_title, return_price, return_type,
-         shopping_address, seller_real_name)
+
+        INSERT INTO inter_atw_return_order_header (create_time, diy_site_address,diy_site_id, diy_site_tel,
+        diy_site_title, order_number, remark_info,
+        return_number, return_time, status_id, deliver_type_title, shopping_address,
+        seller_real_name, goods_line_quantity, creator, creator_phone, rejecter,
+        rejecter_phone, rejecter_address)
             SELECT
                 #{createTime},
-                #{cancelTime},
-                #{checkTime},
                 #{diySiteAddress},
                 #{diySiteId},
                 #{diySiteTel},
                 #{diySiteTitle},
-                #{managerRemarkInfo},
-                #{orderTime},
                 #{orderNumber},
-                #{payTypeId},
-                #{payTypeTitle},
                 #{remarkInfo},
                 #{returnNumber},
                 #{returnTime},
                 #{statusId},
-                #{userName},
                 #{deliverTypeTitle},
-                #{returnPrice},
-                #{returnType},
                 #{shoppingAddress},
-                #{sellerRealName}
+        #{sellerRealName},
+        #{goodsLineQuantity},
+        #{creator},
+        #{creatorPhone},
+        #{rejecter},
+        #{rejecterPhone},
+        #{rejecterAddress}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
-                    FROM inter_atw_order_return
+        FROM inter_atw_return_order_header
                     WHERE return_number = #{returnNumber}
             )
     </insert>
@@ -145,16 +144,13 @@
             <if test="null != errorMessage">
                 error_message = #{errorMessage},
             </if>
-            <if test="null != managerRemarkInfo">
-                manager_remark_info = #{managerRemarkInfo},
-            </if>
         </set>
         WHERE order_number = #{orderNumber}
     </update>
 
     <update id="modifyAtwReturnOrder"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
-        UPDATE inter_atw_order_return
+        UPDATE inter_atw_return_order_header
         <set>
             <if test="null != sendFlag">
                 send_flag = #{sendFlag},
@@ -203,7 +199,6 @@
             diy_site_title,
             diy_site_tel,
             remark_info,
-        manager_remark_info,
             customer_name,
             order_number,
             reserve_time_quantum,
@@ -228,7 +223,8 @@
         member_receiver,
             unpayed,
             total_goods_price,
-            agency_fund
+        agency_fund,
+        residence_name
         FROM inter_atw_order_requsition
         WHERE order_number = #{orderNo};
     </select>
@@ -245,7 +241,7 @@
     <select id="findReturnOrderByReturnOrderNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
         SELECT *
-        FROM inter_atw_order_return
+        FROM inter_atw_return_order_header
         WHERE return_number = #{returnNumber};
     </select>
 

@@ -123,7 +123,8 @@ public interface ReturnOrderService {
      * @return 退货单
      */
     ReturnOrderBaseInfo createReturnOrderBaseInfo(Long orderId, String orderNo, Date orderTime, String remarksInfo, Long creatorId,
-                                                  Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType);
+                                                  Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType,
+                                                  Long storeId, String storeCode, String storeStructureCode);
 
     /**
      * 创建退货配送物流信息
@@ -173,4 +174,6 @@ public interface ReturnOrderService {
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRoid(Long roid);
 
     List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo);
+
+    void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails);
 }

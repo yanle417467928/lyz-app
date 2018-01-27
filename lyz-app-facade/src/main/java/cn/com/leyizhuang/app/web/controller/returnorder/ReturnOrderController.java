@@ -278,6 +278,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnPic(returnPic);
@@ -770,7 +773,8 @@ public class ReturnOrderController {
             //********************创建退货单基础信息******************
             //记录原订单信息
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.createReturnOrderBaseInfo(order.getId(), order.getOrderNumber(),
-                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType());
+                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType(),
+                    order.getStoreId(), order.getStoreCode(), order.getStoreStructureCode());
             if (identityType == 0) {
                 AppCustomer customer = customerService.findById(param.getCusId());
                 if (AssertUtil.isNotEmpty(customer)) {
@@ -798,7 +802,7 @@ public class ReturnOrderController {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()) {
+                                if (simpleInfo.getQty() > goodsInfo.getReturnableQuantity()) {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
@@ -1506,6 +1510,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnType(ReturnOrderType.CANCEL_RETURN);

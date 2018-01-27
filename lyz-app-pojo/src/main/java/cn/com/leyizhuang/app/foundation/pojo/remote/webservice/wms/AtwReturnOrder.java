@@ -25,14 +25,6 @@ public class AtwReturnOrder {
      */
     private Date createTime;
     /**
-     * 申请退货时间
-     */
-    private Date cancelTime;
-    /**
-     * 确认收货时间
-     */
-    private Date checkTime;
-    /**
      * 门店地址
      */
     private String diySiteAddress;
@@ -50,10 +42,6 @@ public class AtwReturnOrder {
      */
     private String diySiteTel;
     /**
-     * 管理员后台备注信息
-     */
-    private String managerRemarkInfo;
-    /**
      * 订单备注信息
      */
     private String remarkInfo;
@@ -61,14 +49,6 @@ public class AtwReturnOrder {
      * 原单号（主单号）
      */
     private String orderNumber;
-    /**
-     * 支付方式值
-     */
-    private Integer payTypeId;
-    /**
-     * 支付方式描述
-     */
-    private String payTypeTitle;
     /**
      * 退单号
      */
@@ -82,10 +62,6 @@ public class AtwReturnOrder {
      */
     private Integer statusId;
     /**
-     * 申请人姓名
-     */
-    private String userName;
-    /**
      * 原订单配送方式
      */
     private String deliverTypeTitle;
@@ -94,10 +70,6 @@ public class AtwReturnOrder {
      */
     private Double returnPrice;
     /**
-     * 退货方式
-     */
-    private String returnType;
-    /**
      * 原订单收货地址
      */
     private String shoppingAddress;
@@ -105,10 +77,31 @@ public class AtwReturnOrder {
      * 导购真实姓名
      */
     private String sellerRealName;
+
     /**
-     * 下单时间
+     * 商品行总数
      */
-    private Date orderTime;
+    private Integer goodsLineQuantity;
+    /**
+     * 创建者
+     */
+    private String creator;
+    /**
+     * 创建人电话
+     */
+    private String creatorPhone;
+    /**
+     * 退货人
+     */
+    private String rejecter;
+    /**
+     * 退货人电话
+     */
+    private String rejecterPhone;
+    /**
+     * 退货人地址
+     */
+    private String rejecterAddress;
     /**
      * 接口传输标识
      */

@@ -103,6 +103,8 @@ public interface ReturnOrderDAO {
                                                        @Param("returnableQty") Integer returnableQty,
                                                        @Param("id")Long id);
 
+    void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails);
+
     /**
      * app后台获取所有退单列表
      *
@@ -120,4 +122,8 @@ public interface ReturnOrderDAO {
     List<ReturnOrderJxPriceDifferenceRefundDetails> getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(String returnNo);
 
     ReturnOrderBaseInfo queryReturnOrderByRoid(Long roid);
+
+    List<ReturnOrderBaseInfo> findReturnOrderListByStatus(AppReturnOrderStatus status);
+
+    List<ReturnOrderBaseInfo> findReturnOrderListByStroe(Long store);
 }

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.returning.Returning;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.returning.ReturningVO;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -21,7 +21,7 @@ public interface ItyReturningService {
      * @param keywords
      * @return
      */
-    PageInfo<ReturningVO> queryPage(Integer offset, Integer size, String keywords);
+    PageInfo<ReturnOrderBaseInfo> queryPage(Integer offset, Integer size, String keywords);
 
     /**
      * 查询退单详情
@@ -30,4 +30,6 @@ public interface ItyReturningService {
      * @return
      */
     Returning queryReturningById(Long id);
+
+    PageInfo<ReturnOrderBaseInfo> getReturningVOByQueryParam(Integer offset, Integer size, Integer status, Long store);
 }

@@ -46,8 +46,8 @@ public class MaRequiringRestController {
 
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存要货管理分页查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords);
 
-        PageInfo<RequiringVO> allocationVOPageInfo = ityRequiringService.queryPage(offset, size, keywords);
-        return new GridDataVO<RequiringVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
+        PageInfo<AtwRequisitionOrder> requisitionOrderPageInfo = ityRequiringService.queryPage(offset, size, keywords);
+        return new GridDataVO<RequiringVO>().transform(RequiringVO.transform(requisitionOrderPageInfo.getList()), requisitionOrderPageInfo.getTotal());
     }
 
     /**
