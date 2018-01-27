@@ -63,6 +63,7 @@ mybatis:
   type-aliases-package: cn.com.leyizhuang.app.foundation
   configuration:
     map-underscore-to-camel-case: true
+    cache-enabled: true
 
 pagehelper:
   helper-dialect: mysql
