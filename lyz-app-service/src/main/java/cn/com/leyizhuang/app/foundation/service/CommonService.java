@@ -4,6 +4,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -11,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSim
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
@@ -71,4 +73,15 @@ public interface CommonService {
     List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList);
 
     void deductionOrderJxPriceDifferenceRefund(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderGoodsInfo> goodsInfos);
+
+    /**
+     *  后台买券订单创建商品信息
+     * @param goodsList
+     * @param customer
+     * @param userId
+     * @param identityType
+     * @param orderNumber
+     * @return
+     */
+    CreateOrderGoodsSupport createMaOrderGoodsInfo(List<MaActGoodsMapping> goodsList, AppCustomer customer, Long userId, Integer identityType, String orderNumber);
 }

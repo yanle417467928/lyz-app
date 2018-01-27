@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.UserRole;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
@@ -20,10 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
@@ -45,7 +43,7 @@ import java.util.*;
  * 通用方法实现
  *
  * @author Richard
- * Created on 2017-09-12 15:44
+ *         Created on 2017-09-12 15:44
  **/
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -96,7 +94,7 @@ public class CommonServiceImpl implements CommonService {
     private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
 
     @Resource
-    private TransactionalSupportService transactionalSupportService;
+    private ReturnOrderService returnOrderService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -1231,7 +1229,7 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setUnitPrice(details.getUnitPrice());
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
                         returnDetailsList.add(returnDetails);
-                        orderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
+                        returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                     }
                 }
             }
@@ -1358,5 +1356,108 @@ public class CommonServiceImpl implements CommonService {
         return pickUpCode;
     }
 
+    @Override
+    public CreateOrderGoodsSupport createMaOrderGoodsInfo(List<MaActGoodsMapping> goodsList, AppCustomer customer, Long userId, Integer identityType, String orderNumber) {
+        List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+        //新建一个map,用来存放最终要检核库存的商品和商品数量
+        Map<Long, Integer> inventoryCheckMap = new HashMap<>();
+        //定义订单商品零售总价
+        Double goodsTotalPrice = 0D;
+        //定义订单会员折扣
+        Double memberDiscount = 0D;
+        //定义订单促销折扣
+        Double promotionDiscount = 0D;
+        //处理订单本品商品信息
+        if (null != goodsList && goodsList.size() > 0) {
+            //获取本品id集合
+            Set<Long> goodsIdSet = new HashSet<>();
+            for (MaActGoodsMapping goods : goodsList) {
+                goodsIdSet.add(goods.getGid());
+            }
+            //根据本品id集合查询商品信息
+            List<OrderGoodsVO> goodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    userId, identityType, goodsIdSet);
+            //定义当前有唯一价格的本品id集合
+            Set<Long> hasPriceGoodsIdSet = new HashSet<>();
+            //循环处理查询到的商品信息
+            for (OrderGoodsVO goodsVO : goodsVOList) {
+                if (hasPriceGoodsIdSet.contains(goodsVO.getGid())) {
+                    throw new GoodsMultipartPriceException("商品 '" + goodsVO.getSkuName() + "'在当前门店下存在多个价格!");
+                } else {
+                    hasPriceGoodsIdSet.add(goodsVO.getGid());
+                }
+                for (MaActGoodsMapping info : goodsList) {
+                    if (info.getGid().equals(goodsVO.getGid())) {
+                        goodsVO.setQty(info.getQty());
+                    }
+                }
+                //加总商品零售价总额
+                goodsTotalPrice += goodsVO.getRetailPrice() * goodsVO.getQty();
+
+                //设置本品会员折扣
+                if (null == customer) {
+                    throw new OrderCustomerException("订单顾客信息异常!");
+                }
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                    memberDiscount += (goodsVO.getRetailPrice() - goodsVO.getVipPrice()) * goodsVO.getQty();
+                } else {
+                    memberDiscount += 0D;
+                }
+
+                OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
+                goodsInfo.setOrderNumber(orderNumber);
+                goodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
+                goodsInfo.setRetailPrice(goodsVO.getRetailPrice());
+                goodsInfo.setVIPPrice(goodsVO.getVipPrice());
+                goodsInfo.setWholesalePrice(goodsVO.getWholesalePrice());
+                goodsInfo.setIsPriceShare(Boolean.FALSE);
+                goodsInfo.setPromotionSharePrice(0D);
+                goodsInfo.setLbSharePrice(0D);
+                goodsInfo.setCashCouponSharePrice(0D);
+                goodsInfo.setCashReturnSharePrice(0D);
+                goodsInfo.setIsReturnable(Boolean.TRUE);
+
+                if (null == customer) {
+                    throw new OrderCustomerException("订单顾客信息异常!");
+                }
+                if (customer.getCustomerType() == AppCustomerType.MEMBER) {
+                    goodsInfo.setSettlementPrice(goodsVO.getVipPrice());
+                    goodsInfo.setReturnPrice(goodsVO.getVipPrice());
+                } else {
+                    goodsInfo.setSettlementPrice(goodsVO.getRetailPrice());
+                    goodsInfo.setReturnPrice(goodsVO.getRetailPrice());
+                }
+                goodsInfo.setGid(goodsVO.getGid());
+                goodsInfo.setSku(goodsVO.getSku());
+                goodsInfo.setSkuName(goodsVO.getSkuName());
+                goodsInfo.setOrderQuantity(goodsVO.getQty());
+                goodsInfo.setShippingQuantity(0);
+                goodsInfo.setReturnableQuantity(goodsVO.getQty());
+                goodsInfo.setReturnQuantity(0);
+                goodsInfo.setReturnPriority(1);
+                goodsInfo.setPriceItemId(goodsVO.getPriceItemId());
+                goodsInfo.setCompanyFlag(goodsVO.getCompanyFlag());
+                orderGoodsInfoList.add(goodsInfo);
+            }
+
+            if (goodsIdSet.size() != hasPriceGoodsIdSet.size()) {
+                StringBuilder ids = new StringBuilder();
+                for (Long id : goodsIdSet) {
+                    if (!hasPriceGoodsIdSet.contains(id)) {
+                        ids.append(id).append(",");
+                    }
+                }
+                throw new GoodsNoPriceException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
+            }
+        }
+        CreateOrderGoodsSupport support = new CreateOrderGoodsSupport();
+        support.setGoodsTotalPrice(goodsTotalPrice);
+        support.setInventoryCheckMap(inventoryCheckMap);
+        support.setMemberDiscount(memberDiscount);
+        support.setOrderGoodsInfoList(orderGoodsInfoList);
+        support.setProductCouponGoodsList(null);
+        support.setPromotionDiscount(promotionDiscount);
+        return support;
+    }
 }
 

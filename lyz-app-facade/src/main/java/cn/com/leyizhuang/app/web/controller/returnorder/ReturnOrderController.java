@@ -278,6 +278,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnPic(returnPic);
@@ -770,7 +773,8 @@ public class ReturnOrderController {
             //********************创建退货单基础信息******************
             //记录原订单信息
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.createReturnOrderBaseInfo(order.getId(), order.getOrderNumber(),
-                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType());
+                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType(),
+                    order.getStoreId(), order.getStoreCode(), order.getStoreStructureCode());
             if (identityType == 0) {
                 AppCustomer customer = customerService.findById(param.getCusId());
                 if (AssertUtil.isNotEmpty(customer)) {
@@ -798,7 +802,7 @@ public class ReturnOrderController {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()) {
+                                if (simpleInfo.getQty() > goodsInfo.getReturnableQuantity()) {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
@@ -1506,6 +1510,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnType(ReturnOrderType.CANCEL_RETURN);
@@ -1806,22 +1813,41 @@ public class ReturnOrderController {
                 for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
-                    //创建新的产品券
-                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
-                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
-                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
-                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
-                    newCusProductCoupon.setGetTime(date);
-                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
-                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
-                    newCusProductCoupon.setIsUsed(false);
-                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
-                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
-                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
-                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
-                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
-                    //TODO   增加日志
+
+
+
+//                    //创建新的产品券
+//                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
+//                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
+//                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
+//                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
+//                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
+//                    newCusProductCoupon.setGetTime(date);
+//                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
+//                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
+//                    newCusProductCoupon.setIsUsed(false);
+//                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
+//                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
+//                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
+//                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
+//                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
+                    //增加日志
+                    CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                        changeLog.setCusId(userId);
+                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                        changeLog.setCusId(orderBaseInfo.getCustomerId());
+                    }
+                    changeLog.setCouponId(orderProductCoupon.getCouponId());
+                    changeLog.setChangeType(CustomerProductCouponChangeType.CANCEL_ORDER);
+                    changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.CANCEL_ORDER.getDescription());
+                    changeLog.setReferenceNumber(orderNumber);
+                    changeLog.setOperatorId(userId);
+                    changeLog.setOperatorIp(null);
+                    changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    changeLog.setUseTime(new Date());
+                    //todo 做日志变更保存
+
                 }
 
 

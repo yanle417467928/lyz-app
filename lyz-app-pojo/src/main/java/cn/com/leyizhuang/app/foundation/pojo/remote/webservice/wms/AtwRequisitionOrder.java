@@ -53,7 +53,7 @@ public class AtwRequisitionOrder {
     /**
      * 管理员后台备注
      */
-    private String managerRemarkInfo;
+//    private String managerRemarkInfo;
     /**
      * 顾客姓名
      */

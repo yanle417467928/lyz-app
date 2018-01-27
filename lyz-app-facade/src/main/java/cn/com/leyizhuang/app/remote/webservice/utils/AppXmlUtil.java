@@ -46,21 +46,16 @@ public class AppXmlUtil {
             orderTime = DateUtil.formatDate(requisitionOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
         }
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
+        //CUSTOMER_NAME 修改为传导购姓名
+        //<GOODS_QUANTITY> 修改为传商品行总数
         String xmlStr = "<ERP><TABLE>" +
                 "<ID>" + requisitionOrder.getId() + "</ID>" +
-                "<CANCEL_TIME></CANCEL_TIME>" +
-                "<CHECK_TIME></CHECK_TIME>" +
                 "<DIY_SITE_ADDRESS>" + requisitionOrder.getDiySiteAddress() + "</DIY_SITE_ADDRESS>" +
                 "<DIY_SITE_ID>" + requisitionOrder.getDiySiteId() + "</DIY_SITE_ID>" +
                 "<DIY_SITE_TEL>" + requisitionOrder.getDiySiteTel() + "</DIY_SITE_TEL>" +
                 "<DIY_SITE_TITLE>" + requisitionOrder.getDiySiteTitle() + "</DIY_SITE_TITLE>" +
-                "<MANAGER_REMARK_INFO>" + requisitionOrder.getManagerRemarkInfo() + "</MANAGER_REMARK_INFO>" +
                 "<REMARK_INFO>" + requisitionOrder.getRemarkInfo() + "</REMARK_INFO>" +
-                "<REQUISITION_NUMBER></REQUISITION_NUMBER>" +
-                "<STATUS_ID></STATUS_ID>" +
-                "<TYPE_ID></TYPE_ID>" +
                 "<CUSTOMER_NAME>" + requisitionOrder.getCustomerName() + "</CUSTOMER_NAME>" +
-                "<CUSTOMER_ID></CUSTOMER_ID>" +
                 "<DELIVERY_TIME>" + requisitionOrder.getReserveTimeQuantum() + "</DELIVERY_TIME>" +
                 "<ORDER_NUMBER>" + requisitionOrder.getOrderNumber() + "</ORDER_NUMBER>" +
                 "<RECEIVE_ADDRESS>" + requisitionOrder.getReceiveAddress() + "</RECEIVE_ADDRESS>" +
@@ -71,12 +66,11 @@ public class AppXmlUtil {
                 "<DISCTRICT>" + requisitionOrder.getDisctrict() + "</DISCTRICT>" +
                 "<PROVINCE>" + requisitionOrder.getProvince() + "</PROVINCE>" +
                 "<SUBDISTRICT>" + requisitionOrder.getSubdistrict() + "</SUBDISTRICT>" +
+                "<RESIDENCE_NAME>" + requisitionOrder.getResidenceName() + "</RESIDENCE_NAME>" +
                 "<ORDER_TIME>" + orderTime + "</ORDER_TIME>" +
-                "<SUB_ORDER_NUMBER></SUB_ORDER_NUMBER>" +
                 "<SELLER_TEL>" + requisitionOrder.getSellerTel() + "</SELLER_TEL>" +
                 "<GOODS_QUANTITY>" + requisitionOrder.getGoodsQuantity() + "</GOODS_QUANTITY>" +
                 "<UPSTAIRS_ALL>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getUpstairsAll()) + "</UPSTAIRS_ALL>" +
-                "<UPSTAIRS_LEFT></UPSTAIRS_LEFT>" +
                 "<SELLER_NAME>" + requisitionOrder.getSellerName() + "</SELLER_NAME>" +
                 "<DELIVERY_FEE>" + requisitionOrder.getDeliveryFee() + "</DELIVERY_FEE>" +
                 "<COLOR_FEE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getColorFee()) + "</COLOR_FEE>" +
@@ -102,47 +96,32 @@ public class AppXmlUtil {
      * @return xml
      */
     public static String getReturnOrderXml(AtwReturnOrder returnOrder) {
-        String orderTime = null;
-        String cancelTime = null;
-        String checkTime = null;
         String returnTime = null;
-        if (returnOrder.getOrderTime() != null) {
-            orderTime = DateUtil.formatDate(returnOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
-        }
-        if (returnOrder.getCancelTime() != null) {
-            cancelTime = DateUtil.formatDate(returnOrder.getCancelTime(), "yyyy-MM-dd HH:MM:ss");
-        }
         if (returnOrder.getReturnTime() != null) {
             returnTime = DateUtil.formatDate(returnOrder.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
-        }
-        if (returnOrder.getCheckTime() != null) {
-            checkTime = DateUtil.formatDate(returnOrder.getCheckTime(), "yyyy-MM-dd HH:MM:ss");
         }
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
                 "<id>" + returnOrder.getId() + "</id>" +
-                "<cancel_time>" + cancelTime + "</cancel_time>" +
-                "<check_time>" + checkTime + "</check_time>" +
                 "<diy_site_address>" + returnOrder.getDiySiteAddress() + "</diy_site_address>" +
                 "<diy_site_id>" + returnOrder.getDiySiteId() + "</diy_site_id>" +
                 "<diy_site_tel>" + returnOrder.getDiySiteTel() + "</diy_site_tel>" +
                 "<diy_site_title>" + returnOrder.getDiySiteTitle() + "</diy_site_title>" +
-                "<manager_remark_info>" + returnOrder.getManagerRemarkInfo() + "</manager_remark_info>" +
                 "<order_number>" + returnOrder.getOrderNumber() + "</order_number>" +
-                "<order_time>" + orderTime + "</order_time>" +
-                "<pay_type_id>" + returnOrder.getPayTypeId() + "</pay_type_id>" +
-                "<pay_type_title>" + returnOrder.getPayTypeTitle() + "</pay_type_title>" +
                 "<remark_info>" + returnOrder.getRemarkInfo() + "</remark_info>" +
                 "<return_number>" + returnOrder.getReturnNumber() + "</return_number>" +
                 "<return_time>" + returnTime + "</return_time>" +
-                "<sort_id></sort_id>" +
                 "<status_id>" + returnOrder.getStatusId() + "</status_id>" +
-                "<username>" + returnOrder.getUserName() + "</username>" +
                 "<deliver_type_title>" + returnOrder.getDeliverTypeTitle() + "</deliver_type_title>" +
                 "<turn_price>" + returnOrder.getReturnPrice() + "</turn_price>" +
-                "<turn_type>" + returnOrder.getReturnType() + "</turn_type>" +
                 "<shopping_address>" + returnOrder.getShoppingAddress() + "</shopping_address>" +
                 "<seller_real_name>" + returnOrder.getSellerRealName() + "</seller_real_name>" +
+                "<goods_line_quantity>" + returnOrder.getGoodsLineQuantity() + "</goods_line_quantity>" +
+                "<creator>" + returnOrder.getCreator() + "</creator>" +
+                "<creator_phone>" + returnOrder.getCreatorPhone() + "</creator_phone>" +
+                "<rejecter>" + returnOrder.getRejecter() + "</rejecter>" +
+                "<rejecter_phone>" + returnOrder.getRejecterPhone() + "</rejecter_phone>" +
+                "<rejecter_address>" + returnOrder.getRejecterAddress() + "</rejecter_address>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
@@ -195,7 +174,6 @@ public class AppXmlUtil {
                 "<goods_title>" + orderGoods.getGoodsTitle() + "</goods_title>" +
                 "<price>" + orderGoods.getPrice() + "</price>" +
                 "<quantity>" + orderGoods.getQuantity() + "</quantity>" +
-                "<td_requisition_id></td_requisition_id>" +
                 "<order_number>" + orderGoods.getOrderNumber() + "</order_number>" +
                 "<sub_order_number>" + orderGoods.getCompanyFlag() + "</sub_order_number>" +
                 "</TABLE></ERP>";

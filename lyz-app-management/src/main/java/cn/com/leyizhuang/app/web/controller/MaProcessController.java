@@ -14,7 +14,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/process")
-public class ProcessController {
+public class MaProcessController {
     @Autowired
     private ProcessService processService;
     @Autowired

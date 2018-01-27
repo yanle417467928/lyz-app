@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ItyRequiringDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.Requiring;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.requiring.RequiringVO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
@@ -33,12 +32,11 @@ public class ItyRequiringServiceImpl implements ItyRequiringService {
     private AppToWmsOrderDAO appToWmsOrderDAO;
 
     @Override
-    public PageInfo<RequiringVO> queryPage(Integer offset, Integer size, String keywords) {
+    public PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords) {
         PageHelper.startPage(offset, size);
-        List<AtwRequisitionOrder> requiringOrderList;
-        requiringOrderList = appToWmsOrderDAO.findRequiringOrderList(keywords);
-        List<RequiringVO> requiringVOList = RequiringVO.transform(requiringOrderList);
-        return new PageInfo<>(requiringVOList);
+
+        List<AtwRequisitionOrder> requiringOrderList = appToWmsOrderDAO.findRequiringOrderList(keywords);
+        return new PageInfo<>(requiringOrderList);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class ItyRequiringServiceImpl implements ItyRequiringService {
         requiring.setId(id);
         requiring.setOrderNumber(atwRequisitionOrder.getOrderNumber());
         requiring.setRemarkInfo(atwRequisitionOrder.getRemarkInfo());
-        requiring.setManagerRemarkInfo(atwRequisitionOrder.getManagerRemarkInfo());
+//        requiring.setManagerRemarkInfo(atwRequisitionOrder.getManagerRemarkInfo());
         requiring.setGoodsList(goods);
 
         StoreResponse storeResponse = new StoreResponse();

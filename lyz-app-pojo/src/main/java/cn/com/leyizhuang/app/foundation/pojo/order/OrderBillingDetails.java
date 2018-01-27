@@ -135,4 +135,23 @@ public class OrderBillingDetails {
      */
     private Double jxPriceDifferenceAmount;
 
+    /**
+     * 现金金额
+     */
+    private Double cash;
+
+    /**
+     *  其他金额
+     */
+    private Double otherMoney;
+
+    /**
+     * POS金额
+     */
+    private Double posMoney;
+
+    /**
+     * POS流水号后六位
+     */
+    private String posNumber;
 }

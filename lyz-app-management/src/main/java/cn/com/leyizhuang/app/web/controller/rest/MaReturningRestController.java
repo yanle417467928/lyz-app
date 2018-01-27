@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.returning.Returning;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.returning.ReturningVO;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.ItyReturningService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -47,10 +48,19 @@ public class MaReturningRestController {
 
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存退货管理查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords);
 
-        PageInfo<ReturningVO> allocationVOPageInfo = ityReturningService.queryPage(offset, size, keywords);
-        return new GridDataVO<ReturningVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
+        PageInfo<ReturnOrderBaseInfo> baseInfoPageInfo = ityReturningService.queryPage(offset, size, keywords);
+        return new GridDataVO<ReturningVO>().transform(ReturningVO.transform(baseInfoPageInfo.getList()), baseInfoPageInfo.getTotal());
     }
 
+    @GetMapping(value = "/query/param")
+    public GridDataVO<ReturningVO> getReturningVOByQueryParam(Integer offset, Integer size, Integer status, Long store) {
+
+        logger.info("dataAllocationVOPageGridGet CREATE,门店库存退货管理查询, 入参 offset:{},size:{},status:{},store:{}", offset, size, status, store);
+
+        PageInfo<ReturnOrderBaseInfo> baseInfoPageInfo = ityReturningService.getReturningVOByQueryParam(offset, size, status, store);
+        return new GridDataVO<ReturningVO>().transform(ReturningVO.transform(baseInfoPageInfo.getList()), baseInfoPageInfo.getTotal());
+
+    }
     /**
      * 根据退货单ID 查退货详情
      *

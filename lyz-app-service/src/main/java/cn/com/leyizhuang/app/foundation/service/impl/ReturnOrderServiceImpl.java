@@ -54,7 +54,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
     @Override
     public ReturnOrderBaseInfo createReturnOrderBaseInfo(Long orderId, String orderNo, Date orderTime, String remarksInfo, Long creatorId,
-                                                         Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType) {
+                                                         Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType,
+                                                         Long storeId, String storeCode, String storeStructureCode) {
 
         ReturnOrderBaseInfo baseInfo = new ReturnOrderBaseInfo();
         baseInfo.setOrderId(orderId);
@@ -62,6 +63,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         baseInfo.setOrderTime(orderTime);
         baseInfo.setOrderType(orderType);
         baseInfo.setRemarksInfo(remarksInfo);
+        baseInfo.setStoreId(storeId);
+        baseInfo.setStoreCode(storeCode);
+        baseInfo.setStoreStructureCode(storeStructureCode);
         baseInfo.setCreatorId(creatorId);
         baseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(creatorIdentityType));
         baseInfo.setReasonInfo(reasonInfo);
@@ -285,5 +289,13 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             return returnOrderDAO.getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(returnNo);
         }
         return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveReturnOrderJxPriceDifferenceRefundDetails(ReturnOrderJxPriceDifferenceRefundDetails refundDetails) {
+        if (null != refundDetails) {
+            returnOrderDAO.saveReturnOrderJxPriceDifferenceRefundDetails(refundDetails);
+        }
     }
 }

@@ -145,10 +145,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(idx);
                         header = mapping(header, childNode);
                     }
-                    if (StringUtils.isBlank(header.getDriver())) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_rec_no{}", header.getRecNo());
-                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,验收单号" + header.getRecNo() + "");
-                    }
+//                    if (StringUtils.isBlank(header.get())) {
+//                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_rec_no{}", header.getRecNo());
+//                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,验收单号" + header.getRecNo() + "");
+//                    }
 
                     wmsToAppOrderService.saveWtaReturningOrderHeader(header);
 
@@ -383,77 +383,21 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_driver".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setDriver(childNode.getChildNodes().item(0).getNodeValue());
-                }
             } else if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setRecNo(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_print_times".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setPrintTimes(Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("c_back_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setBackNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_back_type".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setBackType(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_back_class".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setBackClass(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_customer_no".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setCustomerNo(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_plat_no".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setPlatNo(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_rec_user".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setRecUser(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_op_tools".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setOpTools(childNode.getChildNodes().item(0).getNodeValue());
-                }
             } else if ("c_note".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setNote(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_mk_userno".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setMkUserno(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_modified_userno".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setModifiedUserno(childNode.getChildNodes().item(0).getNodeValue());
-                }
             } else if ("c_po_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setPoNo(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_begin_dt".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setBeginDt(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
-                }
-            } else if ("c_end_dt".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setEndDt(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
-                }
-            } else if ("c_mk_dt".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setMkDt(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
-                }
-            } else if ("c_modified_dt".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    returningOrderHeader.setModifiedDt(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             }
         }
@@ -465,10 +409,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             // 比较字段名
             if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
+//                if (null != childNode.getChildNodes().item(0)) {
+//                    goods.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
+//                }
+            }
+            if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     goods.setRecNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
@@ -480,29 +425,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     goods.setGcode(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_pack_qty".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setPackQty(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_price".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setPrice(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_gift_qty".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setGiftQty(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_bad_qty".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setBadQty(childNode.getChildNodes().item(0).getNodeValue());
-                }
             } else if ("c_rec_qty".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     goods.setRecQty(childNode.getChildNodes().item(0).getNodeValue());
-                }
-            } else if ("c_rec_user".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    goods.setRecUser(childNode.getChildNodes().item(0).getNodeValue());
                 }
 //            } else if (childNode.getNodeName().equalsIgnoreCase("c_plat_no")) {
 //                if (null != childNode.getChildNodes().item(0)) {

@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory.returning;
 
 
-import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
-import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +35,7 @@ public class Returning {
     /**
      * 退单类型（CANCEL_RETURN(1, "取消退货"), REFUSED_RETURN(2, "拒签退货"), NORMAL_RETURN(3, "正常退货")）
      */
-    private ReturnOrderType returnType;
+    private String returnType;
 
     /**
      * 门店名称
@@ -64,7 +62,7 @@ public class Returning {
     /**
      * 退货单状态
      */
-    private AppReturnOrderStatus returnStatus;
+    private String returnStatus;
 
     /**
      * 备注
