@@ -1,22 +1,35 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
-import cn.com.leyizhuang.app.foundation.service.MaOrderService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -24,7 +37,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -39,8 +56,21 @@ public class MaOrderRestController extends BaseRestController {
     private final Logger logger = LoggerFactory.getLogger(MaOrderRestController.class);
 
     @Resource
+    private AppEmployeeService appEmployeeService;
+    @Resource
+    private AppStoreService appStoreService;
+    @Resource
+    private CityService cityService;
+    @Resource
+    private AppCustomerService appCustomerService;
+    @Resource
     private MaOrderService maOrderService;
-
+    @Resource
+    private CommonService commonService;
+    @Resource
+    private AppActDutchService dutchService;
+    @Resource
+    private AppActService actService;
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
 
@@ -315,12 +345,12 @@ public class MaOrderRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/selfTakeOrder/page/screenGrid")
-    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId,@RequestParam(value = "status") Integer status,@RequestParam(value = "isPayUp") Integer isPayUp) {
-        logger.info("restSelfTakeOrderPageGirdByCityId 后台根据筛选条件分页查询所有自提订单 ,入参offset:{}, size:{}, kewords:{},cityId:{},storeId:{},status:{},isPayUp:{}", offset, size, keywords, cityId,storeId,status,isPayUp);
+    public GridDataVO<MaSelfTakeOrderVO> restSelfTakeOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "status") Integer status, @RequestParam(value = "isPayUp") Integer isPayUp) {
+        logger.info("restSelfTakeOrderPageGirdByCityId 后台根据筛选条件分页查询所有自提订单 ,入参offset:{}, size:{}, kewords:{},cityId:{},storeId:{},status:{},isPayUp:{}", offset, size, keywords, cityId, storeId, status, isPayUp);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId,storeId,status,isPayUp);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId, storeId, status, isPayUp);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGirdByCityId ,后台根据筛选条件分页查询所有自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -386,7 +416,6 @@ public class MaOrderRestController extends BaseRestController {
     }
 
 
-
     /**
      * 后台自提单发货
      *
@@ -394,17 +423,17 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/orderShipping")
-    public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber,@RequestParam(value = "code") String code) {
-        logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}",orderNumber,code);
+    public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "code") String code) {
+        logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}", orderNumber, code);
         ResultDTO<Object> resultDTO;
-        if (null == orderNumber&&"".equals(orderNumber)) {
+        if (null == orderNumber && "".equals(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空", null);
             logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(orderNumber);
-        if("SELLER".equals(maOrderTempInfo.getCreatorIdentityType())){
-            if (null == code&&"".equals(code)) {
+        if ("SELLER".equals(maOrderTempInfo.getCreatorIdentityType())) {
+            if (null == code && "".equals(code)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -442,30 +471,30 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/judgmentVerification")
-    public ResultDTO<Object> judgmentVerification(@RequestParam(value = "orderNumber") String orderNumber,@RequestParam(value = "code") String code) {
-        logger.warn("orderForGuide 后台验证发货验证码 ,入参orderNumbe:{},code:{}",orderNumber,code);
+    public ResultDTO<Object> judgmentVerification(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "code") String code) {
+        logger.warn("orderForGuide 后台验证发货验证码 ,入参orderNumbe:{},code:{}", orderNumber, code);
         ResultDTO<Object> resultDTO;
-        if (null == orderNumber&&"".equals(orderNumber)) {
+        if (null == orderNumber && "".equals(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空", null);
             logger.warn("judgmentVerification OUT,后台验证发货验证码失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == code&&"".equals(code)) {
+        if (null == code && "".equals(code)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
             logger.warn("judgmentVerification OUT,后台验证发货验证码失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-           Boolean isCorrect = this.maOrderService.judgmentVerification(orderNumber,code);
-           if(isCorrect){
-               logger.warn("judgmentVerification ,后台验证发货验证码成功,验证码正确");
-               return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
-                       "后台验证发货验证码成功,验证码正确", null);
-           }else{
-               logger.warn("judgmentVerification ,后台验证发货验证码成功,验证码错误");
-               return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
-                       "后台验证发货验证码成功,验证码错误", null);
-           }
+            Boolean isCorrect = this.maOrderService.judgmentVerification(orderNumber, code);
+            if (isCorrect) {
+                logger.warn("judgmentVerification ,后台验证发货验证码成功,验证码正确");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                        "后台验证发货验证码成功,验证码正确", null);
+            } else {
+                logger.warn("judgmentVerification ,后台验证发货验证码成功,验证码错误");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "后台验证发货验证码成功,验证码错误", null);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("orderForGuide EXCEPTION,发生未知错误，后台验证发货验证码失败");
@@ -483,25 +512,25 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PostMapping(value = "/orderReceivables")
-    public ResultDTO<Object> orderReceivables( MaOrderAmount maOrderAmount) {
-        logger.warn("orderReceivables 后台订单收款 ,maOrderAmount:{}",maOrderAmount);
+    public ResultDTO<Object> orderReceivables(MaOrderAmount maOrderAmount) {
+        logger.warn("orderReceivables 后台订单收款 ,maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
-        if(null==maOrderAmount.getCashAmount()){
+        if (null == maOrderAmount.getCashAmount()) {
             maOrderAmount.setCashAmount(BigDecimal.ZERO);
         }
-        if(null==maOrderAmount.getOtherAmount()){
+        if (null == maOrderAmount.getOtherAmount()) {
             maOrderAmount.setOtherAmount(BigDecimal.ZERO);
         }
-        if(null==maOrderAmount.getPosAmount()){
+        if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
-        if (null==maOrderAmount.getAllAmount()) {
+        if (null == maOrderAmount.getAllAmount()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null==maOrderAmount.getOrderNumber()||"".equals(maOrderAmount.getOrderNumber())) {
+        if (null == maOrderAmount.getOrderNumber() || "".equals(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -549,6 +578,172 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("restarrearsAndAgencyOrderPageGird EXCEPTION,发生未知错误，后台分页查询所有未收款订单");
             logger.warn("{}", e);
             return null;
+        }
+    }
+
+    /**
+     * 保存买券信息，创建买券订单
+     *
+     * @param sellerId
+     * @param customerId
+     * @param goodsDetails
+     * @param giftDetails
+     * @param cashMoney
+     * @param posMoney
+     * @param otherMoney
+     * @param posNumber
+     * @param collectMoneyTime
+     * @param remarks
+     * @param preDepositMoney
+     * @param preDepositCollectMoneyTime
+     * @param preDepositRemarks
+     * @return
+     * @throws IOException
+     */
+    @PostMapping(value = "/save/productCoupon")
+    public ResultDTO<?> saveMaProductCoupon(HttpServletRequest request, Long sellerId, Long customerId, String goodsDetails, String giftDetails,
+                                            Double cashMoney, Double posMoney, Double otherMoney, String posNumber, Double totalMoney,
+                                            String collectMoneyTime, String remarks, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks) throws IOException {
+        logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{}," +
+                        "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{}", sellerId, customerId, goodsDetails, giftDetails,
+                cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney);
+        if (null == sellerId) {
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购id不能为空！", null);
+        }
+
+        if (null == customerId) {
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id不能为空！", null);
+        }
+        if (StringUtils.isBlank(goodsDetails)) {
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空！", null);
+        }
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, MaActGoodsMapping.class);
+            JavaType javaType2 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
+            //商品信息
+            List<MaActGoodsMapping> goodsList = objectMapper.readValue(goodsDetails, javaType1);
+            //促销信息
+            List<PromotionSimpleInfo> giftList = new ArrayList<>();
+            if (StringUtils.isNotBlank(giftDetails)) {
+                giftList = objectMapper.readValue(giftDetails, javaType2);
+            }
+            // 检查促销是否过期
+            List<Long> promotionIds = new ArrayList<>();
+            for (PromotionSimpleInfo promotion : giftList) {
+                promotionIds.add(promotion.getPromotionId());
+            }
+            if (promotionIds.size() > 0) {
+                Boolean outTime = actService.checkActOutTime(promotionIds);
+                if (!outTime) {
+                    logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "存在过期促销，请重新下单！");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，存在过期促销，请重新下单！", null);
+                }
+            }
+            //获取导购信息
+            AppEmployee appEmployee = appEmployeeService.findById(sellerId);
+            if (null == appEmployee) {
+                logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "未查询到导购信息！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到导购信息！", null);
+            }
+            //获取顾客信息
+            AppCustomer appCustomer = appCustomerService.findById(customerId);
+            if (null == appCustomer) {
+                logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "未查询到顾客信息！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到顾客信息！", null);
+            }
+            //获取城市信息
+            City city = cityService.findById(appEmployee.getCityId());
+            if (null == city) {
+                logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "未查询到城市信息！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到城市信息！", null);
+            }
+            //获取门店信息
+            AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+            if (null == appStore) {
+                logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "未查询到门店信息！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到门店信息！", null);
+            }
+
+
+            //***********************创建买券订单头*********************
+            //生成订单号
+            String orderNumber = OrderUtils.generateOrderNumber(city.getCityId());
+            OrderBaseInfo orderBaseInfo = maOrderService.createMaOrderBaseInfo(appCustomer, city, appStore, appEmployee,
+                    preDepositMoney, remarks, preDepositRemarks, totalMoney, orderNumber);
+
+            //******************************创建买券订单商品信息******************************
+            CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, sellerId, 0, orderNumber);
+
+            //****************** 处理订单账单相关信息 ***************
+            OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
+            orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
+            orderBillingDetails.setPromotionDiscount(support.getPromotionDiscount());
+            String payTime = "";
+            if (null != preDepositMoney) {
+                cashMoney = null;
+                posMoney = null;
+                posNumber = null;
+                otherMoney = null;
+                payTime = preDepositCollectMoneyTime;
+            } else {
+                if (null != posMoney && posNumber == null) {
+                    logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS收款金额，请填写POS流水号！！");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS收款金额，请填写POS流水号！", null);
+                }
+                if (null != posNumber && posMoney == null) {
+                    logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS流水号，请填写POS收款金额！");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS流水号，请填写POS收款金额！", null);
+                }
+                preDepositMoney = null;
+                payTime = collectMoneyTime;
+            }
+            orderBillingDetails = maOrderService.createMaOrderBillingDetails(orderBillingDetails, preDepositMoney, cashMoney, posMoney, otherMoney, posNumber, payTime);
+            orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
+
+            //****************** 处理订单账单支付明细信息 ************
+            List<OrderBillingPaymentDetails> paymentDetails = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
+
+            //********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ****************
+            List<OrderGoodsInfo> orderGoodsInfoList;
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(sellerId, AppIdentityType.getAppIdentityTypeByValue(0), giftList, support.getOrderGoodsInfoList());
+
+            //******** 分摊完毕 计算退货 单价 ***************************
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
+
+            //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
+            //**************** 2、持久化订单相关实体信息 ****************
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null);
+
+            logger.warn("saveMaProductCoupon OUT,买券订单创建成功","买券订单创建成功");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "买券订单创建成功", null);
+        } catch (LockStorePreDepositException | SystemBusyException | GoodsMultipartPriceException | GoodsNoPriceException |
+                OrderPayableAmountException | DutchException e) {
+            e.printStackTrace();
+            logger.warn("saveMaProductCoupon EXCEPTION,买券订单创建失败,出参 resultDTO:{}", e.getMessage());
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.warn("saveMaProductCoupon EXCEPTION,买券订单创建失败,出参 resultDTO:{}", "买券订单参数转换异常!");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买券订单参数转换异常!", null);
+        } catch (OrderSaveException e) {
+            e.printStackTrace();
+            logger.warn("saveMaProductCoupon EXCEPTION,买券订单创建失败,出参 resultDTO:{}", "买券订单创建异常!");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买券订单创建异常!", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("saveMaProductCoupon EXCEPTION,买券订单创建失败,出参 resultDTO:{}", "发生未知异常,下单失败!");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
         }
     }
 }

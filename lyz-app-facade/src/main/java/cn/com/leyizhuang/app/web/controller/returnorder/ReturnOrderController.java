@@ -1813,22 +1813,41 @@ public class ReturnOrderController {
                 for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
-                    //创建新的产品券
-                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
-                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
-                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
-                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
-                    newCusProductCoupon.setGetTime(date);
-                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
-                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
-                    newCusProductCoupon.setIsUsed(false);
-                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
-                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
-                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
-                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
-                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
-                    //TODO   增加日志
+
+
+
+//                    //创建新的产品券
+//                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
+//                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
+//                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
+//                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
+//                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
+//                    newCusProductCoupon.setGetTime(date);
+//                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
+//                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
+//                    newCusProductCoupon.setIsUsed(false);
+//                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
+//                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
+//                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
+//                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
+//                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
+                    //增加日志
+                    CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                        changeLog.setCusId(userId);
+                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                        changeLog.setCusId(orderBaseInfo.getCustomerId());
+                    }
+                    changeLog.setCouponId(orderProductCoupon.getCouponId());
+                    changeLog.setChangeType(CustomerProductCouponChangeType.CANCEL_ORDER);
+                    changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.CANCEL_ORDER.getDescription());
+                    changeLog.setReferenceNumber(orderNumber);
+                    changeLog.setOperatorId(userId);
+                    changeLog.setOperatorIp(null);
+                    changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    changeLog.setUseTime(new Date());
+                    //todo 做日志变更保存
+
                 }
 
 
