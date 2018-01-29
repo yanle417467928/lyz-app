@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface AppUserDeviceService {
 
-    AppUserDevice findByClientIdAndDeviceId(String clientId,String deviceId);
+    AppUserDevice findByClientIdAndDeviceIdAndIdentityType(String clientId, String deviceId, AppIdentityType identityType);
 
     void addUserDevice(AppUserDevice device);
 

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppUserDeviceDAO;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
@@ -21,9 +22,9 @@ public class AppUserDeviceServiceImpl implements AppUserDeviceService {
     private AppUserDeviceDAO deviceDAO;
 
     @Override
-    public AppUserDevice findByClientIdAndDeviceId(String clientId, String deviceId) {
+    public AppUserDevice findByClientIdAndDeviceIdAndIdentityType(String clientId, String deviceId,AppIdentityType identityType) {
         if(StringUtils.isNotBlank(clientId) && StringUtils.isNotBlank(deviceId)){
-            return deviceDAO.findByClientIdAndDeviceId(clientId,deviceId);
+            return deviceDAO.findByClientIdAndDeviceIdAndIdentityType(clientId,deviceId,identityType);
         }
         return null;
     }

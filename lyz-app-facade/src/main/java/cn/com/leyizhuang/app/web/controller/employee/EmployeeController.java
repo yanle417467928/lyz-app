@@ -109,9 +109,9 @@ public class EmployeeController {
                     return resultDTO;
                 }
             }
-            AppUserDevice device = userDeviceService.findByClientIdAndDeviceId(loginParam.getClientId(), loginParam.getDeviceId());
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndIdentityType(loginParam.getClientId(), loginParam.getDeviceId(),employee.getIdentityType());
             if (null == device) {
-                device = new AppUserDevice(null, employee.getEmpId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(loginParam.getSystemType()),
+                device = new AppUserDevice(null, employee.getEmpId(), employee.getIdentityType(), AppSystemType.getAppSystemTypeByValue(loginParam.getSystemType()),
                         loginParam.getClientId(), loginParam.getDeviceId(), new Date(), new Date());
                 userDeviceService.addUserDevice(device);
             } else {

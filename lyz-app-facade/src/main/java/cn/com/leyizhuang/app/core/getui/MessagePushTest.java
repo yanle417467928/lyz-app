@@ -6,9 +6,12 @@ import cn.com.leyizhuang.app.foundation.pojo.message.TransmissionTemplateContent
 import com.alibaba.fastjson.JSON;
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
+import com.gexin.rp.sdk.base.impl.SingleMessage;
+import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.base.payload.APNPayload;
 import com.gexin.rp.sdk.base.payload.MultiMedia;
 import com.gexin.rp.sdk.base.uitls.AppConditions;
+import com.gexin.rp.sdk.exceptions.RequestException;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.NotificationTemplate;
@@ -23,6 +26,14 @@ import java.util.List;
  **/
 public class MessagePushTest {
     public static void main(String[] args) throws Exception {
+        pushMessageToSingle();
+        //pushMessageToApp();
+    }
+
+    /**
+     * 群推App所有用户
+     */
+    public static void pushMessageToApp() {
         IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
 
         //LinkTemplate template = linkTemplateDemo();
@@ -54,6 +65,38 @@ public class MessagePushTest {
 
         IPushResult ret = push.pushMessageToApp(message, "任务别名_toApp");
         System.out.println(ret.getResponse().toString());
+    }
+
+    /**
+     * 单推个人
+     */
+    public static void pushMessageToSingle() {
+        IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
+        TransmissionTemplate template = getTemplate();
+        SingleMessage message = new SingleMessage();
+        message.setOffline(true);
+        // 离线有效时间，单位为毫秒，可选
+        message.setOfflineExpireTime(24 * 3600 * 1000);
+        message.setData(template);
+        // 可选，1为wifi，0为不限制网络环境。根据手机处于的网络情况，决定是否下发
+        message.setPushNetWorkType(0);
+        Target target = new Target();
+        target.setAppId(AppConstant.APP_ID);
+        target.setClientId("c0ebf0688af4e7ea677f3572deb5fc52");
+        //target.setAlias(Alias);
+        IPushResult ret = null;
+        try {
+            ret = push.pushMessageToSingle(message, target);
+        } catch (RequestException e) {
+            e.printStackTrace();
+            ret = push.pushMessageToSingle(message, target, e.getRequestId());
+        }
+        if (ret != null) {
+            System.out.println(ret.getResponse().toString());
+        } else {
+            System.out.println("服务器响应异常");
+        }
+
     }
 
 
@@ -142,7 +185,8 @@ public class MessagePushTest {
         TransmissionTemplateContent content = new TransmissionTemplateContent();
         content.setContent("您的订单发货了");
         content.setTitle("发货通知");
-        content.setPayload(new Payload("page/personal/myOrderWL.html?orderNo='CD_XN20180126172227906201'", "跳转订单物流详情"));
+        //content.setPayload(new Payload("page/personal/myOrderWL.html&CD_XN20180125145618869313", "跳转订单物流详情"));
+        content.setPayload(new Payload("http://www.baidu.com", "跳转订单物流详情"));
         System.out.println(content);
         template.setTransmissionContent(JSON.toJSONString(content));
         template.setTransmissionType(2);
