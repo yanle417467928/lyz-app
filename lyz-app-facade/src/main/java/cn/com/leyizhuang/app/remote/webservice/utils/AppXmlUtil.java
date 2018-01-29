@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.remote.webservice.utils;
 
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
@@ -161,6 +158,37 @@ public class AppXmlUtil {
     }
 
     /**
+     * 取消退货单xml
+     *
+     * @param returnOrderRequest 取消退货单
+     * @return xml
+     */
+    public static String getCancelReturnOrderXml(AtwCancelReturnOrderRequest returnOrderRequest) {
+
+        String returnTime = null;
+        if (returnOrderRequest.getReturnTime() != null) {
+            returnTime = DateUtil.formatDate(returnOrderRequest.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        String createTime = null;
+        if (returnOrderRequest.getCreateTime() != null) {
+            createTime = DateUtil.formatDate(returnOrderRequest.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        // diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
+        String xmlStr = "<ERP><TABLE>" +
+                "<id>" + returnOrderRequest.getId() + "</id>" +
+                "<create_time>" + createTime + "</create_time>" +
+                "<return_time>" + returnTime + "</return_time>" +
+                "<store_code>" + returnOrderRequest.getStoreCode() + "</store_code>" +
+                "<return_no>" + returnOrderRequest.getReturnNo() + "</return_no>" +
+                "<return_type>" + returnOrderRequest.getReturnType().getDescription() + "</return_type>" +
+                "</TABLE></ERP>";
+
+        xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getCancelOrderXml OUT, 拼接拒签退货和取消订单xml, 出参 xmlStr:{}", xmlStr);
+        return Base64Utils.encode(xmlStr);
+    }
+
+    /**
      * 获取退货商品和要货商品XML
      *
      * @param orderGoods 要货商品
@@ -180,6 +208,36 @@ public class AppXmlUtil {
 
         xmlStr = xmlStr.replace("null", "");
         LOGGER.info("getRequisitionOrderGoodsXml OUT, 拼接退货商品和要货商品XML, 出参 xmlStr:{}", xmlStr);
+
+        return Base64Utils.encode(xmlStr);
+    }
+
+    /**
+     * 发送退货单收货确认
+     *
+     * @param atwReturnOrderCheckEnter
+     * @return
+     */
+    public static String getReturnOrderCheckEnterXml(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter) {
+
+        String checkTime = null;
+        if (atwReturnOrderCheckEnter.getCheckGoodsTime() != null) {
+            checkTime = DateUtil.formatDate(atwReturnOrderCheckEnter.getCheckGoodsTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        String createTime = null;
+        if (atwReturnOrderCheckEnter.getCreateTime() != null) {
+            createTime = DateUtil.formatDate(atwReturnOrderCheckEnter.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
+        }
+        String xmlStr = "<ERP><TABLE>" +
+                "<id>" + atwReturnOrderCheckEnter.getId() + "</id>" +
+                "<create_time>" + createTime + "</create_time>" +
+                "<check_goods_time>" + checkTime + "</check_goods_time>" +
+                "<return_no>" + atwReturnOrderCheckEnter.getReturnNo() + "</return_no>" +
+                "<return_status>" + atwReturnOrderCheckEnter.getReturnStatus().getDescription() + "</return_status>" +
+                "</TABLE></ERP>";
+
+        xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("getRequisitionOrderGoodsXml OUT, 拼接发送退货单收货确认XML, 出参 xmlStr:{}", xmlStr);
 
         return Base64Utils.encode(xmlStr);
     }

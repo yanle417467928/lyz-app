@@ -52,6 +52,10 @@ public class ReturnOrderBaseInfo {
      */
     private Long creatorId;
     /**
+     * 创建人姓名
+     */
+    private String creatorName;
+    /**
      * 创建退单人类型
      */
     private AppIdentityType creatorIdentityType;

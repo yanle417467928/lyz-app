@@ -1,5 +1,11 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -59,6 +65,7 @@ public class AtwReturnOrder {
     private Date returnTime;
     /**
      * 退货单状态一期：1:待通知物流 2:待取货 3: 待确认收货 4 待退款（物流确认） 5 已完成 6 退货取消
+     * 退货单状态二期: 1:退货中    2:已取消  3:待退货     4:待退款         5: 已完成
      */
     private Integer statusId;
     /**
@@ -115,4 +122,38 @@ public class AtwReturnOrder {
      */
     private Date sendTime;
 
+    private static AtwReturnOrder transform(ReturnOrderBaseInfo baseInfo, ReturnOrderLogisticInfo logisticInfo, AppStore store,
+                                            OrderBaseInfo orderBaseInfo, int goodsLineQuantity, SalesConsult salesConsult) {
+        AtwReturnOrder atwReturnOrder = new AtwReturnOrder();
+
+        atwReturnOrder.setCreateTime(new Date());
+        atwReturnOrder.setCreator(baseInfo.getCreatorName());
+        atwReturnOrder.setCreatorPhone(baseInfo.getCreatorPhone());
+        atwReturnOrder.setDeliverTypeTitle(logisticInfo.getDeliveryType().getDescription());
+        atwReturnOrder.setDiySiteAddress(store.getDetailedAddress());
+        atwReturnOrder.setDiySiteId(store.getStoreCode());
+        atwReturnOrder.setDiySiteTel(store.getPhone());
+        atwReturnOrder.setDiySiteTitle(store.getStoreName());
+        atwReturnOrder.setGoodsLineQuantity(goodsLineQuantity);
+        atwReturnOrder.setOrderNumber(baseInfo.getOrderNo());
+        //如果是退货到店则收货信息设置为导购信息
+        if (AppDeliveryType.RETURN_STORE.equals(logisticInfo.getDeliveryType())) {
+            atwReturnOrder.setRejecter(salesConsult.getConsultName());
+            atwReturnOrder.setRejecterAddress(store.getDetailedAddress());
+            atwReturnOrder.setRejecterPhone(salesConsult.getConsultMobilePhone());
+        } else {
+            atwReturnOrder.setRejecter(logisticInfo.getRejecter());
+            atwReturnOrder.setRejecterAddress(logisticInfo.getDetailedAddress());
+            atwReturnOrder.setRejecterPhone(logisticInfo.getRejecterPhone());
+        }
+        atwReturnOrder.setRemarkInfo(baseInfo.getRemarksInfo());
+        atwReturnOrder.setReturnNumber(baseInfo.getReturnNo());
+        atwReturnOrder.setReturnPrice(baseInfo.getReturnPrice());
+        atwReturnOrder.setReturnTime(baseInfo.getReturnTime());
+        atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
+        atwReturnOrder.setShoppingAddress(logisticInfo.getReturnFullAddress());
+        atwReturnOrder.setStatusId(baseInfo.getReturnStatus().getValue());
+
+        return atwReturnOrder;
+    }
 }

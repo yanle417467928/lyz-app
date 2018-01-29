@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -123,4 +120,16 @@ public interface AppToWmsOrderDAO {
      * @return
      */
     AtwRequisitionOrder findAtwRequisitionOrderById(Long id);
+
+    void saveAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest);
+
+    AtwCancelReturnOrderRequest findAtwCancelReturnOrderByReturnNo(String returnNumber);
+
+    void updateAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest);
+
+    void saveAtwReturnOrderCheckEnter(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
+
+    AtwReturnOrderCheckEnter findAtwReturnOrderCheckEnterByReturnNo(String returnNumber);
+
+    void updateAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
 }

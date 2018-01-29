@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 
 import java.util.List;
 
@@ -119,4 +116,48 @@ public interface AppToWmsOrderService {
      * @return
      */
     AtwRequisitionOrder findAtwRequisitionOrderById(Long id);
+
+    /**
+     * 保存取消退货单
+     *
+     * @param returnOrderRequest
+     */
+    void saveAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest);
+
+    /**
+     * 查找取消退货单
+     *
+     * @param returnNumber
+     * @return
+     */
+    AtwCancelReturnOrderRequest findAtwCancelReturnOrderByReturnNo(String returnNumber);
+
+    /**
+     * 修改取消退货单
+     *
+     * @param returnOrderRequest
+     */
+    void modifyAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest);
+
+    /**
+     * 保存确认收货
+     *
+     * @param atwReturnOrderCheckEnter
+     */
+    void saveAtwReturnOrderCheckEnter(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
+
+    /**
+     * 查找确认收货
+     *
+     * @param returnNumber
+     * @return
+     */
+    AtwReturnOrderCheckEnter findAtwReturnOrderCheckEnterByReturnNo(String returnNumber);
+
+    /**
+     * 修改确认收货
+     *
+     * @param atwReturnOrderCheckEnter
+     */
+    void modifyAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
 }

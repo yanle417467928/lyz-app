@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppToWmsOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.stereotype.Service;
 
@@ -105,5 +102,41 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
     @Override
     public AtwRequisitionOrder findAtwRequisitionOrderById(Long id) {
         return appToWmsOrderDAO.findAtwRequisitionOrderById(id);
+    }
+
+    @Override
+    public void saveAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest) {
+        appToWmsOrderDAO.saveAtwCancelReturnOrderRequest(returnOrderRequest);
+    }
+
+    @Override
+    public AtwCancelReturnOrderRequest findAtwCancelReturnOrderByReturnNo(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            return appToWmsOrderDAO.findAtwCancelReturnOrderByReturnNo(returnNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public void modifyAtwCancelReturnOrderRequest(AtwCancelReturnOrderRequest returnOrderRequest) {
+        appToWmsOrderDAO.updateAtwCancelReturnOrderRequest(returnOrderRequest);
+    }
+
+    @Override
+    public void saveAtwReturnOrderCheckEnter(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter) {
+        appToWmsOrderDAO.saveAtwReturnOrderCheckEnter(atwReturnOrderCheckEnter);
+    }
+
+    @Override
+    public AtwReturnOrderCheckEnter findAtwReturnOrderCheckEnterByReturnNo(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            return appToWmsOrderDAO.findAtwReturnOrderCheckEnterByReturnNo(returnNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public void modifyAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter) {
+        appToWmsOrderDAO.updateAtwReturnOrderCheckEnterRequest(atwReturnOrderCheckEnter);
     }
 }

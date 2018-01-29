@@ -177,32 +177,64 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
 
-                //获取配送取货配送员
+                //获取退货单配送取货配送员
             } else if ("tbw_send_task_Driver".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
 
-                    WtaUpdateDeliveryInfo wtaUpdateDeliveryInfo = new WtaUpdateDeliveryInfo();
+                    WtaReturnOrderDeliveryClerk deliveryClerk = new WtaReturnOrderDeliveryClerk();
                     for (int idx = 0; idx < childNodeList.getLength(); idx++) {
                         Node childNode = childNodeList.item(idx);
-                        wtaUpdateDeliveryInfo = mapping(wtaUpdateDeliveryInfo, childNode);
+                        deliveryClerk = mapping(deliveryClerk, childNode);
                     }
-
-                    OrderDeliveryInfoDetails deliveryInfoDetails = orderDeliveryInfoDetailsService.findByTaskNo(wtaUpdateDeliveryInfo.getTaskNo());
-
-                    if (AssertUtil.isEmpty(deliveryInfoDetails)) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询到该配送单,任务编号 出参 c_task_no{}", wtaUpdateDeliveryInfo.getTaskNo());
-                        return AppXmlUtil.resultStrXml(1, "未找到该任务的配送单,任务编号： " + wtaUpdateDeliveryInfo.getTaskNo() + "");
-                    }
-                    deliveryInfoDetails.setWarehouseNo(wtaUpdateDeliveryInfo.getWarehouseNo());
-                    deliveryInfoDetails.setOperationType(wtaUpdateDeliveryInfo.getOperatorStatus());
-                    deliveryInfoDetails.setOperatorNo(wtaUpdateDeliveryInfo.getDriver());
-                    deliveryInfoDetails.setOrderNo(wtaUpdateDeliveryInfo.getReserved1());
-                    orderDeliveryInfoDetailsService.modifyOrderDeliveryInfoDetails(deliveryInfoDetails);
+                    wmsToAppOrderService.saveWtaReturnOrderDeliveryClerk(deliveryClerk);
+//                    ReturnOrderDeliveryDetail deliveryInfoDetails = returnOrderDeliveryDetailsService.findReturnNumber(deliveryClerk.getReturnNo());
+//
+//                    if (AssertUtil.isEmpty(deliveryInfoDetails)) {
+//                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询到该配送单,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
+//                        return AppXmlUtil.resultStrXml(1, "未找到该任务的配送单,退单号： " + deliveryClerk.getReturnNo() + "");
+//                    }
+//                    deliveryInfoDetails.setWarehouseNo(wtaUpdateDeliveryInfo.getWarehouseNo());
+//                    deliveryInfoDetails.setOperationType(wtaUpdateDeliveryInfo.getOperatorStatus());
+//                    deliveryInfoDetails.setOperatorNo(wtaUpdateDeliveryInfo.getDriver());
+//                    deliveryInfoDetails.setOrderNo(wtaUpdateDeliveryInfo.getReserved1());
+//                    returnOrderDeliveryDetailsService.modifyReturnOrderDeliveryInfoDetails(deliveryInfoDetails);
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "");
+                //取消订单结果确认
+            } else if ("inter_wta_order_result_enter".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+                    WtaCancelOrderResultEnter orderResultEnter = new WtaCancelOrderResultEnter();
+                    for (int j = 0; j < childNodeList.getLength(); j++) {
+
+                        Node childNode = childNodeList.item(j);
+                        orderResultEnter = mapping(orderResultEnter, childNode);
+                    }
+                    wmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
+                }
+                logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "");
+                //取消退单结果确认
+            } else if ("inter_wta_return_order_result_enter".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+                    WtaCancelReturnOrderResultEnter returnOrderResultEnter = new WtaCancelReturnOrderResultEnter();
+                    for (int j = 0; j < childNodeList.getLength(); j++) {
+
+                        Node childNode = childNodeList.item(j);
+                        returnOrderResultEnter = mapping(returnOrderResultEnter, childNode);
+                    }
+                    wmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
+                }
+                logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
                 //配送单物流详情
             } else if ("tbw_out_m".equalsIgnoreCase(strTable)) {
@@ -486,53 +518,29 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
         return goods;
     }
 
-    private WtaUpdateDeliveryInfo mapping(WtaUpdateDeliveryInfo wtaUpdateDeliveryInfo, Node childNode) {
+    private WtaReturnOrderDeliveryClerk mapping(WtaReturnOrderDeliveryClerk returnOrderDeliveryClerk, Node childNode) {
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
             // 比较字段名
-            if ("c_task_no".equalsIgnoreCase(childNode.getNodeName())) {
+            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
-                    wtaUpdateDeliveryInfo.setTaskNo(childNode.getChildNodes().item(0).getNodeValue());
+                    returnOrderDeliveryClerk.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
                 }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_end_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
             } else if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wtaUpdateDeliveryInfo.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                    returnOrderDeliveryClerk.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_op_status".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("return_number".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wtaUpdateDeliveryInfo.setOperatorStatus(childNode.getChildNodes().item(0).getNodeValue());
-                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_op_user")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_op_user = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_owner_no = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-            } else if ("c_reserved1".equalsIgnoreCase(childNode.getNodeName())) {
-                if (null != childNode.getChildNodes().item(0)) {
-                    wtaUpdateDeliveryInfo.setReserved1(childNode.getChildNodes().item(0).getNodeValue());
+                    returnOrderDeliveryClerk.setReturnNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
             } else if ("c_Driver".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wtaUpdateDeliveryInfo.setDriver(childNode.getChildNodes().item(0).getNodeValue());
+                    returnOrderDeliveryClerk.setDriver(childNode.getChildNodes().item(0).getNodeValue());
                 }
             }
         }
-        return wtaUpdateDeliveryInfo;
+        return returnOrderDeliveryClerk;
     }
 
     private OrderDeliveryInfoDetails mapping(OrderDeliveryInfoDetails orderDeliveryInfoDetails, Node childNode) {
@@ -647,7 +655,55 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
         return orderDeliveryInfoDetails;
     }
 
+    private WtaCancelReturnOrderResultEnter mapping(WtaCancelReturnOrderResultEnter returnOrderResultEnter, Node childNode) {
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            // 比较字段名
+            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
+                // 有值
+                if (null != childNode.getChildNodes().item(0)) {
+                    returnOrderResultEnter.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    returnOrderResultEnter.setIsCancel(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("return_number".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    returnOrderResultEnter.setReturnNumber(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("error_message".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    returnOrderResultEnter.setErrorMessage(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            }
+        }
+        return returnOrderResultEnter;
+    }
 
+    private WtaCancelOrderResultEnter mapping(WtaCancelOrderResultEnter orderResultEnter, Node childNode) {
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            // 比较字段名
+            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
+                // 有值
+                if (null != childNode.getChildNodes().item(0)) {
+                    orderResultEnter.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    orderResultEnter.setIsCancel(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("order_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    orderResultEnter.setOrderNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("error_message".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    orderResultEnter.setErrorMessage(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            }
+        }
+        return orderResultEnter;
+    }
 
 
     //***************************下面是调用测试***********************************

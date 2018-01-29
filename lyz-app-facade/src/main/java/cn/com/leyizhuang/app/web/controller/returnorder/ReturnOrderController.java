@@ -298,6 +298,7 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setCreatorId(userId);
             returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             AppEmployee employee = employeeService.findById(userId);
+            returnOrderBaseInfo.setCreatorName(employee.getName());
             returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
             if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
                 returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
@@ -772,18 +773,29 @@ public class ReturnOrderController {
             }
             //********************创建退货单基础信息******************
             //记录原订单信息
+
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.createReturnOrderBaseInfo(order.getId(), order.getOrderNumber(),
                     order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType(),
                     order.getStoreId(), order.getStoreCode(), order.getStoreStructureCode());
-            if (identityType == 0) {
-                AppCustomer customer = customerService.findById(param.getCusId());
-                if (AssertUtil.isNotEmpty(customer)) {
-                    returnOrderBaseInfo.setCustomerId(customer.getCusId());
-                    returnOrderBaseInfo.setCustomerName(customer.getName());
-                    returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
-                    returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
+            if (identityType == 6) {
+                AppCustomer customer = customerService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(customer.getName());
+                returnOrderBaseInfo.setCreatorPhone(customer.getMobile());
+            } else {
+                AppEmployee employee = appEmployeeService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(employee.getName());
+                returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
+                if (identityType == 0) {
+                    AppCustomer customer = customerService.findById(param.getCusId());
+                    if (AssertUtil.isNotEmpty(customer)) {
+                        returnOrderBaseInfo.setCustomerId(customer.getCusId());
+                        returnOrderBaseInfo.setCustomerName(customer.getName());
+                        returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
+                        returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
+                    }
                 }
             }
+
             //******************* 创建退货单物流信息 ************************
             ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.createReturnOrderLogisticInfo(param.getReturnDeliveryInfo());
             String returnNo = returnOrderBaseInfo.getReturnNo();
@@ -1530,9 +1542,11 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
                 AppCustomer customer = customerService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(customer.getName());
                 returnOrderBaseInfo.setCreatorPhone(customer.getMobile());
             } else {
                 AppEmployee employee = employeeService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(employee.getName());
                 returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
                     returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());

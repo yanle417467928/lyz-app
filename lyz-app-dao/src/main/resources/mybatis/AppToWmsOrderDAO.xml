@@ -21,6 +21,39 @@
         )
     </insert>
 
+    <insert id="saveAtwCancelReturnOrderRequest" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest">
+        INSERT INTO inter_atw_return_order_cancel_request (create_time, store_code, return_no, return_type, return_time)
+            SELECT
+                #{createTime},
+                #{storeCode},
+                #{returnNo},
+                #{returnType},
+                #{returnTime}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_atw_return_order_cancel_request
+                    WHERE return_no = #{returnNo}
+            )
+    </insert>
+
+    <insert id="saveAtwReturnOrderCheckEnter" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrderCheckEnter">
+        INSERT INTO inter_atw_return_order_check_enter (create_time, return_no, return_status, check_goods_time)
+            SELECT
+                #{createTime},
+                #{returnNo},
+                #{returnStatus},
+                #{checkGoodsTime}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_atw_return_order_check_enter
+                    WHERE return_no = #{returnNo}
+            )
+    </insert>
+
     <insert id="saveAtwRequisitionOrder" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
         INSERT INTO inter_atw_order_requsition
@@ -117,6 +150,40 @@
     <update id="updateAtwCancelOrderRequest"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest">
         UPDATE inter_atw_order_cancel_request
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage},
+            </if>
+        </set>
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <update id="updateAtwCancelReturnOrderRequest"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest">
+        UPDATE inter_atw_return_order_cancel_request
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage},
+            </if>
+        </set>
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <update id="updateAtwReturnOrderCheckEnterRequest"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrderCheckEnter">
+        UPDATE inter_atw_return_order_check_enter
         <set>
             <if test="null != sendFlag">
                 send_flag = #{sendFlag},
@@ -259,4 +326,17 @@
         WHERE id = #{id};
     </select>
 
+    <select id="findAtwCancelReturnOrderByReturnNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest">
+        SELECT *
+        FROM inter_atw_return_order_cancel_request
+        WHERE return_no = #{returnNumber};
+    </select>
+
+    <select id="findAtwReturnOrderCheckEnterByReturnNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrderCheckEnter">
+        SELECT *
+        FROM inter_atw_return_order_check_enter
+        WHERE return_no = #{returnNumber};
+    </select>
 </mapper>

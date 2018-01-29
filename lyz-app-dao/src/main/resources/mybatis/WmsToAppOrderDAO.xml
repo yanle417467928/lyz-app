@@ -45,4 +45,55 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
 
     </insert>
+
+    <insert id="saveWtaReturnOrderDeliveryClerk"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturnOrderDeliveryClerk">
+        INSERT INTO inter_wta_return_order_delivery_clerk (create_time, return_number, c_wh_no, driver)
+            SELECT
+                #{createTime},
+                #{returnNumber},
+                #{warehouseNo},
+                #{driver}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_wta_return_order_delivery_clerk
+                    WHERE return_number = #{orderNo}
+            );
+    </insert>
+
+    <insert id="saveWtaCancelOrderResultEnter"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter">
+
+        INSERT INTO inter_wta_order_result_enter (create_time, order_no, is_cancel, error_message)
+
+            SELECT
+                #{createTime},
+                #{orderNo},
+                #{isCancel},
+                #{errorMessage}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_wta_order_result_enter
+                    WHERE order_no = #{orderNo}
+            );
+    </insert>
+
+    <insert id="saveWtaCancelOrderResultEnter"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelReturnOrderResultEnter">
+
+        INSERT INTO inter_wta_return_order_result_enter (create_time, return_number, is_cancel, error_message)
+        SELECT
+        #{createTime},
+        #{returnNumber},
+        #{isCancel},
+        #{errorMessage}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_wta_return_order_result_enter
+        WHERE return_number = #{returnNumber}
+        );
+    </insert>
 </mapper>
