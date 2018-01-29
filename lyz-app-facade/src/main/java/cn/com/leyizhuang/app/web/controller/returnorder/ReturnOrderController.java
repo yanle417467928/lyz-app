@@ -1512,7 +1512,7 @@ public class ReturnOrderController {
     @Transactional
     public Boolean cancelOrderUniversal(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
                                         String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
-        ResultDTO<Object> resultDTO;
+
         try {
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
