@@ -140,9 +140,9 @@ public class MessagePushTest {
         template.setAppId(AppConstant.APP_ID);
         template.setAppkey(AppConstant.APP_KEY);
         TransmissionTemplateContent content = new TransmissionTemplateContent();
-        content.setContent("跳转订单页面");
-        content.setTitle("测试透传模板");
-        content.setPayload(new Payload("/page/personal/myOrderList.html", "跳转我的订单"));
+        content.setContent("您的订单发货了");
+        content.setTitle("发货通知");
+        content.setPayload(new Payload("page/personal/myOrderWL.html?orderNo='CD_XN20180126172227906201'", "跳转订单物流详情"));
         System.out.println(content);
         template.setTransmissionContent(JSON.toJSONString(content));
         template.setTransmissionType(2);

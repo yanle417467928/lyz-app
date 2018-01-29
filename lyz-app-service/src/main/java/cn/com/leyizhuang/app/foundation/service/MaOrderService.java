@@ -1,13 +1,18 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageInfo;
@@ -223,5 +228,76 @@ public interface MaOrderService {
 
 
     PageInfo<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
+
+
+    /**
+     * 后台买券订单创建订单账单信息
+     * @param orderBillingDetails
+     * @param preDeposit
+     * @param cash
+     * @param posMoney
+     * @param otherMoney
+     * @param posNumber
+     * @param payTime
+     * @return
+     */
+    OrderBillingDetails createMaOrderBillingDetails(OrderBillingDetails orderBillingDetails, Double preDeposit, Double cash, Double posMoney, Double otherMoney, String posNumber, String payTime);
+
+    /**
+     * 后台买券订单创建支付明细信息
+     * @param orderBaseInfo
+     * @param orderBillingDetails
+     * @return
+     */
+    List<OrderBillingPaymentDetails> createMaOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
+
+    /**
+     * 后台买券订单扣减门店预存款
+     * @param identityType
+     * @param userId
+     * @param billingDetails
+     * @param orderNumber
+     * @param ipAddress
+     */
+    void deductionsStPreDeposit(Integer identityType, Long userId, OrderBillingDetails billingDetails, String orderNumber, String ipAddress);
+
+    /**
+     * 后台买券订单保存相关实体信息
+     * @param orderBaseInfo
+     * @param orderGoodsInfoList
+     * @param orderBillingDetails
+     * @param paymentDetails
+     */
+    void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails);
+
+    /**
+     *  后台买券订单持久化调用方法
+     * @param identityType
+     * @param userId
+     * @param orderBillingDetails
+     * @param orderBaseInfo
+     * @param orderGoodsInfoList
+     * @param paymentDetails
+     * @param ipAddress
+     */
+    void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
+                               List<OrderGoodsInfo> orderGoodsInfoList,List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
+
+    /**
+     *  后台买券订单创建订单基础信息
+     * @param appCustomer
+     * @param city
+     * @param appStore
+     * @param appEmployee
+     * @param preDepositMoney
+     * @param remarks
+     * @param preDepositRemarks
+     * @param totalMoney
+     * @return
+     */
+    OrderBaseInfo createMaOrderBaseInfo(AppCustomer appCustomer, City city, AppStore appStore, AppEmployee appEmployee,
+                                        Double preDepositMoney, String remarks, String preDepositRemarks , Double totalMoney, String orderNumber);
+
 
 }

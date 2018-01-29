@@ -23,7 +23,7 @@
                 </span>
             </div>
         </form>
-        <div class="pre-scrollable" style="max-height: 489px">
+        <div class="pre-scrollable" style="max-height: 800px">
         <ul class="sidebar-menu" >
             <li class="header">操作菜单</li>
         <#if IndexMenuVOList?? && IndexMenuVOList?size gt 0>
