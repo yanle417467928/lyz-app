@@ -41,7 +41,11 @@ public enum AppReturnOrderStatus {
     /**
      * 配送单:有  自提单:有  买券订单:有
      */
-    FINISHED(5, "已完成");
+    FINISHED(5, "已完成"),
+    /**
+     * 退货单: 有
+     */
+    CANCELING(6, "取消中");
 
     private final Integer value;
     private final String description;

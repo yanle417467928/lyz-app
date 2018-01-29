@@ -80,7 +80,7 @@
             );
     </insert>
 
-    <insert id="saveWtaCancelOrderResultEnter"
+    <insert id="saveWtaCancelReturnOrderResultEnter"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelReturnOrderResultEnter">
 
         INSERT INTO inter_wta_return_order_result_enter (create_time, return_number, is_cancel, error_message)

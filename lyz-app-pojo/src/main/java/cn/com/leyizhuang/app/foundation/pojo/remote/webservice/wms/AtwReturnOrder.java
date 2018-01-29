@@ -65,7 +65,7 @@ public class AtwReturnOrder {
     private Date returnTime;
     /**
      * 退货单状态一期：1:待通知物流 2:待取货 3: 待确认收货 4 待退款（物流确认） 5 已完成 6 退货取消
-     * 退货单状态二期: 1:退货中    2:已取消  3:待退货     4:待退款         5: 已完成
+     * 退货单状态二期: 1:退货中    2:已取消  3:待退货     4:待退款         5: 已完成   6: 取消中
      */
     private Integer statusId;
     /**
