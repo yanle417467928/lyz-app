@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.CancelOrderParametersDAO">
+
+
+    <insert id="addCancelOrderParameters"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO">
+        INSERT INTO cancel_order_parameters (order_number, user_id, identity_type, reason_info, remarks_info, cancel_status)
+        VALUES (#{orderNumber}, #{userId}, #{identityType},#{reasonInfo}, #{remarksInfo}, #{cancelStatus}})
+    </insert>
+
+    <select id="findCancelOrderParametersByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO">
+        SELECT
+        *
+        FROM
+        cancel_order_parameters
+        WHERE
+        order_number = #{orderNumber}
+    </select>
+
+    <update id="updateCancelStatusByOrderNumber">
+        UPDATE cancel_order_parameters
+        SET
+        cancel_status = 'PROCESSED'
+        WHERE
+        order_number = #{orderNumber}
+    </update>
+</mapper>
