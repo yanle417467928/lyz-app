@@ -822,4 +822,9 @@ public class MaOrderServiceImpl implements MaOrderService {
         return orderBaseInfo;
     }
 
+    @Override
+    public void scanningUnpaidOrder() {
+
+    }
+
 }

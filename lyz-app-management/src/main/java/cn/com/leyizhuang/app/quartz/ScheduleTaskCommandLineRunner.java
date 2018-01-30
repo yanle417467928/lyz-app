@@ -34,5 +34,14 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
         }else{
             log.info("销售明细传输到HQ任务未加入任务池！！！");
         }
+
+
+        String scanningUnpaidOrderCron =maClearTempCreditService.getCron(3L);
+        if(null!=scanningUnpaidOrderCron){
+            QuartzManager.addJob("scanningUnpaidOrder","jobGroup3","trigger3","triggerGroup3", ScanningUnpaidOrderTask.class,scanningUnpaidOrderCron);
+
+        }else{
+            throw new RuntimeException("scanningUnpaidOrderCron为空");
+        }
     }
 }
