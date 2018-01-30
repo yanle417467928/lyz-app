@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.CancelProcessingStatus;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
@@ -21,12 +23,14 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
+import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -46,6 +50,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,10 +60,10 @@ import java.util.Map;
 
 /**
  * @author Jerry.Ren
- * Notes: 退货单接口
- * Created with IntelliJ IDEA.
- * Date: 2017/12/4.
- * Time: 9:34.
+ *         Notes: 退货单接口
+ *         Created with IntelliJ IDEA.
+ *         Date: 2017/12/4.
+ *         Time: 9:34.
  */
 
 @RestController
@@ -108,13 +114,17 @@ public class ReturnOrderController {
     private ICallWms callWms;
     @Resource
     private CommonService commonService;
-
+    @Resource
+    private CancelOrderParametersService cancelOrderParametersService;
     @Resource
     private SinkSender sinkSender;
 
     @Resource
     private SellDetailsSender sellDetailsSender;
 
+
+    @Resource
+    private SmsAccountServiceImpl smsAccountService;
 
     /**
      * 取消订单
@@ -186,9 +196,35 @@ public class ReturnOrderController {
                     if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
                         // TODO wms 建好表后可使用通知WMS
 //                AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
+                //判断收货类型和订单状态
+                if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
+                    //创建取消订单参数存储类
+                    CancelOrderParametersDO cancelOrderParametersDO = new CancelOrderParametersDO();
+                    cancelOrderParametersDO.setOrderNumber(orderNumber);
+                    cancelOrderParametersDO.setIdentityType(identityType);
+                    cancelOrderParametersDO.setUserId(userId);
+                    cancelOrderParametersDO.setReasonInfo(reasonInfo);
+                    cancelOrderParametersDO.setRemarksInfo(remarksInfo);
+                    cancelOrderParametersDO.setCancelStatus(CancelProcessingStatus.SEND_WMS);
+                    cancelOrderParametersService.addCancelOrderParameters(cancelOrderParametersDO);
+
+                    // TODO wms 建好表后可使用通知WMS
+//                AtwCan`celOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
 //                appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
 //                callWms.sendToWmsCancelOrder(returnOrderBaseInfo.getOrderNo());
-                    }
+                    //修改订单状态为取消中
+                    orderBaseInfo.setStatus(AppOrderStatus.CANCELING);
+                    appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消订单提交成功，等待确认！", null);
+                    logger.info("canselOrder OUT,取消订单提交成功！，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                ReturnOrderController r = new ReturnOrderController();
+                //调用取消订单通用方法
+                Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
+                if (b) {
+                    //发送退单拆单消息到拆单消息队列
+                    sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                     logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -286,6 +322,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnPic(returnPic);
@@ -303,6 +342,7 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setCreatorId(userId);
             returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             AppEmployee employee = employeeService.findById(userId);
+            returnOrderBaseInfo.setCreatorName(employee.getName());
             returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
             if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
                 returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
@@ -777,17 +817,29 @@ public class ReturnOrderController {
             }
             //********************创建退货单基础信息******************
             //记录原订单信息
+
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.createReturnOrderBaseInfo(order.getId(), order.getOrderNumber(),
-                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType());
-            if (identityType == 0) {
-                AppCustomer customer = customerService.findById(param.getCusId());
-                if (AssertUtil.isNotEmpty(customer)) {
-                    returnOrderBaseInfo.setCustomerId(customer.getCusId());
-                    returnOrderBaseInfo.setCustomerName(customer.getName());
-                    returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
-                    returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
+                    order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType(),
+                    order.getStoreId(), order.getStoreCode(), order.getStoreStructureCode());
+            if (identityType == 6) {
+                AppCustomer customer = customerService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(customer.getName());
+                returnOrderBaseInfo.setCreatorPhone(customer.getMobile());
+            } else {
+                AppEmployee employee = appEmployeeService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(employee.getName());
+                returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
+                if (identityType == 0) {
+                    AppCustomer customer = customerService.findById(param.getCusId());
+                    if (AssertUtil.isNotEmpty(customer)) {
+                        returnOrderBaseInfo.setCustomerId(customer.getCusId());
+                        returnOrderBaseInfo.setCustomerName(customer.getName());
+                        returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
+                        returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
+                    }
                 }
             }
+
             //******************* 创建退货单物流信息 ************************
             ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.createReturnOrderLogisticInfo(param.getReturnDeliveryInfo());
             String returnNo = returnOrderBaseInfo.getReturnNo();
@@ -806,7 +858,7 @@ public class ReturnOrderController {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
-                                if (simpleInfo.getQty() > goodsInfo.getReturnQuantity()) {
+                                if (simpleInfo.getQty() > goodsInfo.getReturnableQuantity()) {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
@@ -1504,7 +1556,7 @@ public class ReturnOrderController {
     @Transactional
     public Boolean cancelOrderUniversal(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
                                         String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
-        ResultDTO<Object> resultDTO;
+
         try {
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
@@ -1514,6 +1566,9 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderNumber);
             returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnType(ReturnOrderType.CANCEL_RETURN);
@@ -1531,9 +1586,11 @@ public class ReturnOrderController {
             returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
                 AppCustomer customer = customerService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(customer.getName());
                 returnOrderBaseInfo.setCreatorPhone(customer.getMobile());
             } else {
                 AppEmployee employee = employeeService.findById(userId);
+                returnOrderBaseInfo.setCreatorName(employee.getName());
                 returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
                     returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
@@ -1814,22 +1871,39 @@ public class ReturnOrderController {
                 for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
-                    //创建新的产品券
-                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
-                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
-                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
-                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
-                    newCusProductCoupon.setGetTime(date);
-                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
-                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
-                    newCusProductCoupon.setIsUsed(false);
-                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
-                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
-                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
-                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
-                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
-                    //TODO   增加日志
+
+//                    //创建新的产品券
+//                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
+//                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
+//                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
+//                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
+//                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
+//                    newCusProductCoupon.setGetTime(date);
+//                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
+//                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
+//                    newCusProductCoupon.setIsUsed(false);
+//                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
+//                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
+//                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
+//                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
+//                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
+                    //增加日志
+                    CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                        changeLog.setCusId(userId);
+                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                        changeLog.setCusId(orderBaseInfo.getCustomerId());
+                    }
+                    changeLog.setCouponId(orderProductCoupon.getCouponId());
+                    changeLog.setChangeType(CustomerProductCouponChangeType.CANCEL_ORDER);
+                    changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.CANCEL_ORDER.getDescription());
+                    changeLog.setReferenceNumber(orderNumber);
+                    changeLog.setOperatorId(userId);
+                    changeLog.setOperatorIp(null);
+                    changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    changeLog.setUseTime(new Date());
+                    //todo 做日志变更保存
+
                 }
 
 
@@ -1940,6 +2014,67 @@ public class ReturnOrderController {
             logger.warn("cancelOrder EXCEPTION,未知异常,取消订单失败，出参 resultDTO:{}");
             logger.warn("{}", e);
             return false;
+        }
+    }
+
+
+    public void cancelOrderToWms(HttpServletRequest req, HttpServletResponse response, String orderNumber, Boolean isCancel) {
+        if (StringUtils.isBlank(orderNumber)) {
+            logger.info("cancelOrderToWms OUT,WMS回传订单号为空，取消订单失败，出参 ResultDTO:{}");
+            return;
+        }
+        //获取订单头信息
+        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+        //获取订单账目明细
+        OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+        //获取取消订单相关参数
+        CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderNumber);
+        if (isCancel) {
+            //调用取消订单通用方法
+            Boolean b = this.cancelOrderUniversal(req, response, cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderNumber, cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
+
+            if (b) {
+                //发送退单拆单消息到拆单消息队列
+//                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                //修改取消订单处理状态
+                cancelOrderParametersService.updateCancelStatusByOrderNumber(orderNumber);
+                logger.info("cancelOrderToWms OUT,取消订单成功");
+                return;
+            } else {
+                logger.info("getReturnOrderList OUT,取消订单失败");
+            }
+        } else {
+            logger.info("cancelOrderToWms CALLED,发送提货码，入参 mobile:{}", orderBaseInfo.getCreatorPhone());
+            if (null == orderBaseInfo.getCreatorPhone() || orderBaseInfo.getCreatorPhone().equalsIgnoreCase("") || orderBaseInfo.getCreatorPhone().trim().length() != 11) {
+                logger.info("cancelOrderToWms OUT,发送提货码失败，出参 ResultDTO:{}");
+            }
+            String info = "您取消的订单" + orderNumber + "，取消失败，请联系管理人员！";
+            logger.info("取消失败订单号:{}", orderNumber);
+            String content = null;
+            try {
+                content = URLEncoder.encode(info, "GB2312");
+                System.err.println(content);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
+            }
+
+            SmsAccount account = smsAccountService.findOne();
+            String returnCode = null;
+            try {
+                returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderBaseInfo.getCreatorPhone(), content);
+            } catch (IOException e) {
+                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
+                logger.warn("{}", e);
+            } catch (Exception e) {
+                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
+                logger.warn("{}", e);
+            }
+            if (returnCode.equalsIgnoreCase("00")) {
+                logger.info("cancelOrderToWms OUT，取消订单失败信息发送成功，出参 ResultDTO:{}");
+            } else {
+                logger.info("cancelOrderToWms OUT，取消订单失败信息发送失败，出参 ResultDTO:{}");
+            }
         }
     }
 }

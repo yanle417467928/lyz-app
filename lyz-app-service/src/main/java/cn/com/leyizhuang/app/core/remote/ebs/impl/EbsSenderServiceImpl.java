@@ -180,6 +180,8 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         if (null != orderCouponInfs && orderCouponInfs.size() > 0) {
             for (OrderCouponInf couponInf : orderCouponInfs) {
                 OrderCouponSecond orderCouponSecond = new OrderCouponSecond();
+                orderCouponSecond.setLineId(toString(couponInf.getId()));
+                orderCouponSecond.setPromotion(toString(couponInf.getPromotion()));
                 orderCouponSecond.setAttribute1(toString(couponInf.getAttribute1()));
                 orderCouponSecond.setAttribute2(toString(couponInf.getAttribute2()));
                 orderCouponSecond.setAttribute3(toString(couponInf.getAttribute3()));

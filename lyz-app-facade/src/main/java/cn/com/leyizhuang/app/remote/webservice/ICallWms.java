@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.util.AssertUtil;
@@ -64,11 +61,10 @@ public class ICallWms {
         String xml = AppXmlUtil.getCancelOrderXml(cancelOrderRequest);
         logger.info("取消订单XML拼装完毕 OUT, xml:{}", xml);
         //发送到WMS
-        //TODO wms确定td_return_note参数
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
         try {
-            objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
+            objects = wmsClient.invoke(wmsName, "td_tbw_back_m_cancel", "1", xml);
         } catch (Exception e) {
             // TODO 发送短信通知传输失败
             cancelOrderRequest.setSendFlag(false);
@@ -87,6 +83,99 @@ public class ICallWms {
             cancelOrderRequest.setErrorStatus(null);
         }
         appToWmsOrderService.modifyAtwCancelOrderRequest(cancelOrderRequest);
+        logger.info("sendMsgToWMS, OUT");
+    }
+
+    /**
+     * 发送取消退货单到WMS
+     *
+     * @param returnNumber 取消退货单单号
+     */
+    public void sendToWmsCancelReturnOrder(String returnNumber) {
+        if (StringUtils.isBlank(returnNumber)) {
+            return;
+        }
+        AtwCancelReturnOrderRequest returnOrderRequest = appToWmsOrderService.findAtwCancelReturnOrderByReturnNo(returnNumber);
+        if (null == returnOrderRequest) {
+            return;
+        }
+        if (null != returnOrderRequest.getSendFlag() && returnOrderRequest.getSendFlag()) {
+            return;
+        }
+        logger.info("============================取消退货单XML开始拼装===============================");
+        String xml = AppXmlUtil.getCancelReturnOrderXml(returnOrderRequest);
+        logger.info("取消退货单XML拼装完毕 OUT, xml:{}", xml);
+        //发送到WMS
+        //TODO wms确定td_return_note参数
+        wmsClient = getWmsClient();
+        Object[] objects = new Object[0];
+        try {
+            objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
+        } catch (Exception e) {
+            // TODO 发送短信通知传输失败
+            returnOrderRequest.setSendFlag(false);
+            returnOrderRequest.setErrorMessage("退货单：" + returnNumber + "发送取消退单调用接口失败！");
+            logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
+            e.printStackTrace();
+        }
+        //修改发送状态
+        String errorMsg = AppXmlUtil.checkReturnXml(objects);
+        logger.info("*****WMS返回发送取消退货订单信息***** 出参 OUT, XML:{}", objects);
+        if (errorMsg != null) {
+            //如果发送失败修改发送状态
+            returnOrderRequest.setErrorStatus(errorMsg);
+            logger.error("发送取消退货单出现异常 EXCEPTION, errorMsg:{}", errorMsg);
+        } else if (null == returnOrderRequest.getErrorMessage()) {
+            returnOrderRequest.setErrorStatus(null);
+        }
+        appToWmsOrderService.modifyAtwCancelReturnOrderRequest(returnOrderRequest);
+        logger.info("sendMsgToWMS, OUT");
+    }
+
+    /**
+     * 发送退货单收货确认
+     *
+     * @param returnNumber 退货单单号
+     */
+    public void sendToWmsReturnOrderCheck(String returnNumber) {
+        if (StringUtils.isBlank(returnNumber)) {
+            return;
+        }
+        AtwReturnOrderCheckEnter atwReturnOrderCheckEnter = appToWmsOrderService.findAtwReturnOrderCheckEnterByReturnNo(returnNumber);
+        if (null == atwReturnOrderCheckEnter) {
+            return;
+        }
+        if (null != atwReturnOrderCheckEnter.getSendFlag() && atwReturnOrderCheckEnter.getSendFlag()) {
+            return;
+        }
+        logger.info("============================退货单收货确认XML开始拼装===============================");
+        String xml = AppXmlUtil.getReturnOrderCheckEnterXml(atwReturnOrderCheckEnter);
+        logger.info("退货单收货确认XML拼装完毕 OUT, xml:{}", xml);
+        //发送到WMS
+        wmsClient = getWmsClient();
+        Object[] objects = new Object[0];
+        try {
+            objects = wmsClient.invoke(wmsName, "inter_atw_order_check", "1", xml);
+        } catch (Exception e) {
+            // TODO 发送短信通知传输失败
+            atwReturnOrderCheckEnter.setSendFlag(false);
+            atwReturnOrderCheckEnter.setErrorMessage("退货单：" + returnNumber + "发送退货单收货确认调用接口失败！");
+            logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
+            e.printStackTrace();
+        }
+        //修改发送状态
+        String errorMsg = AppXmlUtil.checkReturnXml(objects);
+        logger.info("*****WMS返回发送退货单收货确认订单信息***** 出参 OUT, XML:{}", objects);
+        if (errorMsg != null) {
+            //如果发送失败修改发送状态
+            atwReturnOrderCheckEnter.setSendFlag(Boolean.FALSE);
+            atwReturnOrderCheckEnter.setErrorMessage(errorMsg);
+            logger.error("发送退货单收货确认出现异常 EXCEPTION, errorMsg:{}", errorMsg);
+        } else if (null == atwReturnOrderCheckEnter.getErrorMessage()) {
+            atwReturnOrderCheckEnter.setSendFlag(Boolean.TRUE);
+            atwReturnOrderCheckEnter.setSendTime(new Date());
+        }
+        appToWmsOrderService.modifyAtwReturnOrderCheckEnterRequest(atwReturnOrderCheckEnter);
         logger.info("sendMsgToWMS, OUT");
     }
 

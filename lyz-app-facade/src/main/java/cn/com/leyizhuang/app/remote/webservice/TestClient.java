@@ -92,28 +92,20 @@ public class TestClient {
 //        appToWmsOrderService.modifyAtwRequisitionOrderGoods(goods1);
 
         AtwReturnOrder returnOrder = new AtwReturnOrder();
-        returnOrder.setCancelTime(new Date());
-        returnOrder.setCheckTime(new Date());
         returnOrder.setCreateTime(new Date());
         returnOrder.setDeliverTypeTitle("送货上门");
         returnOrder.setDiySiteAddress("富森美家居城");
         returnOrder.setDiySiteId("FZM007");
         returnOrder.setDiySiteTel("123456678");
         returnOrder.setDiySiteTitle("府河市场");
-        returnOrder.setManagerRemarkInfo("已收货");
         returnOrder.setOrderNumber("CD_XN20180109112029014872");
-        returnOrder.setOrderTime(new Date());
-        returnOrder.setPayTypeId(0);
-        returnOrder.setPayTypeTitle("支付宝");
         returnOrder.setRemarkInfo("下单下多了");
         returnOrder.setReturnNumber("T201801121041875");
         returnOrder.setReturnPrice(219.74);
         returnOrder.setReturnTime(new Date());
-        returnOrder.setReturnType("上门提货");
         returnOrder.setSellerRealName("刘老根");
         returnOrder.setShoppingAddress("成都市新都区大丰街道订单");
         returnOrder.setStatusId(3);
-        returnOrder.setUserName("王老实");
 
         appToWmsOrderService.saveAtwReturnOrder(returnOrder);
         System.out.println(returnOrder.getId());

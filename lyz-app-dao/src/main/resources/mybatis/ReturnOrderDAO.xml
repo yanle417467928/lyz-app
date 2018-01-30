@@ -5,29 +5,33 @@
     <select id="queryByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
-            roid,
-            oid       orderId,
-            ord_no    orderNo,
-            order_time,
-            return_time,
-            return_no,
-            return_type,
-            return_price,
-            remarks_info,
-            creator_id,
-            creator_identityType,
-            creator_phone,
-            cus_id    customerId,
-            cus_name  customerName,
-            cus_phone customerPhone,
-            cus_type  customerType,
-            reason_info,
+        roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_name,
+        creator_identityType,
+        creator_phone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info,
             return_pic,
-            ord_type  orderType,
-            return_status
+        ord_type orderType,
+        return_status
         FROM ord_return_base_info
         WHERE
-            return_no = #{returnNo}
+        return_no = #{returnNo}
     </select>
 
 
@@ -36,16 +40,18 @@
             useGeneratedKeys="true" keyProperty="roid">
         INSERT INTO ord_return_base_info
         (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
-         creator_identityType, creator_phone, cus_id, cus_name, cus_phone, cus_type, reason_info, return_pic, ord_type,
+        creator_name,
+        creator_identityType, creator_phone, store_id, store_code, store_structure_code, cus_id, cus_name, cus_phone,
+        cus_type, reason_info, return_pic, ord_type,
          return_status)
         VALUES
             (#{orderId}, #{orderNo}, #{orderTime},
                          #{returnTime}, #{returnNo}, #{returnType},
                          #{returnPrice}, #{remarksInfo},
-                         #{creatorId}, #{creatorIdentityType},
-                         #{creatorPhone},
-             #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
-             #{returnPrice}, #{orderType}, #{returnStatus})
+        #{creatorId}, #{creatorName,}, #{creatorIdentityType},
+        #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode},
+        #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
+        #{returnPrice}, #{orderType}, #{returnStatus})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -79,11 +85,23 @@
             <if test="null != creatorId">
                 creator_id = #{creatorId},
             </if>
+            <if test="null != creatorName,">
+                creator_name, = #{creatorName,},
+            </if>
             <if test="null != creatorIdentityType">
                 creator_identityType = #{creatorIdentityType},
             </if>
             <if test="null != creatorPhone">
                 creator_phone = #{creatorPhone},
+            </if>
+            <if test="null != storeId">
+                store_id = #{storeId}
+            </if>
+            <if test="null != storeCode">
+                store_code = #{storeCode}
+            </if>
+            <if test="null != storeStructureCode">
+                store_structure_code = #{storeStructureCode}
             </if>
             <if test="null != customerId">
                 cus_id = #{customerId},
@@ -202,7 +220,31 @@
     <select id="findReturnOrderListByUserIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
 
-        SELECT *
+        SELECT
+        roid roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time orderTime,
+        return_time returnTime,
+        return_no returnNo,
+        return_type returnType,
+        return_price returnPrice,
+        remarks_info remarksInfo,
+        creator_id creatorId,
+        creator_name creatorName,
+        creator_identityType creatorIdentityType,
+        creator_phone creatorPhone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info reasonInfo,
+        return_pic returnPic,
+        ord_type orderType,
+        return_status
         FROM ord_return_base_info orbi
         WHERE
             orbi.creator_id = #{userId}
@@ -212,7 +254,31 @@
     <select id="findReturnOrderList" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
 
-        SELECT *
+        SELECT
+        roid roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time orderTime,
+        return_time returnTime,
+        return_no returnNo,
+        return_type returnType,
+        return_price returnPrice,
+        remarks_info remarksInfo,
+        creator_id creatorId,
+        creator_name creatorName,
+        creator_identityType creatorIdentityType,
+        creator_phone creatorPhone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info reasonInfo,
+        return_pic returnPic,
+        ord_type orderType,
+        return_status
         FROM ord_return_base_info orbi
         <if test="null != keywords">
             WHERE orbi.return_no LIKE concat('%',#{keywords},'%')
@@ -301,7 +367,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
         SELECT
             id,
-            creat_time,
+        create_time,
             roid,
             return_pay_type,
             return_money,
@@ -311,6 +377,30 @@
         FROM ord_return_billing_detail
         WHERE roid = #{roid}
     </select>
+
+    <insert id="saveReturnOrderJxPriceDifferenceRefundDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails">
+
+        INSERT INTO ord_return_jx_price_difference_return_details (roid, ord_no, return_no, create_time, store_id,
+        store_code,
+                                                                   sku, unit_price, return_qty, amount, refund_number)
+            SELECT
+                #{roid},
+                #{orderNumber},
+                #{returnNumber},
+                #{createTime},
+                #{storeId},
+                #{storeCode},
+                #{sku},
+                #{unitPrice},
+                #{returnQty},
+                #{amount},
+                #{refundNumber}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+        FROM ord_return_jx_price_difference_return_details
+                             WHERE refund_number = #{refundNumber})
+    </insert>
 
     <select id="getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails">
@@ -327,33 +417,101 @@
             return_qty,
             amount,
             refund_number
-        FROM ord_return_jx_price_difference_refund_details
+        FROM ord_return_jx_price_difference_return_details
         WHERE return_no = #{returnNo}
     </select>
 
     <select id="queryReturnOrderByRoid" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
-        oid,
-        ord_no,
-        order_time,
-        return_time,
-        return_no,
-        return_type,
-        return_price,
-        remarks_info,
-        creator_id,
-        creator_identityType,
-        creator_phone,
-        cus_id,
-        cus_name,
-        cus_phone,
-        cus_type,
-        reason_info,
-        return_pic,
-        ord_type,
+        roid roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time orderTime,
+        return_time returnTime,
+        return_no returnNo,
+        return_type returnType,
+        return_price returnPrice,
+        remarks_info remarksInfo,
+        creator_id creatorId,
+        creator_name creatorName,
+        creator_identityType creatorIdentityType,
+        creator_phone creatorPhone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info reasonInfo,
+        return_pic returnPic,
+        ord_type orderType,
         return_status
-        FROM ord_return_base_info WHERE roid = #{roid};
+        FROM ord_return_base_info
+        WHERE roid = #{roid};
 
+    </select>
+
+    <select id="findReturnOrderListByStatus" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+            roid                 roid,
+            oid                  orderId,
+            ord_no               orderNo,
+            order_time           orderTime,
+            return_time          returnTime,
+            return_no            returnNo,
+            return_type          returnType,
+            return_price         returnPrice,
+            remarks_info         remarksInfo,
+            creator_id           creatorId,
+        creator_name creatorName,
+            creator_identityType creatorIdentityType,
+            creator_phone        creatorPhone,
+            store_id             storeId,
+            store_code           storeCode,
+            store_structure_code storeStructureCode,
+            cus_id               customerId,
+            cus_name             customerName,
+            cus_phone            customerPhone,
+            cus_type             customerType,
+            reason_info          reasonInfo,
+            return_pic           returnPic,
+            ord_type             orderType,
+            return_status
+        FROM ord_return_base_info
+        WHERE return_status = #{status};
+    </select>
+
+    <select id="findReturnOrderListByStroe" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+        roid roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time orderTime,
+        return_time returnTime,
+        return_no returnNo,
+        return_type returnType,
+        return_price returnPrice,
+        remarks_info remarksInfo,
+        creator_id creatorId,
+        creator_name creatorName,
+        creator_identityType creatorIdentityType,
+        creator_phone creatorPhone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info reasonInfo,
+        return_pic returnPic,
+        ord_type orderType,
+        return_status
+        FROM ord_return_base_info
+        WHERE store_id = #{store};
     </select>
 </mapper>

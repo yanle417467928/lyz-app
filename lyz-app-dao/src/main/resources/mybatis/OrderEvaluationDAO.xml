@@ -3,7 +3,13 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.OrderEvaluationDAO">
 
     <select id="queryOrderEvaluationListByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation">
-        SELECT *
+        SELECT
+            id id,
+            product_star productStar,
+            logistics_star logisticsStar,
+            service_star serviceStars,
+            order_number orderNumber,
+            evaluation_time evaluationTime
         FROM ord_evaluation
         WHERE
         order_number = #{orderNumber}

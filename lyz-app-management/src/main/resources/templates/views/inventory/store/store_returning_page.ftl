@@ -29,7 +29,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
+                <div id="toolbar" class="form-inline">
                 <#--<button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
@@ -83,40 +83,56 @@
                             <b>退单号</b> <a class="pull-right" id="returnNo"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>订单号</b> <a class="pull-right" id="orderNo"></a>
+                            <b>退单状态</b> <a class="pull-right" id="returnStatus"></a>
                         </li>
                         <li class="list-group-item">
                             <b>退货类型</b> <a class="pull-right" id="returnType"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店电话</b> <a class="pull-right" id="storePhone"></a>
+                            <b>退款金额</b> <a class="pull-right" id="returnPrice"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>门店电话</b> <a class="pull-right" id="storeAddress"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>门店名称</b> <a class="pull-right" id="storeName"></a>
+                            <b>订单号</b> <a class="pull-right" id="orderNo"></a>
                         </li>
                         <li class="list-group-item">
                             <b>申请用户</b> <a class="pull-right" id="creatorPhone"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品编码</b> <a class="pull-right" id="sku"></a>
+                            <b>顾客姓名</b> <a class="pull-right" id="customerName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>商品名称</b> <a class="pull-right" id="skuName"></a>
+                            <b><label for="remarkInfo">备注信息</label></b>
+                            <div>
+                                <textarea id="remarkInfo" class="form-control" readonly></textarea>
+                            </div>
                         </li>
                         <li class="list-group-item">
-                            <b>可售门店库存</b> <a class="pull-right" id="availableIty"></a>
+                            <b>退货商品</b>
+                            <table id="returnOrderGoodsList" class="table table-bordered table-responsive">
+                                <thead>
+                                <tr>
+                                    <th style="text-align: center">商品编码</th>
+                                    <th style="text-align: center">商品名称</th>
+                                    <th style="text-align: center">数量</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </li>
                         <li class="list-group-item">
-                            <b>真实门店库存</b> <a class="pull-right" id="realIty"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>上次修改时间</b> <a class="pull-right" id="lastUpdateTime"></a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                            <b>门店信息</b>
+                            <table id="store" class="table table-bordered">
+                                <thead>
+                                <tr style="text-align: center">
+                                    <th style="text-align: center">门店名称</th>
+                                    <th style="text-align: center">门店地址</th>
+                                    <th style="text-align: center">门店电话</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </li>
                     </ul>
                 </div>
@@ -193,7 +209,83 @@
                 $('#btn_delete').on('click', function() {
                     $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
                 });*/
+
+        $('#selectStatus').change(function () {
+
+            var status = $('#selectStatus').val();
+            if (status === '-1') {
+                $("#dataGrid").bootstrapTable('refreshOptions', {
+                    url: '/rest/store/returning/page/grid'
+                });
+            } else {
+                $("#dataGrid").bootstrapTable('refreshOptions', {
+                    url: '/rest/store/returning/query/param?status=' + status
+                });
+            }
+        });
+
+        $('#selectStore').change(function () {
+            var store = $('#selectStore').val();
+            if (store === '-1') {
+                $("#dataGrid").bootstrapTable('refreshOptions', {
+                    url: '/rest/store/returning/page/grid'
+                });
+            } else {
+                $("#dataGrid").bootstrapTable('refreshOptions', {
+                    url: '/rest/store/returning/query/param?store=' + store
+                });
+            }
+        });
+
+        findCityList();
+        findStoreList()
     });
+
+    function findCityList() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#selectCity").append(city);
+            }
+        });
+    }
+
+
+    function findStoreList() {
+        var store = "";
+        $.ajax({
+            url: '/rest/stores/findStorelist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $("#selectStore").append(store);
+                // fromName.selectpicker('refresh');
+                // fromName.selectpicker('render');
+            }
+        });
+    }
+
 
     var $page = {
         information: {
@@ -228,59 +320,57 @@
                                 $('#orderNo').html(data.orderNo);
 
                                 if (null === data.returnType) {
-                                    data.returnType = 'fa fa-circle-o';
+                                    data.returnType = '-';
                                 }
                                 $('#returnType').html(data.returnType);
-
-                                if (null === data.storePhone) {
-                                    data.storePhone = '-';
-                                }
-                                $('#storePhone').html(data.storePhone);
-
-                                if (null === data.storeAddress) {
-                                    data.storeAddress = '-';
-                                }
-                                $('#storeAddress').html(data.storeAddress);
 
                                 if (null === data.storeName) {
                                     data.storeName = '-';
                                 }
-                                $('#storeName').html(data.storeName);
+                                if (null === data.storeAddress) {
+                                    data.storeAddress = '-';
+                                }
+                                if (null === data.storePhone) {
+                                    data.storePhone = '-';
+                                }
+                                var $tr = "<tr><td>" + data.storeName + "</td><td>" + data.storeAddress + "</td><td>" + data.storePhone + "</td></tr>";
+                                $('#store').find('tbody').empty();
+                                $('#store').find('tbody').append($tr);
 
                                 if (null === data.creatorPhone) {
                                     data.creatorPhone = '-';
                                 }
                                 $('#creatorPhone').html(data.creatorPhone);
 
-                                if (null === data.sku) {
-                                    data.sku = '-';
+                                if (null === data.customerName) {
+                                    data.customerName = '-';
                                 }
-                                $('#sku').html(data.sku);
+                                $('#customerName').html(data.customerName);
 
-                                if (null === data.skuName) {
-                                    data.skuName = '-';
+                                if (null === data.returnStatus) {
+                                    data.returnStatus = '-';
                                 }
-                                $('#skuName').html(data.skuName);
+                                $('#returnStatus').html(data.returnStatus);
 
-                                if (null === data.availableIty) {
-                                    data.availableIty = '-';
+                                if (null === data.remarksInfo) {
+                                    data.remarksInfo = '';
                                 }
-                                $('#availableIty').html(data.availableIty);
+                                $('#remarksInfo').html(data.remarksInfo);
 
-                                if (null === data.realIty) {
-                                    data.realIty = '-';
+                                if (null === data.returnPrice) {
+                                    data.returnPrice = '-';
                                 }
-                                $('#realIty').html(data.realIty);
+                                $('#returnPrice').html(data.returnPrice);
 
-                                if (null === data.lastUpdateTime) {
-                                    data.lastUpdateTime = '-';
+                                if (null === data.returnOrderGoodsList) {
+                                    data.returnOrderGoodsList = '-';
                                 }
-                                $('#lastUpdateTime').html(data.lastUpdateTime);
-
-                                if (null === data.createTime) {
-                                    data.createTime = '-';
-                                }
-                                $('#createTime').html(data.createTime);
+                                var str = "";
+                                $.each(data.returnOrderGoodsList, function (i, item) {
+                                    str += "<tr><td>" + item.sku + "</td><td>" + item.skuName + "</td><td>" + item.returnQty + "</td></tr>";
+                                });
+                                $('#returnOrderGoodsList').find('tbody').empty();
+                                $('#returnOrderGoodsList').find('tbody').append(str);
 
                                 $('#information').modal();
                             } else {

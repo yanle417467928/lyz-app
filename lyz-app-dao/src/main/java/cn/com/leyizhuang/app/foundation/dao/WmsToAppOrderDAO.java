@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -42,4 +39,10 @@ public interface WmsToAppOrderDAO {
      * @param goods 返配单商品
      */
     void saveWtaReturningOrderGoods(WtaReturningOrderGoods goods);
+
+    void saveWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
+
+    void saveWtaCancelOrderResultEnter(WtaCancelOrderResultEnter orderResultEnter);
+
+    void saveWtaCancelReturnOrderResultEnter(WtaCancelReturnOrderResultEnter returnOrderResultEnter);
 }

@@ -52,6 +52,10 @@ public class ReturnOrderBaseInfo {
      */
     private Long creatorId;
     /**
+     * 创建人姓名
+     */
+    private String creatorName;
+    /**
      * 创建退单人类型
      */
     private AppIdentityType creatorIdentityType;
@@ -59,6 +63,21 @@ public class ReturnOrderBaseInfo {
      * 创建退单人电话号码
      */
     private String creatorPhone;
+
+    /**
+     * 下单人门店(装饰公司)编码
+     */
+    private String storeCode;
+
+    /**
+     * 下单人门店(装饰公司)id
+     */
+    private Long storeId;
+
+    /**
+     * 门店组织全编码
+     */
+    private String storeStructureCode;
     /**
      * 顾客id
      */
