@@ -24,7 +24,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
-import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
@@ -120,10 +119,6 @@ public class ReturnOrderController {
     private SinkSender sinkSender;
 
     @Resource
-    private SellDetailsSender sellDetailsSender;
-
-
-    @Resource
     private SmsAccountServiceImpl smsAccountService;
 
     /**
@@ -183,19 +178,6 @@ public class ReturnOrderController {
             }
             if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
                     || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
-                ReturnOrderController r = new ReturnOrderController();
-                //调用取消订单通用方法
-                Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
-                //发送退单拆单消息到拆单消息队列
-                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-
-                // 记录退货销量明细数据
-                sellDetailsSender.sendReturnOrderSellDetailsTOManagement(returnOrderBaseInfo.getReturnNo());
-                if (b) {
-                    //判断收货类型和订单状态
-                    if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
-                        // TODO wms 建好表后可使用通知WMS
-//                AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
                 //判断收货类型和订单状态
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
                     //创建取消订单参数存储类
