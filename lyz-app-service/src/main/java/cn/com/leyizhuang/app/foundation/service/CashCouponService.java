@@ -12,10 +12,10 @@ import java.util.List;
 public interface CashCouponService {
     /**
      *  获取现金券信息
-     * @param couponId
+     * @param cusProductCouponId
      * @return
      */
-    CashCoupon findCashCouponByOrderNumber(Long couponId);
+    CustomerCashCoupon findCusCashCouponByCouponId(Long cusProductCouponId);
 
     /**
      * 添加现金券模板
@@ -72,4 +72,10 @@ public interface CashCouponService {
     List<Long> queryBrandIdsByCcid(Long ccid);
 
     List<Long> queryGoodsIdsByCcid(Long ccid);
+
+    /**
+     * 取消订单修改现金券信息
+     * @param customerCashCoupon
+     */
+    void updateCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
 }

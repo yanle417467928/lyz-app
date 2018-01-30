@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
@@ -73,4 +74,15 @@ public interface ProductCouponDAO {
      * 删除产品券模版
      */
     void deleteProductCoupon(@Param("ids") List<Long> ids);
+
+    /**
+     * 取消订单修改产品券信息
+     */
+    void updateCustomerProductCoupon(CustomerProductCoupon customerProductCoupon);
+
+    /**
+     * 添加顾客产品券变更日志
+     * @param customerProductCouponChangeLog
+     */
+    void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog);
 }
