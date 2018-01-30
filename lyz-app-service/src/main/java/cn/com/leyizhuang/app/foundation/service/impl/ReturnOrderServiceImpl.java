@@ -6,8 +6,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -20,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by caiyu on 2017/12/4.
@@ -34,23 +31,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Resource
     private OrderDAO orderDAO;
     @Resource
-    private AppStoreService appStoreService;
-    @Resource
-    private StorePreDepositLogService storePreDepositLogService;
-    @Resource
-    private StoreCreditMoneyLogService storeCreditMoneyLogService;
-    @Resource
     private AppEmployeeService appEmployeeService;
     @Resource
     private AppCustomerService appCustomerService;
-    @Resource
-    private ProductCouponService productCouponService;
-    @Resource
-    private LeBiVariationLogService leBiVariationLogService;
-    @Resource
-    private CashCouponService cashCouponService;
-    @Resource
-    private ReturnOrderService returnOrderService;
 
     @Override
     public ReturnOrderBaseInfo createReturnOrderBaseInfo(Long orderId, String orderNo, Date orderTime, String remarksInfo, Long creatorId,
@@ -298,4 +281,5 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderDAO.saveReturnOrderJxPriceDifferenceRefundDetails(refundDetails);
         }
     }
+
 }

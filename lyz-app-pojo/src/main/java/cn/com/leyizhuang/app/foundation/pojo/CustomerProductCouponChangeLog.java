@@ -22,7 +22,7 @@ public class CustomerProductCouponChangeLog {
 
     private Long id;
     /**
-     * 门店id
+     * 顾客id
      */
     private Long cusId;
     /**

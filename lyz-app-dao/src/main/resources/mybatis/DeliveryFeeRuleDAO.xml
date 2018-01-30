@@ -79,6 +79,14 @@
          WHERE rule_id = #{ruleId}
     </select>
 
+    <select id="findSpecialGoodsIdByRuleId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select
+          goods_id
+         FROM
+         delivery_fee_rule_special_goods
+         WHERE rule_id = #{ruleId}
+    </select>
+
     <delete id="deleteDeliveryFeeRule" parameterType="java.lang.Long">
         DELETE FROM  delivery_fee_rule
         where id = #{id}

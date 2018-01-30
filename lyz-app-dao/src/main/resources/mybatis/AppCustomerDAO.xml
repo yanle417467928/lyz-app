@@ -182,7 +182,8 @@
             c.pic_url,
             c.light,
             c.customer_type,
-            c.create_time
+            c.create_time,
+            c.last_consumption_time
         FROM cus_customer c
         WHERE sales_consult_id = #{userId}
     </select>

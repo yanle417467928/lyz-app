@@ -93,9 +93,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                        detailsDO.setCompanyId(orderBaseInfo.getSobId());
                        detailsDO.setYear(year);
                        detailsDO.setMonth(month);
+                       detailsDO.setCreateTime(new Date());
                        detailsDO.setCityId(orderBaseInfo.getCityId());
                        detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
                        detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
+                       detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
+                       detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
                        detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                        detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
                        detailsDO.setNumber(orderBaseInfo.getOrderNumber());
@@ -145,9 +148,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setCompanyId(orderBaseInfo.getSobId());
                         detailsDO.setYear(year);
                         detailsDO.setMonth(month);
+                        detailsDO.setCreateTime(new Date());
                         detailsDO.setCityId(orderBaseInfo.getCityId());
                         detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
                         detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
+                        detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
+                        detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
                         detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                         detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
                         detailsDO.setNumber(orderBaseInfo.getOrderNumber());
@@ -164,5 +170,25 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                 // TODO 记录错误日志
             }
         }
+    }
+
+    /**
+     * 根据销量时间倒叙取四条记录单号
+     * @return
+     */
+    public List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(Long cusId,LocalDateTime dateTime,Long sellerId){
+        if (cusId == null || sellerId == null || dateTime == null){
+            return  null;
+        }
+
+        return sellDetailsDAO.getCustomerSellDetailsOrderByCreateTimeDescLimit4(cusId,dateTime,sellerId);
+    }
+
+    public List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(Long cusId,LocalDateTime dateTime,Long sellerId){
+        if (cusId == null || sellerId == null || dateTime == null){
+            return  null;
+        }
+
+        return sellDetailsDAO.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(cusId,dateTime,sellerId);
     }
 }

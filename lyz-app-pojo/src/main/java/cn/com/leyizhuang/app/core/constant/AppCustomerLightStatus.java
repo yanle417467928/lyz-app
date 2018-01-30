@@ -9,6 +9,7 @@ package cn.com.leyizhuang.app.core.constant;
 
 public enum AppCustomerLightStatus {
 
+    NOT("无灯"),
     CLOSE("熄灯"),
     RED("红灯"),
     GREEN("绿灯"),

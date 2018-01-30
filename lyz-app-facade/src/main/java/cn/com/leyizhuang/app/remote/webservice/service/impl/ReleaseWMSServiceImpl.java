@@ -7,10 +7,8 @@ import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderDeliveryDetailsService;
-import cn.com.leyizhuang.app.foundation.service.WmsToAppOrderService;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.webservice.TestUser;
 import cn.com.leyizhuang.app.remote.webservice.service.ReleaseWMSService;
 import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
@@ -49,6 +47,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
     @Resource
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
+
+    @Resource
+    private StatisticsSellDetailsService statisticsSellDetailsService;
+
+    @Resource
+    private SellDetailsSender sellDetailsSender;
+
     /**
      * 获取wms信息
      *
@@ -107,6 +112,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     //保存物流信息
                     OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header);
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+
+                    // rabbit 记录下单销量
+                    sellDetailsSender.sendOrderSellDetailsTOManagement(header.getOrderNo());
                 }
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
@@ -156,6 +164,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
+                    // rabbitMq 记录退单销量
+                    sellDetailsSender.sendReturnOrderSellDetailsTOManagement(header.getPoNo());
                 }
                 logger.info("GetWMSInfo OUT,获取返配单wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");

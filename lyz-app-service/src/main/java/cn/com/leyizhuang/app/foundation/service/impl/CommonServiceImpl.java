@@ -96,6 +96,9 @@ public class CommonServiceImpl implements CommonService {
     @Resource
     private ReturnOrderService returnOrderService;
 
+    @Resource
+    private ProductCouponService productCouponService;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveUserAndUserRoleByUserVO(UserVO userVO) {
@@ -330,7 +333,8 @@ public class CommonServiceImpl implements CommonService {
                         changeLog.setOperatorIp(ipAddress);
                         changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                         changeLog.setUseTime(new Date());
-                        //TODO save changeLog
+
+                        productCouponService.addCustomerProductCouponChangeLog(changeLog);
                     } else {
                         throw new LockCustomerProductCouponException("该客户id为" + couponInfo.getCouponId() + "的产品券已使用或已失效!");
                     }

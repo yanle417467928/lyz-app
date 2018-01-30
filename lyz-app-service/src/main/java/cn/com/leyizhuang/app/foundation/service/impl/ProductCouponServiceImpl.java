@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
@@ -129,5 +130,16 @@ public class ProductCouponServiceImpl implements ProductCouponService {
         ProductCoupon productCoupon = productCouponDAO.queryProductCouponById(id);
         return productCoupon;
     }
+
+    @Override
+    public void updateCustomerProductCoupon(CustomerProductCoupon customerProductCoupon) {
+        productCouponDAO.updateCustomerProductCoupon(customerProductCoupon);
+    }
+
+    @Override
+    public void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog) {
+        productCouponDAO.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
+    }
+
 
 }

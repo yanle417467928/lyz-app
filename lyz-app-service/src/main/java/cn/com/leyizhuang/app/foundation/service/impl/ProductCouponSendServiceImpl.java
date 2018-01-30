@@ -65,7 +65,7 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
         customerProductCoupon.setEffectiveStartTime(productCoupon.getEffectiveStartTime());
         customerProductCoupon.setEffectiveEndTime(productCoupon.getEffectiveEndTime());
         customerProductCoupon.setIsUsed(false);
-
+        customerProductCoupon.setBuyPrice(0.00);
         customerProductCoupon.setStoreId(employeeDO.getStoreId().getStoreId());
         customerProductCoupon.setSellerId(employeeDO.getEmpId());
         customerProductCoupon.setStatus(true);

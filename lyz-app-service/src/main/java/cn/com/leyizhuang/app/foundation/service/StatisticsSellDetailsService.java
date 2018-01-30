@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -24,11 +26,29 @@ public interface StatisticsSellDetailsService {
 
     /**
      * 记录下单销量明细
+     * orderNumeber 订单号
      */
     void addOrderSellDetails(String orderNumber);
 
     /**
      * 记录退单销量明细
+     * returnOrderNo 退单号
      */
     void addReturnOrderSellDetails(String returnOrderNo);
+
+    /**
+     * 查询用户近期90天内的4单 单号
+     * @param cusId
+     * @return
+     */
+    List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(Long cusId, LocalDateTime dateTime,Long sellerId);
+
+    /**
+     * 查询一段时间内 一个顾客在一个导购下产生销量的月份频次 不能超过365天
+     * @param cusId
+     * @param dateTime
+     * @param sellerId
+     * @return
+     */
+    List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(@Param("cusId") Long cusId, @Param("dateTime") LocalDateTime dateTime, @Param("sellerId") Long sellerId);
 }
