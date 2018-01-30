@@ -107,4 +107,9 @@ public class CustomerProductCoupon implements Serializable {
      * 券订单商品行id
      */
     private Long goodsLineId;
+
+    /**
+     * 修改时间
+     */
+    private Date lastUpdateTime;
 }

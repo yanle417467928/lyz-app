@@ -30,8 +30,8 @@ public class CashCouponServiceImpl implements CashCouponService{
     private MaGoodsBrandDAO maGoodsBrandDAO;
 
     @Override
-    public CashCoupon findCashCouponByOrderNumber(Long couponId) {
-        return cashCouponDAO.findCashCouponByOrderNumber(couponId);
+    public CustomerCashCoupon findCusCashCouponByCouponId(Long cusProductCouponId) {
+        return cashCouponDAO.findCusCashCouponByCouponId(cusProductCouponId);
     }
 
     @Override
@@ -289,6 +289,11 @@ public class CashCouponServiceImpl implements CashCouponService{
             return null;
         }
         return cashCouponDAO.queryGoodsIdsByCcid(ccid);
+    }
+
+    @Override
+    public void updateCustomerCashCoupon(CustomerCashCoupon customerCashCoupon) {
+        cashCouponDAO.updateCustomerCashCoupon(customerCashCoupon);
     }
 
 }

@@ -12,15 +12,14 @@
         city_id,city_name,`type`,is_specified_store,`status`,sort_id
     </sql>
 
-    <select id="findCashCouponByOrderNumber" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
+    <select id="findCusCashCouponByCouponId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
          SELECT
-            ccc.*
+            *
         FROM
-            cp_cash_coupon AS ccc
-        INNER JOIN ord_coupon_info AS oci ON ccc.ccid = oci.coupon_id
+            cus_customer_cash_coupon
         WHERE
-            oci.coupon_id = #{couponId}
+            id = #{cusCashCouponId}
     </select>
 
     <select id="findCustomerCashCouponById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
@@ -43,10 +42,10 @@
     <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         INSERT INTO cus_customer_cash_coupon
         (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
-         effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store)
+         effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store,last_update_time)
         VALUES
         (#{cusId}, #{ccid}, #{qty}, #{getTime}, #{isUsed}, #{useTime}, #{useOrderNumber}, #{downTime}, #{status}, #{condition},
-         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore})
+         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime})
     </insert>
 
     <insert id="addCashCouponStores" parameterType="java.util.List">
@@ -241,4 +240,76 @@
         DELETE FROM cp_cash_coupon_Goods where ccid = #{ccid}
     </delete>
 
+    <update id="updateCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        UPDATE cus_customer_cash_coupon
+        <set >
+            <if test="cusId != null" >
+                cus_id = #{cusId},
+            </if>
+            <if test="ccid != null" >
+                ccid = #{ccid},
+            </if>
+            <if test="qty != null" >
+                qty = #{qty},
+            </if>
+            <if test="getTime != null" >
+                get_time = #{getTime},
+            </if>
+            <if test="isUsed != null" >
+                is_used = #{isUsed},
+            </if>
+            <if test="useTime != null" >
+                use_time = #{useTime},
+            </if>
+            <if test="useOrderNumber != null" >
+                use_ord_no = #{useOrderNumber},
+            </if>
+            <if test="downTime != null" >
+                down_time = #{downTime},
+            </if>
+            <if test="status != null" >
+                `status` = #{status},
+            </if>
+            <if test="condition != null" >
+                condition = #{condition},
+            </if>
+            <if test="denomination != null" >
+                denomination = #{denomination},
+            </if>
+            <if test="effectiveStartTime != null" >
+                effective_start_time = #{effectiveStartTime},
+            </if>
+            <if test="effectiveEndTime != null" >
+                effective_end_time = #{effectiveEndTime},
+            </if>
+            <if test="description != null" >
+                descripttion = #{description},
+            </if>
+            <if test="title != null" >
+                title = #{title},
+            </if>
+            <if test="getType != null" >
+                get_type = #{getType},
+            </if>
+            <if test="purchasePrice != null" >
+                pruchase_price = #{purchasePrice},
+            </if>
+            <if test="cityId != null" >
+                city_id = #{cityId},
+            </if>
+            <if test="cityName != null" >
+                city_name = #{cityName},
+            </if>
+            <if test="type != null" >
+                `type` = #{type},
+            </if>
+            <if test="isSpecifiedStore != null" >
+                is_specified_store = #{isSpecifiedStore},
+            </if>
+            <if test="lastUpdateTime != null" >
+                last_update_time = #{lastUpdateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>

@@ -126,4 +126,9 @@ public class CustomerCashCoupon implements Serializable {
      * 指定门店
      */
     private Boolean isSpecifiedStore;
+
+    /**
+     * 修改时间
+     */
+    private Date lastUpdateTime;
 }

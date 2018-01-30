@@ -201,9 +201,8 @@ public class ReturnOrderController {
                     logger.info("canselOrder OUT,取消订单提交成功！，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                ReturnOrderController r = new ReturnOrderController();
                 //调用取消订单通用方法
-                Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
+                Boolean b = this.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
                 if (b) {
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
@@ -278,7 +277,6 @@ public class ReturnOrderController {
             //创建退单头
             ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
 
-            ReturnOrderController r = new ReturnOrderController();
             if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
                 logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
@@ -577,21 +575,28 @@ public class ReturnOrderController {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
                     //创建新的产品券
-                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
-                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
-                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
-                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-                    newCusProductCoupon.setGetType(CouponGetType.RETURN_ORDER);
-                    newCusProductCoupon.setGetTime(date);
-                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
-                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
-                    newCusProductCoupon.setIsUsed(false);
-                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
-                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
-                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
-                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
-                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
-                    //TODO   增加日志
+                    customerProductCoupon.setLastUpdateTime(new Date());
+                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                    //修改原产品券是否使用和修改时间
+                    productCouponService.updateCustomerProductCoupon(customerProductCoupon);
+
+                    //增加日志
+                    CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                        changeLog.setCusId(userId);
+                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                        changeLog.setCusId(orderBaseInfo.getCustomerId());
+                    }
+                    changeLog.setCouponId(orderProductCoupon.getCouponId());
+                    changeLog.setChangeType(CustomerProductCouponChangeType.RETURN_ORDER);
+                    changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.RETURN_ORDER.getDescription());
+                    changeLog.setReferenceNumber(orderNumber);
+                    changeLog.setOperatorId(userId);
+                    changeLog.setOperatorIp(null);
+                    changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    changeLog.setUseTime(new Date());
+                    // 日志变更保存
+                    productCouponService.addCustomerProductCouponChangeLog(changeLog);
                 }
             }
             //获取订单使用现金券
@@ -599,63 +604,30 @@ public class ReturnOrderController {
             if (AssertUtil.isNotEmpty(orderCashCouponList)) {
                 for (OrderCouponInfo orderCashCoupon : orderCashCouponList) {
                     //查询现金券原信息
-                    CashCoupon cashCoupon = cashCouponService.findCashCouponByOrderNumber(orderCashCoupon.getCouponId());
-                    if (null != cashCoupon) {
-                        //添加新的现金券
-                        CashCoupon newCashCoupon = new CashCoupon();
-                        newCashCoupon.setCreateTime(date);
-                        newCashCoupon.setDenomination(cashCoupon.getDenomination());
-                        newCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
-                        newCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
-                        newCashCoupon.setInitialQuantity(1);
-                        newCashCoupon.setRemainingQuantity(1);
-                        newCashCoupon.setDescription(cashCoupon.getDescription());
-                        newCashCoupon.setTitle(cashCoupon.getTitle());
-                        newCashCoupon.setCondition(cashCoupon.getCondition());
-                        //保存新现金优惠券
-                        cashCouponService.addCashCoupon(newCashCoupon);
-                        //获取现金券id
-                        Long couponId = newCashCoupon.getId();
-                        //给顾客返回现金券
-                        CustomerCashCoupon newCustomerCashCoupon = new CustomerCashCoupon();
-                        if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
-                            newCustomerCashCoupon.setCusId(orderBaseInfo.getCreatorId());
-                        } else if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
-                            newCustomerCashCoupon.setCusId(orderBaseInfo.getCustomerId());
-                        }
-                        newCustomerCashCoupon.setCcid(couponId);
-                        newCustomerCashCoupon.setQty(1);
-                        newCustomerCashCoupon.setIsUsed(false);
-                        newCustomerCashCoupon.setGetTime(date);
-                        newCustomerCashCoupon.setCondition(cashCoupon.getCondition());
-                        newCustomerCashCoupon.setDenomination(cashCoupon.getDenomination());
-                        newCustomerCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
-                        newCustomerCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
-                        newCustomerCashCoupon.setDescription(cashCoupon.getDescription());
-                        newCustomerCashCoupon.setTitle(cashCoupon.getTitle());
-                        newCustomerCashCoupon.setStatus(true);
-                        //保存
-                        cashCouponService.addCustomerCashCoupon(newCustomerCashCoupon);
+                    CustomerCashCoupon customerCashCoupon = cashCouponService.findCusCashCouponByCouponId(orderCashCoupon.getCouponId());
+                    customerCashCoupon.setLastUpdateTime(new Date());
+                    customerCashCoupon.setIsUsed(Boolean.FALSE);
+                    //修改原现金券是否使用和修改时间
+                    cashCouponService.updateCustomerCashCoupon(customerCashCoupon);
 
-                        //记录现金券变更日志
-                        CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
-                        if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
-                            customerCashCouponChangeLog.setCusId(orderBaseInfo.getCreatorId());
-                        } else if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
-                            customerCashCouponChangeLog.setCusId(orderBaseInfo.getCustomerId());
-                        }
-                        customerCashCouponChangeLog.setUseTime(date);
-                        customerCashCouponChangeLog.setCouponId(orderCashCoupon.getCouponId());
-                        customerCashCouponChangeLog.setReferenceNumber(orderNumber);
-                        customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.CANCEL_ORDER);
-                        customerCashCouponChangeLog.setChangeTypeDesc("拒签退单返还");
-                        customerCashCouponChangeLog.setOperatorId(userId);
-                        customerCashCouponChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
-                        customerCashCouponChangeLog.setRemark("拒签退单");
-                        //保存日志
-                        appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
-
+                    //记录现金券变更日志
+                    CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
+                    if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
+                        customerCashCouponChangeLog.setCusId(orderBaseInfo.getCreatorId());
+                    } else if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
+                        customerCashCouponChangeLog.setCusId(orderBaseInfo.getCustomerId());
                     }
+                    customerCashCouponChangeLog.setUseTime(date);
+                    customerCashCouponChangeLog.setCouponId(orderCashCoupon.getCouponId());
+                    customerCashCouponChangeLog.setReferenceNumber(orderNumber);
+                    customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.CANCEL_ORDER);
+                    customerCashCouponChangeLog.setChangeTypeDesc("拒签退单返还");
+                    customerCashCouponChangeLog.setOperatorId(userId);
+                    customerCashCouponChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                    customerCashCouponChangeLog.setRemark("拒签退单");
+                    //保存日志
+                    appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
+
                 }
             }
             //********************************退经销差价退还*************************
@@ -670,13 +642,13 @@ public class ReturnOrderController {
             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                 if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //支付宝退款
-                    r.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
+                    this.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
                     WeChatPayController wechat = new WeChatPayController();
                     Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    r.returnWeChatMoney(returnOrderId, returnNumber, map);
+                    this.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -1538,7 +1510,6 @@ public class ReturnOrderController {
     @Transactional
     public Boolean cancelOrderUniversal(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
                                         String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
-
         try {
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
@@ -1853,22 +1824,11 @@ public class ReturnOrderController {
                 for (OrderCouponInfo orderProductCoupon : orderProductCouponList) {
                     //查询使用产品券信息
                     CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(orderProductCoupon.getCouponId());
+                    customerProductCoupon.setLastUpdateTime(new Date());
+                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                    //修改原产品券是否使用和修改时间
+                    productCouponService.updateCustomerProductCoupon(customerProductCoupon);
 
-//                    //创建新的产品券
-//                    CustomerProductCoupon newCusProductCoupon = new CustomerProductCoupon();
-//                    newCusProductCoupon.setCustomerId(customerProductCoupon.getCustomerId());
-//                    newCusProductCoupon.setGoodsId(customerProductCoupon.getGoodsId());
-//                    newCusProductCoupon.setQuantity(customerProductCoupon.getQuantity());
-//                    newCusProductCoupon.setGetType(CouponGetType.CANCEL_ORDER);
-//                    newCusProductCoupon.setGetTime(date);
-//                    newCusProductCoupon.setEffectiveStartTime(customerProductCoupon.getEffectiveStartTime());
-//                    newCusProductCoupon.setEffectiveEndTime(customerProductCoupon.getEffectiveEndTime());
-//                    newCusProductCoupon.setIsUsed(false);
-//                    newCusProductCoupon.setGetOrderNumber(customerProductCoupon.getGetOrderNumber());
-//                    newCusProductCoupon.setBuyPrice(customerProductCoupon.getBuyPrice());
-//                    newCusProductCoupon.setStoreId(customerProductCoupon.getStoreId());
-//                    newCusProductCoupon.setSellerId(customerProductCoupon.getSellerId());
-//                    productCouponService.addCustomerProductCoupon(newCusProductCoupon);
                     //增加日志
                     CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
                     if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
@@ -1884,8 +1844,8 @@ public class ReturnOrderController {
                     changeLog.setOperatorIp(null);
                     changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                     changeLog.setUseTime(new Date());
-                    //todo 做日志变更保存
-
+                    // 日志变更保存
+                    productCouponService.addCustomerProductCouponChangeLog(changeLog);
                 }
 
 
@@ -1895,63 +1855,30 @@ public class ReturnOrderController {
             if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
                 for (OrderCouponInfo orderCashCoupon : orderCashCouponList) {
                     //查询现金券原信息
-                    CashCoupon cashCoupon = cashCouponService.findCashCouponByOrderNumber(orderCashCoupon.getCouponId());
-                    if (null != cashCoupon) {
-                        //添加新的现金券
-                        CashCoupon newCashCoupon = new CashCoupon();
-                        newCashCoupon.setCreateTime(date);
-                        newCashCoupon.setDenomination(cashCoupon.getDenomination());
-                        newCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
-                        newCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
-                        newCashCoupon.setInitialQuantity(1);
-                        newCashCoupon.setRemainingQuantity(1);
-                        newCashCoupon.setDescription(cashCoupon.getDescription());
-                        newCashCoupon.setTitle(cashCoupon.getTitle());
-                        newCashCoupon.setCondition(cashCoupon.getCondition());
-                        //保存新现金优惠券
-                        cashCouponService.addCashCoupon(newCashCoupon);
-                        //获取现金券id
-                        Long couponId = newCashCoupon.getId();
-                        //给顾客返回现金券
-                        CustomerCashCoupon newCustomerCashCoupon = new CustomerCashCoupon();
-                        if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
-                            newCustomerCashCoupon.setCusId(userId);
-                        } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
-                            newCustomerCashCoupon.setCusId(orderBaseInfo.getCustomerId());
-                        }
-                        newCustomerCashCoupon.setCcid(couponId);
-                        newCustomerCashCoupon.setQty(1);
-                        newCustomerCashCoupon.setIsUsed(false);
-                        newCustomerCashCoupon.setGetTime(date);
-                        newCustomerCashCoupon.setCondition(cashCoupon.getCondition());
-                        newCustomerCashCoupon.setDenomination(cashCoupon.getDenomination());
-                        newCustomerCashCoupon.setEffectiveStartTime(cashCoupon.getEffectiveStartTime());
-                        newCustomerCashCoupon.setEffectiveEndTime(cashCoupon.getEffectiveEndTime());
-                        newCustomerCashCoupon.setDescription(cashCoupon.getDescription());
-                        newCustomerCashCoupon.setTitle(cashCoupon.getTitle());
-                        newCustomerCashCoupon.setStatus(true);
-                        //保存
-                        cashCouponService.addCustomerCashCoupon(newCustomerCashCoupon);
+                    CustomerCashCoupon customerCashCoupon = cashCouponService.findCusCashCouponByCouponId(orderCashCoupon.getCouponId());
+                    customerCashCoupon.setLastUpdateTime(new Date());
+                    customerCashCoupon.setIsUsed(Boolean.FALSE);
+                    //修改原现金券是否使用和修改时间
+                    cashCouponService.updateCustomerCashCoupon(customerCashCoupon);
 
-                        //记录现金券变更日志
-                        CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
-                        if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
-                            customerCashCouponChangeLog.setCusId(userId);
-                        } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
-                            customerCashCouponChangeLog.setCusId(orderBaseInfo.getCustomerId());
-                        }
-                        customerCashCouponChangeLog.setUseTime(date);
-                        customerCashCouponChangeLog.setCouponId(orderCashCoupon.getCouponId());
-                        customerCashCouponChangeLog.setReferenceNumber(orderNumber);
-                        customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.CANCEL_ORDER);
-                        customerCashCouponChangeLog.setChangeTypeDesc("取消订单返还");
-                        customerCashCouponChangeLog.setOperatorId(userId);
-                        customerCashCouponChangeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-                        customerCashCouponChangeLog.setRemark("取消订单");
-                        //保存日志
-                        appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
-
+                    //记录现金券变更日志
+                    CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
+                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
+                        customerCashCouponChangeLog.setCusId(userId);
+                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                        customerCashCouponChangeLog.setCusId(orderBaseInfo.getCustomerId());
                     }
+                    customerCashCouponChangeLog.setUseTime(date);
+                    customerCashCouponChangeLog.setCouponId(orderCashCoupon.getCouponId());
+                    customerCashCouponChangeLog.setReferenceNumber(orderNumber);
+                    customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.CANCEL_ORDER);
+                    customerCashCouponChangeLog.setChangeTypeDesc("取消订单返还");
+                    customerCashCouponChangeLog.setOperatorId(userId);
+                    customerCashCouponChangeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    customerCashCouponChangeLog.setRemark("取消订单");
+                    //保存日志
+                    appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
+
                 }
             }
             //********************************退经销差价退还*************************
@@ -1961,19 +1888,19 @@ public class ReturnOrderController {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
 
-            ReturnOrderController returnOrderController = new ReturnOrderController();
+
             //********************************退第三方支付**************************
             //如果是待收货、门店自提单则需要返回第三方支付金额
             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                 if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //支付宝退款
-                    returnOrderController.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
+                    this.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
                     WeChatPayController wechat = new WeChatPayController();
                     Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    returnOrderController.returnWeChatMoney(returnOrderId, returnNumber, map);
+                    this.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
