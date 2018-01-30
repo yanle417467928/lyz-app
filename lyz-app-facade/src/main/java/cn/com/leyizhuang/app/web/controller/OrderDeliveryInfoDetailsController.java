@@ -1,13 +1,17 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsMessageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -36,6 +40,9 @@ public class OrderDeliveryInfoDetailsController {
     @Resource
     private AppEmployeeService appEmployeeService;
 
+    @Resource
+    private AppOrderService appOrderService;
+
     /**
      * 查看物流详情
      *
@@ -43,7 +50,7 @@ public class OrderDeliveryInfoDetailsController {
      * @return 订单详情
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getOrderDelivery(String orderNumber) {
+    public ResultDTO<Object> getOrderDelivery(String orderNumber,Long userId, Integer identityType ) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderDelicery CALLED,获取物流详情，入参 orderNumber:{}", orderNumber);
         if (StringUtils.isBlank(orderNumber)) {
@@ -53,6 +60,21 @@ public class OrderDeliveryInfoDetailsController {
         }
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //查询订单基础信息
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (AppIdentityType.CUSTOMER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))){
+                if (!orderBaseInfo.getCustomerId().equals(userId)){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只能查看自己订单物流详情", null);
+                    logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }else if (AppIdentityType.SELLER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))){
+                if (!orderBaseInfo.getSalesConsultId().equals(userId)){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只能查看自己订单物流详情", null);
+                    logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
             //查询该订单所有物流状态
             List<OrderDeliveryInfoDetails> orderDeliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(orderNumber);
             //配送员编号
@@ -83,6 +105,7 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsInformationResponse1.setOrderNumber(orderNumber);
                 logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
             }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
             logger.info("getOrderDelicery OUT,获取物流详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
