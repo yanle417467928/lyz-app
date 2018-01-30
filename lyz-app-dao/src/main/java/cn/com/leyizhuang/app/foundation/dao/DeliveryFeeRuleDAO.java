@@ -30,6 +30,8 @@ public interface DeliveryFeeRuleDAO {
 
     List<DeliveryFeeRuleSpecailGoods> findSpecailGoodsByRuleId(@Param("ruleId") Long ruleId);
 
+    List<Long> findSpecialGoodsIdByRuleId(@Param("ruleId") Long ruleId);
+
     void deleteSpecailGoodsByRuleId(@Param("ruleId") Long ruleId);
 
 }

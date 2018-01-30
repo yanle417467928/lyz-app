@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
@@ -111,6 +112,10 @@ public class ReturnOrderController {
     @Resource
     private SinkSender sinkSender;
 
+    @Resource
+    private SellDetailsSender sellDetailsSender;
+
+
     /**
      * 取消订单
      *
@@ -173,6 +178,9 @@ public class ReturnOrderController {
                 Boolean b = r.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
                 //发送退单拆单消息到拆单消息队列
                 sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+
+                // 记录退货销量明细数据
+                sellDetailsSender.sendReturnOrderSellDetailsTOManagement(returnOrderBaseInfo.getReturnNo());
                 if (b) {
                     //判断收货类型和订单状态
                     if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {

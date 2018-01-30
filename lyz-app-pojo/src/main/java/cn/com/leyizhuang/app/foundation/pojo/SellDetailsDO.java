@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import lombok.*;
 
+import java.util.Date;
+
 /**
  * 销售明细
  * Created by panjie on 2018/1/24.
@@ -38,6 +40,11 @@ public class SellDetailsDO {
     private Integer month;
 
     /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
      * 城市id
      */
     private Long cityId;
@@ -56,6 +63,11 @@ public class SellDetailsDO {
      * 导购名称
      */
     private String sellerName;
+
+    /**
+     * 顾客id
+     */
+    private Long customerId;
 
     /**
      * 顾客电话

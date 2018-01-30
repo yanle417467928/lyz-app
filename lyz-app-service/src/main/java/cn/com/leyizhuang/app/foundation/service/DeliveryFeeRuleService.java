@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,4 +30,13 @@ public interface DeliveryFeeRuleService {
     DeliveryFeeRule findRuleById(Long id);
 
     List<DeliveryFeeRuleSpecailGoods> findSpecailGoodsByRuleId(Long ruleId);
+
+    /**
+     * 计算运费
+     * @param cityId
+     * @param totalPrice 商品总价
+     * @param goodsInfoList 商品集合
+     * @return
+     */
+    Double countDeliveryFee(Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList);
 }

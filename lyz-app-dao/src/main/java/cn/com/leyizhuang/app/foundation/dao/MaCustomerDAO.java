@@ -66,6 +66,17 @@ public interface MaCustomerDAO {
      */
     List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(@Param(value = "customerQueryConditions") String customerQueryConditions,
                                                                                @Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+    /**
+     * 根据灯号返回顾客信息
+     * @param light
+     * @return
+     */
+    List<CustomerDO> findCustomerByLightAndStatusTrue(@Param("light") String light);
 
-
+    /**
+     * 更新灯号
+     * @param cusIdList
+     * @param light
+     */
+    void updateLight(@Param("cusIdList") List<Long> cusIdList , @Param("light") String light);
 }

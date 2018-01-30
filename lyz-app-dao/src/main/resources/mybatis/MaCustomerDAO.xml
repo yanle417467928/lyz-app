@@ -295,4 +295,19 @@
         </if>
     </select>
 
+    <select id="findCustomerByLightAndStatusTrue" resultType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO">
+        select * from cus_customer
+        where light = #{light}
+        and status = TRUE ;
+    </select>
+
+    <!--改变灯号-->
+    <update id="updateLight" >
+        UPDATE cus_customer
+        set light = #{light}
+        where cus_id in
+        <foreach collection="cusIdList" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

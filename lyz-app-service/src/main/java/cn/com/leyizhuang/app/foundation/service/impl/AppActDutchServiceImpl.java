@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.ActConditionType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.ActBaseDAO;
 import cn.com.leyizhuang.app.foundation.dao.ActGoodsMappingDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
@@ -154,7 +155,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         for (GoodsIdQtyParam param : goodsIdQtyParams) {
                             if (goods.getGid().equals(param.getId())) {
                                 goods.setQty(param.getQty());
-                                continue;
+                                break;
                             }
                         }
 
@@ -280,6 +281,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     promotionMap.remove(act.getId());
                 } else {
                     //throw Exception;
+                   throw new DutchException("分摊异常");
                 }
             }
         }
@@ -301,7 +303,6 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 Iterator<Map.Entry<String, OrderGoodsInfo>> it = orderGoodsInfoMap.entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry<String, OrderGoodsInfo> itEntry = it.next();
-                    Object itKey = itEntry.getKey();
                     //注意：可以使用这种遍历方式进行删除元素和修改元素
 
                     OrderGoodsInfo info = itEntry.getValue();
@@ -340,7 +341,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     if (act.getActType().contains("ADD")){
                         // 单个促销最大选择赠品数量
                         Integer giftMaxChooseNum = act.getGiftChooseNumber();
-                        Double addSaleTimes = 0.00;
+                        Double addSaleTimes;
                         if(giftNum == 0){
                             addSaleTimes = 0.00;
                         }else{
@@ -356,7 +357,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         for (GoodsIdQtyParam param : goodsIdQtyParams) {
                             if (goods.getGid().equals(param.getId())) {
                                 goods.setQty(param.getQty());
-                                continue;
+                                break;
                             }
                         }
 
@@ -382,6 +383,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     promotionMap.remove(act.getId());
                 } else {
                     //throw Exception;
+                    throw new DutchException("分摊出错");
                 }
 
                 finallyOrderGoodsInfo.addAll(newOrderGoodsInfoList);
@@ -391,7 +393,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         Iterator<Map.Entry<String, OrderGoodsInfo>> it = orderGoodsInfoMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, OrderGoodsInfo> itEntry = it.next();
-            Object itKey = itEntry.getKey();
+
             //注意：可以使用这种遍历方式进行删除元素和修改元素
 
             OrderGoodsInfo info = itEntry.getValue();
@@ -414,10 +416,10 @@ public class AppActDutchServiceImpl implements AppActDutchService {
     /**
      * 计算分摊金额
      *
-     * @param orderGoodsInfos
-     * @param totalPrice
-     * @param subPrice
-     * @return
+     * @param orderGoodsInfos 需要参与分摊的商品集合
+     * @param totalPrice 总价
+     * @param subPrice 分摊金额
+     * @return 分摊后的结果
      */
     private List<OrderGoodsInfo> countDutchPrice(List<OrderGoodsInfo> orderGoodsInfos, Double totalPrice, Double subPrice, AppIdentityType type, AppCustomerType customerType) {
         // 记录已经分摊的金额  倒挤算法
@@ -434,7 +436,6 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 info.setPromotionSharePrice(dutchPrice);
                 dutchedPrice += CountUtil.mul(dutchPrice , info.getOrderQuantity());
             }else{
-                Double price = info.getSettlementPrice();
                 Double dutchPrice =  subPrice - dutchedPrice;
                 info.setIsPriceShare(true);
                 info.setPromotionSharePrice(CountUtil.div(dutchPrice,info.getOrderQuantity()));

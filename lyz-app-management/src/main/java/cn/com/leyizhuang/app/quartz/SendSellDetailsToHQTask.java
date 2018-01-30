@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.quartz;
 
 import cn.com.leyizhuang.app.core.utils.ApplicationContextUtil;
+import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.remote.queue.MaSellDetailsSender;
@@ -38,7 +39,7 @@ public class SendSellDetailsToHQTask implements Job {
         List<SellDetailsDO> sellDetailsDOList = statisticsSellDetailsService.statisticsCurrentDetails();
 
         //将list按100长度拆分
-        List<List<SellDetailsDO>> lists = this.splitList(sellDetailsDOList,100);
+        List<List<SellDetailsDO>> lists = ArrayListUtils.splitList(sellDetailsDOList,100);
         for (List<SellDetailsDO> list : lists){
             String data = JSON.toJSONString(list);
             maSellDetailsSender.sendSellDetailsToHQ(data);
@@ -46,28 +47,4 @@ public class SendSellDetailsToHQTask implements Job {
 
     }
 
-    /**
-     * @author panjie
-     * 2018.1.24
-     * 将传入的List按照给定的size拆分成多个子List    <br>
-     * 例如 list=[1, 2, 3, 4, 5] , per=3    <br>
-     * 则会得到 : [[1, 2, 3],[4, 5]]    <br>
-     * list=[1, 2, 3, 4, 5]  , per=2    <br>
-     * 则会得到 : [[1, 2], [3, 4], [5]]    <br>
-     * */
-    public static <T> List<List<T>> splitList(List<T> list,int per){
-        List<List<T>> returnList = new ArrayList<List<T>>();
-        int count = list.size()/per;
-        int yu = list.size() % per;
-        for (int i = 0; i <= count; i++) {
-            List<T> subList = new ArrayList<T>();
-            if (i == count) {
-                subList = list.subList(i * per, i * per + yu);
-            } else {
-                subList = list.subList(i * per, per * (i + 1));
-            }
-            returnList.add(subList);
-        }
-        return returnList;
-    }
 }

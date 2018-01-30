@@ -110,6 +110,9 @@ public class OrderController {
     @Resource
     private AppCashReturnDutchService cashReturnDutchService;
 
+    @Resource
+    private DeliveryFeeRuleService deliveryFeeRuleService;
+
     /**
      * 创建订单方法
      *
@@ -294,9 +297,6 @@ public class OrderController {
 
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
-                // 记录销量明细
-                sellDetailsSender.sendOrderSellDetailsTOManagement(orderBaseInfo.getOrderNumber());
-
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
@@ -467,6 +467,7 @@ public class OrderController {
                     }
                 }
             }
+
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {
                 for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
@@ -522,9 +523,10 @@ public class OrderController {
             }
 
             totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
-            if (totalOrderAmount != null && totalOrderAmount < 1000) {
-                freight = 1.00;
-            }
+
+            // 运费计算
+            freight = deliveryFeeRuleService.countDeliveryFee(cityId,totalOrderAmount,goodsInfo);
+
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             if (identityType == 6) {
                 //计算顾客乐币

@@ -4,15 +4,15 @@
 
     <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
     insert into sell_details ( company_id, `year`,
-      `month`, store_id, seller_id,
+      `month`, store_id, seller_id,seller_name,
       customer_phone, customer_name, `number`,
       goods_grade, sku, quantity,
-      amount, single_rewards ,city_id,goods_line_id)
+      amount, single_rewards ,city_id,goods_line_id,create_time,customerId)
     values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
-      #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},
+      #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},#{sellerName},
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
-      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId})
+      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customer_id})
     </insert>
 
     <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
@@ -24,6 +24,20 @@
         SELECT EXISTS (
                 select 1 from sell_details where `number` = #{number} and goods_line_id = #{lineId}
         )
+    </select>
+
+    <select id="getCustomerSellDetailsOrderByCreateTimeDescLimit4" resultType="java.lang.String">
+        select DISTINCT `NUMBER` from sell_details
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('CD_XN','%' ) and create_time > #{dateTime}
+        ORDER BY create_time DESC
+        limit 4
+    </select>
+
+    <select id="getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime" resultType="java.lang.String">
+        select DISTINCT `month` from sell_details
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('CD_XN','%' ) and create_time > #{dateTime}
+        GROUP BY NUMBER
+        ORDER BY create_time DESC
     </select>
 
 </mapper>

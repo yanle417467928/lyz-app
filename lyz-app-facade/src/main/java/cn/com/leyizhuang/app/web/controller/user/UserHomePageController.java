@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.DeliveryAddressService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -50,6 +47,9 @@ public class UserHomePageController {
 
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
+
+    @Resource
+    private CustomerLevelService customerLevelService;
 
     /**
      * 个人主页的信息
@@ -148,7 +148,12 @@ public class UserHomePageController {
         }
         try {
             PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
-            List<CustomerListResponse> customerlistresponselist = CustomerListResponse.transform(appCustomerList.getList());
+
+            // 计算灯号
+            List<AppCustomer> customers = appCustomerList.getList();
+            customers = customerLevelService.countCustomerListLightlevel(customers,userId);
+
+            List<CustomerListResponse> customerlistresponselist = CustomerListResponse.transform(customers);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     null != appCustomerList.getList() && appCustomerList.getList().size() > 0 ? new GridDataVO<CustomerListResponse>().transform(customerlistresponselist, appCustomerList) : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
