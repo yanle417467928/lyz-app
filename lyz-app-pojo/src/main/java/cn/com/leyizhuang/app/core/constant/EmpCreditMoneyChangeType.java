@@ -12,8 +12,9 @@ public enum EmpCreditMoneyChangeType {
     RETURN_ORDER("RETURN_ORDER","退单返还"),
     CANCEL_ORDER("CANCEL_ORDER","取消订单返还"),
     TEMPORARY_ADJUSTMENT("TEMPORARY_ADJUSTMENT","临时额度调整"),
-    ADMIN_RECHARGE("ADMIN_RECHARGE","管理员修改");
-
+    ADMIN_RECHARGE("ADMIN_RECHARGE","管理员修改"),
+    ORDER_REPAYMENT("ORDER_REPAYMENT","订单还款"),
+    TEMPORARY_CLEAR("TEMPORARY_CLEAR","临时额度清零");
     private final String value;
     private final String description;
 

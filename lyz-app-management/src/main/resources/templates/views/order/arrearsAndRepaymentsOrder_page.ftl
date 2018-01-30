@@ -34,117 +34,6 @@
     <div class="row">
         <div class=" col-xs-12">
             <div class="box box-primary">
-                <div class="panel-group" id="accordion">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    模糊查询
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapseOne" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <div class="form-inline">
-                                    <div class="row text-center">
-                                        <div class="col-xs-12" style="margin-top: 5px">
-                                            <div class="col-xs-4 ">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input name="beginTime" type="text"
-                                                               class="form-control datepicker" id="beginTime"
-                                                               placeholder="开始时间">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">结束时间:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input name="endTime" type="text"
-                                                               class="form-control datepicker" id="endTime"
-                                                               placeholder="结束时间">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4 ">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">会员姓名:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="memberName" id="memberName"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row text-center">
-                                        <div class="col-xs-12" style="margin-top: 5px">
-                                            <div class="col-xs-4 ">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">收货地址:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="shippingAddress" id="shippingAddress"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">收货人姓名:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="receiverName" id="receiverName"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">会员电话:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="memberPhone" id="memberPhone"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row text-center">
-                                        <div class="col-xs-12" style="margin-top: 5px">
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">收货人电话:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="receiverPhone" id="receiverPhone"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <label class="col-xs-5" style="padding-right: 0px">导购姓名:</label>
-                                                    <div class=" col-xs-7" style="padding-left: 0px">
-                                                        <input type="text" name="sellerName" id="sellerName"
-                                                               class="form-control" \>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <button type="button" name="search" id="search-btn"
-                                                            class="btn btn-primary btn-search"
-                                                            onclick="findOrderByFilterCondition()">查找
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div id="toolbar" class="form-inline">
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             data-live-search="true" onchange="findOrderByCity(this.value)">
@@ -156,13 +45,14 @@
                     </select>
                     <select name="status" id="status" class="form-control" style="width:auto;"
                             onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">出货状态</option>
-                        <option value="1">已出货</option>
-                        <option value="0">未出货</option>
+                        <option value="-1">审批状态</option>
+                        <option value="2">审核已通过</option>
+                        <option value="1">审核不通过</option>
+                        <option value="0">审核中</option>
                     </select>
                     <select name="isPayUp" id="isPayUp" class="form-control" style="width:auto;"
                             onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">收款状态</option>
+                        <option value="-1">还款状态</option>
                         <option value="1">已付清</option>
                         <option value="0">未付清</option>
                     </select>
@@ -177,7 +67,6 @@
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
-
                     </table>
                 </div>
             </div>
@@ -266,7 +155,7 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/order/selfTakeOrderDetail/' + value + '">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/arrearsAndRepaymentsOrderDetail/' + value + '">' + value + '</a>';
                 }
             }
         }, {
@@ -289,26 +178,16 @@
                 }
             }
         }, {
-            field: 'status',
-            title: '订单状态',
+            field: 'arrearsAuditStatus',
+            title: '审批状态',
             align: 'center',
             formatter: function (value, row, index) {
-                if ('UNPAID' === value) {
-                    return '<span class="">待付款</span>';
-                } else if ('PENDING_SHIPMENT' === value) {
-                    return '<span class="">待发货</span>';
-                } else if ('PENDING_RECEIVE' === value) {
-                    return '<span class="">待收货</span>';
-                } else if ('FINISHED' === value) {
-                    return '<span class="">已完成</span>';
-                } else if ('CLOSED' === value) {
-                    return '<span class="">已结案</span>';
-                } else if ('CANCELED' === value) {
-                    return '<span class="">已取消</span>';
-                } else if ('REJECTED' === value) {
-                    return '<span class="">拒签</span>';
-                } else if ('CANCELING' === value) {
-                    return '<span class="">取消中</span>';
+                if ('AUDIT_PASSED' === value) {
+                    return '<span class="label label-success">审核已通过</span>';
+                } else if ('AUDIT_NO' === value) {
+                    return '<span class="label label-danger">审核未通过</span>';
+                } else if ('AUDITING' === value) {
+                    return '<span class="label label-primary">审核中</span>';
                 }
             }
         }, {
@@ -317,9 +196,9 @@
             align: 'center',
             formatter: function (value, row, index) {
                 if (false == value) {
-                    return '未收款';
+                    return '<span class="label label-danger">未收款</span>';
                 } else if (true == value) {
-                    return '已收款';
+                    return '<span class="label label-success">已收款</span>';
                 } else {
                     return '-';
                 }
@@ -350,7 +229,7 @@
         var storeId = $("#storeCode").val();
         var status = $("#status").val();
         var isPayUp = $("#isPayUp").val();
-        initDateGird('/rest/order/selfTakeOrder/page/screenGrid?cityId=' + cityId + '&storeId=' + storeId + '&status=' + status + '&isPayUp=' + isPayUp);
+        initDateGird('/rest/order/arrearsAndAgencyOrder/page/screenGrid?cityId=' + cityId + '&storeId=' + storeId + '&status=' + status + '&isPayUp=' + isPayUp);
     }
 
 
@@ -360,8 +239,7 @@
         if (cityId == -1) {
             findStoreSelection();
             return false;
-        }
-        ;
+        };
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityId/' + cityId,
@@ -390,9 +268,9 @@
         $('#enabled').val("-1");
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/order/selfTakeOrder/page/grid');
+            initDateGird('/rest/order/arrearsAndAgencyOrder/page/grid');
         } else {
-            initDateGird('/rest/order/selfTakeOrder/page/infoGrid?info=' + queryOrderInfo);
+            initDateGird('/rest/order/arrearsAndAgencyOrder/page/infoGrid?info=' + queryOrderInfo);
         }
     }
 
@@ -418,20 +296,6 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
-
-    function findOrderByFilterCondition() {
-        var beginTime = $("#beginTime").val();
-        var endTime = $("#endTime").val();
-        var memberName = $("#memberName").val();
-        var shippingAddress = $("#shippingAddress").val();
-        var sellerName = $("#sellerName").val();
-        var memberPhone = $("#memberPhone").val();
-        var receiverName = $("#receiverName").val();
-        var receiverPhone = $("#receiverPhone").val();
-        $("#dataGrid").bootstrapTable('destroy');
-        initDateGird('/rest/order/selfTakeOrder/page/conditionGrid?beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
-                + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone)
-    }
 
 
 </script>

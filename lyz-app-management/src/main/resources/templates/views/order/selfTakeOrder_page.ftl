@@ -39,7 +39,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    模糊查询
+                                    高级查询
                                 </a>
                             </h4>
                         </div>

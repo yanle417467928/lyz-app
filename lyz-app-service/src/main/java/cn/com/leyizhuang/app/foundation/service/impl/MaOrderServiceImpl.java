@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -17,6 +18,8 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQt
 import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
@@ -25,12 +28,15 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -39,15 +45,21 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -76,6 +88,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Resource
     private ProductCouponService productCouponService;
 
+    @Resource
+    private StatisticsSellDetailsService statisticsSellDetailsService;
+    @Resource
+    private AppOrderService appOrderService;
+    @Resource
+    private MaEmpCreditMoneyService maEmpCreditMoneyService;
 
     @Override
     public List<MaOrderVO> findMaOrderVOAll() {
@@ -318,7 +336,8 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
         maOrderReceiveInf.setSendTime(new Date());
         this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-
+        //记录销量
+        statisticsSellDetailsService.addOrderSellDetails(orderNumber);
     }
 
     @Override
@@ -380,6 +399,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
+    public String queryAuditStatus(String orderNumber) {
+        return this.maOrderDAO.queryAuditStatus(orderNumber);
+    }
+
+    @Override
     public Boolean judgmentVerification(String orderNumber, String code) {
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(orderNumber);
         if (code.equals(maOrderTempInfo.getPickUpCode())) {
@@ -401,10 +425,91 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size) {
+    public PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findArrearsAndAgencyOrderList();
-        return new PageInfo<>(maSelfTakeOrderVOList);
+        List<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOList = maOrderDAO.findArrearsAndAgencyOrderList();
+        return new PageInfo<>(arrearsAndAgencyOrderVOList);
+    }
+
+
+    @Override
+    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp) {
+        PageHelper.startPage(page, size);
+        if (storeId != -1) {
+            cityId = null;
+        }
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByScreen(cityId, storeId, status, isPayUp);
+        return new PageInfo<>(maAgencyAndArrearsOrderVOList);
+    }
+
+    @Override
+    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size, String info) {
+        PageHelper.startPage(page, size);
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByInfo(info);
+        return new PageInfo<>(maAgencyAndArrearsOrderVOList);
+    }
+
+    @Override
+    public List<MaOrderGoodsDetailResponse> getOrderGoodsDetailResponseList(String orderNumber) {
+        List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+        //创建商品返回list
+        List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = new ArrayList<>();
+        for (OrderGoodsInfo orderGoodsDetailInfo : orderGoodsInfoList) {
+            //创建商品返回对象
+            MaOrderGoodsDetailResponse maOrderGoodsDetailResponse = new MaOrderGoodsDetailResponse();
+            maOrderGoodsDetailResponse.setSku(orderGoodsDetailInfo.getSku());
+            maOrderGoodsDetailResponse.setGoodsName(orderGoodsDetailInfo.getSkuName());
+            maOrderGoodsDetailResponse.setQty(orderGoodsDetailInfo.getOrderQuantity() == null ? 0 : orderGoodsDetailInfo.getOrderQuantity());
+            maOrderGoodsDetailResponse.setUnitPrice(orderGoodsDetailInfo.getRetailPrice() == null ? 0.00 : orderGoodsDetailInfo.getRetailPrice());
+            //计算商品小计（零售）
+            Double subTotalPrice = (orderGoodsDetailInfo.getOrderQuantity() == null ? 0 : orderGoodsDetailInfo.getOrderQuantity()) * (orderGoodsDetailInfo.getRetailPrice() == null ? 0.00 : orderGoodsDetailInfo.getRetailPrice());
+            maOrderGoodsDetailResponse.setSubTotalPrice(subTotalPrice);
+            //计算商品实付金额（分摊）
+            Double reslPayment = (orderGoodsDetailInfo.getOrderQuantity() == null ? 0 : orderGoodsDetailInfo.getOrderQuantity()) * (orderGoodsDetailInfo.getReturnPrice() == null ? 0.00 : orderGoodsDetailInfo.getReturnPrice());
+            maOrderGoodsDetailResponse.setRealPayment(reslPayment);
+            if ("本品".equals(orderGoodsDetailInfo.getGoodsLineType().getDescription())) {
+                maOrderGoodsDetailResponse.setGoodsType("本品");
+            } else if ("赠品".equals(orderGoodsDetailInfo.getGoodsLineType().getDescription())) {
+                maOrderGoodsDetailResponse.setGoodsType("赠品");
+            } else if ("产品券".equals(orderGoodsDetailInfo.getGoodsLineType().getDescription())) {
+                maOrderGoodsDetailResponse.setGoodsType("产品券");
+            }
+            maOrderGoodsDetailResponseList.add(maOrderGoodsDetailResponse);
+        }
+        return maOrderGoodsDetailResponseList;
+    }
+
+
+    @Override
+    public void auditOrderStatus(String orderNumber, String status) {
+        this.maOrderDAO.auditOrderStatus(orderNumber, status);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void arrearsOrderRepayment(MaOrderAmount maOrderAmount,GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
+        //更新订单支付信息
+        this.orderReceivables(maOrderAmount);
+        //得到导购id
+        Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
+        if (null == sellerId) {
+            throw new RuntimeException("该订单导购ID为空");
+        }
+        //得到该销售的可用额度
+        GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
+        BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
+        maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney);
+        //生成信用金额变成日志
+        GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
+        guideCreditMoneyDetail.setEmpId(sellerId);
+        guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
+        guideCreditMoneyDetail.setCreditLimitAvailable(availableCreditMoney);
+        guideCreditChangeDetailVO.setEmpId(sellerId);
+        maEmpCreditMoneyService.saveCreditMoneyChange(guideCreditMoneyDetail,guideCreditChangeDetailVO);
+    }
+
+    public Long querySellerIdByOrderNumber(String orderNumber) {
+        return this.maOrderDAO.querySellerIdByOrderNumber(orderNumber);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.guide;
 
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import lombok.*;
@@ -21,25 +22,25 @@ import java.util.Date;
 public class GuideCreditChangeDetailDO {
 
     private Long id;
-    //''创建时间''
+    //创建时间
     private Date  createTime;
-   //'临时额度改变
+    //临时额度改变
     private GuideTempCreditChange tempCreditChangeId;
-    //''固定额度改变''
+    //固定额度改变
     private GuideFixedCreditChange fixedCreditChangeId;
-    //''可用变更'
+    //可用额度变更
     private GuideAvailableCreditChange availableCreditChangId;
-    //'相关单号'
+    //相关单号
     private String referenceNumber;
-    //''变更类型'
-    private String changeType;
-    //''变更类型描述''
+    //变更类型
+    private EmpCreditMoneyChangeType changeType;
+    //变更类型描述
     private String changeTypeDesc;
-    //''操作人id''
+    //操作人id
     private Long operatorId;
-    //''操作人id''
+    //操作人id
     private String operatorName;
-    // 导购id
+    //导购id
     private Long  empId;
     //操作人身份类型
     private String operatorType;

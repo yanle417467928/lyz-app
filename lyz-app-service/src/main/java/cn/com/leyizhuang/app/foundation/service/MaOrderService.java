@@ -9,11 +9,14 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageInfo;
 
@@ -196,9 +199,16 @@ public interface MaOrderService {
      * 后台判断订单是否已收款
      *
      * @param orderNumber 订单号
-     * @return 物流详情
+     * @return
      */
     Boolean isPayUp(String orderNumber);
+    /**
+     * 查询订单审核状态
+     *
+     * @param orderNumber 订单号
+     * @return
+     */
+    String queryAuditStatus(String orderNumber);
 
     /**
      * 新增订单收款记录
@@ -227,8 +237,24 @@ public interface MaOrderService {
     void sendOrderReceiveInfAndRecord(String orderNumber);
 
 
-    PageInfo<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
+    PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
 
+
+    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,Integer status,Integer isPayUp);
+
+
+    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size,String info);
+    /**
+     * 得到订单商品详情
+     */
+    List<MaOrderGoodsDetailResponse> getOrderGoodsDetailResponseList(String orderNumber);
+    /**
+     * 审核订单
+     */
+      void auditOrderStatus(String orderNumber,String status);
+
+
+      void arrearsOrderRepayment(MaOrderAmount maOrderAmount,GuideCreditChangeDetailVO guideCreditChangeDetailVO);
 
     /**
      * 后台买券订单创建订单账单信息

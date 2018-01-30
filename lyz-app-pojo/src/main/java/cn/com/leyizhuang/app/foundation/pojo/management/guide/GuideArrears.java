@@ -21,23 +21,23 @@ import java.util.Date;
 public class GuideArrears {
 
     private Long id;
-    //''创建时间''
+    //创建时间
     private Date  createTime;
-   //'临时额度改变
+    //临时额度改变
     private GuideTempCreditChange tempCreditChangeId;
-    //''固定额度改变''
+    //固定额度改变
     private GuideFixedCreditChange fixedCreditChangeId;
-    //''可用变更'
+    //可用变更
     private GuideAvailableCreditChange availableCreditChangId;
-    //'相关单号'
+    //相关单号
     private String referenceNumber;
-    //''变更类型'
+    //变更类型
     private String changeType;
-    //''变更类型描述''
+    //变更类型描述
     private String changeTypeDesc;
-    //''操作人id''
+    //操作人id
     private Long operatorId;
-    //''操作人id''
+    //操作人id
     private String operatorName;
     // 导购id
     private Long  empId;
@@ -45,25 +45,5 @@ public class GuideArrears {
     private String operatorType;
     //操作人IP
     private String operatorIp;
-
-    public static final GuideArrears transform(GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
-        if (null != guideCreditChangeDetailVO) {
-            GuideArrears guideCreditChangeDetailDO = new GuideArrears();
-            guideCreditChangeDetailDO.setId(guideCreditChangeDetailVO.getId());
-            guideCreditChangeDetailDO.setChangeType(guideCreditChangeDetailVO.getChangeType());
-            guideCreditChangeDetailDO.setChangeTypeDesc(guideCreditChangeDetailVO.getChangeTypeDesc());
-            guideCreditChangeDetailDO.setCreateTime(guideCreditChangeDetailVO.getCreateTime());
-            guideCreditChangeDetailDO.setAvailableCreditChangId(guideCreditChangeDetailVO.getAvailableCreditChangId());
-            guideCreditChangeDetailDO.setFixedCreditChangeId(guideCreditChangeDetailVO.getFixedCreditChangeId());
-            guideCreditChangeDetailDO.setTempCreditChangeId(guideCreditChangeDetailVO.getTempCreditChangeId());
-            guideCreditChangeDetailDO.setOperatorId(guideCreditChangeDetailVO.getOperatorId());
-            guideCreditChangeDetailDO.setReferenceNumber(guideCreditChangeDetailVO.getReferenceNumber());
-            guideCreditChangeDetailDO.setEmpId(guideCreditChangeDetailVO.getEmpId());
-            guideCreditChangeDetailDO.setOperatorName(guideCreditChangeDetailVO.getOperatorName());
-            return guideCreditChangeDetailDO;
-        } else {
-            return null;
-        }
-    }
 
 }

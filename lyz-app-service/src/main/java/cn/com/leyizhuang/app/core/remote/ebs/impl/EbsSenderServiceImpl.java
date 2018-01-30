@@ -30,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -705,6 +706,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     private Map<String, Object> sendOrderReceiveToEbs(MaOrderReceiveInf receiveInfs) {
         log.info("sendOrderReceiveToEbs, receiveInfs=" + receiveInfs);
         StorePickUpSecond storePickUpSecond = new StorePickUpSecond();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (null != receiveInfs) {
             storePickUpSecond.setAttribute1(toString(receiveInfs.getAttribute1()));
             storePickUpSecond.setAttribute2(toString(receiveInfs.getAttribute2()));
@@ -713,7 +715,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             storePickUpSecond.setAttribute5(toString(receiveInfs.getAttribute5()));
             storePickUpSecond.setSobId(toString(receiveInfs.getSobId()));
             storePickUpSecond.setMainOrderNumber(receiveInfs.getOrderNumber());
-            storePickUpSecond.setReceiveDate(toString(receiveInfs.getReceiveDate()));
+            storePickUpSecond.setReceiveDate(toString(sdf.format(receiveInfs.getReceiveDate())));
         }
         String storePickUpSecondJson = JSON.toJSONString(storePickUpSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();

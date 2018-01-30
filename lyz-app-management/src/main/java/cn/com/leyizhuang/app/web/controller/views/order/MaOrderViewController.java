@@ -238,35 +238,15 @@ public class MaOrderViewController {
     public String selfTakeOrderDetail(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber) {
         logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 orderNumber:{}", orderNumber);
         if (!StringUtils.isBlank(orderNumber)) {
+            //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
+                //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
                 maOrderDetailResponse.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
-                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+                //查询订单商品信息
+                List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
                 //创建商品返回list
-                List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = new ArrayList<>();
-                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                    //创建商品返回对象
-                    MaOrderGoodsDetailResponse maOrderGoodsDetailResponse = new MaOrderGoodsDetailResponse();
-                    maOrderGoodsDetailResponse.setSku(orderGoodsInfo.getSku());
-                    maOrderGoodsDetailResponse.setGoodsName(orderGoodsInfo.getSkuName());
-                    maOrderGoodsDetailResponse.setQty(orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity());
-                    maOrderGoodsDetailResponse.setUnitPrice(orderGoodsInfo.getRetailPrice() == null ? 0.00 : orderGoodsInfo.getRetailPrice());
-                    //计算商品小计（零售）
-                    Double subTotalPrice = (orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity()) * (orderGoodsInfo.getRetailPrice() == null ? 0.00 : orderGoodsInfo.getRetailPrice());
-                    maOrderGoodsDetailResponse.setSubTotalPrice(subTotalPrice);
-                    //计算商品实付金额（分摊）
-                    Double reslPayment = (orderGoodsInfo.getOrderQuantity() == null ? 0 : orderGoodsInfo.getOrderQuantity()) * (orderGoodsInfo.getReturnPrice() == null ? 0.00 : orderGoodsInfo.getReturnPrice());
-                    maOrderGoodsDetailResponse.setRealPayment(reslPayment);
-                    if ("本品".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
-                        maOrderGoodsDetailResponse.setGoodsType("本品");
-                    } else if ("赠品".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
-                        maOrderGoodsDetailResponse.setGoodsType("赠品");
-                    } else if ("产品券".equals(orderGoodsInfo.getGoodsLineType().getDescription())) {
-                        maOrderGoodsDetailResponse.setGoodsType("产品券");
-                    }
-                    maOrderGoodsDetailResponseList.add(maOrderGoodsDetailResponse);
-                }
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 //获取订单账目明细
                 MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
@@ -281,9 +261,14 @@ public class MaOrderViewController {
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
                 Boolean isPayUp = maOrderService.isPayUp(orderNumber);
                 map.addAttribute("isPayUp", isPayUp);
+                return "/views/order/selfTakeOrder_detail";
+            } else {
+                logger.warn("该订单不为门店自提");
             }
+        } else {
+            logger.warn("orderNumber为空");
         }
-        return "/views/order/selfTakeOrder_detail";
+        return "/error/500";
     }
 
 
@@ -293,7 +278,56 @@ public class MaOrderViewController {
      * @return
      */
     @RequestMapping(value = "/arrearsAndRepaymentsOrder/list")
-    public String arrearsAndRepaymentsShippingListPage() {
+    public String arrearsAndRepaymentsOrderListPage() {
         return "/views/order/arrearsAndRepaymentsOrder_page";
     }
+
+    /**
+     * 订单审核欠款还款详情
+     *
+     * @return 订单审核欠款还款详情页面
+     */
+    @GetMapping(value = "/arrearsAndRepaymentsOrderDetail/{orderNumber}")
+    public String arrearsAndRepaymentsOrderDetail(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber) {
+        logger.info("arrearsAndRepaymentsOrderDetail CALLED,欠款还款订单详情，入参 orderaNumber:{}", orderNumber);
+        if (!StringUtils.isBlank(orderNumber)) {
+            //获取订单基本信息
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            //查询订单是否还清
+            Boolean isPayUp = maOrderService.isPayUp(orderNumber);
+            //查询审核状态
+            String auditStatus =  maOrderService.queryAuditStatus(orderNumber);
+            //查询订单商品信息
+            List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
+            //获取订单账目明细
+            MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
+            //获取订单支付明细列表
+            List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+            if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
+                //查询订单详细信息
+                MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+                maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
+                map.addAttribute("maOrderDetail", maOrderDetailResponse);
+                map.addAttribute("type",1);
+            } else if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
+                //查询订单基本信息
+                MaCompanyOrderDetailResponse maCompanyOrderDetailResponse = maOrderService.findMaCompanyOrderDetailByOrderNumber(orderNumber);
+                maCompanyOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
+                map.addAttribute("maOrderDetail", maCompanyOrderDetailResponse);
+                map.addAttribute("type",2);
+            }
+            if (null != maOrderBillingDetailResponse) {
+                map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
+            }
+            if (null != maOrderBillingPaymentDetailResponseList) {
+                map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
+            }
+            map.addAttribute("isPayUp", isPayUp);
+            map.addAttribute("auditStatus", auditStatus);
+            return "/views/order/arrearsAndRepaymentsOrder_detail";
+        }
+        logger.warn("orderNumber为空");
+        return "/error/500";
+    }
+
 }
