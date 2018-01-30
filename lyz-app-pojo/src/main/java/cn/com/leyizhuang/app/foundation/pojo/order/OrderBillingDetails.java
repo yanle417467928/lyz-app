@@ -138,7 +138,7 @@ public class OrderBillingDetails {
     /**
      * 现金金额
      */
-    private Double cash;
+    private Double storeCash;
 
     /**
      *  其他金额

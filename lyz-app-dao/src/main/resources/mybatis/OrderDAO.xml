@@ -467,7 +467,7 @@
                                          lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-                                         online_pay_time, pay_up_time, is_pay_up, cash, other_money, pos_money,pos_number)
+                                         online_pay_time, pay_up_time, is_pay_up, store_cash, other_money, pos_money,pos_number)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -476,7 +476,7 @@
                 #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
                 #{storeSubvention}, #{orderAmountSubtotal},
                 #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
-             #{payUpTime}, #{isPayUp}, #{cash}, #{otherMoney}, #{posMoney}, #{posNumber}
+             #{payUpTime}, #{isPayUp}, #{storeCash}, #{otherMoney}, #{posMoney}, #{posNumber}
             )
     </insert>
 

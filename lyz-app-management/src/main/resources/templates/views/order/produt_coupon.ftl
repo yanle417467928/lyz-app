@@ -183,6 +183,12 @@
 
 
                                 </div>
+                                <!-- 立减金额 -->
+                                <div class="row" id="subAmount_div" >
+
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -538,6 +544,10 @@
         findGoodsBrand();
         //物理分类列表（下拉框）
         findGoodsPhysical();
+        //初始化时间选择框
+        initDateTime("collectMoneyTime");
+        initDateTime("preDepositCollectMoneyTime");
+
         $("#preDeposit").hide();
         $("#offlinePayments").show();
     })
@@ -1010,8 +1020,27 @@
 
                     }
                 }
-                $("#giftBigList").val(result.content);
+                var promotionDiscountList = promotionsListResponse.promotionDiscountList;
+                if (null != promotionDiscountList){
+                    var money = 0;
+                    for (var a = 0; a < promotionDiscountList.length; a++) {
+                        money += promotionDiscountList[a].discountPrice;
+                    }
+                    var promotionDiscount = "<div class='col-xs-12 col-md-6'>"+
+                            "<div class='form-group'>"+
+                            "<label for='description'>"+
+                            "立减金额￥"+
+                            "</label>"+
+                            "<div class='input-group'>"+
+                            "<span class='input-group-addon'><i class='fa fa-cny'></i></span>"+
+                            "<input name='subAmount' type='number' style='readonly' class='form-control'id='subAmount' value='"+money+"'>"+
+                            "</div>"+
+                            "</div>"+
+                            "</div>";
+                }
+
                 $("#giftMessage").append(title);
+                $("#subAmount_div").append(promotionDiscount);
             <#--赠品促销标题-->
             } else {
                 $notify.danger(result.message);
@@ -1234,7 +1263,7 @@
                 if (result.code === 0) {
                     $notify.danger('保存成功');
                 } else {
-                    $notify.denger('保存失败');
+                    $notify.warning(result.message)
                 }
             }
         });
@@ -1314,6 +1343,8 @@
     function giftDetail(details, divId) {
 
         var tables = $("#" + divId).find("tbody");
+        var subAmount = $("#subAmount").val();
+        var discountMoney = 0;
         var num = 0;
         //数量正则
         var re = /^[0-9]+.?[0-9]*$/;
@@ -1333,11 +1364,12 @@
                 enjoyTimes = $(m).find("#enjoyTimes").val();
                 maxChooseNumber = $(n).find("#maxChooseNumber").val();
                 totalQty += Number(qty);
-
-                giftGoodsList.push({
-                    gid: id,
-                    qty: qty
-                });
+                if (qty != '' || qty > 0 || qty != 0) {
+                    giftGoodsList.push({
+                        id: id,
+                        qty: qty
+                    });
+                }
 
             });
             if (Number(totalQty) > Number(maxChooseNumber)) {
@@ -1345,9 +1377,14 @@
                 num = 1;
                 return num;
             }
+            if (subAmount != '' || subAmount > 0){
+                discountMoney = subAmount;
+            }else {
+                discountMoney = null;
+            }
             details.push({
                 promotionId: promotionId,
-                discount: null,
+                discount: discountMoney,
                 enjoyTimes: enjoyTimes,
                 presentInfo: giftGoodsList
             });
@@ -1425,6 +1462,14 @@
             $("#offlinePayments").hide();
             $("#preDeposit").show();
         }
+    }
+
+    function initDateTime(dateTime) {
+        $("#" + dateTime).datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss',
+            language: 'zh-CN',
+            autoclose: true
+        });
     }
 </script>
 </body>
