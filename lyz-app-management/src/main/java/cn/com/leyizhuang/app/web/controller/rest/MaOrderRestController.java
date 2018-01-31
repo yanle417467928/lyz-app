@@ -46,8 +46,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -688,7 +691,7 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PutMapping(value = "/arrearsAndAgencyOrder/arrearsOrderRepayment")
-    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request) {
+    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request,@RequestParam String lastUpdateTime) {
         logger.info("arrearsOrderRepayment 欠款订单还款 ,入参maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
         if (null == maOrderAmount.getCashAmount()) {
@@ -706,8 +709,13 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == maOrderAmount.getOrderNumber() || "".equals(maOrderAmount.getOrderNumber())) {
+        if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(lastUpdateTime)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购额度上次更新时间为空", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -717,6 +725,8 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
+            DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date lastUpdateTimeFormat =dateFormat.parse(lastUpdateTime);
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
             guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
@@ -725,7 +735,7 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetailVO.setReferenceNumber(maOrderAmount.getOrderNumber());
-            this.maOrderService.arrearsOrderRepayment(maOrderAmount,guideCreditChangeDetailVO);
+            this.maOrderService.arrearsOrderRepayment(maOrderAmount,guideCreditChangeDetailVO,lastUpdateTimeFormat);
             logger.warn("arrearsOrderRepayment ,后台欠款订单还款成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台欠款订单还款成功", null);

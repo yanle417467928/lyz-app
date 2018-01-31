@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.*;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
@@ -25,23 +26,34 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
+    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO,Date lastUpdateTime) {
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+            GuideCreditMoney  guideCreditMoney = this.findGuideCreditMoneyAvailableByEmpId(guideCreditMoneyDetail.getEmpId());
+            Date updateTime = guideCreditMoney.getLastUpdateTime();
             if (null != guideCreditMoneyDetail) {
-                //得到更新后的可用额度
-                BigDecimal CreditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
-                BigDecimal TempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
-                BigDecimal AllChangeAmount = CreditLimitChangeAmount.add(TempCreditLimitChangeAmount);
-                guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(AllChangeAmount));
-                //更新导购信用金
-                GuideCreditMoney guideCreditMoneyVO = new GuideCreditMoney();
-                guideCreditMoneyVO.setCreditLimit(guideCreditMoneyDetail.getCreditLimit());
-                guideCreditMoneyVO.setCreditLimitAvailable(guideCreditMoneyDetail.getCreditLimitAvailable());
-                guideCreditMoneyVO.setEmpId(guideCreditMoneyDetail.getEmpId());
-                guideCreditMoneyVO.setTempCreditLimit(guideCreditMoneyDetail.getTempCreditLimit());
-                this.maEmpCreditMoneyDAO.update(guideCreditMoneyVO);
-                //更新变更详情父表与子表
-                this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetailVO);
+                if(updateTime.equals(lastUpdateTime)){
+                    //得到更新后的可用额度
+                    BigDecimal CreditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
+                    BigDecimal TempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
+                    BigDecimal AllChangeAmount = CreditLimitChangeAmount.add(TempCreditLimitChangeAmount);
+                    guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(AllChangeAmount));
+                    //更新导购信用金
+                    GuideCreditMoney guideCreditMoneyVO = new GuideCreditMoney();
+                    guideCreditMoneyVO.setCreditLimit(guideCreditMoneyDetail.getCreditLimit());
+                    guideCreditMoneyVO.setCreditLimitAvailable(guideCreditMoneyDetail.getCreditLimitAvailable());
+                    guideCreditMoneyVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                    guideCreditMoneyVO.setTempCreditLimit(guideCreditMoneyDetail.getTempCreditLimit());
+                    this.maEmpCreditMoneyDAO.update(guideCreditMoneyVO);
+                    //更新变更详情父表与子表
+                    this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetailVO);
+                    break;
+                }else{
+                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    }
+                }
+            } else {
+                throw new RuntimeException("导购额度变更信息为空");
             }
         }
     }

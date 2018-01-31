@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDet
 import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 public interface MaEmpCreditMoneyService {
 
 
-    void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO);
+    void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO,Date lastUpdate);
 
     void updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney);
 

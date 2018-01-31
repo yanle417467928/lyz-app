@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.views.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
+import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
@@ -36,6 +38,8 @@ public class MaOrderViewController {
     private AppOrderService appOrderService;
     @Resource
     private MaOrderService maOrderService;
+    @Resource
+    private MaEmpCreditMoneyService maEmpCreditMoneyService;
 
     /**
      * 返回门店订单列表页
@@ -301,6 +305,9 @@ public class MaOrderViewController {
             List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
             //获取订单账目明细
             MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
+            //导购信用额度更新时间
+            Long sellerId = maOrderService.querySellerIdByOrderNumber(orderNumber);
+            GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
             //获取订单支付明细列表
             List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
@@ -324,6 +331,7 @@ public class MaOrderViewController {
             }
             map.addAttribute("isPayUp", isPayUp);
             map.addAttribute("auditStatus", auditStatus);
+            map.addAttribute("lastUpdateTime", guideCreditMoney.getLastUpdateTime());
             return "/views/order/arrearsAndRepaymentsOrder_detail";
         }
         logger.warn("orderNumber为空");

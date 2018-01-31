@@ -167,7 +167,10 @@
 
     <select id="findGuideCreditMoneyAvailableByEmpId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
         SELECT
-        credit_limit_available
+        emp_id,
+        temp_credit_limit,
+        credit_limit_available,
+        last_update_time
         FROM emp_credit_money
         WHERE
         emp_id=#{sellerId}

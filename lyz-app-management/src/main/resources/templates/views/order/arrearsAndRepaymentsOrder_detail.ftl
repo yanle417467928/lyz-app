@@ -56,6 +56,8 @@
                     <input type="hidden" id="isPayUp" readonly value="${isPayUp?c}">
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
                     <input type="hidden" id="auditStatus" readonly value="${auditStatus!""}">
+                    <input type="hidden" id="lastUpdateTime" readonly
+                           value="${lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}">
                 </div>
             </div>
         </div>
@@ -391,7 +393,7 @@
                                                 <#elseif paymentDetail.paymentType = 'CASH'>现金
                                                 <#elseif paymentDetail.paymentType = 'OTHER'>门店其它
                                                 </#if>
-                                                <#else>
+                                            <#else>
                                                 未知
                                             </#if>
                                         </td>
@@ -502,7 +504,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="name">总金额(元)</label>
-                                <input type="text" class="form-control" id="count"
+                                <input type="text" class="form-control" id="allAmount"
                                        name="allAmount"
                                        readonly
                                        value="${orderBillingDetail.amountPayable!'0.00'}">
@@ -607,7 +609,7 @@
                     validators: {
                         notEmpty: {
                             message: '流水号不允许为空'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '流水号长度必须在1~10位之间'
@@ -631,17 +633,35 @@
         });
         $("#confirmSubmit").click(function () {
             var isPayUp = $('#isPayUp').val();
+            var lastUpdateTime = $("#lastUpdateTime").val();
+            var allAmount = $("#allAmount").val();
+            var orderNumber = $("#orderNumber").val();
+            var cashAmount = $("#cashAmount").val();
+            var posAmount = $("#posAmount").val();
+            var otherAmount = $("#otherAmount").val();
+            var serialNumber = $("#serialNumber").val();
+            var date = $("#date").val();
             if ('true' == isPayUp) {
                 return false;
             }
             var bv = form.data('bootstrapValidator');
             bv.validate();
+            var data = {
+                'lastUpdateTime': lastUpdateTime,
+                'allAmount': allAmount,
+                'orderNumber': orderNumber,
+                'cashAmount': cashAmount,
+                'posAmount': posAmount,
+                'otherAmount': otherAmount,
+                'serialNumber': serialNumber,
+                'date': date
+            }
             if (bv.isValid()) {
                 $.ajax({
                     url: '/rest/order/arrearsAndAgencyOrder/arrearsOrderRepayment',
                     async: false,
                     type: 'PUT',
-                    data: form.serialize(),
+                    data: data,
                     success: function (result) {
                         if (result.code == 10100) {
                             $("#message").html('所有金额之和不等于总金额');

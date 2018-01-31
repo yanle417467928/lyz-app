@@ -20,6 +20,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDet
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -164,15 +165,15 @@ public interface MaOrderService {
 
     PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,Integer status,Integer isPayUp);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size,String info);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size, String info);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size,MaOrderVORequest maOrderVORequest);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size, MaOrderVORequest maOrderVORequest);
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
-    void orderShipping(String orderNumber,ShiroUser shiroUser,MaOrderTempInfo maOrderTempInfo);
+    void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo);
 
     void orderReceivables(MaOrderAmount maOrderAmount);
 
@@ -194,7 +195,8 @@ public interface MaOrderService {
 
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber);
 
-    Boolean judgmentVerification(String code,String orderNumber);
+    Boolean judgmentVerification(String code, String orderNumber);
+
     /**
      * 后台判断订单是否已收款
      *
@@ -202,6 +204,7 @@ public interface MaOrderService {
      * @return
      */
     Boolean isPayUp(String orderNumber);
+
     /**
      * 查询订单审核状态
      *
@@ -216,7 +219,7 @@ public interface MaOrderService {
      * @param maOrderBillingPaymentDetails 订单号
      * @return
      */
-    void saveOrderBillingPaymentDetails( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
+    void saveOrderBillingPaymentDetails(MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
 
     /**
      * 新增自提单接口表数据
@@ -240,24 +243,32 @@ public interface MaOrderService {
     PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
 
 
-    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,Integer status,Integer isPayUp);
+    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp);
 
 
-    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size,String info);
+    PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size, String info);
+
     /**
      * 得到订单商品详情
      */
     List<MaOrderGoodsDetailResponse> getOrderGoodsDetailResponseList(String orderNumber);
+
     /**
      * 审核订单
      */
-      void auditOrderStatus(String orderNumber,String status);
+    void auditOrderStatus(String orderNumber, String status);
+
+    /**
+     * 通过订单id得到销售id
+     */
+    Long querySellerIdByOrderNumber(String orderNumber);
 
 
-      void arrearsOrderRepayment(MaOrderAmount maOrderAmount,GuideCreditChangeDetailVO guideCreditChangeDetailVO);
+    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO,Date lastUpdateTime);
 
     /**
      * 后台买券订单创建订单账单信息
+     *
      * @param orderBillingDetails
      * @param preDeposit
      * @param cash
@@ -271,6 +282,7 @@ public interface MaOrderService {
 
     /**
      * 后台买券订单创建支付明细信息
+     *
      * @param orderBaseInfo
      * @param orderBillingDetails
      * @return
@@ -279,6 +291,7 @@ public interface MaOrderService {
 
     /**
      * 后台买券订单扣减门店预存款
+     *
      * @param identityType
      * @param userId
      * @param billingDetails
@@ -289,16 +302,18 @@ public interface MaOrderService {
 
     /**
      * 后台买券订单保存相关实体信息
+     *
      * @param orderBaseInfo
      * @param orderGoodsInfoList
      * @param orderBillingDetails
      * @param paymentDetails
      */
     void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails);
+                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails);
 
     /**
-     *  后台买券订单持久化调用方法
+     * 后台买券订单持久化调用方法
+     *
      * @param identityType
      * @param userId
      * @param orderBillingDetails
@@ -308,10 +323,11 @@ public interface MaOrderService {
      * @param ipAddress
      */
     void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                               List<OrderGoodsInfo> orderGoodsInfoList,List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
+                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
 
     /**
-     *  后台买券订单创建订单基础信息
+     * 后台买券订单创建订单基础信息
+     *
      * @param appCustomer
      * @param city
      * @param appStore
@@ -323,7 +339,7 @@ public interface MaOrderService {
      * @return
      */
     OrderBaseInfo createMaOrderBaseInfo(AppCustomer appCustomer, City city, AppStore appStore, AppEmployee appEmployee,
-                                        Double preDepositMoney, String remarks, String preDepositRemarks , Double totalMoney, String orderNumber);
+                                        Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber);
 
     void scanningUnpaidOrder();
 
