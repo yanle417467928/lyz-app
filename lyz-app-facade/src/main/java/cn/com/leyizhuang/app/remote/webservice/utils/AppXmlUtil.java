@@ -219,7 +219,7 @@ public class AppXmlUtil {
                 "<goods_title>" + orderGoods.getGoodsTitle() + "</goods_title>" +
                 "<price>" + orderGoods.getPrice() + "</price>" +
                 "<quantity>" + orderGoods.getQuantity() + "</quantity>" +
-                "<td_requisition_id>" + orderGoods.getCompanyFlag() + "</td_requisition_id>" +
+                "<td_requisition_id></td_requisition_id>" +
                 "<order_number>" + orderGoods.getOrderNumber() + "</order_number>" +
                 "<sub_order_number>" + orderGoods.getCompanyFlag() + "</sub_order_number>" +
                 "</TABLE></ERP>";
