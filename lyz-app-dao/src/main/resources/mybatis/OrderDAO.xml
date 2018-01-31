@@ -52,7 +52,7 @@
             obi.customer_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
-                AND effective_end_time &gt; NOW()
+                AND obi.effective_end_time > NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` in('PENDING_RECEIVE','PENDING_SHIPMENT')
@@ -84,7 +84,7 @@
             AND creator_identity_type != 'SELLER'
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
-                AND effective_end_time &gt; NOW()
+                AND obi.effective_end_time > NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` = 'PENDING_RECEIVE'
@@ -119,7 +119,7 @@
             AND creator_identity_type != 'DECORATE_MANAGER'
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
-                AND effective_end_time &gt; NOW()
+                AND obi.effective_end_time > NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` = 'PENDING_RECEIVE'
