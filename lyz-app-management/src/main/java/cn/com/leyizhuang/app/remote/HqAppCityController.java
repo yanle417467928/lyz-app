@@ -71,7 +71,9 @@ public class HqAppCityController {
                     city.setStructureId(hqAppCityDTO.getStructureId());
                     city.setStructureTitle(hqAppCityDTO.getStructureTitle());
                     city.setEnable(hqAppCityDTO.getEnable());
-                    city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
+                    if (StringUtils.isBlank(hqAppCityDTO.getEnableFalseTime())) {
+                        city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
+                    }
                     cityService.save(city);
                     logger.warn("addCity EXCEPTION,城市存储同步成功！",city);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

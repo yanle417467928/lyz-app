@@ -175,7 +175,9 @@ public interface MaOrderDAO {
 
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo);
 
-   Boolean isPayUp(String orderNo);
+    Boolean isPayUp(String orderNo);
+
+    String queryAuditStatus(String orderNumber);
 
     void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
 
@@ -183,5 +185,14 @@ public interface MaOrderDAO {
 
     MaOrderReceiveInf queryOrderReceiveInf(String orderNumber);
 
-    List<MaSelfTakeOrderVO> findArrearsAndAgencyOrderList();
+    List<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList();
+
+
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);
+
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(String info);
+
+    void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status);
+
+    Long querySellerIdByOrderNumber(String orderNumber);
 }

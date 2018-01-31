@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h2 class="page-header" style="margin-left:15px;border: 0px">
-                    门店自提订单详情
+                    订单欠款还款详情
                 </h2>
             </div>
         </div>
@@ -38,16 +38,11 @@
                     <spanp>${maOrderDetail.createTime?string("yyyy-MM-dd HH:mm:ss")!""}</spanp>
                 </div>
                 <div class="col-sm-2">
-                    <b>订单状态:</b>
+                    <b>审核状态:</b>
                     <spanp style="color: red;font-weight:bold">
-                    <#if maOrderDetail.orderStatus = 'UNPAID'>待付款
-                    <#elseif maOrderDetail.orderStatus = 'PENDING_SHIPMENT'>待发货
-                    <#elseif maOrderDetail.orderStatus = 'PENDING_RECEIVE'>待收货
-                    <#elseif maOrderDetail.orderStatus = 'FINISHED'>已完成
-                    <#elseif maOrderDetail.orderStatus = 'CLOSED'>已结案
-                    <#elseif maOrderDetail.orderStatus = 'CANCELED'>已取消
-                    <#elseif maOrderDetail.orderStatus = 'REJECTED'>拒签
-                    <#elseif maOrderDetail.orderStatus = 'CANCELING'>取消中
+                    <#if auditStatus = 'AUDIT_PASSED'>审核已通过
+                    <#elseif auditStatus = 'AUDIT_NO'>审核未通过
+                    <#elseif auditStatus = 'AUDITING'>审核中
                     </#if>
                     </spanp>
                 </div>
@@ -58,10 +53,11 @@
                     <#else>已付清
                     </#if>
                     </spanp>
-                    <input type="hidden" id="status" readonly value="${maOrderDetail.orderStatus!""}">
                     <input type="hidden" id="isPayUp" readonly value="${isPayUp?c}">
-                    <input type="hidden" id="type" readonly value="${maOrderDetail.creatorIdentityType!""}">
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
+                    <input type="hidden" id="auditStatus" readonly value="${auditStatus!""}">
+                    <input type="hidden" id="lastUpdateTime" readonly
+                           value="${lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}">
                 </div>
             </div>
         </div>
@@ -75,6 +71,7 @@
                     <dl>
                         <dd>
                             <table class="table table-bordered table-hover" style="width: 98%">
+                            <#if type = 1>
                                 <tbody>
                                 <tr>
                                     <th style="width: 20%">门店名称</th>
@@ -115,12 +112,15 @@
                                 <tr>
                                     <th>配送方式</th>
                                     <td>
-                                    <div>
-                                    <span>
-                                    <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
-                                            </span>
-                                    </div>
-                                        门店自提</#if>
+                                        <div>
+                                        <span>
+                                            <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
+                                                门店自提
+                                            <#elseif maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
+                                                送货上门
+                                            </#if>
+                                        </span>
+                                        </div>
                                     </td>
                                     <th>下单人</th>
                                     <td>
@@ -132,11 +132,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>发货时间</th>
+                                    <th>是否主家收货</th>
                                     <td>
                                         <div>
                                             <span>
-                                            ${maOrderDetail.shipTime!""}
+                                                <#if maOrderDetail.isOwnerReceiving>是<#else>否</#if>
                                             </span>
                                         </div>
                                     </td>
@@ -147,7 +147,39 @@
                                             ${maOrderDetail.customerName!""}
                                             </span>
                                         </div>
+                                    </td>
+                                </tr>
+                                    <#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
+                                    <tr>
+                                        <th>代收金额</th>
+                                        <td>
+                                            <div>
+                                            <span>
+                                            ${maOrderDetail.collectionAmount!'0.00'}
+                                            </span>
+                                            </div>
+                                        </td>
+                                        <th>手机号</th>
+                                        <td>
+                                            <div>
+                                            <span>
+                                            ${maOrderDetail.receiverPhone!""}
+                                            </span>
+                                            </div>
 
+                                        </td>
+                                    </tr>
+                                    </#if>
+                                <tr>
+                                    <th>
+                                        送货地址
+                                    </th>
+                                    <td colspan='3'>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.shippingAddress!""}
+                                            </span>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -163,6 +195,124 @@
                                     </td>
                                 </tr>
                                 </tbody>
+                            </#if>
+                            <#if type = 2>
+                                <tbody>
+                                <tr>
+                                    <th style="width: 20%">装饰公司名称</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.companyName!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <th style="width: 20%">装饰公司编码</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.companyCode!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>下单人ID</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.creatorId!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <th>下单人名称</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.creatorName!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>配送方式</th>
+                                    <td>
+                                        <div>
+                                        <span>
+                                            <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
+                                                门店自提
+                                            <#elseif maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
+                                                送货上门
+                                            </#if>
+                                        </span>
+                                        </div>
+                                    </td>
+                                    <th>是否主家收货</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                                <#if maOrderDetail.isOwnerReceiving>是<#else>否</#if>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>收货人</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.receiverName!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <th>手机号</th>
+                                    <td>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.receiverPhone!""}
+                                            </span>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        关联料单审核单号
+                                    </th>
+                                    <td colspan='3'>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.auditNumber!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        送货地址
+                                    </th>
+                                    <td colspan='3'>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.shippingAddress!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        订单备注
+                                    </th>
+                                    <td colspan='3'>
+                                        <div>
+                                            <span>
+                                            ${maOrderDetail.orderRemarks!""}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </#if>
                             </table>
                         </dd>
                     </dl>
@@ -232,14 +382,21 @@
                                     <#list paymentDetailList as paymentDetail>
                                     <tr>
                                         <td align="center">${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</td>
-                                        <td><#if paymentDetail.paymentType = 'CUS_PREPAY'>
-                                            顾客预存款<#elseif paymentDetail.paymentType = 'ST_PREPAY'>
-                                            门店预存款<#elseif paymentDetail.paymentType = 'ALIPAY'>
-                                            支付宝<#elseif paymentDetail.paymentType = 'WE_CHAT'>
-                                            微信<#elseif paymentDetail.paymentType = 'UNION_PAY'>
-                                            银联<#elseif paymentDetail.paymentType = 'POS'>
-                                            POS<#elseif paymentDetail.paymentType = 'CASH'>
-                                            现金<#elseif paymentDetail.paymentType = 'OTHER'>门店其它</#if></td>
+                                        <td>
+                                            <#if paymentDetail.paymentType??>
+                                                <#if paymentDetail.paymentType = 'CUS_PREPAY'>顾客预存款
+                                                <#elseif paymentDetail.paymentType = 'ST_PREPAY'>门店预存款
+                                                <#elseif paymentDetail.paymentType = 'ALIPAY'>支付宝
+                                                <#elseif paymentDetail.paymentType = 'WE_CHAT'>微信
+                                                <#elseif paymentDetail.paymentType = 'UNION_PAY'>银联
+                                                <#elseif paymentDetail.paymentType = 'POS'>POS
+                                                <#elseif paymentDetail.paymentType = 'CASH'>现金
+                                                <#elseif paymentDetail.paymentType = 'OTHER'>门店其它
+                                                </#if>
+                                            <#else>
+                                                未知
+                                            </#if>
+                                        </td>
                                         <td align="center">${paymentDetail.amount!'0.00'}</td>
                                     </tr>
                                     </#list>
@@ -276,7 +433,7 @@
                                     <#list maOrderDetail.maOrderGoodsDetailResponseList as goods>
                                     <tr>
                                         <td align="center">${goods.sku!""}</td>
-                                        <td align="center">${goods.goodsName!""}</td>
+                                        <td>${goods.goodsName!""}</td>
                                         <td align="center">${goods.qty!""}</td>
                                         <td align="center">${goods.unitPrice!'0.00'}</td>
                                         <td align="center">${goods.subTotalPrice!'0.00'}</td>
@@ -295,15 +452,15 @@
         <div class="row">
             <div class="col-xs-12 col-md-6"></div>
             <div class="col-xs-12 col-md-2">
-                <button type="button" class="btn btn-primary footer-btn" id="ship"
-                        onclick="confirmShip()">
-                    <i class="fa fa-check"></i>确认发货
+                <button type="button" class="btn btn-primary footer-btn" id="audit"
+                        onclick="confirmAudit()">
+                    <i class="fa fa-check"></i>审核订单
                 </button>
             </div>
             <div class="col-xs-12 col-md-2">
                 <button type="button" class="btn btn-success footer-btn" id="receivable"
                         onclick="confirmReceivables()">
-                    <i class="fa fa-check"></i>确认收款
+                    <i class="fa fa-check"></i>订单还款
                 </button>
             </div>
             <div class="col-xs-12 col-md-2">
@@ -312,7 +469,7 @@
                 </button>
             </div>
         </div>
-        <div class="modal fade" id="confirmShipForGuide">
+        <div class="modal fade" id="auditOrderStatus">
             <div class="modal-dialog" style="width: 30%;">
                 <div class="modal-content message_align">
                     <div class="modal-header">
@@ -322,47 +479,14 @@
                         <h4 class="modal-title">提示信息</h4>
                     </div>
                     <div class="modal-body">
-                        <p>您确认要发货吗？</p>
+                        <p>您确认要改变订单审核状态吗吗？</p>
                     </div>
                     <div class="modal-footer">
-                        <a onclick=" return OrderShippingSubmit()" class="btn btn-danger"
-                           data-dismiss="modal">确定</a>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">
-                            取消
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="confirmShipForCustomer">
-            <div class="modal-dialog" style="width: 30%;">
-                <div class="modal-content message_align">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"
-                                aria-label="Close"><span
-                                aria-hidden="true">×</span></button>
-                        <h4 class="modal-title">提示信息</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-inline">
-                            <label style="padding-right: 0px">提货码:&nbsp</label>
-                            <input type="text" name="code" id="code" class="form-control "
-                                   style="width:auto;"
-                                   onKeyUp="judgmentVerification(this.value)"
-                                   placeholder="请输提货码">
-                            <input type="hidden" name="secondCode" id="secondCode" class="form-control">
-                            <span id="msg"></span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="return OrderShippingSubmit()"
-                                class="btn btn-success "
-                                data-dismiss="modal"
-                                id="confirmShip">确定
-                        </button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">
-                            取消
-                        </button>
+                        <a onclick=" return OrderAuditSubmit('AUDIT_PASSED')" class="btn btn-success"
+                           data-dismiss="modal">&nbsp&nbsp&nbsp通过&nbsp&nbsp&nbsp</a>
+                        <a onclick=" return OrderAuditSubmit('AUDIT_NO')" class="btn btn-danger" data-dismiss="modal">
+                            不通过
+                        </a>
                     </div>
                 </div>
             </div>
@@ -374,13 +498,13 @@
                         <button type="button" class="close" data-dismiss="modal"
                                 aria-label="Close"><span
                                 aria-hidden="true">×</span></button>
-                        <h4 class="modal-title">确认收款</h4>
+                        <h4 class="modal-title">确认还款</h4>
                     </div>
                     <form id="confirmReceivablesFrom">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="name">总金额(元)</label>
-                                <input type="text" class="form-control" id="count"
+                                <input type="text" class="form-control" id="allAmount"
                                        name="allAmount"
                                        readonly
                                        value="${orderBillingDetail.amountPayable!'0.00'}">
@@ -457,8 +581,8 @@
                     message: '现金校验失败',
                     validators: {
                         regexp: {
-                            regexp: /^(-|\+)?\d+$/,
-                            message: '现金称只能输入正或负数'
+                            regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
+                            message: '现金称只能输入正数'
                         }
                     }
                 },
@@ -485,11 +609,12 @@
                     validators: {
                         notEmpty: {
                             message: '流水号不允许为空'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '流水号长度必须在1~10位之间'
                         }
+
                     }
                 },
                 date: {
@@ -499,7 +624,7 @@
                             message: '日期不允许为空!'
                         },
                         regexp: {
-                            regexp: /^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\-)([0][1-9]|[1][0-2])(\-)([0-2][1-9]|[3][0-1])$/g,
+                            regexp: /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/,
                             message: '日期格式:yyyy-MM-dd'
                         }
                     }
@@ -508,17 +633,35 @@
         });
         $("#confirmSubmit").click(function () {
             var isPayUp = $('#isPayUp').val();
-            if('true'==isPayUp){
-               return false;
+            var lastUpdateTime = $("#lastUpdateTime").val();
+            var allAmount = $("#allAmount").val();
+            var orderNumber = $("#orderNumber").val();
+            var cashAmount = $("#cashAmount").val();
+            var posAmount = $("#posAmount").val();
+            var otherAmount = $("#otherAmount").val();
+            var serialNumber = $("#serialNumber").val();
+            var date = $("#date").val();
+            if ('true' == isPayUp) {
+                return false;
             }
             var bv = form.data('bootstrapValidator');
             bv.validate();
+            var data = {
+                'lastUpdateTime': lastUpdateTime,
+                'allAmount': allAmount,
+                'orderNumber': orderNumber,
+                'cashAmount': cashAmount,
+                'posAmount': posAmount,
+                'otherAmount': otherAmount,
+                'serialNumber': serialNumber,
+                'date': date
+            }
             if (bv.isValid()) {
                 $.ajax({
-                    url: '/rest/order/orderReceivables',
+                    url: '/rest/order/arrearsAndAgencyOrder/arrearsOrderRepayment',
                     async: false,
-                    type: 'POST',
-                    data: form.serialize(),
+                    type: 'PUT',
+                    data: data,
                     success: function (result) {
                         if (result.code == 10100) {
                             $("#message").html('所有金额之和不等于总金额');
@@ -541,16 +684,8 @@
         });
     });
 
-    function confirmShip() {
-        var creatorIdentityType = $("#type").val();
-        $('#code').val('');
-        $('#msg').html('')
-        $('#secondCode').val('');
-        if ('SELLER' == creatorIdentityType) {
-            $('#confirmShipForGuide').modal();
-        } else if ('SELLER' != creatorIdentityType) {
-            $('#confirmShipForCustomer').modal();
-        }
+    function confirmAudit() {
+        $('#auditOrderStatus').modal();
     }
 
     function confirmReceivables() {
@@ -558,20 +693,19 @@
     }
 
 
-    function OrderShippingSubmit() {
+    function OrderAuditSubmit(statusType) {
         var orderNumber = $("#orderNumber").val();
-        var code = $('#secondCode').val();
-        var status = $('#status').val();
-        if ('PENDING_RECEIVE' != status) {
+        var auditStatus = $("#auditStatus").val();
+        if ('AUDITING' != auditStatus) {
             return false;
         }
         if (isBlank(orderNumber)) {
             return false;
         }
         $.ajax({
-            url: '/rest/order/orderShipping',
-            method: 'GET',
-            data: {'orderNumber': orderNumber, 'code': code},
+            url: '/rest/order/arrearsAndAgencyOrder/auditOrderStatus',
+            method: 'PUT',
+            data: {"orderNumber": orderNumber, "status": statusType},
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -582,34 +716,7 @@
                 if (0 === result.code) {
                     window.location.reload();
                 } else {
-                    $notify.danger('发货失败，请稍后重试或联系管理员');
-                }
-            }
-        });
-    }
-
-    function judgmentVerification(data) {
-        var orderNumber = $("#orderNumber").val();
-        var code = $("#code").val();
-        if(null==code||''==code||6!=code.length){
-            return false;
-        }
-        $.ajax({
-            url: '/rest/order/judgmentVerification',
-            method: 'GET',
-            data: {'orderNumber': orderNumber, 'code': data},
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    $('#secondCode').val(data);
-                    $('#confirmShip').attr("disabled", false);
-                    $('#msg').html('<font color="green">验证成功</font>')
-                } else {
-                    $('#msg').html('<font color="red">验证失败</font>')
+                    $notify.danger('审核失败，请稍后重试或联系管理员');
                 }
             }
         });
@@ -643,15 +750,18 @@
 
 
     function Initialization() {
-        var status = $('#status').val();
+        var auditStatus = $('#auditStatus').val();
         var isPayUp = $('#isPayUp').val();
-        if (status != 'PENDING_RECEIVE') {
-            $('#ship').attr("disabled", true);
+        if (auditStatus == 'AUDITING') {
+            $('#audit').attr("disabled", false);
+        } else {
+            $('#audit').attr("disabled", true);
         }
-        if (isPayUp == 'true') {
+        if (isPayUp == 'false' && auditStatus == 'AUDIT_PASSED') {
+            $('#receivable').attr("disabled", false);
+        } else {
             $('#receivable').attr("disabled", true);
         }
-        $('#confirmShip').attr("disabled", true);
     }
 
     function reload() {

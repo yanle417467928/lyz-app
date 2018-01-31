@@ -165,4 +165,26 @@
     </select>
 
 
+    <select id="findGuideCreditMoneyAvailableByEmpId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
+        SELECT
+        emp_id,
+        temp_credit_limit,
+        credit_limit_available,
+        last_update_time
+        FROM emp_credit_money
+        WHERE
+        emp_id=#{sellerId}
+    </select>
+
+    <update id="updateGuideCreditMoneyByRepayment">
+        UPDATE
+        emp_credit_money
+        <set>
+            <if test="null != availableCreditMoney">
+                credit_limit_available =#{availableCreditMoney},
+            </if>
+        </set>
+        WHERE emp_id = #{sellerId}
+    </update>
+
 </mapper>

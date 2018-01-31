@@ -1,9 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.core.utils.IpUtil;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -23,6 +27,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
@@ -40,8 +46,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -444,10 +453,15 @@ public class MaOrderRestController extends BaseRestController {
                 return resultDTO;
             }
         }
+        if (!"PENDING_RECEIVE".equals(maOrderTempInfo.getStatus().getValue())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单状态错误", null);
+            logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            ShiroUser shiroUser =this.getShiroUser();
+            ShiroUser shiroUser = this.getShiroUser();
             //后台发货并返回插入接口表数据的id
-            maOrderService.orderShipping(orderNumber,shiroUser,maOrderTempInfo);
+            maOrderService.orderShipping(orderNumber, shiroUser, maOrderTempInfo);
             //发送门店自提单消息队列
             maSinkSender.sendStorePickUpReceivedToEBSAndRecord(orderNumber);
             logger.info("orderShipping ,后台自提单发货成功");
@@ -556,7 +570,7 @@ public class MaOrderRestController extends BaseRestController {
 
 
     /**
-     * 后台分页查询所有未收款订单
+     * 后台分页查询所有欠款与还款订单
      *
      * @param offset   当前页
      * @param size     每页条数
@@ -564,22 +578,176 @@ public class MaOrderRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/arrearsAndAgencyOrder/page/grid")
-    public GridDataVO<MaSelfTakeOrderVO> restarrearsAndAgencyOrderPageGird(Integer offset, Integer size, String keywords) {
-        logger.info("restarrearsAndAgencyOrderPageGird 后台分页查询所有未收款订单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
+    public GridDataVO<MaAgencyAndArrearsOrderVO> restArrearsAndAgencyOrderPageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restarrearsAndAgencyOrderPageGird 后台分页查询所有欠款与还款订单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findArrearsAndAgencyOrderList(page, size);
-            List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
-            logger.info("restarrearsAndAgencyOrderPageGird ,后台分页查询所有未收款订单", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
-            return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
+            PageInfo<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOPageInfo = this.maOrderService.findArrearsAndAgencyOrderList(page, size);
+            List<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOList = arrearsAndAgencyOrderVOPageInfo.getList();
+            logger.info("restarrearsAndAgencyOrderPageGird ,后台分页查询所有欠款与还款订单", (arrearsAndAgencyOrderVOList == null) ? 0 : arrearsAndAgencyOrderVOList.size());
+            return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(arrearsAndAgencyOrderVOList, arrearsAndAgencyOrderVOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("restarrearsAndAgencyOrderPageGird EXCEPTION,发生未知错误，后台分页查询所有未收款订单");
+            logger.warn("restarrearsAndAgencyOrderPageGird EXCEPTION,发生未知错误，后台分页查询所有欠款与还款订单");
             logger.warn("{}", e);
             return null;
         }
     }
+
+
+    /**
+     * 后台根据筛选条件分页查询所有欠款与还款订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/arrearsAndAgencyOrder/page/screenGrid")
+    public GridDataVO<MaAgencyAndArrearsOrderVO> restArrearsAndAgencyOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "status") Integer status, @RequestParam(value = "isPayUp") Integer isPayUp) {
+        logger.info("restArrearsAndAgencyOrderPageGirdByScreen 后台根据筛选条件分页查询所有欠款与还款订单 ,入参offset:{}, size:{}, kewords:{},cityId:{},storeId:{},status:{},isPayUp:{}", offset, size, keywords, cityId, storeId, status, isPayUp);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByScreen(page, size, cityId, storeId, status, isPayUp);
+            List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
+            logger.info("restArrearsAndAgencyOrderPageGirdByScreen ,后台根据筛选条件分页查询所有欠款与还款订单列表成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
+            return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restArrearsAndAgencyOrderPageGirdByScreen EXCEPTION,发生未知错误，后台根据筛选条件分页查询所有欠款与还款订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台根据条件信息分页查询欠款与还款订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/arrearsAndAgencyOrder/page/infoGrid")
+    public GridDataVO<MaAgencyAndArrearsOrderVO> restArrearsAndAgencyOrderPageGirdByInfo(Integer offset, Integer size, String keywords, @RequestParam(value = "info") String info) {
+        logger.info("restArrearsAndAgencyOrderPageGirdByInfo 后台根据条件信息分页查询欠款与还款订单 ,入参offsetL:{}, size:{}, kewords:{},info:{}", offset, size, keywords, info);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByInfo(page, size, info);
+            List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
+            logger.info("restArrearsAndAgencyOrderPageGirdByInfo ,后台根据条件信息分页查询欠款与还款订单成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
+            return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restArrearsAndAgencyOrderPageGirdByInfo EXCEPTION,发生未知错误，后台根据条件信息分页查询欠款与还款订单失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 审核订单
+     *
+     * @param
+     * @return
+     */
+    @PutMapping(value = "/arrearsAndAgencyOrder/auditOrderStatus")
+    public ResultDTO<Object> auditOrderStatus(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "status") String status) {
+        logger.info("auditOrderStatus 审核订单 ,入参orderNumber:{},status:{}", orderNumber,status);
+        if ( StringUtils.isBlank(status)) {
+            logger.warn("订单状态为空,审核订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "审核订单失败", null);
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            logger.warn("订单号为空,审核订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "审核订单失败", null);
+        }
+        try {
+            this.maOrderService.auditOrderStatus(orderNumber, status);
+            logger.info("auditOrderStatus ,审核订单成功");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                    "审核订单成功", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("auditOrderStatus EXCEPTION,发生未知错误，审核订单失败");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "审核订单失败", null);
+        }
+    }
+
+
+    /**
+     * 欠款订单还款
+     *
+     * @param
+     * @return
+     */
+    @PutMapping(value = "/arrearsAndAgencyOrder/arrearsOrderRepayment")
+    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request,@RequestParam String lastUpdateTime) {
+        logger.info("arrearsOrderRepayment 欠款订单还款 ,入参maOrderAmount:{}", maOrderAmount);
+        ResultDTO<Object> resultDTO;
+        if (null == maOrderAmount.getCashAmount()) {
+            maOrderAmount.setCashAmount(BigDecimal.ZERO);
+        }
+        if (null == maOrderAmount.getOtherAmount()) {
+            maOrderAmount.setOtherAmount(BigDecimal.ZERO);
+        }
+        if (null == maOrderAmount.getPosAmount()) {
+            maOrderAmount.setPosAmount(BigDecimal.ZERO);
+        }
+        BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
+        if (null == maOrderAmount.getAllAmount()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(lastUpdateTime)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购额度上次更新时间为空", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!acount.equals(maOrderAmount.getAllAmount())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date lastUpdateTimeFormat =dateFormat.parse(lastUpdateTime);
+            ShiroUser shiroUser = this.getShiroUser();
+            GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
+            guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
+            guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
+            guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+            guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+            guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
+            guideCreditChangeDetailVO.setReferenceNumber(maOrderAmount.getOrderNumber());
+            this.maOrderService.arrearsOrderRepayment(maOrderAmount,guideCreditChangeDetailVO,lastUpdateTimeFormat);
+            logger.warn("arrearsOrderRepayment ,后台欠款订单还款成功");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                    "后台欠款订单还款成功", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("arrearsOrderRepayment EXCEPTION,发生未知错误，后台欠款订单还款失败");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "后台欠款订单还款失败", null);
+        }
+    }
+
 
     /**
      * 保存买券信息，创建买券订单

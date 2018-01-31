@@ -43,6 +43,6 @@ public class MaAgencyAndArrearsOrderVO {
     /**
      * 收款状态
      */
-    private String agencyStatus;
+    private String isPayUp;
 
 }

@@ -4,6 +4,10 @@ import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import lombok.*;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * 导购详情VO
  *

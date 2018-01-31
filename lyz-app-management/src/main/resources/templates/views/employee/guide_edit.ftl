@@ -104,16 +104,13 @@
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                                <label>
-                                    临时额度
+                                <label for="title">
+                                    上次更新时间
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name=" originalTempCreditLimit" type="hidden" class="form-control"
-                                           id="originalTempCreditLimit" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
-                                    <input name="tempCreditLimit" type="text" class="form-control" id="tempCreditLimit"
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
+                                    <input name="lastUpdateTime" type="text" class="form-control" id="lastUpdateTime" readonly
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -132,6 +129,22 @@
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
                                     <input name="creditLimit" type="text" class="form-control" id="creditLimit"
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label>
+                                    临时额度
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name=" originalTempCreditLimit" type="hidden" class="form-control"
+                                           id="originalTempCreditLimit" readonly
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
+                                    <input name="tempCreditLimit" type="text" class="form-control" id="tempCreditLimit"
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -274,6 +287,7 @@
             var creditLimit = parseFloat($('#creditLimit').val().replace(/,/g, ''));
             var empId = $('#id').val();
             var modifyReason = $("#modifyReason").val();
+            var lastUpdateTime = $("#lastUpdateTime").val();
             data = {
                 'empId': empId,
                 'originalCreditLimitAvailable': originalCreditLimitAvailable,
@@ -281,7 +295,8 @@
                 'originalCreditLimit': originalCreditLimit,
                 'creditLimit': creditLimit,
                 'tempCreditLimit': tempCreditLimitAfterChange,
-                "modifyReason": modifyReason
+                "modifyReason": modifyReason,
+                "lastUpdateTime": lastUpdateTime,
             }
 
             if (null === $global.timer) {

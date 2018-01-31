@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.CancelProcessingStatus;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.pay.wechat.refund.WeChatRefundService;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -117,7 +118,8 @@ public class ReturnOrderController {
     private CancelOrderParametersService cancelOrderParametersService;
     @Resource
     private SinkSender sinkSender;
-
+    @Resource
+    private WeChatRefundService weChatRefundService;
     @Resource
     private SmsAccountServiceImpl smsAccountService;
 
@@ -646,8 +648,7 @@ public class ReturnOrderController {
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
-                    WeChatPayController wechat = new WeChatPayController();
-                    Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
+                    Map<String, String> map = weChatRefundService.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
                     this.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
@@ -1898,8 +1899,7 @@ public class ReturnOrderController {
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
-                    WeChatPayController wechat = new WeChatPayController();
-                    Map<String, String> map = wechat.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
+                    Map<String, String> map = weChatRefundService.wechatReturnMoney(req, response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
                     this.returnWeChatMoney(returnOrderId, returnNumber, map);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体

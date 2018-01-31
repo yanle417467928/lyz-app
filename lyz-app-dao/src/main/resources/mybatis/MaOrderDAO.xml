@@ -637,7 +637,8 @@
             city_name,
             creator_identity_type,
             sob_id,
-            create_time
+            create_time,
+            status
         FROM ord_base_info obi
         WHERE obi.ord_no = #{orderNo}
     </select>
@@ -673,6 +674,16 @@
     </update>
 
 
+    <select id="queryAuditStatus" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        oaa.status
+        FROM ord_arrears_audit oaa
+        WHERE oaa.ord_no = #{orderNumber}
+        ORDER  BY  id DESC
+        LIMIT 1
+    </select>
+
     <select id="isPayUp" parameterType="java.lang.String"
             resultType="java.lang.Boolean">
         SELECT
@@ -693,14 +704,15 @@
 
 
     <insert id="saveAppToEbsOrderReceiveInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf" >
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf">
         INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,send_time,init_date)
         VALUES
         (#{deliverTypeTitle}, #{headerId}, #{orderNumber}, #{receiveDate}, #{sobId}, #{errorMsg}, #{sendFlag},
         #{sendTime}, #{initDate})
     </insert>
 
-    <select id="queryOrderReceiveInf" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf">
+    <select id="queryOrderReceiveInf" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf">
      SELECT
      id,
      deliver_type_title,
@@ -726,10 +738,8 @@
         obi.creator_name creatorName,
         obi.customer_name customerName,
         s.store_name storeName,
-        oaa.status,
-        oaf.id,
-        oaf.agency_money,
-        oaf.order_money,
+        oaa.status arrearsAuditStatus,
+        obd.is_pay_up isPayUp
         FROM
         ord_base_info AS obi
         INNER JOIN
@@ -737,10 +747,111 @@
         LEFT JOIN
         st_store AS s ON s.store_code = obi.store_code
         LEFT JOIN
-        ord_agency_fund oaf ON obi.ord_no =oaf.ord_no
+        ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
         1=1
         ORDER BY
         obi.create_time DESC
     </select>
+
+
+    <select id="findMaAgencyAndArrearsOrderListByScreen" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
+        SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName,
+        oaa.status arrearsAuditStatus,
+        obd.is_pay_up isPayUp
+        FROM
+        ord_base_info AS obi
+        INNER JOIN
+        ord_arrears_audit oaa ON obi.ord_no =oaa.ord_no
+        LEFT JOIN
+        st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN
+        ord_billing_details obd ON obi.ord_no =obd.ord_no
+        WHERE
+        1=1
+        <choose>
+            <when test=" null!= status and 2==status">
+                AND
+                oaa.status ='AUDIT_PASSED'
+
+            </when>
+            <when test=" null!= status and 1==status">
+                AND
+                oaa.status ='AUDIT_NO'
+            </when>
+            <when test=" null!= status and 0==status">
+                AND
+                oaa.status ='AUDITING'
+            </when>
+        </choose>
+        <choose>
+            <when test=" null!= isPayUp and 1==isPayUp">
+                AND
+                obd.is_pay_up =TRUE
+            </when>
+            <when test=" null!= isPayUp and 0==isPayUp">
+                AND
+                obd.is_pay_up =FALSE
+            </when>
+        </choose>
+        <if test=" null!= storeId and -1!=storeId ">
+            AND
+            s.store_id =#{storeId}
+        </if>
+        <if test=" null!= cityId and -1!=cityId ">
+            AND
+            obi.city_id =#{cityId}
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <select id="findMaAgencyAndArrearsOrderListByInfo"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
+    SELECT
+        obi.ord_no orderNumber,
+        obi.create_time createTime,
+        obi.creator_name creatorName,
+        obi.customer_name customerName,
+        s.store_name storeName,
+        oaa.status arrearsAuditStatus,
+        obd.is_pay_up isPayUp
+        FROM
+        ord_base_info AS obi
+        INNER JOIN
+        ord_arrears_audit oaa ON obi.ord_no =oaa.ord_no
+        LEFT JOIN
+        st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN
+        ord_billing_details obd ON obi.ord_no =obd.ord_no
+        WHERE
+        obi.ord_no=#{info}
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <update id="auditOrderStatus" parameterType="java.lang.String">
+        UPDATE ord_arrears_audit
+        SET
+        status = #{status}
+        WHERE ord_no = #{orderNumber}
+    </update>
+
+
+    <select id="querySellerIdByOrderNumber" parameterType="java.lang.String"
+            resultType="java.lang.Long">
+        SELECT
+             oaa.seller_id
+        FROM ord_arrears_audit oaa
+        WHERE oaa.ord_no = #{orderNumber}
+    </select>
+
 </mapper>

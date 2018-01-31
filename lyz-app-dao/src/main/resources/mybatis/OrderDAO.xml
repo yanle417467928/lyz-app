@@ -52,6 +52,7 @@
             obi.customer_id = #{userID}
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
+                AND effective_end_time &gt; NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` in('PENDING_RECEIVE','PENDING_SHIPMENT')
@@ -79,8 +80,11 @@
             ord_base_info AS obi
             WHERE
             obi.creator_id = #{userID}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'SELLER'
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
+                AND effective_end_time &gt; NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` = 'PENDING_RECEIVE'
@@ -110,9 +114,12 @@
             FROM
             ord_base_info AS obi
             WHERE
-            obi.sales_consult_id = #{userID}
+            obi.creator_id = #{userID}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'DECORATE_MANAGER'
             <if test="null != showStatus and showStatus == 1">
                 AND obi.`status` = 'UNPAID'
+                AND effective_end_time &gt; NOW()
             </if>
             <if test="null != showStatus and showStatus == 2">
                 AND obi.`status` = 'PENDING_RECEIVE'

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam;
 import cn.com.leyizhuang.app.quartz.QuartzManager;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,19 +50,21 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
      * @return
      */
     @PutMapping
-    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, @RequestParam(value = "modifyReason") String modifyReason, BindingResult result, HttpServletRequest request) {
+    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, @RequestParam(value = "modifyReason") String modifyReason, BindingResult result, HttpServletRequest request,@RequestParam(value = "lastUpdateTime") String lastUpdateTime) {
         logger.info("restGuideCreditMoneyVOPut 后台修改员工额度 ,入参 guideCreditMoneyDetail:{}, modifyReason:{},", guideCreditMoneyDetail, modifyReason);
         try {
             if (!result.hasErrors()) {
+                DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date lastUpdateTimeFormat =dateFormat.parse(lastUpdateTime);
                 ShiroUser shiroUser = this.getShiroUser();
                 GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
                 guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
                 guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
                 guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
-                guideCreditChangeDetailVO.setChangeType("ADMIN_RECHARGE");
+                guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ADMIN_RECHARGE);
                 guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
-                this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetailVO);
+                this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetailVO,lastUpdateTimeFormat);
                 logger.info("restGuideCreditMoneyVOPut ,后台修改员工额度成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
@@ -96,7 +101,7 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
                 guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
-                guideCreditChangeDetailVO.setChangeTypeDesc("后台临时额度手动清零");
+                guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
                 guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
                 this.maEmpCreditMoneyService.clearTempCreditLimit(guideCreditMoneyDetail, guideCreditChangeDetailVO);
                 logger.info("clearTempCreditLimit ,后台手动清零临时额度成功");
