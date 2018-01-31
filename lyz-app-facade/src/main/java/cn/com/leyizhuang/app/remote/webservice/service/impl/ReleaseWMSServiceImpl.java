@@ -164,6 +164,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
+
                     // rabbitMq 记录退单销量
                     sellDetailsSender.sendReturnOrderSellDetailsTOManagement(header.getPoNo());
                 }

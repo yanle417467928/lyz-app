@@ -247,7 +247,24 @@ public class AppActServiceImpl implements AppActService {
                     // 结束本次促销循环
                     continue;
                 }
-            } else if (actType.equals("COMMON_FAMO_DIS")) {
+            }
+            // **************** 普通-满金额-折扣 *************
+            else if (actType.equals("COMMON_FAMO_DIS")) {
+                // 参与活动商品总额
+                Double actualTotalPrice = countActualTotalPrice(goodsPool, act, customerType);
+
+                // 满足促销金额
+                if (actualTotalPrice >= act.getFullAmount()) {
+
+                    int enjoyTimes = 1;
+                    if (act.getIsDouble()) {
+                        enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice, act.getFullAmount());
+                    }
+                    // 创建一个促销结果
+                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes,actualTotalPrice));
+                    // 结束本次促销循环
+                    continue;
+                }
 
             }
             //***************** 普通-满数量-赠商品 ************
@@ -639,6 +656,31 @@ public class AppActServiceImpl implements AppActService {
         return proDiscount;
     }
 
+    private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act, int enjoyTimes,Double totalPrice) {
+
+        // 创建一个促销结果
+        PromotionDiscountListResponse proDiscount = new PromotionDiscountListResponse();
+        ActSubAmountDO sub_amount = actSubAmountDAO.queryByActId(act.getId());
+
+        Double discountPrice = 0.00;
+        if (act.getActType().contains("DIS")){
+            Double discount = sub_amount.getDiscount() == null ? 1 : sub_amount.getDiscount();
+            discountPrice = CountUtil.mul(CountUtil.sub(10D,discount),totalPrice);
+            discountPrice = CountUtil.mul(0.1,discountPrice);
+        }else if (act.getActType().contains("SUB")){
+            discountPrice = sub_amount.getSubAmount() == null ? 0 : sub_amount.getSubAmount();
+            discountPrice = CountUtil.mul(discountPrice,enjoyTimes);
+        }
+
+        proDiscount.setPromotionId(act.getId());
+        proDiscount.setPromotionTitle(act.getTitle());
+        proDiscount.setDiscountPrice(discountPrice);
+        proDiscount.setEnjoyTimes(enjoyTimes);
+
+        logger.info("享受："+act.getTitle());
+        return proDiscount;
+    }
+
     /**
      * 计算满金额促销重复参与次数
      *
@@ -727,7 +769,7 @@ public class AppActServiceImpl implements AppActService {
      * @param subAmount
      */
     @Transactional
-    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList) {
+    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -812,6 +854,15 @@ public class AppActServiceImpl implements AppActService {
                     actAddSaleDAO.save(actAddSaleDO);
                 }
             }
+        } else if (act_type.contains("DIS")) {
+            // 折扣
+
+            ActSubAmountDO actSubAmountDO = new ActSubAmountDO();
+            actSubAmountDO.setActId(baseDO.getId());
+            actSubAmountDO.setActCode(baseDO.getActCode());
+            actSubAmountDO.setDiscount(discount);
+
+            actSubAmountDAO.save(actSubAmountDO);
         }
     }
 
@@ -825,7 +876,7 @@ public class AppActServiceImpl implements AppActService {
      * @param storeDOList
      */
     @Transactional
-    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList) {
+    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -911,6 +962,15 @@ public class AppActServiceImpl implements AppActService {
                     actAddSaleDAO.save(actAddSaleDO);
                 }
             }
+        }else if (act_type.contains("DIS")) {
+            // 折扣
+            actSubAmountDAO.deleteByActBaseId(baseDO.getId());
+            ActSubAmountDO actSubAmountDO = new ActSubAmountDO();
+            actSubAmountDO.setActId(baseDO.getId());
+            actSubAmountDO.setActCode(baseDO.getActCode());
+            actSubAmountDO.setDiscount(discount);
+
+            actSubAmountDAO.save(actSubAmountDO);
         }
     }
 

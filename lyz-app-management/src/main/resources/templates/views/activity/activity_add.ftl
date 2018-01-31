@@ -200,6 +200,7 @@
                                         <option value="SUB">立减</option>
                                         <option value="GOO">送商品</option>
                                         <option value="ADD">加价购买</option>
+                                        <option value="DIS">打折</option>
                                     </select>
                                 </div>
                             </div>
@@ -300,6 +301,21 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
                                     <input name="subAmount" type="number" class="form-control" id="subAmount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 打折 -->
+                    <div class="row" id="discount_div" style="display: none;">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="discount">
+                                    折扣比例（1~10）
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-cny"></i></span>
+                                    <input name="discount" type="text" class="form-control" id="discount" >
                                 </div>
                             </div>
                         </div>

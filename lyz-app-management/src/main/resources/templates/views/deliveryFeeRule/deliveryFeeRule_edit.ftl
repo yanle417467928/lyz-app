@@ -53,14 +53,18 @@
                                 <label for="title">
                                     城市
                                 </label>
-                                <select name="cityId" id="cityId" class="form-control select">
-                                <#if cityList??>
-                                    <#list cityList as item>
-                                        <option value="${item.cityId}" <#if item.cityId == rule.cityId >
-                                                selected</#if>>${item.name}</option>
-                                    </#list>
-                                </#if>
-                                </select>
+                                <#--<select name="cityId" id="cityId" class="form-control select" readonly="readonly">-->
+                                <#--<#if cityList??>-->
+                                    <#--<#list cityList as item>-->
+                                        <#--<option value="${item.cityId}" <#if item.cityId == rule.cityId >-->
+                                                <#--selected</#if>>${item.name}</option>-->
+                                    <#--</#list>-->
+                                <#--</#if>-->
+                                <#--</select>-->
+                                <div class="input-group">
+                                    <input  type="text" class="form-control"  value="<#if rule?? && rule.cityName??>${rule.cityName!""}</#if>" readonly="readonly">
+                                    <input name="cityId" type="hidden" value="<#if rule?? && rule.cityId??>${rule.cityId!""}</#if>">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -278,7 +282,7 @@
 
     $(function () {
         // 初始化城市、门店信息
-        $commonForm.city("/rest/citys/findCitylist", "cityId", "");
+        //$commonForm.city("/rest/citys/findCitylist", "cityId", "");
 
         // 特殊商品
         AddSpecialGoods();

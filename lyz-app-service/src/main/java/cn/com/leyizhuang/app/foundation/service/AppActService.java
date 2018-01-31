@@ -25,9 +25,18 @@ public interface AppActService {
 
     PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size ,String keywords,String status);
 
-    void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeList);
+    /**
+     * 新增
+     * @param baseDO 基本信息
+     * @param goodsList 本品集合
+     * @param giftList 赠品集合
+     * @param subAmount 立减金额
+     * @param storeList 门店集合
+     * @param discount 折扣
+     */
+    void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeList,Double discount);
 
-    void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList);
+    void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount);
 
     ModelMap getModelMapByActBaseId(ModelMap map, Long id);
 

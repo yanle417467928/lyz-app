@@ -525,7 +525,7 @@ public class OrderController {
             totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
 
             // 运费计算
-            freight = deliveryFeeRuleService.countDeliveryFee(cityId,totalOrderAmount,goodsInfo);
+            freight = deliveryFeeRuleService.countDeliveryFee(identityType,cityId,totalOrderAmount,goodsInfo);
 
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             if (identityType == 6) {
