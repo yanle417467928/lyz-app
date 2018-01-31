@@ -131,7 +131,7 @@ public class SinkReceiver {
                         separateOrderService.separateReturnOrder(returnNumber);
                         //拆单完成之后发送退单和退单商品信息到EBS
                         separateOrderService.sendReturnOrderBaseInfAndReturnOrderGoodsInf(returnNumber);
-                       //发送退单券儿信息
+                        //发送退单券儿信息
                         separateOrderService.sendReturnOrderCouponInf(returnNumber);
                         //发送订单收款信息
                         separateOrderService.sendReturnOrderRefundInf(returnNumber);
@@ -145,13 +145,14 @@ public class SinkReceiver {
                     log.warn("{}", e);
                     e.printStackTrace();
                 }
+                break;
             case ORDER_RECEIVE:
-                try{
+                try {
                     String orderNumber = objectMapper.readValue(message.getContent(), String.class);
                     // 门店自提单发货
                     log.info("门店自提单发货队列消费开始");
                     maOrderService.sendOrderReceiveInfAndRecord(orderNumber);
-                }catch (IOException e) {
+                } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
                 } catch (Exception e) {
