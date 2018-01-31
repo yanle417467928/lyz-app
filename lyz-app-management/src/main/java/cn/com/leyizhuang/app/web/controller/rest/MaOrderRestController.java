@@ -453,7 +453,7 @@ public class MaOrderRestController extends BaseRestController {
                 return resultDTO;
             }
         }
-        if (!"PENDING_RECEIVE".equals(maOrderTempInfo.getStatus())) {
+        if (!"PENDING_RECEIVE".equals(maOrderTempInfo.getStatus().getValue())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单状态错误", null);
             logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
