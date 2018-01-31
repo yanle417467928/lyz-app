@@ -1039,7 +1039,7 @@ public class OrderController {
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
-            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses.size());
+            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
