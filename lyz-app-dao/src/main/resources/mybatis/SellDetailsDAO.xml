@@ -7,12 +7,12 @@
       `month`, store_id, seller_id,seller_name,
       customer_phone, customer_name, `number`,
       goods_grade, sku, quantity,
-      amount, single_rewards ,city_id,goods_line_id,create_time,customerId)
+      amount, single_rewards ,city_id,goods_line_id,create_time,customer_id)
     values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
       #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},#{sellerName},
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
-      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customer_id})
+      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId})
     </insert>
 
     <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
