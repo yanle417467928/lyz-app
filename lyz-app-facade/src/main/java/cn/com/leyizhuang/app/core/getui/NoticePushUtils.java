@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.core.getui;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.message.Payload;
 import cn.com.leyizhuang.app.foundation.pojo.message.TransmissionTemplateContent;
+import cn.com.leyizhuang.app.foundation.service.AppUserDeviceService;
 import com.alibaba.fastjson.JSON;
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
@@ -19,17 +21,27 @@ import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Created on 2017-12-08 8:49
  **/
+@Component
 public class NoticePushUtils {
     public static void main(String[] args) throws Exception {
-        pushMessageToList(AppConstant.GE_TUI_HOST,AppConstant.APP_KEY,AppConstant.MASTER_SECRET);
+        pushMessageToList(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
         //pushMessageToApp();
+    }
+
+    private static AppUserDeviceService userDeviceService;
+
+    @Resource
+    public void setUserDeviceService(AppUserDeviceService userDeviceService) {
+        NoticePushUtils.userDeviceService = userDeviceService;
     }
 
     /**
@@ -42,7 +54,7 @@ public class NoticePushUtils {
         //NotificationTemplate template = notificationTemplateDemo(AppConstant.APP_ID,AppConstant.APP_KEY);
         //TransmissionTemplate template = transmissionTemplateDemo();
         TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
-                new Payload("page/personal/myOrderWL.html&CD_XN20180125145618869313", "跳转订单物流详情"));
+                new Payload("page/personal/myOrderWL.html&CD_XN20180125145618869313", "跳转订单物流详情"), null, null);
         AppMessage message = new AppMessage();
         message.setData(template);
 
@@ -65,7 +77,8 @@ public class NoticePushUtils {
     public static void pushMessageToSingle() {
         IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
         TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
-                new Payload("page/personal/myOrderWL.html&CD_XN20180125145618869313", "跳转订单物流详情"));
+                new Payload("page/personal/myOrderWL.html&CD_XN20180125145618869313", "跳转订单物流详情"),
+                null, null);
         SingleMessage message = new SingleMessage();
         message.setOffline(true);
         // 离线有效时间，单位为毫秒，可选
@@ -94,16 +107,18 @@ public class NoticePushUtils {
 
     /**
      * 列表推送
-     * @param host appId
-     * @param appKey appKey
+     *
+     * @param host         appId
+     * @param appKey       appKey
      * @param masterSecret masterSecret
      */
-    public static void pushMessageToList(String host,String appKey,String masterSecret){
-        IGtPush push = new IGtPush(host,appKey,masterSecret);
+    public static void pushMessageToList(String host, String appKey, String masterSecret) {
+        IGtPush push = new IGtPush(host, appKey, masterSecret);
         // 通知透传模板
         //NotificationTemplate template = notificationTemplateDemo();
         TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
-                new Payload("page/personal/myOrderWL.html&CD_XN20180129145733063612", "跳转订单物流详情"));
+                new Payload("page/personal/myOrderWL.html&CD_XN20180129145733063612", "跳转订单物流详情"),
+                null, null);
         ListMessage message = new ListMessage();
         message.setData(template);
         // 设置消息离线，并设置离线时间
@@ -201,13 +216,14 @@ public class NoticePushUtils {
      *
      * @return 返回透传消息模板
      */
-    public static TransmissionTemplate getTransmissionTemplate(String appId, String appKey, Payload contentPayload) {
+    public static TransmissionTemplate getTransmissionTemplate(String appId, String appKey, Payload contentPayload,
+                                                               String contentBody, String contentTitle) {
         TransmissionTemplate template = new TransmissionTemplate();
         template.setAppId(appId);
         template.setAppkey(appKey);
         TransmissionTemplateContent content = new TransmissionTemplateContent();
-        content.setContent("您的订单发货了");
-        content.setTitle("发货通知");
+        content.setContent(contentBody);
+        content.setTitle(contentTitle);
         content.setPayload(contentPayload);
         System.out.println(content);
         template.setTransmissionContent(JSON.toJSONString(content));
@@ -251,8 +267,30 @@ public class NoticePushUtils {
     /**
      * 物流出货信息推送
      */
-    public static void pushOrderLogisticInfo(Long userId, AppIdentityType identityType,String orderNo){
-        IGtPush push = new IGtPush(AppConstant.APP_ID,AppConstant.APP_KEY,AppConstant.MASTER_SECRET);
+    public static void pushOrderLogisticInfo(Long userId, AppIdentityType identityType, String orderNo) {
+        IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
+        TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
+                new Payload("page/personal/myOrderWL.html&" + orderNo, "跳转订单物流详情"),
+                "您单号为:" + orderNo + "的订单已经发货了!", "发货通知");
+        ListMessage message = new ListMessage();
+        message.setData(template);
+        // 设置消息离线，并设置离线时间
+        message.setOffline(true);
+        // 离线有效时间，单位为毫秒，可选
+        message.setOfflineExpireTime(24 * 1000 * 3600);
+        // 配置推送目标
+        List<Target> targetList = new ArrayList();
+        List<AppUserDevice> userDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(userId, identityType);
+        userDeviceList.forEach(p -> {
+            Target target = new Target();
+            target.setAppId(AppConstant.APP_ID);
+            target.setClientId(p.getClientId());
+            targetList.add(target);
+        });
+        // taskId用于在推送时去查找对应的message
+        String taskId = push.getContentId(message);
+        IPushResult ret = push.pushMessageToList(taskId, targetList);
+        System.out.println(ret.getResponse().toString());
 
     }
 }
