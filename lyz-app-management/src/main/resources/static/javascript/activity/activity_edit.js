@@ -303,9 +303,11 @@ function changeConditionType(val) {
     var baseVal = $("#baseType").val();
 
     if (baseVal == "COMMON") {
-        if (val == "FQTY") {
+        if(val == "FQTY"){
+            $("#fullNumber_div").fadeIn(1000);
             $("#fullAmount_div").fadeOut(1);
-        } else if (val == "FAMO") {
+        }else if(val == "FAMO"){
+            $("#fullNumber_div").fadeOut(1);
             $("#fullAmount_div").fadeIn(1000);
         }
     } else {
@@ -320,16 +322,30 @@ function changeResultType(val) {
         $("#Gift_div").fadeIn(1000);
         $("#giftChooseNumber_div").fadeIn(1000);
         $("#addAmount_div").fadeOut(1);
+        $("#discount_div").fadeOut(1);
     } else if (val == "SUB") {
         $("#subAmount_div").fadeIn(1000);
         $("#Gift_div").fadeOut(1);
         $("#giftChooseNumber_div").fadeOut(1);
         $("#addAmount_div").fadeOut(1);
+        $("#discount_div").fadeOut(1);
     } else if (val == "ADD") {
         $("#subAmount_div").fadeOut(1);
         $("#Gift_div").fadeIn(1000);
         $("#giftChooseNumber_div").fadeIn(1000);
         $("#addAmount_div").fadeIn(1000);
+        $("#discount_div").fadeOut(1);
+    } else if(val == "DIS"){
+        $("#subAmount_div").fadeOut(1);
+        $("#Gift_div").fadeOut();
+        $("#giftChooseNumber_div").fadeOut(1);
+        $("#addAmount_div").fadeOut(1);
+        $("#discount_div").fadeIn(1000);
+
+        // 折扣 只能满金额
+        changeConditionType("FAMO");
+        $("#conditionType").val("FAMO");
+        $("#conditionType").selectpicker('refresh');
     }
 }
 
@@ -373,6 +389,32 @@ function formValidate() {
                 validators: {
                     notEmpty: {
                         message: '请选择促销结束时间'
+                    }
+                }
+            },
+            subAmount:{
+                validators:{
+                    stringLength:{
+                        min:0,
+                        max:8,
+                        message: "金额不准确"
+                    }
+                }
+            },
+            addAmount:{
+                validators:{
+                    stringLength:{
+                        min:0,
+                        max:8,
+                        message: "金额不准确"
+                    }
+                }
+            },
+            discount:{
+                validators:{
+                    regexp: {
+                        regexp: /^[1-9](\.\d{0,2})?$/,
+                        message: "只能输入1~10之间的数字,可保留两位小数"
                     }
                 }
             },
@@ -534,6 +576,22 @@ function formValidate() {
             if (!reg.test(price)) {
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("加价金额有误");
+                return false;
+            }
+        } else if(resultType == "DIS"){
+            // 折扣
+            if (conditionType == "FQTY"){
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("折扣促销只能满金额打折");
+                return false;
+            }
+
+            var discount = $("#discount").val();
+
+            if(discount == null || discount.trim() == ""){
+
+                $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
+                $notify.danger("请填写折扣");
                 return false;
             }
         }

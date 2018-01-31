@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.DeliveryFeeRuleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods;
@@ -117,12 +118,22 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService {
         return deliveryFeeRuleDAO.findSpecailGoodsByRuleId(ruleId);
     }
 
-    public Double countDeliveryFee(Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList) {
+    public Double countDeliveryFee(Integer identityType, Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList) {
 
         DeliveryFeeRule deliveryFeeRule = deliveryFeeRuleDAO.findRuleByCityId(cityId).get(0);
         if (deliveryFeeRule == null) {
             return 0.00;
         } else {
+            String tollObject = deliveryFeeRule.getTollObject();
+
+            if (identityType == null || identityType.equals("")){
+                throw new RuntimeException("计算运费，用户身份信息为null");
+            }
+
+            if (!tollObject.contains(String.valueOf(identityType))){
+                return 0.00;
+            }
+
             // 是否包含特殊商品
             if (deliveryFeeRule.getIncludeSpecialGoods()) {
                 // 包含

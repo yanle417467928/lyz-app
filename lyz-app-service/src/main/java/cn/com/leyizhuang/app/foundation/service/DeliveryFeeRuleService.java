@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -38,5 +39,5 @@ public interface DeliveryFeeRuleService {
      * @param goodsInfoList 商品集合
      * @return
      */
-    Double countDeliveryFee(Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList);
+    Double countDeliveryFee(Integer identityType,Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList);
 }
