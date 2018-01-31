@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppSystemType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
@@ -109,7 +108,7 @@ public class EmployeeController {
                     return resultDTO;
                 }
             }
-            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndIdentityType(loginParam.getClientId(), loginParam.getDeviceId(),employee.getIdentityType());
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndUserIdAndIdentityType(loginParam.getClientId(), loginParam.getDeviceId(), employee.getEmpId(), employee.getIdentityType());
             if (null == device) {
                 device = new AppUserDevice(null, employee.getEmpId(), employee.getIdentityType(), AppSystemType.getAppSystemTypeByValue(loginParam.getSystemType()),
                         loginParam.getClientId(), loginParam.getDeviceId(), new Date(), new Date());

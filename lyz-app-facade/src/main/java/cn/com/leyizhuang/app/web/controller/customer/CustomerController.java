@@ -102,7 +102,7 @@ public class CustomerController {
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndIdentityType(clientId, deviceId, AppIdentityType.CUSTOMER);
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndUserIdAndIdentityType(clientId, deviceId, customer.getCusId(),AppIdentityType.CUSTOMER);
             if (null == device) {
                 device = new AppUserDevice(null, customer.getCusId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(systemType),
                         clientId, deviceId, new Date(), new Date());
