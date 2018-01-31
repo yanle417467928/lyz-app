@@ -216,7 +216,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
                 //取消订单结果确认
-            } else if ("inter_wta_order_result_enter".equalsIgnoreCase(strTable)) {
+            } else if ("tbw_out_m_cancel".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -232,7 +232,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "");
                 //取消退单结果确认
-            } else if ("inter_wta_return_order_result_enter".equalsIgnoreCase(strTable)) {
+            } else if ("tbw_back_m_cancel".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -669,24 +669,29 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaCancelReturnOrderResultEnter mapping(WtaCancelReturnOrderResultEnter returnOrderResultEnter, Node childNode) {
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
             // 比较字段名
-            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
+            if ("C_MK_DT".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderResultEnter.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
                 }
-            } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_OP_STATUS".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    returnOrderResultEnter.setIsCancel(Boolean.parseBoolean(childNode.getChildNodes().item(0).getNodeValue()));
+                    if ("已作废".equals(childNode.getChildNodes().item(0).getNodeValue())) {
+                        returnOrderResultEnter.setIsCancel(Boolean.TRUE);
+                    } else if ("结案/验收中".equals(childNode.getChildNodes().item(0).getNodeValue())) {
+                        returnOrderResultEnter.setIsCancel(Boolean.FALSE);
+                    }
                 }
-            } else if ("return_number".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_PO_NO".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderResultEnter.setReturnNumber(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("error_message".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_NOTE".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderResultEnter.setErrorMessage(childNode.getChildNodes().item(0).getNodeValue());
                 }
             }
+            //TODO  加5个备用字段:<C_RESERVED1></C_RESERVED1><C_RESERVED2></C_RESERVED2><C_RESERVED3></C_RESERVED3><C_RESERVED4></C_RESERVED4><C_RESERVED5></C_RESERVED5>
         }
         return returnOrderResultEnter;
     }
@@ -694,24 +699,29 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaCancelOrderResultEnter mapping(WtaCancelOrderResultEnter orderResultEnter, Node childNode) {
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
             // 比较字段名
-            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
+            if ("C_MK_DT".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
                     orderResultEnter.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
                 }
-            } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_OP_STATUS".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    orderResultEnter.setIsCancel(Boolean.parseBoolean(childNode.getChildNodes().item(0).getNodeValue()));
+                    if ("已作废".equals(childNode.getChildNodes().item(0).getNodeValue())) {
+                        orderResultEnter.setIsCancel(Boolean.TRUE);
+                    } else {
+                        orderResultEnter.setIsCancel(Boolean.FALSE);
+                    }
                 }
-            } else if ("order_no".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_PO_NO".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     orderResultEnter.setOrderNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("error_message".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_NOTE".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     orderResultEnter.setErrorMessage(childNode.getChildNodes().item(0).getNodeValue());
                 }
             }
+            //TODO  加5个备用字段:<C_RESERVED1></C_RESERVED1><C_RESERVED2></C_RESERVED2><C_RESERVED3></C_RESERVED3><C_RESERVED4></C_RESERVED4><C_RESERVED5></C_RESERVED5>
         }
         return orderResultEnter;
     }
