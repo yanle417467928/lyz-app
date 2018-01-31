@@ -1,10 +1,9 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
+import cn.com.leyizhuang.app.foundation.service.WmsToAppOrderService;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +23,8 @@ public class TestClient {
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
 
+    @Resource
+    private WmsToAppOrderService WmsToAppOrderService;
     @Resource
     private AppStoreService storeService;
 
@@ -47,7 +48,7 @@ public class TestClient {
         order.setDiySiteTitle("富森富之美");
         order.setCustomerName("测试");
         order.setReserveTimeQuantum("2017-12-20 14:30");
-        order.setOrderNumber("CD_XN20171220102259123465");
+        order.setOrderNumber("CD_XN20180109112029019999");
         order.setReceiveAddress("成都市新都区大丰街道订单");
         order.setReceiveName("测试");
         order.setReceivePhone("13408698552");
@@ -73,7 +74,7 @@ public class TestClient {
         goods.setCreateTime(new Date());
         goods.setGoodsCode("SJWT4503-20");
         goods.setGoodsTitle("金牛白色PPR45度弯头20");
-        goods.setOrderNumber("CD_XN20171220102259123465");
+        goods.setOrderNumber("CD_XN20180109112029018888");
         goods.setPrice(10D);
         goods.setQuantity(1);
 
@@ -83,7 +84,7 @@ public class TestClient {
         //第二步：将订单商品转化成要货商品实体AtwRequisitionOrderGoods然后调用下面service保存
 //        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
         //第三步：调用下面service将订单号发送给wms
-//        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180109112029014872");
+//        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180109112029019999");
         AtwRequisitionOrderGoods goods1 = new AtwRequisitionOrderGoods();
         goods1.setErrorMessage("测试");
         goods1.setSendFlag(true);
@@ -107,14 +108,39 @@ public class TestClient {
         returnOrder.setShoppingAddress("成都市新都区大丰街道订单");
         returnOrder.setStatusId(3);
 
-        appToWmsOrderService.saveAtwReturnOrder(returnOrder);
-        System.out.println(returnOrder.getId());
-        returnOrder.setSendFlag(true);
-        returnOrder.setSendTime(new Date());
-        returnOrder.setErrorMessage("noun");
-        appToWmsOrderService.modifyAtwReturnOrder(returnOrder);
-        System.out.println("****************************************************");
-        AtwReturnOrder returnOrder1 = appToWmsOrderService.findReturnOrderByReturnOrderNo("T201801121041875");
-        System.out.println(returnOrder1.toString());
+//        appToWmsOrderService.saveAtwReturnOrder(returnOrder);
+//        System.out.println(returnOrder.getId());
+//        returnOrder.setSendFlag(true);
+//        returnOrder.setSendTime(new Date());
+//        returnOrder.setErrorMessage("noun");
+//        appToWmsOrderService.modifyAtwReturnOrder(returnOrder);
+//        System.out.println("****************************************************");
+//        AtwReturnOrder returnOrder1 = appToWmsOrderService.findReturnOrderByReturnOrderNo("T201801121041875");
+//        System.out.println(returnOrder1.toString());
+
+
+//        AtwCancelReturnOrderRequest atwReturnOrderCheckEnter = new AtwCancelReturnOrderRequest();
+//        atwReturnOrderCheckEnter.setStoreCode("FZM007");
+//        atwReturnOrderCheckEnter.setReturnTime(new Date());
+//        atwReturnOrderCheckEnter.setReturnType(ReturnOrderType.NORMAL_RETURN);
+//        atwReturnOrderCheckEnter.setCreateTime(new Date());
+//        atwReturnOrderCheckEnter.setReturnNo("T201801121041875");
+//        appToWmsOrderService.saveAtwCancelReturnOrderRequest(atwReturnOrderCheckEnter);
+//
+//
+//        iCallWms.sendToWmsCancelReturnOrder("T201801121041875");
+//        iCallWms.sendToWmsReturnOrderCheck("T201801121041875");
+
+        WtaCancelOrderResultEnter orderResultEnter = new WtaCancelOrderResultEnter();
+        orderResultEnter.setCreateTime(new Date());
+        orderResultEnter.setOrderNo("CD_XN20180109112029014872");
+        orderResultEnter.setIsCancel(true);
+        WtaCancelReturnOrderResultEnter returnOrderResultEnter = new WtaCancelReturnOrderResultEnter();
+        returnOrderResultEnter.setReturnNumber("T201801121041875");
+        returnOrderResultEnter.setCreateTime(new Date());
+        returnOrderResultEnter.setIsCancel(true);
+
+        WmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
+        WmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
     }
 }

@@ -91,6 +91,7 @@ public class ICallWms {
      *
      * @param returnNumber 取消退货单单号
      */
+    @Async
     public void sendToWmsCancelReturnOrder(String returnNumber) {
         if (StringUtils.isBlank(returnNumber)) {
             return;
@@ -137,6 +138,7 @@ public class ICallWms {
      *
      * @param returnNumber 退货单单号
      */
+    @Async
     public void sendToWmsReturnOrderCheck(String returnNumber) {
         if (StringUtils.isBlank(returnNumber)) {
             return;
