@@ -64,7 +64,7 @@ public class ICallWms {
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
         try {
-            objects = wmsClient.invoke(wmsName, "td_tbw_back_m_cancel", "1", xml);
+            objects = wmsClient.invoke(wmsName, "inter_atw_order_cancel_request", "1", xml);
         } catch (Exception e) {
             // TODO 发送短信通知传输失败
             cancelOrderRequest.setSendFlag(false);
@@ -111,7 +111,7 @@ public class ICallWms {
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
         try {
-            objects = wmsClient.invoke(wmsName, "td_return_note", "1", xml);
+            objects = wmsClient.invoke(wmsName, "td_tbw_back_m_cancel", "1", xml);
         } catch (Exception e) {
             // TODO 发送短信通知传输失败
             returnOrderRequest.setSendFlag(false);

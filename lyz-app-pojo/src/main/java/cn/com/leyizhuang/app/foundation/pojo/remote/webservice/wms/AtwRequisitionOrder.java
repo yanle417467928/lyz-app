@@ -191,6 +191,7 @@ public class AtwRequisitionOrder {
         requisitionOrder.setDisctrict(logisticsInfo.getDeliveryCounty());
 //        requisitionOrder.setProvince();
         requisitionOrder.setResidenceName(logisticsInfo.getResidenceName());
+        requisitionOrder.setOrderTime(orderBaseInfo.getCreateTime());
         requisitionOrder.setSubdistrict(logisticsInfo.getDeliveryStreet());
         requisitionOrder.setSellerTel(orderBaseInfo.getSalesConsultPhone());
         requisitionOrder.setGoodsQuantity(goodsQuantity);
