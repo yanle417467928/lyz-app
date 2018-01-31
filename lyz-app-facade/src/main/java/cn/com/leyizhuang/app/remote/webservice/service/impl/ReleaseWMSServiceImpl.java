@@ -676,7 +676,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
             } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    returnOrderResultEnter.setIsCancel(childNode.getChildNodes().item(0).getNodeValue());
+                    returnOrderResultEnter.setIsCancel(Boolean.parseBoolean(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("return_number".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
@@ -701,7 +701,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
             } else if ("is_cancel".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    orderResultEnter.setIsCancel(childNode.getChildNodes().item(0).getNodeValue());
+                    orderResultEnter.setIsCancel(Boolean.parseBoolean(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("order_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {

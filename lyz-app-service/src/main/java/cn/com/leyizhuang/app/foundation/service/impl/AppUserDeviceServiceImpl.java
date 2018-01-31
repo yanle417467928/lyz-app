@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.service.AppUserDeviceService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 用户设备服务实现
@@ -22,9 +23,9 @@ public class AppUserDeviceServiceImpl implements AppUserDeviceService {
     private AppUserDeviceDAO deviceDAO;
 
     @Override
-    public AppUserDevice findByClientIdAndDeviceIdAndIdentityType(String clientId, String deviceId,AppIdentityType identityType) {
+    public AppUserDevice findByClientIdAndDeviceIdAndUserIdAndIdentityType(String clientId, String deviceId,Long userId,AppIdentityType identityType) {
         if(StringUtils.isNotBlank(clientId) && StringUtils.isNotBlank(deviceId)){
-            return deviceDAO.findByClientIdAndDeviceIdAndIdentityType(clientId,deviceId,identityType);
+            return deviceDAO.findByClientIdAndDeviceIdAndUserIdAndIdentityType(clientId,deviceId,userId,identityType);
         }
         return null;
     }
@@ -41,5 +42,13 @@ public class AppUserDeviceServiceImpl implements AppUserDeviceService {
         if (null != device){
             deviceDAO.updateLastLoginTime(device);
         }
+    }
+
+    @Override
+    public List<AppUserDevice> findAppUserDeviceByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
+        if (null != userId && null != identityType){
+            return deviceDAO.findAppUserDeviceByUserIdAndIdentityType(userId,identityType);
+        }
+        return null;
     }
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppUserDeviceDAO">
 
-    <select id="findByClientIdAndDeviceIdAndIdentityType"
+    <select id="findByClientIdAndDeviceIdAndUserIdAndIdentityType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice">
         SELECT
             id,
@@ -13,16 +13,33 @@
             device_id,
             create_time
         FROM user_device
-        WHERE client_id = #{clientId} AND device_id = #{deviceId} AND identity_type = #{identityType}
+        WHERE client_id = #{clientId} AND device_id = #{deviceId} AND user_id = #{userId} AND
+              identity_type = #{identityType}
     </select>
 
     <insert id="addUserDevice" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice">
         INSERT INTO user_device (user_id, identity_type, system_type, client_id, device_id, create_time)
         VALUES (#{userId}, #{identityType}, #{systemType}, #{clientId}, #{deviceId}, #{createTime})
     </insert>
+
     <update id="updateLastLoginTime" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice">
         UPDATE user_device
         SET last_login_time = #{lastLoginTime}
         WHERE id = #{id}
     </update>
+
+    <select id="findAppUserDeviceByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice">
+        SELECT
+            id,
+            user_id,
+            identity_type,
+            system_type,
+            client_id,
+            device_id,
+            create_time
+        FROM user_device
+        WHERE user_id = #{userId} AND
+              identity_type = #{identityType}
+    </select>
 </mapper>

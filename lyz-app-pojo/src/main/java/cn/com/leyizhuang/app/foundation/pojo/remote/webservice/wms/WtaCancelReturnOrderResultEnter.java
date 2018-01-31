@@ -31,7 +31,7 @@ public class WtaCancelReturnOrderResultEnter {
     /**
      * 是否已退
      */
-    private String isCancel;
+    private Boolean isCancel;
 
     /**
      * 接口错误信息

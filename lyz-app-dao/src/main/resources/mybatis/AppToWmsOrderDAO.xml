@@ -178,7 +178,7 @@
                 error_message = #{errorMessage},
             </if>
         </set>
-        WHERE order_no = #{orderNo}
+        WHERE return_no = #{returnNo}
     </update>
 
     <update id="updateAtwReturnOrderCheckEnterRequest"
@@ -195,7 +195,7 @@
                 error_message = #{errorMessage},
             </if>
         </set>
-        WHERE order_no = #{orderNo}
+        WHERE return_no = #{returnNo}
     </update>
 
     <update id="updateAtwRequisitionOrder"
