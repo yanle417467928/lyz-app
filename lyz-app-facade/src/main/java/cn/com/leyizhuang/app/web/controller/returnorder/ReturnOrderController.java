@@ -41,6 +41,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,10 +165,6 @@ public class ReturnOrderController {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             //获取订单账目明细
             OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-            //获取退单号
-            String returnNumber = OrderUtils.getReturnNumber();
-            //创建退单头
-            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
             if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
@@ -178,8 +175,9 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
-                    || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
+            if (((AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus()) || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus()) && orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY))
+                    || ((AppOrderStatus.PENDING_RECEIVE == orderBaseInfo.getStatus() || AppOrderStatus.UNPAID == orderBaseInfo.getStatus()) &&
+                    AppDeliveryType.SELF_TAKE == orderBaseInfo.getDeliveryType())) {
                 //判断收货类型和订单状态
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
                     //创建取消订单参数存储类
@@ -204,8 +202,10 @@ public class ReturnOrderController {
                     return resultDTO;
                 }
                 //调用取消订单通用方法
-                Boolean b = this.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
-                if (b) {
+                Map<Object, Object> maps = this.cancelOrderUniversal(req, response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
+
+                ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                if (maps.get("code").equals("SUCCESS")) {
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -1509,8 +1509,9 @@ public class ReturnOrderController {
      * @return
      */
     @Transactional
-    public Boolean cancelOrderUniversal(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
-                                        String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
+    public Map<Object, Object> cancelOrderUniversal(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType,
+                                                    String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
+        Map<Object, Object> maps = new HashedMap();
         try {
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
@@ -1917,12 +1918,15 @@ public class ReturnOrderController {
             }
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
-            return true;
+            maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
+            maps.put("code", "SUCCESS");
+            return maps;
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("cancelOrder EXCEPTION,未知异常,取消订单失败，出参 resultDTO:{}");
             logger.warn("{}", e);
-            return false;
+            maps.put("code", "FAILURE");
+            return maps;
         }
     }
 
@@ -1940,11 +1944,11 @@ public class ReturnOrderController {
         CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderNumber);
         if (isCancel) {
             //调用取消订单通用方法
-            Boolean b = this.cancelOrderUniversal(req, response, cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderNumber, cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
-
-            if (b) {
+            Map<Object, Object> maps = this.cancelOrderUniversal(req, response, cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderNumber, cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
+            ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+            if (maps.get("code").equals("SUCCESS")) {
                 //发送退单拆单消息到拆单消息队列
-//                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                 //修改取消订单处理状态
                 cancelOrderParametersService.updateCancelStatusByOrderNumber(orderNumber);
                 logger.info("cancelOrderToWms OUT,取消订单成功");
