@@ -247,8 +247,19 @@
         return_status
         FROM ord_return_base_info orbi
         WHERE
+         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            (orbi.creator_id = #{userId}
+            AND orbi.creator_identityType = #{identityType})
+             or cus_id = #{userId}
+         </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
             orbi.creator_id = #{userId}
             AND orbi.creator_identityType = #{identityType}
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            orbi.creator_id = #{userId}
+            AND orbi.creator_identityType = #{identityType}
+        </if>
     </select>
 
     <select id="findReturnOrderList" parameterType="java.lang.String"

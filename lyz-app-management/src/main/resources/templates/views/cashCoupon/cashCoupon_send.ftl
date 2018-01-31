@@ -46,42 +46,36 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="title">标题：</label>
-                            <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.title}</#if>
-                            </div>
-                        </div>
+
+                    <div class="col-md-1 a" style="text-align: right">
+                        <label class="title">标题：</label>
+                    </div>
+                    <div class="col-md-2">
+                    <#if cashCoupon??>${cashCoupon.title}</#if>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="title">剩余数量：</label>
-                            <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
-                            </div>
-                        </div>
+                    <div class="col-md-1 a" style="text-align: right">
+                        <label class="title">剩余数量：</label>
+                    </div>
+                    <div class="col-md-2">
+                        <#if cashCoupon??>${cashCoupon.remainingQuantity}</#if>
                     </div>
 
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="title">面额￥：</label>
-                            <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.denomination}</#if>
-                            </div>
-                        </div>
+
+                    <div class="col-md-1 a" style="text-align: right">
+                        <label class="title">面额：</label>
+                    </div>
+                    <div class="col-md-2">
+                    <#if cashCoupon??>${cashCoupon.denomination}</#if>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="title">使用条件￥：</label>
-                            <div class="input-group">
-                            <#if cashCoupon??>${cashCoupon.condition}</#if>
-                            </div>
-                        </div>
+                    <div class="col-md-1 a" style="text-align: right">
+                        <label class="title">使用条件：</label>
+                    </div>
+                    <div class="col-md-2">
+                    <#if cashCoupon??>${cashCoupon.condition}</#if>
                     </div>
                 </div>
             </div>

@@ -414,6 +414,15 @@ function formValidate() {
                     }
                 }
             },
+            fixedAmount:{
+                validators:{
+                    stringLength:{
+                        min:0,
+                        max:8,
+                        message: "金额不准确"
+                    }
+                }
+            },
             discount:{
                 validators:{
                     regexp: {

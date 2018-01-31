@@ -29,7 +29,8 @@
         <div class=" col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findDecorativeByCondition()">
+                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findDecorativeByCondition()">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
@@ -101,13 +102,13 @@
 <script>
 
 
-    $(function() {
+    $(function () {
         initDateGird('/rest/decorativeInfo/page/grid');
         findCitySelection();
     });
 
 
-    function findCitySelection(){
+    function findCitySelection() {
         var city = "";
         $.ajax({
             url: '/rest/citys/findCitylist',
@@ -162,21 +163,38 @@
             field: 'enable',
             title: '是否启用',
             align: 'center',
-            formatter: function(value,row,index){
+            formatter: function (value, row, index) {
                 if (true === value) {
                     return '<span class="label label-primary">是</span>';
-                }else if(false === value){
+                } else if (false === value) {
                     return '<span class="label label-danger">否</span>';
                 } else {
                     return '<span class="label label-danger">-</span>';
                 }
             }
-        }]);
+        }, {
+            field: 'id',
+            title: '公司合同',
+            align: 'center',
+            formatter: function (value) {
+                return '<a class="scan" href="/views/controller/detail/' + value + '"> 查看合同</a>';
+
+            }
+//            events: {
+//                'click .scan': function (e, value, row) {
+//                    $page.information.show(row.id);
+//                }
+//            },
+//            formatter: function () {
+//                return '<a class="scan" href="#">查看合同</a>';
+//            }
+        }
+        ]);
     }
 
     var $page = {
         information: {
-            show: function ( decorativeCompanyId) {
+            show: function (decorativeCompanyId) {
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
@@ -219,10 +237,10 @@
 
                                 if (true === data.enable) {
                                     data.enable = '<span class="label label-primary">是</span>';
-                                }else if(false === data.enable){
+                                } else if (false === data.enable) {
                                     data.enable = '<span class="label label-danger">否</span>';
-                                }else{
-                                    data.enable  = '<span class="label label-danger">-</span>';
+                                } else {
+                                    data.enable = '<span class="label label-danger">-</span>';
                                 }
                                 $('#enable').html(data.enable);
 
@@ -246,9 +264,6 @@
             }
         }
     }
-
-
-
 
 
     function findDecorativeByCondition() {
