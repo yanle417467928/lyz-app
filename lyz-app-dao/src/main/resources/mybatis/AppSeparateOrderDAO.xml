@@ -780,6 +780,7 @@
     <select id="getReturnOrderGoodsInfByReturnNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf">
         SELECT
+            rt_line_id,
             rt_header_id,
             return_number,
             main_return_number,
