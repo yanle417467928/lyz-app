@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -944,6 +945,13 @@ public class ReturnOrderController {
             }
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
                     productCouponList, orderGoodsInfoList);
+            //保存发送wms退货单头
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+            SalesConsult salesConsult = employeeService.findSellerByUserIdAndIdentityType(userId, identityType);
+            AtwReturnOrder atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
+            appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
+            //发送退货单到wms
+            callWms.sendToWmsReturnOrderAndGoods(returnNo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;

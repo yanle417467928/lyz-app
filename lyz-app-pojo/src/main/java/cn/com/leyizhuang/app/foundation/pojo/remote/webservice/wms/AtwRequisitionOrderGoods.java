@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -62,15 +61,16 @@ public class AtwRequisitionOrderGoods {
      */
     private Date sendTime;
 
-    public static AtwRequisitionOrderGoods transform(OrderGoodsInfo goodsInfo) {
+    public static AtwRequisitionOrderGoods transform(String orderNumber, String sku, String skuName, Double retailPrice,
+                                                     Integer qty, String companyFlag) {
         AtwRequisitionOrderGoods requisitionOrderGoods = new AtwRequisitionOrderGoods();
         requisitionOrderGoods.setCreateTime(new Date());
-        requisitionOrderGoods.setOrderNumber(goodsInfo.getOrderNumber());
-        requisitionOrderGoods.setGoodsCode(goodsInfo.getSku());
-        requisitionOrderGoods.setGoodsTitle(goodsInfo.getSkuName());
-        requisitionOrderGoods.setPrice(goodsInfo.getRetailPrice());
-        requisitionOrderGoods.setQuantity(goodsInfo.getOrderQuantity());
-        requisitionOrderGoods.setCompanyFlag(goodsInfo.getCompanyFlag());
+        requisitionOrderGoods.setOrderNumber(orderNumber);
+        requisitionOrderGoods.setGoodsCode(sku);
+        requisitionOrderGoods.setGoodsTitle(skuName);
+        requisitionOrderGoods.setPrice(retailPrice);
+        requisitionOrderGoods.setQuantity(qty);
+        requisitionOrderGoods.setCompanyFlag(companyFlag);
         return requisitionOrderGoods;
     }
 }

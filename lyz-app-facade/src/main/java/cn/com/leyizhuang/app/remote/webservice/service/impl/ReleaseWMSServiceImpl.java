@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.remote.webservice.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -58,6 +59,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
     @Resource
     private AppOrderService appOrderService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
 
     /**
      * 获取wms信息
@@ -236,6 +240,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         orderResultEnter = mapping(orderResultEnter, childNode);
                     }
                     wmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
+                    //修改原订单状态
+                    appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderResultEnter.getOrderNo());
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -252,6 +258,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         returnOrderResultEnter = mapping(returnOrderResultEnter, childNode);
                     }
                     wmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
+                    //修改退货单状态
+                    returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -335,7 +343,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                }
             } else if ("c_end_dt".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wtaShippingOrderHeader.setEndDt(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
+                    wtaShippingOrderHeader.setEndDt(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
@@ -563,7 +571,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
-                    returnOrderDeliveryClerk.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
+                    returnOrderDeliveryClerk.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
@@ -623,7 +631,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                }
             } else if ("C_DT".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    orderDeliveryInfoDetails.setCreateTime(DateUtil.parseDate(childNode.getChildNodes().item(0).getNodeValue()));
+                    orderDeliveryInfoDetails.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
                 }
 //            } else if (childNode.getNodeName().equalsIgnoreCase("C_COLUMN1")) {
 //                if (null != childNode.getChildNodes().item(0)) {

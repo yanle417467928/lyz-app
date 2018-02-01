@@ -292,6 +292,26 @@ public class DateUtil {
     }
 
     /**
+     * 按照 yyyy/MM/dd HH:mm:ss 的格式解析给定的日期字符串
+     *
+     * @param dateString 给定的日期字符串
+     * @return 返回解析后的日期，如果解析失败，则返回null
+     */
+    public static Date dateFromString(String dateString) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        if (dateString != null) {
+            try {
+                Date date = sdf.parse(dateString);
+                return date;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return new Date(0);
+            }
+        }
+        return new Date(0);
+    }
+
+    /**
      * 按照 yyyy-MM-dd HH:mm:ss 的格式解析给定的日期字符串
      *
      * @param dateTimeStr 给定的日期字符串

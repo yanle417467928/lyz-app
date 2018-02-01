@@ -252,6 +252,28 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         WHERE store_id = #{storeId} AND identity_type = #{type}
     </select>
 
+    <select id="findSellerByEmpId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.SalesConsult">
+        SELECT
+            name     consultName,
+            mobile   consultMobilePhone,
+            store_id ascriptionStoreId
+        FROM emp_employee
+        WHERE emp_id = #{userId}
+    </select>
+
+    <select id="findSellerByCustomerId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.SalesConsult">
+        SELECT
+            name     consultName,
+            mobile   consultMobilePhone,
+            store_id ascriptionStoreId
+        FROM emp_employee
+        WHERE emp_id = (SELECT c.sales_consult_id
+                        FROM cus_customer c
+                        WHERE c.cus_id = #{userId})
+
+    </select>
     <select id="findDeliveryClerkNoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
         SELECT delivery_clerk_no

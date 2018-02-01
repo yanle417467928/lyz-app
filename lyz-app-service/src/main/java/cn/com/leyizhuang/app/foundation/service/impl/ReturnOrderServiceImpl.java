@@ -6,20 +6,27 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
+import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by caiyu on 2017/12/4.
@@ -34,7 +41,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     private AppEmployeeService appEmployeeService;
     @Resource
     private AppCustomerService appCustomerService;
-
+    @Resource
+    private AppToWmsOrderService appToWmsOrderService;
     @Override
     public ReturnOrderBaseInfo createReturnOrderBaseInfo(Long orderId, String orderNo, Date orderTime, String remarksInfo, Long creatorId,
                                                          Integer creatorIdentityType, String reasonInfo, String returnPic, AppOrderType orderType,
@@ -131,6 +139,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                         //修改这个数量
                         orderDAO.updateOrderGoodsInfo(orderGoodsInfo);
+                        //保存发送wms退货商品明细
+                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), orderGoodsInfo.getSku(),
+                                orderGoodsInfo.getSkuName(), orderGoodsInfo.getRetailPrice(), orderGoodsInfo.getOrderQuantity(), orderGoodsInfo.getCompanyFlag());
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }
             } else {
