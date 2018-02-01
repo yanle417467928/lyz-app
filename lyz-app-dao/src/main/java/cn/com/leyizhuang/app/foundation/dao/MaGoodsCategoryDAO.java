@@ -35,4 +35,5 @@ public interface MaGoodsCategoryDAO {
 
     Boolean editIsExistSortId(@Param(value = "sortId") Long sortId,@Param(value = "id") Long id);
 
+    List<GoodsCategoryDO> findGoodsCategoryByPCategoryCode(String categoryCode);
 }

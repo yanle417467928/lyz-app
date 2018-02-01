@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2018/1/15
@@ -43,7 +46,11 @@ public class MaPhotoOrderViewsController extends BaseController {
 
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
-        PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findById(id);
+        List<PhotoOrderStatus> status = new ArrayList<>();
+        status.add(PhotoOrderStatus.PENDING);
+        status.add(PhotoOrderStatus.PROCESSING);
+        PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByIdAndStatus(id, status);
+
         if (null == photoOrderVO) {
             logger.warn("跳转变更预存款页面失败，photoOrderVO(id = {}) == null", id);
             error404();

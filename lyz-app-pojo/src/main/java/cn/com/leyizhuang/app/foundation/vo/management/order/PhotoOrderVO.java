@@ -22,6 +22,8 @@ public class PhotoOrderVO {
     private Long id;
     //下单人门店
     private String storeName;
+    //下单人id
+    private Long userId;
     //下单人真实姓名
     private String username;
     //下单人手机号码
@@ -43,6 +45,8 @@ public class PhotoOrderVO {
     private String contactName;
     //联系人电话
     private String contactPhone;
+    //下单人身份类型
+    private AppIdentityType identityTypeValue;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();
@@ -50,6 +54,7 @@ public class PhotoOrderVO {
 
     public void setIdentityType(AppIdentityType identityType){
         this.identityType = identityType.getDescription();
+        this.identityTypeValue = identityType;
     }
 
     public void setCreateTime(LocalDateTime createTime){

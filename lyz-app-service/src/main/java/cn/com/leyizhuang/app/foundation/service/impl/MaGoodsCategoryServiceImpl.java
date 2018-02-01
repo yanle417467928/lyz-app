@@ -105,4 +105,9 @@ public class MaGoodsCategoryServiceImpl implements MaGoodsCategoryService {
     public Boolean editIsExistSortId(Long sortId,Long id){
         return  maGoodsCategoryDAO.editIsExistSortId(sortId,id);
     }
+
+    @Override
+    public List<GoodsCategoryDO> findGoodsCategoryByPCategoryCode(String categoryCode) {
+        return this.maGoodsCategoryDAO.findGoodsCategoryByPCategoryCode(categoryCode);
+    }
 }

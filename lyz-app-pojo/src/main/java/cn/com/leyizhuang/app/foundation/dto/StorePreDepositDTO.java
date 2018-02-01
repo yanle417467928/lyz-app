@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.io.Serializable;
+
 /**
  * @author GenerationRoad
  * @date 2018/1/12
@@ -14,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorePreDepositDTO {
+public class StorePreDepositDTO implements Serializable{
 
     /**
      * 门店id
