@@ -456,15 +456,17 @@
 
     <insert id="saveOrderJxPriceDifferenceRefundInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderJxPriceDifferenceRefundInf">
-        INSERT INTO inter_ate_order_jx_price_difference_refund_inf (main_order_number, return_number, sob_id, store_org_code, diy_site_code, refund_date, sku,
-                                                                    amount, description, attribute1, attribute2, attribute3, attribute4, attribute5,
-                                                                    create_time, send_flag, error_msg, send_time, refund_number)
+        INSERT INTO inter_ate_return_order_jx_price_difference_refund_inf (main_return_number, main_order_number, sob_id, store_org_code, diy_site_code,
+                                                                           refund_date, refund_number, sku, amount, description, attribute1, attribute2,
+                                                                           attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time)
             SELECT
+                #{mainReturnNumber},
                 #{mainOrderNumber},
                 #{sobId},
                 #{storeOrgCode},
                 #{diySiteCode},
                 #{refundDate},
+                #{refundNumber},
                 #{sku},
                 #{amount},
                 #{description},
@@ -476,13 +478,11 @@
                 #{createTime},
                 #{sendFlag},
                 #{errorMsg},
-                #{sendTime},
-                #{refundNumber},
-                #{returnNumber}
+                #{sendTime}
             FROM dual
             WHERE NOT exists(SELECT 1
-                             FROM inter_ate_order_jx_price_difference_refund_inf
-                             WHERE return_number = #{returnNumber}
+                             FROM inter_ate_return_order_jx_price_difference_refund_inf
+                             WHERE main_return_number = #{mainReturnNumber}
                                    AND sku = #{sku})
 
     </insert>
@@ -516,8 +516,8 @@
     <select id="getOrderJxPriceDifferenceRefundInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderJxPriceDifferenceRefundInf">
         SELECT *
-        FROM inter_ate_order_jx_price_difference_refund_inf
-        WHERE return_number = #{returnNumber}
+        FROM inter_ate_return_order_jx_price_difference_refund_inf
+        WHERE main_return_number = #{returnNumber}
     </select>
 
     <update id="updateOrderJxPriceDifferenceReturnInf">
@@ -546,7 +546,7 @@
     </select>
 
     <update id="updateOrderJxPriceDifferenceRefundInf">
-        UPDATE inter_ate_order_jx_price_difference_refund_inf
+        UPDATE inter_ate_return_order_jx_price_difference_refund_inf
         <set>
             <if test="null != flag">
                 send_flag = #{flag},
