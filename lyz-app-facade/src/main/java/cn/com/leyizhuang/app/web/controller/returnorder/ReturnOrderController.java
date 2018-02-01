@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.web.controller.returnorder;
 
-import cn.com.leyizhuang.app.core.constant.CancelProcessingStatus;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
@@ -15,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -27,7 +27,6 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
-import cn.com.leyizhuang.app.web.controller.wechatpay.WeChatPayController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
@@ -1214,12 +1213,11 @@ public class ReturnOrderController {
                 logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            //TODO wms那边建好表后可使用
-//            AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
-//            appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+            AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
+            appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
             //发送取消退货单到WMS
-//            callWms.sendToWmsCancelOrder(returnNumber);
-            // TODO 修改回原订单的可退和已退！
+            callWms.sendToWmsCancelOrder(returnNumber);
+            // 修改回原订单的可退和已退！
             returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
             returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
@@ -1347,7 +1345,7 @@ public class ReturnOrderController {
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
             //如果是门店自提，取货地址就取顾客默认地址
             if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
-                if (StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())) {
+                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
                     AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
                     DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
                     if (null == defaultDeliveryAddress) {
@@ -1356,13 +1354,13 @@ public class ReturnOrderController {
                     }
                     orderLogisticsInfo = transform(orderLogisticsInfo, defaultDeliveryAddress);
                     //如果是送货上门，退货到门店的地址就是订单门店地址
-                } else if (StringUtils.isBlank(orderLogisticsInfo.getBookingStoreAddress()) && identityType == 6) {
+                } else if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType()) && identityType == 6) {
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo && null != orderBaseInfo.getCreatorId()) {
                         if (orderBaseInfo.getCreatorId().equals(userId)) {
                             AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
-                            orderLogisticsInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
+                            orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
                             orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
                             orderLogisticsInfo.setBookingStoreName(store.getStoreName());
                             orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
@@ -1383,7 +1381,7 @@ public class ReturnOrderController {
     }
 
     private OrderLogisticsInfo transform(OrderLogisticsInfo orderLogisticsInfo, DeliveryAddressResponse defaultDeliveryAddress) {
-        orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
+        orderLogisticsInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
         orderLogisticsInfo.setReceiver(defaultDeliveryAddress.getDeliveryName());
         orderLogisticsInfo.setReceiverPhone(defaultDeliveryAddress.getDeliveryPhone());
         orderLogisticsInfo.setDeliveryCity(defaultDeliveryAddress.getDeliveryCity());

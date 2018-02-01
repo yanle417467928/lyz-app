@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author Jerry.Ren
  * Notes: WMS~APP退单单头返配上架
@@ -20,6 +22,10 @@ public class WtaReturningOrderHeader {
 
     private Long id;
 
+    /**
+     * 创建时间（本条数据创建时间）
+     */
+    private Date createTime;
     /**
      * 仓库编号
      */
