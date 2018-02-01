@@ -34,4 +34,6 @@ public interface MaGoodsCategoryService {
     Boolean isExistSortId(Long sortId);
 
     Boolean editIsExistSortId(Long sortId,Long id);
+
+    List<GoodsCategoryDO> findGoodsCategoryByPCategoryCode(String categoryCode);
 }

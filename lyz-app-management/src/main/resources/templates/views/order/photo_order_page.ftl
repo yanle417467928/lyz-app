@@ -33,11 +33,14 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <div id="toolbar" class="form-inline ">
+                    <button id="btn_delete" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
+                    </button>
+
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             onchange="findCusByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
-
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
                             onchange="findCusByStoreId()"   data-live-search="true" >
@@ -252,6 +255,9 @@
                 }
             }
         ]);
+        $('#btn_delete').on('click', function () {
+            $grid.remove($('#dataGrid'), '/rest/order/photo', 'delete');
+        });
     }
     function findCusByCity(cityId) {
         initSelect("#storeCode", "选择门店");

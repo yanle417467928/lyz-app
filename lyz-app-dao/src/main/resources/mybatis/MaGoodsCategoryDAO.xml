@@ -132,4 +132,12 @@
         DELETE FROM gds_goods_category
         WHERE cid = #{id};
     </delete>
+
+    <select id="findGoodsCategoryByPCategoryCode" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO">
+        SELECT cid, category_name
+        FROM gds_goods_category
+        WHERE p_category_code = #{categoryCode}
+    </select>
+
+
  </mapper>

@@ -17,8 +17,12 @@ public interface MaOrderPhotoDAO {
 
     PhotoOrderVO findById(Long id);
 
+    PhotoOrderVO findByIdAndStatus(@Param("id")Long id, @Param("list")List<PhotoOrderStatus> status);
+
     int updateStatus(@Param("id")Long id, @Param("status")PhotoOrderStatus status);
 
     int batchUpdateStatus(@Param("list")List<Long> ids, @Param("status")PhotoOrderStatus status);
+
+    int batchDelete(@Param("array")Long[] ids);
 
 }

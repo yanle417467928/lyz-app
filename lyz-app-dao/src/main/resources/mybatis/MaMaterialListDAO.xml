@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaMaterialListDAO">
+
+    <select id="findByUserIdAndIdentityTypeAndGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+        SELECT *
+        FROM
+        material_list
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND gid = #{goodsId}
+        AND audit_no IS NULL
+        AND cus_id IS NULL
+        AND (material_list_type = 'NORMAL' OR material_list_type IS NULL)
+    </select>
+
+    <insert id="batchSave" parameterType="java.util.List">
+        INSERT INTO material_list
+        (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty,
+        audit_no,
+        material_list_type)
+        VALUES
+        <foreach collection="list" item="materialListDO" separator=",">
+            (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.cusId},#{materialListDO.gid},
+            #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification},
+            #{materialListDO.coverImageUri},
+            #{materialListDO.goodsUnit}, #{materialListDO.qty},
+            #{materialListDO.auditNo},#{materialListDO.materialListType})
+        </foreach>
+    </insert>
+
+    <update id="modifyQty">
+        UPDATE material_list
+        SET qty = #{qty}
+        WHERE id = #{id};
+    </update>
+
+</mapper>

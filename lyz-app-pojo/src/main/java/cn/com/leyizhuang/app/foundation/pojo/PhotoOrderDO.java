@@ -42,4 +42,6 @@ public class PhotoOrderDO {
     private LocalDateTime createTime;
     //拍照下单单号
     private String photoOrderNo;
+    //创建时间
+    private LocalDateTime updateTime;
 }
