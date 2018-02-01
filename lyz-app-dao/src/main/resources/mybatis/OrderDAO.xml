@@ -838,4 +838,12 @@
         WHERE
             id = #{ogi}
     </update>
+
+    <update id="updateOrderGoodsShippingQuantity">
+        UPDATE ord_goods_info
+        SET shipping_qty = #{qty}
+        WHERE sku = #{sku}
+              AND ord_no = #{orderNo}
+
+    </update>
 </mapper>

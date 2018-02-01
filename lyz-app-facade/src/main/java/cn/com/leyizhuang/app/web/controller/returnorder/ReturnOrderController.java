@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -190,10 +191,10 @@ public class ReturnOrderController {
                     cancelOrderParametersDO.setCancelStatus(CancelProcessingStatus.SEND_WMS);
                     cancelOrderParametersService.addCancelOrderParameters(cancelOrderParametersDO);
 
-                    // TODO wms 建好表后可使用通知WMS
-//                AtwCan`celOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
-//                appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
-//                callWms.sendToWmsCancelOrder(returnOrderBaseInfo.getOrderNo());
+                    // 发送到wms通知WMS
+                    AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(orderNumber, reasonInfo, orderBaseInfo.getStatus());
+                    appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+                    callWms.sendToWmsCancelOrder(orderNumber);
                     //修改订单状态为取消中
                     orderBaseInfo.setStatus(AppOrderStatus.CANCELING);
                     appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
@@ -1221,8 +1222,8 @@ public class ReturnOrderController {
                 logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(returnOrderBaseInfo);
-            appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
+            AtwCancelReturnOrderRequest atwCancelOrderRequest = AtwCancelReturnOrderRequest.transform(returnOrderBaseInfo);
+            appToWmsOrderService.saveAtwCancelReturnOrderRequest(atwCancelOrderRequest);
             //发送取消退货单到WMS
             callWms.sendToWmsCancelOrder(returnNumber);
             // 修改回原订单的可退和已退！

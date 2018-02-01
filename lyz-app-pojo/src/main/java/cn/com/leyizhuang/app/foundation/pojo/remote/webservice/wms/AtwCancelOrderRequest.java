@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -54,13 +53,13 @@ public class AtwCancelOrderRequest {
      */
     private Date sendTime;
 
-    public static AtwCancelOrderRequest transform(ReturnOrderBaseInfo returnOrderBaseInfo) {
+    public static AtwCancelOrderRequest transform(String orderNo, String cancelReason, AppOrderStatus appOrderStatus) {
         AtwCancelOrderRequest atwCancelOrderRequest = new AtwCancelOrderRequest();
-        atwCancelOrderRequest.setOrderNo(returnOrderBaseInfo.getReturnNo());
-        atwCancelOrderRequest.setCancelReason(returnOrderBaseInfo.getReasonInfo());
-        atwCancelOrderRequest.setCancelTime(returnOrderBaseInfo.getReturnTime());
+        atwCancelOrderRequest.setOrderNo(orderNo);
+        atwCancelOrderRequest.setCancelReason(cancelReason);
+        atwCancelOrderRequest.setCancelTime(new Date());
         atwCancelOrderRequest.setCreateTime(new Date());
-        atwCancelOrderRequest.setOrderStatus(AppOrderStatus.PENDING_SHIPMENT);
+        atwCancelOrderRequest.setOrderStatus(appOrderStatus);
 
         return atwCancelOrderRequest;
     }

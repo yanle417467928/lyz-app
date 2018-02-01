@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
+import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
@@ -149,15 +149,16 @@ public class TestClient {
 //        WmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
 //        WmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
 
-        AtwCancelOrderRequest orderRequest = new AtwCancelOrderRequest();
-        orderRequest.setOrderStatus(AppOrderStatus.CANCELING);
-        orderRequest.setOrderNo("CD_XN20180201100056260714");
+        AtwCancelReturnOrderRequest orderRequest = new AtwCancelReturnOrderRequest();
+        orderRequest.setReturnNo("T20180201165521849");
         orderRequest.setCreateTime(new Date());
-        orderRequest.setCancelTime(new Date());
-        orderRequest.setCancelReason("下错误了");
-        appToWmsOrderService.saveAtwCancelOrderRequest(orderRequest);
+        orderRequest.setReturnType(ReturnOrderType.NORMAL_RETURN);
+        orderRequest.setReturnTime(new Date());
+        orderRequest.setStoreCode("FZM007");
 
-        iCallWms.sendToWmsCancelOrder("CD_XN20180201100056260714");
+        appToWmsOrderService.saveAtwCancelReturnOrderRequest(orderRequest);
+
+        iCallWms.sendToWmsCancelReturnOrder("T20180201165521849");
 
     }
 }

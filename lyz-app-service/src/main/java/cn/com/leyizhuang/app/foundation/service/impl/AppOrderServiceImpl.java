@@ -663,4 +663,11 @@ public class AppOrderServiceImpl implements AppOrderService {
     public void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId) {
         orderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty,orderGoodsId);
     }
+
+    @Override
+    public void updateOrderGoodsShippingQuantity(String orderNo, String gCode, Integer dAckQty) {
+        if (StringUtils.isNotBlank(orderNo) && StringUtils.isNotBlank(gCode)) {
+            orderDAO.updateOrderGoodsShippingQuantity(orderNo, gCode, dAckQty);
+        }
+    }
 }

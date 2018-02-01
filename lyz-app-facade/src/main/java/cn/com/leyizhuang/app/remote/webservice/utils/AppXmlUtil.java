@@ -186,18 +186,14 @@ public class AppXmlUtil {
         if (returnOrderRequest.getReturnTime() != null) {
             returnTime = DateUtil.formatDate(returnOrderRequest.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
         }
-        String createTime = null;
-        if (returnOrderRequest.getCreateTime() != null) {
-            createTime = DateUtil.formatDate(returnOrderRequest.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
-        }
         // diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
-                "<id>" + returnOrderRequest.getId() + "</id>" +
-                "<create_time>" + createTime + "</create_time>" +
-                "<return_time>" + returnTime + "</return_time>" +
-                "<store_code>" + returnOrderRequest.getStoreCode() + "</store_code>" +
-                "<return_no>" + returnOrderRequest.getReturnNo() + "</return_no>" +
-                "<return_type>" + returnOrderRequest.getReturnType().getDescription() + "</return_type>" +
+                "<id></id>" +
+                "<c_request_dt>" + returnTime + "</c_request_dt>" +
+                "<c_due_dt></c_due_dt>" +
+                "<c_customer_no>" + returnOrderRequest.getStoreCode() + "</c_customer_no>" +
+                "<c_po_no>" + returnOrderRequest.getReturnNo() + "</c_po_no>" +
+                "<c_po_type>" + returnOrderRequest.getReturnType().getDescription() + "</c_po_type>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");

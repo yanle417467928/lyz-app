@@ -11,5 +11,18 @@ import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
  **/
 public interface SmsAccountService {
 
+    /**
+     * 获取短信账号
+     *
+     * @return
+     */
     SmsAccount findOne();
+
+    /**
+     * 通用短信发送方法
+     *
+     * @param mobile  手机号
+     * @param content 短信内容
+     */
+    void commonSendSms(String mobile, String content);
 }
