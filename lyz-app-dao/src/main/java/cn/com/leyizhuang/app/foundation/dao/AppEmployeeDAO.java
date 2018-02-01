@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideAvailableCreditChange;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
@@ -76,4 +75,8 @@ public interface AppEmployeeDAO {
     Long saveTempCreditLimitChange(EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog);
 
     String isSupervisor(Long id);
+
+    SalesConsult findSellerByEmpId(Long userId);
+
+    SalesConsult findSellerByCustomerId(Long userId);
 }

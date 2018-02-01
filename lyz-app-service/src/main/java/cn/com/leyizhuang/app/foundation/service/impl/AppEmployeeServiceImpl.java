@@ -239,4 +239,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         String isSupervisor = employeeDAO.isSupervisor(id);
         return isSupervisor;
     }
+
+    @Override
+    public SalesConsult findSellerByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (identityType == 0) {
+            return employeeDAO.findSellerByEmpId(userId);
+        } else if (identityType == 6) {
+            return employeeDAO.findSellerByCustomerId(userId);
+        }
+        return null;
+    }
 }

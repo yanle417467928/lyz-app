@@ -21,7 +21,10 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.user.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
@@ -658,7 +661,8 @@ public class CommonServiceImpl implements CommonService {
                     //保存传wms配送单商品信息
                     if (orderGoodsInfoList.size() > 0) {
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                            AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
+                            AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                             appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                         }
                     }
@@ -822,7 +826,8 @@ public class CommonServiceImpl implements CommonService {
                 //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo);
+                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }

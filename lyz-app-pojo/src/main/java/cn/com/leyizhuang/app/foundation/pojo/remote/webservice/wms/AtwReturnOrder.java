@@ -122,8 +122,8 @@ public class AtwReturnOrder {
      */
     private Date sendTime;
 
-    private static AtwReturnOrder transform(ReturnOrderBaseInfo baseInfo, ReturnOrderLogisticInfo logisticInfo, AppStore store,
-                                            OrderBaseInfo orderBaseInfo, int goodsLineQuantity, SalesConsult salesConsult) {
+    public static AtwReturnOrder transform(ReturnOrderBaseInfo baseInfo, ReturnOrderLogisticInfo logisticInfo, AppStore store,
+                                           OrderBaseInfo orderBaseInfo, int goodsLineQuantity, SalesConsult salesConsult) {
         AtwReturnOrder atwReturnOrder = new AtwReturnOrder();
 
         atwReturnOrder.setCreateTime(new Date());
