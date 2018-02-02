@@ -143,4 +143,10 @@ public interface AppOrderService {
 
     List<OrderJxPriceDifferenceReturnDetails> getOrderJxPriceDifferenceReturnDetailsByOrderNumber(String orderNumber);
     void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId);
+
+    void updateOrderGoodsShippingQuantity(String orderNo, String gCode, Integer dAckQty);
+
+    void saveWeChatOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber,String receiptNumber);
+
+    void saveAliPayOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber);
 }

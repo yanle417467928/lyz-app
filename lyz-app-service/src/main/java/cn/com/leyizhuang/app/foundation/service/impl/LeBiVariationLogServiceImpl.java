@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author caiyu
  * @date 2017/11/8
  */
@@ -42,7 +41,10 @@ public class LeBiVariationLogServiceImpl implements LeBiVariationLogService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateLeBiQtyByUserId(Integer quantity, Date lastUpdateTime, Long customerId) {
-        leBiVariationLogDAO.updateLeBiQtyByUserId(quantity,lastUpdateTime,customerId);
+    public Integer updateLeBiQtyByUserId(Integer quantity, Date lastUpdateTime, Long customerId) {
+        if (null != quantity && null != customerId) {
+            return leBiVariationLogDAO.updateLeBiQtyByUserId(quantity, lastUpdateTime, customerId);
+        }
+        return null;
     }
 }

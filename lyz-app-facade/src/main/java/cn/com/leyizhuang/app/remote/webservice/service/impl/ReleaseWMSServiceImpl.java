@@ -150,6 +150,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品不存在");
                     }
                     wmsToAppOrderService.saveWtaShippingOrderGoods(goods);
+                    //跟新订单的出货数量
+                    appOrderService.updateOrderGoodsShippingQuantity(goods.getOrderNo(), goods.getGCode(), goods.getDAckQty());
                 }
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -365,7 +367,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("C_RESERVED4".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("C_RESERVED1".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setOrderNo(childNode.getChildNodes().item(0).getNodeValue());
                 }

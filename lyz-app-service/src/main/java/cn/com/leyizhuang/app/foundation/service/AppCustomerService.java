@@ -123,4 +123,6 @@ public interface AppCustomerService {
     Integer lockCustomerProductCouponById(Long couponId, String orderNumber);
 
     List<CustomerProfession> getCustomerProfessionListByStatus(String status);
+
+    Integer updateDepositByUserIdAndVersion(Long userId,Double customerDeposit,Date version);
 }

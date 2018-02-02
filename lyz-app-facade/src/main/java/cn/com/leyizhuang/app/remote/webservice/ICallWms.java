@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
+import cn.com.leyizhuang.app.foundation.service.SmsAccountService;
 import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import org.apache.cxf.endpoint.Client;
@@ -26,6 +27,9 @@ public class ICallWms {
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
+
+    @Resource
+    private SmsAccountService smsAccountService;
 
     private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
 
@@ -67,6 +71,7 @@ public class ICallWms {
             objects = wmsClient.invoke(wmsName, "inter_atw_order_cancel_request", "1", xml);
         } catch (Exception e) {
             // TODO 发送短信通知传输失败
+//            smsAccountService.commonSendSms();
             cancelOrderRequest.setSendFlag(false);
             cancelOrderRequest.setErrorMessage("订单号：" + orderNumber + "发送取消订单调用接口失败！");
             logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
@@ -252,6 +257,7 @@ public class ICallWms {
         try {
             objects = wmsClient.invoke(wmsName, "td_requisition", "1", xml);
         } catch (Exception e) {
+//            smsAccountService.commonSendSms(requisitionOrder);
             requisitionOrder.setSendFlag(false);
             requisitionOrder.setErrorMessage("订单号：" + orderNumber + "发送要货单头档调用接口失败！");
             logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", e);

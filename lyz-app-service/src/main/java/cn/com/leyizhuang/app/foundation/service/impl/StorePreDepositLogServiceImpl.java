@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,5 +57,10 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     @Transactional(rollbackFor = Exception.class)
     public void updateStPreDepositByUserId(Double money, Long userId) {
         this.storePreDepositLogDAO.updateStPreDepositByUserId(money, userId);
+    }
+
+    @Override
+    public Integer updateStPreDepositByUserIdAndVersion(Double money, Long userId, Date version) {
+        return storePreDepositLogDAO.updateStPreDepositByUserIdAndVersion(money, userId, version);
     }
 }

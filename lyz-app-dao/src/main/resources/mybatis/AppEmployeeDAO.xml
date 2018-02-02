@@ -336,4 +336,13 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         WHERE emp_id = #{id}
     </select>
 
+    <update id="unlockGuideCreditByUserIdAndGuideCreditAndVersion">
+        UPDATE
+        emp_credit_money
+        SET
+        credit_limit_available = credit_limit_available + #{credit}
+        WHERE
+        emp_id = #{userId}
+        AND last_update_time = #{version}
+    </update>
 </mapper>

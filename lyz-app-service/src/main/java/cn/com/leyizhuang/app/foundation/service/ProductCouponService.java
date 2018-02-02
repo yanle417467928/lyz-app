@@ -28,7 +28,7 @@ public interface ProductCouponService {
      * @param couponType 券类型
      * @return 订单券
      */
-    List<OrderCouponInfo> findOrderCouponByCouponTypeAndUserId(Long orderId, OrderCouponType couponType);
+    List<OrderCouponInfo> findOrderCouponByCouponTypeAndOrderId(Long orderId, OrderCouponType couponType);
 
     /**
      * 获取顾客产品券信息

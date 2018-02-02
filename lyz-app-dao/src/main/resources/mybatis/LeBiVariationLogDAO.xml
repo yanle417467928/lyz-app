@@ -43,13 +43,13 @@
              #{afterVariationQuantity},
              #{orderNum})
     </insert>
-    
-    <update id="updateLeBiQtyByUserId" >
+
+    <update id="updateLeBiQtyByUserId">
         UPDATE cus_lb
         SET quantity = #{quantity},
-         last_update_time = #{lastUpdateTime}
         WHERE
             cus_id = #{customerId}
+        AND last_update_time = #{version}
     </update>
 
 </mapper>

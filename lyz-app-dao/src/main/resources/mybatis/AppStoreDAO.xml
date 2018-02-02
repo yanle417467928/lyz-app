@@ -424,4 +424,35 @@
                             #{balance}, #{referenceNumber}, #{changeType}, #{changeTypeDesc}, #{operatorId},
                             #{operatorType}, #{operatorIp}, #{remark})
     </insert>
+
+
+    <update id="updateStoreInventoryByStoreCodeAndGoodsIdAndVersion">
+        UPDATE st_inventory
+        SET available_ity = available_ity + #{qty}
+        WHERE
+        gid = #{gid}
+        AND store_code = #{storeCode}
+        AND last_update_time = #{version}
+    </update>
+
+    <update id="updateStoreCreditByUserIdAndVersion">
+        UPDATE
+        st_credit_money
+        SET credit_limit_available = credit_limit_available + #{credit}
+        WHERE
+        store_id = (SELECT store_id
+        FROM emp_employee
+        WHERE emp_id = #{userId})
+        AND last_update_time = #{version}
+    </update>
+
+    <update id="updateStoreSubventionByUserIdAndVersion">
+        UPDATE st_subvention
+        SET balance = balance + #{subvention}
+        WHERE
+        store_id = (SELECT store_id
+        FROM emp_employee
+        WHERE emp_id = #{userId})
+        AND last_update_time = #{version}
+    </update>
 </mapper>

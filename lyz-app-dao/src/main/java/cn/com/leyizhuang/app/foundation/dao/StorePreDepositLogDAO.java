@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,4 +36,6 @@ public interface StorePreDepositLogDAO {
      * @param userId    用户id
      */
     void updateStPreDepositByUserId(@Param("money") Double money,@Param("userId")Long userId);
+
+    Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money,@Param("userId")Long userId, @Param("version")Date version);
 }

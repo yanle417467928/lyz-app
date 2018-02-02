@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,4 +48,8 @@ public interface CityService {
     void addCityInventoryAvailableQtyChangeLog(CityInventoryAvailableQtyChangeLog log);
 
     City findCityByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityType);
+
+    Integer updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version);
+
+    Integer updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version);
 }

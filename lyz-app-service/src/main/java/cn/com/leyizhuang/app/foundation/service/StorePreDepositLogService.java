@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,4 +38,6 @@ public interface StorePreDepositLogService {
      * @param userId    用户id
      */
     void updateStPreDepositByUserId(Double money,Long userId);
+
+    Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version);
 }

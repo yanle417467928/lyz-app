@@ -135,6 +135,9 @@ public interface AppCustomerDAO {
                                                                                @Param(value = "qty") Integer qty);
 
     Integer updateCustomerProductCouponById(@Param(value = "couponId") Long couponId,
+                                          @Param(value = "orderNumber") String orderNumber);
+
+    Integer updateDepositByUserIdAndVersion(@Param("userId") Long userId, @Param("deposit") Double customerDeposit,@Param("version")Date version);
                                             @Param(value = "orderNumber") String orderNumber);
 
     List<CustomerProfession> getCustomerProfessionListByStatus(String status);

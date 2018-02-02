@@ -84,10 +84,9 @@ public class WechatPrePay {
      * @param rn         商户退单号
      * @param totalfee   订单总金额，单位为分，只能为整。
      * @param refoundfee 退款金额
-     * @param request    请求对象
      * @return 证书
      */
-    public static Map<String, Object> wechatRefundSign(String sn, String rn, BigDecimal totalfee, BigDecimal refoundfee, HttpServletRequest request) {
+    public static Map<String, Object> wechatRefundSign(String sn, String rn, BigDecimal totalfee, BigDecimal refoundfee) {
 
         //设置相关参数
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();

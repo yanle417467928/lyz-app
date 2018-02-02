@@ -671,4 +671,11 @@
         FROM cus_profession
         WHERE status = #{status}
     </select>
+
+    <update id="updateDepositByUserIdAndVersion">
+        UPDATE cus_pre_deposit
+        SET balance = balance + #{deposit}
+        WHERE cus_id = #{userId}
+        AND last_update_time = #{version}
+    </update>
 </mapper>

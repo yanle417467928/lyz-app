@@ -474,7 +474,7 @@
                                          lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-                                         online_pay_time, pay_up_time, is_pay_up, store_cash, other_money, pos_money,pos_number)
+                                         online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money,store_pos_number)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -483,7 +483,7 @@
                 #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
                 #{storeSubvention}, #{orderAmountSubtotal},
                 #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
-             #{payUpTime}, #{isPayUp}, #{storeCash}, #{otherMoney}, #{posMoney}, #{posNumber}
+             #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney}, #{storePosNumber}
             )
     </insert>
 
@@ -527,9 +527,6 @@
             </if>
             <if test="null != arrearage ">
                 arrearage = #{arrearage},
-            </if>
-            <if test="null != onlinePayType ">
-                online_pay_type = #{onlinePayType},
             </if>
             <if test="null != onlinePayTime">
                 online_pay_time = #{onlinePayTime},
@@ -837,5 +834,13 @@
             returnable_qty = returnable_qty + #{qty}
         WHERE
             id = #{ogi}
+    </update>
+
+    <update id="updateOrderGoodsShippingQuantity">
+        UPDATE ord_goods_info
+        SET shipping_qty = #{qty}
+        WHERE sku = #{sku}
+              AND ord_no = #{orderNo}
+
     </update>
 </mapper>

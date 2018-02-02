@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,4 +59,14 @@ public interface CityDAO {
 
     City findCityByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                          @Param(value = "identityType") AppIdentityType identityType);
+
+    Integer updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(@Param("userId") Long userId,
+                                                                            @Param("gid") Long index,
+                                                                            @Param("qty") Integer integer,
+                                                                            @Param(value = "version") Date version);
+
+    Integer updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(@Param("userId") Long userId,
+                                                                            @Param("gid") Long index,
+                                                                            @Param("qty") Integer integer,
+                                                                            @Param(value = "version") Date version);
 }

@@ -854,4 +854,13 @@
         WHERE oaa.ord_no = #{orderNumber}
     </select>
 
+    <select id="scanningUnpaidOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+            *
+        FROM
+            ord_base_info
+        WHERE
+            `status` = 'UNPAID'
+    </select>
+
 </mapper>

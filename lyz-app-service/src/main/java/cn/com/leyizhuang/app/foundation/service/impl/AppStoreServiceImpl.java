@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -341,5 +342,30 @@ public class AppStoreServiceImpl implements AppStoreService {
     public void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty) {
         storeDAO.updateStoreInventoryByStoreCodeAndGoodsId(storeCode, gid, qty);
     }
+
+    @Override
+    public Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(String storeCode, Long gid, Integer qty, Date version) {
+        if (null != storeCode && null != gid && null !=qty){
+            return storeDAO.updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(storeCode, gid, qty, version);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit, Date version) {
+        if (null != userId && null != storeCredit){
+            return storeDAO.updateStoreCreditByUserIdAndVersion(userId, storeCredit, version);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version) {
+        if (null != subvention && null != userId){
+            storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
+        }
+        return null;
+    }
+
 
 }

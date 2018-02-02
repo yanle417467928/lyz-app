@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -76,4 +77,6 @@ public interface AppEmployeeService {
     String isSupervisor(Long id);
 
     SalesConsult findSellerByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion( Long userId, Double guideCredit, Date version);
 }

@@ -7,9 +7,12 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -75,6 +78,7 @@ public class AliPayController {
 
     @Resource
     private TransactionalSupportService supportService;
+
 
     /**
      * 支付宝充值生成充值单
@@ -403,7 +407,7 @@ public class AliPayController {
                                     paymentDataDO);
                             String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                             Double money = paymentDataDO.getTotalFee();
-                            appOrderService.saveOrderBillingPaymentDetails(orderNumber, money, tradeNo, outTradeNo);
+                            appOrderService.saveAliPayOrderBillingPaymentDetails(orderNumber, money, tradeNo, outTradeNo);
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
                         }
@@ -468,6 +472,18 @@ public class AliPayController {
             logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+        if (null == orderBaseInfo){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单记录！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+        if (null == orderBillingDetails){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单账单记录！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
 
         OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
         if (null == orderArrearsAuditDO) {
@@ -475,6 +491,7 @@ public class AliPayController {
             logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+
         String totalFee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
         String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
         PaymentDataDO paymentDataDO = new PaymentDataDO();
@@ -493,6 +510,7 @@ public class AliPayController {
         paymentDataDO.setOnlinePayType(OnlinePayType.ALIPAY);
         paymentDataDO.setCreateTime(LocalDateTime.now());
         this.paymentDataService.save(paymentDataDO);
+
 
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
         //appId 非空，应用ID
