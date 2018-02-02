@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import com.github.pagehelper.PageInfo;
 
 import java.sql.Timestamp;
@@ -124,4 +121,6 @@ public interface AppCustomerService {
     List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty);
 
     Integer lockCustomerProductCouponById(Long couponId, String orderNumber);
+
+    List<CustomerProfession> getCustomerProfessionListByStatus(String status);
 }

@@ -21,5 +21,7 @@ public class CustomerRegistryParam {
     private Boolean sex;
     private String phone;
     private Long cityId;
+    private String profession;
+    private String name;
 
 }

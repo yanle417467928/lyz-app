@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -76,7 +73,7 @@ public interface AppCustomerDAO {
 
     int updateDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double customerDeposit);
 
-    int updateDepositByUserIdAndLastUpdateTime(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldLastUpdateTime")Timestamp oldLastUpdateTime);
+    int updateDepositByUserIdAndLastUpdateTime(@Param("userId") Long userId, @Param("deposit") Double customerDeposit, @Param("lastUpdateTime") Timestamp lastUpdateTime, @Param("oldLastUpdateTime") Timestamp oldLastUpdateTime);
 
     void updateLeBiByUserIdAndQuantity(@Param("userId") Long userId, @Param("qty") Integer qty);
 
@@ -138,5 +135,7 @@ public interface AppCustomerDAO {
                                                                                @Param(value = "qty") Integer qty);
 
     Integer updateCustomerProductCouponById(@Param(value = "couponId") Long couponId,
-                                          @Param(value = "orderNumber") String orderNumber);
+                                            @Param(value = "orderNumber") String orderNumber);
+
+    List<CustomerProfession> getCustomerProfessionListByStatus(String status);
 }

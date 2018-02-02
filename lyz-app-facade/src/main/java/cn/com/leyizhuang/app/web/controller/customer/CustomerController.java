@@ -8,13 +8,12 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -26,9 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Richard
@@ -102,7 +99,7 @@ public class CustomerController {
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndUserIdAndIdentityType(clientId, deviceId, customer.getCusId(),AppIdentityType.CUSTOMER);
+            AppUserDevice device = userDeviceService.findByClientIdAndDeviceIdAndUserIdAndIdentityType(clientId, deviceId, customer.getCusId(), AppIdentityType.CUSTOMER);
             if (null == device) {
                 device = new AppUserDevice(null, customer.getCusId(), AppIdentityType.CUSTOMER, AppSystemType.getAppSystemTypeByValue(systemType),
                         clientId, deviceId, new Date(), new Date());
@@ -156,6 +153,16 @@ public class CustomerController {
                 logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (null == registryParam.getProfession()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "工种不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == registryParam.getName()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客姓名不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             AppCustomer customer = customerService.findByOpenId(registryParam.getOpenId());
             if (customer != null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId已存在！",
@@ -196,6 +203,8 @@ public class CustomerController {
                 newUser.setMobile(registryParam.getPhone());
                 newUser.setLight(AppCustomerLightStatus.GREEN);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
+                newUser.setCustomerProfession(registryParam.getProfession());
+                newUser.setName(registryParam.getName());
                 AppCustomer returnUser = commonService.saveCustomerInfo(newUser, new CustomerLeBi(), new CustomerPreDeposit());
                 //拼装accessToken
                 String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
@@ -727,6 +736,35 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取顾客签到明细失败", null);
             logger.warn("getCustomerSignDetail EXCEPTION,获取顾客签到信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取APP顾客身份类型列表
+     *
+     * @return APP顾客身份类型列表
+     */
+    @PostMapping(value = "/get/customerProfession", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerIdentityType() {
+        ResultDTO<Object> resultDTO;
+        try {
+            List<CustomerProfession> customerIdentityTypeList = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
+            if (AssertUtil.isNotEmpty(customerIdentityTypeList)) {
+                Map<String, String> returnMap = new HashMap<>(20);
+                customerIdentityTypeList.forEach(p -> returnMap.put(p.getTitle(), p.getDescription()));
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        returnMap);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有获取到顾客身份类型信息",
+                        null);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取顾客身份类型信息失败", null);
+            logger.warn("getCustomerIdentityType EXCEPTION,获取顾客身份类型信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

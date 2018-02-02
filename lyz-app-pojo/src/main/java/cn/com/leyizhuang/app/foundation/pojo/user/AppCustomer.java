@@ -126,4 +126,9 @@ public class AppCustomer implements Serializable {
      */
     private Date lastConsumptionTime;
 
+    /**
+     * 顾客工种
+     */
+    private String customerProfession;
+
 }

@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
@@ -464,6 +461,11 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             return customerDAO.updateCustomerProductCouponById(couponId, orderNumber);
         }
         return 0;
+    }
+
+    @Override
+    public List<CustomerProfession> getCustomerProfessionListByStatus(String status) {
+        return customerDAO.getCustomerProfessionListByStatus(status);
     }
 
 
