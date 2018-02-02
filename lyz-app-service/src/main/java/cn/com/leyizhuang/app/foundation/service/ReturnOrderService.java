@@ -1,28 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.AppOrderType;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
-import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
-import cn.com.leyizhuang.common.util.AssertUtil;
-import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.collections.map.HashedMap;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +182,6 @@ public interface ReturnOrderService {
     /**
      * 取消订单通用方法
      *
-     * @param response
      * @param userId
      * @param identityType
      * @param orderNumber
@@ -201,7 +189,7 @@ public interface ReturnOrderService {
      * @param remarksInfo
      * @return
      */
-    Map<Object, Object> cancelOrderUniversal(HttpServletResponse response, Long userId, Integer identityType,
+    Map<Object, Object> cancelOrderUniversal(Long userId, Integer identityType,
                                              String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 
     }

@@ -1,23 +1,18 @@
 package cn.com.leyizhuang.app.web.controller.returnorder;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
-import cn.com.leyizhuang.app.core.config.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.*;
-import cn.com.leyizhuang.app.core.pay.wechat.refund.WeChatRefundService;
-import cn.com.leyizhuang.app.core.utils.SmsUtils;
+import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -32,18 +27,11 @@ import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.OperationReasonType;
-import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
-import com.alipay.api.AlipayApiException;
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.request.AlipayTradeRefundRequest;
-import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -122,7 +108,7 @@ public class ReturnOrderController {
     @Resource
     private SinkSender sinkSender;
     @Resource
-    private WeChatRefundService weChatRefundService;
+    private OnlinePayRefundService onlinePayRefundService;
     @Resource
     private SmsAccountServiceImpl smsAccountService;
 
@@ -204,7 +190,7 @@ public class ReturnOrderController {
                     return resultDTO;
                 }
                 //调用取消订单通用方法
-                Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(response, userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
+                Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
                 //获取退单基础表信息
                 ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
                 String code = (String)maps.get("code");
@@ -214,12 +200,11 @@ public class ReturnOrderController {
                         if (null != orderBillingDetails.getOnlinePayType()){
                             if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                                 //支付宝退款
-                                this.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderBaseInfo.getRoid());
+                                onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
 
                             } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                                 //微信退款方法类
-                                Map<String, String> map = weChatRefundService.wechatReturnMoney(response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
-                                this.returnWeChatMoney(returnOrderBaseInfo.getRoid(), returnOrderBaseInfo.getReturnNo(), map);
+                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
                             } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                                 //创建退单退款详情实体
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -670,12 +655,11 @@ public class ReturnOrderController {
             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                 if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //支付宝退款
-                    this.returnAlipayMoney(orderNumber, orderBillingDetails.getOnlinePayAmount(), returnOrderId);
+                    onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
 
                 } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //微信退款方法类
-                    Map<String, String> map = weChatRefundService.wechatReturnMoney(response, userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
-                    this.returnWeChatMoney(returnOrderId, returnNumber, map);
+                    Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnNumber);
                 } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
                     //创建退单退款详情实体
                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -1430,66 +1414,6 @@ public class ReturnOrderController {
         return orderLogisticsInfo;
     }
 
-    /**
-     * 支付宝退款
-     *
-     * @param orderNumber   订单号
-     * @param money         退款金额
-     * @param returnOrderId 退单id
-     * @throws AlipayApiException
-     */
-    public void returnAlipayMoney(String orderNumber, Double money, Long returnOrderId) throws AlipayApiException {
-        AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.serverUrl, AlipayConfig.appId, AlipayConfig.privateKey, AlipayConfig.format, AlipayConfig.charset, AlipayConfig.aliPublicKey, AlipayConfig.signType);
-        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
-        request.setBizContent("{" +
-                "\"out_trade_no\":\"" + orderNumber + "\"," +
-                "\"refund_amount\":" + money + "," +
-                "  }");
-        AlipayTradeRefundResponse aliPayResponse = alipayClient.execute(request);
-        if (aliPayResponse.isSuccess()) {
-            //创建退单退款详情实体
-            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-            returnOrderBillingDetail.setCreateTime(new Date());
-            returnOrderBillingDetail.setRoid(returnOrderId);
-            returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
-            returnOrderBillingDetail.setIntoAmountTime(aliPayResponse.getGmtRefundPay());
-            returnOrderBillingDetail.setReplyCode(aliPayResponse.getTradeNo());
-            returnOrderBillingDetail.setReturnMoney(Double.valueOf(aliPayResponse.getRefundFee()));
-            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ALIPAY);
-            returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-        } else {
-            logger.info("refusedOrder OUT,支付宝退款失败！，出参 resultDTO:{}");
-            throw new RuntimeException("支付宝退款失败");
-        }
-    }
-
-    /**
-     * 微信退款
-     *
-     * @param returnOrderId 退单id
-     * @param returnNumber  退单号
-     * @param map           微信返回值
-     */
-    public void returnWeChatMoney(Long returnOrderId, String returnNumber, Map<String, String> map) {
-        if ("SUCCESS".equals(map.get("code"))) {
-            //创建退单退款详情实体
-            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-            returnOrderBillingDetail.setCreateTime(new Date());
-            returnOrderBillingDetail.setRoid(returnOrderId);
-            returnOrderBillingDetail.setRefundNumber(returnNumber);
-            returnOrderBillingDetail.setIntoAmountTime(new Date());
-            returnOrderBillingDetail.setReplyCode(map.get("number"));
-            returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
-            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
-            returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-        } else {
-            logger.info("refusedOrder OUT,微信退款失败！，出参 resultDTO:{}");
-            throw new RuntimeException("微信退款失败");
-        }
-
-
-    }
-
     private ReturnOrderGoodsResponse transform(OrderGoodsInfo goodsInfo) {
         ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
         returnOrderGoodsResponse.setId(goodsInfo.getId());
@@ -1526,63 +1450,5 @@ public class ReturnOrderController {
         return returnOrderGoodsInfo;
     }
 
-    public void cancelOrderToWms(HttpServletRequest req, HttpServletResponse response, String orderNumber, Boolean isCancel) {
-        if (StringUtils.isBlank(orderNumber)) {
-            logger.info("cancelOrderToWms OUT,WMS回传订单号为空，取消订单失败，出参 ResultDTO:{}");
-            return;
-        }
-        //获取订单头信息
-        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
-        //获取订单账目明细
-        OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-        //获取取消订单相关参数
-        CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderNumber);
-        if (isCancel) {
-            //调用取消订单通用方法
-            Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(response, cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderNumber, cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
-            ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-            if (maps.get("code").equals("SUCCESS")) {
-                //发送退单拆单消息到拆单消息队列
-                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-                //修改取消订单处理状态
-                cancelOrderParametersService.updateCancelStatusByOrderNumber(orderNumber);
-                logger.info("cancelOrderToWms OUT,取消订单成功");
-                return;
-            } else {
-                logger.info("getReturnOrderList OUT,取消订单失败");
-            }
-        } else {
-            logger.info("cancelOrderToWms CALLED,发送提货码，入参 mobile:{}", orderBaseInfo.getCreatorPhone());
-            if (null == orderBaseInfo.getCreatorPhone() || orderBaseInfo.getCreatorPhone().equalsIgnoreCase("") || orderBaseInfo.getCreatorPhone().trim().length() != 11) {
-                logger.info("cancelOrderToWms OUT,发送提货码失败，出参 ResultDTO:{}");
-            }
-            String info = "您取消的订单" + orderNumber + "，取消失败，请联系管理人员！";
-            logger.info("取消失败订单号:{}", orderNumber);
-            String content = null;
-            try {
-                content = URLEncoder.encode(info, "GB2312");
-                System.err.println(content);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
-            }
 
-            SmsAccount account = smsAccountService.findOne();
-            String returnCode = null;
-            try {
-                returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderBaseInfo.getCreatorPhone(), content);
-            } catch (IOException e) {
-                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
-                logger.warn("{}", e);
-            } catch (Exception e) {
-                logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
-                logger.warn("{}", e);
-            }
-            if (returnCode.equalsIgnoreCase("00")) {
-                logger.info("cancelOrderToWms OUT，取消订单失败信息发送成功，出参 ResultDTO:{}");
-            } else {
-                logger.info("cancelOrderToWms OUT，取消订单失败信息发送失败，出参 ResultDTO:{}");
-            }
-        }
-    }
 }

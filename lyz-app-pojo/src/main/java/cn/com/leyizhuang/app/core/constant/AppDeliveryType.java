@@ -14,7 +14,7 @@ public enum AppDeliveryType {
     SELF_TAKE("SELF_TAKE", "门店自提"), HOUSE_DELIVERY("HOUSE_DELIVERY", "送货上门"),PRODUCT_COUPON("PRODUCT_COUPON","购买产品券"),
 
     //**************************反向配送方式******************************
-    RETURN_STORE("SELF_DELIVERY", "退货到店"), HOUSE_PICK("HOUSE_PICK", "上门取货");
+    RETURN_STORE("SELF_DELIVERY", "退货到店"), HOUSE_PICK("HOUSE_PICK", "工地取货");
     private String value;
 
     private String description;

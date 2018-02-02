@@ -63,7 +63,7 @@ public class ICallWms {
         }
         logger.info("============================取消订单XML开始拼装===============================");
         String xml = AppXmlUtil.getCancelOrderXml(cancelOrderRequest);
-        logger.info("取消订单XML拼装完毕 OUT, xml:{}", xml);
+        logger.info("取消订单XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
         //发送到WMS
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
@@ -110,7 +110,7 @@ public class ICallWms {
         }
         logger.info("============================取消退货单XML开始拼装===============================");
         String xml = AppXmlUtil.getCancelReturnOrderXml(returnOrderRequest);
-        logger.info("取消退货单XML拼装完毕 OUT, xml:{}", xml);
+        logger.info("取消退货单XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
         //发送到WMS
         //TODO wms确定td_return_note参数
         wmsClient = getWmsClient();
@@ -157,7 +157,7 @@ public class ICallWms {
         }
         logger.info("============================退货单收货确认XML开始拼装===============================");
         String xml = AppXmlUtil.getReturnOrderCheckEnterXml(atwReturnOrderCheckEnter);
-        logger.info("退货单收货确认XML拼装完毕 OUT, xml:{}", xml);
+        logger.info("退货单收货确认XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
         //发送到WMS
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
@@ -212,7 +212,7 @@ public class ICallWms {
             }
             logger.info("============================要货单商品XML开始拼装===============================");
             String xml = AppXmlUtil.getRequisitionOrderGoodsXml(requisitionOrderGoods);
-            logger.info("要货单商品XML拼装完毕 OUT, XML:{}", xml);
+            logger.info("要货单商品XML拼装完毕 OUT, XML:{}", AppXmlUtil.format(xml));
             //发送到WMS
             Client wmsClient = getWmsClient();
             Object[] objects = new Object[0];
@@ -250,7 +250,7 @@ public class ICallWms {
         }
         logger.info("============================要货单XML开始拼装===============================");
         String xml = AppXmlUtil.getRequisitionOrderXml(requisitionOrder);
-        logger.info("XML拼装完毕 OUT, xml:{}", xml);
+        logger.info("XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
         //发送到WMS
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];
@@ -304,7 +304,7 @@ public class ICallWms {
             }
             logger.info("============================退货单商品XML开始拼装===============================");
             String xml = AppXmlUtil.getRequisitionOrderGoodsXml(returnOrderGoods);
-            logger.info("退货单商品XML拼装完毕 OUT, XML:{}", xml);
+            logger.info("退货单商品XML拼装完毕 OUT, XML:{}", AppXmlUtil.format(xml));
             //发送到WMS
             Client wmsClient = getWmsClient();
             Object[] objects = new Object[0];
@@ -342,7 +342,7 @@ public class ICallWms {
         }
         logger.info("============================退货单XML开始拼装===============================");
         String xml = AppXmlUtil.getReturnOrderXml(returnOrder);
-        logger.info("XML拼装完毕 OUT, xml:{}", xml);
+        logger.info("XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
         //发送到WMS
         wmsClient = getWmsClient();
         Object[] objects = new Object[0];

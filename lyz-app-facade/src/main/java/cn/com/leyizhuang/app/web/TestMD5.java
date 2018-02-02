@@ -16,6 +16,5 @@ public class TestMD5 {
 
 //        String c = Base64Utils.decode("");
 //        System.out.println(c);
-
     }
 }

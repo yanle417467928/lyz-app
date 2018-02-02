@@ -34,7 +34,7 @@ public enum AppReturnOrderStatus {
     /**
      * 退货单：有
      */
-    PENDING_PICK_UP(3, "待退货"),
+    PENDING_PICK_UP(3, "已提交"),
     /**
      * 退货单：有
      */
