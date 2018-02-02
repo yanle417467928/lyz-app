@@ -68,7 +68,7 @@
         INSERT INTO inter_wta_return_order_delivery_clerk (create_time, return_number, c_wh_no, driver)
             SELECT
                 #{createTime},
-                #{returnNumber},
+                #{returnNo},
                 #{warehouseNo},
                 #{driver}
             FROM DUAL
