@@ -205,4 +205,6 @@ public interface ReturnOrderService {
      */
     Map<Object, Object> refusedOrder(Logger logger, Long userId, Integer identityType, String orderNumber, String reasonInfo,
                                      String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic);
+
+    void updateReturnLogisticInfo(String driver, String returnNo);
 }

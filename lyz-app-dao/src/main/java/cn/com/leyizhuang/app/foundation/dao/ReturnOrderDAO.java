@@ -126,4 +126,6 @@ public interface ReturnOrderDAO {
     List<ReturnOrderBaseInfo> findReturnOrderListByStatus(AppReturnOrderStatus status);
 
     List<ReturnOrderBaseInfo> findReturnOrderListByStroe(Long store);
+
+    void updateReturnLogisticInfo(String driver, String returnNo);
 }

@@ -296,6 +296,7 @@
             WHERE orbi.return_no LIKE concat('%',#{keywords},'%')
             OR orbi.creator_phone LIKE concat('%',#{keywords},'%')
         </if>
+        ORDER BY orbi.return_time DESC
     </select>
 
     <select id="findReturnOrderGoodsInfoByOrderNumber"
@@ -329,6 +330,13 @@
         FROM ord_return_logistic_info
         WHERE return_no = #{returnNo};
     </select>
+
+    <update id="updateReturnLogisticInfo">
+
+        UPDATE ord_return_logistic_info
+        SET delivery_clerk_no = #{driver}
+        WHERE return_no = #{returnNo}
+    </update>
 
     <update id="updateReturnOrderStatus">
         UPDATE ord_return_base_info

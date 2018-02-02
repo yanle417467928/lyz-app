@@ -12,11 +12,12 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail">
         INSERT INTO ord_return_delivery_detail
-        (return_no, return_logistic_status, pickers_id, pickers_number, description, pick_up_address, pick_up_time,
-         warehouse_no, task_no, picture)
+        (roid, create_time, return_no, return_logistic_status, description, pickers_id, pickers_number, task_no,
+        picture)
+
         VALUES
-            (#{returnNo}, #{returnLogisticStatus}, #{consigneeId}, #{consigneeNumber}, #{description}, #{pickUpAddress},
-             #{pickUpTime}, #{warehouseNo}, #{taskNo}, #{picture})
+        (#{roid},#{createTime},#{returnNo}, #{returnLogisticStatus}, #{description},
+        #{pickUpId},#{pickUpNumber}, #{taskNo}, #{picture})
     </insert>
 
     <select id="getReturnLogisticStatusDetail"

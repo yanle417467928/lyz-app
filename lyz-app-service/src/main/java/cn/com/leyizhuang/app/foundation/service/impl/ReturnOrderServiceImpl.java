@@ -13,7 +13,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
@@ -23,17 +22,14 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.common.core.constant.CommonGlobal;
-import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -1356,6 +1352,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             maps.put("code", "FAILURE");
             return maps;
         }
-    }
+
+        @Override
+        public void updateReturnLogisticInfo (String driver, String returnNo){
+            returnOrderDAO.updateReturnLogisticInfo(driver, returnNo);
+        }
 }
 

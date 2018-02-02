@@ -167,7 +167,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
 
                 //退货单返配上架头
-            } else if ("tbw_back_m".equalsIgnoreCase(strTable)) {
+            } else if ("tbw_back_rec_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
@@ -195,7 +195,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
 
                 //退货单返配上架明细
-            } else if ("tbw_back_d".equalsIgnoreCase(strTable)) {
+            } else if ("tbw_back_rec_d".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -212,7 +212,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
 
                 //获取退货单配送取货配送员
-            } else if ("tbw_send_task_Driver".equalsIgnoreCase(strTable)) {
+            } else if ("tbw_back_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -236,6 +236,17 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                    deliveryInfoDetails.setOperatorNo(wtaUpdateDeliveryInfo.getDriver());
 //                    deliveryInfoDetails.setOrderNo(wtaUpdateDeliveryInfo.getReserved1());
 //                    returnOrderDeliveryDetailsService.modifyReturnOrderDeliveryInfoDetails(deliveryInfoDetails);
+                    returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
+
+                    ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+                    returnOrderDeliveryDetail.setReturnNo(deliveryClerk.getReturnNo());
+                    returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.PICKING_GOODS);
+                    returnOrderDeliveryDetail.setDescription("配送员正在取货途中");
+                    returnOrderDeliveryDetail.setCreateTime(new Date());
+                    returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
+                    returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+
+                    returnOrderService.updateReturnLogisticInfo(deliveryClerk.getDriver(), deliveryClerk.getReturnNo());
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");

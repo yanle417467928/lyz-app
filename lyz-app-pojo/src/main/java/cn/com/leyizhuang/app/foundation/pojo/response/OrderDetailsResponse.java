@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
@@ -30,7 +31,11 @@ public class OrderDetailsResponse {
     /**
      * 订单头状态
      */
-    private String status;
+    private AppOrderStatus status;
+    /**
+     * 订单状态描述
+     */
+    private String statusDesc;
     /**
      * 支付方式
      */

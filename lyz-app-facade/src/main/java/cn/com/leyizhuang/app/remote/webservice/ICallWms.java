@@ -2,11 +2,14 @@ package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.service.ReturnOrderDeliveryDetailsService;
 import cn.com.leyizhuang.app.foundation.service.SmsAccountService;
 import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.util.AssertUtil;
@@ -36,6 +39,9 @@ public class ICallWms {
 
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
+
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
 
@@ -380,6 +386,14 @@ public class ICallWms {
         } else if (null == returnOrder.getErrorMessage()) {
             returnOrder.setSendTime(new Date());
             returnOrder.setSendFlag(true);
+
+            ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+            returnOrderDeliveryDetail.setDescription("物流已接收");
+            returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.RECEIVED);
+            returnOrderDeliveryDetail.setReturnNo(returnOrder.getReturnNumber());
+            returnOrderDeliveryDetail.setCreateTime(new Date());
+            returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+
         }
         appToWmsOrderService.modifyAtwReturnOrder(returnOrder);
         logger.info("sendMsgToWMS, OUT");

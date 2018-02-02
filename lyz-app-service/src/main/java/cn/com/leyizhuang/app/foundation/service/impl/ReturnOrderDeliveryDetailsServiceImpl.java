@@ -31,6 +31,6 @@ public class ReturnOrderDeliveryDetailsServiceImpl implements ReturnOrderDeliver
 
     @Override
     public void addReturnOrderDeliveryInfoDetails(ReturnOrderDeliveryDetail returnOrderDeliveryDetail) {
-
+        returnDeliveryInfoDetailsDAO.save(returnOrderDeliveryDetail);
     }
 }
