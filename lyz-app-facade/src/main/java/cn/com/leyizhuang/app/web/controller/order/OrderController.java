@@ -288,7 +288,7 @@ public class OrderController {
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
 
-            if (orderBillingDetails.getIsPayUp()) {
+            if (orderBillingDetails.getAmountPayable()<=AppConstant.PAY_UP_LIMIT) {
                 //如果预存款或信用金已支付完成直接发送到WMS出货单
                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                   iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());

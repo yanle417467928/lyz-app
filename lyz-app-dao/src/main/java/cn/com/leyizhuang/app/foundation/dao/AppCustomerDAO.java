@@ -140,4 +140,8 @@ public interface AppCustomerDAO {
     Integer updateDepositByUserIdAndVersion(@Param("userId") Long userId, @Param("deposit") Double customerDeposit,@Param("version")Date version);
 
     List<CustomerProfession> getCustomerProfessionListByStatus(String status);
+
+    List<CustomerCashCoupon> findCashCouponsByids(@Param(value = "cashCouponList")List<Long> cashCouponList);
+
+    CustomerProfession findCustomerProfessionByTitle(String customerProfession);
 }

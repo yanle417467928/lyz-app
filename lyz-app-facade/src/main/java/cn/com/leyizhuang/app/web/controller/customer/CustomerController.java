@@ -13,7 +13,6 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
-import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -26,6 +25,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Richard
@@ -204,6 +204,8 @@ public class CustomerController {
                 newUser.setLight(AppCustomerLightStatus.GREEN);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
                 newUser.setCustomerProfession(registryParam.getProfession());
+                List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
+                newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals(registryParam.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
                 newUser.setName(registryParam.getName());
                 AppCustomer returnUser = commonService.saveCustomerInfo(newUser, new CustomerLeBi(), new CustomerPreDeposit());
                 //拼装accessToken

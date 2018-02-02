@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.StoreSellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.UserInformationResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.FunctionalFeedbackStatusEnum;
@@ -224,8 +225,8 @@ public class UserSettingController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/deliveryAddress/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getDeliveryAddress(Long userId, Integer identityType,Integer page) {
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType,page:{}", userId, identityType,page);
+    public ResultDTO<Object> getDeliveryAddress(Long userId, Integer identityType, Integer page) {
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType,page:{}", userId, identityType, page);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -563,6 +564,7 @@ public class UserSettingController {
         if (guide != null) {
             informationResponse.setGuideMobile(guide.getMobile());
         }
+        informationResponse.setProfession(appCustomer.getCustomerProfessionDesc());
         return informationResponse;
     }
 

@@ -46,7 +46,7 @@ import java.util.*;
  * 通用方法实现
  *
  * @author Richard
- *         Created on 2017-09-12 15:44
+ * Created on 2017-09-12 15:44
  **/
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -893,7 +893,7 @@ public class CommonServiceImpl implements CommonService {
         List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
         if (null != orderBaseInfo) {
             if (null != cashCouponList && cashCouponList.size() > 0) {
-                List<CustomerCashCoupon> cashCoupons = customerService.findCashCouponsByCcids(cashCouponList);
+                List<CustomerCashCoupon> cashCoupons = customerService.findCashCouponsByids(cashCouponList);
                 for (CustomerCashCoupon coupon :
                         cashCoupons) {
                     OrderCouponInfo couponInfo = new OrderCouponInfo();
@@ -1045,6 +1045,7 @@ public class CommonServiceImpl implements CommonService {
                 goodsInfo.setReturnPriority(1);
                 goodsInfo.setPriceItemId(goodsVO.getPriceItemId());
                 goodsInfo.setCompanyFlag(goodsVO.getCompanyFlag());
+                goodsInfo.setCoverImageUri(goodsVO.getCoverImageUri());
                 orderGoodsInfoList.add(goodsInfo);
             }
 
@@ -1129,6 +1130,7 @@ public class CommonServiceImpl implements CommonService {
                 couponGoodsInfo.setReturnPriority(1);
                 couponGoodsInfo.setPriceItemId(couponGoods.getPriceItemId());
                 couponGoodsInfo.setCompanyFlag(couponGoods.getCompanyFlag());
+                couponGoodsInfo.setCoverImageUri(couponGoods.getCoverImageUri());
                 productCouponGoodsList.add(couponGoodsInfo);
             }
             if (couponGoodsIdSet.size() != hasPriceCouponGoodsIdSet.size()) {

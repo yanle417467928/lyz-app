@@ -40,6 +40,11 @@ public class CustomerListResponse implements Serializable {
     //顾客身份类型
     private String customerType;
 
+    /**
+     * 顾客工种
+     */
+    private String profession;
+
     public CustomerListResponse() {
     }
 
@@ -62,6 +67,7 @@ public class CustomerListResponse implements Serializable {
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             customer.setCreateTime(time);
         }
+        customer.setProfession(appCustomer.getCustomerProfessionDesc());
         return customer;
     }
 

@@ -131,4 +131,10 @@ public class AppCustomer implements Serializable {
      */
     private String customerProfession;
 
+    /**
+     * 顾客工种说明
+     */
+    private String customerProfessionDesc;
+
+
 }

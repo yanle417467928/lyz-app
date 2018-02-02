@@ -59,6 +59,11 @@ public class OrderGoodsVO {
      */
     private Integer qty;
 
+    /**
+     * 封面图片
+     */
+    private String coverImageUri;
+
 
 
 

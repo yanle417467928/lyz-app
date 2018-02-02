@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -471,6 +472,22 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     public Integer updateDepositByUserIdAndVersion(Long userId, Double customerDeposit, Date version) {
         return customerDAO.updateDepositByUserIdAndVersion(userId, customerDeposit, version);
+    }
+
+    @Override
+    public List<CustomerCashCoupon> findCashCouponsByids(List<Long> cashCouponList) {
+        if (AssertUtil.isNotEmpty(cashCouponList)){
+            return customerDAO.findCashCouponsByids(cashCouponList);
+        }
+        return null;
+    }
+
+    @Override
+    public CustomerProfession findCustomerProfessionByTitle(String customerProfession) {
+        if (StringUtils.isNotBlank(customerProfession)){
+            return customerDAO.findCustomerProfessionByTitle(customerProfession);
+        }
+        return null;
     }
 
 

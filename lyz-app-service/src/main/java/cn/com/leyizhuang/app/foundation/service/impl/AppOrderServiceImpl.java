@@ -506,6 +506,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit());
                 orderBillingDetails.setAmountPayable(amountPayable);
+                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
             case 0:
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
@@ -521,6 +522,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getEmpCreditMoney());
                 orderBillingDetails.setAmountPayable(amountPayable);
+                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable() + orderBillingDetails.getEmpCreditMoney());
                 break;
             case 2:
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
@@ -534,6 +536,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
+                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable() + orderBillingDetails.getStoreCreditMoney());
                 break;
             default:
                 break;
@@ -541,7 +544,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (amountPayable < 0D) {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
-        orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+       // orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         //根据应付金额判断订单账单是否已付清
         if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
@@ -662,7 +665,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public void updateReturnableQuantityAndReturnQuantityById(int returnQty, Long orderGoodsId) {
-        orderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty,orderGoodsId);
+        orderDAO.updateReturnableQuantityAndReturnQuantityById(returnQty, orderGoodsId);
     }
 
     @Override
@@ -679,7 +682,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
         OrderBillingDetails orderBillingDetails = orderDAO.getOrderBillingDetail(orderNumber);
         Date repaymentTime = new Date();
-        if (null != orderBillingDetails){
+        if (null != orderBillingDetails) {
             orderBillingDetails.setOnlinePayType(OnlinePayType.WE_CHAT);
             orderBillingDetails.setOnlinePayAmount(money);
             orderBillingDetails.setOnlinePayTime(repaymentTime);
@@ -712,7 +715,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
         OrderBillingDetails orderBillingDetails = orderDAO.getOrderBillingDetail(orderNumber);
         Date repaymentTime = new Date();
-        if (null != orderBillingDetails){
+        if (null != orderBillingDetails) {
             orderBillingDetails.setOnlinePayType(OnlinePayType.ALIPAY);
             orderBillingDetails.setOnlinePayAmount(money);
             orderBillingDetails.setOnlinePayTime(repaymentTime);

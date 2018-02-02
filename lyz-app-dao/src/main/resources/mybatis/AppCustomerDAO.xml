@@ -7,7 +7,7 @@
         INSERT INTO cus_customer
         (store_id, name, mobile, birthday, status, sex, open_id,
          pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type, customer_type,
-         last_sign_time, binding_time, last_consumption_time,customer_profession
+         last_sign_time, binding_time, last_consumption_time, customer_profession
         )
         VALUES
             (
@@ -23,7 +23,7 @@
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime},#{customerProfession}
+                #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession}
             )
     </insert>
 
@@ -121,7 +121,9 @@
             last_sign_time,
             consecutive_sign_days,
             binding_time,
-            last_consumption_time
+            last_consumption_time,
+            customer_profession,
+            customer_profession_desc
         FROM cus_customer
         WHERE cus_id = #{cusId}
     </select>
@@ -183,7 +185,9 @@
             c.light,
             c.customer_type,
             c.create_time,
-            c.last_consumption_time
+            c.last_consumption_time,
+            c.customer_profession,
+            c.customer_profession_desc
         FROM cus_customer c
         WHERE sales_consult_id = #{userId}
     </select>
@@ -676,6 +680,42 @@
         UPDATE cus_pre_deposit
         SET balance = balance + #{deposit}
         WHERE cus_id = #{userId}
-        AND last_update_time = #{version}
+              AND last_update_time = #{version}
     </update>
+
+    <select id="findCashCouponsByids" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+        SELECT
+        cus_id,
+        ccid,
+        qty,
+        get_time,
+        is_used,
+        use_time,
+        use_ord_no,
+        down_time,
+        status,
+        `condition`,
+        denomination,
+        effective_start_time,
+        effective_end_time,
+        descripttion,
+        title
+        FROM cus_customer_cash_coupon where id in
+        <foreach collection="cashCouponList" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findCustomerProfessionByTitle" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
+        SELECT
+            id,
+            title,
+            description,
+            create_time,
+            status
+        FROM cus_profession
+        WHERE title = #{customerProfession}
+    </select>
+
 </mapper>

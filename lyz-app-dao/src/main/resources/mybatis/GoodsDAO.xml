@@ -852,6 +852,7 @@
         g.gid,
         g.sku,
         g.sku_name,
+        g.cover_image_uri,
         gp.retail_price,
         gp.vip_price,
         gp.wholesale_price,
@@ -941,6 +942,7 @@
         gp.vip_price,
         gp.wholesale_price,
         g.company_flag,
+        g.cover_image_uri,
         gp.price_line_id price_item_id
         FROM emp_employee e INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
         INNER JOIN gds_goods g ON gp.gid = g.gid

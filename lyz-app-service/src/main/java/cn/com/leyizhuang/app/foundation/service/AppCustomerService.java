@@ -125,4 +125,8 @@ public interface AppCustomerService {
     List<CustomerProfession> getCustomerProfessionListByStatus(String status);
 
     Integer updateDepositByUserIdAndVersion(Long userId,Double customerDeposit,Date version);
+
+    List<CustomerCashCoupon> findCashCouponsByids(List<Long> cashCouponList);
+
+    CustomerProfession findCustomerProfessionByTitle(String customerProfession);
 }

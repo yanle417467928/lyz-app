@@ -36,4 +36,6 @@ public class UserInformationResponse implements Serializable {
     private String storeName;
     //所属导购
     private String guideMobile;
+    //工种
+    private String profession;
 }
