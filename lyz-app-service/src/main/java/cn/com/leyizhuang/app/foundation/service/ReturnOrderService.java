@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
 
 import java.util.Date;
 import java.util.List;
@@ -192,4 +193,16 @@ public interface ReturnOrderService {
     Map<Object, Object> cancelOrderUniversal(Long userId, Integer identityType,
                                              String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 
-    }
+    /**
+     * 拒签退货
+     *
+     * @param userId
+     * @param identityType
+     * @param orderNumber
+     * @param reasonInfo
+     * @param remarksInfo
+     * @return
+     */
+    Map<Object, Object> refusedOrder(Logger logger, Long userId, Integer identityType, String orderNumber, String reasonInfo,
+                                     String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic);
+}
