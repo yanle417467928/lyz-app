@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -16,6 +18,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -340,5 +344,35 @@ public class AppXmlUtil {
             }
         }
         return null;
+    }
+
+    public static String format(String unformattedXml) {
+        try {
+            final Document document = parseXmlFile(unformattedXml);
+            if (document == null) {
+                return unformattedXml;
+            }
+            OutputFormat format = new OutputFormat(document);
+            format.setLineWidth(65);
+            format.setIndenting(true);
+            format.setIndent(2);
+            Writer out = new StringWriter();
+            XMLSerializer serializer = new XMLSerializer(out, format);
+            serializer.serialize(document);
+            return out.toString();
+        } catch (IOException e) {
+            return unformattedXml;
+        }
+    }
+
+    private static Document parseXmlFile(String in) throws IOException {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            InputSource is = new InputSource(new StringReader(in));
+            return db.parse(is);
+        } catch (ParserConfigurationException | SAXException e) {
+            return null;
+        }
     }
 }

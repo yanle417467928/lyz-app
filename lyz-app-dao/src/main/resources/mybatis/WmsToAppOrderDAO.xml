@@ -40,12 +40,27 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
         insert into inter_wta_return_order_back_header (create_time, back_no, company_id, note, owner_no, po_no, rec_no,
         wh_no)
-        values ();
+        SELECT
+        #{createTime},
+        #{backNo},
+        #{companyId},
+        #{note},
+        #{ownerNo},
+        #{poNo},
+        #{recNo},
+        #{whNo}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_wta_return_order_back_header
+        WHERE po_no = #{poNo}
+        );
     </insert>
 
     <insert id="saveWtaReturningOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
-
+        insert into inter_wta_return_order_back_goods (gcode, rec_id, rec_no, rec_qty)
+        values (#{gcode},#{recId},#{recNo},#{recQty});
     </insert>
 
     <insert id="saveWtaReturnOrderDeliveryClerk"
