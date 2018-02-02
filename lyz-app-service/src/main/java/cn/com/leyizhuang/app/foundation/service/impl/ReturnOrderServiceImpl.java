@@ -636,50 +636,49 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
-                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                        //返回门店预存款
-                        if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
-                            //获取门店预存款
-                            StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
-                            //返还预存款后门店预存款金额
-                            Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
-                            //修改门店预存款
-                            Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
-                            if (affectLine > 0) {
-                                //记录门店预存款变更日志
-                                StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
-                                stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                                stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
-                                stPreDepositLogDO.setRemarks("取消订单返还门店预存款");
-                                stPreDepositLogDO.setOrderNumber(orderNumber);
-                                stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
-                                stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
-                                stPreDepositLogDO.setOperatorId(userId);
-                                stPreDepositLogDO.setOperatorType(AppIdentityType.DECORATE_MANAGER);
-                                stPreDepositLogDO.setBalance(stPreDeposit);
-                                stPreDepositLogDO.setDetailReason("取消订单");
-                                stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                                //保存日志
-                                storePreDepositLogService.save(stPreDepositLogDO);
+                            //返回门店预存款
+                            if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
+                                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取门店预存款
+                                StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
+                                //返还预存款后门店预存款金额
+                                Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
+                                //修改门店预存款
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店预存款变更日志
+                                    StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                                    stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
+                                    stPreDepositLogDO.setRemarks("取消订单返还门店预存款");
+                                    stPreDepositLogDO.setOrderNumber(orderNumber);
+                                    stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                                    stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                                    stPreDepositLogDO.setOperatorId(userId);
+                                    stPreDepositLogDO.setOperatorType(AppIdentityType.DECORATE_MANAGER);
+                                    stPreDepositLogDO.setBalance(stPreDeposit);
+                                    stPreDepositLogDO.setDetailReason("取消订单");
+                                    stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    //保存日志
+                                    storePreDepositLogService.save(stPreDepositLogDO);
 
-                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                returnOrderBillingDetail.setCreateTime(new Date());
-                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
-                                returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
-                                returnOrderBillingDetail.setIntoAmountTime(new Date());
-                                returnOrderBillingDetail.setReplyCode(null);
-                                returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
-                                returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-                                break;
-                            } else {
-                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(new Date());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
+                                    returnOrderBillingDetail.setIntoAmountTime(new Date());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
                                 }
                             }
                         }
-                    }
-
                     //返回门店信用金（装饰公司）
                     if (orderBillingDetails.getStoreCreditMoney() != null && orderBillingDetails.getStoreCreditMoney() > 0) {
                         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {

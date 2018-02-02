@@ -36,9 +36,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitio
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -929,49 +927,67 @@ public class MaOrderServiceImpl implements MaOrderService {
 
                         //退还库存量
                         if ("送货上门".equals(orderBaseInfo.getDeliveryType().getDescription())) {
-                            //获取现有城市库存量
-                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
-                            //退还城市库存量
-                            cityService.updateCityInventoryByEmpIdAndGoodsIdAndGoodsQty(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
-                            //记录城市库存变更日志
-                            CityInventoryAvailableQtyChangeLog cityInventoryAvailableQtyChangeLog = new CityInventoryAvailableQtyChangeLog();
-                            cityInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
-                            cityInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
-                            cityInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
-                            cityInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
-                            cityInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
-                            cityInventoryAvailableQtyChangeLog.setChangeTime(date);
-                            cityInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
-                            cityInventoryAvailableQtyChangeLog.setAfterChangeQty((cityInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
-                            cityInventoryAvailableQtyChangeLog.setChangeType(null);
-                            cityInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
-                            cityInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                            //保存记录
-                            cityService.addCityInventoryAvailableQtyChangeLog(cityInventoryAvailableQtyChangeLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取现有城市库存量
+                                CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
+                                //退还城市库存量
+                                Integer affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录城市库存变更日志
+                                    CityInventoryAvailableQtyChangeLog cityInventoryAvailableQtyChangeLog = new CityInventoryAvailableQtyChangeLog();
+                                    cityInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
+                                    cityInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
+                                    cityInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
+                                    cityInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
+                                    cityInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
+                                    cityInventoryAvailableQtyChangeLog.setChangeTime(date);
+                                    cityInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
+                                    cityInventoryAvailableQtyChangeLog.setAfterChangeQty((cityInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
+                                    cityInventoryAvailableQtyChangeLog.setChangeType(null);
+                                    cityInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
+                                    cityInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                    //保存记录
+                                    cityService.addCityInventoryAvailableQtyChangeLog(cityInventoryAvailableQtyChangeLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         } else if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
                             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
-                            //查询现有门店库存
-                            StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid());
-                            //退还门店可用量
-                            appStoreService.updateStoreInventoryByStoreCodeAndGoodsId(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
-                            //记录门店库存变更日志
-                            StoreInventoryAvailableQtyChangeLog storeInventoryAvailableQtyChangeLog = new StoreInventoryAvailableQtyChangeLog();
-                            storeInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
-                            storeInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
-                            storeInventoryAvailableQtyChangeLog.setStoreId(appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode()).getStoreId());
-                            storeInventoryAvailableQtyChangeLog.setStoreName(orderLogisticsInfo.getBookingStoreName());
-                            storeInventoryAvailableQtyChangeLog.setStoreCode(orderLogisticsInfo.getBookingStoreCode());
-                            storeInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
-                            storeInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
-                            storeInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
-                            storeInventoryAvailableQtyChangeLog.setChangeTime(date);
-                            storeInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
-                            storeInventoryAvailableQtyChangeLog.setAfterChangeQty((storeInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
-                            storeInventoryAvailableQtyChangeLog.setChangeType(null);
-                            storeInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
-                            storeInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                            //保存记录
-                            appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //查询现有门店库存
+                                StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid());
+                                //退还门店可用量
+                                Integer affectLine = appStoreService.updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(orderLogisticsInfo.getBookingStoreCode(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), storeInventory.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店库存变更日志
+                                    StoreInventoryAvailableQtyChangeLog storeInventoryAvailableQtyChangeLog = new StoreInventoryAvailableQtyChangeLog();
+                                    storeInventoryAvailableQtyChangeLog.setCityId(orderBaseInfo.getCityId());
+                                    storeInventoryAvailableQtyChangeLog.setCityName(orderBaseInfo.getCityName());
+                                    storeInventoryAvailableQtyChangeLog.setStoreId(appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode()).getStoreId());
+                                    storeInventoryAvailableQtyChangeLog.setStoreName(orderLogisticsInfo.getBookingStoreName());
+                                    storeInventoryAvailableQtyChangeLog.setStoreCode(orderLogisticsInfo.getBookingStoreCode());
+                                    storeInventoryAvailableQtyChangeLog.setGid(orderGoodsInfo.getGid());
+                                    storeInventoryAvailableQtyChangeLog.setSku(orderGoodsInfo.getSku());
+                                    storeInventoryAvailableQtyChangeLog.setSkuName(orderGoodsInfo.getSkuName());
+                                    storeInventoryAvailableQtyChangeLog.setChangeTime(date);
+                                    storeInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
+                                    storeInventoryAvailableQtyChangeLog.setAfterChangeQty((storeInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
+                                    storeInventoryAvailableQtyChangeLog.setChangeType(null);
+                                    storeInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
+                                    storeInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                    //保存记录
+                                    appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -993,168 +1009,262 @@ public class MaOrderServiceImpl implements MaOrderService {
                     if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
                         //返回乐币
                         if (orderBillingDetails.getLebiQuantity() != null && orderBillingDetails.getLebiQuantity() > 0) {
-                            //获取顾客当前乐币数量
-                            CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(orderBaseInfo.getCustomerId());
-                            //返还乐币后顾客乐币数量
-                            Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
-                            //更改顾客乐币数量
-                            leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, date, orderBaseInfo.getCustomerId());
-                            //记录乐币日志
-                            CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
-                            leBiVariationLog.setCusId(orderBaseInfo.getCustomerId());
-                            leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
-                            leBiVariationLog.setAfterVariationQuantity(lebiTotal);
-                            leBiVariationLog.setVariationTime(date);
-                            leBiVariationLog.setLeBiVariationType(LeBiVariationType.CANCEL_ORDER);
-                            leBiVariationLog.setVariationTypeDesc("超过待付款时间");
-                            leBiVariationLog.setOrderNum(orderBaseInfo.getOrderNumber());
-                            //保存日志
-                            leBiVariationLogService.addCustomerLeBiVariationLog(leBiVariationLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取顾客当前乐币数量
+                                CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(orderBaseInfo.getCustomerId());
+                                //返还乐币后顾客乐币数量
+                                Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
+                                //更改顾客乐币数量
+                                Integer affectLine = leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, customerLeBi.getLastUpdateTime(), orderBaseInfo.getCustomerId());
+                                if (affectLine > 0) {
+                                    //记录乐币日志
+                                    CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
+                                    leBiVariationLog.setCusId(orderBaseInfo.getCustomerId());
+                                    leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
+                                    leBiVariationLog.setAfterVariationQuantity(lebiTotal);
+                                    leBiVariationLog.setVariationTime(date);
+                                    leBiVariationLog.setLeBiVariationType(LeBiVariationType.CANCEL_ORDER);
+                                    leBiVariationLog.setVariationTypeDesc("超过待付款时间");
+                                    leBiVariationLog.setOrderNum(orderBaseInfo.getOrderNumber());
+                                    //保存日志
+                                    leBiVariationLogService.addCustomerLeBiVariationLog(leBiVariationLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                         //返回顾客预存款
                         if (orderBillingDetails.getCusPreDeposit() != null && orderBillingDetails.getCusPreDeposit() > 0) {
-                            //获取顾客预存款
-                            CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(orderBaseInfo.getCustomerId());
-                            //返还预存款后顾客预存款金额
-                            Double cusPreDeposit = (customerPreDeposit.getBalance() + orderBillingDetails.getCusPreDeposit());
-                            //更改顾客预存款金额
-                            appCustomerService.unlockCustomerDepositByUserIdAndDeposit(orderBaseInfo.getCustomerId(), orderBillingDetails.getCusPreDeposit());
-                            //记录预存款日志
-                            CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
-                            cusPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            cusPreDepositLogDO.setChangeMoney(orderBillingDetails.getCusPreDeposit());
-                            cusPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                            cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.CANCEL_ORDER);
-                            cusPreDepositLogDO.setChangeTypeDesc("超过待付款时间");
-                            cusPreDepositLogDO.setCusId(orderBaseInfo.getCustomerId());
-                            cusPreDepositLogDO.setOperatorId(null);
-                            cusPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            cusPreDepositLogDO.setBalance(cusPreDeposit);
-                            cusPreDepositLogDO.setDetailReason("超过待付款时间");
-                            cusPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            cusPreDepositLogDO.setMerchantOrderNumber(null);
-                            //保存日志
-                            appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取顾客预存款
+                                CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(orderBaseInfo.getCustomerId());
+                                //返还预存款后顾客预存款金额
+                                Double cusPreDeposit = (customerPreDeposit.getBalance() + orderBillingDetails.getCusPreDeposit());
+                                //更改顾客预存款金额
+                                Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(orderBaseInfo.getCustomerId(), orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录预存款日志
+                                    CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                                    cusPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    cusPreDepositLogDO.setChangeMoney(orderBillingDetails.getCusPreDeposit());
+                                    cusPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.CANCEL_ORDER);
+                                    cusPreDepositLogDO.setChangeTypeDesc("超过待付款时间");
+                                    cusPreDepositLogDO.setCusId(orderBaseInfo.getCustomerId());
+                                    cusPreDepositLogDO.setOperatorId(null);
+                                    cusPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    cusPreDepositLogDO.setBalance(cusPreDeposit);
+                                    cusPreDepositLogDO.setDetailReason("超过待付款时间");
+                                    cusPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    cusPreDepositLogDO.setMerchantOrderNumber(null);
+                                    //保存日志
+                                    appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(new Date());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
+                                    returnOrderBillingDetail.setIntoAmountTime(new Date());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                     }
                     if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
                         //返回门店预存款
                         if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
-                            //获取门店预存款
-                            StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
-                            //返还预存款后门店预存款金额
-                            Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
-                            //修改门店预存款
-                            storePreDepositLogService.updateStPreDepositByUserId(stPreDeposit, orderBaseInfo.getSalesConsultId());
-                            //记录门店预存款变更日志
-                            StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
-                            stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
-                            stPreDepositLogDO.setRemarks("超过待付款时间");
-                            stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
-                            stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
-                            stPreDepositLogDO.setOperatorId(null);
-                            stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            stPreDepositLogDO.setBalance(stPreDeposit);
-                            stPreDepositLogDO.setDetailReason("超过待付款时间");
-                            stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            //保存日志
-                            storePreDepositLogService.save(stPreDepositLogDO);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取门店预存款
+                                StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
+                                //返还预存款后门店预存款金额
+                                Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
+                                //修改门店预存款
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getSalesConsultId(), storePreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店预存款变更日志
+                                    StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                                    stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
+                                    stPreDepositLogDO.setRemarks("超过待付款时间");
+                                    stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                                    stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                                    stPreDepositLogDO.setOperatorId(null);
+                                    stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    stPreDepositLogDO.setBalance(stPreDeposit);
+                                    stPreDepositLogDO.setDetailReason("超过待付款时间");
+                                    stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    //保存日志
+                                    storePreDepositLogService.save(stPreDepositLogDO);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(new Date());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
+                                    returnOrderBillingDetail.setIntoAmountTime(new Date());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                         //返回导购信用额度
                         if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0) {
-                            //获取导购信用金
-                            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
-                            //返还信用金后导购信用金额度
-                            Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getEmpCreditMoney());
-                            //修改导购信用额度
-                            appEmployeeService.unlockGuideCreditByUserIdAndCredit(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney());
-                            //记录导购信用金变更日志
-                            EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                            empCreditMoneyChangeLog.setEmpId(orderBaseInfo.getSalesConsultId());
-                            empCreditMoneyChangeLog.setCreateTime(date);
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                            empCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                            empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.CANCEL_ORDER);
-                            empCreditMoneyChangeLog.setChangeTypeDesc("超过待付款时间");
-                            empCreditMoneyChangeLog.setOperatorId(null);
-                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            //保存日志
-                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取导购信用金
+                                EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
+                                //返还信用金后导购信用金额度
+                                Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getEmpCreditMoney());
+                                //修改导购信用额度
+                                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录导购信用金变更日志
+                                    EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                                    empCreditMoneyChangeLog.setEmpId(orderBaseInfo.getSalesConsultId());
+                                    empCreditMoneyChangeLog.setCreateTime(date);
+                                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                                    empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                                    empCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                    empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.CANCEL_ORDER);
+                                    empCreditMoneyChangeLog.setChangeTypeDesc("超过待付款时间");
+                                    empCreditMoneyChangeLog.setOperatorId(null);
+                                    empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    //保存日志
+                                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                     }
                     if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.DECORATE_MANAGER)) {
                         //返回门店预存款
                         if (orderBillingDetails.getStPreDeposit() != null && orderBillingDetails.getStPreDeposit() > 0) {
-                            //获取门店预存款
-                            StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getCreatorId());
-                            //返还预存款后门店预存款金额
-                            Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
-                            //修改门店预存款
-                            storePreDepositLogService.updateStPreDepositByUserId(stPreDeposit, orderBaseInfo.getCreatorId());
-                            //记录门店预存款变更日志
-                            StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
-                            stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
-                            stPreDepositLogDO.setRemarks("超过待付款时间");
-                            stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
-                            stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
-                            stPreDepositLogDO.setOperatorId(null);
-                            stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            stPreDepositLogDO.setBalance(stPreDeposit);
-                            stPreDepositLogDO.setDetailReason("超过待付款时间");
-                            stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            //保存日志
-                            storePreDepositLogService.save(stPreDepositLogDO);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取门店预存款
+                                StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getCreatorId());
+                                //返还预存款后门店预存款金额
+                                Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
+                                //修改门店预存款
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getCreatorId(), storePreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店预存款变更日志
+                                    StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                                    stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
+                                    stPreDepositLogDO.setRemarks("超过待付款时间");
+                                    stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                                    stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                                    stPreDepositLogDO.setOperatorId(null);
+                                    stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    stPreDepositLogDO.setBalance(stPreDeposit);
+                                    stPreDepositLogDO.setDetailReason("超过待付款时间");
+                                    stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                                    //保存日志
+                                    storePreDepositLogService.save(stPreDepositLogDO);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(new Date());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
+                                    returnOrderBillingDetail.setIntoAmountTime(new Date());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
+
                         //返回门店信用金（装饰公司）
                         if (orderBillingDetails.getStoreCreditMoney() != null && orderBillingDetails.getStoreCreditMoney() > 0) {
-                            //查询门店信用金
-                            StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
-                            //返还后门店信用金额度
-                            Double creditMoney = (storeCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getStoreCreditMoney());
-                            //修改门店可用信用金
-                            appStoreService.unlockStoreCreditByUserIdAndCredit(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney());
-                            //记录门店信用金变更日志
-                            StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
-                            storeCreditMoneyChangeLog.setStoreId(storeCreditMoney.getStoreId());
-                            storeCreditMoneyChangeLog.setCreateTime(date);
-                            storeCreditMoneyChangeLog.setChangeAmount(orderBillingDetails.getStoreCreditMoney());
-                            storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                            storeCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                            storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.CANCEL_ORDER);
-                            storeCreditMoneyChangeLog.setChangeTypeDesc("超过待付款时间");
-                            storeCreditMoneyChangeLog.setOperatorId(null);
-                            storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            storeCreditMoneyChangeLog.setRemark("超过待付款时间");
-                            //保存日志
-                            appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //查询门店信用金
+                                StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
+                                //返还后门店信用金额度
+                                Double creditMoney = (storeCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getStoreCreditMoney());
+                                //修改门店可用信用金
+                                Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店信用金变更日志
+                                    StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+                                    storeCreditMoneyChangeLog.setStoreId(storeCreditMoney.getStoreId());
+                                    storeCreditMoneyChangeLog.setCreateTime(date);
+                                    storeCreditMoneyChangeLog.setChangeAmount(orderBillingDetails.getStoreCreditMoney());
+                                    storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                                    storeCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                    storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.CANCEL_ORDER);
+                                    storeCreditMoneyChangeLog.setChangeTypeDesc("超过待付款时间");
+                                    storeCreditMoneyChangeLog.setOperatorId(null);
+                                    storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    storeCreditMoneyChangeLog.setRemark("超过待付款时间");
+                                    //保存日志
+                                    appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                         //返回门店现金返利（装饰公司）
                         if (orderBillingDetails.getStoreSubvention() != null && orderBillingDetails.getStoreSubvention() > 0) {
-                            //获取门店现金返利
-                            StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
-                            //返还后门店现金返利余额
-                            Double subvention = (storeSubvention.getBalance() + orderBillingDetails.getStoreSubvention());
-                            //修改门店现金返利
-                            appStoreService.unlockStoreSubventionByUserIdAndSubvention(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreSubvention());
-                            //记录门店现金返利变更日志
-                            StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
-                            storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
-                            storeSubventionChangeLog.setCreateTime(date);
-                            storeSubventionChangeLog.setChangeAmount(orderBillingDetails.getStoreSubvention());
-                            storeSubventionChangeLog.setBalance(subvention);
-                            storeSubventionChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                            storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.CANCEL_ORDER);
-                            storeSubventionChangeLog.setChangeTypeDesc("超过待付款时间");
-                            storeSubventionChangeLog.setOperatorId(null);
-                            storeSubventionChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                            storeSubventionChangeLog.setRemark("超过待付款时间");
-                            //保存日志
-                            appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取门店现金返利
+                                StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
+                                //返还后门店现金返利余额
+                                Double subvention = (storeSubvention.getBalance() + orderBillingDetails.getStoreSubvention());
+                                //修改门店现金返利
+                                Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店现金返利变更日志
+                                    StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
+                                    storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
+                                    storeSubventionChangeLog.setCreateTime(date);
+                                    storeSubventionChangeLog.setChangeAmount(orderBillingDetails.getStoreSubvention());
+                                    storeSubventionChangeLog.setBalance(subvention);
+                                    storeSubventionChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                    storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.CANCEL_ORDER);
+                                    storeSubventionChangeLog.setChangeTypeDesc("超过待付款时间");
+                                    storeSubventionChangeLog.setOperatorId(null);
+                                    storeSubventionChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                                    storeSubventionChangeLog.setRemark("超过待付款时间");
+                                    //保存日志
+                                    appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
                         }
                     }
                     //*******************************退券*********************************
@@ -1181,6 +1291,20 @@ public class MaOrderServiceImpl implements MaOrderService {
                             changeLog.setUseTime(new Date());
                             // 日志变更保存
                             productCouponService.addCustomerProductCouponChangeLog(changeLog);
+
+                            ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
+                            returnOrderProductCoupon.setOrderNo(orderBaseInfo.getOrderNumber());
+                            returnOrderProductCoupon.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderProductCoupon.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                            returnOrderProductCoupon.setGid(null);
+                            returnOrderProductCoupon.setPcid(orderProductCoupon.getCouponId());
+                            returnOrderProductCoupon.setQty(1);
+                            returnOrderProductCoupon.setReturnQty(1);
+                            returnOrderProductCoupon.setSku(orderProductCoupon.getSku());
+                            returnOrderProductCoupon.setPurchasePrice(orderProductCoupon.getPurchasePrice());
+                            returnOrderProductCoupon.setIsReturn(Boolean.TRUE);
+
+                            returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
                         }
                     }
                     //获取订单使用现金券
@@ -1207,6 +1331,16 @@ public class MaOrderServiceImpl implements MaOrderService {
                             customerCashCouponChangeLog.setRemark("超过待付款时间");
                             //保存日志
                             appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
+
+                            ReturnOrderCashCoupon returnOrderCashCoupon = new ReturnOrderCashCoupon();
+                            returnOrderCashCoupon.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderCashCoupon.setOrderNo(orderBaseInfo.getOrderNumber());
+                            returnOrderCashCoupon.setCcid(orderCashCoupon.getCouponId());
+                            returnOrderCashCoupon.setPurchasePrice(orderCashCoupon.getPurchasePrice());
+                            returnOrderCashCoupon.setIsReturn(Boolean.TRUE);
+
+                            returnOrderService.saveReturnOrderCashCoupon(returnOrderCashCoupon);
+
                         }
                     }
                     //修改订单状态为已取消
