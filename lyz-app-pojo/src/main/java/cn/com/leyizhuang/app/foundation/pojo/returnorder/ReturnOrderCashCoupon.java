@@ -24,7 +24,7 @@ public class ReturnOrderCashCoupon {
     /**
      * 现金券id
      */
-    private String ccid;
+    private Long ccid;
     /**
      * 购买时价格
      */

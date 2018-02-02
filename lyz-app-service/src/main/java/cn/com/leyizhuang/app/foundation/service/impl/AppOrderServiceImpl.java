@@ -208,11 +208,12 @@ public class AppOrderServiceImpl implements AppOrderService {
     public void saveOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber) {
         OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
         OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
+        Date repaymentTime = new Date();
         if (null != orderBaseInfo) {
             orderBillingPaymentDetails.setOrderId(orderBaseInfo.getId());
         }
         orderBillingPaymentDetails.setOrderNumber(orderNumber);
-        Date repaymentTime = new Date();
+
         orderBillingPaymentDetails.setPayTime(repaymentTime);
         orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
         orderBillingPaymentDetails.setAmount(money);
@@ -669,5 +670,71 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (StringUtils.isNotBlank(orderNo) && StringUtils.isNotBlank(gCode)) {
             orderDAO.updateOrderGoodsShippingQuantity(orderNo, gCode, dAckQty);
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveWeChatOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber) {
+        OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
+        OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
+        OrderBillingDetails orderBillingDetails = orderDAO.getOrderBillingDetail(orderNumber);
+        Date repaymentTime = new Date();
+        if (null != orderBillingDetails){
+            orderBillingDetails.setOnlinePayType(OnlinePayType.WE_CHAT);
+            orderBillingDetails.setOnlinePayAmount(money);
+            orderBillingDetails.setOnlinePayTime(repaymentTime);
+            orderBillingDetails.setIsPayUp(Boolean.TRUE);
+            orderBillingDetails.setPayUpTime(repaymentTime);
+            orderBillingDetails.setArrearage(0D);
+            orderDAO.updateOrderBillingDetails(orderBillingDetails);
+
+        }
+        if (null != orderBaseInfo) {
+            orderBillingPaymentDetails.setOrderId(orderBaseInfo.getId());
+        }
+        orderBillingPaymentDetails.setOrderNumber(orderNumber);
+
+        orderBillingPaymentDetails.setPayTime(repaymentTime);
+        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.WE_CHAT);
+        orderBillingPaymentDetails.setAmount(money);
+        orderBillingPaymentDetails.setReplyCode(replyNumber);
+        orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
+        //保存还款记录
+        orderDAO.savePaymentDetails(orderBillingPaymentDetails);
+        //导购欠款还款后修改欠款审核表
+        arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveAliPayOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber) {
+        OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
+        OrderBaseInfo orderBaseInfo = orderDAO.getOrderDetail(orderNumber);
+        OrderBillingDetails orderBillingDetails = orderDAO.getOrderBillingDetail(orderNumber);
+        Date repaymentTime = new Date();
+        if (null != orderBillingDetails){
+            orderBillingDetails.setOnlinePayType(OnlinePayType.ALIPAY);
+            orderBillingDetails.setOnlinePayAmount(money);
+            orderBillingDetails.setOnlinePayTime(repaymentTime);
+            orderBillingDetails.setIsPayUp(Boolean.TRUE);
+            orderBillingDetails.setPayUpTime(repaymentTime);
+            orderBillingDetails.setArrearage(0D);
+            orderDAO.updateOrderBillingDetails(orderBillingDetails);
+
+        }
+        if (null != orderBaseInfo) {
+            orderBillingPaymentDetails.setOrderId(orderBaseInfo.getId());
+        }
+        orderBillingPaymentDetails.setOrderNumber(orderNumber);
+
+        orderBillingPaymentDetails.setPayTime(repaymentTime);
+        orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
+        orderBillingPaymentDetails.setAmount(money);
+        orderBillingPaymentDetails.setReplyCode(replyNumber);
+        orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
+        //保存还款记录
+        orderDAO.savePaymentDetails(orderBillingPaymentDetails);
+        //导购欠款还款后修改欠款审核表
+        arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
     }
 }

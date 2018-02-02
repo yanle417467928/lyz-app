@@ -25,5 +25,5 @@ public interface LeBiVariationLogService {
      * @param lastUpdateTime    修改时间
      * @param customerId    顾客id
      */
-    void updateLeBiQtyByUserId(Integer quantity,Date lastUpdateTime,Long customerId);
+    Integer updateLeBiQtyByUserId(Integer quantity,Date lastUpdateTime,Long customerId);
 }

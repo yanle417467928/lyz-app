@@ -466,6 +466,11 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         return 0;
     }
 
+    @Override
+    public Integer updateDepositByUserIdAndVersion(Long userId, Double customerDeposit, Date version) {
+        return customerDAO.updateDepositByUserIdAndVersion(userId, customerDeposit, version);
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -91,5 +92,13 @@ public interface AppStoreService {
     StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long goodsId);
 
     void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty);
+
+    Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(String storeCode, Long gid, Integer qty, Date version);
+
+    Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit,Date version);
+
+    Integer updateStoreSubventionByUserIdAndVersion(Double subvention,Long userId,Timestamp version);
+
+
 
 }

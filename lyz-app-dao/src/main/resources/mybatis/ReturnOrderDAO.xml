@@ -129,7 +129,8 @@
     </update>
 
     <insert id="saveReturnOrderBilling"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ord_return_billing
         (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash, lb_quantity)
         VALUES

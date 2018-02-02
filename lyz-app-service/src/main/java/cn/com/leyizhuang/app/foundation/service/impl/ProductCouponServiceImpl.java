@@ -60,8 +60,8 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public  List<OrderCouponInfo>  findOrderCouponByCouponTypeAndUserId(Long orderId, OrderCouponType couponType) {
-        return productCouponDAO.findOrderCouponByCouponTypeAndUserId(orderId,couponType);
+    public  List<OrderCouponInfo>  findOrderCouponByCouponTypeAndOrderId(Long orderId, OrderCouponType couponType) {
+        return productCouponDAO.findOrderCouponByCouponTypeAndOrderId(orderId,couponType);
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -246,6 +247,14 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
             return employeeDAO.findSellerByEmpId(userId);
         } else if (identityType == 6) {
             return employeeDAO.findSellerByCustomerId(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion(Long userId, Double guideCredit, Date version) {
+        if (null != userId && null != guideCredit){
+            return employeeDAO.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, guideCredit, version);
         }
         return null;
     }

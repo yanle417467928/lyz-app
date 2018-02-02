@@ -9,7 +9,9 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.crypto.Data;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +58,8 @@ public interface AppEmployeeDAO {
     void deleteByLoginName(String loginName);
 
     void unlockGuideCreditByUserIdAndGuideCredit(@Param("userId") Long userId, @Param("credit") Double guideCredit);
+
+    Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion(@Param("userId") Long userId, @Param("credit") Double guideCredit, @Param("version")Date version);
 
     List<SellerResponse> findSellerByStoreIdAndIdentityType(@Param("storeId") Long storeId, @Param("type") AppIdentityType type);
 

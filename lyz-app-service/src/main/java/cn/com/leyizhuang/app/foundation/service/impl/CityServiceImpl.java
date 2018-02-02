@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import java.util.Map;
  * 城市API实现
  *
  * @author Richard
- * Created on 2017-09-21 14:25
+ *         Created on 2017-09-21 14:25
  **/
 @Service
 public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
@@ -152,7 +153,23 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     public City findCityByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
-        return cityDAO.findCityByUserIdAndIdentityType(userId,identityType);
+            return cityDAO.findCityByUserIdAndIdentityType(userId, identityType);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version) {
+        if (null != userId && null != index && null != integer) {
+            return cityDAO.updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(userId, index, integer, version);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version) {
+        if (null != userId && null != index && null != integer) {
+            return cityDAO.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(userId, index, integer, version);
         }
         return null;
     }

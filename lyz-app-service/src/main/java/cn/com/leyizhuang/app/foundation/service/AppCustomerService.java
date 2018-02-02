@@ -124,4 +124,6 @@ public interface AppCustomerService {
     List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty);
 
     Integer lockCustomerProductCouponById(Long couponId, String orderNumber);
+
+    Integer updateDepositByUserIdAndVersion(Long userId,Double customerDeposit,Date version);
 }

@@ -24,8 +24,8 @@ public interface LeBiVariationLogDAO {
     /**
      * 取消订单返回乐币
      * @param quantity  返回后总数量
-     * @param lastUpdateTime    修改时间
+     * @param version    修改时间
      * @param customerId    顾客id
      */
-    void updateLeBiQtyByUserId(@Param("quantity") Integer quantity, @Param("lastUpdateTime")Date lastUpdateTime, @Param("customerId") Long customerId);
+    Integer updateLeBiQtyByUserId(@Param("quantity") Integer quantity, @Param("version")Date version, @Param("customerId") Long customerId);
 }

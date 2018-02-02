@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaym
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
@@ -195,4 +197,10 @@ public interface MaOrderDAO {
     void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status);
 
     Long querySellerIdByOrderNumber(String orderNumber);
+
+    /**
+     * 定时查找待付款订单
+     * @return
+     */
+    List<OrderBaseInfo> scanningUnpaidOrder();
 }

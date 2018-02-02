@@ -139,4 +139,6 @@ public interface AppCustomerDAO {
 
     Integer updateCustomerProductCouponById(@Param(value = "couponId") Long couponId,
                                           @Param(value = "orderNumber") String orderNumber);
+
+    Integer updateDepositByUserIdAndVersion(@Param("userId") Long userId, @Param("deposit") Double customerDeposit,@Param("version")Date version);
 }

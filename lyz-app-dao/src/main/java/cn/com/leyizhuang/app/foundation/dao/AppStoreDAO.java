@@ -55,6 +55,8 @@ public interface AppStoreDAO {
 
     void updateStoreCreditByUserId(@Param("userId") Long userId, @Param("credit") Double storeCredit);
 
+    Integer updateStoreCreditByUserIdAndVersion(@Param("userId") Long userId, @Param("credit") Double storeCredit, @Param("version") Date version);
+
     void updateStoreSubventionByUserId(@Param("userId") Long userId, @Param("subvention") Double storeSubvention);
 
     void updateStoreInventoryByEmployeeIdAndGoodsId(
@@ -122,5 +124,10 @@ public interface AppStoreDAO {
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 
     void updateStoreInventoryByStoreCodeAndGoodsId(@Param("storeCode") String storeCode, @Param("gid") Long gid, @Param("qty") Integer qty);
+
+    Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(@Param("storeCode") String storeCode, @Param("gid") Long gid,
+                                                                @Param("qty") Integer qty, @Param(value = "version") Date version);
+
+    Integer updateStoreSubventionByUserIdAndVersion(@Param("subvention")Double subvention,@Param("userId")Long userId,@Param("version")Timestamp version);
 
 }

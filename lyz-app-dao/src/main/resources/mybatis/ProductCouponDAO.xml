@@ -47,7 +47,7 @@
         AND ccpc.id = #{pcId}
     </select>
 
-    <select id="findOrderCouponByCouponTypeAndUserId"
+    <select id="findOrderCouponByCouponTypeAndOrderId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
         SELECT
             *

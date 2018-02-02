@@ -659,4 +659,11 @@
               AND effective_start_time &lt; NOW()
               AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
     </update>
+
+    <update id="updateDepositByUserIdAndVersion">
+        UPDATE cus_pre_deposit
+        SET balance = balance + #{deposit}
+        WHERE cus_id = #{userId}
+        AND last_update_time = #{version}
+    </update>
 </mapper>

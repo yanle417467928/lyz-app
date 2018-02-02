@@ -143,15 +143,15 @@ public class OrderBillingDetails {
     /**
      *  其他金额
      */
-    private Double otherMoney;
+    private Double storeOtherMoney;
 
     /**
      * POS金额
      */
-    private Double posMoney;
+    private Double storePosMoney;
 
     /**
      * POS流水号后六位
      */
-    private String posNumber;
+    private String storePosNumber;
 }

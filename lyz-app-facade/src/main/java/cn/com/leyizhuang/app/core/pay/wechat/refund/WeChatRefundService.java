@@ -41,7 +41,7 @@ public class WeChatRefundService {
      * @param money
      * @return
      */
-    public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
+    public Map<String, String> wechatReturnMoney(HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
@@ -54,7 +54,7 @@ public class WeChatRefundService {
 
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
-                    orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money), req);
+                    orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money));
             logger.debug("******微信退款签名***** OUT, 出参 sign:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
