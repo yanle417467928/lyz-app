@@ -1352,7 +1352,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             maps.put("code", "FAILURE");
             return maps;
         }
-
+    }
         @Override
         public void updateReturnLogisticInfo (String driver, String returnNo){
             returnOrderDAO.updateReturnLogisticInfo(driver, returnNo);
