@@ -65,17 +65,18 @@
 
     <insert id="saveWtaReturnOrderDeliveryClerk"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturnOrderDeliveryClerk">
-        INSERT INTO inter_wta_return_order_delivery_clerk (create_time, return_number, c_wh_no, driver)
+        INSERT INTO inter_wta_return_order_delivery_clerk (create_time, return_number, c_wh_no, driver, note)
             SELECT
                 #{createTime},
-                #{returnNumber},
+                #{returnNo},
                 #{warehouseNo},
-                #{driver}
+        #{driver},
+        #{note}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_return_order_delivery_clerk
-                    WHERE return_number = #{orderNo}
+        WHERE return_number = #{returnNo}
             );
     </insert>
 

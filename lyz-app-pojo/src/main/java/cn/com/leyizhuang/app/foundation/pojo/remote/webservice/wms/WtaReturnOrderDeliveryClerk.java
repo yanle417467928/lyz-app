@@ -35,4 +35,9 @@ public class WtaReturnOrderDeliveryClerk {
      * 配送员编码
      */
     private String driver;
+
+    /**
+     * 备注信息
+     */
+    private String note;
 }

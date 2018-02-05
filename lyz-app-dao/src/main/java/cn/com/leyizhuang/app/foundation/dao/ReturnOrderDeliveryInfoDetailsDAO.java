@@ -20,4 +20,11 @@ public interface ReturnOrderDeliveryInfoDetailsDAO {
      * @return 物流信息明细
      */
     ReturnOrderDeliveryDetail getReturnLogisticStatusDetail(String returnNo);
+
+    /**
+     * 保存退单物流状态信息
+     *
+     * @param returnOrderDeliveryDetail
+     */
+    void save(ReturnOrderDeliveryDetail returnOrderDeliveryDetail);
 }
