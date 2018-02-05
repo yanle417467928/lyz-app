@@ -33,6 +33,9 @@ public class GoodsDO {
     //轮播展示图片，多张图片以,隔开
     private String rotationImageUri;
 
+    //商品详情图片，多张以，隔开
+    private String detailsImageUri;
+
     //商品规格
     private String goodsSpecification;
 

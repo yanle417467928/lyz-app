@@ -94,7 +94,7 @@ public class ActBaseDO{
     private Boolean isGoodsOptionalQty;
 
     // 赠品数量任选
-    private Boolean isGiftOptionalQty;
+    private Boolean isGiftOptionalQty = true;
 
     // 促销状态
     private ActStatusType status;

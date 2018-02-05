@@ -534,4 +534,8 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         log.setChangeTypeDesc(paymentDataDO.getPaymentTypeDesc());
         this.cusPreDepositLogServiceImpl.save(log);
     }
+
+    public void preDepositWithdraw(){
+
+    }
 }

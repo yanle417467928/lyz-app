@@ -38,7 +38,7 @@ public class GoodsDetailResponse {
             if (null == goodsDetailResponse) {
                 goodsDetailResponse = new GoodsDetailResponse();
             }
-            String coverImageUri = goodsDO.getCoverImageUri();
+            String coverImageUri = goodsDO.getDetailsImageUri();
             String rotationImageUri = goodsDO.getRotationImageUri();
             if (null != coverImageUri) {
                 List<String> list = new ArrayList<>();

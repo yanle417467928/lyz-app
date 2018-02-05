@@ -53,4 +53,12 @@ public class UserGoodsResponse implements Serializable {
 
     //下料清单商品数量
     private Integer materialQty;
+
+//    public void setCoverImageUri(String coverImageUri){
+//        String[] urlArr = coverImageUri.split(",");
+//        if (urlArr != null || urlArr.length > 0){
+//            // 多张图片默认取第一张
+//            this.coverImageUri = urlArr[0];
+//        }
+//    }
 }
