@@ -127,5 +127,5 @@ public interface ReturnOrderDAO {
 
     List<ReturnOrderBaseInfo> findReturnOrderListByStroe(Long store);
 
-    void updateReturnLogisticInfo(String driver, String returnNo);
+    void updateReturnLogisticInfo(@Param("driver") String driver, @Param("returnNo") String returnNo);
 }

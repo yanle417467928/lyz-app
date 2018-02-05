@@ -17,7 +17,7 @@
 
         VALUES
         (#{roid}, #{createTime}, #{returnNo}, #{returnLogisticStatus}, #{description},
-         #{pickUpId}, #{pickUpNumber}, #{warehouseNo}, #{taskNo}, #{picture})
+        #{pickersId}, #{pickersNumber}, #{warehouseNo}, #{taskNo}, #{picture})
     </insert>
 
     <select id="getReturnLogisticStatusDetail"

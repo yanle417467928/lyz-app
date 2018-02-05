@@ -225,11 +225,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     deliveryClerk.setCreateTime(new Date());
                     wmsToAppOrderService.saveWtaReturnOrderDeliveryClerk(deliveryClerk);
-//
-//                    if (AssertUtil.isEmpty(deliveryInfoDetails)) {
-//                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询到该配送单,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
-//                        return AppXmlUtil.resultStrXml(1, "未找到该任务的配送单,退单号： " + deliveryClerk.getReturnNo() + "");
-//                    }
+
+                    if (AssertUtil.isEmpty(deliveryClerk.getDriver())) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询到该配送单,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
+                        return AppXmlUtil.resultStrXml(1, "配送员(c_driver)不可为空,退单号： " + deliveryClerk.getReturnNo() + "");
+                    }
                     returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
 
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
@@ -678,7 +678,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderDeliveryClerk.setReturnNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("driver".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("c_driver".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderDeliveryClerk.setDriver(childNode.getChildNodes().item(0).getNodeValue());
                 }
