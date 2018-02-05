@@ -172,7 +172,7 @@ public class CustomerController {
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
             //如果电话号码已经存在
-            if (phoneUser != null) {
+            if (phoneUser != null && phoneUser.getOpenId() == null) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
@@ -199,7 +199,10 @@ public class CustomerController {
                     newUser.setSex(registryParam.getSex() ? SexType.MALE : SexType.FEMALE);
                 }
                 newUser.setPicUrl(registryParam.getPicUrl());
-                newUser.setCityId(registryParam.getCityId());
+                Long cityId = registryParam.getCityId();
+                AppStore store = storeService.findDefaultStoreByCityId(cityId);
+                newUser.setStoreId(store.getStoreId());
+                newUser.setCityId(cityId);
                 newUser.setMobile(registryParam.getPhone());
                 newUser.setLight(AppCustomerLightStatus.GREEN);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
