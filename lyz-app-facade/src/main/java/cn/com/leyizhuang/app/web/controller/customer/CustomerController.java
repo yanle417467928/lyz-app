@@ -759,14 +759,14 @@ public class CustomerController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         returnMap);
             } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有获取到顾客身份类型信息",
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有获取到工种信息",
                         null);
                 return resultDTO;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取顾客身份类型信息失败", null);
-            logger.warn("getCustomerIdentityType EXCEPTION,获取顾客身份类型信息失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取工种信息失败", null);
+            logger.warn("getCustomerIdentityType EXCEPTION,获取工种信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
