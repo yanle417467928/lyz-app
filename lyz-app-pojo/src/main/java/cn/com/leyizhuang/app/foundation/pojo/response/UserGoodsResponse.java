@@ -50,4 +50,7 @@ public class UserGoodsResponse implements Serializable {
 
     //商品类型分类编码 id
     private Long typeId;
+
+    //下料清单商品数量
+    private Integer materialQty;
 }

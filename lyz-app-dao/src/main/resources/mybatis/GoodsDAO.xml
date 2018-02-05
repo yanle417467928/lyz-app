@@ -767,10 +767,12 @@
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        m.qty materialQty
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
@@ -805,10 +807,12 @@
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        m.qty materialQty
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
