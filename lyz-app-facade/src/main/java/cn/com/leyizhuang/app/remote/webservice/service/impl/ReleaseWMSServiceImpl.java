@@ -225,17 +225,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     deliveryClerk.setCreateTime(new Date());
                     wmsToAppOrderService.saveWtaReturnOrderDeliveryClerk(deliveryClerk);
-//                    ReturnOrderDeliveryDetail deliveryInfoDetails = returnOrderDeliveryDetailsService.findReturnNumber(deliveryClerk.getReturnNo());
 //
 //                    if (AssertUtil.isEmpty(deliveryInfoDetails)) {
 //                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询到该配送单,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
 //                        return AppXmlUtil.resultStrXml(1, "未找到该任务的配送单,退单号： " + deliveryClerk.getReturnNo() + "");
 //                    }
-//                    deliveryInfoDetails.setWarehouseNo(wtaUpdateDeliveryInfo.getWarehouseNo());
-//                    deliveryInfoDetails.setOperationType(wtaUpdateDeliveryInfo.getOperatorStatus());
-//                    deliveryInfoDetails.setOperatorNo(wtaUpdateDeliveryInfo.getDriver());
-//                    deliveryInfoDetails.setOrderNo(wtaUpdateDeliveryInfo.getReserved1());
-//                    returnOrderDeliveryDetailsService.modifyReturnOrderDeliveryInfoDetails(deliveryInfoDetails);
                     returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
 
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
@@ -244,6 +238,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     returnOrderDeliveryDetail.setDescription("配送员正在取货途中");
                     returnOrderDeliveryDetail.setCreateTime(new Date());
                     returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
+                    returnOrderDeliveryDetail.setWarehouseNo(deliveryClerk.getWarehouseNo());
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
                     returnOrderService.updateReturnLogisticInfo(deliveryClerk.getDriver(), deliveryClerk.getReturnNo());
@@ -670,20 +665,20 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaReturnOrderDeliveryClerk mapping(WtaReturnOrderDeliveryClerk returnOrderDeliveryClerk, Node childNode) {
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
             // 比较字段名
-            if ("create_time".equalsIgnoreCase(childNode.getNodeName())) {
+            if ("c_note".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
-                    returnOrderDeliveryClerk.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
+                    returnOrderDeliveryClerk.setNote(childNode.getChildNodes().item(0).getNodeValue());
                 }
             } else if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderDeliveryClerk.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("return_number".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("c_po_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderDeliveryClerk.setReturnNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_Driver".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("driver".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returnOrderDeliveryClerk.setDriver(childNode.getChildNodes().item(0).getNodeValue());
                 }

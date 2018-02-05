@@ -46,6 +46,10 @@ public class ReturnOrderDeliveryDetail {
      */
     private String pickersNumber;
     /**
+     * 仓库编号
+     */
+    private String warehouseNo;
+    /**
      * 物流操作编码
      */
     private String taskNo;
