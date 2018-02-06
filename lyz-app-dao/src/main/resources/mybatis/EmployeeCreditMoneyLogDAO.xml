@@ -15,8 +15,8 @@
         t.temp_credit_limit_change_amount change_money
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
-        INNER JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
-            INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
+            LEFT JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
+            LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
                                           AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>

@@ -454,7 +454,7 @@ public class EmployeeController {
     @PostMapping(value = "/seller/creditMoney/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getSellerCreditMoneyLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录失败，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
+        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
