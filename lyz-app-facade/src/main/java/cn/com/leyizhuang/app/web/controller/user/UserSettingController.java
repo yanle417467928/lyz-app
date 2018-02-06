@@ -565,7 +565,7 @@ public class UserSettingController {
         if (guide != null) {
             informationResponse.setGuideMobile(guide.getMobile());
         }
-        informationResponse.setProfession(appCustomer.getCustomerProfessionDesc());
+        informationResponse.setProfession(appCustomer.getCustomerProfession());
         return informationResponse;
     }
 

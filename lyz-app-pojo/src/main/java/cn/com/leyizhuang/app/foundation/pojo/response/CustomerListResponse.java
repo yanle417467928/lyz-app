@@ -75,7 +75,7 @@ public class CustomerListResponse implements Serializable {
 
         List<CustomerListResponse> customerListResponses;
 
-        if (appCustomerList.size() > 0 && !appCustomerList.isEmpty()) {
+        if (null != appCustomerList && appCustomerList.size() > 0) {
             customerListResponses = new ArrayList<>(appCustomerList.size());
             appCustomerList.forEach(appCustomer -> customerListResponses.add(transform(appCustomer)));
         } else {

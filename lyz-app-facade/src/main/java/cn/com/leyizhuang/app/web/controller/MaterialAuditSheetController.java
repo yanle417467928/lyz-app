@@ -437,7 +437,7 @@ public class MaterialAuditSheetController {
      * @return 返回成功或失败
      */
     @RequestMapping(value = "/manager/check", method = RequestMethod.POST)
-    public ResultDTO<Object> managerAudit(Long userID, String auditNo, Boolean isAudited) {
+    public ResultDTO<Object> managerAudit(Integer identityType,Long userID, String auditNo, Boolean isAudited) {
         ResultDTO<Object> resultDTO;
         logger.info("managerAudit CALLED,项目经理审核物料审核单，入参 userID:{}, auditNo:{}, isAudited:{}", userID, auditNo, isAudited);
         if (null == userID) {
@@ -447,6 +447,16 @@ public class MaterialAuditSheetController {
         }
         if (StringUtils.isBlank(auditNo)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料审核单编号不能为空", null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 2){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型错误，不能进行审核！", null);
             logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

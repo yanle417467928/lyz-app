@@ -501,9 +501,10 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         SELECT
+        DISTINCT
+            g.gid      id,
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid      id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,

@@ -19,8 +19,11 @@
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/1.12.2/js/i18n/defaults-zh_CN.min.js"></script>
-    <script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.js"></script>
-    <script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <#--<script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.js"></script>-->
+    <#--<script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>-->
+
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
@@ -118,7 +121,7 @@
                                     <h3 class="box-title">选择商品</h3>
 
                                     <div class="box-tools">
-                                        <button type="button" class="btn btn-primary btn-xs"
+                                        <button id="selectGoods" type="button" class="btn btn-primary btn-xs"
                                                 onclick="openGoodsModal('selectedGoodsTable')">
                                             选择商品
                                         </button>
@@ -208,6 +211,24 @@
                                             选择线下支付
                                         </button>
                                     </div>
+
+                                </div>
+
+
+                                <div class="col-xs-6">
+                                    <div class="col-xs-4" style="margin-left: 115px;">
+                                        <#--<button type="button" class="btn btn-primary btn-xs"-->
+                                                <#--onclick="selectPaymnet('preDeposit')">-->
+                                            <#--选择预存款支付-->
+                                        <#--</button>-->
+                                            <select name="selectPaymnet" id="selectPaymnet" class="form-control select"
+                                                    onchange="selectPaymnet(this.value)">
+                                                <option value="-1">请选择支付方式</option>
+                                                <option value="offlinePayments">线下支付</option>
+                                                <option value="preDeposit">预存款支付</option>
+                                            </select>
+                                    </div>
+
                                     <div id="offlinePayments">
                                         <div class="col-xs-12">
                                             <div class="col-xs-11" style="margin-top: 10px">
@@ -262,9 +283,12 @@
                                                 <label class="col-xs-3" style="padding-right: 0px;text-align:right">收款时间
                                                     &ensp;</label>
                                                 <div class=" col-xs-8" style="padding-left: 0px">
-                                                    <input name="collectMoneyTime" type="text" class="form-control"
-                                                           id="collectMoneyTime"
-                                                           readonly placeholder="请选择收款时间">
+
+                                                    <input name="collectMoneyTime" type="text" class="form-control datepicker" id="collectMoneyTime"
+                                                           placeholder="请选择收款时间">
+                                                    <#--<input name="collectMoneyTime" type="text" class="form-control"-->
+                                                           <#--id="collectMoneyTime"-->
+                                                           <#--readonly placeholder="请选择收款时间">-->
                                                 </div>
                                             </div>
                                         </div>
@@ -292,16 +316,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
 
-                                <div class="col-xs-6">
-                                    <div class="col-xs-2" style="margin-left: 115px;">
-                                        <button type="button" class="btn btn-primary btn-xs"
-                                                onclick="selectPaymnet('preDeposit')">
-                                            选择预存款支付
-                                        </button>
-                                    </div>
+
                                     <div id="preDeposit">
                                         <div class="col-xs-12">
                                             <div class="col-xs-11" style="margin-top: 10px">
@@ -328,18 +345,6 @@
                                         </div>
                                         <div class="col-xs-12">
                                             <div class="col-xs-11" style="margin-top: 10px">
-                                                <label class="col-xs-3" style="padding-right: 0px;text-align:right">收款时间
-                                                    &ensp;</label>
-                                                <div class=" col-xs-8" style="padding-left: 0px">
-                                                    <input name="preDepositCollectMoneyTime" type="text"
-                                                           class="form-control"
-                                                           id="preDepositCollectMoneyTime"
-                                                           readonly placeholder="请选择收款时间">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12">
-                                            <div class="col-xs-11" style="margin-top: 10px">
                                                 <label class="col-xs-3" style="padding-right: 0px;text-align:right">备注
                                                     &ensp;</label>
                                                 <div class=" col-xs-8" style="padding-left: 0px">
@@ -351,8 +356,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                            <#--</div>-->
                             </div>
                         </div>
 
@@ -544,9 +547,12 @@
         findGoodsBrand();
         //物理分类列表（下拉框）
         findGoodsPhysical();
-        //初始化时间选择框
-        initDateTime("collectMoneyTime");
-        initDateTime("preDepositCollectMoneyTime");
+       //初始化时间选择框
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
 
         $("#preDeposit").hide();
         $("#offlinePayments").show();
@@ -982,7 +988,7 @@
                                 "<b style='padding-left: 150px'>最大可选数量:</b>" +
                                 "<span id='actMaxQty' style='padding-left: 5px'>" + giftListResponse[i].maxChooseNumber + "</span>" +
                                 "<b style='padding-left: 150px'>赠品数量是否任选:</b>" +
-                                "<span id='IsArbitraryChoice' style='padding-left: 5px'>" + giftListResponse[i].isArbitraryChoice + "</span>" +
+                                "<span id='IsArbitraryChoice' style='padding-left: 5px'>" + isArbitraryChoice + "</span>" +
                                 "</div>" +
                                 "<div class='box-body table-responsive no-padding'>" +
                                 "<div class='col-xs-12'>" +
@@ -1001,12 +1007,13 @@
                         if (null != giftListResponse[i].giftList && "" != giftListResponse[i].giftList) {
                             var giftList = giftListResponse[i].giftList
                             for (var j = 0; j < giftList.length; j++) {
+                                var price = giftList[j].retailPrice.toFixed(2);
 
                                 title += "<tr>" +
                                         "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
-                                        "<td><input id='retailPrice' type='text' value='" + giftList[j].retailPrice + "' style='width:90%;border: none;' readonly></td>" +
+                                        "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
                                         "<td><input id='title' type='text' value='" + giftList[j].skuName + "' style='width:90%;border: none;' readonly></td>" +
-                                        "<td><input id='qty' type='number' value='0'></td>" +
+                                        "<td><input id='giftQty' type='number' value='0'></td>" +
                                         "<td><input id='promotionId' type='hidden' value='" + giftListResponse[i].promotionId + "'></td>" +
                                         "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
                                         "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
@@ -1041,6 +1048,11 @@
 
                 $("#giftMessage").append(title);
                 $("#subAmount_div").append(promotionDiscount);
+
+                $("#selectedGoodsTable").find("input,button,textarea,select").attr("readOnly", "readOnly");
+                $("#selectedGoodsTable").find("a").removeAttr("onclick");
+                document.getElementById("selectGoods").innerHtml="更改商品";
+//                $("#selectedGoodsTable").find("a").attr("onclick","del_goods_comb(this)");
             <#--赠品促销标题-->
             } else {
                 $notify.danger(result.message);
@@ -1135,8 +1147,8 @@
                             "<td><input type='text' id='gid'value=" + item.gid + " style='width:90%;border: none;' readonly /></td>" +
                             "<td><input id='sku' type='text' value='" + item.sku + "' style='width:90%;border: none;' readonly></td>" +
                             "<td><input id='title' type='text' value='" + item.skuName + "' style='width:90%;border: none;' readonly></td>" +
-                            "<td><input id='retailPrice' type='number' value='" + item.retailPrice + "' style='width:90%;border: none;' readonly></td>" +
                             "<td><input id='vipPrice' type='number' value='" + item.vipPrice + "' style='width:90%;border: none;' readonly></td>" +
+                            "<td><input id='retailPrice' type='number' value='" + item.retailPrice + "' style='width:90%;border: none;' readonly></td>" +
                             "<td><input id='qty' type='number' value='0'></td>" +
                             "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>" +
                             "</tr>"
@@ -1161,6 +1173,9 @@
         var remarks = $('#remarks').val();
         var sellerId = $('#sellerId').text();
         var customerId = $('#customerId').text();
+        var selectPaymnet = $('#selectPaymnet').val();
+
+
         var totalMoneys = (Number(cashMoney) + Number(posMoney) + Number(otherMoney));
         if ('' == sellerId || null == sellerId) {
             $notify.warning("请选择导购");
@@ -1177,7 +1192,12 @@
 
         var totalMoney = 0;
 
-        if (null == preDepositMoney || '' == preDepositMoney) {
+        if (selectPaymnet == -1){
+            $notify.warning("请选择支付方式！");
+            return;
+        }
+
+        if (selectPaymnet == 'offlinePayments') {
             totalMoney = $('#totalMoney').val();
             if (null == collectMoneyTime) {
                 $notify.warning("请填写收款时间！");
@@ -1205,10 +1225,7 @@
                 $notify.warning("使用预存款金额大于可使用金额，请检查！");
                 return;
             }
-            if (null == preDepositCollectMoneyTime || '' == preDepositCollectMoneyTime) {
-                $notify.warning("请填写收款时间！");
-                return;
-            }
+
         }
 
 
@@ -1359,7 +1376,7 @@
 
             trs.each(function (i, m) {
                 var id = $(m).find("#gid").val();
-                var qty = $(m).find("#qty").val();
+                var qty = $(m).find("#giftQty").val();
                 promotionId = $(m).find("#promotionId").val();
                 enjoyTimes = $(m).find("#enjoyTimes").val();
                 maxChooseNumber = $(n).find("#maxChooseNumber").val();
@@ -1453,6 +1470,9 @@
         } else if ('preDeposit' == id) {
             if ('ZY' != storeType) {
                 $notify.warning("此支付方式只有直营门店可用使用！");
+                document.getElementById("selectPaymnet").options.selectedIndex = 0; //回到初始状态
+                $("#selectPaymnet").selectpicker('refresh');//对selectPaymnet这个下拉框进行重置刷新
+
                 return;
             }
             $("#offlinePayments :input").each(function () {
@@ -1464,12 +1484,6 @@
         }
     }
 
-    function initDateTime(dateTime) {
-        $("#" + dateTime).datetimepicker({
-            format: 'yyyy-mm-dd hh:ii:ss',
-            language: 'zh-CN',
-            autoclose: true
-        });
-    }
+
 </script>
 </body>

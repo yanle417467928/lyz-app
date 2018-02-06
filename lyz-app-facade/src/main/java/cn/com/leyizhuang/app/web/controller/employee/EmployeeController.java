@@ -207,7 +207,7 @@ public class EmployeeController {
             return resultDTO;
         }
         Boolean active = appEmployeeService.existsSellerCreditByUserId(userId);
-        if (!active) {
+        if (null == active || !active) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购没有开通信用额度",
                     null);
             logger.info("getGuideCreditMoneyBalance OUT,获取导购信用金余额失败，出参 resultDTO:{}", resultDTO);
@@ -454,7 +454,7 @@ public class EmployeeController {
     @PostMapping(value = "/seller/creditMoney/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getSellerCreditMoneyLog(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录失败，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
+        logger.info("getSellerCreditMoneyLog CALLED, 获取导购信用金变更记录，入参 userId {},identityType{}, page{}, size{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
