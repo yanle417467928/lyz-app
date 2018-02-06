@@ -96,6 +96,9 @@
             <if test="null != lastConsumptionTime">
                 last_consumption_time = #{lastConsumptionTime},
             </if>
+            <if test="null != customerProfession">
+                customer_profession = #{customerProfession},
+            </if>
         </set>
         WHERE cus_id = #{cusId}
     </update>

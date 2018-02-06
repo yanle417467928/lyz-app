@@ -307,6 +307,10 @@
                                 <td class="td1">- ¥${orderBillingDetail.cashCouponDiscount!'0.00'}</td>
                             </tr>
                             <tr>
+                                <th class="th1">产品券折扣:</th>
+                                <td class="td1">- ¥${orderBillingDetail.productCouponDiscount!'0.00'}</td>
+                            </tr>
+                            <tr>
                                 <th class="th1">促销折扣:</th>
                                 <td class="td1">- ¥${orderBillingDetail.promotionDiscount!'0.00'}</td>
                             </tr>

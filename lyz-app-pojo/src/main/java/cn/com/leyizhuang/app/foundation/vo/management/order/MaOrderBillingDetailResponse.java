@@ -44,4 +44,8 @@ public class MaOrderBillingDetailResponse {
      * 现金返利折扣
      */
     private Double subvention;
+    /**
+     * 产品券抵现金额
+     */
+    private Double productCouponDiscount;
 }
