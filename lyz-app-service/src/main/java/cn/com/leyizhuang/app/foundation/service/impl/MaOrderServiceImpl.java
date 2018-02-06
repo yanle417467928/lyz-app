@@ -68,7 +68,7 @@ import java.util.*;
 /**
  * Created by caiyu on 2017/12/16.
  */
-@Service
+@Service("maOrderService")
 public class MaOrderServiceImpl implements MaOrderService {
 
     @Resource

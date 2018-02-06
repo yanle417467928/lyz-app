@@ -31,5 +31,7 @@ public class BrowseHistoryResponse {
     private Double retailPrice;
     //浏览时间
     private Date createTime;
+    //下料清单商品数量
+    private Integer materialQty;
 
 }
