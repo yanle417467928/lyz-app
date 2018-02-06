@@ -1,11 +1,20 @@
 package cn.com.leyizhuang.app.foundation.pojo.user;
 
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.PreDepositWithdrawStatus;
+import lombok.*;
+
 import java.util.Date;
 
 /**
  * 顾客预存款提现 申请记录表
  * Created by panjie on 2018/2/5.
  */
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CusPreDepositWithdraw {
 
     private Long id;
@@ -38,7 +47,7 @@ public class CusPreDepositWithdraw {
     /**
      * 帐号类型
      */
-    private String accountType;
+    private OrderBillingPaymentType accountType;
 
     /**
      * 提现帐号
@@ -53,7 +62,7 @@ public class CusPreDepositWithdraw {
     /**
      * 申请单状态
      */
-    private String status;
+    private PreDepositWithdrawStatus status;
 
     /**
      * 审核人id

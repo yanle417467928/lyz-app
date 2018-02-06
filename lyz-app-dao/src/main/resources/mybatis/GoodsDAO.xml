@@ -519,7 +519,8 @@
     <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
             COVER_IMAGE_URI,
-            ROTATION_IMAGE_URI
+            ROTATION_IMAGE_URI,
+            details_image_uri
         FROM
             gds_goods
         WHERE
