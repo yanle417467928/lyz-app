@@ -478,7 +478,7 @@
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
-            g.gtid type_id，
+            g.gtid type_id,
             m.qty materialQty
             FROM
             gds_goods_collect acc
