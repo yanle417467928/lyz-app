@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import cn.com.leyizhuang.app.foundation.service.WmsToAppOrderService;
@@ -150,7 +148,7 @@ public class TestClient {
 //        WmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
 
         AtwCancelReturnOrderRequest orderRequest = new AtwCancelReturnOrderRequest();
-        orderRequest.setReturnNo("T20180201165521849");
+        orderRequest.setReturnNo("T20180202150851167");
         orderRequest.setCreateTime(new Date());
         orderRequest.setReturnType(ReturnOrderType.NORMAL_RETURN);
         orderRequest.setReturnTime(new Date());
@@ -158,7 +156,17 @@ public class TestClient {
 
         appToWmsOrderService.saveAtwCancelReturnOrderRequest(orderRequest);
 
-        iCallWms.sendToWmsCancelReturnOrder("T20180201165521849");
+        iCallWms.sendToWmsCancelReturnOrder("T20180202150851167");
+
+        AtwReturnOrderCheckEnter checkEnter = new AtwReturnOrderCheckEnter();
+
+        checkEnter.setCreateTime(new Date());
+        checkEnter.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
+        checkEnter.setCheckGoodsTime(new Date());
+        checkEnter.setReturnNo("T20180202150851167");
+
+//        appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
+//        iCallWms.sendToWmsReturnOrderCheck("T20180202150851167");
 
     }
 }

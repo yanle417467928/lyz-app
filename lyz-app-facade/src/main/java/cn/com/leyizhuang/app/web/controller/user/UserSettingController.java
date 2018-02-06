@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -587,6 +588,9 @@ public class UserSettingController {
             String picUrl = FileUploadOSSUtils.uploadProfilePhoto(userInformation.getHeadPic(), "profile/photo/");
             appCustomer.setPicUrl(picUrl);
         }
+        appCustomer.setCustomerProfession(userInformation.getProfession());
+        List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
+        appCustomer.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals(userInformation.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
         return appCustomer;
     }
 

@@ -60,4 +60,8 @@ public class UserSetInformationReq {
      * 所属导购
      */
     private Long salesConsultId;
+    /**
+     * 顾客工种
+     */
+    private String profession;
 }

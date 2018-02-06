@@ -196,7 +196,8 @@ public class AtwRequisitionOrder {
         requisitionOrder.setSellerTel(orderBaseInfo.getSalesConsultPhone());
         requisitionOrder.setGoodsQuantity(goodsQuantity);
         requisitionOrder.setUpstairsAll(orderBillingDetails.getUpstairsFee());
-        requisitionOrder.setSellerName(orderBaseInfo.getSalesConsultName());
+        requisitionOrder.setSellerName(orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER) ?
+                orderBaseInfo.getCreatorName() + "-" + store.getStoreName() : orderBaseInfo.getSalesConsultName());
         requisitionOrder.setDeliveryFee(orderBillingDetails.getFreight());
 //        requisitionOrder.setColorFee(); 没有调色费
         Double discount = 0D;

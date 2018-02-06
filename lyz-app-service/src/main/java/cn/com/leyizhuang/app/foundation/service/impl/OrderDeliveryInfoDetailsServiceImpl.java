@@ -89,7 +89,10 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Override
     public int countUnreadLogisticsMessage(Long userId, Integer identityType) {
-        return orderDeliveryInfoDetailsDAO.countUnreadLogisticsMessage(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        if (identityType == 6 || identityType == 2 || identityType == 0) {
+            return orderDeliveryInfoDetailsDAO.countUnreadLogisticsMessage(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        }
+        return 0;
     }
 
     @Override

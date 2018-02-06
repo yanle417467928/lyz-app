@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.remote.webservice.utils;
 
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
@@ -192,7 +193,7 @@ public class AppXmlUtil {
         }
         // diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
-                "<id></id>" +
+                "<id>" + returnOrderRequest.getId() + "</id>" +
                 "<c_request_dt>" + returnTime + "</c_request_dt>" +
                 "<c_due_dt></c_due_dt>" +
                 "<c_customer_no>" + returnOrderRequest.getStoreCode() + "</c_customer_no>" +
@@ -242,16 +243,14 @@ public class AppXmlUtil {
         if (atwReturnOrderCheckEnter.getCheckGoodsTime() != null) {
             checkTime = DateUtil.formatDate(atwReturnOrderCheckEnter.getCheckGoodsTime(), "yyyy-MM-dd HH:MM:ss");
         }
-        String createTime = null;
-        if (atwReturnOrderCheckEnter.getCreateTime() != null) {
-            createTime = DateUtil.formatDate(atwReturnOrderCheckEnter.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
+        int returnStatus = 0;
+        if (AppReturnOrderStatus.PENDING_REFUND.equals(atwReturnOrderCheckEnter.getReturnStatus())) {
+            returnStatus = 4;
         }
         String xmlStr = "<ERP><TABLE>" +
-                "<id>" + atwReturnOrderCheckEnter.getId() + "</id>" +
-                "<create_time>" + createTime + "</create_time>" +
                 "<check_goods_time>" + checkTime + "</check_goods_time>" +
                 "<return_no>" + atwReturnOrderCheckEnter.getReturnNo() + "</return_no>" +
-                "<return_status>" + atwReturnOrderCheckEnter.getReturnStatus().getDescription() + "</return_status>" +
+                "<return_status>" + returnStatus + "</return_status>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
