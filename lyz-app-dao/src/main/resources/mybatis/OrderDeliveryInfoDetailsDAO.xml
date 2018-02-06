@@ -226,7 +226,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
             orgi.retail_price,
-            orgi.return_qty,
+            orgi.return_qty qty,
             gg.sku_name,
             gg.gid goodsId,
             gg.goods_specification,

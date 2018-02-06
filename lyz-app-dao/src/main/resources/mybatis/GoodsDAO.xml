@@ -396,13 +396,15 @@
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
-            g.gtid     type_id
+            g.gtid     type_id，
+            m.qty materialQty
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
         WHERE
             c.cus_id = #{userId}
             AND g.is_hot = 1
@@ -420,13 +422,15 @@
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
-            g.gtid     type_id
+            g.gtid     type_id，
+            m.qty materialQty
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
         WHERE
             e.emp_id = #{userId}
             AND g.is_hot = 1
@@ -446,12 +450,14 @@
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
-            g.gtid type_id
+            g.gtid type_id，
+            m.qty materialQty
             FROM
             gds_goods_collect acc
             INNER JOIN cus_customer c ON c.cus_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND c.store_id = p.store_id
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE
@@ -472,12 +478,14 @@
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
-            g.gtid type_id
+            g.gtid type_id，
+            m.qty materialQty
             FROM
             gds_goods_collect acc
             INNER JOIN emp_employee e ON e.emp_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND e.store_id = p.store_id
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE
@@ -502,13 +510,15 @@
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
-            g.gtid     type_id
+            g.gtid     type_id,
+            m.qty materialQty
         FROM
             gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+             LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type
         WHERE
             acg.user_id = #{userId}
             AND acg.identity_type = #{type,
@@ -538,13 +548,15 @@
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
-            g.gtid     type_id
+            g.gtid     type_id,
+            m.qty materialQty
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
+            LEFT JOIN material_list AS m ON m.gid = p.gid AND m.user_id = #{userId}
         WHERE
             c.cus_id = #{userId}
             AND (
@@ -564,13 +576,15 @@
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
-            g.gtid     type_id
+            g.gtid     type_id,
+            m.qty materialQty
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
         WHERE
             e.emp_id = #{userId}
             AND (
