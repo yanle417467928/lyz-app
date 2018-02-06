@@ -119,9 +119,11 @@
         gp.RETAIL_PRICE,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        m.qty materialQty
         FROM
         emp_employee e INNER JOIN gds_goods_price gp ON gp.store_id = e.store_id
+        LEFT JOIN material_list m ON m.gid = gp.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
         AND gp.start_time &lt; NOW()
         AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
         INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
@@ -142,8 +144,10 @@
         gp.RETAIL_PRICE,
         g.cid category_id,
         g.brd_id brand_id,
-        g.gtid type_id
+        g.gtid type_id,
+        m.qty materialQty
         FROM cus_customer c INNER JOIN gds_goods_price gp ON gp.store_id = c.store_id
+        LEFT JOIN material_list AS m ON m.gid = gp.gid AND m.user_id = #{userId}
         AND gp.start_time &lt; NOW()
         AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
         INNER JOIN gds_process_goods pg ON pg.gid = gp.gid
