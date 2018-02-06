@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 
+import java.util.List;
+
 /**
  * @author Jerry.Ren
  * Notes: 退货单物流详情服务
@@ -25,4 +27,12 @@ public interface ReturnOrderDeliveryDetailsService {
      * @param returnOrderDeliveryDetail 物流信息明细
      */
     void addReturnOrderDeliveryInfoDetails(ReturnOrderDeliveryDetail returnOrderDeliveryDetail);
+
+    /**
+     * 根据退单号获取所有物流详情
+     *
+     * @param returnNumber
+     * @return
+     */
+    List<ReturnOrderDeliveryDetail> queryListByReturnOrderNumber(String returnNumber);
 }

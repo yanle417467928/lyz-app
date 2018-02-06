@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.service.ReturnOrderDeliveryDetailsServic
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author Jerry.Ren
@@ -32,5 +33,13 @@ public class ReturnOrderDeliveryDetailsServiceImpl implements ReturnOrderDeliver
     @Override
     public void addReturnOrderDeliveryInfoDetails(ReturnOrderDeliveryDetail returnOrderDeliveryDetail) {
         returnDeliveryInfoDetailsDAO.save(returnOrderDeliveryDetail);
+    }
+
+    @Override
+    public List<ReturnOrderDeliveryDetail> queryListByReturnOrderNumber(String returnNumber) {
+        if (StringUtils.isNotBlank(returnNumber)) {
+            return returnDeliveryInfoDetailsDAO.queryListByReturnOrderNumber(returnNumber);
+        }
+        return null;
     }
 }

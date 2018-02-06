@@ -284,12 +284,13 @@ public class WeChatPayController {
 
     /**
      * 微信退款方法
-     *
+     * 已移动到 onlinePayService
      * @param userId
      * @param identityType
      * @param money
      * @return
      */
+    @Deprecated
     public Map<String, String> wechatReturnMoney(HttpServletRequest req, HttpServletResponse response, Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);

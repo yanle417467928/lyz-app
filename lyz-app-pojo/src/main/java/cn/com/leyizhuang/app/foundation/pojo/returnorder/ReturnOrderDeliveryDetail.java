@@ -60,8 +60,12 @@ public class ReturnOrderDeliveryDetail {
 
     public static ReturnOrderDeliveryDetail transform(WtaReturningOrderHeader header) {
         ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
-
-
+        returnOrderDeliveryDetail.setCreateTime(header.getCreateTime());
+        returnOrderDeliveryDetail.setWarehouseNo(header.getWhNo());
+        returnOrderDeliveryDetail.setTaskNo(header.getRecNo());
+        returnOrderDeliveryDetail.setReturnNo(header.getPoNo());
+        returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.AGAIN_ON_SALE);
+        returnOrderDeliveryDetail.setDescription("退单商品已返配上架");
         return returnOrderDeliveryDetail;
     }
 }

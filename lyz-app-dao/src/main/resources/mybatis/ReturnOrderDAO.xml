@@ -261,6 +261,7 @@
             orbi.creator_id = #{userId}
             AND orbi.creator_identityType = #{identityType}
         </if>
+        ORDER BY orbi.return_time DESC
     </select>
 
     <select id="findReturnOrderList" parameterType="java.lang.String"

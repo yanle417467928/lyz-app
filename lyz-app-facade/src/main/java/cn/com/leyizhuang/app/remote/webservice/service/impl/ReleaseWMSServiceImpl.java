@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
@@ -355,8 +356,15 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         returnOrderResultEnter = mapping(returnOrderResultEnter, childNode);
                     }
                     wmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
-                    //修改退货单状态
-                    returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
+                    if (returnOrderResultEnter.getIsCancel()) {
+                        // 修改回原订单的可退和已退！
+                        List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnOrderResultEnter.getReturnNumber());
+                        returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
+                                returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getOrderGoodsId()));
+
+                        //修改退货单状态
+                        returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
+                    }
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -386,9 +394,20 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取wms物流信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
-                //获取仓库列表
-            } else if ("".equalsIgnoreCase(strTable)) {
+                //整转零
+            } else if ("tbw_whole_sep_direction".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
 
+                    WtaWarehouseWholeSplitToUnit wholeSplitToUnit = new WtaWarehouseWholeSplitToUnit();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+//                        wholeSplitToUnit = mapping(wholeSplitToUnit, childNode);
+                    }
+
+
+                }
             }
 
         } catch (ParserConfigurationException e) {
@@ -575,6 +594,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setPoNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
+            } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    String companyId = childNode.getChildNodes().item(0).getNodeValue();
+                    returningOrderHeader.setCompanyId(companyId != null ? Long.parseLong(companyId) : 0L);
+                }
             }
         }
         return returningOrderHeader;
@@ -583,12 +607,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaReturningOrderGoods mapping(WtaReturningOrderGoods goods, Node childNode) {
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
             // 比较字段名
-            if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
-                // 有值
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    goods.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
-//                }
-            }
             if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     goods.setRecNo(childNode.getChildNodes().item(0).getNodeValue());
@@ -605,58 +623,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     goods.setRecQty(childNode.getChildNodes().item(0).getNodeValue());
                 }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_plat_no")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    platNo = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_op_tools")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    opTools = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_op_status")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    opStatus = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved1")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    reserved1 = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved2")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    reserved2 = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved3")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    reserved3 = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved4")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    reserved4 = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved5")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    reserved5 = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_note")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    note = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    mkUserno = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_mk_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_mk_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if (childNode.getNodeName().equalsIgnoreCase("c_modified_dt")) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_modified_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
             }
         }
         return goods;
