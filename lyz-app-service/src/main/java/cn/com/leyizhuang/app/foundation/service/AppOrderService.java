@@ -149,4 +149,6 @@ public interface AppOrderService {
     void saveWeChatOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber,String receiptNumber);
 
     void saveAliPayOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber);
+
+    void updateOrderLogisticInfoByDeliveryClerkNo(String driver);
 }

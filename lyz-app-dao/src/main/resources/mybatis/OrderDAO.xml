@@ -844,4 +844,22 @@
               AND ord_no = #{orderNo}
 
     </update>
+
+    <update id="updateOrderLogisticInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
+        UPDATE ord_logistics_info
+        <set>
+            <if test="deliveryClerkId != null">
+                delivery_clerk_id = #{deliveryClerkId},
+            </if>
+            <if test="deliveryClerkNo != null">
+                delivery_clerk_no = #{deliveryClerkNo},
+            </if>
+            <if test="deliveryClerkName != null">
+                delivery_clerk_name = #{deliveryClerkName},
+            </if>
+            <if test="warehouse != null">
+                warehouse = #{warehouse},
+            </if>
+        </set>
+    </update>
 </mapper>

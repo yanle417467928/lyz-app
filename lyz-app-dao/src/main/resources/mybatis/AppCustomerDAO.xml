@@ -7,7 +7,7 @@
         INSERT INTO cus_customer
         (store_id, name, mobile, birthday, status, sex, open_id,
          pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type, customer_type,
-         last_sign_time, binding_time, last_consumption_time, customer_profession
+        last_sign_time, binding_time, last_consumption_time, customer_profession, customer_profession_desc
         )
         VALUES
             (
@@ -23,7 +23,7 @@
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession}
+        #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession},#{customerProfessionDesc}
             )
     </insert>
 
@@ -98,6 +98,9 @@
             </if>
             <if test="null != customerProfession">
                 customer_profession = #{customerProfession},
+            </if>
+            <if test="null != customerProfessionDesc">
+                customer_profession_desc = #{customerProfessionDesc},
             </if>
         </set>
         WHERE cus_id = #{cusId}
@@ -668,7 +671,7 @@
               AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
     </update>
 
-    <select id="getCustomerProfessionListByStatus"
+    <select id="getCustomerProfessionListByStatus" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
         SELECT
             id,

@@ -133,6 +133,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     //保存物流信息
                     OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header);
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+                    //修改订单配送信息加入配送员
+                    appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver());
                     //修改订单头状态
                     appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
                     // rabbit 记录下单销量

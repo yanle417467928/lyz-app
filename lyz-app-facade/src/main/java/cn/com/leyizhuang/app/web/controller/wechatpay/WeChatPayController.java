@@ -382,7 +382,7 @@ public class WeChatPayController {
                     if (WechatUtil.verifyNotify(resultMap)) {
                         logger.info("weChatReturnSync,微信支付异步回调接口,回调参数:{}", resultMap);
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("outTradeNo").toString();
+                        String outTradeNo = resultMap.get("out_trade_no").toString();
                         logger.info("weChatReturnSync,微信支付异步回调接口,订单号:{}", outTradeNo);
                         //微信交易号
                         String tradeNo = resultMap.get("transaction_id").toString();

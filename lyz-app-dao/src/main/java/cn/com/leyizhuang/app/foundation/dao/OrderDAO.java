@@ -132,4 +132,6 @@ public interface OrderDAO {
     void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
 
     void updateOrderGoodsShippingQuantity(@Param("orderNo") String orderNo, @Param("sku") String gCode, @Param("qty") Integer dAckQty);
+
+    void updateOrderLogisticInfo(OrderLogisticsInfo logisticsInfo);
 }

@@ -740,4 +740,19 @@ public class AppOrderServiceImpl implements AppOrderService {
         //导购欠款还款后修改欠款审核表
         arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
     }
+
+    @Override
+    public void updateOrderLogisticInfoByDeliveryClerkNo(String driver) {
+        if (StringUtils.isNotBlank(driver)) {
+            AppEmployee clerk = employeeService.findDeliveryByClerkNo(driver);
+
+            OrderLogisticsInfo logisticsInfo = new OrderLogisticsInfo();
+
+            logisticsInfo.setDeliveryClerkId(clerk.getEmpId());
+            logisticsInfo.setDeliveryClerkNo(driver);
+            logisticsInfo.setDeliveryClerkName(clerk.getName());
+
+            orderDAO.updateOrderLogisticInfo(logisticsInfo);
+        }
+    }
 }

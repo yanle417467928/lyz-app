@@ -79,4 +79,6 @@ public interface AppEmployeeService {
     SalesConsult findSellerByUserIdAndIdentityType(Long userId, Integer identityType);
 
     Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion( Long userId, Double guideCredit, Date version);
+
+    AppEmployee findDeliveryByClerkNo(String driver);
 }
