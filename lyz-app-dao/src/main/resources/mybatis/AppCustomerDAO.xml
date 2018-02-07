@@ -203,9 +203,10 @@
             c.mobile,
             c.pic_url,
             c.light,
-            c.create_time
+            c.create_time,
+            c.customer_profession_desc customerProfessionDesc
         FROM cus_customer c
-        WHERE c.sales_consult_id = #{userId}
+        WHERE (c.sales_consult_id = #{userId} OR c.store_id IN (select store_id from st_store where is_default = TRUE AND city_id in (select DISTINCT city_id from cus_customer where sales_consult_id = 1)))
               AND (
                   c.name LIKE concat('%', #{keywords}, '%')
                   OR c.mobile LIKE concat('%', #{keywords}, '%')
