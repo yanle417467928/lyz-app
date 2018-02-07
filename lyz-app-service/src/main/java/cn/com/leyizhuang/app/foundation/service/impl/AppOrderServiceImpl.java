@@ -742,15 +742,17 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public void updateOrderLogisticInfoByDeliveryClerkNo(String driver) {
+    public void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo) {
         if (StringUtils.isNotBlank(driver)) {
             AppEmployee clerk = employeeService.findDeliveryByClerkNo(driver);
 
             OrderLogisticsInfo logisticsInfo = new OrderLogisticsInfo();
-
+            logisticsInfo.setOrdNo(orderNo);
             logisticsInfo.setDeliveryClerkId(clerk.getEmpId());
             logisticsInfo.setDeliveryClerkNo(driver);
             logisticsInfo.setDeliveryClerkName(clerk.getName());
+            logisticsInfo.setDeliveryClerkPhone(clerk.getMobile());
+            logisticsInfo.setWarehouse(warehouse);
 
             orderDAO.updateOrderLogisticInfo(logisticsInfo);
         }

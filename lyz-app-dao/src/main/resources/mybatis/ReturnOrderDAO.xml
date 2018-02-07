@@ -332,11 +332,25 @@
         WHERE return_no = #{returnNo};
     </select>
 
-    <update id="updateReturnLogisticInfo">
+    <update id="updateReturnLogisticInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo">
 
         UPDATE ord_return_logistic_info
-        SET delivery_clerk_no = #{driver}
-        WHERE return_no = #{returnNo}
+        <set>
+            <if test="deliveryClerkId != null">
+                delivery_clerk_id = #{deliveryClerkId},
+            </if>
+            <if test="deliveryClerkNo != null">
+                delivery_clerk_no = #{deliveryClerkNo},
+            </if>
+            <if test="deliveryClerkName != null">
+                delivery_clerk_name = #{deliveryClerkName},
+            </if>
+            <if test="deliveryClerkPhone != null">
+                delivery_clerk_Phone = #{deliveryClerkPhone},
+            </if>
+        </set>
+        WHERE return_no = #{returnNO}
     </update>
 
     <update id="updateReturnOrderStatus">

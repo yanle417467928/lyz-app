@@ -857,9 +857,13 @@
             <if test="deliveryClerkName != null">
                 delivery_clerk_name = #{deliveryClerkName},
             </if>
+            <if test="deliveryClerkPhone != null">
+                delivery_clerk_Phone = #{deliveryClerkPhone},
+            </if>
             <if test="warehouse != null">
                 warehouse = #{warehouse},
             </if>
         </set>
+        WHERE ord_no = #{ordNo}
     </update>
 </mapper>

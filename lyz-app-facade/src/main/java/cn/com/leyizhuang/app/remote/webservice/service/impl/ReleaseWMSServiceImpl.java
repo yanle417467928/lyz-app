@@ -134,7 +134,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header);
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
                     //修改订单配送信息加入配送员
-                    appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver());
+                    appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
                     //修改订单头状态
                     appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
                     // rabbit 记录下单销量
@@ -243,7 +243,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
                     returnOrderDeliveryDetail.setWarehouseNo(deliveryClerk.getWarehouseNo());
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
-
+                    //修改配送物流信息的配送员信息
                     returnOrderService.updateReturnLogisticInfo(deliveryClerk.getDriver(), deliveryClerk.getReturnNo());
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
