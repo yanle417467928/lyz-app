@@ -490,7 +490,7 @@ public class CommonServiceImpl implements CommonService {
                             log.setCreditLimitAvailableChangeAmount(billingDetails.getEmpCreditMoney());
                             log.setCreditLimitAvailableAfterChange(empCreditMoney.getCreditLimitAvailable() - billingDetails.getEmpCreditMoney());
                             log.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
-                            log.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getValue());
+                            log.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getDescription());
                             log.setCreateTime(Calendar.getInstance().getTime());
                             log.setOperatorId(userId);
                             log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));

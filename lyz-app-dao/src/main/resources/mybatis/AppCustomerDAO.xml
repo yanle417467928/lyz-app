@@ -386,7 +386,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
             cccc.denomination,
-            cccc.CONDITION,
+        cccc.`condition`,
             cccc.title
         FROM
             cus_customer_cash_coupon cccc
@@ -419,7 +419,7 @@
             AND ccp.`status` IS TRUE
             AND ccp.effective_start_time &lt; now()
             AND ccp.effective_end_time &gt; now()
-            AND ccp.denomination &lt;= #{totalAmount}
+        AND ccp.`condition` &lt;= #{totalAmount}
     </select>
 
     <select id="findByCusId" parameterType="java.lang.Long"
