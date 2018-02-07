@@ -622,7 +622,7 @@ public class CommonServiceImpl implements CommonService {
                                                List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) {
 
         if (null != orderBaseInfo) {
-            if (null != orderBillingDetails && orderBillingDetails.getIsPayUp()) {
+            if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
                 orderBillingDetails.setPayUpTime(new Date());
                 //发送提货码给顾客,及提示导购顾客下单信息
                 String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(orderBaseInfo);
