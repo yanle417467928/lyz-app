@@ -7,7 +7,6 @@
         <module>lyz-app-pojo</module>
         <module>lyz-app-dao</module>
         <module>lyz-app-service</module>
-        <module>lyz-app-api</module>
         <module>lyz-app-management</module>
         <module>lyz-app-facade</module>
     </modules>
