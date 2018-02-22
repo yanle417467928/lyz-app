@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.core.getui;
 
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class GetuiTest {
 
 
-    @RequestMapping(value = "/test/getui/logistic",method = RequestMethod.GET)
+    @RequestMapping(value = "/test/getui/logistic", method = RequestMethod.GET)
     public String testLogisticInfo() {
-        NoticePushUtils.pushOrderLogisticInfo(1L, AppIdentityType.CUSTOMER, "CD_XN20180129145733063612");
+        NoticePushUtils.pushOrderLogisticInfo("CD_XN20180129145733063612");
         return "success";
     }
 
