@@ -618,8 +618,7 @@ public class CustomerController {
             return resultDTO;
         }
     }
-
-
+    
     /**
      * 获取顾客签到概况
      *

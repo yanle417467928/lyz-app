@@ -17,7 +17,9 @@ public enum CustomerPreDepositChangeType {
     ALIPAY_RECHARGE("ALIPAY_RECHARGE","支付宝充值"),
     WECHAT_RECHARGE("WECHAT_RECHARGE","微信充值"),
     UNIONPAY_RECHARGE("UNIONPAY_RECHARGE","银联充值"),
-    ADMIN_CHANGE("ADMIN_CHANGE","管理员修改");
+    ADMIN_CHANGE("ADMIN_CHANGE","管理员修改"),
+    WITHDRAW("WITHDRAW","提现"),
+    RETURN_WITHDRAW("RETURN_WITHDRAW","提现退还");
 
     private final String value;
     private final String description;
