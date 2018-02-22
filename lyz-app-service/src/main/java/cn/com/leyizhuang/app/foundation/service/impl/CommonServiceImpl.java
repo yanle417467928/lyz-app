@@ -836,6 +836,8 @@ public class CommonServiceImpl implements CommonService {
 
             //更新订单基础信息
             orderService.updateOrderBaseInfo(baseInfo);
+            //第三方支付信息
+            //paymentDataService.updateByTradeStatusIsWaitPay(paymentData);
             //更新订单账单信息
             orderService.updateOrderBillingDetails(billingDetails);
             //保存新增订单账单支付明细

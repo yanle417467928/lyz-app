@@ -13,7 +13,7 @@ public class GetuiTest {
 
     @RequestMapping(value = "/test/getui/logistic", method = RequestMethod.GET)
     public String testLogisticInfo() {
-        NoticePushUtils.pushOrderLogisticInfo("CD_XN20180129145733063612");
+        NoticePushUtils.pushOrderLogisticInfo("CD_XN20180202163424919683");
         return "success";
     }
 
