@@ -1471,5 +1471,6 @@ public class CommonServiceImpl implements CommonService {
         support.setPromotionDiscount(promotionDiscount);
         return support;
     }
+
 }
 

@@ -127,7 +127,7 @@ public class CustomerController {
     }
 
     /**
-     * App 顾客注册
+     * 顾客注册 - 绑定微信
      *
      * @param registryParam 注册参数
      * @param response      请求响应
@@ -301,6 +301,48 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
             logger.warn("customerBindingSeller EXCEPTION,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 顾客解除微信绑定
+     *
+     * @param userId       顾客id
+     * @param identityType 身份类型
+     * @return resultDTO
+     */
+    @PostMapping(value = "/unbinding/weChat", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerUnbindingWeChat(Long userId, Integer identityType) {
+
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType || !(identityType == AppIdentityType.CUSTOMER.getValue())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不正确！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppCustomer customer = customerService.findById(userId);
+            if (customer == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                customerService.unbindingCustomerWeChat(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "顾客解除微信绑定成功！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客解除微信绑定失败", null);
+            logger.warn("customerUnbindingWeChat EXCEPTION,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

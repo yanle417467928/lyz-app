@@ -144,4 +144,6 @@ public interface AppCustomerDAO {
     List<CustomerCashCoupon> findCashCouponsByids(@Param(value = "cashCouponList")List<Long> cashCouponList);
 
     CustomerProfession findCustomerProfessionByTitle(String customerProfession);
+
+    void unbindingCustomerWeChat(Long userId);
 }

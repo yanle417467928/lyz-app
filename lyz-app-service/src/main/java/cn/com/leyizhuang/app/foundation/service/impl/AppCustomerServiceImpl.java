@@ -490,6 +490,13 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         return null;
     }
 
+    @Override
+    public void unbindingCustomerWeChat(Long userId) {
+        if (null != userId){
+            customerDAO.unbindingCustomerWeChat(userId);
+        }
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

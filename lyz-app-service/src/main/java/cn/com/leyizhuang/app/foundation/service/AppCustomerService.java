@@ -129,4 +129,6 @@ public interface AppCustomerService {
     List<CustomerCashCoupon> findCashCouponsByids(List<Long> cashCouponList);
 
     CustomerProfession findCustomerProfessionByTitle(String customerProfession);
+
+    void unbindingCustomerWeChat(Long userId);
 }

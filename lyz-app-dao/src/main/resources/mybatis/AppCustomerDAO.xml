@@ -7,7 +7,7 @@
         INSERT INTO cus_customer
         (store_id, name, mobile, birthday, status, sex, open_id,
          pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type, customer_type,
-        last_sign_time, binding_time, last_consumption_time, customer_profession, customer_profession_desc
+         last_sign_time, binding_time, last_consumption_time, customer_profession, customer_profession_desc
         )
         VALUES
             (
@@ -23,7 +23,8 @@
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-        #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession},#{customerProfessionDesc}
+                #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession},
+                #{customerProfessionDesc}
             )
     </insert>
 
@@ -209,7 +210,12 @@
             c.create_time,
             c.customer_profession_desc customerProfessionDesc
         FROM cus_customer c
-        WHERE (c.sales_consult_id = #{userId} OR c.store_id IN (select store_id from st_store where is_default = TRUE AND city_id in (select DISTINCT city_id from cus_customer where sales_consult_id = 1)))
+        WHERE (c.sales_consult_id = #{userId} OR c.store_id IN (SELECT store_id
+                                                                FROM st_store
+                                                                WHERE is_default = TRUE AND
+                                                                      city_id IN (SELECT DISTINCT city_id
+                                                                                  FROM cus_customer
+                                                                                  WHERE sales_consult_id = 1)))
               AND (
                   c.name LIKE concat('%', #{keywords}, '%')
                   OR c.mobile LIKE concat('%', #{keywords}, '%')
@@ -390,7 +396,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
         SELECT
             cccc.denomination,
-        cccc.`condition`,
+            cccc.`condition`,
             cccc.title
         FROM
             cus_customer_cash_coupon cccc
@@ -423,7 +429,7 @@
             AND ccp.`status` IS TRUE
             AND ccp.effective_start_time &lt; now()
             AND ccp.effective_end_time &gt; now()
-        AND ccp.`condition` &lt;= #{totalAmount}
+            AND ccp.`condition` &lt;= #{totalAmount}
     </select>
 
     <select id="findByCusId" parameterType="java.lang.Long"
@@ -724,5 +730,13 @@
         FROM cus_profession
         WHERE title = #{customerProfession}
     </select>
+
+    <update id="unbindingCustomerWeChat" parameterType="java.lang.Long">
+        UPDATE cus_customer
+        SET open_id   = NULL,
+            pic_url   = NULL,
+            nick_name = NULL
+        WHERE cus_id = #{userId}
+    </update>
 
 </mapper>
