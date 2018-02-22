@@ -739,7 +739,7 @@ public class CommonServiceImpl implements CommonService {
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
-            billingDetails.setOnlinePayType(OnlinePayType.ALIPAY);
+            billingDetails.setOnlinePayType(onlinePayType);
             billingDetails.setOnlinePayAmount(paymentData.getTotalFee());
             billingDetails.setOnlinePayTime(paymentData.getNotifyTime());
             billingDetails.setArrearage(0D);
@@ -836,8 +836,6 @@ public class CommonServiceImpl implements CommonService {
 
             //更新订单基础信息
             orderService.updateOrderBaseInfo(baseInfo);
-            //第三方支付信息
-            //paymentDataService.updateByTradeStatusIsWaitPay(paymentData);
             //更新订单账单信息
             orderService.updateOrderBillingDetails(billingDetails);
             //保存新增订单账单支付明细
