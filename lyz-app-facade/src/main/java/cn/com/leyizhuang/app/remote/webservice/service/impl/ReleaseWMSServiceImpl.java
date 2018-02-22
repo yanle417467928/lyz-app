@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.remote.webservice.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.getui.NoticePushUtils;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
@@ -137,6 +138,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
                     //修改订单头状态
                     appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
+                    //推送物流信息
+                    NoticePushUtils.pushOrderLogisticInfo(header.getOrderNo());
                     // rabbit 记录下单销量
                     sellDetailsSender.sendOrderSellDetailsTOManagement(header.getOrderNo());
                 }

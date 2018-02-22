@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.message.Payload;
 import cn.com.leyizhuang.app.foundation.pojo.message.TransmissionTemplateContent;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppUserDeviceService;
 import com.alibaba.fastjson.JSON;
 import com.gexin.rp.sdk.base.IPushResult;
@@ -42,6 +44,14 @@ public class NoticePushUtils {
     @Resource
     public void setUserDeviceService(AppUserDeviceService userDeviceService) {
         NoticePushUtils.userDeviceService = userDeviceService;
+    }
+
+
+    private static AppOrderService orderService;
+
+    @Resource
+    public static void setOrderService(AppOrderService orderService) {
+        NoticePushUtils.orderService = orderService;
     }
 
     /**
@@ -267,7 +277,7 @@ public class NoticePushUtils {
     /**
      * 物流出货信息推送
      */
-    public static void pushOrderLogisticInfo(Long userId, AppIdentityType identityType, String orderNo) {
+    public static void pushOrderLogisticInfo(String orderNo) {
         IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
         TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
                 new Payload("page/personal/myOrderWL.html&" + orderNo, "跳转订单物流详情"),
@@ -279,8 +289,17 @@ public class NoticePushUtils {
         // 离线有效时间，单位为毫秒，可选
         message.setOfflineExpireTime(24 * 1000 * 3600);
         // 配置推送目标
-        List<Target> targetList = new ArrayList();
-        List<AppUserDevice> userDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(userId, identityType);
+        List<Target> targetList = new ArrayList(5);
+        List<AppUserDevice> userDeviceList = new ArrayList<>();
+        OrderBaseInfo orderBaseInfo = orderService.getOrderDetail(orderNo);
+        if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+            List<AppUserDevice> sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), AppIdentityType.SELLER);
+            List<AppUserDevice> customerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(orderBaseInfo.getCustomerId(), AppIdentityType.CUSTOMER);
+            userDeviceList.addAll(sellerDeviceList);
+            userDeviceList.addAll(customerDeviceList);
+        } else {
+            userDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), orderBaseInfo.getCreatorIdentityType());
+        }
         userDeviceList.forEach(p -> {
             Target target = new Target();
             target.setAppId(AppConstant.APP_ID);
