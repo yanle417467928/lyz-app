@@ -89,7 +89,7 @@
                 },
             </if>
             <if test="null != lastSignTime">
-                last_sign_time = #{bindingTime},
+                last_sign_time = #{lastSignTime},
             </if>
             <if test="null != bindingTime">
                 binding_time = #{bindingTime},

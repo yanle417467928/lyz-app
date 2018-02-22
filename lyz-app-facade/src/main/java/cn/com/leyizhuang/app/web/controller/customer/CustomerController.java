@@ -280,6 +280,7 @@ public class CustomerController {
                 customer.setSalesConsultId(seller.getEmpId());
                 customer.setStoreId(store.getStoreId());
                 customer.setCustomerType(AppCustomerType.MEMBER);
+                customer.setBindingTime(new Date());
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
@@ -287,6 +288,11 @@ public class CustomerController {
                 return resultDTO;
             } else {//未添加推荐导购电话
                 AppStore store = storeService.findDefaultStoreByCityId(customer.getCityId());
+                if (null == store) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "该城市下没有默认门店!", null);
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
                 customer.setCustomerType(AppCustomerType.RETAIL);
@@ -335,7 +341,7 @@ public class CustomerController {
                 return resultDTO;
             } else {
                 customerService.unbindingCustomerWeChat(userId);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "顾客解除微信绑定成功！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客解除微信绑定成功！", null);
                 logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
