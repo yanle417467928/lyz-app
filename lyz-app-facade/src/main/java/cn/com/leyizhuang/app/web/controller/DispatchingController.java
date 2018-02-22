@@ -1,15 +1,17 @@
 package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrderCheckEnter;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
-import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.webservice.ICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +41,14 @@ public class DispatchingController {
     @Resource
     private AppOrderService appOrderService;
 
+    @Resource
+    private ReturnOrderService returnOrderService;
+
+    @Resource
+    private AppToWmsOrderService appToWmsOrderService;
+
+    @Resource
+    private ICallWms iCallWms;
     /**
      * 配送员获取待配送列表
      *
@@ -260,6 +269,74 @@ public class DispatchingController {
         }
     }
 
+    /**
+     * 配送员取货确认
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @param returnNumber 订单号
+     * @return 返回详情
+     */
+    @RequestMapping(value = "/pickUp/enter", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPickUpEnter(Long userID, Integer identityType, String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getPickUpEnter CALLED,配送员取货确认，入参 userID:{}, identityType:{}, returnNumber:{}", userID, identityType, returnNumber);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(returnNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退单号不能为空", null);
+            logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 1) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非配送员不能查看取货单详情", null);
+            logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppEmployee appEmployee = appEmployeeService.findById(userID);
+            if (null == appEmployee) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+            if (AssertUtil.isEmpty(returnOrderBaseInfo)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到该退单", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AtwReturnOrderCheckEnter checkEnter = AtwReturnOrderCheckEnter.transform(returnOrderBaseInfo);
+
+            //发送wms
+            appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
+            iCallWms.sendToWmsReturnOrderCheck(returnNumber);
+            //修改退单状态
+            returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.PENDING_REFUND);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("getPickUpEnter OUT,配送员取货确认成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，配送员取货确认失败", null);
+            logger.warn("getPickUpEnter EXCEPTION,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
     /**
      *  配送员获取已完成单列表
      * @param userId    用户id

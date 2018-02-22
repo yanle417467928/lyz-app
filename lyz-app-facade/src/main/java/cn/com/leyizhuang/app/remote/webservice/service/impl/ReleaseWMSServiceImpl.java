@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
@@ -73,7 +74,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private OnlinePayRefundService onlinePayRefundService;
     @Resource
     private SmsAccountService smsAccountService;
-
+    @Resource
+    private WareHouseService wareHouseService;
     /**
      * 获取wms信息
      *
@@ -130,8 +132,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该订单不存在 出参 order_no:{}", header.getOrderNo());
                         return AppXmlUtil.resultStrXml(1, "App没有找到该订单");
                     }
+                    WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(header.getWhNo());
                     //保存物流信息
-                    OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header);
+                    OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header,
+                            null != wareHouse ? wareHouse.getWareHouseName() : header.getWhNo());
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
                     //修改订单配送信息加入配送员
                     appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
@@ -405,7 +409,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     WtaWarehouseWholeSplitToUnit wholeSplitToUnit = new WtaWarehouseWholeSplitToUnit();
                     for (int idx = 0; idx < childNodeList.getLength(); idx++) {
                         Node childNode = childNodeList.item(idx);
-//                        wholeSplitToUnit = mapping(wholeSplitToUnit, childNode);
+                        wholeSplitToUnit = mapping(wholeSplitToUnit, childNode);
                     }
 
 
@@ -423,6 +427,69 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
         }
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
+    }
+
+    /**
+     * 整转零结果集映射
+     *
+     * @param wholeSplitToUnit
+     * @param childNode
+     * @return
+     */
+    private WtaWarehouseWholeSplitToUnit mapping(WtaWarehouseWholeSplitToUnit wholeSplitToUnit, Node childNode) {
+
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if (childNode.getNodeName().equalsIgnoreCase("c_wh_no")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_direct_no")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setDirectNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_gcode")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setSku(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_d_gcode")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setDSku(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_qty")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setQty(Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_in_qty")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setDQty(Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_status")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setStatus(childNode.getChildNodes().item(0).getNodeValue());
+                }
+//            } else if (childNode.getNodeName().equalsIgnoreCase("c_reserved1")) {
+//                if (null != childNode.getChildNodes().item(0)) {
+//                    cReserved1 = childNode.getChildNodes().item(0).getNodeValue();
+//                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setCreatorNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if (childNode.getNodeName().equalsIgnoreCase("c_company_id")) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    wholeSplitToUnit.setCompanyId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return wholeSplitToUnit;
     }
 
     /**
