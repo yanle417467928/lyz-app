@@ -734,14 +734,13 @@ public class ReturnOrderController {
 
             //获取原订单收货/自提门店地址
             ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
-            if (null == returnOrderLogisticInfo) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少收货物流信息！", null);
-                logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == returnOrderLogisticInfo) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少收货物流信息！", null);
+//                logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             detailResponse = new ReturnOrderDetailResponse();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
             //设置基础信息
             detailResponse.setReturnNumber(returnBaseInfo.getReturnNo());
             detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
@@ -749,21 +748,22 @@ public class ReturnOrderController {
             detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
             detailResponse.setReturnStatus(null != returnBaseInfo.getReturnStatus() ? returnBaseInfo.getReturnStatus().getDescription() : null);
             detailResponse.setReturnType(null != returnBaseInfo.getReturnType() ? returnBaseInfo.getReturnType().getDescription() : null);
-            detailResponse.setDeliveryType(null != returnOrderLogisticInfo.getDeliveryType() ? returnOrderLogisticInfo.getDeliveryType().getValue() : null);
-
             //取货方式（上门取货，送货到店）
-            if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
-                detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
-                AppStore appStore = appStoreService.findByStoreCode(returnOrderLogisticInfo.getReturnStoreCode());
-                if (appStore != null) {
-                    detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
-                    detailResponse.setBookingStorePhone(appStore.getPhone());
+            if (AssertUtil.isNotEmpty(returnOrderLogisticInfo)) {
+                detailResponse.setDeliveryType(null != returnOrderLogisticInfo.getDeliveryType() ? returnOrderLogisticInfo.getDeliveryType().getValue() : null);
+                if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
+                    detailResponse.setBookingStoreName(returnOrderLogisticInfo.getReturnStoreName());
+                    AppStore appStore = appStoreService.findByStoreCode(returnOrderLogisticInfo.getReturnStoreCode());
+                    if (appStore != null) {
+                        detailResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                        detailResponse.setBookingStorePhone(appStore.getPhone());
+                    }
+                } else {
+                    detailResponse.setDeliveryTime(returnOrderLogisticInfo.getDeliveryTime());
+                    detailResponse.setReceiver(returnOrderLogisticInfo.getRejecter());
+                    detailResponse.setReceiverPhone(returnOrderLogisticInfo.getRejecterPhone());
+                    detailResponse.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
                 }
-            } else {
-                detailResponse.setDeliveryTime(returnOrderLogisticInfo.getDeliveryTime());
-                detailResponse.setReceiver(returnOrderLogisticInfo.getRejecter());
-                detailResponse.setReceiverPhone(returnOrderLogisticInfo.getRejecterPhone());
-                detailResponse.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
             }
             detailResponse.setGoodsList(returnOrderService.getReturnOrderGoodsDetails(returnNumber));
             int count = 0;
@@ -869,7 +869,7 @@ public class ReturnOrderController {
             AtwCancelReturnOrderRequest atwCancelOrderRequest = AtwCancelReturnOrderRequest.transform(returnOrderBaseInfo);
             appToWmsOrderService.saveAtwCancelReturnOrderRequest(atwCancelOrderRequest);
             //发送取消退货单到WMS
-            callWms.sendToWmsCancelOrder(returnNumber);
+            callWms.sendToWmsCancelReturnOrder(returnNumber);
             returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELING);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("cancelReturnOrder OUT,用户取消退货单成功,等待wms返回取消结果，出参 resultDTO:{}", resultDTO);

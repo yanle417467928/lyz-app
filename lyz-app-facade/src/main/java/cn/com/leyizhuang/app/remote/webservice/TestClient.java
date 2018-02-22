@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
-import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -156,7 +153,7 @@ public class TestClient {
 //        WmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
 
         AtwCancelReturnOrderRequest orderRequest = new AtwCancelReturnOrderRequest();
-        orderRequest.setReturnNo("T20180206154417160");
+        orderRequest.setReturnNo("T20180222113753087");
         orderRequest.setCreateTime(new Date());
         orderRequest.setReturnType(ReturnOrderType.NORMAL_RETURN);
         orderRequest.setReturnTime(new Date());
@@ -164,23 +161,23 @@ public class TestClient {
 
 //        appToWmsOrderService.saveAtwCancelReturnOrderRequest(orderRequest);
 //
-//        iCallWms.sendToWmsCancelReturnOrder("T20180206154417160");
+//        iCallWms.sendToWmsCancelReturnOrder("T20180222113753087");
+//
+//        AtwReturnOrderCheckEnter checkEnter = new AtwReturnOrderCheckEnter();
 
-        AtwReturnOrderCheckEnter checkEnter = new AtwReturnOrderCheckEnter();
-
-        checkEnter.setCreateTime(new Date());
-        checkEnter.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
-        checkEnter.setCheckGoodsTime(new Date());
-        checkEnter.setReturnNo("T20180206175111713");
+//        checkEnter.setCreateTime(new Date());
+//        checkEnter.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
+//        checkEnter.setCheckGoodsTime(new Date());
+//        checkEnter.setReturnNo("T20180206175111713");
 
 //        appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
 //        iCallWms.sendToWmsReturnOrderCheck("T20180206175111713");
 
 
-        AppCustomer newUser = new AppCustomer();
-        List<CustomerProfession> professions = appCustomerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
-        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
-
-        System.out.println(newUser);
+//        AppCustomer newUser = new AppCustomer();
+//        List<CustomerProfession> professions = appCustomerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
+//        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
+//
+//        System.out.println(newUser);
     }
 }
