@@ -514,6 +514,7 @@
                 is_evaluated = #{isEvaluated}
             </if>
         </set>
+        WHERE ord_no = #{orderNumber}
     </update>
 
     <update id="updateOrderBillingDetails"
@@ -539,6 +540,7 @@
                 is_pay_up = #{isPayUp}
             </if>
         </set>
+        WHERE ord_no = #{orderNumber}
     </update>
 
 

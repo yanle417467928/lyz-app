@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -300,7 +301,12 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
         //设置城市信息
         tempOrder.setCityId(userStore.getCityId());
-        tempOrder.setCityName(userStore.getCity());
+        if (null != userStore.getCity()) {
+            tempOrder.setCityName(userStore.getCity());
+        } else {
+            City city = cityService.findById(cityId);
+            tempOrder.setCityName(city.getName());
+        }
         tempOrder.setSobId(userStore.getSobId());
         tempOrder.setStoreOrgId(userStore.getStoreId());
 
