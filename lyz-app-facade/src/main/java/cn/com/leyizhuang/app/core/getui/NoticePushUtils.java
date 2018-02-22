@@ -23,9 +23,9 @@ import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class NoticePushUtils {
 
     private static AppUserDeviceService userDeviceService;
 
-    @Resource
+    @Autowired
     public void setUserDeviceService(AppUserDeviceService userDeviceService) {
         NoticePushUtils.userDeviceService = userDeviceService;
     }
@@ -49,8 +49,8 @@ public class NoticePushUtils {
 
     private static AppOrderService orderService;
 
-    @Resource
-    public static void setOrderService(AppOrderService orderService) {
+    @Autowired
+    public void setOrderService(AppOrderService orderService) {
         NoticePushUtils.orderService = orderService;
     }
 
