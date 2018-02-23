@@ -382,7 +382,7 @@ public class GoodsController {
     public ResultDTO<Object> filterGoodsList(Long userId, Integer identityType, String firstCategoryCode, Long categoryId,
                                              Long brandId, Long typeId, String specification, Integer page, Integer size) {
         logger.info("filterGoodsList CALLED,筛选商品，入参 userId:{},identityType:{},firstCategoryCode: {},categoryId:{}," +
-                        "brandId: {},typeId:{},specification:{}", userId, identityType, firstCategoryCode, categoryId, brandId,
+                        "brandId: {},typeId:{},specification:{},page:{},size:{}", userId, identityType, firstCategoryCode, categoryId, brandId,
                 typeId, specification, page, size);
         ResultDTO<Object> resultDTO;
         try {
