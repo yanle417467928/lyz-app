@@ -1283,7 +1283,7 @@ public class CommonServiceImpl implements CommonService {
         String pickUpCode = "";
         if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
             //发送提货码给顾客
-            pickUpCode = RandomUtil.randomStrCode(6);
+            pickUpCode = RandomUtil.randomNumCode(4);
             SmsAccount account = smsAccountService.findOne();
             String info = "【乐易装】您订单"
                     + orderBaseInfo.getOrderNumber()
