@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.vo.management.customer;
 
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
@@ -59,9 +60,9 @@ public class CustomerDetailVO {
     //创建时间
     private Date createTime;
     //灯号:绿灯 黄灯 红灯 熄灯
-    private String light;
+    private AppCustomerLightStatus light;
     //创建类型（APP注册、后台添加）
-    private String createType;
+    private AppCustomerCreateType createType;
     //顾客类型（零售、会员）
     private String customerType;
     //上次签到时间
@@ -82,15 +83,7 @@ public class CustomerDetailVO {
             customerVO.setSex(customerDO.getSex());
             customerVO.setPicUrl(customerDO.getPicUrl());
             customerVO.setCreateTime(customerDO.getCreateTime());
-                if ("GREEN".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.GREEN.getValue());
-                } else if ("YELLOW".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.YELLOW.getValue());
-                } else if ("RED".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.RED.getValue());
-                } else if ("CLOSE".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.CLOSE.getValue());
-                }
+            customerVO.setLight(customerDO.getLight());
             customerVO.setBindingTime(customerDO.getBindingTime());
             customerVO.setCreateType(customerDO.getCreateType());
             customerVO.setIsCashOnDelivery(customerDO.getIsCashOnDelivery());

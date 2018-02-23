@@ -61,8 +61,11 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
                 guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                //TODO
+                //没有修改原因字段
                 guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
                 guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ADMIN_RECHARGE);
+                //guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
                 guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
                 this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetailVO,lastUpdateTimeFormat);
                 logger.info("restGuideCreditMoneyVOPut ,后台修改员工额度成功");
@@ -101,6 +104,7 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
                 guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR);
                 guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
                 guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
                 this.maEmpCreditMoneyService.clearTempCreditLimit(guideCreditMoneyDetail, guideCreditChangeDetailVO);

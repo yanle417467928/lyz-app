@@ -26,17 +26,34 @@
     <update id="updateStoreInventory">
         UPDATE st_inventory
         <if test="null != goodsQty">
-        SET available_ity = #{goodsQty},
-        </if>
-        <if test="null != date">
-            last_update_time = #{date}
+            SET real_ity = #{goodsQty}
         </if>
         WHERE
-            gid = #{goodsId}
-            AND store_id = #{storeId}
+        gid = #{goodsId}
+        AND
+        store_id = #{storeId}
+        AND
+        last_update_time = #{date}
     </update>
 
-    <insert id="addInventoryChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange">
+
+    <update id="updateStoreInventoryAndAvailableIty">
+        UPDATE st_inventory
+        <if test="null != goodsQty">
+            SET real_ity = #{goodsQty},
+        </if>
+        <if test="null != goodsAvailableIty">
+            SET available_ity = #{goodsAvailableIty},
+        </if>
+        WHERE
+        gid = #{goodsId}
+        AND store_id = #{storeId}
+        AND
+        last_update_time = #{date}
+    </update>
+
+    <insert id="addInventoryChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange">
         INSERT st_inventory_available_qty_change_log
         (city_id,city_name,store_id,store_name,store_code,gid,sku,sku_name,change_time,change_qty,after_change_qty,reference_number,change_type,change_type_desc)
         VALUES

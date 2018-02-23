@@ -687,6 +687,14 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
+
+    @Override
+    public void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long rtHeaderId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != rtHeaderId) {
+            separateOrderDAO.updateReturnOrderFlagAndSendTimeAndErrorMsg(rtHeaderId, msg, sendTime, flag);
+        }
+    }
+
     @Override
     public void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf) {
         if (null != returnOrderBaseInf) {

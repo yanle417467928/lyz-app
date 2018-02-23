@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
@@ -11,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 public interface MaStoreService {
@@ -85,5 +88,21 @@ public interface MaStoreService {
 
     void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) throws Exception;
 
+    MaStoreInfo findStoreByStoreCode(String code);
 
+    /**
+     * 更新门店预存款
+     * @param money
+     * @param userId
+     * @param version
+     * @return
+     */
+    Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version);
+
+    /**
+     * 生成门店预存款日志
+     * @param stPreDepositLogDO
+     * @return
+     */
+    void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
 }

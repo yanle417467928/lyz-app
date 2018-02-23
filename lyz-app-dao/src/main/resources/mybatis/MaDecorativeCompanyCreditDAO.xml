@@ -2,20 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaDecorativeCompanyCreditDAO">
 
-    <update id="updateDecorativeCompanyCredit" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit">
+    <update id="updateDecorativeCompanyCredit"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit">
         UPDATE
         st_credit_money
         <set>
-            <if test="null != credit" >
+            <if test="null != credit">
                 credit_limit_available = #{credit},
             </if>
         </set>
         WHERE id = #{cid}
+        AND
+        last_update_time=#{creditLastUpdateTime}
     </update>
 
 
-
-    <update id="updateDecorativeCompanySubvention" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention">
+    <update id="updateDecorativeCompanySubvention"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention">
         UPDATE
         st_subvention
         <set>
@@ -24,23 +27,9 @@
             </if>
         </set>
         WHERE id = #{sid}
+        AND
+        last_update_time=#{sponsorshipLastUpdateTime}
     </update>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </mapper>

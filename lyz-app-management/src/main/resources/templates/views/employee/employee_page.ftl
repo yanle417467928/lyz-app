@@ -36,22 +36,25 @@
                             onchange="findEmpByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px" style="margin-left:10px width:auto;"
-                      onchange="findEmpByStore()"  data-live-search="true" >
+                    <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            style="margin-left:10px width:auto;"
+                            onchange="findEmpByStore()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
                     <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
                             onchange="findEmpByCondition()">
                         <option value="-1">选择类型</option>
                     </select>
-                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;" data-live-search="true"
+                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
+                            data-live-search="true"
                             onchange="findEmpByCondition()">
                         <option value="-1">是否可用</option>
                         <option value="1">是</option>
                         <option value="0">否</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control" style="width:auto;"
+                        <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control"
+                               style="width:auto;"
                                placeholder="请输入姓名、电话或登录名..">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -145,8 +148,8 @@
         initDateGird('/rest/employees/page/grid');
     });
 
-   function initDateGird(url) {
-        $grid.init($('#dataGrid'), $('#toolbar'),url , 'get', false, function (params) {
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -160,48 +163,48 @@
                 field: 'id',
                 title: '员工ID',
                 align: 'center'
-            },{
-            field: 'loginName',
-            title: '登录名',
-            align: 'center'
-        }, {
-            field: 'name',
-            title: '姓名',
-            align: 'center',
-            events: {
-                'click .scan': function(e, value, row) {
-                    $page.information.show(row.id);
+            }, {
+                field: 'loginName',
+                title: '登录名',
+                align: 'center'
+            }, {
+                field: 'name',
+                title: '姓名',
+                align: 'center',
+                events: {
+                    'click .scan': function (e, value, row) {
+                        $page.information.show(row.id);
+                    }
+                },
+                formatter: function (value) {
+                    return '<a class="scan" href="#">' + value + '</a>';
                 }
-            },
-            formatter: function(value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            }
-          },{
-            field: 'identityType',
-            title: '员工类型',
-            align: 'center'
-            },{
+            }, {
+                field: 'identityType',
+                title: '员工类型',
+                align: 'center'
+            }, {
                 field: 'cityId.name',
                 title: '归属城市',
                 align: 'center'
-            },{
+            }, {
                 field: 'storeId.storeName',
                 title: '归属门店',
                 align: 'center'
-            },{
-            field: 'status',
-            title: '是否生效',
-            align: 'center',
-                formatter: function(value,row,index){
-                if(true==value){
-                    return '<span class="label label-primary">是</span>';
-                }else if(false==value){
-                    return '<span class="label label-danger">否</span>';
-                }else {
-                    return '<span class="label label-danger">-</span>';
+            }, {
+                field: 'status',
+                title: '是否生效',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (true == value) {
+                        return '<span class="label label-primary">是</span>';
+                    } else if (false == value) {
+                        return '<span class="label label-danger">否</span>';
+                    } else {
+                        return '<span class="label label-danger">-</span>';
+                    }
                 }
-            }
-        },
+            },
         ]);
     }
 
@@ -228,7 +231,7 @@
         m = m < 10 ? ('0' + m) : m;
         var d = dt.getDate();
         d = d < 10 ? ('0' + d) : d;
-        return y + '-' + m + '-' + d ;
+        return y + '-' + m + '-' + d;
     };
 
     var $page = {
@@ -280,10 +283,10 @@
 
                                 if (null === data.birthday) {
                                     data.birthday = '-';
-                                }else{
-                                    data.birthday=formatDateTimeBirthday(data.birthday)
+                                } else {
+                                    data.birthday = formatDateTimeBirthday(data.birthday)
                                 }
-                                $('#birthday').html( data.birthday);
+                                $('#birthday').html(data.birthday);
 
 
                                 if (null === data.picUrl) {
@@ -293,17 +296,17 @@
 
                                 if (null === data.cityId) {
                                     $('#city').html('-');
-                                }else if(null === data.cityId.name){
+                                } else if (null === data.cityId.name) {
                                     $('#city').html('-');
-                                }else{
+                                } else {
                                     $('#city').html(data.cityId.name);
                                 }
 
                                 if (null === data.storeId) {
                                     $('#store').html('-');
-                                }else if(null === data.storeId.storeName){
+                                } else if (null === data.storeId.storeName) {
                                     $('#store').html('-');
-                                }else{
+                                } else {
                                     $('#store').html(data.storeId.storeName);
                                 }
 
@@ -320,27 +323,38 @@
                                 if (null === data.sellerType) {
                                     data.sellerType = '-';
                                 }
-                                $('#sellerType').html(data.sellerType);
+
+                                if (null == data.sellerType) {
+                                    $('#sellerType').html('-');
+                                } else {
+                                    if ('SELLER' == data.sellerType) {
+                                        $('#sellerType').html('导购');
+                                    } else if ('SUPERVISOR' == data.sellerType) {
+                                        $('#sellerType').html('店长');
+                                    } else {
+                                        $('#sellerType').html('-');
+                                    }
+                                }
 
                                 if (null === data.entryTime) {
                                     data.entryTime = '-';
-                                }else{
-                                    data.entryTime=formatDateTime(data.entryTime)
+                                } else {
+                                    data.entryTime = formatDateTime(data.entryTime)
                                 }
                                 $('#entryTime').html(data.entryTime);
 
                                 if (null === data.createTime) {
                                     data.createTime = '-';
-                                }else{
-                                    data.createTime=formatDateTime(data.createTime)
+                                } else {
+                                    data.createTime = formatDateTime(data.createTime)
                                 }
                                 $('#createTime').html(data.createTime);
 
-                                if (true==data.status) {
+                                if (true == data.status) {
                                     $('#status').html('<span class="label label-primary">是</span>');
-                                }else if(false==data.status){
+                                } else if (false == data.status) {
                                     $('#status').html('<span class="label label-danger">否</span>');
-                                }else {
+                                } else {
                                     $('#status').html('<span class="label label-danger">-</span>');
                                 }
 
@@ -358,7 +372,7 @@
         }
     }
 
-    function findCitySelection(){
+    function findCitySelection() {
         $.ajax({
             url: '/rest/citys/findCitylist',
             method: 'GET',
@@ -430,15 +444,15 @@
     }
 
 
-    function findEmpByCondition(){
+    function findEmpByCondition() {
         $("#queryEmpInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var identityType = $("#identityType").val();
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
         var enabled = $("#enabled").val();
-            initDateGird('/rest/employees/page/conditionGrid?identityType=' + identityType+'&storeId='+storeId+
-            '&cityId='+cityId+'&enabled='+enabled);
+        initDateGird('/rest/employees/page/conditionGrid?identityType=' + identityType + '&storeId=' + storeId +
+                '&cityId=' + cityId + '&enabled=' + enabled);
     }
 
 
@@ -453,7 +467,7 @@
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryEmpInfo || "" == queryEmpInfo) {
             initDateGird('/rest/employees/page/grid');
-        }else {
+        } else {
             initDateGird('/rest/employees/page/infoGrid/' + queryEmpInfo);
         }
     }
@@ -464,11 +478,12 @@
         initSelect("#identityType", "选择类型");
         findEmpByCondition();
         $("#queryCusInfo").val('');
-        if(cityId==-1){
+        if (cityId == -1) {
             findStoreSelection();
             findTypeSelection();
             return false;
-        };
+        }
+        ;
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityId/' + cityId,
@@ -493,16 +508,13 @@
     }
 
 
-
-
-
-    function findIdentityTypeByCity(){
+    function findIdentityTypeByCity() {
         $("#queryEmpInfo").val('');
         var cityId = $("#cityCode").val();
         initSelect("#identityType", "选择类型")
         var emptype;
         $.ajax({
-            url: '/rest/employees/findEmpTypeByCityId/'+cityId,
+            url: '/rest/employees/findEmpTypeByCityId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -520,18 +532,19 @@
         });
     }
 
-    function findEmpByStore(){
+    function findEmpByStore() {
         $("#queryEmpInfo").val('');
         var storeId = $("#storeCode").val();
         initSelect("#identityType", "选择类型");
         findEmpByCondition();
-        if(storeId==-1){
+        if (storeId == -1) {
             findTypeSelection();
             return false;
-        };
+        }
+        ;
         var emptype;
         $.ajax({
-            url: '/rest/employees/findEmpTypeByStoreId/'+storeId,
+            url: '/rest/employees/findEmpTypeByStoreId/' + storeId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

@@ -177,7 +177,7 @@
 
     <select id="queryCusPredepositByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
         SELECT
-        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name
+        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name,c.last_update_time
         FROM cus_customer c
         LEFT JOIN cus_pre_deposit cp on cp.cus_id = c.cus_id
         LEFT JOIN st_store s ON s.store_id = c.store_id
@@ -310,4 +310,19 @@
             #{id}
         </foreach>
     </update>
+
+    <update id="updateDepositByUserIdAndVersion">
+        UPDATE cus_pre_deposit
+        SET balance = #{deposit}
+        WHERE cus_id = #{userId}
+        AND last_update_time = #{version}
+    </update>
+
+    <insert id="saveCusPreDepositLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit">
+        INSERT INTO cus_pre_deposit_log (create_time, change_money, remarks, change_type, change_type_desc, cus_id, operator_id, operator_type, operator_ip, order_number, balance,
+        detail_reason, transfer_time, merchant_order_number)
+        VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc}, #{cusId},
+        #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
+        #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+    </insert>
 </mapper>

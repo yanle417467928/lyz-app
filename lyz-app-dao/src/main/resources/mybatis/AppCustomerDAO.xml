@@ -721,14 +721,24 @@
 
     <select id="findCustomerProfessionByTitle" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
+    SELECT
+    id,
+    title,
+    description,
+    create_time,
+    status
+    FROM cus_profession
+    WHERE title = #{customerProfession}
+</select>
+
+
+    <select id="getCustomerSupportHotline" parameterType="java.lang.Long"
+            resultType="java.lang.String">
         SELECT
-            id,
-            title,
-            description,
-            create_time,
-            status
-        FROM cus_profession
-        WHERE title = #{customerProfession}
+        ee.mobile
+        FROM cus_customer cc
+        LEFT JOIN emp_employee ee ON cc.sales_consult_id = ee.emp_id
+        WHERE cc.cus_id = #{userId}
     </select>
 
     <update id="unbindingCustomerWeChat" parameterType="java.lang.Long">

@@ -266,16 +266,16 @@
             title: '顾客灯号',
             align: 'center',
             formatter: function (value, row, index) {
-                if ('绿灯' === value) {
+                if ('GREEN' === value) {
                     return '<span class="label label-success">绿灯</span>';
-                } else if ('红灯' === value) {
+                } else if ('RED' === value) {
                     return '<span class="label label-danger">红灯</span>';
-                } else if ('黄灯' === value) {
+                } else if ('YELLOW' === value) {
                     return '<span class="label label-warning">黄灯</span>';
-                } else if ('熄灯' === value) {
+                } else if('CLOSE' === data.light) {
                     return '<span class="label label-deafult">熄灯</span>';
-                } else {
-                    return '<span class="label label-danger">-</span>';
+                }else if('NOT' === data.light){
+                    return'<span class="label label-danger">无灯</span>';
                 }
             }
         },
@@ -398,16 +398,16 @@
                                 $('#isCashOnDelivery').html(data.isCashOnDelivery);
 
 
-                                if ('绿灯' === data.light) {
+                                if ('GREEN' === data.light) {
                                     data.light = '<span class="label label-success">绿灯</span>';
-                                }else if('红灯' === data.light){
+                                }else if('RED' === data.light){
                                     data.light = '<span class="label label-danger">红灯</span>';
-                                } else if('黄灯' === data.light){
+                                } else if('YELLOW' === data.light){
                                     data.light = '<span class="label label-warning">黄灯</span>';
-                                } else if('熄灯' === data.light) {
+                                } else if('CLOSE' === data.light) {
                                     data.light = '<span class="label label-deafult">熄灯</span>';
-                                }else{
-                                    data.light = '<span class="label label-danger">-</span>';
+                                }else if('NOT' === data.light){
+                                    data.light = '<span class="label label-danger">无灯</span>';
                                 }
                                 $('#light').html(data.light);
 
@@ -421,9 +421,9 @@
                                 $('#customerType').html(data.customerType);
 
                                 if ('APP_REGISTRY' === data.createType) {
-                                    data.createType = 'APP';
+                                    data.createType = 'APP注册';
                                 } else if('Background add' === data.createType) {
-                                        data.createType = '后台添加';
+                                        data.createType = '后台创建';
                                 }else {
                                     data.createType = '-';
                                 }

@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
@@ -40,6 +41,8 @@ public class MaOrderViewController {
     private MaOrderService maOrderService;
     @Resource
     private MaEmpCreditMoneyService maEmpCreditMoneyService;
+    @Resource
+    private MaStoreInventoryService maStoreInventoryService;
 
     /**
      * 返回门店订单列表页
@@ -300,7 +303,7 @@ public class MaOrderViewController {
             //查询订单是否还清
             Boolean isPayUp = maOrderService.isPayUp(orderNumber);
             //查询审核状态
-            String auditStatus =  maOrderService.queryAuditStatus(orderNumber);
+            String auditStatus = maOrderService.queryAuditStatus(orderNumber);
             //查询订单商品信息
             List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
             //获取订单账目明细
@@ -315,13 +318,13 @@ public class MaOrderViewController {
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
-                map.addAttribute("type",1);
+                map.addAttribute("type", 1);
             } else if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaCompanyOrderDetailResponse maCompanyOrderDetailResponse = maOrderService.findMaCompanyOrderDetailByOrderNumber(orderNumber);
                 maCompanyOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maCompanyOrderDetailResponse);
-                map.addAttribute("type",2);
+                map.addAttribute("type", 2);
             }
             if (null != maOrderBillingDetailResponse) {
                 map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);

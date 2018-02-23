@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MaDecorativeCompanyCreditDAO {
 
-   void updateDecorativeCompanyCredit(DecorativeCompanyCredit decorativeCompanyCredit);
+   int updateDecorativeCompanyCredit(DecorativeCompanyCredit decorativeCompanyCredit);
 
-   void  updateDecorativeCompanySubvention(DecorativeCompanySubvention decorativeCompanySubvention);
+   int  updateDecorativeCompanySubvention(DecorativeCompanySubvention decorativeCompanySubvention);
 }

@@ -38,6 +38,9 @@ public class DecorativeCompanyDetailVO {
     // 创建时间
     private Date createTime;
 
+    // 销售经理
+    private String salesManager;
+
 
 
     public static final DecorativeCompanyDetailVO transform(StoreDO storeDO) {
@@ -49,6 +52,7 @@ public class DecorativeCompanyDetailVO {
             decorativeCompanyVO.setCreateTime(storeDO.getCreateTime());
             decorativeCompanyVO.setEnable(storeDO.getEnable());
             decorativeCompanyVO.setStoreCode(storeDO.getStoreCode());
+            decorativeCompanyVO.setSalesManager(storeDO.getSalesManager());
             return decorativeCompanyVO;
         } else {
             return null;

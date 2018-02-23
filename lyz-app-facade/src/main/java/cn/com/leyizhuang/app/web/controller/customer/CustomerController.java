@@ -824,5 +824,42 @@ public class CustomerController {
     }
 
 
+    /**
+     * 顾客获取咨询电话
+     *
+     * @param userId       用户id
+     * @param identityType 身份类型
+     * @return 咨询电话
+     */
+    @PostMapping(value = "/supportHotline", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerSupportHotline(Long userId, Integer identityType) {
+        logger.info("getCustomerSupportHotline CALLED,顾客获取咨询电话，入参 userId {},identityType{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType||6 != identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误",
+                    null);
+            logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            SupportHotlineResponse supportHotline = customerService.getCustomerSupportHotline(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, supportHotline);
+            logger.info("getCustomerSupportHotline OUT顾客获取咨询电话成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取咨询电话失败", null);
+            logger.warn("getCustomerSupportHotline EXCEPTION,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+
 }
 

@@ -56,7 +56,7 @@ public class AppConstant {
     /**
      * EBS接口发送地址
      */
-    public static final String EBS_NEW_URL = "http://ebs.leyizhuang.com.cn:10001/ebs/";
+    public static final String EBS_NEW_URL = "http://localhost:10001/ebs/";
 
     /**
      * WMS接口地址

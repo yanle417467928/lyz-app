@@ -857,6 +857,23 @@
         WHERE id = #{receiveInfsId}
     </update>
 
+
+    <update id="updateReturnOrderFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_return_order_base_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE rt_header_id = #{rtHeaderId}
+    </update>
+
     <select id="getReturnOrderCouponInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderCouponInf">
         SELECT

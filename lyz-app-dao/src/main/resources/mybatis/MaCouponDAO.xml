@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCouponDAO">
+    <select id="findProductCouponTypeByReturnOrder" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaProductCouponInfo">
+        SELECT
+            *
+        FROM
+            ord_return_product_coupon
+        WHERE
+            return_no = #{returnNumber}
+    </select>
+
+
+    <select id="findCashCouponTypeByReturnOrderId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaCashCouponInfo">
+        SELECT
+        *
+        FROM
+        ord_return_cash_coupon
+        WHERE
+        roid = #{returnOrderId}
+    </select>
+
+</mapper>
