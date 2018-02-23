@@ -69,8 +69,11 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         this.maOrderPhotoDAO.updateStatus(photoId,status);
         //加入下料清单
         this.maMaterialListService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
-
+        //修改处理人ID
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != shiroUser) {
+            this.maOrderPhotoDAO.updateOperationUserId(shiroUser.getId(), photoId);
+        }
     }
 
     @Override

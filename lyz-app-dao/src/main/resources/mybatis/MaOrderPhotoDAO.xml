@@ -79,6 +79,12 @@
             #{id}
         </foreach>
     </update>
+    
+    <update id="updateOperationUserId" parameterType="java.lang.Long">
+        UPDATE photo_order
+        SET operation_user_id = #{userId}
+        WHERE id = #{id}
+    </update>
 
 
 </mapper>
