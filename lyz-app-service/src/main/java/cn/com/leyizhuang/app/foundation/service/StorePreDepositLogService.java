@@ -39,5 +39,5 @@ public interface StorePreDepositLogService {
      */
     void updateStPreDepositByUserId(Double money,Long userId);
 
-    Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version);
+    Integer updateStPreDepositByStoreIdAndVersion(Double money,Long userId, Date version);
 }

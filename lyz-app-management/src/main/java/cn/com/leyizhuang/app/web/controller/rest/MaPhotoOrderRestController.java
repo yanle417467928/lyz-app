@@ -6,13 +6,11 @@ import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.foundation.dto.PhotoOrderDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.VerifyCodeResponse;
-import cn.com.leyizhuang.app.foundation.service.MaGoodsCategoryService;
-import cn.com.leyizhuang.app.foundation.service.MaGoodsService;
-import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
-import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
@@ -61,6 +59,9 @@ public class MaPhotoOrderRestController extends BaseRestController{
 
     @Autowired
     private SmsAccountServiceImpl smsAccountService;
+
+    @Autowired
+    private MaPhotoOrderGoodsService maPhotoOrderGoodsService;
 
     /**
      * @title   获取拍照下单列表
@@ -194,6 +195,7 @@ public class MaPhotoOrderRestController extends BaseRestController{
                     List<MaterialListDO> combList = photoOrderDTO.getCombList();
                     List<MaterialListDO> materialListSave = new ArrayList<>();
                     List<MaterialListDO> materialListUpdate = new ArrayList<>();
+                    List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
                     for (MaterialListDO materialListDO: combList) {
                         GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
                         if (null != goodsDO){
@@ -210,12 +212,20 @@ public class MaPhotoOrderRestController extends BaseRestController{
                                 materialList.setQty(materialList.getQty() + materialListDO.getQty());
                                 materialListUpdate.add(materialList);
                             }
+
+                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                            photoOrderGoodsDO.setGid(goodsDO.getGid());
+                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setPhotoOrderNo(photoOrderVO.getPhotoOrderNo());
+                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
                         }
                     }
+                    this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
                     this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
 
                     //短信提醒
-                    String info = "您的拍照下单订单[" + photoOrderVO.getPhotoOrderNo() + "]已处理，请登录APP查看。";
+                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";
                     String content;
                     try {
                         content = URLEncoder.encode(info, "GB2312");

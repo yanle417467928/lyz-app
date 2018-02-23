@@ -4,19 +4,23 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
+import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -43,6 +47,9 @@ public class UserHomePageController {
     private AppEmployeeService employeeService;
 
     @Resource
+    private AppStoreService appStoreService;
+
+    @Resource
     private DeliveryAddressService deliveryAddressService;
 
     @Resource
@@ -50,6 +57,9 @@ public class UserHomePageController {
 
     @Resource
     private CustomerLevelService customerLevelService;
+
+    @Resource
+    private AppPreDepositWithdrawService appPreDepositWithdrawService;
 
     /**
      * 个人主页的信息
@@ -391,4 +401,218 @@ public class UserHomePageController {
             return resultDTO;
         }
     }
+
+    /**
+     * 顾客预存款提现申请
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/cus/apply/withdraw",produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> cusApplyWithdraw(PreDepositWithdrawParam param){
+        logger.info("顾客预存款提现申请,入参:{}", JSON.toJSONString(param));
+        ResultDTO<Object> resultDTO;
+        if (param == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "参数null", null);
+            logger.info("顾客预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        if (param.getId() == null || param.getRealName() == null || param.getRealName().equals("") || param.getRealPhone().equals("") || param.getRealPhone() == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客信息不正确", null);
+            logger.info("顾客预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        if (param.getAccountType() == null || param.getAccount() == null || param.getAccount().equals("")){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "提现帐号信息不正确", null);
+            logger.info("顾客预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        try{
+            // 校验顾客可提现预存款
+            CustomerPreDeposit preDeposit = customerService.findByCusId(param.getId());
+
+            if (preDeposit == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款不足", null);
+                logger.info("顾客预存款提现申请失败", resultDTO);
+                return resultDTO;
+            }
+
+            // 可现预存款
+            Double canWithdrawAmount = preDeposit.getBalance() == null ? 0.00 : preDeposit.getBalance();
+            // 需要提现预存款
+            Double needWithdrawAmount = param.getAmount() == null ? 0.00 : param.getAmount();
+
+            if (canWithdrawAmount.equals(0.00) || needWithdrawAmount > canWithdrawAmount){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款不足", null);
+                logger.info("顾客预存款提现申请失败", resultDTO);
+                return resultDTO;
+            }
+
+            appPreDepositWithdrawService.cusSave(param);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "提现申请成功", null);
+            logger.info("顾客提现申请成功,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,提现申请失败", null);
+            logger.warn("cusApplyWithdraw EXCEPTION,顾客提现申请失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
+    }
+
+    /**
+     * 门店预存款提现
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/st/apply/withdraw",produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> stApplyWithdraw(PreDepositWithdrawParam param){
+        logger.info("门店预存款提现申请,入参:{}", JSON.toJSONString(param));
+        ResultDTO<Object> resultDTO;
+        if (param == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "参数null", null);
+            logger.info("门店预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        if (param.getId() == null || param.getRealName() == null || param.getRealName().equals("") || param.getRealPhone().equals("") || param.getRealPhone() == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "提现门店信息不正确", null);
+            logger.info("门店预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        if (param.getAccountType() == null || param.getAccount() == null || param.getAccount().equals("")){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "提现帐号信息不正确", null);
+            logger.info("门店预存款提现申请失败", resultDTO);
+            return resultDTO;
+        }
+
+        try{
+
+            // 校验顾客可提现预存款
+            StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(param.getId());
+
+
+            // 可现预存款
+            Double canWithdrawAmount = preDeposit.getBalance() == null ? 0.00 : preDeposit.getBalance();
+            // 需要提现预存款
+            Double needWithdrawAmount = param.getAmount() == null ? 0.00 : param.getAmount();
+
+            if (canWithdrawAmount.equals(0.00) || needWithdrawAmount > canWithdrawAmount){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款不足", null);
+                logger.info("门店预存款提现申请失败", resultDTO);
+                return resultDTO;
+            }
+
+            appPreDepositWithdrawService.stSave(param);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "提现申请成功", null);
+            logger.info("门店提现申请成功,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,提现失败", null);
+            logger.warn("cusApplyWithdraw EXCEPTION,门店提现申请失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
+    }
+
+    /**
+     * 顾客申请提现列表
+     */
+    @PostMapping("/cus/apply/list")
+    public ResultDTO cusApplyList(Integer page, Integer size, Long cusId){
+        ResultDTO<Object> resultDTO;
+        if (page == null || size == null){
+            page = 1;
+            size = 10;
+        }
+
+        if (cusId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try{
+            PageInfo<CusPreDepositWithdraw> preDepositWithdrawPageInfo = appPreDepositWithdrawService.cusApplyList(page,size,cusId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<CusPreDepositWithdraw>().transform(preDepositWithdrawPageInfo));
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客提现申请列表失败", null);
+        }
+
+        return resultDTO;
+    }
+
+    /**
+     * 门店提现申请列表
+     */
+    @PostMapping("/st/apply/list")
+    public ResultDTO stApplyList(Integer page, Integer size, Long stId){
+        ResultDTO<Object> resultDTO;
+        if (page == null || size == null){
+            page = 1;
+            size = 10;
+        }
+
+        if (stId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try{
+            PageInfo<StPreDepositWithdraw> stPreDepositWithdrawPageInfo = appPreDepositWithdrawService.stApplyList(page,size,stId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<StPreDepositWithdraw>().transform(stPreDepositWithdrawPageInfo));
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取门店提现申请列表失败", null);
+        }
+
+        return resultDTO;
+    }
+
+    /**
+     * 顾客取消提现申请
+     */
+    @PostMapping("cus/apply/cancel")
+    public ResultDTO cusApplyCancel(Long applyId, Long cusId){
+        ResultDTO<Object> resultDTO;
+        if (applyId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "申请单数据有误，请联系管理员", null);
+        }
+
+        if (cusId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try {
+            appPreDepositWithdrawService.cusCancelApply(applyId,cusId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
+        }
+        return resultDTO;
+    }
+
+    @PostMapping("st/apply/cancel")
+    public ResultDTO stApplyCancel(Long applyId, Long stId){
+        ResultDTO<Object> resultDTO;
+        if (applyId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "申请单数据有误，请联系管理员", null);
+        }
+
+        if (stId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try {
+            appPreDepositWithdrawService.stCancelApply(applyId,stId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
+        }
+        return resultDTO;
+    }
+
 }

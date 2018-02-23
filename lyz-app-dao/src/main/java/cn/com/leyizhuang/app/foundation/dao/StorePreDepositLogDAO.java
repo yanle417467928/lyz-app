@@ -37,5 +37,5 @@ public interface StorePreDepositLogDAO {
      */
     void updateStPreDepositByUserId(@Param("money") Double money,@Param("userId")Long userId);
 
-    Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money,@Param("userId")Long userId, @Param("version")Date version);
+    Integer updateStPreDepositByStoreIdAndVersion(@Param("money") Double money,@Param("storeId")Long userId, @Param("version")Date version);
 }
