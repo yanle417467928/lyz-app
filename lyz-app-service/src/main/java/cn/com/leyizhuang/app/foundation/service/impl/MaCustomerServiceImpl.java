@@ -1,10 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
+import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.MaCusLebiLogService;
@@ -93,11 +96,12 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Override
     public void saveCustomer(CustomerDetailVO customer){
         if(null!=customer){
-            customer.setCreateTime(new Date());
-            customer.setLight("GREEN");
-            customer.setCreateType("Background add");
+            Date date = new Date();
+            customer.setCreateTime(date);
+            customer.setLight(AppCustomerLightStatus.GREEN);
+            customer.setCreateType(AppCustomerCreateType.ADMIN_CREATE);
             if(null!=customer.getSalesConsultId()){
-                customer.setBindingTime(new Date());
+                customer.setBindingTime(date);
             }
             CustomerDO customerDO =CustomerDO.transform(customer);
             maCustomerDAO.save(customerDO);
@@ -185,5 +189,15 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         return this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions, cityId, storeId);
     }
 
+    @Override
+    public Integer updateDepositByUserIdAndVersion(Long userId, Double customerDeposit, Date version) {
+        return maCustomerDAO.updateDepositByUserIdAndVersion(userId, customerDeposit, version);
+    }
+
+
+    @Override
+    public void saveCusPreDepositLog( MaCustomerPreDeposit customerPreDeposit) {
+        this.maCustomerDAO.saveCusPreDepositLog(customerPreDeposit);
+    }
 }
 

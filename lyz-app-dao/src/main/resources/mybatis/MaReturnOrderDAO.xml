@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReturnOrderDAO">
+
+
+    <select id="findMaReturnOrderList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo">
+        SELECT
+         orbi.roid roid,
+         orbi.return_time returnTime,
+         orbi.return_no returnNo,
+         orbi.return_type returnType,
+         orbi.creator_name creatorName,
+         orbi.store_code storeCode,
+         orbi.ord_type orderType,
+         orbi.return_status returnStatus,
+         s.store_name storeName
+        FROM ord_return_base_info orbi
+        LEFT JOIN
+        st_store AS s ON s.store_id = orbi.store_id
+        WHERE
+          1=1
+    </select>
+
+
+    <select id="findMaReturnOrderListByScreen"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo">
+        SELECT
+        orbi.roid roid,
+        orbi.return_time returnTime,
+        orbi.return_no returnNo,
+        orbi.return_type returnType,
+        orbi.creator_name creatorName,
+        orbi.store_code storeCode,
+        orbi.ord_type orderType,
+        orbi.return_status returnStatus,
+        s.store_name storeName
+        FROM ord_return_base_info orbi
+        LEFT JOIN
+        st_store AS s ON s.store_id = orbi.store_id
+        WHERE
+        1=1
+        <if test="null!=storeId and ''!= storeId">
+            AND
+            s.store_id =#{storeId}
+        </if>
+        <if test=" null!= status and '-1'!=status ">
+            AND
+            orbi.return_status =#{status}
+        </if>
+    </select>
+
+
+    <select id="findMaReturnOrderPageGirdByInfo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo">
+    SELECT
+    orbi.roid roid,
+    orbi.return_time returnTime,
+    orbi.return_no returnNo,
+    orbi.return_type returnType,
+    orbi.creator_name creatorName,
+    orbi.store_code storeCode,
+    orbi.ord_type orderType,
+    orbi.return_status returnStatus,
+    s.store_name storeName
+    FROM ord_return_base_info orbi
+    LEFT JOIN
+    st_store AS s ON s.store_id = orbi.store_id
+    WHERE
+    1=1
+    AND
+    (orbi.ord_no  LIKE CONCAT('%',#{info},'%')
+    OR
+    orbi.return_no  LIKE CONCAT('%',#{info},'%'))
+</select>
+
+    <select id="queryMaReturnOrderByReturnNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderDetailInfo">
+            SELECT
+            orbi.roid,
+            orbi.oid orderId,
+            orbi.ord_no orderNo,
+            orbi.order_time,
+            orbi.return_time,
+            orbi.return_no,
+            orbi.return_type,
+            orbi.return_price,
+            orbi.remarks_info,
+            orbi.creator_id,
+            orbi.creator_name,
+            orbi.creator_identityType,
+            orbi.creator_phone,
+            orbi.store_id storeId,
+            orbi.store_code storeCode,
+            orbi.store_structure_code storeStructureCode,
+            orbi.cus_id customerId,
+            orbi.cus_name customerName,
+            orbi.cus_phone customerPhone,
+            orbi.cus_type customerType,
+            orbi.reason_info,
+            orbi.return_pic,
+            orbi.ord_type orderType,
+            orbi.return_status,
+            s.store_name
+            FROM ord_return_base_info orbi
+            LEFT  JOIN st_store s ON orbi.store_id = s.store_id
+            WHERE
+            return_no = #{returnNo}
+    </select>
+
+
+    <select id="getMaReturnOrderLogisticeInfo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderLogisticInfo">
+        SELECT *
+        FROM ord_return_logistic_info
+        WHERE return_no = #{returnNo};
+    </select>
+
+
+    <select id="getMaReturnOrderGoodsDetails" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods">
+        SELECT
+        ogi.return_qty ,
+        ogi.return_price,
+        ogi.sku_name,
+        ogi.sku
+        FROM
+        ord_return_goods_info AS ogi
+        WHERE
+        ogi.return_no = #{returnNumber}
+    </select>
+
+    <select id="getReturnOrderProductCoupon" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderProductCouponInfo">
+        SELECT
+        orpc.pcid,
+        orpc.sku,
+        orpc.return_qty,
+        orpc.is_return
+        FROM
+        ord_return_product_coupon AS orpc
+        WHERE
+        orpc.return_no = #{returnNumber}
+    </select>
+
+
+    <select id="getMaReturnOrderBillingDetails" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderBillingDetail">
+        SELECT
+        orbd.create_time,
+        orbd.return_pay_type,
+        orbd.return_money
+        FROM
+        ord_return_billing_detail AS orbd
+        WHERE
+        orbd.roid = #{returnBillingID}
+    </select>
+
+
+    <select id="findMaReturnOrderGoodsInfoByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderGoodsInfo">
+        SELECT *
+        FROM ord_return_goods_info
+        WHERE return_no = #{returnNo};
+    </select>
+
+    <select id="findReturnOrderBillingId" parameterType="java.lang.String"
+            resultType="java.lang.Long">
+        SELECT roid
+        FROM ord_return_billing
+        WHERE return_no = #{returnNo};
+    </select>
+
+
+    <update id="updateReturnOrderStatus" parameterType="java.lang.String">
+        Update ord_return_base_info
+        SET return_status =#{status}
+        WHERE return_no = #{returnNumber};
+    </update>
+
+
+    <select id="findReturnOrderGoodsList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
+        SELECT
+        orgi.gid gid,
+        orgi.sku  sku,
+        orgi.sku_name  skuName,
+        orgi.return_qty orderQty,
+        orgi.return_price returnPrice
+        FROM ord_return_goods_info orgi
+        WHERE orgi.return_no = #{returnNumber}
+    </select>
+
+    <select id="findReturnOrderTypeByReturnNumber" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        orli.delivery_type
+        FROM ord_return_logistic_info orli
+        WHERE orli.return_no = #{returnNumber}
+    </select>
+
+    <insert id="saveAppToEbsReturnOrderInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo">
+     INSERT INTO inter_ate_return_order_base_inf (main_return_number,sob_id,return_date,main_order_number,userid,seller_id,diy_site_code,create_time,return_type,deliver_type_title)
+     VALUES (#{mainReturnNumber},#{sobId},#{returnDate},#{mainOrderNumber},#{userId},#{sellerId},#{diySiteCode},#{createTime},#{returnType},#{deliverTypeTitle})
+    </insert>
+
+
+    <select id="findMaStoreReturnOrderAppToEbsInfoByReturnNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo">
+        SELECT
+        rt_header_id,
+        main_return_number,
+        sob_id,
+        return_date,
+        main_order_number
+        FROM inter_ate_return_order_base_inf
+        WHERE main_return_number = #{returnNumber}
+        ORDER BY  create_time DESC
+        limit 1
+     </select>
+
+    <select id="findReturnOrderBillingList" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaOrdReturnBilling">
+        SELECT
+        id,
+      roid,
+      return_no,
+      pre_deposit,
+      credit_money,
+      st_pre_deposit,
+      st_credit_money,
+      st_subvention,
+      online_pay,
+      cash,
+      lb_quantity
+        FROM ord_return_billing orb
+        WHERE orb.return_no = #{returnNumber}
+    </select>
+
+    <insert id="saveReturnOrderBillingDetail"  parameterType="java.util.List">
+        insert into ord_return_billing_detail (create_time, roid, return_pay_type, return_money, into_amount_time,reply_code,refund_number)
+        values
+        <foreach collection="maOrdReturnBillingDetailList" item="item" index="index" separator="," >
+            ( #{item.createTime}, #{item.roid},#{item.returnPayType}, #{item.returnMoney}, #{item.intoAmountTime},
+            #{item.replyCode}, #{item.refundNumber})
+        </foreach>
+    </insert>
+</mapper>

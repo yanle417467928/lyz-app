@@ -54,6 +54,7 @@
         <result property="area" column="area"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
+        <result property="salesManager" column="sales_manager"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -66,8 +67,8 @@
         <result property="storeName" column="store_name"/>
         <result property="storeCode" column="store_code"/>
         <result property="enable" column="enable"/>
-<!--        <result property="credit" column="credit"/>
-        <result property="sponsorship" column="sponsorship"/>-->
+        <!--        <result property="credit" column="credit"/>
+                <result property="sponsorship" column="sponsorship"/>-->
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -75,10 +76,12 @@
         <association property="credit" javaType="DecorativeCompanyCredit">
             <id property="cid" column="cid"/>
             <result property="credit" column="credit"/>
+            <result property="creditLastUpdateTime" column="credit_Last_update_ime"/>
         </association>
         <association property="sponsorship" javaType="DecorativeCompanySubvention">
             <id property="sid" column="sid"/>
             <result property="sponsorship" column="sponsorship"/>
+            <result property="sponsorshipLastUpdateTime" column="sponsorship_last_update_time"/>
         </association>
     </resultMap>
 
@@ -112,7 +115,8 @@
         where s.store_id=#{storeId}
     </select>
 
-    <select id="findStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -124,7 +128,8 @@
          s.store_type!="ZS"
     </select>
 
-    <select id="findAllStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findAllStoresListByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -154,7 +159,7 @@
     </select>
 
 
-   <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
+    <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -185,12 +190,12 @@
         WHERE
         1=1
         <if test="null != cityId">
-        AND
-        c.city_id= #{cityId}
+            AND
+            c.city_id= #{cityId}
         </if>
         <if test="null != enabled">
-        AND
-         s.enable=#{enabled}
+            AND
+            s.enable=#{enabled}
         </if>
         AND
         s.store_type!="ZS"
@@ -211,14 +216,14 @@
         AND
          s.store_type!="ZS"
     </select>
-    
+
     <update id="update">
         UPDATE
-          st_store
+        st_store
         <set>
-          <if test="null != isSelfDelivery">
-             is_self_delivery = #{isSelfDelivery},
-          </if>
+            <if test="null != isSelfDelivery">
+                is_self_delivery = #{isSelfDelivery},
+            </if>
         </set>
         WHERE store_id = #{storeId}
     </update>
@@ -242,7 +247,8 @@
     </select>
 
 
-    <select id="queryDecorativeCompanyVOList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany">
+    <select id="queryDecorativeCompanyVOList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany">
         SELECT
         s.store_name,
         s.store_id as id
@@ -309,7 +315,8 @@
         s.store_type,
         s.store_id,
         s.create_time,
-        c.name
+        c.name,
+        s.sales_manager
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
@@ -318,7 +325,7 @@
          s.store_type="ZS"
     </select>
 
-    <select id="findDecorativeCreditList"  resultMap="decorativeCompanyResultMap">
+    <select id="findDecorativeCreditList" resultMap="decorativeCompanyResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -349,10 +356,12 @@
         s.store_type,
         s.store_id,
         c.name,
-         scm.id as cid,
-         ss.id as sid,
-        scm.credit_limit_available AS credit,
-        ss.balance AS sponsorship
+        scm.id as cid,
+        ss.id as sid,
+        scm.credit_limit_available AS credit ,
+        scm.last_update_time AS credit_Last_update_ime ,
+        ss.balance AS sponsorship,
+        ss.last_update_time AS sponsorship_last_update_time
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
@@ -419,7 +428,8 @@
         DESC
     </select>
 
-    <select id="findCompanyStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
+    <select id="findCompanyStoresListByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name
@@ -441,7 +451,8 @@
         s.store_type = 'ZS'
     </select>
 
-    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
+    <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
         SELECT
         s.store_id,
         s.store_name
@@ -463,7 +474,8 @@
         s.is_self_delivery = TRUE
     </select>
 
-    <select id="findAllStorePredeposit" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
+    <select id="findAllStorePredeposit"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
         SELECT
         sp.id, sp.balance, s.store_name, s.store_id, s.store_code, c.name city, s.store_type
         FROM st_store s
@@ -472,10 +484,10 @@
         WHERE
         (1 = 1)
         <if test="null != cityId and cityId != -1">
-            AND  c.city_id = #{cityId}
+            AND c.city_id = #{cityId}
         </if>
         <if test="null != storeType and storeType != '-1'">
-            AND  s.store_type = #{storeType}
+            AND s.store_type = #{storeType}
         </if>
         <if test="null != keywords and keywords != ''">
             AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
@@ -484,9 +496,10 @@
         ORDER BY s.create_time DESC
     </select>
 
-    <select id="queryStorePredepositByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
+    <select id="queryStorePredepositByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO">
          SELECT
-        sp.id, sp.balance, s.store_name, s.store_id, s.store_code, c.name city, s.store_type
+        sp.id, sp.balance, s.store_name, s.store_id, s.store_code, c.name city, s.store_type,sp.last_update_time
         FROM st_store s
         LEFT JOIN st_pre_deposit sp on sp.store_id = s.store_id
         LEFT JOIN city c ON c.code = s.city_code
@@ -509,10 +522,37 @@
         SET balance = balance + #{money},
         last_update_time = #{lastUpdateTime}
         WHERE store_id = #{storeId}
-          <if test="null != oldUpdateTime">
+        <if test="null != oldUpdateTime">
             AND last_update_time = #{oldUpdateTime}
-          </if>
+        </if>
     </update>
 
+
+    <select id="findStoreByStoreCode" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo">
+        SELECT *
+        FROM st_store
+        WHERE store_code = #{storeCode}
+    </select>
+
+
+    <update id="updateStPreDepositByUserIdAndVersion">
+        UPDATE st_pre_deposit
+        SET
+        balance = #{money}
+        WHERE
+        store_id = #{userId}
+        AND last_update_time = #{version}
+    </update>
+
+
+    <insert id="saveStorePreDepositLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
+        INSERT INTO st_pre_deposit_log
+        (create_time, change_money, remarks, change_type, store_id, operator_id, operator_type,
+        operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number)
+        VALUES
+        (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{storeId}, #{operatorId}, #{operatorType},
+        #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+    </insert>
 
 </mapper>

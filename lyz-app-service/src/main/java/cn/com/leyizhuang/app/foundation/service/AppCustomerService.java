@@ -131,4 +131,6 @@ public interface AppCustomerService {
     CustomerProfession findCustomerProfessionByTitle(String customerProfession);
 
     void unbindingCustomerWeChat(Long userId);
+
+    SupportHotlineResponse getCustomerSupportHotline(Long userId);
 }

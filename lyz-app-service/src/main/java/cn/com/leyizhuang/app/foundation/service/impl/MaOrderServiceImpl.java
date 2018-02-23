@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
-import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -15,36 +14,23 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
-import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
@@ -52,13 +38,11 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -256,10 +240,6 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) {
-        Date date = new Date();
-        if (null == maOrderTempInfo || null == maOrderTempInfo.getCityId()) {
-            throw new RuntimeException("该订单城市ID为空,无法更新城市库存");
-        }
         if (null == maOrderTempInfo || null == maOrderTempInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
@@ -267,8 +247,10 @@ public class MaOrderServiceImpl implements MaOrderService {
         this.updateOrderStatus(orderNumber);
         //查询该订单下的所有商品
         List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber);
-        //生成出货记录
+
+        Date date = new Date();
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
+            //生成出货记录
             GoodsShippingInfo goodsShippingInfo = new GoodsShippingInfo();
             goodsShippingInfo.setStore(maOrderTempInfo.getStoreCode());
             goodsShippingInfo.setCity(maOrderTempInfo.getCityName());
@@ -284,66 +266,27 @@ public class MaOrderServiceImpl implements MaOrderService {
             goodsShippingInfo.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.toString());
             goodsShippingInfo.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.getDescription());
             maGoodsDAO.saveGoodsShippingInfo(goodsShippingInfo);
-        }
-
-        //更新城市和门店库存及生成日志信息
-        for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
-            //查看门店下 该商品的库存
+            //更新门店库存
+            //查看门店下该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid());
             if (null == storeInventory || null == storeInventory.getAvailableIty()) {
                 throw new RuntimeException("该门店下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
             }
-            if (storeInventory.getAvailableIty() < maOrderGoodsInfo.getOrderQty()) {
+            if (storeInventory.getRealIty() < maOrderGoodsInfo.getOrderQty()) {
                 throw new RuntimeException("门店下该商品库存不足,无法发货,商品id:" + maOrderGoodsInfo.getGid());
             }
-            //查看城市下 该商品的库存
-            MaCityInventory maCityInventory = maCityInventoryService.findCityInventoryByCityIdAndGoodsId(maOrderTempInfo.getCityId(), maOrderGoodsInfo.getGid());
-            if (null == maCityInventory || null == maCityInventory.getAvailableIty()) {
-                throw new RuntimeException("该城市下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
-            }
-            if (maCityInventory.getAvailableIty() < maOrderGoodsInfo.getOrderQty()) {
-                throw new RuntimeException("城市下该商品库存不足,无法发货,商品id:" + maOrderGoodsInfo.getGid());
-            }
-
             //更新门店库存数量
-            Integer goodsQtyAfterChange = storeInventory.getAvailableIty() - maOrderGoodsInfo.getOrderQty();
-            maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, date);
-
-            //更新城市库存数量
-            Integer cityQtyAfterChange = maCityInventory.getAvailableIty() - maOrderGoodsInfo.getOrderQty();
-            maCityInventoryService.updateCityInventory(maOrderTempInfo.getCityId(), maOrderGoodsInfo.getGid(), cityQtyAfterChange, date);
-
-            //增加门店库存变更日志
-            MaStoreInventoryChange storeInventoryChange = new MaStoreInventoryChange();
-            storeInventoryChange.setCityId(maOrderTempInfo.getCityId());
-            storeInventoryChange.setCityName(maOrderTempInfo.getCityName());
-            storeInventoryChange.setStoreId(maOrderTempInfo.getStoreId());
-            storeInventoryChange.setStoreCode(maOrderTempInfo.getStoreCode());
-            storeInventoryChange.setReferenceNumber(maOrderTempInfo.getOrderNumber());
-            storeInventoryChange.setGid(maOrderGoodsInfo.getGid());
-            storeInventoryChange.setSku(maOrderGoodsInfo.getSku());
-            storeInventoryChange.setSkuName(maOrderGoodsInfo.getSkuName());
-            storeInventoryChange.setChangeTime(date);
-            storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
-            storeInventoryChange.setChangeQty(maOrderGoodsInfo.getOrderQty());
-            storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER);
-            storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.getDescription());
-            maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
-
-            //增加库存库存变更日志
-            MaCityInventoryChange cityInventoryChange = new MaCityInventoryChange();
-            cityInventoryChange.setCityId(maOrderTempInfo.getCityId());
-            cityInventoryChange.setCityName(maOrderTempInfo.getCityName());
-            cityInventoryChange.setReferenceNumber(maOrderTempInfo.getOrderNumber());
-            cityInventoryChange.setGid(maOrderGoodsInfo.getGid());
-            cityInventoryChange.setSku(maOrderGoodsInfo.getSku());
-            cityInventoryChange.setSkuName(maOrderGoodsInfo.getSkuName());
-            cityInventoryChange.setChangeTime(date);
-            cityInventoryChange.setAfterChangeQty(cityQtyAfterChange);
-            cityInventoryChange.setChangeQty(maOrderGoodsInfo.getOrderQty());
-            cityInventoryChange.setChangeType(CityInventoryAvailableQtyChangeType.SELF_TAKE_ORDER);
-            cityInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER.getDescription());
-            maCityInventoryService.addInventoryChangeLog(cityInventoryChange);
+            Integer goodsQtyAfterChange = storeInventory.getRealIty() - maOrderGoodsInfo.getOrderQty();
+            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, maOrderGoodsInfo.getLastUpdateTime());
+                if (affectLine > 0) {
+                    break;
+                } else {
+                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    }
+                }
+            }
         }
         //生成ebs接口表数据
         MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
@@ -364,6 +307,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         MaOrderReceiveInf maOrderReceiveInf = this.maOrderDAO.queryOrderReceiveInf(orderNumber);
         return maOrderReceiveInf;
     }
+
 
     @Override
     public void sendOrderReceiveInfAndRecord(String orderNumber) {
@@ -415,6 +359,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public Boolean isPayUp(String orderNumber) {
         return this.maOrderDAO.isPayUp(orderNumber);
+    }
+
+    @Override
+    public String getShippingTime(String orderNumber) {
+        System.out.println(orderNumber);
+        return this.maOrderDAO.getShippingTime(orderNumber);
     }
 
     @Override
@@ -507,21 +457,20 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) {
+        //更新订单支付信息
+        this.orderReceivables(maOrderAmount);
+        //得到导购id
+        Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
+        if (null == sellerId) {
+            throw new RuntimeException("该订单导购ID为空");
+        }
+        //得到该销售的可用额度
+        GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
+        BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
+        //更改该销售的可用额度
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            //更新订单支付信息
-            this.orderReceivables(maOrderAmount);
-            //得到导购id
-            Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
-            if (null == sellerId) {
-                throw new RuntimeException("该订单导购ID为空");
-            }
-            //得到该销售的可用额度
-            GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
-            BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
-            //更改该销售的可用额度
-            Date updateTime = guideCreditMoney.getLastUpdateTime();
-            if (updateTime.equals(lastUpdateTime)) {
-                maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney);
+            int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, lastUpdateTime);
+            if (affectLine > 0) {
                 //生成信用金额变成日志
                 GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
                 guideCreditMoneyDetail.setEmpId(sellerId);
@@ -884,7 +833,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                     List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
 
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                        returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
+                        returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
                     }
                     returnOrderBaseInfo.setReturnPrice(returnPrice);
                     returnOrderBaseInfo.setRemarksInfo(null);
@@ -1090,7 +1039,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                 //返还预存款后门店预存款金额
                                 Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                                 //修改门店预存款
-                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getSalesConsultId(), storePreDeposit.getLastUpdateTime());
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //记录门店预存款变更日志
                                     StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -1166,7 +1115,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                 //返还预存款后门店预存款金额
                                 Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                                 //修改门店预存款
-                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getCreatorId(), storePreDeposit.getLastUpdateTime());
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //记录门店预存款变更日志
                                     StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -1351,4 +1300,9 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     }
 
+
+    @Override
+    public List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber) {
+        return maOrderDAO.findPaymentDataByOrderNo(orderNumber);
+    }
 }

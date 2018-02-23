@@ -60,7 +60,7 @@ public class StorePreDepositLogServiceImpl implements StorePreDepositLogService 
     }
 
     @Override
-    public Integer updateStPreDepositByUserIdAndVersion(Double money, Long userId, Date version) {
-        return storePreDepositLogDAO.updateStPreDepositByUserIdAndVersion(money, userId, version);
+    public Integer updateStPreDepositByStoreIdAndVersion(Double money, Long userId, Date version) {
+        return storePreDepositLogDAO.updateStPreDepositByStoreIdAndVersion(money, userId, version);
     }
 }

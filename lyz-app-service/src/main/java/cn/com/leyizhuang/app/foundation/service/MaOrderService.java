@@ -3,10 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
@@ -205,6 +202,8 @@ public interface MaOrderService {
      */
     Boolean isPayUp(String orderNumber);
 
+
+    String getShippingTime(String orderNumber);
     /**
      * 查询订单审核状态
      *
@@ -264,7 +263,7 @@ public interface MaOrderService {
     Long querySellerIdByOrderNumber(String orderNumber);
 
 
-    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO,Date lastUpdateTime);
+    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime);
 
     /**
      * 后台买券订单创建订单账单信息
@@ -344,4 +343,10 @@ public interface MaOrderService {
     void scanningUnpaidOrder();
 
 
+    /**
+     * 查询该订单的支付信息
+     * @param orderNumber
+     * @return
+     */
+    List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
 }

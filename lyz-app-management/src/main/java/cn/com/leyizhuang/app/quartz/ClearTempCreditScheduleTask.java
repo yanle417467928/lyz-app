@@ -13,9 +13,8 @@ public class ClearTempCreditScheduleTask implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println(new Date() + ": 清除临时额度");
+        System.out.println(new Date() + ": 执行清除临时额度任务");
         MaEmpCreditMoneyService maEmpCreditMoneyService = (MaEmpCreditMoneyService) ApplicationContextUtil.getBean("maEmpCreditMoneyService");
         maEmpCreditMoneyService.autoClearTempCreditMoney();
     }
-
 }

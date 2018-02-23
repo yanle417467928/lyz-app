@@ -146,4 +146,6 @@ public interface AppCustomerDAO {
     CustomerProfession findCustomerProfessionByTitle(String customerProfession);
 
     void unbindingCustomerWeChat(Long userId);
+
+    String getCustomerSupportHotline(Long userId);
 }

@@ -2,20 +2,22 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
+import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.foundation.dto.PhotoOrderDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
-import cn.com.leyizhuang.app.foundation.service.MaGoodsCategoryService;
-import cn.com.leyizhuang.app.foundation.service.MaGoodsService;
-import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
-import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderService;
+import cn.com.leyizhuang.app.foundation.pojo.response.VerifyCodeResponse;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
+import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -26,6 +28,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -52,6 +56,12 @@ public class MaPhotoOrderRestController extends BaseRestController{
 
     @Autowired
     private MaMaterialListService maMaterialListService;
+
+    @Autowired
+    private SmsAccountServiceImpl smsAccountService;
+
+    @Autowired
+    private MaPhotoOrderGoodsService maPhotoOrderGoodsService;
 
     /**
      * @title   获取拍照下单列表
@@ -91,8 +101,19 @@ public class MaPhotoOrderRestController extends BaseRestController{
         }
     }
 
+    /**
+     * @title   获取商品分类
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/22
+     */
     @GetMapping(value = "/findCategory")
     public ResultDTO<Object> findCategory(String categoryCode, Long id) {
+        logger.info("findCategory,获取商品分类，入参 categoryCode:{} id:{}", categoryCode, id);
+
         Map<String, Object> returnMap = new HashMap(2);
         List<GoodsCategoryDO> goodsCategoryDOList = this.maGoodsCategoryService.findGoodsCategoryByPCategoryCode(categoryCode);
         if (null == goodsCategoryDOList) {
@@ -119,8 +140,18 @@ public class MaPhotoOrderRestController extends BaseRestController{
         }
     }
 
+    /**
+     * @title   获取商品
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/22
+     */
     @GetMapping(value = "/findGoods")
     public ResultDTO<Object> findGoods(Long categoryId, Long id) {
+        logger.info("findGoods,获取商品，入参 categoryId:{} id:{}", categoryId, id);
         List<Long> cids = new ArrayList<>();
         cids.add(categoryId);
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findById(id);
@@ -141,9 +172,18 @@ public class MaPhotoOrderRestController extends BaseRestController{
         }
     }
 
-
+    /**
+     * @title 保存拍照下单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/22
+     */
     @PostMapping(value = "/save")
-    public ResultDTO<String> savePhotoOrder(@Valid PhotoOrderDTO photoOrderDTO, BindingResult result) {
+    public ResultDTO<Object> savePhotoOrder(@Valid PhotoOrderDTO photoOrderDTO, BindingResult result) {
+        logger.info("savePhotoOrder,保存拍照下单，入参 categoryId:{}", photoOrderDTO);
         if (!result.hasErrors()) {
             if (null != photoOrderDTO && null != photoOrderDTO.getPhotoId() && null != photoOrderDTO.getCombList() && photoOrderDTO.getCombList().size() > 0){
                 //查询拍照订单信息
@@ -155,6 +195,7 @@ public class MaPhotoOrderRestController extends BaseRestController{
                     List<MaterialListDO> combList = photoOrderDTO.getCombList();
                     List<MaterialListDO> materialListSave = new ArrayList<>();
                     List<MaterialListDO> materialListUpdate = new ArrayList<>();
+                    List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
                     for (MaterialListDO materialListDO: combList) {
                         GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
                         if (null != goodsDO){
@@ -171,9 +212,47 @@ public class MaPhotoOrderRestController extends BaseRestController{
                                 materialList.setQty(materialList.getQty() + materialListDO.getQty());
                                 materialListUpdate.add(materialList);
                             }
+
+                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                            photoOrderGoodsDO.setGid(goodsDO.getGid());
+                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setPhotoOrderNo(photoOrderVO.getPhotoOrderNo());
+                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
                         }
                     }
+                    this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
                     this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
+
+                    //短信提醒
+                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";
+                    String content;
+                    try {
+                        content = URLEncoder.encode(info, "GB2312");
+                        System.err.println(content);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", null);
+                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.warn("{}", e);
+                        return resultDTO;
+                    }
+                    SmsAccount account = smsAccountService.findOne();
+                    String returnCode;
+                    try {
+                        returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), photoOrderVO.getUserMobile(), content);
+                    } catch (IOException e) {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，提醒短信发送失败！", null);
+                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.warn("{}", e);
+                        return resultDTO;
+                    } catch (Exception e) {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", null);
+                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.warn("{}", e);
+                        return resultDTO;
+                    }
+
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 }
             }
@@ -186,8 +265,18 @@ public class MaPhotoOrderRestController extends BaseRestController{
         }
     }
 
+    /**
+     * @title   批量取消拍照下单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/22
+     */
     @DeleteMapping
     public ResultDTO<?> dataResourceDelete(Long[] ids) {
+        logger.info("dataResourceDelete,批量取消拍照下单，入参 ids:{}", ids);
         try {
             int num = this.maPhotoOrderService.batchDelete(ids);
             if (num > 0) {
@@ -208,8 +297,18 @@ public class MaPhotoOrderRestController extends BaseRestController{
         }
     }
 
+    /**
+     * @title   取消拍照下单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/22
+     */
     @PostMapping(value = "/delete")
     public ResultDTO<?> dataResourceDeleteOne(Long photoId) {
+        logger.info("dataResourceDeleteOne,取消拍照下单，入参 photoId:{}", photoId);
         try {
             Long[] ids = {photoId};
             int num = this.maPhotoOrderService.batchDelete(ids);

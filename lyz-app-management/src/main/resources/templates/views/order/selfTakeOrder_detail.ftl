@@ -40,14 +40,14 @@
                 <div class="col-sm-2">
                     <b>订单状态:</b>
                     <spanp style="color: red;font-weight:bold">
-                    <#if maOrderDetail.orderStatus = 'UNPAID'>待付款
-                    <#elseif maOrderDetail.orderStatus = 'PENDING_SHIPMENT'>待发货
-                    <#elseif maOrderDetail.orderStatus = 'PENDING_RECEIVE'>待收货
-                    <#elseif maOrderDetail.orderStatus = 'FINISHED'>已完成
-                    <#elseif maOrderDetail.orderStatus = 'CLOSED'>已结案
-                    <#elseif maOrderDetail.orderStatus = 'CANCELED'>已取消
-                    <#elseif maOrderDetail.orderStatus = 'REJECTED'>拒签
-                    <#elseif maOrderDetail.orderStatus = 'CANCELING'>取消中
+                    <#if maOrderDetail.orderStatus == 'UNPAID'>待付款
+                    <#elseif maOrderDetail.orderStatus == 'PENDING_SHIPMENT'>待发货
+                    <#elseif maOrderDetail.orderStatus == 'PENDING_RECEIVE'>待收货
+                    <#elseif maOrderDetail.orderStatus == 'FINISHED'>已完成
+                    <#elseif maOrderDetail.orderStatus == 'CLOSED'>已结案
+                    <#elseif maOrderDetail.orderStatus == 'CANCELED'>已取消
+                    <#elseif maOrderDetail.orderStatus == 'REJECTED'>拒签
+                    <#elseif maOrderDetail.orderStatus == 'CANCELING'>取消中
                     </#if>
                     </spanp>
                 </div>
@@ -136,7 +136,7 @@
                                     <td>
                                         <div>
                                             <span>
-                                            ${maOrderDetail.shipTime!""}
+                                            <#if shippingTime??> ${shippingTime?string("yyyy-MM-dd HH:mm:ss")!""}</#if>
                                             </span>
                                         </div>
                                     </td>
@@ -232,14 +232,14 @@
                                     <#list paymentDetailList as paymentDetail>
                                     <tr>
                                         <td align="center">${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</td>
-                                        <td><#if paymentDetail.paymentType = 'CUS_PREPAY'>
-                                            顾客预存款<#elseif paymentDetail.paymentType = 'ST_PREPAY'>
-                                            门店预存款<#elseif paymentDetail.paymentType = 'ALIPAY'>
-                                            支付宝<#elseif paymentDetail.paymentType = 'WE_CHAT'>
-                                            微信<#elseif paymentDetail.paymentType = 'UNION_PAY'>
-                                            银联<#elseif paymentDetail.paymentType = 'POS'>
-                                            POS<#elseif paymentDetail.paymentType = 'CASH'>
-                                            现金<#elseif paymentDetail.paymentType = 'OTHER'>门店其它</#if></td>
+                                        <td><#if paymentDetail.paymentType == 'CUS_PREPAY'>
+                                            顾客预存款<#elseif paymentDetail.paymentType == 'ST_PREPAY'>
+                                            门店预存款<#elseif paymentDetail.paymentType == 'ALIPAY'>
+                                            支付宝<#elseif paymentDetail.paymentType == 'WE_CHAT'>
+                                            微信<#elseif paymentDetail.paymentType == 'UNION_PAY'>
+                                            银联<#elseif paymentDetail.paymentType == 'POS'>
+                                            POS<#elseif paymentDetail.paymentType == 'CASH'>
+                                            现金<#elseif paymentDetail.paymentType == 'OTHER'>门店其它</#if></td>
                                         <td align="center">${paymentDetail.amount!'0.00'}</td>
                                     </tr>
                                     </#list>
@@ -485,7 +485,7 @@
                     validators: {
                         notEmpty: {
                             message: '流水号不允许为空'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '流水号长度必须在1~10位之间'
@@ -508,8 +508,8 @@
         });
         $("#confirmSubmit").click(function () {
             var isPayUp = $('#isPayUp').val();
-            if('true'==isPayUp){
-               return false;
+            if ('true' == isPayUp) {
+                return false;
             }
             var bv = form.data('bootstrapValidator');
             bv.validate();
@@ -591,7 +591,7 @@
     function judgmentVerification(data) {
         var orderNumber = $("#orderNumber").val();
         var code = $("#code").val();
-        if(null==code||''==code||6!=code.length){
+        if (null == code || '' == code || 6 != code.length) {
             return false;
         }
         $.ajax({

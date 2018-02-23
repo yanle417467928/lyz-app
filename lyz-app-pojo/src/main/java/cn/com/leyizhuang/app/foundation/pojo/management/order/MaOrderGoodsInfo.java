@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.pojo.management.order;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * 订单商品信息
  *
@@ -28,4 +30,6 @@ public class MaOrderGoodsInfo {
     private BigDecimal returnPrice;
     //商品金额
     private BigDecimal settlementPrice;
+    //商品库存上次更新时间
+    private Date lastUpdateTime;
 }

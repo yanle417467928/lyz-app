@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
@@ -21,7 +22,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +45,8 @@ public class MaOrderViewController {
     private MaOrderService maOrderService;
     @Resource
     private MaEmpCreditMoneyService maEmpCreditMoneyService;
+    @Resource
+    private MaStoreInventoryService maStoreInventoryService;
 
     /**
      * 返回门店订单列表页
@@ -244,6 +251,18 @@ public class MaOrderViewController {
         if (!StringUtils.isBlank(orderNumber)) {
             //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            //查询出货时间
+            String  time = maOrderService.getShippingTime(orderNumber);
+            logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 time:{}", time);
+            if(null!=time){
+                try{
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date shippingTime  =sdf.parse(time);
+                    map.addAttribute("shippingTime", shippingTime);
+                } catch (ParseException e) {
+                    logger.info("出货日期转换错误");
+                }
+            }
             if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
@@ -265,6 +284,7 @@ public class MaOrderViewController {
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
                 Boolean isPayUp = maOrderService.isPayUp(orderNumber);
                 map.addAttribute("isPayUp", isPayUp);
+                logger.info("selfTakeOrderDetail CALLED,门店订单详情成功");
                 return "/views/order/selfTakeOrder_detail";
             } else {
                 logger.warn("该订单不为门店自提");
@@ -300,7 +320,7 @@ public class MaOrderViewController {
             //查询订单是否还清
             Boolean isPayUp = maOrderService.isPayUp(orderNumber);
             //查询审核状态
-            String auditStatus =  maOrderService.queryAuditStatus(orderNumber);
+            String auditStatus = maOrderService.queryAuditStatus(orderNumber);
             //查询订单商品信息
             List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
             //获取订单账目明细
@@ -315,13 +335,13 @@ public class MaOrderViewController {
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
-                map.addAttribute("type",1);
+                map.addAttribute("type", 1);
             } else if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaCompanyOrderDetailResponse maCompanyOrderDetailResponse = maOrderService.findMaCompanyOrderDetailByOrderNumber(orderNumber);
                 maCompanyOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maCompanyOrderDetailResponse);
-                map.addAttribute("type",2);
+                map.addAttribute("type", 2);
             }
             if (null != maOrderBillingDetailResponse) {
                 map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);

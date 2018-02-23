@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
@@ -9,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -79,4 +81,9 @@ public interface MaCustomerDAO {
      * @param light
      */
     void updateLight(@Param("cusIdList") List<Long> cusIdList , @Param("light") String light);
+
+    Integer updateDepositByUserIdAndVersion(@Param("userId") Long userId, @Param("deposit") Double customerDeposit,@Param("version")Date version);
+
+    void saveCusPreDepositLog(MaCustomerPreDeposit customerPreDeposit);
+
 }

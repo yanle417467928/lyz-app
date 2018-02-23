@@ -8,6 +8,6 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
  */
 public interface QuickOrderRelationService {
 
-    GoodsDO findByNumber(String number);
+    GoodsDO findByNumber(Long userId, Integer identityType, String number);
 
 }

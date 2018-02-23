@@ -102,7 +102,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public PageInfo<AppCustomer> findListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
+    public PageInfo<AppCustomer> findListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (null != userId && null != identityType && identityType == 0) {
             PageHelper.startPage(page, size);
             List<AppCustomer> appCustomerList = customerDAO.findListBySalesConsultId(userId);
@@ -476,7 +476,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public List<CustomerCashCoupon> findCashCouponsByids(List<Long> cashCouponList) {
-        if (AssertUtil.isNotEmpty(cashCouponList)){
+        if (AssertUtil.isNotEmpty(cashCouponList)) {
             return customerDAO.findCashCouponsByids(cashCouponList);
         }
         return null;
@@ -484,7 +484,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public CustomerProfession findCustomerProfessionByTitle(String customerProfession) {
-        if (StringUtils.isNotBlank(customerProfession)){
+        if (StringUtils.isNotBlank(customerProfession)) {
             return customerDAO.findCustomerProfessionByTitle(customerProfession);
         }
         return null;
@@ -542,7 +542,18 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         this.cusPreDepositLogServiceImpl.save(log);
     }
 
-    public void preDepositWithdraw(){
+    public void preDepositWithdraw() {
 
+    }
+
+
+    @Override
+    public SupportHotlineResponse getCustomerSupportHotline(Long userId) {
+        String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
+        SupportHotlineResponse supportHotlineResponse = new SupportHotlineResponse();
+        if(null !=sellerMobile){
+            supportHotlineResponse.setSellerMobile(sellerMobile);
+        }
+        return supportHotlineResponse;
     }
 }

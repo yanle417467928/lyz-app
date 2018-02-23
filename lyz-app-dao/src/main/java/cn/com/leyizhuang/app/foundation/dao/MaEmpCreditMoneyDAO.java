@@ -5,13 +5,14 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 @Repository
 public interface MaEmpCreditMoneyDAO {
 
-    void update(GuideCreditMoney guideCreditMoneyVO);
+    Integer update(GuideCreditMoney guideCreditMoneyVO);
 
-    void  updateGuideCreditMoneyByRepayment(@Param(value = "sellerId") Long sellerId, @Param(value = "availableCreditMoney") BigDecimal availableCreditMoney);
+    int  updateGuideCreditMoneyByRepayment(@Param(value = "sellerId") Long sellerId, @Param(value = "availableCreditMoney") BigDecimal availableCreditMoney,@Param(value = "lastUpdateTime")Date lastUpdateTime);
 
     void clearTempCreditLimit(Long id);
 

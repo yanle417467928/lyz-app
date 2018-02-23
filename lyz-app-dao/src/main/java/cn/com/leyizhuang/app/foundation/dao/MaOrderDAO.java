@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -179,6 +181,8 @@ public interface MaOrderDAO {
 
     Boolean isPayUp(String orderNo);
 
+    String getShippingTime(String orderNo);
+
     String queryAuditStatus(String orderNumber);
 
     void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
@@ -203,4 +207,7 @@ public interface MaOrderDAO {
      * @return
      */
     List<OrderBaseInfo> scanningUnpaidOrder();
+
+    List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
+
 }

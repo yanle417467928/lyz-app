@@ -67,11 +67,11 @@
         </dependency>
 
         <!-- 依赖API模块 -->
-        <dependency>
+<!--        <dependency>
             <groupId>cn.com.leyizhuang</groupId>
             <artifactId>lyz-app-api</artifactId>
             <version>${lyz-app-api.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- 持久层：Spring Boot MyBatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -119,6 +119,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- freemarker -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
         <!--热部署-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

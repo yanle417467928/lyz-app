@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+
 /**
  * @author GenerationRoad
  * @date 2018/1/8
@@ -25,6 +27,8 @@ public class CustomerPreDepositVO {
     private String mobile;
     //当前余额
     private String balance = "0.00";
+    //上次更新时间
+    private Timestamp lastUpdateTime;
 
     public void setBalance(String balance){
         if (null != balance){

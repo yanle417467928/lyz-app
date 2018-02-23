@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderPhotoDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
@@ -8,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +69,11 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         this.maOrderPhotoDAO.updateStatus(photoId,status);
         //加入下料清单
         this.maMaterialListService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+        //修改处理人ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != shiroUser) {
+            this.maOrderPhotoDAO.updateOperationUserId(shiroUser.getId(), photoId);
+        }
     }
 
     @Override

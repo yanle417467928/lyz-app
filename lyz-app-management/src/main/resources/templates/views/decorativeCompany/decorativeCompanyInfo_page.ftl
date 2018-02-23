@@ -85,6 +85,9 @@
                             <b>公司名称</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
+                            <b>销售经理</b> <a class="pull-right" id="salesManager"></a>
+                        </li>
+                        <li class="list-group-item">
                             <b>是否启用</b> <a class="pull-right" id="enable"></a>
                         </li>
                         <li class="list-group-item">
@@ -250,6 +253,13 @@
                                 } else {
                                     $('#createTime').html(formatDateTime(data.createTime));
                                 }
+
+                                if (null === data.salesManager) {
+                                    $('#salesManager').html('-');
+                                } else {
+                                    $('#salesManager').html(data.salesManager);
+                                }
+
 
                                 $('#information').modal();
                             } else {

@@ -28,6 +28,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ import java.util.*;
  */
 @Service
 public class ReturnOrderServiceImpl implements ReturnOrderService {
+    private static final Logger logger = LoggerFactory.getLogger(ReturnOrderServiceImpl.class);
     @Resource
     private ReturnOrderDAO returnOrderDAO;
     @Resource
@@ -350,7 +352,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
+                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
             }
             returnOrderBaseInfo.setReturnPrice(returnPrice);
             returnOrderBaseInfo.setRemarksInfo(remarksInfo);
@@ -569,7 +571,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
-                        Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
+                        Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店预存款变更日志
                             StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -645,7 +647,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
-                        Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
+                        Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店预存款变更日志
                             StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -843,6 +845,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             return maps;
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("异常错误",e);
             maps.put("code", "FAILURE");
             return maps;
         }
@@ -876,7 +879,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
+                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
             }
             returnOrderBaseInfo.setReturnPrice(returnPrice);
             returnOrderBaseInfo.setRemarksInfo(remarksInfo);
@@ -1055,7 +1058,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
-                        Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
+                        Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店预存款变更日志
                             StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -1134,7 +1137,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
-                        Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, userId, storePreDeposit.getLastUpdateTime());
+                        Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店预存款变更日志
                             StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();

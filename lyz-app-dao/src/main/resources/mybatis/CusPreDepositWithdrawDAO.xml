@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO">
+
+    <sql id="ALL_FIELDS">
+            id, apply_no, create_time, apply_cus_id, apply_cus_name, apply_cus_phone, account_type,
+          account, withdraw_amount, status, check_id, check_name, check_code
+    </sql>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+        insert into cus_pre_deposit_withdraw ( apply_no, create_time,
+      apply_cus_id, apply_cus_name, apply_cus_phone,
+      account_type, account, withdraw_amount,
+      status, check_id, check_name,
+      check_code)
+    values ( #{applyNo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{applyCusId,jdbcType=BIGINT}, #{applyCusName,jdbcType=VARCHAR}, #{applyCusPhone,jdbcType=VARCHAR},
+      #{accountType,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{withdrawAmount,jdbcType=DOUBLE},
+      #{status,jdbcType=VARCHAR}, #{checkId,jdbcType=BIGINT}, #{checkName,jdbcType=VARCHAR},
+      #{checkCode,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+
+        update cus_pre_deposit_withdraw
+        <set >
+            <if test="applyNo != null" >
+                apply_no = #{applyNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyCusId != null" >
+                apply_cus_id = #{applyCusId,jdbcType=BIGINT},
+            </if>
+            <if test="applyCusName != null" >
+                apply_cus_name = #{applyCusName,jdbcType=VARCHAR},
+            </if>
+            <if test="applyCusPhone != null" >
+                apply_cus_phone = #{applyCusPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="accountType != null" >
+                account_type = #{accountType,jdbcType=VARCHAR},
+            </if>
+            <if test="account != null" >
+                account = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="withdrawAmount != null" >
+                withdraw_amount = #{withdrawAmount,jdbcType=DOUBLE},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="checkId != null" >
+                check_id = #{checkId,jdbcType=BIGINT},
+            </if>
+            <if test="checkName != null" >
+                check_name = #{checkName,jdbcType=VARCHAR},
+            </if>
+            <if test="checkCode != null" >
+                check_code = #{checkCode,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE cus_pre_deposit_withdraw
+        status = #{status}
+        where apply_no = #{applyNo}
+    </update>
+
+    <select id="findById" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+
+        SELECT
+        <include refid="ALL_FIELDS"></include>
+        FROM cus_pre_deposit_withdraw
+        where id = #{id}
+    </select>
+
+    <select id="findByApplyNo" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+        SELECT
+        <include refid="ALL_FIELDS"></include>
+        FROM cus_pre_deposit_withdraw
+        where apply_no = #{applyNo}
+    </select>
+
+    <select id="findByKeywords" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+        SELECT
+        <include refid="ALL_FIELDS"></include>
+        FROM cus_pre_deposit_withdraw
+        WHERE 1=1
+        <if test="keywords != null">
+            and (apply_cus_name LIKE concat("%",#{keywords},"%") or apply_cus_phone like concat(#{keywords},"%"))
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </select>
+</mapper>

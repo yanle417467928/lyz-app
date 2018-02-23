@@ -101,9 +101,15 @@ public interface AppSeparateOrderDAO {
                                                       @Param(value = "sendTime") Date sendTime,
                                                       @Param(value = "flag") AppWhetherFlag flag);
 
+
+    void updateReturnOrderFlagAndSendTimeAndErrorMsg(@Param(value = "rtHeaderId") Long rtHeaderId,
+                                                      @Param(value = "msg") String msg,
+                                                      @Param(value = "sendTime") Date sendTime,
+                                                      @Param(value = "flag") AppWhetherFlag flag);
+
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
-
+    //分退单号
     void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
 
     void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf);

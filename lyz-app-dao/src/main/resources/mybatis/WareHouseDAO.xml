@@ -13,11 +13,11 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.WareHouseDO">
         SELECT
             id,
-            wh_no,
-            wh_name,
-            city_id,
-            city_name,
-            type
+            wh_no     wareHouseNo,
+            wh_name   wareHouseName,
+            city_id   cityId,
+            city_name cityName,
+            type      type
         FROM warehouse
         WHERE wh_no = #{whNo};
     </select>

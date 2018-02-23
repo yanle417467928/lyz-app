@@ -13,6 +13,8 @@ public interface MaStoreInventoryService {
 
     MaStoreInventory findStoreInventoryByStoreCodeAndGoodsId(Long storeId,Long goodsId);
 
-    void updateStoreInventory(Long storeId,Long goodsId,Integer goodsQty,Date date);
+    int updateStoreInventory(Long storeId,Long goodsId,Integer goodsQty,Date date);
+
+    int updateStoreInventoryAndAvailableIty(Long storeId,Long goodsId,Integer goodsQty,Integer goodsAvailableIty,Date date);
 }
 

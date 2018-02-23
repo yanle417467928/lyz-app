@@ -3,10 +3,7 @@ package cn.com.leyizhuang.app.remote.queue;
 import cn.com.leyizhuang.app.core.utils.JsonUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
-import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
-import cn.com.leyizhuang.app.foundation.service.MaOrderService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -35,6 +32,9 @@ public class SinkReceiver {
     private ItyAllocationService ityAllocationService;
     @Resource
     private MaOrderService maOrderService;
+
+    @Resource
+    private MaReturnOrderService maReturnOrderService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -154,6 +154,20 @@ public class SinkReceiver {
                     // 门店自提单发货
                     log.info("门店自提单发货队列消费开始");
                     maOrderService.sendOrderReceiveInfAndRecord(orderNumber);
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
+            case RETURN_ORDER_RECEIPT:
+                try {
+                    String returnNumber = objectMapper.readValue(message.getContent(), String.class);
+                    // 门店退货单收货(自提单)
+                    log.info("门店自提单收货发货队列消费开始");
+                    maReturnOrderService.sendReturnOrderReceiptInfAndRecord(returnNumber);
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();

@@ -25,4 +25,6 @@ public interface MaOrderPhotoDAO {
 
     int batchDelete(@Param("array")Long[] ids);
 
+    int updateOperationUserId(@Param("userId") Long userId, @Param("id") Long id);
+
 }

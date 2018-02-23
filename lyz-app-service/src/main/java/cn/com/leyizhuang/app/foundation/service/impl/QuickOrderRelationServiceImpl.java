@@ -17,7 +17,7 @@ public class QuickOrderRelationServiceImpl implements QuickOrderRelationService 
     private QuickOrderRelationDAO quickOrderRelationDAO;
 
     @Override
-    public GoodsDO findByNumber(String number) {
-        return this.quickOrderRelationDAO.findByNumber(number);
+    public GoodsDO findByNumber(Long userId, Integer identityType, String number) {
+        return this.quickOrderRelationDAO.findByNumber(userId, identityType, number);
     }
 }

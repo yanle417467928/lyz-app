@@ -68,6 +68,8 @@ public interface AppSeparateOrderService {
 
     void updateOrderReceiveFlagAndSendTimeAndErrorMsg(Long receiveInfsId, String msg, Date sendTime, AppWhetherFlag flag);
 
+    void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long rtHeaderId, String msg, Date sendTime, AppWhetherFlag flag);
+
     void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
 
     void saveReturnOrderGoodsInf(ReturnOrderGoodsInf returnOrderGoodsInf);

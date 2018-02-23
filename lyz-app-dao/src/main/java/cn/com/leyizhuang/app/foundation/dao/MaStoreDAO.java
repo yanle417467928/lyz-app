@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
@@ -12,6 +14,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -90,4 +93,10 @@ public interface MaStoreDAO {
     void savePreDeposit(StorePreDeposit storePreDeposit);
 
     int updateDepositByStoreId(@Param("storeId")Long storeId, @Param("money")Double money, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldUpdateTime")Timestamp oldUpdateTime);
+
+    MaStoreInfo findStoreByStoreCode(String code);
+
+    Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money,@Param("userId")Long userId, @Param("version")Date version);
+
+    void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
 }
