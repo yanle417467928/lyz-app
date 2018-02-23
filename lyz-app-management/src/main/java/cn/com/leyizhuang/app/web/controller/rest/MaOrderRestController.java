@@ -776,16 +776,16 @@ public class MaOrderRestController extends BaseRestController {
                         "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{}", sellerId, customerId, goodsDetails, giftDetails,
                 cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney);
         if (null == sellerId) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,导购id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购id不能为空！", null);
         }
 
         if (null == customerId) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,顾客id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id不能为空！", null);
         }
         if (StringUtils.isBlank(goodsDetails)) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,商品信息不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空！", null);
         }
 

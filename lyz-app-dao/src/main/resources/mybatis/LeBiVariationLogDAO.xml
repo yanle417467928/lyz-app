@@ -46,7 +46,7 @@
 
     <update id="updateLeBiQtyByUserId">
         UPDATE cus_lb
-        SET quantity = #{quantity},
+        SET quantity = #{quantity}
         WHERE
             cus_id = #{customerId}
         AND last_update_time = #{version}
