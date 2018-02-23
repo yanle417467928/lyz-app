@@ -46,6 +46,9 @@ public interface AppOrderService {
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(String orderNumber);
 
+    //获取订单总金额
+    Double getTotalGoodsPriceByOrderNumber(String orderNumber);
+
     //计算获取订单所有商品数量
     Integer querySumQtyByOrderNumber(String orderNumber);
 

@@ -64,10 +64,10 @@ public interface OrderDeliveryInfoDetailsService {
 
     /**
      * 配送员获取已完成单列表
-     * @param userId    配送员编号
+     * @param operatorNo    配送员编号
      * @return  已完成单列表
      */
-    PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId, Integer page, Integer size);
+    PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(String operatorNo, Integer page, Integer size);
 
     /**
      * 获取未读的物流信息条数

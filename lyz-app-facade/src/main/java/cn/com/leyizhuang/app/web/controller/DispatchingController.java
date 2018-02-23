@@ -373,10 +373,10 @@ public class DispatchingController {
             AppEmployee appEmployee = appEmployeeService.findById(userId);
             if (null == appEmployee) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此配送员", null);
-                logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getDispatchingList OUT,配送员获取已完成单列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            PageInfo<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsService.getAuditFinishOrderByOperatorNo(userId, page, size);
+            PageInfo<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsService.getAuditFinishOrderByOperatorNo(appEmployee.getDeliveryClerkNo(), page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<AuditFinishResponse>().transform(auditFinishResponseList));
             if(null!=auditFinishResponseList&&null!=auditFinishResponseList.getList()){
                 logger.info("getFinishOrderList OUT,配送员获取已完成单列表成功，出参 resultDTO:{}", auditFinishResponseList.getList().size());

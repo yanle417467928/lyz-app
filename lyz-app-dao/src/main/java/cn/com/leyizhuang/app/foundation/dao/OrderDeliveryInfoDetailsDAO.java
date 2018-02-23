@@ -29,10 +29,9 @@ public interface OrderDeliveryInfoDetailsDAO {
 
     /**
      * 配送员获取已完成单列表
-     * @param userId    配送员id
      * @return  已完成单列表
      */
-    List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(@Param("userId") Long userId);
+    List<AuditFinishResponse> getAuditFinishOrderByOperatorNo(@Param("operatorNo") String operatorNo);
 
     //获取出货单详情
     ShipperDetailResponse getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber(@Param("operatorNo") String operatorNo, @Param("orderNumber") String orderNumber);

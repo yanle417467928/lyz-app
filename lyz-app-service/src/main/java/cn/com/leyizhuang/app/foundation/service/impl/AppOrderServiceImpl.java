@@ -139,6 +139,11 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    public Double getTotalGoodsPriceByOrderNumber(String orderNumber) {
+        return orderDAO.getTotalGoodsPriceByOrderNumber(orderNumber);
+    }
+
+    @Override
     public Integer querySumQtyByOrderNumber(String orderNumber) {
         return orderDAO.querySumQtyByOrderNumber(orderNumber);
     }

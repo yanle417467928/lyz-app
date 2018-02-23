@@ -228,6 +228,15 @@
             ord_no = #{orderNumber}
     </select>
 
+
+    <select id="getTotalGoodsPriceByOrderNumber" resultType="java.lang.Double">
+        SELECT total_goods_price
+        FROM
+        ord_billing_details
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
     <select id="querySumQtyByOrderNumber" resultType="java.lang.Integer">
         SELECT sum(order_qty)
         FROM ord_goods_info

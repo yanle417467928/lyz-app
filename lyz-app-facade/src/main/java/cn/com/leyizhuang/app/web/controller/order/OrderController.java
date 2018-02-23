@@ -1026,7 +1026,7 @@ public class OrderController {
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);
                 if (identityType == 0) {
                     orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
