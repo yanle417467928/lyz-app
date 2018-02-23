@@ -828,7 +828,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                     List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
 
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                        returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getPromotionSharePrice());
+                        returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
                     }
                     returnOrderBaseInfo.setReturnPrice(returnPrice);
                     returnOrderBaseInfo.setRemarksInfo(null);
@@ -1034,7 +1034,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                 //返还预存款后门店预存款金额
                                 Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                                 //修改门店预存款
-                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getSalesConsultId(), storePreDeposit.getLastUpdateTime());
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //记录门店预存款变更日志
                                     StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
@@ -1110,7 +1110,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                 //返还预存款后门店预存款金额
                                 Double stPreDeposit = (storePreDeposit.getBalance() + orderBillingDetails.getStPreDeposit());
                                 //修改门店预存款
-                                Integer affectLine = storePreDepositLogService.updateStPreDepositByUserIdAndVersion(stPreDeposit, orderBaseInfo.getCreatorId(), storePreDeposit.getLastUpdateTime());
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //记录门店预存款变更日志
                                     StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
