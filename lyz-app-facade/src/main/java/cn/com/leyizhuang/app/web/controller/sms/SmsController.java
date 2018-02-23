@@ -99,7 +99,7 @@ public class SmsController {
             logger.info("getPuCode OUT,发送提货码失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String smsCode = RandomUtil.randomStrCode(6);
+        String smsCode = RandomUtil.randomNumCode(4);
         String info = "您的提货码为" + smsCode + "，请在【门店取货】时出示信息，在此之前请勿删除此信息。为了您的商品安全，请妥善保管提货码。";
         logger.info("生成的提货码为:{}", smsCode);
         String content;
