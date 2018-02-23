@@ -590,7 +590,8 @@ public class UserSettingController {
         }
         appCustomer.setCustomerProfession(userInformation.getProfession());
         List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
-        appCustomer.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals(userInformation.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
+        appCustomer.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().
+                equals(userInformation.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
         return appCustomer;
     }
 

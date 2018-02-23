@@ -23,7 +23,7 @@ public interface TransactionalSupportService {
 
     void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                       List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                      List<OrderJxPriceDifferenceReturnInf> returnInfs);
+                                      List<OrderJxPriceDifferenceReturnInf> returnInfs,OrderFreightInf orderFreightInf);
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 

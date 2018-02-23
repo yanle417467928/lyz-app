@@ -5,7 +5,6 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                             List<OrderJxPriceDifferenceReturnInf> returnInfs) {
+                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderFreightInf orderFreightInf) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -88,6 +86,10 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         //保存经销差价收款信息
         for (OrderJxPriceDifferenceReturnInf returnInf : returnInfs) {
             separateOrderService.saveOrderJxPriceDifferenceReturnInf(returnInf);
+        }
+        //保存订单运费信息
+        if (null != orderFreightInf){
+            separateOrderService.saveOrderFreightInf(orderFreightInf);
         }
 
     }
@@ -149,11 +151,11 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         }
         //保存退单退款信息
         if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
-            returnOrderRefundInfList.forEach(p->separateOrderService.saveReturnOrderRefundInf(p));
+            returnOrderRefundInfList.forEach(p -> separateOrderService.saveReturnOrderRefundInf(p));
         }
         //保存退单经销差价扣除信息
-        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)){
-            jxPriceDifferenceRefundInfList.forEach(p-> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
+        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)) {
+            jxPriceDifferenceRefundInfList.forEach(p -> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
         }
     }
 }

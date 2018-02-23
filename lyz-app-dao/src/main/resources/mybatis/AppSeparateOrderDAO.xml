@@ -992,4 +992,46 @@
             #{id}
         </foreach>
     </update>
+
+    <insert id="saveOrderFreightInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderFreightInf">
+        INSERT INTO inter_ate_order_freight_inf (main_order_number, type, order_amt, goods_amt, amount, attribute1,
+                                                 attribute2, attribute3, attribute4, attribute5)
+        VALUES (#{mainOrderNumber}, #{type}, #{orderAmt}, #{goodsAmt}, #{amount}, #{attribute1}, #{attribute2},
+                #{attribute3},
+                #{attribute4}, #{attribute5})
+    </insert>
+    <select id="getOrderFreightInfByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderFreightInf">
+        SELECT
+            id,
+            main_order_number,
+            type,
+            order_amt,
+            goods_amt,
+            amount,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5
+        FROM inter_ate_order_freight_inf
+        WHERE main_order_number = #{orderNumber}
+    </select>
+
+    <update id="updateOrderFreightInfFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_order_freight_inf
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg}
+            </if>
+        </set>
+        WHERE id =#{id}
+    </update>
 </mapper>
