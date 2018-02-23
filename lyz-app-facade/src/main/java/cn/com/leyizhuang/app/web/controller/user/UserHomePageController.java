@@ -4,11 +4,13 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -18,9 +20,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -507,4 +507,98 @@ public class UserHomePageController {
         }
 
     }
+
+    /**
+     * 顾客申请提现列表
+     */
+    @PostMapping("/cus/apply/list")
+    public ResultDTO cusApplyList(Integer page, Integer size, Long cusId){
+        ResultDTO<Object> resultDTO;
+        if (page == null || size == null){
+            page = 1;
+            size = 10;
+        }
+
+        if (cusId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try{
+            PageInfo<CusPreDepositWithdraw> preDepositWithdrawPageInfo = appPreDepositWithdrawService.cusApplyList(page,size,cusId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<CusPreDepositWithdraw>().transform(preDepositWithdrawPageInfo));
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客提现申请列表失败", null);
+        }
+
+        return resultDTO;
+    }
+
+    /**
+     * 门店提现申请列表
+     */
+    @PostMapping("/st/apply/list")
+    public ResultDTO stApplyList(Integer page, Integer size, Long stId){
+        ResultDTO<Object> resultDTO;
+        if (page == null || size == null){
+            page = 1;
+            size = 10;
+        }
+
+        if (stId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try{
+            PageInfo<StPreDepositWithdraw> stPreDepositWithdrawPageInfo = appPreDepositWithdrawService.stApplyList(page,size,stId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<StPreDepositWithdraw>().transform(stPreDepositWithdrawPageInfo));
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取门店提现申请列表失败", null);
+        }
+
+        return resultDTO;
+    }
+
+    /**
+     * 顾客取消提现申请
+     */
+    @PostMapping("cus/apply/cancel")
+    public ResultDTO cusApplyCancel(Long applyId, Long cusId){
+        ResultDTO<Object> resultDTO;
+        if (applyId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "申请单数据有误，请联系管理员", null);
+        }
+
+        if (cusId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try {
+            appPreDepositWithdrawService.cusCancelApply(applyId,cusId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
+        }
+        return resultDTO;
+    }
+
+    @PostMapping("st/apply/cancel")
+    public ResultDTO stApplyCancel(Long applyId, Long stId){
+        ResultDTO<Object> resultDTO;
+        if (applyId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "申请单数据有误，请联系管理员", null);
+        }
+
+        if (stId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前帐号信息有误，请联系管理员", null);
+        }
+
+        try {
+            appPreDepositWithdrawService.stCancelApply(applyId,stId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
+        }
+        return resultDTO;
+    }
+
 }

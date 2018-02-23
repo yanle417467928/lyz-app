@@ -204,7 +204,7 @@ public class CustomerController {
                 newUser.setStoreId(store.getStoreId());
                 newUser.setCityId(cityId);
                 newUser.setMobile(registryParam.getPhone());
-                newUser.setLight(AppCustomerLightStatus.GREEN);
+                newUser.setLight(AppCustomerLightStatus.NOT);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
                 newUser.setCustomerProfession(registryParam.getProfession());
                 List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
