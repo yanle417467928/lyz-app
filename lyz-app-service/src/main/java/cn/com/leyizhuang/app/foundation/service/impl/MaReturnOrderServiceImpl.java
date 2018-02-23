@@ -201,7 +201,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
             //查看门店下 该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), maOrderGoodsInfo.getGid());
-            if (null == storeInventory || null == storeInventory.getAvailableIty()) {
+            if (null == storeInventory) {
                 throw new RuntimeException("该门店下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
             }
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {

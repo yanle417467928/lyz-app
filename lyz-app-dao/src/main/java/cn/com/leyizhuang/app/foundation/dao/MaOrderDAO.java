@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -179,6 +180,8 @@ public interface MaOrderDAO {
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo);
 
     Boolean isPayUp(String orderNo);
+
+    String getShippingTime(String orderNo);
 
     String queryAuditStatus(String orderNumber);
 

@@ -362,6 +362,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
+    public String getShippingTime(String orderNumber) {
+        System.out.println(orderNumber);
+        return this.maOrderDAO.getShippingTime(orderNumber);
+    }
+
+    @Override
     public String queryAuditStatus(String orderNumber) {
         return this.maOrderDAO.queryAuditStatus(orderNumber);
     }
@@ -451,21 +457,20 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) {
+        //更新订单支付信息
+        this.orderReceivables(maOrderAmount);
+        //得到导购id
+        Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
+        if (null == sellerId) {
+            throw new RuntimeException("该订单导购ID为空");
+        }
+        //得到该销售的可用额度
+        GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
+        BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
+        //更改该销售的可用额度
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            //更新订单支付信息
-            this.orderReceivables(maOrderAmount);
-            //得到导购id
-            Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
-            if (null == sellerId) {
-                throw new RuntimeException("该订单导购ID为空");
-            }
-            //得到该销售的可用额度
-            GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
-            BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
-            //更改该销售的可用额度
-            Date updateTime = guideCreditMoney.getLastUpdateTime();
-            if (updateTime.equals(lastUpdateTime)) {
-                maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney);
+            int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, lastUpdateTime);
+            if (affectLine > 0) {
                 //生成信用金额变成日志
                 GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
                 guideCreditMoneyDetail.setEmpId(sellerId);
