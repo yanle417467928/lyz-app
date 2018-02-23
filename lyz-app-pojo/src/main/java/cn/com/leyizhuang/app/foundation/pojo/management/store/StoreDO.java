@@ -65,6 +65,9 @@ public class StoreDO {
     // 是否支持门店自提
     private Boolean isSelfDelivery;
 
+    // 销售经理
+    private String salesManager;
+
 
 
 }

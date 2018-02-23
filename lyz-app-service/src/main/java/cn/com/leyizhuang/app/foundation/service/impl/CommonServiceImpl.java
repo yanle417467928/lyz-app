@@ -622,7 +622,7 @@ public class CommonServiceImpl implements CommonService {
                                                List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) {
 
         if (null != orderBaseInfo) {
-            if (null != orderBillingDetails && orderBillingDetails.getIsPayUp()) {
+            if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
                 orderBillingDetails.setPayUpTime(new Date());
                 //发送提货码给顾客,及提示导购顾客下单信息
                 String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(orderBaseInfo);
@@ -739,7 +739,7 @@ public class CommonServiceImpl implements CommonService {
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
-            billingDetails.setOnlinePayType(OnlinePayType.ALIPAY);
+            billingDetails.setOnlinePayType(onlinePayType);
             billingDetails.setOnlinePayAmount(paymentData.getTotalFee());
             billingDetails.setOnlinePayTime(paymentData.getNotifyTime());
             billingDetails.setArrearage(0D);
@@ -1283,7 +1283,7 @@ public class CommonServiceImpl implements CommonService {
         String pickUpCode = "";
         if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
             //发送提货码给顾客
-            pickUpCode = RandomUtil.randomStrCode(6);
+            pickUpCode = RandomUtil.randomNumCode(4);
             SmsAccount account = smsAccountService.findOne();
             String info = "【乐易装】您订单"
                     + orderBaseInfo.getOrderNumber()
@@ -1324,7 +1324,7 @@ public class CommonServiceImpl implements CommonService {
         } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
             if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
                 //发送提货码给顾客
-                pickUpCode = RandomUtil.randomStrCode(6);
+                pickUpCode = RandomUtil.randomNumCode(4);
                 SmsAccount account = smsAccountService.findOne();
                 String info = "【乐易装】您订单"
                         + orderBaseInfo.getOrderNumber()
@@ -1471,5 +1471,6 @@ public class CommonServiceImpl implements CommonService {
         support.setPromotionDiscount(promotionDiscount);
         return support;
     }
+
 }
 

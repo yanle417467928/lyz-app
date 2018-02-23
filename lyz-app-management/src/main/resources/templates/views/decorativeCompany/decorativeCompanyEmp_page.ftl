@@ -30,8 +30,8 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline ">
                     <select name="diyCode" id="diyCode" class="form-control select" style="margin-left:10px width:auto;"
-                        onchange="findDecorativeEmpByCondition()">
-                    <option value="-1">选择公司</option>
+                            onchange="findDecorativeEmpByCondition()">
+                        <option value="-1">选择公司</option>
                     </select>
                     <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
                             onchange="findDecorativeEmpByCondition()">
@@ -39,14 +39,16 @@
                         <option value="DECORATE_MANAGER">装饰经理</option>
                         <option value="DECORATE_EMPLOYEE">装饰工人</option>
                     </select>
-                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;" data-live-search="true"
+                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
+                            data-live-search="true"
                             onchange="findDecorativeEmpByCondition()">
                         <option value="-1">是否可用</option>
                         <option value="1">是</option>
                         <option value="0">否</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control" style="width:auto;"
+                        <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control"
+                               style="width:auto;"
                                placeholder="请输入姓名、电话或登录名..">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -132,8 +134,8 @@
         initDateGird('/rest/decorativeEmp/page/grid');
     });
 
-   function initDateGird(url) {
-        $grid.init($('#dataGrid'), $('#toolbar'),url , 'get', false, function (params) {
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -147,48 +149,48 @@
                 field: 'id',
                 title: '员工ID',
                 align: 'center'
-            },{
-            field: 'loginName',
-            title: '登录名',
-            align: 'center'
-        }, {
-            field: 'name',
-            title: '姓名',
-            align: 'center',
-            events: {
-                'click .scan': function(e, value, row) {
-                    $page.information.show(row.id);
+            }, {
+                field: 'loginName',
+                title: '登录名',
+                align: 'center'
+            }, {
+                field: 'name',
+                title: '姓名',
+                align: 'center',
+                events: {
+                    'click .scan': function (e, value, row) {
+                        $page.information.show(row.id);
+                    }
+                },
+                formatter: function (value) {
+                    return '<a class="scan" href="#">' + value + '</a>';
                 }
-            },
-            formatter: function(value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            }
-          },{
-            field: 'identityType',
-            title: '员工类型',
-            align: 'center'
-            },{
+            }, {
+                field: 'identityType',
+                title: '员工类型',
+                align: 'center'
+            }, {
                 field: 'cityId.name',
                 title: '归属城市',
                 align: 'center'
-            },{
+            }, {
                 field: 'storeId.storeName',
                 title: '归属门店',
                 align: 'center'
-            },{
-            field: 'status',
-            title: '是否生效',
-            align: 'center',
-                formatter: function(value,row,index){
-                if(true==value){
-                    return '<span class="label label-primary">是</span>';
-                }else if(false==value){
-                    return '<span class="label label-danger">否</span>';
-                }else {
-                    return '<span class="label label-danger">-</span>';
+            }, {
+                field: 'status',
+                title: '是否生效',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (true == value) {
+                        return '<span class="label label-primary">是</span>';
+                    } else if (false == value) {
+                        return '<span class="label label-danger">否</span>';
+                    } else {
+                        return '<span class="label label-danger">-</span>';
+                    }
                 }
-            }
-        },
+            },
         ]);
     }
 
@@ -257,10 +259,10 @@
 
                                 if (null === data.birthday) {
                                     data.birthday = '-';
-                                }else{
-                                    data.birthday=formatDateTime(data.birthday)
+                                } else {
+                                    data.birthday = formatDateTimeBirthday(data.birthday)
                                 }
-                                $('#birthday').html( data.birthday);
+                                $('#birthday').html(data.birthday);
 
 
                                 if (null === data.picUrl) {
@@ -270,17 +272,17 @@
 
                                 if (null === data.cityId) {
                                     $('#city').html('-');
-                                }else if(null === data.cityId.name){
+                                } else if (null === data.cityId.name) {
                                     $('#city').html('-');
-                                }else{
+                                } else {
                                     $('#city').html(data.cityId.name);
                                 }
 
                                 if (null === data.storeId) {
                                     $('#city').html('-');
-                                }else if(null === data.storeId.storeName){
+                                } else if (null === data.storeId.storeName) {
                                     $('#city').html('-');
-                                }else{
+                                } else {
                                     $('#city').html(data.storeId.storeName);
                                 }
 
@@ -291,23 +293,23 @@
 
                                 if (null === data.entryTime) {
                                     data.entryTime = '-';
-                                }else{
-                                    data.entryTime=formatDateTime(data.entryTime)
+                                } else {
+                                    data.entryTime = formatDateTime(data.entryTime)
                                 }
                                 $('#entryTime').html(data.entryTime);
 
                                 if (null === data.createTime) {
                                     data.createTime = '-';
-                                }else{
-                                    data.createTime=formatDateTime(data.createTime)
+                                } else {
+                                    data.createTime = formatDateTime(data.createTime)
                                 }
                                 $('#createTime').html(data.createTime);
 
-                                if (true==data.status) {
+                                if (true == data.status) {
                                     $('#status').html('<span class="label label-primary">是</span>');
-                                }else if(false==data.status){
+                                } else if (false == data.status) {
                                     $('#status').html('<span class="label label-danger">否</span>');
-                                }else {
+                                } else {
                                     $('#status').html('<span class="label label-danger">-</span>');
                                 }
 
@@ -326,7 +328,7 @@
     }
 
 
-    function findDecorativeCompany(){
+    function findDecorativeCompany() {
         $("#queryEmpInfo").val('');
         var company;
         $.ajax({
@@ -355,14 +357,14 @@
     }
 
 
-     function findDecorativeEmpByCondition(){
+    function findDecorativeEmpByCondition() {
         $("#queryEmpInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var identityType = $("#identityType").val();
         var diyId = $("#diyCode").val();
         var enabled = $("#enabled").val();
-        initDateGird('/rest/decorativeEmp/page/conditionGrid?identityType=' + identityType+'&diyId='+diyId+'&enabled='+enabled);
-     }
+        initDateGird('/rest/decorativeEmp/page/conditionGrid?identityType=' + identityType + '&diyId=' + diyId + '&enabled=' + enabled);
+    }
 
 
     function findDecorativeEmpByInfo() {
@@ -373,8 +375,18 @@
             initDateGird('/rest/decorativeEmp/page/grid');
             return false;
         }
-            initDateGird('/rest/decorativeEmp/page/infoGrid/' + queryEmpInfo);
+        initDateGird('/rest/decorativeEmp/page/infoGrid/' + queryEmpInfo);
     }
+
+    var formatDateTimeBirthday = function (date) {
+        var dt = new Date(date);
+        var y = dt.getFullYear();
+        var m = dt.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = dt.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        return y + '-' + m + '-' + d;
+    };
 
 </script>
 </body>

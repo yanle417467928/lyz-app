@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -135,6 +136,11 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public Double getAmountPayableByOrderNumber(String orderNumber) {
         return orderDAO.getAmountPayableByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public Double getTotalGoodsPriceByOrderNumber(String orderNumber) {
+        return orderDAO.getTotalGoodsPriceByOrderNumber(orderNumber);
     }
 
     @Override
@@ -300,7 +306,12 @@ public class AppOrderServiceImpl implements AppOrderService {
         tempOrder.setStoreStructureCode(userStore.getStoreStructureCode());
         //设置城市信息
         tempOrder.setCityId(userStore.getCityId());
-        tempOrder.setCityName(userStore.getCity());
+        if (null != userStore.getCity()) {
+            tempOrder.setCityName(userStore.getCity());
+        } else {
+            City city = cityService.findById(cityId);
+            tempOrder.setCityName(city.getName());
+        }
         tempOrder.setSobId(userStore.getSobId());
         tempOrder.setStoreOrgId(userStore.getStoreId());
 
@@ -739,5 +750,22 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
         arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
+    }
+
+    @Override
+    public void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo) {
+        if (StringUtils.isNotBlank(driver)) {
+            AppEmployee clerk = employeeService.findDeliveryByClerkNo(driver);
+
+            OrderLogisticsInfo logisticsInfo = new OrderLogisticsInfo();
+            logisticsInfo.setOrdNo(orderNo);
+            logisticsInfo.setDeliveryClerkId(clerk.getEmpId());
+            logisticsInfo.setDeliveryClerkNo(driver);
+            logisticsInfo.setDeliveryClerkName(clerk.getName());
+            logisticsInfo.setDeliveryClerkPhone(clerk.getMobile());
+            logisticsInfo.setWarehouse(warehouse);
+
+            orderDAO.updateOrderLogisticInfo(logisticsInfo);
+        }
     }
 }

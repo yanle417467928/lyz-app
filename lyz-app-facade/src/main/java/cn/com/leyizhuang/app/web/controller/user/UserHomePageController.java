@@ -87,32 +87,46 @@ public class UserHomePageController {
             return resultDTO;
         }
         try {
-            if (identityType == 6) {
+            if (identityType == AppIdentityType.CUSTOMER.getValue()) {
                 CustomerHomePageResponse customerHomePageResponse = customerService.findCustomerInfoByUserId(userId);
-                String parseLight = AppCustomerLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
-                customerHomePageResponse.setLight(parseLight);
-                if (null != customerHomePageResponse.getLastSignTime() && DateUtils.isSameDay(customerHomePageResponse.getLastSignTime(), new Date())) {
-                    customerHomePageResponse.setCanSign(Boolean.FALSE);
+                if (null != customerHomePageResponse) {
+                    String parseLight = AppCustomerLightStatus.valueOf(customerHomePageResponse.getLight()).getValue();
+                    customerHomePageResponse.setLight(parseLight);
+                    if (null != customerHomePageResponse.getLastSignTime() && DateUtils.isSameDay(customerHomePageResponse.getLastSignTime(), new Date())) {
+                        customerHomePageResponse.setCanSign(Boolean.FALSE);
+                    } else {
+                        customerHomePageResponse.setCanSign(Boolean.TRUE);
+                    }
+                    Integer cashCouponQty = customerService.findCashCouponAvailQtyByCustomerId(userId);
+                    customerHomePageResponse.setCashCouponQty(null == cashCouponQty ? 0 : cashCouponQty);
+                    Integer productCouponQty = customerService.findProductCouponAvailQtyByCustomerId(userId);
+                    customerHomePageResponse.setProductCouponQty(null == productCouponQty ? 0 : productCouponQty);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
+                    logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 } else {
-                    customerHomePageResponse.setCanSign(Boolean.TRUE);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户!", null);
+                    logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
-                Integer cashCouponQty = customerService.findCashCouponAvailQtyByCustomerId(userId);
-                customerHomePageResponse.setCashCouponQty(null == cashCouponQty ? 0 : cashCouponQty);
-                Integer productCouponQty = customerService.findProductCouponAvailQtyByCustomerId(userId);
-                customerHomePageResponse.setProductCouponQty(null == productCouponQty ? 0 : productCouponQty);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, customerHomePageResponse);
-                logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
+
             } else {
                 EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
-                // 配送员还需要查询配送订单数量
-                if (identityType == 1) {
-                    int count = orderDeliveryInfoDetailsService.countAuditFinishOrderByOperatorNo(userId);
-                    employeeHomePageResponse.setSendQty(count);
+                if (null != employeeHomePageResponse) {
+                    // 配送员还需要查询配送订单数量
+                    if (identityType == 1) {
+                        int count = orderDeliveryInfoDetailsService.countAuditFinishOrderByOperatorNo(userId);
+                        employeeHomePageResponse.setSendQty(count);
+                    }
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
+                    logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                } else {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户!", null);
+                    logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
-                logger.info("personalHomepage OUT,获取个人主页成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,9 +145,9 @@ public class UserHomePageController {
      * @return
      */
     @PostMapping(value = "/customer/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getCustomersList(Long userId, Integer identityType,Integer page, Integer size) {
+    public ResultDTO getCustomersList(Long userId, Integer identityType, Integer page, Integer size) {
 
-        logger.info("getCustomersList CALLED,获取我的顾客列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getCustomersList CALLED,获取我的顾客列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (userId == null) {
@@ -157,11 +171,11 @@ public class UserHomePageController {
             return resultDTO;
         }
         try {
-            PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType,page,size);
+            PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType, page, size);
 
             // 计算灯号
             List<AppCustomer> customers = appCustomerList.getList();
-            customers = customerLevelService.countCustomerListLightlevel(customers,userId);
+            customers = customerLevelService.countCustomerListLightlevel(customers, userId);
 
             List<CustomerListResponse> customerlistresponselist = CustomerListResponse.transform(customers);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
@@ -226,8 +240,8 @@ public class UserHomePageController {
      * @return
      */
     @PostMapping(value = "/decorateEmployee/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType,Integer page, Integer size) {
-        logger.info("getDecorateEmployeeList CALLED,获取我的员工列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType,page,size);
+    public ResultDTO getDecorateEmployeeList(Long userId, Integer identityType, Integer page, Integer size) {
+        logger.info("getDecorateEmployeeList CALLED,获取我的员工列表，入参 userId {},identityType{},page:{},size:{}", userId, identityType, page, size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -254,7 +268,7 @@ public class UserHomePageController {
         try {
             PageInfo<AppEmployee> appEmployeeList = employeeService.findDecorateEmployeeListByUserIdAndIdentityType(userId, identityType, page, size);
             List<EmployeeListResponse> employeeListResponseList = EmployeeListResponse.transform(appEmployeeList.getList());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null!=appEmployeeList && null!=appEmployeeList.getList()&&appEmployeeList.getList().size() > 0) ? new GridDataVO<EmployeeListResponse>().transform(employeeListResponseList,appEmployeeList) : null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null != appEmployeeList && null != appEmployeeList.getList() && appEmployeeList.getList().size() > 0) ? new GridDataVO<EmployeeListResponse>().transform(employeeListResponseList, appEmployeeList) : null);
             logger.info("getDecorateEmployeeList OUT,获取我的员工列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

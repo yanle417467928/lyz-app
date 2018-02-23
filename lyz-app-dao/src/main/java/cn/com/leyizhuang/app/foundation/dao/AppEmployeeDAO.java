@@ -9,7 +9,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.Data;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -83,4 +82,6 @@ public interface AppEmployeeDAO {
     SalesConsult findSellerByEmpId(Long userId);
 
     SalesConsult findSellerByCustomerId(Long userId);
+
+    AppEmployee findDeliveryByClerkNo(String driver);
 }

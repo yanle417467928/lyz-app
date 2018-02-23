@@ -3,8 +3,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -237,6 +239,22 @@ public class MaStoreServiceImpl implements MaStoreService {
             }
         }
         this.maStorePreDepositLogService.save(storePreDepositDTO);
+    }
+
+    @Override
+    public MaStoreInfo findStoreByStoreCode(String code){
+       return mastoreDAO.findStoreByStoreCode(code);
+    }
+
+
+    @Override
+    public Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version){
+        return mastoreDAO.updateStPreDepositByUserIdAndVersion(money, userId, version);
+    }
+
+    @Override
+    public void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO){
+         this.mastoreDAO.saveStorePreDepositLog(stPreDepositLogDO);
     }
 
 }

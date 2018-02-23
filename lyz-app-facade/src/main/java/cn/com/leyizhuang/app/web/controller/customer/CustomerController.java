@@ -94,7 +94,7 @@ public class CustomerController {
 
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！",
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您还不是乐易装的会员，先来注册一个吧！",
                         new CustomerLoginResponse(Boolean.FALSE, null, null, null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -127,7 +127,7 @@ public class CustomerController {
     }
 
     /**
-     * App 顾客注册
+     * 顾客注册 - 绑定微信
      *
      * @param registryParam 注册参数
      * @param response      请求响应
@@ -280,6 +280,7 @@ public class CustomerController {
                 customer.setSalesConsultId(seller.getEmpId());
                 customer.setStoreId(store.getStoreId());
                 customer.setCustomerType(AppCustomerType.MEMBER);
+                customer.setBindingTime(new Date());
                 customerService.update(customer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CustomerBindingSellerResponse(Boolean.TRUE, seller.getName(), store.getStoreName()));
@@ -287,6 +288,11 @@ public class CustomerController {
                 return resultDTO;
             } else {//未添加推荐导购电话
                 AppStore store = storeService.findDefaultStoreByCityId(customer.getCityId());
+                if (null == store) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "该城市下没有默认门店!", null);
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 customer.setStoreId(store.getStoreId());
                 customer.setSalesConsultId(0L);
                 customer.setCustomerType(AppCustomerType.RETAIL);
@@ -301,6 +307,48 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,绑定导购失败", new CustomerBindingSellerResponse(Boolean.FALSE, null, null));
             logger.warn("customerBindingSeller EXCEPTION,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 顾客解除微信绑定
+     *
+     * @param userId       顾客id
+     * @param identityType 身份类型
+     * @return resultDTO
+     */
+    @PostMapping(value = "/unbinding/weChat", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerUnbindingWeChat(Long userId, Integer identityType) {
+
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType || !(identityType == AppIdentityType.CUSTOMER.getValue())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不正确！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppCustomer customer = customerService.findById(userId);
+            if (customer == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                customerService.unbindingCustomerWeChat(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客解除微信绑定成功！", null);
+                logger.info("customerUnbindingWeChat OUT,顾客解除微信绑定成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,顾客解除微信绑定失败", null);
+            logger.warn("customerUnbindingWeChat EXCEPTION,顾客解除微信绑定失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -769,6 +817,43 @@ public class CustomerController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取工种信息失败", null);
             logger.warn("getCustomerIdentityType EXCEPTION,获取工种信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+
+    /**
+     * 顾客获取咨询电话
+     *
+     * @param userId       用户id
+     * @param identityType 身份类型
+     * @return 咨询电话
+     */
+    @PostMapping(value = "/supportHotline", produces = "application/json;charset=UTF-8")
+    public ResultDTO getCustomerSupportHotline(Long userId, Integer identityType) {
+        logger.info("getCustomerSupportHotline CALLED,顾客获取咨询电话，入参 userId {},identityType{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType||6 != identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误",
+                    null);
+            logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            SupportHotlineResponse supportHotline = customerService.getCustomerSupportHotline(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, supportHotline);
+            logger.info("getCustomerSupportHotline OUT顾客获取咨询电话成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取咨询电话失败", null);
+            logger.warn("getCustomerSupportHotline EXCEPTION,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

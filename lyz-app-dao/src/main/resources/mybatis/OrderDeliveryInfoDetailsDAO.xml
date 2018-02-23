@@ -249,29 +249,37 @@
         AND logistic_status = #{logisticStatus}
     </select>
 
-    <select id="getAuditFinishOrderByOperatorNo" parameterType="java.lang.Long"
+    <select id="getAuditFinishOrderByOperatorNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.AuditFinishResponse">
-        SELECT
-            obi.sales_consult_name sellerName,
-            obi.sales_consult_phone sellerPhone,
-            obi.ord_no orderNumber,
-            oli.shipping_address shippingAddress,
-            oli.delivery_time deliveryTime,
-            oli.receiver receiver,
-            oli.receiver_phone receiverPhone,
-            odid.task_no shipperNumber,
-            obd.collection_amount collectionAmount,
-            oaa.`status` auditStatus
-        FROM
-            ord_base_info AS obi
-        INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
-        AND obi.delivery_status = odid.logistic_status
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
-        WHERE
-            (oaa.`status` = 'AUDIT_NO' OR oaa.`status` = 'AUDIT_PASSED')
-        AND oaa.user_id = #{userId}
+            SELECT
+                obi.sales_consult_name sellerName,
+                obi.sales_consult_phone sellerPhone,
+                obi.ord_no orderNumber,
+                oli.shipping_address shippingAddress,
+                oli.delivery_time deliveryTime,
+                oli.receiver receiver,
+                oli.receiver_phone receiverPhone,
+                odid.task_no shipperNumber,
+                obd.collection_amount collectionAmount,
+                oaa.`status` auditStatus
+            FROM
+                ord_base_info AS obi
+            LEFT JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
+            AND obi.delivery_status = odid.logistic_status
+            LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+            LEFT JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
+            WHERE
+                (
+                    odid.logistic_status = 'CONFIRM_ARRIVAL'
+                    OR odid.logistic_status = 'REJECT'
+                )
+            AND (
+                oaa.`status` = 'AUDIT_NO'
+                OR oaa.`status` = 'AUDIT_PASSED'
+                OR oaa.`status` IS NULL
+            )
+            AND odid.operator_no = #{operatorNo}
     </select>
 
     <select id="countAuditFinishOrderByOperatorNo" parameterType="java.lang.Long"

@@ -81,9 +81,9 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(Long userId, Integer page, Integer size) {
+    public PageInfo<AuditFinishResponse> getAuditFinishOrderByOperatorNo(String operatorNo, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(userId);
+        List<AuditFinishResponse> auditFinishResponseList = orderDeliveryInfoDetailsDAO.getAuditFinishOrderByOperatorNo(operatorNo);
         return new PageInfo<>(auditFinishResponseList);
     }
 

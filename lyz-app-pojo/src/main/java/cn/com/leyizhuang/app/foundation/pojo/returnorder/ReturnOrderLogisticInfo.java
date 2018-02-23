@@ -108,4 +108,9 @@ public class ReturnOrderLogisticInfo {
      */
     private String deliveryClerkName;
 
+    /**
+     * 配送员电话
+     */
+    private String deliveryClerkPhone;
+
 }

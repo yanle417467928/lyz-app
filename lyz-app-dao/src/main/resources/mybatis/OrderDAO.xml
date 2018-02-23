@@ -228,6 +228,15 @@
             ord_no = #{orderNumber}
     </select>
 
+
+    <select id="getTotalGoodsPriceByOrderNumber" resultType="java.lang.Double">
+        SELECT total_goods_price
+        FROM
+        ord_billing_details
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
     <select id="querySumQtyByOrderNumber" resultType="java.lang.Integer">
         SELECT sum(order_qty)
         FROM ord_goods_info
@@ -514,6 +523,7 @@
                 is_evaluated = #{isEvaluated}
             </if>
         </set>
+        WHERE ord_no = #{orderNumber}
     </update>
 
     <update id="updateOrderBillingDetails"
@@ -539,6 +549,7 @@
                 is_pay_up = #{isPayUp}
             </if>
         </set>
+        WHERE ord_no = #{orderNumber}
     </update>
 
 
@@ -843,5 +854,27 @@
         WHERE sku = #{sku}
               AND ord_no = #{orderNo}
 
+    </update>
+
+    <update id="updateOrderLogisticInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
+        UPDATE ord_logistics_info
+        <set>
+            <if test="deliveryClerkId != null">
+                delivery_clerk_id = #{deliveryClerkId},
+            </if>
+            <if test="deliveryClerkNo != null">
+                delivery_clerk_no = #{deliveryClerkNo},
+            </if>
+            <if test="deliveryClerkName != null">
+                delivery_clerk_name = #{deliveryClerkName},
+            </if>
+            <if test="deliveryClerkPhone != null">
+                delivery_clerk_Phone = #{deliveryClerkPhone},
+            </if>
+            <if test="warehouse != null">
+                warehouse = #{warehouse},
+            </if>
+        </set>
+        WHERE ord_no = #{ordNo}
     </update>
 </mapper>

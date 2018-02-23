@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.WareHouseDAO">
+
+    <insert id="save"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.WareHouseDO">
+        INSERT INTO warehouse (wh_no, wh_name, city_id, city_name, type) VALUES (
+            #{wareHouseNo}, #{wareHouseName}, #{cityId}, #{cityName}, #{type}
+        );
+    </insert>
+
+    <select id="findByWareHouseNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.WareHouseDO">
+        SELECT
+            id,
+            wh_no     wareHouseNo,
+            wh_name   wareHouseName,
+            city_id   cityId,
+            city_name cityName,
+            type      type
+        FROM warehouse
+        WHERE wh_no = #{whNo};
+    </select>
+</mapper>

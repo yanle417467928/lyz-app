@@ -572,7 +572,7 @@
         AND
         obi.delivery_type= 'SELF_TAKE'
         AND
-        obi.ord_no=#{info}
+        obi.ord_no  LIKE CONCAT('%',#{info},'%')
         ORDER BY
         obi.create_time DESC
     </select>
@@ -639,7 +639,11 @@
             creator_identity_type,
             sob_id,
             create_time,
-            status
+            status,
+            customer_id,
+            sales_consult_id,
+            delivery_type,
+            store_structure_code
         FROM ord_base_info obi
         WHERE obi.ord_no = #{orderNo}
     </select>
@@ -651,10 +655,11 @@
         ogi.gid gid,
         ogi.sku  sku,
         ogi.sku_name  skuName,
-        ogi.sku  sku,
         ogi.order_qty orderQty,
-        ogi.return_price returnPrice
+        ogi.return_price returnPrice,
+        si.last_update_time
         FROM ord_goods_info ogi
+        LEFT  JOIN st_inventory si ON ogi.gid = si.gid
         WHERE ogi.ord_no = #{orderNo}
     </select>
 
@@ -862,6 +867,21 @@
             ord_base_info
         WHERE
             `status` = 'UNPAID'
+    </select>
+
+
+    <select id="findPaymentDataByOrderNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData">
+        SELECT
+        total_fee,
+        create_time,
+        online_pay_type,
+        payment_type
+        FROM payment_data
+        WHERE ord_no = #{orderNumber}
+        AND
+        trade_status='TRADE_SUCCESS'
+        ORDER BY id DESC
     </select>
 
 </mapper>

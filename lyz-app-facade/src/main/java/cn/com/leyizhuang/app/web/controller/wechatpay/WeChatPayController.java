@@ -90,41 +90,41 @@ public class WeChatPayController {
      * @return 微信支付请求签名
      */
     @RequestMapping(value = "/order/pay", method = RequestMethod.POST)
-    public ResultDTO<Object> orderWechatPay(HttpServletRequest req, Long userId, Integer identityType, Double amountPayable, String orderNumber) {
+    public ResultDTO<Object> orderWeChatPay(HttpServletRequest req, Long userId, Integer identityType, Double amountPayable, String orderNumber) {
 
-        logger.info("orderWechatPay CALLED,订单微信支付信息提交,入参 userId:{}, identityType:{}, money:{}, orderNumber:{}",
+        logger.info("orderWeChatPay CALLED,订单微信支付信息提交,入参 userId:{}, identityType:{}, money:{}, orderNumber:{}",
                 userId, identityType, amountPayable, orderNumber);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == amountPayable || amountPayable <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "金额不正确！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == orderNumber) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单不能为空！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         Double totalFee = appOrderService.getAmountPayableByOrderNumber(orderNumber);
         if (totalFee == null) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (!totalFee.equals(amountPayable)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
-            logger.info("orderWechatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String totalFeeFormat = CountUtil.retainTwoDecimalPlaces(totalFee);
@@ -139,12 +139,12 @@ public class WeChatPayController {
             SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(orderNumber, paymentDataDO.getPaymentTypeDesc(),
                     new BigDecimal(totalFeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
-            logger.info("orderWechatPay OUT,微信支付订单成功，出参 resultDTO:{}", resultDTO);
+            logger.info("orderWeChatPay OUT,微信支付订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信支付订单失败!", null);
-            logger.warn("orderWechatPay EXCEPTION,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("orderWeChatPay EXCEPTION,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -382,7 +382,7 @@ public class WeChatPayController {
                     if (WechatUtil.verifyNotify(resultMap)) {
                         logger.info("weChatReturnSync,微信支付异步回调接口,回调参数:{}", resultMap);
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("outTradeNo").toString();
+                        String outTradeNo = resultMap.get("out_trade_no").toString();
                         logger.info("weChatReturnSync,微信支付异步回调接口,订单号:{}", outTradeNo);
                         //微信交易号
                         String tradeNo = resultMap.get("transaction_id").toString();

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+
 /**
  * @author GenerationRoad
  * @date 2018/1/12
@@ -23,6 +25,10 @@ public class StorePreDepositVO {
     private String city;
     //当前余额
     private String balance = "0.00";
+    /**
+     * 上次更新时间
+     */
+    private Timestamp lastUpdateTime;
     /**
      * 门店类型
      */

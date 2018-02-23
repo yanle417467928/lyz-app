@@ -41,13 +41,13 @@ public class DecorativeEmployeeVO {
             decorativeEmployeeVO.setId(employeeDO.getEmpId());
             decorativeEmployeeVO.setLoginName(employeeDO.getLoginName());
             decorativeEmployeeVO.setName(employeeDO.getName());
-            if("SELLER".equals(employeeDO.getIdentityType())){
+            if("SELLER".equals(employeeDO.getIdentityType().toString())){
                 decorativeEmployeeVO.setIdentityType("导购");
-            }else if("DELIVERY_CLERK".equals(employeeDO.getIdentityType())){
+            }else if("DELIVERY_CLERK".equals(employeeDO.getIdentityType().toString())){
                 decorativeEmployeeVO.setIdentityType("配送员");
-            }else if("DECORATE_MANAGER".equals(employeeDO.getIdentityType())){
+            }else if("DECORATE_MANAGER".equals(employeeDO.getIdentityType().toString())){
                 decorativeEmployeeVO.setIdentityType("装饰经理");
-            }else if("DECORATE_EMPLOYEE".equals(employeeDO.getIdentityType())){
+            }else if("DECORATE_EMPLOYEE".equals(employeeDO.getIdentityType().toString())){
                 decorativeEmployeeVO.setIdentityType("装饰工人");
             }else{
                 decorativeEmployeeVO.setIdentityType("");

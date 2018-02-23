@@ -86,10 +86,13 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cid" type="hidden" class="form-control" id="cid"
-                                           value=" <#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid!''}</#if></#if>">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid!''}</#if></#if>" />
+                                    <input name="creditLastUpdateTime" type="hidden" class="form-control"
+                                           id="creditLastUpdateTime"
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>" />
                                     <input name="credit" type="text" class="form-control" id="credit"
                                            placeholder="信用金余额"
-                                           value=" <#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.credit!''}</#if></#if>">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.credit!''}</#if></#if>" />
                                 </div>
                             </div>
                         </div>
@@ -102,10 +105,13 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sid" type="hidden" class="form-control" id="sid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid!''}</#if></#if>">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid!''}</#if></#if>"/>
+                                    <input name="sponsorshipLastUpdateTime" type="hidden" class="form-control"
+                                           id="sponsorshipLastUpdateTime"
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorshipLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>"/>
                                     <input name="sponsorship" type="text" class="form-control" id="sponsorship"
                                            placeholder="赞助金余额"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorship!''}</#if></#if>">
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorship!''}</#if></#if>"/>
                                 </div>
                             </div>
                         </div>
@@ -216,7 +222,7 @@
                         }, regexp: {
                             regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
                             message: '信用金只能为正实数(两位小数)'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '信用金的长度必须在1~10位之间'
@@ -230,7 +236,7 @@
                         }, regexp: {
                             regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
                             message: '赞助金只能为正实数(两位小数)'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '信用金的长度必须在1~10位之间'

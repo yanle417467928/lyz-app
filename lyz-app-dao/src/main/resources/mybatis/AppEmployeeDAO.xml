@@ -345,4 +345,14 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         emp_id = #{userId}
         AND last_update_time = #{version}
     </update>
+
+    <select id="findDeliveryByClerkNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+        SELECT
+            emp_id,
+            name,
+            mobile
+        FROM emp_employee
+        WHERE delivery_clerk_no = #{driver}
+    </select>
 </mapper>

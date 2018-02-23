@@ -72,7 +72,7 @@ public class OrderDeliveryInfoDetails {
         this.taskNo = taskNo;
     }
 
-    public static OrderDeliveryInfoDetails transform(WtaShippingOrderHeader header) {
+    public static OrderDeliveryInfoDetails transform(WtaShippingOrderHeader header, String warehouseName) {
         OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
 
         deliveryInfoDetails.setOrderNo(header.getOrderNo());
@@ -80,7 +80,7 @@ public class OrderDeliveryInfoDetails {
         deliveryInfoDetails.setCreateTime(header.getCreateTime());
         deliveryInfoDetails.setLogisticStatus(LogisticStatus.SEALED_CAR);
         String description = "您的订单在乐易装在【" +
-                header.getWhNo() +
+                warehouseName +
                 "】仓库" +
                 "封车完成，开始配送";
         deliveryInfoDetails.setDescription(description);

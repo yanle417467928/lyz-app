@@ -90,6 +90,9 @@
                         <br>
                         <b>拍&nbsp;照&nbsp;下&nbsp;单&nbsp;单&nbsp;号:</b>
                         <br>
+                        <b>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:</b>
+                        <br>
                     </div>
                     <div class="col-sm-7 invoice-col">
                         <b></b>
@@ -100,6 +103,9 @@
                         <br>
                         <b></b>
                         <spanp class="span"> ${photoOrderVO.photoOrderNo!""}</spanp>
+                        <br>
+                        <b></b>
+                        <spanp class="span"> ${photoOrderVO.remark!""}</spanp>
                         <br>
                     </div>
                 </div>
@@ -469,6 +475,7 @@
             }
             function addCart(isGoHistory) {
                 var params = "";
+                var flag = "";
                 var total = $('#total').val();
                 // 获取所有value值大于0的input标签（即获得了所有数量要大于0的商品）
                 $('.goodsSelectedQuantity').each(
@@ -482,14 +489,26 @@
                                 var typeName = $('#typeName' + goodsId).val();
                                 var price = $('#price' + goodsId).val();
 
-                                params += '<tr><td><input type="hidden" id="gid" name="combList[' + total + '].gid" value="' + goodsId + '" />' + sku + '</td>';
-                                params += '<td>' + goodsName + '</td><td>' + typeName + '</td><td>' + price + '</td>';
-                                params += '<td ><input type="text" id="qty" min="1" name="combList[' + total + '].qty" value="' + qty + '" style="width:30%;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onblur="setQuantity(this)"/></td>';
-                                params += '<td><a title="删除" class="img-btn del operator" onclick="del_goods_comb(this);">删除</a></td></tr>';
-                                total = parseInt(total) + 1;
+                                var oldGoodsId = $('#gid' + goodsId).val();
+                                if (undefined == oldGoodsId || oldGoodsId == ''){
+                                    params += '<tr><td><input type="hidden" id="gid' + goodsId + '" name="combList[' + total + '].gid" value="' + goodsId + '" />' + sku + '</td>';
+                                    params += '<td>' + goodsName + '</td><td>' + typeName + '</td><td>' + price + '</td>';
+                                    params += '<td ><input type="text" id="qty' + goodsId + '" min="1" name="combList[' + total + '].qty" value="' + qty + '" style="width:30%;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onblur="setQuantity(this)"/></td>';
+                                    params += '<td><a title="删除" class="img-btn del operator" onclick="del_goods_comb(this);">删除</a></td></tr>';
+                                    total = parseInt(total) + 1;
+                                } else {
+                                    var oldQty = $('#qty' + goodsId).val();
+                                    if (!isNaN(oldQty) && oldQty > 0){
+                                        qty = parseInt(oldQty) + parseInt(qty);
+                                        $('#qty' + goodsId).val(qty);
+                                    } else {
+                                        $('#qty' + goodsId).val(qty);
+                                    }
+                                }
+                                flag += '1';
                             }
                         });
-                if ("" == params) {
+                if ("" == flag) {
                     $notify.info("亲，请先选择商品的数量");
                     return;
                 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import lombok.*;
 
 import java.util.Date;
@@ -46,4 +47,14 @@ public class AtwReturnOrderCheckEnter {
      * wms收到信息时间
      */
     private Date sendTime;
+
+    public static AtwReturnOrderCheckEnter transform(ReturnOrderBaseInfo returnOrderBaseInfo) {
+        AtwReturnOrderCheckEnter checkEnter = new AtwReturnOrderCheckEnter();
+        checkEnter.setReturnNo(returnOrderBaseInfo.getReturnNo());
+        checkEnter.setCreateTime(new Date());
+        checkEnter.setCheckGoodsTime(new Date());
+        checkEnter.setReturnStatus(returnOrderBaseInfo.getReturnStatus());
+
+        return checkEnter;
+    }
 }

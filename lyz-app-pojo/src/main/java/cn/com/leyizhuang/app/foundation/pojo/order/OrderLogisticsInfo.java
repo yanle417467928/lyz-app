@@ -111,6 +111,10 @@ public class OrderLogisticsInfo {
      */
     private String deliveryClerkName;
     /**
+     * 配送员电话
+     */
+    private String deliveryClerkPhone;
+    /**
      * 配送仓名称
      */
     private String warehouse;

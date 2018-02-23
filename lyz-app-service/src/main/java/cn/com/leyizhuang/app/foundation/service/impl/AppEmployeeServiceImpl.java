@@ -258,4 +258,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
         }
         return null;
     }
+
+    @Override
+    public AppEmployee findDeliveryByClerkNo(String driver) {
+        if (StringUtils.isNotBlank(driver)) {
+            return employeeDAO.findDeliveryByClerkNo(driver);
+        }
+        return null;
+    }
 }

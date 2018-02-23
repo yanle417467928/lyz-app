@@ -71,7 +71,7 @@ public class MaCustomerRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/{cusId}")
-    public ResultDTO<CustomerDetailVO> restCusIdGet(@PathVariable(value = "cusId") Long cusId) {
+    public ResultDTO<CustomerDetailVO> restCustomerDetailInfo(@PathVariable(value = "cusId") Long cusId) {
         logger.info("restCusIdGet 后台查看顾客详细信息 ,入参 offset:{}, cusId:{}", cusId);
         try {
             CustomerDO customerDO = this.maCustomerService.queryCustomerVOById(cusId);

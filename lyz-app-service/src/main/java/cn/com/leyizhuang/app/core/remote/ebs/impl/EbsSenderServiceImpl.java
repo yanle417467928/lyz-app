@@ -6,7 +6,9 @@ import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaReturnOrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
@@ -612,6 +614,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     /*//************************************ 发送订单经销差价退还信息 begin *************************
 
+
     @Override
     public void sendOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs) {
         Map<String, Object> result = sendJxPriceDifferenceRefundToEbs(jxPriceDifferenceRefundInfs);
@@ -689,6 +692,30 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
 
 
+    @Override
+    public void sendReturnOrderReceiptInfAndRecord(MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbsBaseInfo) {
+        Map<String, Object> result = sendReturnOrderReceiptToEbs(maStoreReturnOrderAppToEbsBaseInfo);
+        if (!(Boolean) result.get("success")) {
+            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId(), null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+    /**
+     * 更新门店退货接口信息
+     *
+     * @param rtHeaderId    id
+     * @param msg           错误信息
+     * @param sendTime      发送成功时间
+     * @param flag          标识
+     */
+    private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long rtHeaderId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != rtHeaderId) {
+            separateOrderService.updateReturnOrderFlagAndSendTimeAndErrorMsg(rtHeaderId, msg, sendTime, flag);
+        }
+    }
+
     /**
      * 更新门店自提单接口信息
      *
@@ -728,6 +755,36 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             result.put("content", JSON.toJSONString(content));
         }
         log.info("sendOrderReceiveToEbs, result=" + result);
+        return result;
+    }
+
+
+    private Map<String, Object> sendReturnOrderReceiptToEbs(MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbsBaseInfo) {
+        log.info("sendReturnOrderReceiptToEbs, maReturnOrderReceiptInf=" + maStoreReturnOrderAppToEbsBaseInfo);
+        StoreReturnSecond storeReturnSecond = new StoreReturnSecond();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (null != maStoreReturnOrderAppToEbsBaseInfo) {
+            storeReturnSecond.setAttribute1(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute1()));
+            storeReturnSecond.setAttribute2(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute2()));
+            storeReturnSecond.setAttribute3(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute3()));
+            storeReturnSecond.setAttribute4(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute4()));
+            storeReturnSecond.setAttribute5(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute5()));
+            storeReturnSecond.setSobId(toString(maStoreReturnOrderAppToEbsBaseInfo.getSobId()));
+            storeReturnSecond.setRtHeaderId(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId().toString());
+            storeReturnSecond.setReturnNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getMainReturnNumber()));
+            storeReturnSecond.setReturnDate(toString(sdf.format(maStoreReturnOrderAppToEbsBaseInfo.getReturnDate())));
+        }
+        String storeReturnSecondJson = JSON.toJSONString(storeReturnSecond);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("storeReturnSecondJson", storeReturnSecondJson));
+        String url = AppConstant.EBS_NEW_URL + "callStoreReturnSecond";
+        Map<String, Object> result = this.postToEbs(url, parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("storeReturnSecondJson", storeReturnSecondJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendReturnOrderReceiptToEbs, result=" + result);
         return result;
     }
 

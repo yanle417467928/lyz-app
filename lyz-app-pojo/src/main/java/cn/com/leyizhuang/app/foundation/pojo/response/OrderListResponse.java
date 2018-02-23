@@ -53,7 +53,7 @@ public class OrderListResponse {
      */
     private Integer count;
     /**
-     * 应付/实付金额
+     * 订单总金额
      */
     private Double price;
     /**

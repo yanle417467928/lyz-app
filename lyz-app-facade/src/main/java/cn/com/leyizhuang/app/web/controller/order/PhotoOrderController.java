@@ -148,8 +148,8 @@ public class PhotoOrderController {
      * @date 2017/11/28
      */
     @PostMapping(value = "/pending/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getPhotoOrderOfPending(Long userId, Integer identityType) {
-        logger.info("getPhotoOrderOfPending CALLED,获取未处理拍照下单列表，入参 userId:{} identityType:{}", userId, identityType);
+    public ResultDTO<Object> getPhotoOrderOfPending(Long userId, Integer identityType,Integer page, Integer size) {
+        logger.info("getPhotoOrderOfPending CALLED,获取未处理拍照下单列表，入参 userId:{} identityType:{},page:{},size:{}", userId, identityType, page, size);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -161,10 +161,22 @@ public class PhotoOrderController {
             logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getPhotoOrderOfHandled OUT,获取已处理拍照下单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         List<PhotoOrderStatus> photoOrderStatuses = new ArrayList<PhotoOrderStatus>();
         photoOrderStatuses.add(PhotoOrderStatus.PENDING);
         photoOrderStatuses.add(PhotoOrderStatus.PROCESSING);
-        PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses,null,null);
+        PageInfo<PhotoOrderListResponse> photoOrderListResponseList = this.photoOrderServiceImpl.findByUserIdAndIdentityTypeAndStatus(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), photoOrderStatuses, page,  size);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderListResponseList.getList());
         logger.info("getPhotoOrderOfPending OUT,获取未处理拍照下单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

@@ -34,6 +34,9 @@ public interface OrderDAO {
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    //获取订单总金额
+    Double getTotalGoodsPriceByOrderNumber(@Param("orderNumber") String orderNumber);
+
     //计算获取订单所有商品数量
     Integer querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
 
@@ -132,4 +135,6 @@ public interface OrderDAO {
     void updateReturnableQuantityAndReturnQuantityById(@Param("qty") int returnQty,@Param("ogi") Long orderGoodsId);
 
     void updateOrderGoodsShippingQuantity(@Param("orderNo") String orderNo, @Param("sku") String gCode, @Param("qty") Integer dAckQty);
+
+    void updateOrderLogisticInfo(OrderLogisticsInfo logisticsInfo);
 }

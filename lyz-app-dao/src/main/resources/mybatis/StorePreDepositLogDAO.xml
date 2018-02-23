@@ -58,12 +58,12 @@
         ORDER BY l.create_time DESC
     </select>
 
-    <update id="updateStPreDepositByUserIdAndVersion">
+    <update id="updateStPreDepositByStoreIdAndVersion">
         UPDATE st_pre_deposit
         SET
         balance = #{money}
         WHERE
-        store_id = #{userId}
+        store_id = #{storeId}
         AND last_update_time = #{version}
     </update>
 

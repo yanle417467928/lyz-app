@@ -5,21 +5,16 @@ import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
-import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.IpUtil;
-import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
@@ -40,6 +35,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -49,7 +45,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -431,6 +426,7 @@ public class MaOrderRestController extends BaseRestController {
      * @param orderNumber
      * @return
      */
+    @Transactional
     @GetMapping(value = "/orderShipping")
     public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "code") String code) {
         logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}", orderNumber, code);
@@ -544,7 +540,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == maOrderAmount.getOrderNumber() || "".equals(maOrderAmount.getOrderNumber())) {
+        if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -658,8 +654,8 @@ public class MaOrderRestController extends BaseRestController {
      */
     @PutMapping(value = "/arrearsAndAgencyOrder/auditOrderStatus")
     public ResultDTO<Object> auditOrderStatus(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "status") String status) {
-        logger.info("auditOrderStatus 审核订单 ,入参orderNumber:{},status:{}", orderNumber,status);
-        if ( StringUtils.isBlank(status)) {
+        logger.info("auditOrderStatus 审核订单 ,入参orderNumber:{},status:{}", orderNumber, status);
+        if (StringUtils.isBlank(status)) {
             logger.warn("订单状态为空,审核订单失败");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
@@ -691,7 +687,7 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PutMapping(value = "/arrearsAndAgencyOrder/arrearsOrderRepayment")
-    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request,@RequestParam String lastUpdateTime) {
+    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request, @RequestParam String lastUpdateTime) {
         logger.info("arrearsOrderRepayment 欠款订单还款 ,入参maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
         if (null == maOrderAmount.getCashAmount()) {
@@ -725,8 +721,8 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date lastUpdateTimeFormat =dateFormat.parse(lastUpdateTime);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date lastUpdateTimeFormat = dateFormat.parse(lastUpdateTime);
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
             guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
@@ -735,7 +731,7 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetailVO.setReferenceNumber(maOrderAmount.getOrderNumber());
-            this.maOrderService.arrearsOrderRepayment(maOrderAmount,guideCreditChangeDetailVO,lastUpdateTimeFormat);
+            this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetailVO, lastUpdateTimeFormat);
             logger.warn("arrearsOrderRepayment ,后台欠款订单还款成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台欠款订单还款成功", null);
@@ -776,16 +772,16 @@ public class MaOrderRestController extends BaseRestController {
                         "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{}", sellerId, customerId, goodsDetails, giftDetails,
                 cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney);
         if (null == sellerId) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,导购id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购id不能为空！", null);
         }
 
         if (null == customerId) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,顾客id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id不能为空！", null);
         }
         if (StringUtils.isBlank(goodsDetails)) {
-            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败");
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,商品信息不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空！", null);
         }
 
@@ -889,7 +885,7 @@ public class MaOrderRestController extends BaseRestController {
             //**************** 2、持久化订单相关实体信息 ****************
             maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null);
 
-            logger.warn("saveMaProductCoupon OUT,买券订单创建成功","买券订单创建成功");
+            logger.warn("saveMaProductCoupon OUT,买券订单创建成功", "买券订单创建成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "买券订单创建成功", null);
         } catch (LockStorePreDepositException | SystemBusyException | GoodsMultipartPriceException | GoodsNoPriceException |
                 OrderPayableAmountException | DutchException e) {

@@ -39,7 +39,7 @@ public class CustomerVO {
     //状态：禁用、启用
     private Boolean status;
     //灯号:绿灯 黄灯 红灯 熄灯
-    private String light;
+    private AppCustomerLightStatus light;
 
 
     public static final CustomerVO transform(CustomerDO customerDO) {
@@ -49,15 +49,7 @@ public class CustomerVO {
             customerVO.setName(customerDO.getName());
             customerVO.setMobile(customerDO.getMobile());
             customerVO.setStatus(customerDO.getStatus());
-                if ("GREEN".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.GREEN.getValue());
-                } else if ("YELLOW".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.YELLOW.getValue());
-                } else if ("RED".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.RED.getValue());
-                } else if ("CLOSE".equals(customerDO.getLight())) {
-                    customerVO.setLight(AppCustomerLightStatus.CLOSE.getValue());
-                }
+            customerVO.setLight(customerDO.getLight());
             customerVO.setStore(customerDO.getStoreId());
             return customerVO;
         } else {

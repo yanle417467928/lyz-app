@@ -22,7 +22,7 @@
 <body>
 
 <section class="content-header">
-    <h1>修改商品分类信息</h1>
+    <h1>编辑品牌信息</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -195,7 +195,7 @@
                         }, remote: {
                             type: 'POST',
                             url: '/rest/goodsBrand/editIsExistSort',
-                            message: '已存在品牌名称',
+                            message: '已存排序号',
                             delay: 500,
                             data: function () {
                                 return {

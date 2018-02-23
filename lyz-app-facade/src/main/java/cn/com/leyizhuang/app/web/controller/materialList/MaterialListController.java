@@ -597,7 +597,7 @@ public class MaterialListController {
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
             for (Map.Entry<String, Integer> entry : goodsMap.entrySet()) {
-                GoodsDO goodsDO = this.quickOrderRelationServiceImpl.findByNumber(entry.getKey());
+                GoodsDO goodsDO = this.quickOrderRelationServiceImpl.findByNumber(userId, identityType, entry.getKey());
                 if (null != goodsDO) {
                     MaterialListDO materialListDO = materialListServiceImpl.findByUserIdAndIdentityTypeAndGoodsId(userId,
                             AppIdentityType.getAppIdentityTypeByValue(identityType), goodsDO.getGid());

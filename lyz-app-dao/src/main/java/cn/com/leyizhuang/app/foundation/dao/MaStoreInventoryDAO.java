@@ -18,5 +18,7 @@ public interface MaStoreInventoryDAO {
 
     MaStoreInventory findStoreInventoryByStoreCodeAndGoodsId(@Param(value = "storeId") Long storeId,@Param(value = "goodsId")  Long goodsId);
 
-    void updateStoreInventory (@Param(value = "storeId")Long storeId,@Param(value = "goodsId")Long goodsId,@Param(value = "goodsQty")Integer goodsQty,@Param(value = "date")Date date);
+    int updateStoreInventory (@Param(value = "storeId")Long storeId,@Param(value = "goodsId")Long goodsId,@Param(value = "goodsQty")Integer goodsQty,@Param(value = "date")Date date);
+
+    int updateStoreInventoryAndAvailableIty (@Param(value = "storeId")Long storeId,@Param(value = "goodsId")Long goodsId,@Param(value = "goodsQty")Integer goodsQty,@Param(value = "goodsAvailableIty")Integer goodsAvailableIty,@Param(value = "date")Date date);
 }

@@ -27,7 +27,8 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab_1-1" data-toggle="tab" onclick="showAvailableCredit()">可用额度</a></li>
+                    <li class="active"><a href="#tab_1-1" data-toggle="tab" onclick="showAvailableCredit()">可用额度</a>
+                    </li>
                     <li><a href="#tab_1-3" data-toggle="tab" onclick="showTempCredit()">临时额度</a></li>
                     <li><a href="#tab_1-2" data-toggle="tab" onclick="showFixedCredit()">固定额度</a></li>
                 </ul>
@@ -58,10 +59,10 @@
         });
     });
 
-    function showAvailableCredit(){
+    function showAvailableCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId=$('#guideId').val()
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/guideLine/availableCreditChangePage/grid/'+guideId , 'get', false, function (params) {
+        var guideId = $('#guideId').val()
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/availableCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -75,11 +76,11 @@
                 field: 'id',
                 title: 'ID',
                 align: 'center'
-            },{
+            }, {
                 field: 'availableCreditChangId.creditLimitAvailableChangeAmount',
                 title: '可用额度改变量',
                 align: 'center'
-            },{
+            }, {
                 field: 'availableCreditChangId.creditLimitAvailableAfterChange',
                 title: '可用额度余量',
                 align: 'center'
@@ -92,7 +93,24 @@
             {
                 field: 'changeType',
                 title: '变更类型',
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row) {
+                    if ('PLACE_ORDER' == value) {
+                        return '订单消费';
+                    } else if ('RETURN_ORDER' == value) {
+                        return '退单返还';
+                    } else if ('CANCEL_ORDER' == value) {
+                        return '取消订单返还';
+                    } else if ('TEMPORARY_ADJUSTMENT' == value) {
+                        return '临时额度调整';
+                    } else if ('ADMIN_RECHARGE' == value) {
+                        return '管理员修改';
+                    } else if ('ORDER_REPAYMENT' == value) {
+                        return '订单还款';
+                    } else if ('TEMPORARY_CLEAR' == value) {
+                        return '临时额度清零';
+                    }
+                }
             },
             {
                 field: 'changeTypeDesc',
@@ -103,7 +121,7 @@
                 field: 'createTime',
                 title: '变更时间',
                 align: 'center',
-                formatter: function(value,row) {
+                formatter: function (value, row) {
                     return formatDateTime(value);
                 }
             },
@@ -118,8 +136,8 @@
 
     function showTempCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId=$('#guideId').val()
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/guideLine/tempCreditChangePage/grid/'+guideId , 'get', false, function (params) {
+        var guideId = $('#guideId').val()
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/tempCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -133,7 +151,7 @@
                 field: 'id',
                 title: 'ID',
                 align: 'center'
-            },{
+            }, {
                 field: 'tempCreditChangeId.tempCreditLimitChangeAmount',
                 title: '临时额度改变量',
                 align: 'center'
@@ -150,7 +168,24 @@
             {
                 field: 'changeType',
                 title: '变更类型',
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row) {
+                    if ('PLACE_ORDER' == value) {
+                        return '订单消费';
+                    } else if ('RETURN_ORDER' == value) {
+                        return '退单返还';
+                    } else if ('CANCEL_ORDER' == value) {
+                        return '取消订单返还';
+                    } else if ('TEMPORARY_ADJUSTMENT' == value) {
+                        return '临时额度调整';
+                    } else if ('ADMIN_RECHARGE' == value) {
+                        return '管理员修改';
+                    } else if ('ORDER_REPAYMENT' == value) {
+                        return '订单还款';
+                    } else if ('TEMPORARY_CLEAR' == value) {
+                        return '临时额度清零';
+                    }
+                }
             },
             {
                 field: 'changeTypeDesc',
@@ -161,7 +196,7 @@
                 field: 'createTime',
                 title: '变更时间',
                 align: 'center',
-                formatter: function(value,row) {
+                formatter: function (value, row) {
                     return formatDateTime(value);
                 }
             },
@@ -173,10 +208,10 @@
         ]);
     }
 
-    function showFixedCredit(){
+    function showFixedCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId=$('#guideId').val()
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/guideLine/fixedCreditChangePage/grid/'+guideId , 'get', false, function (params) {
+        var guideId = $('#guideId').val()
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/fixedCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -190,11 +225,11 @@
                 field: 'id',
                 title: 'ID',
                 align: 'center'
-            },{
+            }, {
                 field: 'fixedCreditChangeId.fixedCreditLimitChangeAmount',
                 title: '固定额度改变量',
                 align: 'center'
-            },{
+            }, {
                 field: 'fixedCreditChangeId.fixedCreditLimitAfterChange',
                 title: '固定额度余量',
                 align: 'center',
@@ -207,7 +242,24 @@
             {
                 field: 'changeType',
                 title: '变更类型',
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row) {
+                    if ('PLACE_ORDER' == value) {
+                        return '订单消费';
+                    } else if ('RETURN_ORDER' == value) {
+                        return '退单返还';
+                    } else if ('CANCEL_ORDER' == value) {
+                        return '取消订单返还';
+                    } else if ('TEMPORARY_ADJUSTMENT' == value) {
+                        return '临时额度调整';
+                    } else if ('ADMIN_RECHARGE' == value) {
+                        return '管理员修改';
+                    } else if ('ORDER_REPAYMENT' == value) {
+                        return '订单还款';
+                    } else if ('TEMPORARY_CLEAR' == value) {
+                        return '临时额度清零';
+                    }
+                }
             },
             {
                 field: 'changeTypeDesc',
@@ -218,7 +270,7 @@
                 field: 'createTime',
                 title: '变更时间',
                 align: 'center',
-                formatter: function(value,row) {
+                formatter: function (value, row) {
                     return formatDateTime(value);
                 }
             },
