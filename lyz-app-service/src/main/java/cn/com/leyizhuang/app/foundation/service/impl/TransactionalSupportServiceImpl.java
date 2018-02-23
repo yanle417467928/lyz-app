@@ -56,7 +56,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                             List<OrderJxPriceDifferenceReturnInf> returnInfs) {
+                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderFreightInf orderFreightInf) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -86,6 +86,10 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         //保存经销差价收款信息
         for (OrderJxPriceDifferenceReturnInf returnInf : returnInfs) {
             separateOrderService.saveOrderJxPriceDifferenceReturnInf(returnInf);
+        }
+        //保存订单运费信息
+        if (null != orderFreightInf){
+            separateOrderService.saveOrderFreightInf(orderFreightInf);
         }
 
     }
@@ -147,11 +151,11 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         }
         //保存退单退款信息
         if (AssertUtil.isNotEmpty(returnOrderRefundInfList)) {
-            returnOrderRefundInfList.forEach(p->separateOrderService.saveReturnOrderRefundInf(p));
+            returnOrderRefundInfList.forEach(p -> separateOrderService.saveReturnOrderRefundInf(p));
         }
         //保存退单经销差价扣除信息
-        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)){
-            jxPriceDifferenceRefundInfList.forEach(p-> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
+        if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)) {
+            jxPriceDifferenceRefundInfList.forEach(p -> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
         }
     }
 }

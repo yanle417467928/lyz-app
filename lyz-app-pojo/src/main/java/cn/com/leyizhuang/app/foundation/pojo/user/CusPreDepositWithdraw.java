@@ -37,7 +37,7 @@ public class CusPreDepositWithdraw {
     /**
      * 申请人姓名
      */
-    private Long applyCusName;
+    private String applyCusName;
 
     /**
      * 申请人电话

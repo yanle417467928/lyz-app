@@ -136,7 +136,7 @@
                                     <td>
                                         <div>
                                             <span>
-                                            ${maOrderDetail.shipTime!""}
+                                            <#if shippingTime??> ${shippingTime?string("yyyy-MM-dd HH:mm:ss")!""}</#if>
                                             </span>
                                         </div>
                                     </td>
@@ -485,7 +485,7 @@
                     validators: {
                         notEmpty: {
                             message: '流水号不允许为空'
-                        },stringLength: {
+                        }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '流水号长度必须在1~10位之间'
@@ -508,8 +508,8 @@
         });
         $("#confirmSubmit").click(function () {
             var isPayUp = $('#isPayUp').val();
-            if('true'==isPayUp){
-               return false;
+            if ('true' == isPayUp) {
+                return false;
             }
             var bv = form.data('bootstrapValidator');
             bv.validate();
@@ -591,7 +591,7 @@
     function judgmentVerification(data) {
         var orderNumber = $("#orderNumber").val();
         var code = $("#code").val();
-        if(null==code||''==code||6!=code.length){
+        if (null == code || '' == code || 6 != code.length) {
             return false;
         }
         $.ajax({

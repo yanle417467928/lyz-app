@@ -37,7 +37,7 @@ public class StPreDepositWithdraw {
     /**
      * 申请门店名称
      */
-    private Long applyStName;
+    private String applyStName;
 
     /**
      * 申请门店电话

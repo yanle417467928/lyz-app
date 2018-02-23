@@ -690,6 +690,17 @@
         LIMIT 1
     </select>
 
+
+    <select id="getShippingTime" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        os.shipping_time
+        FROM ord_shipping os
+        WHERE os.ord_no = #{orderNumber}
+        ORDER  BY  id DESC
+        LIMIT 1
+    </select>
+
     <select id="isPayUp" parameterType="java.lang.String"
             resultType="java.lang.Boolean">
         SELECT

@@ -60,8 +60,8 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
     }
 
     @Override
-    public void updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney) {
-        this.maEmpCreditMoneyDAO.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney);
+    public int updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney,Date lastUpdateTime) {
+       return this.maEmpCreditMoneyDAO.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney,lastUpdateTime);
     }
 
 

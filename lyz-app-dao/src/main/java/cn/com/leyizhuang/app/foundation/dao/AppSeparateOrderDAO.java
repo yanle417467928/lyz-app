@@ -152,4 +152,13 @@ public interface AppSeparateOrderDAO {
                                                      @Param(value = "msg") String msg,
                                                      @Param(value = "sendTime") Date sendTime,
                                                      @Param(value = "flag") AppWhetherFlag flag);
+
+    void saveOrderFreightInf(OrderFreightInf orderFreightInf);
+
+    OrderFreightInf getOrderFreightInfByMainOrderNumber(@Param(value = "orderNumber") String orderNumber);
+
+    void updateOrderFreightInfFlagAndSendTimeAndErrorMsg(@Param(value = "id") Long id,
+                                                         @Param(value = "msg") String msg,
+                                                         @Param(value = "sendTime") Date sendTime,
+                                                         @Param(value = "sendFlag") AppWhetherFlag sendFlag);
 }
