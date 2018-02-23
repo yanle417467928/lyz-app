@@ -4,12 +4,14 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.PreDepositWithdrawStatus;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
@@ -17,6 +19,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
@@ -59,6 +62,9 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     private CusPreDepositLogService cusPreDepositLogServiceImpl;
 
     @Resource
+    private StorePreDepositLogService storePreDepositLogService;
+
+    @Resource
     private AppStoreService appStoreService;
 
     @Override
@@ -92,7 +98,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         Double needWithdrawAmount = cusPreDepositWithdraw.getWithdrawAmount() == null ? 0.00 : cusPreDepositWithdraw.getWithdrawAmount();
 
         // 扣款 取负数
-        Double subBalance = -CountUtil.sub(canWithdrawAmount,needWithdrawAmount);
+        Double subBalance = -needWithdrawAmount;
         int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(param.getId(),subBalance,new Timestamp(System.currentTimeMillis()),customerPreDeposit.getLastUpdateTime());
         if (1 != row) {
             throw new RuntimeException("提现申请失败");
@@ -136,21 +142,116 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         Double needWithdrawAmount = param.getAmount() == null ? 0.00 : param.getAmount();
 
         // 扣款
-        Double subBalance = -CountUtil.sub(canWithdrawAmount,needWithdrawAmount);
+        Double subBalance = needWithdrawAmount;
         int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(param.getId(),subBalance,preDeposit.getLastUpdateTime());
         if (1 != row) {
             throw new RuntimeException("提现申请失败");
         }
 
         // 记录日志
-        CusPreDepositLogDO log = new CusPreDepositLogDO();
-        log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), subBalance, CustomerPreDepositChangeType.WITHDRAW);
+        StPreDepositLogDO log = new StPreDepositLogDO();
+        log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), -subBalance, StorePreDepositChangeType.WITHDRAW);
         log.setUserIdAndOperatorinfo(param.getId(), param.getId(), AppIdentityType.SELLER, "");
         log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
         log.setMerchantOrderNumber("");
-        log.setBalance(CountUtil.add(preDeposit.getBalance(), subBalance));
+        log.setBalance(CountUtil.add(preDeposit.getBalance(), -subBalance));
         log.setChangeTypeDesc("门店预存款提现");
-        this.cusPreDepositLogServiceImpl.save(log);
+        this.storePreDepositLogService.save(log);
+    }
+
+    @Override
+    public PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId) {
+
+        PageHelper.startPage(page, size);
+        List<CusPreDepositWithdraw> cusPreDepositWithdraws = cusPreDepositWithdrawDAO.findByCusId(cusId);
+        return new PageInfo<>(cusPreDepositWithdraws);
+    }
+
+    @Override
+    public PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId) {
+        PageHelper.startPage(page, size);
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByStId(stId);
+        return new PageInfo<>(stPreDepositWithdraws);
+    }
+
+    @Override
+    @Transactional
+    public void cusCancelApply(Long applyId, Long cusId) {
+
+        CusPreDepositWithdraw cusPreDepositWithdraw = cusPreDepositWithdrawDAO.findById(applyId);
+
+
+        if (cusPreDepositWithdraw != null && cusPreDepositWithdraw.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
+            cusPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CANCEL);
+
+            cusPreDepositWithdrawDAO.update(cusPreDepositWithdraw);
+
+            // 修改顾客预存款
+            Long cusID = cusPreDepositWithdraw.getApplyCusId();
+            CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(cusID);
+
+            // 可现预存款
+            Double canWithdrawAmount = customerPreDeposit.getBalance() == null ? 0.00 : customerPreDeposit.getBalance();
+            // 需要恢复预存款
+            Double needWithdrawAmount = cusPreDepositWithdraw.getWithdrawAmount() == null ? 0.00 : cusPreDepositWithdraw.getWithdrawAmount();
+
+            Double subBalance = needWithdrawAmount;
+            int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(cusId,subBalance,new Timestamp(System.currentTimeMillis()),customerPreDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new RuntimeException("取消申请失败");
+            }
+
+            // 记录日志
+            CusPreDepositLogDO log = new CusPreDepositLogDO();
+            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), subBalance, CustomerPreDepositChangeType.RETURN_WITHDRAW);
+            log.setUserIdAndOperatorinfo(cusId, cusId, AppIdentityType.CUSTOMER, "");
+            log.setOrderNumber(cusPreDepositWithdraw.getApplyNo());
+            log.setMerchantOrderNumber("");
+            log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), subBalance));
+            log.setChangeTypeDesc("顾客预存款提现取消");
+            this.cusPreDepositLogServiceImpl.save(log);
+        }else{
+            throw new RuntimeException("取消申请失败");
+        }
+
+
+    }
+
+    @Override
+    @Transactional
+    public void stCancelApply(Long applyId, Long stId) {
+
+        StPreDepositWithdraw stPreDepositWithdraw = this.stPreDepositWithdrawDAO.findById(stId);
+        if (stPreDepositWithdraw != null && stPreDepositWithdraw.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
+            stPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CANCEL);
+
+            this.stPreDepositWithdrawDAO.update(stPreDepositWithdraw);
+            // 修改门店预存款
+            StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(stId);
+            // 可现预存款
+            Double canWithdrawAmount = preDeposit.getBalance() == null ? 0.00 : preDeposit.getBalance();
+            // 需要提现预存款
+            Double needWithdrawAmount = stPreDepositWithdraw.getWithdrawAmount() == null ? 0.00 : stPreDepositWithdraw.getWithdrawAmount();
+
+            // 扣款
+            Double subBalance = needWithdrawAmount;
+            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stId,-subBalance,preDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new RuntimeException("提现申请失败");
+            }
+
+            // 记录日志
+            StPreDepositLogDO log = new StPreDepositLogDO();
+            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), subBalance, StorePreDepositChangeType.RETURN_WITHDRAW);
+            log.setUserIdAndOperatorinfo(stId, stId, AppIdentityType.SELLER, "");
+            log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
+            log.setMerchantOrderNumber("");
+            log.setBalance(CountUtil.add(preDeposit.getBalance(), subBalance));
+            log.setChangeTypeDesc("门店预存款提现取消");
+            this.storePreDepositLogService.save(log);
+        }else {
+            throw new RuntimeException("取消提现申请失败");
+        }
     }
 
     /**

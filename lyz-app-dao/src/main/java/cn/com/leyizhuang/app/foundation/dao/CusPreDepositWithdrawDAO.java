@@ -26,4 +26,5 @@ public interface CusPreDepositWithdrawDAO {
 
     List<CusPreDepositWithdraw> findByKeywords(@Param("keywords") String keywords,@Param("status") String status);
 
+    List<CusPreDepositWithdraw> findByCusId(@Param("cusId") Long cusId);
 }

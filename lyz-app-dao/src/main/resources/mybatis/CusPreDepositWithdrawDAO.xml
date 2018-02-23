@@ -97,4 +97,11 @@
             and status = #{status}
         </if>
     </select>
+
+    <select id="findByCusId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
+        SELECT
+        <include refid="ALL_FIELDS"></include>
+        FROM cus_pre_deposit_withdraw
+        where apply_cus_id = #{cusId}
+    </select>
 </mapper>

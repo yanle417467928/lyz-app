@@ -78,6 +78,8 @@ public class AppEmployee {
      */
     private String qrCode;
 
+
+
     public AppEmployee() {
     }
 

@@ -25,4 +25,6 @@ public interface StPreDepositWithdrawDAO {
     int updateStatus(@Param("applyNo") String applyNo,@Param("status") PreDepositWithdrawStatus status);
 
     List<StPreDepositWithdraw> findByKeywords(@Param("keywords") String keywords,@Param("status") String status);
+
+    List<StPreDepositWithdraw> findByStId(@Param("stId") Long stId);
 }
