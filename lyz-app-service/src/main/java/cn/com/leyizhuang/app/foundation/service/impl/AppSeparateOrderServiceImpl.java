@@ -79,7 +79,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void separateOrder(String orderNumber) {
         OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
         if (null != baseInfo) {
+            //主单账单明细
             OrderBillingDetails billingDetail = orderService.getOrderBillingDetail(orderNumber);
+            //主单商品明细
             List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
             if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                 //获取所有companyFlag并加入到set中
@@ -296,8 +298,21 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         jxPriceDifferenceReturnInfs.add(returnInf);
                     }
                 }
+
+                //订单运费拆单
+                OrderFreightInf orderFreightInf = null;
+                if (billingDetail.getFreight() > AppConstant.DOUBLE_ZERO) {
+                    orderFreightInf = new OrderFreightInf();
+                    orderFreightInf.setType(AppFreightOrderType.ORDER);
+                    orderFreightInf.setMainOrderNumber(baseInfo.getOrderNumber());
+                    orderFreightInf.setAmount(billingDetail.getFreight());
+                    orderFreightInf.setOrderAmt(orderBaseInfList.stream().mapToDouble(OrderBaseInf::getOrderAmt).sum());
+                    orderFreightInf.setGoodsAmt(orderGoodsInfoList.stream().mapToDouble(p -> p.getOrderQuantity()
+                            * p.getSettlementPrice()).sum());
+                }
                 //循环保存分单信息,分单商品信息及订单券信息
-                supportService.saveSeparateOrderRelevantInf(orderBaseInfList, orderGoodsInfList, couponInfList, receiptInfList, jxPriceDifferenceReturnInfs);
+                supportService.saveSeparateOrderRelevantInf(orderBaseInfList, orderGoodsInfList, couponInfList,
+                        receiptInfList, jxPriceDifferenceReturnInfs, orderFreightInf);
 
             } else {
                 //todo 记录拆单错误日志
@@ -762,7 +777,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void updateReturnOrderCouponInf(List<Long> returnCouponInfLineId, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (AssertUtil.isNotEmpty(returnCouponInfLineId)){
+        if (AssertUtil.isNotEmpty(returnCouponInfLineId)) {
             separateOrderDAO.updateReturnOrderCouponInf(returnCouponInfLineId, msg, sendTime, flag);
         }
     }
@@ -779,7 +794,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void updateReturnOrderRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (AssertUtil.isNotEmpty(refundInfIds)){
+        if (AssertUtil.isNotEmpty(refundInfIds)) {
             separateOrderDAO.updateReturnOrderRefundInf(refundInfIds, msg, sendTime, flag);
         }
     }
@@ -796,8 +811,32 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void updateReturnOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (AssertUtil.isNotEmpty(refundInfIds)){
-            separateOrderDAO.updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds,msg,sendTime,flag);
+        if (AssertUtil.isNotEmpty(refundInfIds)) {
+            separateOrderDAO.updateReturnOrderJxPriceDifferenceRefundInf(refundInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void saveOrderFreightInf(OrderFreightInf orderFreightInf) {
+        if (null != orderFreightInf){
+            separateOrderDAO.saveOrderFreightInf(orderFreightInf);
+        }
+    }
+
+    @Override
+    public void sendOrderFreightInf(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)){
+            OrderFreightInf orderFreightInf = separateOrderDAO.getOrderFreightInfByMainOrderNumber(orderNumber);
+            if (null != orderFreightInf){
+                ebsSenderService.sendOrderFreightInfAndRecord(orderFreightInf);
+            }
+        }
+    }
+
+    @Override
+    public void updateOrderFreightInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
+        if (null != id){
+            separateOrderDAO.updateOrderFreightInfFlagAndSendTimeAndErrorMsg(id,msg,sendTime,sendFlag);
         }
     }
 

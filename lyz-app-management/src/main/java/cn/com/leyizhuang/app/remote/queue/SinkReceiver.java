@@ -56,12 +56,14 @@ public class SinkReceiver {
                         separateOrderService.separateOrder(orderNumber);
                         //拆单完成之后发送订单和订单商品信息到EBS
                         separateOrderService.sendOrderBaseInfAndOrderGoodsInf(orderNumber);
-                        //发送订单券儿信息
+                        //发送订单券儿信息到EBS
                         separateOrderService.sendOrderCouponInf(orderNumber);
-                        //发送订单收款信息
+                        //发送订单收款信息到EBS
                         separateOrderService.sendOrderReceiptInf(orderNumber);
-                        //发送经销差价返还信息
+                        //发送经销差价返还信息到EBS
                         separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);
+                        //发送订单运费信息到EBS
+                        separateOrderService.sendOrderFreightInf(orderNumber);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");

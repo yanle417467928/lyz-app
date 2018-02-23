@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -247,6 +251,18 @@ public class MaOrderViewController {
         if (!StringUtils.isBlank(orderNumber)) {
             //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            //查询出货时间
+            String  time = maOrderService.getShippingTime(orderNumber);
+            logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 time:{}", time);
+            if(null!=time){
+                try{
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date shippingTime  =sdf.parse(time);
+                    map.addAttribute("shippingTime", shippingTime);
+                } catch (ParseException e) {
+                    logger.info("出货日期转换错误");
+                }
+            }
             if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
@@ -268,6 +284,7 @@ public class MaOrderViewController {
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
                 Boolean isPayUp = maOrderService.isPayUp(orderNumber);
                 map.addAttribute("isPayUp", isPayUp);
+                logger.info("selfTakeOrderDetail CALLED,门店订单详情成功");
                 return "/views/order/selfTakeOrder_detail";
             } else {
                 logger.warn("该订单不为门店自提");

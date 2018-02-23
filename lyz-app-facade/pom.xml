@@ -67,11 +67,11 @@
         </dependency>
 
         <!-- 依赖API模块 -->
-        <dependency>
+<!--        <dependency>
             <groupId>cn.com.leyizhuang</groupId>
             <artifactId>lyz-app-api</artifactId>
             <version>${lyz-app-api.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- 持久层：Spring Boot MyBatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

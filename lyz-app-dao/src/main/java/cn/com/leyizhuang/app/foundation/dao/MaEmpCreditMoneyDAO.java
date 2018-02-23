@@ -12,7 +12,7 @@ public interface MaEmpCreditMoneyDAO {
 
     Integer update(GuideCreditMoney guideCreditMoneyVO);
 
-    void  updateGuideCreditMoneyByRepayment(@Param(value = "sellerId") Long sellerId, @Param(value = "availableCreditMoney") BigDecimal availableCreditMoney);
+    int  updateGuideCreditMoneyByRepayment(@Param(value = "sellerId") Long sellerId, @Param(value = "availableCreditMoney") BigDecimal availableCreditMoney,@Param(value = "lastUpdateTime")Date lastUpdateTime);
 
     void clearTempCreditLimit(Long id);
 

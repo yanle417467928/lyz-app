@@ -195,6 +195,9 @@
             </if>
         </set>
         WHERE emp_id = #{sellerId}
+        AND
+        last_update_time =#{lastUpdateTime}
+
     </update>
 
 </mapper>

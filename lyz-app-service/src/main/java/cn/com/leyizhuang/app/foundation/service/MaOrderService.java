@@ -202,6 +202,8 @@ public interface MaOrderService {
      */
     Boolean isPayUp(String orderNumber);
 
+
+    String getShippingTime(String orderNumber);
     /**
      * 查询订单审核状态
      *

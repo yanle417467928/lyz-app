@@ -552,10 +552,10 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
-        if (amountPayable < 0D) {
+        if (amountPayable < - AppConstant.PAY_UP_LIMIT) {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
-       // orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+        // orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         //根据应付金额判断订单账单是否已付清
         if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
