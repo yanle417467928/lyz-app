@@ -357,7 +357,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     /**
-     * 查询商品详情
+     * 根据信息查询商品
      *
      * @param page
      * @param size
