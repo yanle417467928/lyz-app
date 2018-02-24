@@ -319,6 +319,7 @@
                     <include>**/*.ftl</include>
                     <include>**/*.ico</include>
                     <include>**/*.jpg</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
             <resource>
