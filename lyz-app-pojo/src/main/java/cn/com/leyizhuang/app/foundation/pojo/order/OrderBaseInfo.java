@@ -178,7 +178,7 @@ public class OrderBaseInfo implements Serializable {
     private String remark;
 
     /**
-     * 销售纸质单号（后台四川直营门店购买产品券）
+     * 销售纸质单号（四川直营门店）
      */
     private String salesNumber;
 

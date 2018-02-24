@@ -100,7 +100,7 @@ public interface AppOrderService {
      * @param deliveryType 配送方式
      * @return OrderBaseInfo 订单基础信息
      */
-    OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark);
+    OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark, String salesNumber);
 
     /**
      * 生成订单物流信息 OrderLogisticInfo
