@@ -233,8 +233,8 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo) {
-        return this.maOrderDAO.findOrderGoodsList(orderNo);
+    public List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo,Long storeId) {
+        return this.maOrderDAO.findOrderGoodsList(orderNo,storeId);
     }
 
     @Override
@@ -258,7 +258,8 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderShipping.setShippingTime(date);
         this.saveOrderShipping(orderShipping);
         //查询该订单下的所有商品
-        List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber);
+       Long storeId = maOrderTempInfo.getStoreId();
+        List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber,storeId);
 
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
             //生成出货记录

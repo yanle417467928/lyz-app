@@ -272,7 +272,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark) {
+    public OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark, String salesNumber) {
         OrderBaseInfo tempOrder = new OrderBaseInfo();
         //设置订单创建时间
         Calendar calendar = Calendar.getInstance();
@@ -291,6 +291,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         //生成并设置订单号
         String orderNumber = OrderUtils.generateOrderNumber(cityId);
         tempOrder.setOrderNumber(orderNumber);
+        //设置销售纸质单号
+        tempOrder.setSalesNumber(salesNumber);
         //设置订单备注信息
         tempOrder.setRemark(remark);
         //设置订单配送方式

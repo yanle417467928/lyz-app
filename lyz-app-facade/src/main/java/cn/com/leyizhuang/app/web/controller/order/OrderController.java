@@ -211,11 +211,18 @@ public class OrderController {
             //账单信息
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
+
+
+            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()){
+                    AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
+
+            }
+
             //**********************************开始创建订单 **************************
 
             //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
-                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark());
+                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
 
             //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
@@ -1024,6 +1031,13 @@ public class OrderController {
                 orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                //获取订单物流相关信息
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                if ("SELF_TAKE".equals(orderBaseInfo.getDeliveryType())){
+                    orderListResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                }else{
+                    orderListResponse.setShippingAddress(orderLogisticsInfo.getBookingStoreName());
+                }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setGoodsImgList(goodsImgList);

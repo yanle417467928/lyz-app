@@ -45,10 +45,10 @@ import java.util.Map;
 
 /**
  * @author Jerry.Ren
- *         Notes: 退货单接口
- *         Created with IntelliJ IDEA.
- *         Date: 2017/12/4.
- *         Time: 9:34.
+ * Notes: 退货单接口
+ * Created with IntelliJ IDEA.
+ * Date: 2017/12/4.
+ * Time: 9:34.
  */
 
 @RestController
@@ -320,7 +320,7 @@ public class ReturnOrderController {
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                     }
                 }
-            }else{
+            } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
                 logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -474,6 +474,8 @@ public class ReturnOrderController {
                         }
                     }
                 }
+                //设置退货商品总金额
+                returnOrderBaseInfo.setReturnPrice(returnTotalGoodsPrice);
             }
 
             //********************创建退货单退券信息*********************************
@@ -1007,13 +1009,17 @@ public class ReturnOrderController {
                 } else if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType())) {
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
                     //下订单的id 是否和当前顾客的ID一致
-                    if (null != orderBaseInfo && null != orderBaseInfo.getCreatorId()) {
-                        if (orderBaseInfo.getCreatorId().equals(userId)) {
-                            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                    if (null != orderBaseInfo) {
+                        AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                        if (store != null) {
                             orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
                             orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
                             orderLogisticsInfo.setBookingStoreName(store.getStoreName());
                             orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
+                        } else {
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前用户未查询到门店信息！", null);
+                            logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
                         }
                     }
                 }

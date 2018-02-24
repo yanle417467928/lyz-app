@@ -1,10 +1,11 @@
-package cn.com.leyizhuang.app.web.controller.views.qrcode;
+package cn.com.leyizhuang.app.web.controller.qrcode;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 @RequestMapping(value = QrcodeRegisterController.PRE_URL)
-public class QrcodeRegisterController {
+public class QrcodeRegisterController extends BaseController {
 
     protected final static String PRE_URL = "/qrcode/register";
 

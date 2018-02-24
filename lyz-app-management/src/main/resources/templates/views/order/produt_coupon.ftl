@@ -1305,6 +1305,7 @@
 
     //保存买券订单
     function save() {
+        $global.timer = setTimeout($loading.show, 2000);
         var storeCode = $('#storeCode').text();
         var cashMoney = $('#cashMoney').val();
         var posMoney = $('#posMoney').val();
@@ -1318,10 +1319,12 @@
 
         var salesNumber = $('#salesNumber').val();
         if ('' == sellerId || null == sellerId) {
+            $loading.close();
             $notify.warning("请选择导购");
             return;
         }
         if ('' == customerId || null == customerId) {
+            $loading.close();
             $notify.warning("请选择顾客");
             return;
         }
@@ -1336,6 +1339,7 @@
                 || 'YC002' == storeCode || 'ZC002' == storeCode || 'RC005' == storeCode || 'FZM007' == storeCode || 'SH001' == storeCode
                 || 'YJ001' == storeCode || 'HS001' == storeCode || 'XC001' == storeCode) {
             if (h < 6 || h > 19) {
+                $loading.close();
                 $notify.warning("成都直营门店此时间段不能购买产品券");
                 return;
             }
@@ -1343,12 +1347,14 @@
         var cityId = $('#cityId').val();
 
         if (-1 == cityId) {
+            $loading.close();
             $notify.warning("请先选择城市");
             return;
         }
 
         if (1 == cityId && 'ZY' == storeCode){
             if ('' == salesNumber || null == salesNumber) {
+                $loading.close();
                 $notify.warning("请填写销售纸质单号");
                 return;
             }
@@ -1364,6 +1370,7 @@
         var totalMoney = 0;
 
         if (selectPaymnet == -1) {
+            $loading.close();
             $notify.warning("请选择支付方式！");
             return;
         }
@@ -1371,28 +1378,33 @@
         if (selectPaymnet == 'offlinePayments') {
             totalMoney = $('#totalMoney').val();
             if (null == collectMoneyTime) {
+                $loading.close();
                 $notify.warning("请填写收款时间！");
                 return;
             }
             if (posMoney > 0) {
                 if (null == posNumber || '' == posNumber) {
+                    $loading.close();
                     $notify.warning("请输入POS流水号后六位！");
                     return;
                 }
             }
             if (null != posNumber && '' != posNumber) {
                 if ('' == posMoney || null == posMoney) {
+                    $loading.close();
                     $notify.warning("请输入POS流水号对应的POS金额！");
                     return;
                 }
             }
             if (Number(totalMoney) != Number(totalMoneys)) {
+                $loading.close();
                 $notify.warning("现金、POS、其他收款总和与收款金额不相等，请检查！");
                 return;
             }
         } else {
             totalMoney = Number(preDepositMoney);
             if (Number(availableMoney) < Number(preDepositMoney)) {
+                $loading.close();
                 $notify.warning("使用预存款金额大于可使用金额，请检查！");
                 return;
             }
@@ -1404,10 +1416,12 @@
         var goodsDetails = new Array();
         var a = goodsAndPriceDetail(goodsDetails, 'selectedGoodsTable', totalMoney);
         if (goodsDetails.length == 0) {
+            $loading.close();
             $notify.danger("请选择本品");
             return false;
         }
         if (a == 1) {
+            $loading.close();
             return;
         }
 
@@ -1416,6 +1430,7 @@
         var giftDetails = new Array();
         var b = giftDetail(giftDetails, 'giftMessage');
         if (b == 1) {
+            $loading.close();
             return;
         }
         var datas = {};
@@ -1450,9 +1465,12 @@
             },
             success: function (result) {
                 if (result.code === 0) {
-                    $notify.danger('保存成功');
+                    $loading.close();
+                    $notify.info(result.message);
+                    window.location.href = "/views/admin/order/buy/produtCoupon";
                 } else {
-                    $notify.warning(result.message)
+                    $loading.close();
+                    $notify.danger(result.message);
                 }
             }
         });

@@ -97,6 +97,7 @@ public class MaGoodsVO {
             goodsVO.setCategoryName(goodsDO.getCategoryName());
             goodsVO.setCoverImageUri(goodsDO.getCoverImageUri());
             goodsVO.setGoodsSpecification(goodsDO.getGoodsSpecification());
+            goodsVO.setGoodsDetail(goodsDO.getGoodsDetial());
             goodsVO.setCreateTime(goodsDO.getCreateTime());
             goodsVO.setIsHot(goodsDO.getIsHot());
             goodsVO.setRotationImageUri(goodsDO.getRotationImageUri());

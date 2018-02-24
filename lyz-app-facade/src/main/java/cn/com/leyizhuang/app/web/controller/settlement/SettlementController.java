@@ -25,13 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * 结算页面控制器
  *
  * @author Richard
- * Created on 2017-11-22 13:14
+ *         Created on 2017-11-22 13:14
  **/
 @RestController
 @RequestMapping(value = "/app/settlement")
@@ -190,6 +191,23 @@ public class SettlementController {
             return resultDTO;
         }
         try {
+            AppStore appStore = storeService.findById(storeId);
+            if (null == appStore) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店信息！", null);
+                logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            Integer hour = getHour();
+            if ((hour < 6 || hour > 19) && identityType == AppIdentityType.SELLER.getValue()) {
+                if ("ZY".equals(appStore.getStoreType()) && ("FZY009" == appStore.getStoreCode() || "HLC004" == appStore.getStoreCode() || "ML001" == appStore.getStoreCode() || "QCMJ008" == appStore.getStoreCode() ||
+                        "SB010" == appStore.getStoreCode() || "YC002" == appStore.getStoreCode() || "ZC002" == appStore.getStoreCode() || "RC005" == appStore.getStoreCode() ||
+                        "FZM007" == appStore.getStoreCode() || "SH001" == appStore.getStoreCode() || "YJ001" == appStore.getStoreCode() || "HS001" == appStore.getStoreCode() ||
+                        "XC001" == appStore.getStoreCode())) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该时段此门店不支持门店自提！", null);
+                    logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
             List<GoodsSimpleInfo> simpleInfos = objectMapper.readValue(goodsList, javaType1);
@@ -223,5 +241,17 @@ public class SettlementController {
             return resultDTO;
         }
 
+    }
+
+    /**
+     * 得到现在小时
+     */
+    public static Integer getHour() {
+        Date currentTime = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = formatter.format(currentTime);
+        String hour;
+        hour = dateString.substring(11, 13);
+        return Integer.parseInt(hour);
     }
 }

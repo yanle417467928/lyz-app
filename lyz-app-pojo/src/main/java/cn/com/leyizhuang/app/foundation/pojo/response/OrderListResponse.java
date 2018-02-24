@@ -64,5 +64,8 @@ public class OrderListResponse {
      * 配送方式
      */
     private String deliveryType;
-
+    /**
+     * 配送地址或门店地址
+     */
+    private String shippingAddress;
 }

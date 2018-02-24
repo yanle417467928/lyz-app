@@ -192,7 +192,7 @@ public interface MaOrderService {
      */
     void updateorderReceivablesStatus(String orderNumber);
 
-    List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber);
+    List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber,Long storeId);
 
     Boolean judgmentVerification(String code, String orderNumber);
 

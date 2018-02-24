@@ -14,9 +14,9 @@
             obd.amount_payable orderPrice
         FROM
             ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
          WHERE
         obi.order_subject_type = 'STORE'
         ORDER BY
@@ -35,9 +35,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'STORE'
 	    AND obi.city_id = #{cityId}
@@ -57,9 +57,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'STORE'
         AND obi.store_id = #{storeId}
@@ -80,9 +80,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'STORE'
         <if test="deliveryType != null">
@@ -110,9 +110,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'STORE'
         AND obi.ord_no LIKE concat(concat('%',#{orderNumber}),'%')
@@ -134,9 +134,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'STORE'
         <if test="appDeliveryType != null">
@@ -188,9 +188,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'FIT'
         ORDER BY
@@ -209,9 +209,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'FIT'
         AND obi.ord_no LIKE concat(concat('%',#{orderNumber}),'%')
@@ -233,9 +233,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'FIT'
         <if test="cityId != null and cityId != -1">
@@ -281,9 +281,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         	obi.`status` = 'PENDING_SHIPMENT'
         AND obi.delivery_type = 'SELF_TAKE'
@@ -305,9 +305,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.`status` = 'PENDING_SHIPMENT'
         AND obi.delivery_type = 'SELF_TAKE'
@@ -354,9 +354,9 @@
         obd.amount_payable orderPrice
         FROM
         ord_base_info AS obi
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
          obi.`status` = 'PENDING_SHIPMENT'
         AND obi.delivery_type = 'SELF_TAKE'
@@ -386,9 +386,9 @@
             obd.collection_amount collectionAmount
         FROM
             ord_base_info AS obi
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-        INNER JOIN st_store AS s ON s.store_id = obi.store_id
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+        LEFT JOIN st_store AS s ON s.store_id = obi.store_id
         WHERE
             obi.ord_no = #{orderNumber}
     </select>
@@ -412,8 +412,8 @@
             obi.remark orderRemarks
         FROM
             ord_base_info AS obi
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN st_store AS s ON s.store_code = obi.store_code
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
             obi.ord_no = #{orderNumber}
     </select>
@@ -457,8 +457,8 @@
             odid.task_no shipmentNumber
         FROM
             ord_base_info AS obi
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-        INNER JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN ord_delivery_info_details AS odid ON odid.order_no = obi.ord_no
         AND odid.logistic_status = obi.delivery_status
         WHERE
             obi.ord_no = #{orderNumber}
@@ -593,7 +593,7 @@
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
         INNER JOIN ord_billing_details obd ON obi.oid=obd.oid
-        INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         WHERE
         obi.order_subject_type = 'STORE'
         AND
@@ -661,6 +661,8 @@
         FROM ord_goods_info ogi
         LEFT  JOIN st_inventory si ON ogi.gid = si.gid
         WHERE ogi.ord_no = #{orderNo}
+        AND
+        si.store_id =#{storeId}
     </select>
 
 

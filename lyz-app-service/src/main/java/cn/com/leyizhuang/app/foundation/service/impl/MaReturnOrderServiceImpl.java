@@ -188,7 +188,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) {
+    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser)  {
         Date date = new Date();
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
