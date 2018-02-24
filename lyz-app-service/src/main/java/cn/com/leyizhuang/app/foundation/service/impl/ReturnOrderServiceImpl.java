@@ -156,6 +156,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
                         goodsInfo.setRoid(roid);
                         returnOrderDAO.saveReturnOrderGoodsInfo(goodsInfo);
+                        //保存发送wms退货商品明细
+                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }
                 if (null != returnOrderBilling) {
@@ -172,10 +176,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                         //修改这个数量
                         orderDAO.updateOrderGoodsInfo(orderGoodsInfo);
-                        //保存发送wms退货商品明细
-                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), orderGoodsInfo.getSku(),
-                                orderGoodsInfo.getSkuName(), orderGoodsInfo.getRetailPrice(), orderGoodsInfo.getOrderQuantity(), orderGoodsInfo.getCompanyFlag());
-                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }
             } else {

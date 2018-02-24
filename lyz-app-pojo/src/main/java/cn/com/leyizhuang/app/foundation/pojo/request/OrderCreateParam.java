@@ -74,4 +74,9 @@ public class OrderCreateParam implements Serializable {
      */
     private String billingInfo;
 
+    /**
+     * 销售纸质单号（后台四川直营门店购买产品券）
+     */
+    private String salesNumber;
+
 }

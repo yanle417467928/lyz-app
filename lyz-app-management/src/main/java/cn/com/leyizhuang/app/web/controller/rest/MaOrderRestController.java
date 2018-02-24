@@ -868,7 +868,7 @@ public class MaOrderRestController extends BaseRestController {
                     logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS收款金额，请填写POS流水号！！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS收款金额，请填写POS流水号！", null);
                 }
-                if (StringUtils.isBlank(posNumber) && posMoney == null) {
+                if (!StringUtils.isBlank(posNumber) && posMoney == null) {
                     logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS流水号，请填写POS收款金额！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS流水号，请填写POS收款金额！", null);
                 }
