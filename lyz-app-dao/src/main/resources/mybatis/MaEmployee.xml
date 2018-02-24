@@ -332,6 +332,7 @@
         ee.`name`,
         ee.mobile,
         ss.store_type,
+        ss.store_code,
         spd.balance
         FROM
         emp_employee AS ee

@@ -338,7 +338,7 @@ public interface MaOrderService {
      * @return
      */
     OrderBaseInfo createMaOrderBaseInfo(AppCustomer appCustomer, City city, AppStore appStore, AppEmployee appEmployee,
-                                        Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber);
+                                        Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber,String salesNumber);
 
     void scanningUnpaidOrder();
 

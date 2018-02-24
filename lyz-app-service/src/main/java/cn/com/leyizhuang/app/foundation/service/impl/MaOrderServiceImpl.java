@@ -735,7 +735,7 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     public OrderBaseInfo createMaOrderBaseInfo(AppCustomer appCustomer, City city, AppStore appStore, AppEmployee appEmployee,
-                                               Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber) {
+                                               Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber, String salesNumber) {
         OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
         //城市id
         orderBaseInfo.setCityId(city.getCityId());
@@ -781,6 +781,8 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderBaseInfo.setStoreCode(appStore.getStoreCode());
         //门店组织全编码
         orderBaseInfo.setStoreStructureCode(appStore.getStoreStructureCode());
+        //后台买券销售纸质单号
+        orderBaseInfo.setSalesNumber(salesNumber);
         //订单类型
         orderBaseInfo.setOrderType(AppOrderType.COUPON);
         //订单下单主体类型
