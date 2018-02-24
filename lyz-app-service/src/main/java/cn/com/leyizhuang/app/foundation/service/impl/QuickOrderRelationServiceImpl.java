@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.QuickOrderRelationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
@@ -18,7 +19,7 @@ public class QuickOrderRelationServiceImpl implements QuickOrderRelationService 
     private QuickOrderRelationDAO quickOrderRelationDAO;
 
     @Override
-    public GoodsDO findByNumber(Long userId, Integer identityType, String number) {
+    public GoodsDO findByNumber(Long userId, AppIdentityType identityType, String number) {
         return this.quickOrderRelationDAO.findByNumber(userId, identityType, number);
     }
 
