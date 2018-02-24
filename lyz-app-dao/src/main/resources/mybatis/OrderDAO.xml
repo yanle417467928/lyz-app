@@ -31,11 +31,12 @@
             g.goods_specification,
             g.cover_image_uri,
             g.goods_unit,
-            og.order_qty qty
+            SUM(og.order_qty) qty
         FROM ord_goods_info og
             LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
               AND (og.goods_line_type != 'PRESENT')
+        GROUP BY g.sku
     </select>
 
     <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
