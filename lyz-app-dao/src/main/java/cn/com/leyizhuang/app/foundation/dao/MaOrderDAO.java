@@ -178,7 +178,7 @@ public interface MaOrderDAO {
 
     void updateorderReceivablesStatus(String orderNo);
 
-    List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo);
+    List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo,@Param(value = "storeId") Long storeId);
 
     Boolean isPayUp(String orderNo);
 

@@ -95,7 +95,9 @@ public class QrcodeRegisterRestController extends BaseRestController{
             newCustomer.setLight(AppCustomerLightStatus.NOT);
             newCustomer.setIsCashOnDelivery(Boolean.FALSE);
             newCustomer.setCityId(appEmployee.getCityId());
+            newCustomer.setStoreId(appEmployee.getStoreId());
             newCustomer.setSalesConsultId(appEmployee.getEmpId());
+            newCustomer.setMobile(phone);
 
             // 保存
             commonService.saveCustomerInfo(newCustomer,new CustomerLeBi(),new CustomerPreDeposit());

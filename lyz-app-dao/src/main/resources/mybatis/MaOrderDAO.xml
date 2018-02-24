@@ -661,6 +661,8 @@
         FROM ord_goods_info ogi
         LEFT  JOIN st_inventory si ON ogi.gid = si.gid
         WHERE ogi.ord_no = #{orderNo}
+        AND
+        si.store_id =#{storeId}
     </select>
 
 
