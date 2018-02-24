@@ -41,11 +41,11 @@ public class WtaWarehouseWholeSplitToUnit {
     /**
      * 数量
      */
-    private Double qty;
+    private Integer qty;
     /**
      * 零数量
      */
-    private Double dQty;
+    private Integer dQty;
     /**
      * 状态
      */

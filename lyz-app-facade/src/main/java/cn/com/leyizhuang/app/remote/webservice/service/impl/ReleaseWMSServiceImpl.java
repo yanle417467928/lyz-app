@@ -10,6 +10,8 @@ import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
@@ -38,6 +40,7 @@ import javax.jws.WebService;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +80,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private SmsAccountService smsAccountService;
     @Resource
     private WareHouseService wareHouseService;
+    @Resource
+    private CityService cityService;
+
     /**
      * 获取wms信息
      *
@@ -175,9 +181,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
 
-                //退货单返配上架头
-            } else if ("tbw_back_rec_m".equalsIgnoreCase(strTable)) {
+            //退货单返配上架头
+            else if ("tbw_back_rec_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
@@ -203,9 +210,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
 
-                //退货单返配上架明细
-            } else if ("tbw_back_rec_d".equalsIgnoreCase(strTable)) {
+            //退货单返配上架明细
+            else if ("tbw_back_rec_d".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -220,9 +228,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
 
-                //获取退货单配送取货配送员
-            } else if ("tbw_back_m".equalsIgnoreCase(strTable)) {
+            //获取退货单配送取货配送员
+            else if ("tbw_back_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -255,8 +264,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
-                //取消订单结果确认
-            } else if ("tbw_out_m_cancel".equalsIgnoreCase(strTable)) {
+            }
+
+            //取消订单结果确认
+            else if ("tbw_out_m_cancel".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -352,8 +363,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
-                //取消退单结果确认
-            } else if ("tbw_back_m_cancel".equalsIgnoreCase(strTable)) {
+            }
+
+            //取消退单结果确认
+            else if ("tbw_back_m_cancel".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -377,8 +390,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
-                //配送单物流详情
-            } else if ("tbw_out_m".equalsIgnoreCase(strTable)) {
+            }
+
+            //配送单物流详情
+            else if ("tbw_out_m".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
@@ -403,8 +418,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
                 logger.info("GetWMSInfo OUT,获取wms物流信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
-                //整转零
-            } else if ("tbw_whole_sep_direction".equalsIgnoreCase(strTable)) {
+            }
+
+            //整转零
+            else if ("tbw_whole_sep_direction".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
@@ -414,11 +431,342 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(idx);
                         wholeSplitToUnit = mapping(wholeSplitToUnit, childNode);
                     }
+                    wmsToAppOrderService.saveWtaWarehouseWholeSplitToUnit(wholeSplitToUnit);
 
-
+                    if (null == wholeSplitToUnit.getDQty()) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                        return AppXmlUtil.resultStrXml(1, "cInQty不能为空!");
+                    }
+                    if (null == wholeSplitToUnit.getCompanyId()) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                        return AppXmlUtil.resultStrXml(1, "cCompanyId不能为空!");
+                    }
+                    if (null == wholeSplitToUnit.getSku()) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                        return AppXmlUtil.resultStrXml(1, "商品编码cGcode不能不为空！");
+                    }
+                    if (null == wholeSplitToUnit.getDSku()) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                        return AppXmlUtil.resultStrXml(1, "商品编码cDGcode不能不为空！");
+                    }
+                    //扣整商品仓库数量
+                    GoodsDO goodsDO = goodsService.queryBySku(wholeSplitToUnit.getSku());
+                    for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                        CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(wholeSplitToUnit.getCompanyId(), goodsDO.getGid());
+                        if (null != cityInventory) {
+                            if (cityInventory.getAvailableIty() < wholeSplitToUnit.getQty()) {
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                                return AppXmlUtil.resultStrXml(1, "该城市下sku为" + wholeSplitToUnit.getSku() + "的商品库存不足!");
+                            }
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(
+                                    wholeSplitToUnit.getCompanyId(), goodsDO.getGid(), wholeSplitToUnit.getQty(), cityInventory.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                log.setCityId(cityInventory.getCityId());
+                                log.setCityName(cityInventory.getCityName());
+                                log.setGid(cityInventory.getGid());
+                                log.setSku(cityInventory.getSku());
+                                log.setSkuName(cityInventory.getSkuName());
+                                log.setChangeQty(wholeSplitToUnit.getQty());
+                                log.setAfterChangeQty(cityInventory.getAvailableIty() - wholeSplitToUnit.getQty());
+                                log.setChangeTime(Calendar.getInstance().getTime());
+                                log.setChangeType(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY);
+                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY.getDescription());
+                                log.setReferenceNumber(wholeSplitToUnit.getDirectNo());
+                                cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                                    return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
+                                }
+                            }
+                        } else {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                            return AppXmlUtil.resultStrXml(1, "该城市下没有找到sku为" + wholeSplitToUnit.getSku() + "的商品库存信息!");
+                        }
+                    }
+                    //增加零商品仓库数量
+                    GoodsDO dGodsDO = goodsService.queryBySku(wholeSplitToUnit.getDSku());
+                    for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                        CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(wholeSplitToUnit.getCompanyId(), dGodsDO.getGid());
+                        if (null != cityInventory) {
+                            if (cityInventory.getAvailableIty() < wholeSplitToUnit.getDQty()) {
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                                return AppXmlUtil.resultStrXml(1, "该城市下sku为" + wholeSplitToUnit.getDSku() + "的商品库存不足!");
+                            }
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(
+                                    wholeSplitToUnit.getCompanyId(), dGodsDO.getGid(), -wholeSplitToUnit.getDQty(), cityInventory.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                log.setCityId(cityInventory.getCityId());
+                                log.setCityName(cityInventory.getCityName());
+                                log.setGid(cityInventory.getGid());
+                                log.setSku(cityInventory.getSku());
+                                log.setSkuName(cityInventory.getSkuName());
+                                log.setChangeQty(wholeSplitToUnit.getDQty());
+                                log.setAfterChangeQty(cityInventory.getAvailableIty() + wholeSplitToUnit.getDQty());
+                                log.setChangeTime(Calendar.getInstance().getTime());
+                                log.setChangeType(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY);
+                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY.getDescription());
+                                log.setReferenceNumber(wholeSplitToUnit.getDirectNo());
+                                cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                                    return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
+                                }
+                            }
+                        } else {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
+                            return AppXmlUtil.resultStrXml(1, "该城市下没有找到sku为" + wholeSplitToUnit.getDSku() + "的商品库存信息!");
+                        }
+                    }
                 }
+                logger.info("GetWMSInfo OUT,获取仓库整转零wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
             }
 
+            // 仓库调拨主档
+            else if ("tbw_om_m".equalsIgnoreCase(strTable)) {
+
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+
+                    WtaWarehouseAllocationHeader allocation = new WtaWarehouseAllocationHeader();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        allocation = mapping(allocation, childNode);
+                    }
+                    wmsToAppOrderService.saveWtaWarehouseAllocationHeader(allocation);
+
+                    if (StringUtils.isBlank(allocation.getUploadStatus())
+                            || (!"in".equalsIgnoreCase(allocation.getUploadStatus()) && !"out".equalsIgnoreCase(allocation.getUploadStatus()))) {
+                        return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>c_upload_status：" + allocation.getUploadStatus()
+                                + " 为空或者不属于\"in\"且不属于\"out\"</MESSAGE></STATUS></RESULTS>";
+                    }
+                    if (null == allocation.getCompanyId()) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                        return AppXmlUtil.resultStrXml(1, "cCompanyId不能为空!");
+                    }
+                    List<WtaWarehouseAllocationGoods> allocationGoodsList = wmsToAppOrderService.findWtaWarehouseAllocationGoodsListByAllocationNo(allocation.getAllocationNo());
+                    for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
+                        GoodsDO dGodsDO = goodsService.queryBySku(allocationGoods.getSku());
+                        Integer changeInventory = 0;
+                        CityInventoryAvailableQtyChangeType changeType = null;
+                        //调用的是订单扣减库存方法,所以增加库存要负,减库存为正
+                        if ("in".equalsIgnoreCase(allocation.getUploadStatus())) {
+                            changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND;
+                            changeInventory = -allocationGoods.getCheckQty();
+                        } else if ("out".equalsIgnoreCase(allocation.getUploadStatus())) {
+                            changeInventory = allocationGoods.getCheckQty();
+                            changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_OUTBOUND;
+                        }
+                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(allocation.getCompanyId(), dGodsDO.getGid());
+                            if (null != cityInventory) {
+                                if (cityInventory.getAvailableIty() < allocationGoods.getCheckQty()) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                                    return AppXmlUtil.resultStrXml(1, "该城市下sku为" + allocationGoods.getSku() + "的商品库存不足!");
+                                }
+                                Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(
+                                        allocation.getCompanyId(), dGodsDO.getGid(), changeInventory, cityInventory.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                    log.setCityId(cityInventory.getCityId());
+                                    log.setCityName(cityInventory.getCityName());
+                                    log.setGid(cityInventory.getGid());
+                                    log.setSku(cityInventory.getSku());
+                                    log.setSkuName(cityInventory.getSkuName());
+                                    log.setChangeQty(allocationGoods.getCheckQty());
+                                    log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
+                                    log.setChangeTime(Calendar.getInstance().getTime());
+                                    log.setChangeType(changeType);
+                                    log.setChangeTypeDesc(changeType.getDescription());
+                                    log.setReferenceNumber(allocation.getAllocationNo());
+                                    cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                                        return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
+                                    }
+                                }
+                            } else {
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                                return AppXmlUtil.resultStrXml(1, "该城市下没有找到sku为" + allocationGoods.getSku() + "的商品库存信息!");
+                            }
+                        }
+                    }
+
+                }
+                logger.info("GetWMSInfo OUT,获取仓库调拨头档wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
+
+            // 仓库调拨明细
+            else if ("tbw_om_d".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+
+                    WtaWarehouseAllocationGoods allocationGoods = new WtaWarehouseAllocationGoods();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        allocationGoods = mapping(allocationGoods, childNode);
+                    }
+                    wmsToAppOrderService.saveWtaWarehouseAllocationGoods(allocationGoods);
+                }
+                logger.info("GetWMSInfo OUT,获取仓库调拨明细wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
+
+            //仓库采购主档
+            else if ("tbw_rec_m".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+
+                    WtaWarehousePurchaseHeader purchaseHeader = new WtaWarehousePurchaseHeader();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        purchaseHeader = mapping(purchaseHeader, childNode);
+                    }
+
+                    wmsToAppOrderService.saveWtaWarehousePurchaseHeader(purchaseHeader);
+
+                    List<WtaWarehousePurchaseGoods> purchaseGoodsList = wmsToAppOrderService.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
+                    for (WtaWarehousePurchaseGoods purchaseGoods : purchaseGoodsList) {
+                        GoodsDO dGodsDO = goodsService.queryBySku(purchaseGoods.getSku());
+                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(purchaseHeader.getCompanyId(), dGodsDO.getGid());
+                            if (null != cityInventory) {
+                                if (cityInventory.getAvailableIty() < purchaseGoods.getRecQty()) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
+                                    return AppXmlUtil.resultStrXml(1, "该城市下sku为" + purchaseGoods.getSku() + "的商品库存不足!");
+                                }
+                                Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(
+                                        purchaseHeader.getCompanyId(), dGodsDO.getGid(), -purchaseGoods.getRecQty(), cityInventory.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                    log.setCityId(cityInventory.getCityId());
+                                    log.setCityName(cityInventory.getCityName());
+                                    log.setGid(cityInventory.getGid());
+                                    log.setSku(cityInventory.getSku());
+                                    log.setSkuName(cityInventory.getSkuName());
+                                    log.setChangeQty(purchaseGoods.getRecQty());
+                                    log.setAfterChangeQty(cityInventory.getAvailableIty() + purchaseGoods.getRecQty());
+                                    log.setChangeTime(Calendar.getInstance().getTime());
+                                    log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND);
+                                    log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND.getDescription());
+                                    log.setReferenceNumber(purchaseHeader.getPurchaseNo());
+                                    cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
+                                        return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
+                                    }
+                                }
+                            } else {
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
+                                return AppXmlUtil.resultStrXml(1, "该城市下没有找到sku为" + purchaseGoods.getSku() + "的商品库存信息!");
+                            }
+                        }
+                    }
+                }
+                logger.info("GetWMSInfo OUT,获取仓库采购主档wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
+
+            // 仓库采购入库明细
+            else if ("tbw_rec_d".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+
+                    WtaWarehousePurchaseGoods purchaseGoods = new WtaWarehousePurchaseGoods();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        purchaseGoods = mapping(purchaseGoods, childNode);
+                    }
+                    wmsToAppOrderService.saveWtaWarehousePurchaseGoods(purchaseGoods);
+                }
+                logger.info("GetWMSInfo OUT,获取仓库采购入库明细wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
+
+            // 仓库报损报溢
+            else if ("tbw_waste_view".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+
+                    WtaWarehouseReportDamageAndOverflow damageAndOverflow = new WtaWarehouseReportDamageAndOverflow();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        damageAndOverflow = mapping(damageAndOverflow, childNode);
+                    }
+                    if (damageAndOverflow.getWasteNo() == null) {
+                        return AppXmlUtil.resultStrXml(1, "损溢单号不能为空");
+                    }
+                    if (damageAndOverflow.getWasteId() == null) {
+                        return AppXmlUtil.resultStrXml(1, "损溢单号id不能为空");
+                    }
+                    wmsToAppOrderService.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
+
+                    GoodsDO dGodsDO = goodsService.queryBySku(damageAndOverflow.getSku());
+                    Integer changeInventory = 0;
+                    CityInventoryAvailableQtyChangeType changeType = null;
+                    //调用的是订单扣减库存方法,所以增加库存要负,减库存为正
+                    if (damageAndOverflow.getWasteType().contains("报溢")) {
+                        changeType = CityInventoryAvailableQtyChangeType.CITY_OVERFLOW;
+                        changeInventory = -damageAndOverflow.getQty();
+                    } else {
+                        changeInventory = damageAndOverflow.getQty();
+                        changeType = CityInventoryAvailableQtyChangeType.CITY_WASTAGE;
+                    }
+                    for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                        CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(damageAndOverflow.getCompanyId(), dGodsDO.getGid());
+                        if (null != cityInventory) {
+                            if (cityInventory.getAvailableIty() < damageAndOverflow.getQty()) {
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
+                                return AppXmlUtil.resultStrXml(1, "该城市下sku为" + damageAndOverflow.getSku() + "的商品库存不足!");
+                            }
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(
+                                    damageAndOverflow.getCompanyId(), dGodsDO.getGid(), changeInventory, cityInventory.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                log.setCityId(cityInventory.getCityId());
+                                log.setCityName(cityInventory.getCityName());
+                                log.setGid(cityInventory.getGid());
+                                log.setSku(cityInventory.getSku());
+                                log.setSkuName(cityInventory.getSkuName());
+                                log.setChangeQty(damageAndOverflow.getQty());
+                                log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
+                                log.setChangeTime(Calendar.getInstance().getTime());
+                                log.setChangeType(changeType);
+                                log.setChangeTypeDesc(changeType.getDescription());
+                                log.setReferenceNumber(damageAndOverflow.getWasteNo());
+                                cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
+                                    return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
+                                }
+                            }
+                        } else {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
+                            return AppXmlUtil.resultStrXml(1, "该城市下没有找到sku为" + damageAndOverflow.getSku() + "的商品库存信息!");
+                        }
+                    }
+                }
+                logger.info("GetWMSInfo OUT,获取仓库报损报溢wms信息成功 出参 code=0");
+                return AppXmlUtil.resultStrXml(0, "NORMAL");
+            }
         } catch (ParserConfigurationException e) {
             logger.warn("GetWMSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
@@ -432,6 +780,212 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
     }
 
+
+    //*************************************下面是字段映射匹配,无业务逻辑****************************************
+
+    private WtaWarehouseReportDamageAndOverflow mapping(WtaWarehouseReportDamageAndOverflow damageAndOverflow, Node childNode) {
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+
+            if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_waste_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setWasteNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_waste_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setWasteId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_waste_type".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setWasteType(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_gcode".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setSku(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_qty".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setQty((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_op_status".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setWasteStatus(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("C_COMPANY_ID".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    damageAndOverflow.setCompanyId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return damageAndOverflow;
+    }
+
+    private WtaWarehousePurchaseGoods mapping(WtaWarehousePurchaseGoods purchaseGoods, Node childNode) {
+
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseGoods.setRecNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_rec_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseGoods.setRecId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_gcode".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseGoods.setSku(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_rec_qty".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseGoods.setRecQty((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return purchaseGoods;
+    }
+
+    private WtaWarehousePurchaseHeader mapping(WtaWarehousePurchaseHeader purchaseHeader, Node childNode) {
+
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setRecNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_gather_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setGatherRecNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_gather_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setGatherNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_in_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setInNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_note".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setNote(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_po_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setPurchaseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    purchaseHeader.setCompanyId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return purchaseHeader;
+    }
+
+    private WtaWarehouseAllocationGoods mapping(WtaWarehouseAllocationGoods allocationGoods, Node childNode) {
+
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if ("c_om_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setAllocationNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_om_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setAllocationId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_gcode".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setSku(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_ack_qty".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setAckQty((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_check_qty".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setCheckQty((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_note".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setNote(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_check_dt".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocationGoods.setCheckTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return allocationGoods;
+    }
+
+    private WtaWarehouseAllocationHeader mapping(WtaWarehouseAllocationHeader allocation, Node childNode) {
+        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+            if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_om_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setAllocationNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_om_type".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setAllocationType(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_d_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setShippingWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_po_type".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setPoType(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_po_no".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setPoNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_op_status".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setAllocationStatus(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_note".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setNote(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_mk_dt".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_modified_dt".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setModifyTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            } else if ("c_upload_status".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setUploadStatus(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    allocation.setCompanyId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
+                }
+            }
+        }
+        return allocation;
+    }
+
     /**
      * 整转零结果集映射
      *
@@ -442,35 +996,35 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaWarehouseWholeSplitToUnit mapping(WtaWarehouseWholeSplitToUnit wholeSplitToUnit, Node childNode) {
 
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-            if (childNode.getNodeName().equalsIgnoreCase("c_wh_no")) {
+            if ("c_wh_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setWarehouseNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no")) {
+            } else if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_direct_no")) {
+            } else if ("c_direct_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setDirectNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_gcode")) {
+            } else if ("c_gcode".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setSku(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_d_gcode")) {
+            } else if ("c_d_gcode".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setDSku(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_qty")) {
+            } else if ("c_qty".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wholeSplitToUnit.setQty(Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                    wholeSplitToUnit.setQty(((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue())));
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_in_qty")) {
+            } else if ("c_in_qty".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    wholeSplitToUnit.setDQty(Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
+                    wholeSplitToUnit.setDQty(((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue())));
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_status")) {
+            } else if ("c_status".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setStatus(childNode.getChildNodes().item(0).getNodeValue());
                 }
@@ -478,15 +1032,15 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                if (null != childNode.getChildNodes().item(0)) {
 //                    cReserved1 = childNode.getChildNodes().item(0).getNodeValue();
 //                }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno")) {
+            } else if ("c_mk_userno".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setCreatorNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt")) {
+            } else if ("c_mk_dt".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setCreateTime(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
                 }
-            } else if (childNode.getNodeName().equalsIgnoreCase("c_company_id")) {
+            } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wholeSplitToUnit.setCompanyId(Long.parseLong(childNode.getChildNodes().item(0).getNodeValue()));
                 }

@@ -319,6 +319,11 @@ public class DispatchingController {
                 logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (!returnOrderBaseInfo.getReturnStatus().equals(AppReturnOrderStatus.RETURNING)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该状态退单不可确认收货", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             AtwReturnOrderCheckEnter checkEnter = AtwReturnOrderCheckEnter.transform(returnOrderBaseInfo);
 
             //发送wms
