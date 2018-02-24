@@ -172,6 +172,8 @@ public interface MaOrderService {
 
     void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo);
 
+    void saveOrderShipping(OrderShipping orderShipping);
+
     void orderReceivables(MaOrderAmount maOrderAmount);
 
     /**

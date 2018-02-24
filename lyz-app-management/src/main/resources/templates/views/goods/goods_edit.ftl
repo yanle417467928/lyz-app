@@ -334,13 +334,12 @@
         });
         categoryName = '${(goodsVO.categoryName)}';
         findGoodsCategorySelection();
-        var coverImageUri = '${(goodsVO.coverImageUri)}';
-        if (coverImageUri != null) {
+        var coverImageUri = '${(goodsVO.coverImageUri)!''}';
+        if (coverImageUri != null&& coverImageUri != '') {
             $('#coverImg').val(coverImageUri);
             $('#coverImageBox').html('<img  src="' + coverImageUri + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" >');
         }
-
-        var rotationImageUris = '${(goodsVO.rotationImageUri)}';
+        var rotationImageUris = '${(goodsVO.rotationImageUri)!''}';
         if (rotationImageUris != null && rotationImageUris != '') {
             var arr1 = new Array();
             $('#rotationImg').val(rotationImageUris);

@@ -39,15 +39,18 @@
 
     <update id="updateStoreInventoryAndAvailableIty">
         UPDATE st_inventory
-        <if test="null != goodsQty">
-            SET real_ity = #{goodsQty},
-        </if>
-        <if test="null != goodsAvailableIty">
-            SET available_ity = #{goodsAvailableIty},
-        </if>
+        <set>
+            <if test="null != goodsQty">
+                 real_ity = #{goodsQty},
+            </if>
+            <if test="null != goodsAvailableIty">
+                 available_ity = #{goodsAvailableIty}
+            </if>
+        </set>
         WHERE
         gid = #{goodsId}
-        AND store_id = #{storeId}
+        AND
+        store_id = #{storeId}
         AND
         last_update_time = #{date}
     </update>

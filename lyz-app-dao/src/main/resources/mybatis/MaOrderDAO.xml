@@ -689,7 +689,12 @@
         ORDER  BY  id DESC
         LIMIT 1
     </select>
-
+    <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
+        INSERT
+        ord_shipping(oid,ord_no,shipping_no,shipping_time)
+        VALUES
+        (#{oid},#{ordNo},#{shippingNo},#{shippingTime})
+    </insert>
 
     <select id="getShippingTime" parameterType="java.lang.String"
             resultType="java.lang.String">

@@ -131,17 +131,17 @@ public class MaRetrunOrderRestController extends BaseRestController {
      */
     @PutMapping(value = "/returnOrderReceive")
     public ResultDTO<Object> returnOrderReceive(@RequestParam(value = "returnNumber") String returnNumber) {
-        logger.warn("returnOrderReceive 后台自提单收货 ,入参orderNumbe:{}", returnNumber);
+        logger.warn("returnOrderReceive 后台到店退货单收货 ,入参orderNumbe:{}", returnNumber);
         ResultDTO<Object> resultDTO;
         if (StringUtils.isBlank(returnNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退单号不允许为空", null);
-            logger.warn("returnOrderReceive OUT,后台自提单收货失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("returnOrderReceive OUT,后台到店退货单收货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         MaReturnOrderDetailInfo maReturnOrderDetailInfo = maReturnOrderService.queryMaReturnOrderByReturnNo(returnNumber);
         if (!(3 == maReturnOrderDetailInfo.getReturnStatus().getValue().intValue())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单状态错误", null);
-            logger.warn("returnOrderReceive OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("returnOrderReceive OUT,后台到店退货单收货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
@@ -167,15 +167,15 @@ public class MaRetrunOrderRestController extends BaseRestController {
             }
             //发送门店自提单收货消息队列
             maSinkSender.sendStorePickUpReturnOrderReceiptToEBSAndRecord(returnNumber);
-            logger.info("orderShipping ,后台自提单发货成功");
+            logger.info("orderShipping ,后台到店退货单收货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
-                    "后台自提单发货成功", null);
+                    "后台到店退货单收货成功", null);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("orderShipping EXCEPTION,发生未知错误，后台自提单发货失败");
+            logger.warn("orderShipping EXCEPTION,发生未知错误，后台到店退货单收货失败");
             logger.warn("{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
-                    "后台自提单发货失败", null);
+                    "后台到店退货单收货失败", null);
         }
     }
 

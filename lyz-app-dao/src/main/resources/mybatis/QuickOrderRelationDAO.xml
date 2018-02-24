@@ -26,4 +26,9 @@
         </if>
     </select>
 
+    <select id="findQuickOrderRelationDOByNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO">
+      SELECT * FROM quick_order_relation WHERE number = #{number}
+    </select>
+
 </mapper>

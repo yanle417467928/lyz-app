@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.QuickOrderRelationDAO;
+import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.service.QuickOrderRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,10 @@ public class QuickOrderRelationServiceImpl implements QuickOrderRelationService 
     @Override
     public GoodsDO findByNumber(Long userId, Integer identityType, String number) {
         return this.quickOrderRelationDAO.findByNumber(userId, identityType, number);
+    }
+
+    @Override
+    public QuickOrderRelationDO findQuickOrderRelationDOByNumber(String number) {
+        return this.quickOrderRelationDAO.findQuickOrderRelationDOByNumber(number);
     }
 }

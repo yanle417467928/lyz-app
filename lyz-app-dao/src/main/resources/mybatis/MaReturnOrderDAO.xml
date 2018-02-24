@@ -20,6 +20,9 @@
         st_store AS s ON s.store_id = orbi.store_id
         WHERE
           1=1
+          ORDER BY
+           orbi.return_time
+           DESC
     </select>
 
 
@@ -48,6 +51,9 @@
             AND
             orbi.return_status =#{status}
         </if>
+        ORDER BY
+        orbi.return_time
+        DESC
     </select>
 
 
@@ -72,6 +78,9 @@
     (orbi.ord_no  LIKE CONCAT('%',#{info},'%')
     OR
     orbi.return_no  LIKE CONCAT('%',#{info},'%'))
+     ORDER BY
+           orbi.return_time
+           DESC
 </select>
 
     <select id="queryMaReturnOrderByReturnNo"
@@ -238,10 +247,11 @@
         WHERE orb.return_no = #{returnNumber}
     </select>
 
-    <insert id="saveReturnOrderBillingDetail"  parameterType="java.util.List">
-        insert into ord_return_billing_detail (create_time, roid, return_pay_type, return_money, into_amount_time,reply_code,refund_number)
+    <insert id="saveReturnOrderBillingDetail" parameterType="java.util.List">
+        insert into ord_return_billing_detail (create_time, roid, return_pay_type, return_money,
+        into_amount_time,reply_code,refund_number)
         values
-        <foreach collection="maOrdReturnBillingDetailList" item="item" index="index" separator="," >
+        <foreach collection="maOrdReturnBillingDetailList" item="item" index="index" separator=",">
             ( #{item.createTime}, #{item.roid},#{item.returnPayType}, #{item.returnMoney}, #{item.intoAmountTime},
             #{item.replyCode}, #{item.refundNumber})
         </foreach>

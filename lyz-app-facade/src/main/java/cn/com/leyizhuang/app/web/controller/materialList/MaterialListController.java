@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.materialList;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
@@ -596,6 +597,7 @@ public class MaterialListController {
             }
             List<MaterialListDO> materialListSave = new ArrayList<>();
             List<MaterialListDO> materialListUpdate = new ArrayList<>();
+            String msg = "";
             for (Map.Entry<String, Integer> entry : goodsMap.entrySet()) {
                 GoodsDO goodsDO = this.quickOrderRelationServiceImpl.findByNumber(userId, identityType, entry.getKey());
                 if (null != goodsDO) {
@@ -613,12 +615,21 @@ public class MaterialListController {
                         materialListUpdate.add(materialListDO);
                     }
                 } else {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "id为" + entry.getKey() + "" +
-                            "的商品不存在!", null);
+                    QuickOrderRelationDO quickOrderRelationDO = this.quickOrderRelationServiceImpl.findQuickOrderRelationDOByNumber(entry.getKey());
+                    if (null != msg && !"".equals(msg)) {
+                        msg += "、";
+                    }
+                    msg += "‘";
+                    msg += quickOrderRelationDO.getGoodsName();
+                    msg += "’";
                 }
             }
             commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            if (null == msg || "".equals(msg)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品" + msg + "已下架!", null);
+            }
             logger.info("addQuickOrderMaterialList OUT,快捷下单加入下料清单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

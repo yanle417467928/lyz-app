@@ -591,7 +591,7 @@
     function judgmentVerification(data) {
         var orderNumber = $("#orderNumber").val();
         var code = $("#code").val();
-        if (null == code || '' == code || 6 != code.length) {
+        if (null == code || '' == code || 4 != code.length) {
             return false;
         }
         $.ajax({
