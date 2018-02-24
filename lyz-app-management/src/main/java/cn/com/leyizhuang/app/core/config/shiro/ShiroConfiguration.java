@@ -52,11 +52,11 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/ionicons/**", "anon");
         filterChainDefinitionMap.put("/plugins/**", "anon");
         filterChainDefinitionMap.put("/webhooks", "anon");
+        filterChainDefinitionMap.put("/qrcode/register/**", "anon");
+        filterChainDefinitionMap.put("/rest/qrcode/**", "anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/remote/**", "anon");
-        filterChainDefinitionMap.put("/qrcode/register/**", "anon");
-        filterChainDefinitionMap.put("/rest/qrcode/**", "anon");
         filterChainDefinitionMap.put("/**", "user");
         factoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return factoryBean;
