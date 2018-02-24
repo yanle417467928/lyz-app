@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 
 /**
@@ -9,5 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 public interface QuickOrderRelationService {
 
     GoodsDO findByNumber(Long userId, Integer identityType, String number);
+
+    QuickOrderRelationDO findQuickOrderRelationDOByNumber(String number);
 
 }
