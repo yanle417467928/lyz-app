@@ -36,6 +36,7 @@
             LEFT JOIN gds_goods g ON g.sku = og.sku
         WHERE og.ord_no = #{orderNumber}
               AND (og.goods_line_type != 'PRESENT')
+        GROUP BY g.sku
     </select>
 
     <select id="getOrderListByUserIDAndIdentityType" resultMap="orderBeseInfoList">
