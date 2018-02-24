@@ -32,6 +32,8 @@ public class GoodsDetailResponse {
     private Double price;
     //是否收藏商品
     private Boolean isCollect;
+    //商品详情
+    private String goodsDetail;
 
     public static final GoodsDetailResponse transform(GoodsDetailResponse goodsDetailResponse, GoodsDO goodsDO) {
         if (null != goodsDO) {
@@ -40,6 +42,7 @@ public class GoodsDetailResponse {
             }
             String coverImageUri = goodsDO.getDetailsImageUri();
             String rotationImageUri = goodsDO.getRotationImageUri();
+            goodsDetailResponse.setGoodsDetail(goodsDO.getGoodsDetial());
             if (null != coverImageUri) {
                 List<String> list = new ArrayList<>();
                 String uri[] = coverImageUri.split(",");
