@@ -1010,34 +1010,46 @@
         </foreach>
     </update>
 
-    <insert id="saveOrderFreightInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderFreightInf">
-        INSERT INTO inter_ate_order_freight_inf (main_order_number, type, order_amt, goods_amt, amount, attribute1,
-                                                 attribute2, attribute3, attribute4, attribute5)
-        VALUES (#{mainOrderNumber}, #{type}, #{orderAmt}, #{goodsAmt}, #{amount}, #{attribute1}, #{attribute2},
-                #{attribute3},
-                #{attribute4}, #{attribute5})
+    <insert id="saveOrderKeyInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderKeyInf">
+        INSERT INTO inter_ate_order_key_inf (main_order_number, type, order_amt, goods_amt, freight, attribute1, attribute2, attribute3, attribute4,
+                                             attribute5, create_time, send_flag, error_msg, send_time, dec_credit_money, dec_pre_deposit,
+                                             dec_subvention, emp_credit_money, arrearage)
+        VALUES (#{mainOrderNumber}, #{type}, #{orderAmt}, #{goodsAmt}, #{freight}, #{attribute1}, #{attribute2},
+                                    #{attribute3},
+                                    #{attribute4}, #{attribute5}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime},
+                #{decCreditMoney},
+                #{decPreDeposit}, #{decSubvention}, #{empCreditMoney}, #{arrearage})
     </insert>
-    <select id="getOrderFreightInfByMainOrderNumber" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderFreightInf">
+    <select id="getOrderKeyInfByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderKeyInf">
         SELECT
             id,
             main_order_number,
             type,
             order_amt,
             goods_amt,
-            amount,
+            freight,
             attribute1,
             attribute2,
             attribute3,
             attribute4,
-            attribute5
-        FROM inter_ate_order_freight_inf
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            dec_credit_money,
+            dec_pre_deposit,
+            dec_subvention,
+            emp_credit_money,
+            arrearage
+        FROM inter_ate_order_key_inf
         WHERE main_order_number = #{orderNumber}
     </select>
 
-    <update id="updateOrderFreightInfFlagAndSendTimeAndErrorMsg">
-        UPDATE inter_ate_order_freight_inf
+    <update id="updateOrderKeyInfFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_order_key_inf
         <set>
             <if test="null != sendFlag">
                 send_flag = #{sendFlag},

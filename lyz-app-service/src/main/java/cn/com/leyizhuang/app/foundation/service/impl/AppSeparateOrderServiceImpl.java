@@ -299,20 +299,25 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                     }
                 }
 
-                //订单运费拆单
-                OrderFreightInf orderFreightInf = null;
-                if (billingDetail.getFreight() > AppConstant.DOUBLE_ZERO) {
-                    orderFreightInf = new OrderFreightInf();
-                    orderFreightInf.setType(AppFreightOrderType.ORDER);
-                    orderFreightInf.setMainOrderNumber(baseInfo.getOrderNumber());
-                    orderFreightInf.setAmount(billingDetail.getFreight());
-                    orderFreightInf.setOrderAmt(orderBaseInfList.stream().mapToDouble(OrderBaseInf::getOrderAmt).sum());
-                    orderFreightInf.setGoodsAmt(orderGoodsInfoList.stream().mapToDouble(p -> p.getOrderQuantity()
-                            * p.getSettlementPrice()).sum());
-                }
+                //订单关键信息接口
+                OrderKeyInf orderKeyInf = new OrderKeyInf();
+                orderKeyInf.setType(AppFreightOrderType.ORDER);
+                orderKeyInf.setMainOrderNumber(baseInfo.getOrderNumber());
+                orderKeyInf.setMainOrderNumber(baseInfo.getOrderNumber());
+                orderKeyInf.setFreight(null == billingDetail.getFreight() ? 0D : billingDetail.getFreight());
+                orderKeyInf.setOrderAmt(orderBaseInfList.stream().mapToDouble(OrderBaseInf::getOrderAmt).sum());
+                orderKeyInf.setGoodsAmt(orderGoodsInfoList.stream().mapToDouble(p -> p.getOrderQuantity()
+                        * p.getSettlementPrice()).sum());
+                orderKeyInf.setArrearage(null == billingDetail.getArrearage() ? 0D : billingDetail.getArrearage());
+                orderKeyInf.setDecCreditMoney(baseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE ? 0D :
+                        (null == billingDetail.getStoreCreditMoney() ? 0D : billingDetail.getStoreCreditMoney()));
+                orderKeyInf.setDecPreDeposit(baseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE ? 0D :
+                        (null == billingDetail.getStPreDeposit() ? 0D : billingDetail.getStPreDeposit()));
+                orderKeyInf.setDecSubvention(null == billingDetail.getStoreSubvention() ? 0D : billingDetail.getStoreSubvention());
+                orderKeyInf.setEmpCreditMoney(null == billingDetail.getEmpCreditMoney() ? 0D : billingDetail.getEmpCreditMoney());
                 //循环保存分单信息,分单商品信息及订单券信息
                 supportService.saveSeparateOrderRelevantInf(orderBaseInfList, orderGoodsInfList, couponInfList,
-                        receiptInfList, jxPriceDifferenceReturnInfs, orderFreightInf);
+                        receiptInfList, jxPriceDifferenceReturnInfs, orderKeyInf);
 
             } else {
                 //todo 记录拆单错误日志
@@ -817,26 +822,26 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
-    public void saveOrderFreightInf(OrderFreightInf orderFreightInf) {
-        if (null != orderFreightInf){
-            separateOrderDAO.saveOrderFreightInf(orderFreightInf);
+    public void saveOrderKeyInf(OrderKeyInf orderKeyInf) {
+        if (null != orderKeyInf) {
+            separateOrderDAO.saveOrderKeyInf(orderKeyInf);
         }
     }
 
     @Override
-    public void sendOrderFreightInf(String orderNumber) {
-        if (StringUtils.isNotBlank(orderNumber)){
-            OrderFreightInf orderFreightInf = separateOrderDAO.getOrderFreightInfByMainOrderNumber(orderNumber);
-            if (null != orderFreightInf){
-                ebsSenderService.sendOrderFreightInfAndRecord(orderFreightInf);
+    public void sendOrderKeyInf(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            OrderKeyInf orderKeyInf = separateOrderDAO.getOrderKeyInfByMainOrderNumber(orderNumber);
+            if (null != orderKeyInf) {
+                ebsSenderService.sendOrderKeyInfAndRecord(orderKeyInf);
             }
         }
     }
 
     @Override
-    public void updateOrderFreightInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
-        if (null != id){
-            separateOrderDAO.updateOrderFreightInfFlagAndSendTimeAndErrorMsg(id,msg,sendTime,sendFlag);
+    public void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
+        if (null != id) {
+            separateOrderDAO.updateOrderKeyInfFlagAndSendTimeAndErrorMsg(id, msg, sendTime, sendFlag);
         }
     }
 

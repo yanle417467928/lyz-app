@@ -96,9 +96,9 @@ public interface AppSeparateOrderService {
 
     void updateReturnOrderJxPriceDifferenceRefundInf(List<Long> refundInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 
-    void saveOrderFreightInf(OrderFreightInf orderFreightInf);
+    void saveOrderKeyInf(OrderKeyInf orderKeyInf);
 
-    void sendOrderFreightInf(String orderNumber);
+    void sendOrderKeyInf(String orderNumber);
 
-    void updateOrderFreightInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag);
+    void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag);
 }

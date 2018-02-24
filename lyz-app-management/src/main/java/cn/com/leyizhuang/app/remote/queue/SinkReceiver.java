@@ -62,8 +62,8 @@ public class SinkReceiver {
                         separateOrderService.sendOrderReceiptInf(orderNumber);
                         //发送经销差价返还信息到EBS
                         separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);
-                        //发送订单运费信息到EBS
-                        separateOrderService.sendOrderFreightInf(orderNumber);
+                        //发送订单关键信息到EBS
+                        separateOrderService.sendOrderKeyInf(orderNumber);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
@@ -135,9 +135,9 @@ public class SinkReceiver {
                         separateOrderService.sendReturnOrderBaseInfAndReturnOrderGoodsInf(returnNumber);
                         //发送退单券儿信息
                         separateOrderService.sendReturnOrderCouponInf(returnNumber);
-                        //发送订单收款信息
+                        //发送退单退款信息
                         separateOrderService.sendReturnOrderRefundInf(returnNumber);
-                        //发送经销差价返还信息
+                        //发送经退单销差价扣除信息
                         separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
                     }
                 } catch (IOException e) {

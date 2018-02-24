@@ -8,7 +8,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
-import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaReturnOrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
@@ -640,10 +639,10 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     /**
      * 更新门店退货接口信息
      *
-     * @param rtHeaderId    id
-     * @param msg           错误信息
-     * @param sendTime      发送成功时间
-     * @param flag          标识
+     * @param rtHeaderId id
+     * @param msg        错误信息
+     * @param sendTime   发送成功时间
+     * @param flag       标识
      */
     private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long rtHeaderId, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != rtHeaderId) {
@@ -1034,51 +1033,56 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     //************************************ 发送订单运费信息 begin **********************************
 
     /**
-     * 发送订单运费信息到EBS
+     * 发送订单关键信息到EBS
      *
-     * @param orderFreightInf 订单运费信息
+     * @param orderKeyInf 订单关键信息
      */
     @Override
-    public void sendOrderFreightInfAndRecord(OrderFreightInf orderFreightInf) {
-        Map<String, Object> result = sendOrderFreightInfToEbs(orderFreightInf);
+    public void sendOrderKeyInfAndRecord(OrderKeyInf orderKeyInf) {
+        Map<String, Object> result = sendOrderKeyInfToEbs(orderKeyInf);
         if (!(Boolean) result.get("success")) {
-            updateOrderFreightInfFlagAndSendTimeAndErrorMsg(orderFreightInf.getId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+            updateOrderKeyInfFlagAndSendTimeAndErrorMsg(orderKeyInf.getId(), (String) result.get("msg"), null, AppWhetherFlag.N);
         } else {
-            updateOrderFreightInfFlagAndSendTimeAndErrorMsg(orderFreightInf.getId(), null, new Date(), AppWhetherFlag.Y);
+            updateOrderKeyInfFlagAndSendTimeAndErrorMsg(orderKeyInf.getId(), null, new Date(), AppWhetherFlag.Y);
         }
 
     }
 
-    private Map<String,Object> sendOrderFreightInfToEbs(OrderFreightInf orderFreightInf) {
-        log.info("sendOrderFreightInfToEbs, orderFreightInf=" + orderFreightInf);
-        OrderFreightSecond freightSecond = new OrderFreightSecond();
-        freightSecond.setAmount(toString(orderFreightInf.getAmount()));
-        freightSecond.setId(toString(orderFreightInf.getId()));
-        freightSecond.setAttribute1(toString(orderFreightInf.getAttribute1()));
-        freightSecond.setAttribute2(toString(orderFreightInf.getAttribute2()));
-        freightSecond.setAttribute3(toString(orderFreightInf.getAttribute3()));
-        freightSecond.setAttribute4(toString(orderFreightInf.getAttribute4()));
-        freightSecond.setAttribute5(toString(orderFreightInf.getAttribute5()));
-        freightSecond.setMainOrderNumber(toString(orderFreightInf.getMainOrderNumber()));
-        freightSecond.setOrderAmt(toString(orderFreightInf.getOrderAmt()));
-        freightSecond.setGoodsAmt(toString(orderFreightInf.getGoodsAmt()));
-        freightSecond.setType(toString(orderFreightInf.getType()));
-        String orderFreightSecondJson = JSON.toJSONString(freightSecond);
+    private Map<String, Object> sendOrderKeyInfToEbs(OrderKeyInf orderKeyInf) {
+        log.info("sendOrderKeyInfToEbs, orderKeyInf=" + orderKeyInf);
+        OrderKeySecond orderKeySecond = new OrderKeySecond();
+        orderKeySecond.setFreight(toString(orderKeyInf.getFreight()));
+        orderKeySecond.setId(toString(orderKeyInf.getId()));
+        orderKeySecond.setAttribute1(toString(orderKeyInf.getAttribute1()));
+        orderKeySecond.setAttribute2(toString(orderKeyInf.getAttribute2()));
+        orderKeySecond.setAttribute3(toString(orderKeyInf.getAttribute3()));
+        orderKeySecond.setAttribute4(toString(orderKeyInf.getAttribute4()));
+        orderKeySecond.setAttribute5(toString(orderKeyInf.getAttribute5()));
+        orderKeySecond.setMainOrderNumber(toString(orderKeyInf.getMainOrderNumber()));
+        orderKeySecond.setOrderAmt(toString(orderKeyInf.getOrderAmt()));
+        orderKeySecond.setGoodsAmt(toString(orderKeyInf.getGoodsAmt()));
+        orderKeySecond.setDecCreditMoney(toString(orderKeyInf.getDecCreditMoney()));
+        orderKeySecond.setDecPreDeposit(toString(orderKeyInf.getDecPreDeposit()));
+        orderKeySecond.setDecSubvention(toString(orderKeyInf.getDecSubvention()));
+        orderKeySecond.setEmpCreditMoney(toString(orderKeyInf.getEmpCreditMoney()));
+        orderKeySecond.setArrearage(toString(orderKeyInf.getArrearage()));
+        orderKeySecond.setType(toString(orderKeyInf.getType()));
+        String orderKeySecondJson = JSON.toJSONString(orderKeySecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        parameters.add(new BasicNameValuePair("orderFreightJson", orderFreightSecondJson));
-        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callOrderFreightSecond", parameters);
+        parameters.add(new BasicNameValuePair("orderKeyJson", orderKeySecondJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callOrderKeySecond", parameters);
         if (!(Boolean) result.get("success")) {
             JSONObject content = new JSONObject();
-            content.put("orderFreightSecondJson", orderFreightSecondJson);
+            content.put("orderKeySecondJson", orderKeySecondJson);
             result.put("content", JSON.toJSONString(content));
         }
-        log.info("sendOrderFreightInfToEbs, result=" + result);
+        log.info("sendOrderKeyInfToEbs, result=" + result);
         return result;
     }
 
-    private void updateOrderFreightInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
-        if (null != id){
-            separateOrderService.updateOrderFreightInfFlagAndSendTimeAndErrorMsg(id,msg,sendTime,sendFlag);
+    private void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
+        if (null != id) {
+            separateOrderService.updateOrderKeyInfFlagAndSendTimeAndErrorMsg(id, msg, sendTime, sendFlag);
         }
     }
 

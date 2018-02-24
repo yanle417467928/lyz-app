@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.core.remote.ebs;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaReturnOrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
@@ -57,5 +56,5 @@ public interface EbsSenderService {
 
     void sendReturnOrderJxPriceDifferenceRefundInfAndRecord(List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfs);
 
-    void sendOrderFreightInfAndRecord(OrderFreightInf orderFreightInf);
+    void sendOrderKeyInfAndRecord(OrderKeyInf orderFreightInf);
 }

@@ -17,7 +17,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class OrderFreightInf {
+public class OrderKeyInf {
 
     private Long id;
 
@@ -44,7 +44,7 @@ public class OrderFreightInf {
     /**
      * 运费金额
      */
-    private Double amount;
+    private Double freight;
 
     /**
      * 创建时间
@@ -65,6 +65,30 @@ public class OrderFreightInf {
      * 传输成功时间
      */
     private Date sendTime;
+
+    /**
+     * 装饰公司信用额度
+     */
+    private Double decCreditMoney;
+    /**
+     * 装饰公司预存款
+     */
+    private Double decPreDeposit;
+    /**
+     * 装饰公司赞助金
+     */
+    private Double decSubvention;
+
+    /**
+     * 导购信用额度
+     */
+    private Double empCreditMoney;
+
+    /**
+     * 欠款
+     */
+    private Double arrearage;
+
 
     private String attribute1;
 

@@ -56,7 +56,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderFreightInf orderFreightInf) {
+                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderKeyInf orderKeyInf) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -88,8 +88,8 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
             separateOrderService.saveOrderJxPriceDifferenceReturnInf(returnInf);
         }
         //保存订单运费信息
-        if (null != orderFreightInf){
-            separateOrderService.saveOrderFreightInf(orderFreightInf);
+        if (null != orderKeyInf){
+            separateOrderService.saveOrderKeyInf(orderKeyInf);
         }
 
     }
