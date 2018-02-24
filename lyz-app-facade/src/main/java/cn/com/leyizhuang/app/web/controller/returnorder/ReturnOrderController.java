@@ -595,6 +595,8 @@ public class ReturnOrderController {
             appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
             //发送退货单到wms
             callWms.sendToWmsReturnOrderAndGoods(returnNo);
+            //发送退单拆单消息到拆单消息队列
+            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -933,7 +935,7 @@ public class ReturnOrderController {
                 if (null != giftListResponseGoods && !giftListResponseGoods.isEmpty()) {
                     for (ReturnOrderGoodsResponse returnOrderGoodsResponse : returnOrderGoodsList) {
                         for (GiftListResponseGoods giftListResponseGood : giftListResponseGoods) {
-                            if (giftListResponseGood.getCoverImageUri().equals(returnOrderGoodsResponse.getCoverImageUri())) {
+                            if (giftListResponseGood.getGoodsId().equals(returnOrderGoodsResponse.getGoodsId())) {
                                 returnOrderGoodsResponse.setCoverImageUri(giftListResponseGood.getCoverImageUri());
                                 break;
                             }
@@ -1002,7 +1004,7 @@ public class ReturnOrderController {
                     }
                     orderLogisticsInfo = transform(orderLogisticsInfo, defaultDeliveryAddress);
                     //如果是送货上门，退货到门店的地址就是订单门店地址
-                } else if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType()) && identityType == 6) {
+                } else if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType())) {
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo && null != orderBaseInfo.getCreatorId()) {
@@ -1049,6 +1051,7 @@ public class ReturnOrderController {
     private ReturnOrderGoodsResponse transform(OrderGoodsInfo goodsInfo) {
         ReturnOrderGoodsResponse returnOrderGoodsResponse = new ReturnOrderGoodsResponse();
         returnOrderGoodsResponse.setId(goodsInfo.getId());
+        returnOrderGoodsResponse.setGoodsId(goodsInfo.getGid());
         returnOrderGoodsResponse.setSku(goodsInfo.getSku());
         returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
         returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());

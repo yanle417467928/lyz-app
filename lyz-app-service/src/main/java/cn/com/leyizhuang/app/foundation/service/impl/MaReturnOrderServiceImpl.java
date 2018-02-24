@@ -155,8 +155,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     }
 
     @Override
-    public void updateReturnOrderStatus(String returnNumber,AppReturnOrderStatus status) {
-        if (StringUtils.isNotBlank(returnNumber)&&null !=status) {
+    public void updateReturnOrderStatus(String returnNumber,String status) {
+        if (StringUtils.isNotBlank(returnNumber)&&StringUtils.isNotBlank(status)) {
             maReturnOrderDAO.updateReturnOrderStatus(returnNumber,status);
         }
     }
@@ -202,7 +202,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             //查看门店下 该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), maOrderGoodsInfo.getGid());
             if (null == storeInventory) {
-                throw new RuntimeException("该门店下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
+                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:"+maReturnOrderDetailInfo.getStoreId()+"商品id:" + maOrderGoodsInfo.getGid());
             }
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //更新门店库存数量及可用量
@@ -226,6 +226,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                     storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
                     maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
+                    break;
                 } else {
                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                         throw new SystemBusyException("系统繁忙，请稍后再试!");
@@ -324,6 +325,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     customerPreDeposit.setMerchantOrderNumber(null);
                     //保存日志
                     maCustomerService.saveCusPreDepositLog(customerPreDeposit);
+                    break;
                 } else {
                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                         throw new SystemBusyException("系统繁忙，请稍后再试!");
@@ -363,6 +365,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
                     //保存日志
                     maStoreService.saveStorePreDepositLog(stPreDepositLogDO);
+                    break;
                 } else {
                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                         throw new SystemBusyException("系统繁忙，请稍后再试!");
@@ -435,7 +438,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             }
         }
         //更新订单状态
-        this.updateReturnOrderStatus(returnNumber,AppReturnOrderStatus.FINISHED);
+        this.updateReturnOrderStatus(returnNumber,AppReturnOrderStatus.FINISHED.toString());
     }
 }
 

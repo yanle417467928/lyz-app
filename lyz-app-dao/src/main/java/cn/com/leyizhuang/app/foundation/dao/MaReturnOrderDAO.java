@@ -45,7 +45,7 @@ public interface MaReturnOrderDAO {
 
     Long findReturnOrderBillingId(String returnNumber);
 
-    void updateReturnOrderStatus(String returnNumber,AppReturnOrderStatus status);
+    void updateReturnOrderStatus(@Param(value = "returnNumber") String returnNumber,@Param(value = "status")String status);
 
     List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
 

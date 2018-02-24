@@ -48,7 +48,7 @@ public class MaReturnOrderViewController {
      */
     @RequestMapping(value = "/list")
     public String returnOrderListPage() {
-        return "/views/returnorder/returnOrder_page";
+        return "/views/returnOrder/returnOrder_page";
     }
 
 /*    *//**
@@ -114,7 +114,7 @@ public class MaReturnOrderViewController {
             logger.info("getMaReturnOrderDetail OUT,查看退货单详情成功");
             map.addAttribute("maReturnOrderDetailVO",maReturnOrderDetailVO);
             map.addAttribute("returnOrderType",returnOrderType);
-            return "/views/returnorder/returnOrder_detail";
+            return "/views/returnOrder/returnOrder_detail";
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，查看退货单详情失败", null);

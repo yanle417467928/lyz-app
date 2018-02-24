@@ -238,17 +238,28 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
+    public void saveOrderShipping(OrderShipping orderShipping) {
+         this.maOrderDAO.saveOrderShipping(orderShipping);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) {
         if (null == maOrderTempInfo || null == maOrderTempInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
+        Date date = new Date();
         //更新订单状态
         this.updateOrderStatus(orderNumber);
+        //存入发货表
+        OrderShipping orderShipping = new OrderShipping();
+        orderShipping.setOid(maOrderTempInfo.getId());
+        orderShipping.setOrdNo(maOrderTempInfo.getOrderNumber());
+        orderShipping.setShippingTime(date);
+        this.saveOrderShipping(orderShipping);
         //查询该订单下的所有商品
         List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber);
 
-        Date date = new Date();
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
             //生成出货记录
             GoodsShippingInfo goodsShippingInfo = new GoodsShippingInfo();
