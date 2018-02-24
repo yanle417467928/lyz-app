@@ -761,16 +761,17 @@ public class MaOrderRestController extends BaseRestController {
      * @param preDepositMoney
      * @param preDepositCollectMoneyTime
      * @param preDepositRemarks
+     * @param salesNumber
      * @return
      * @throws IOException
      */
     @PostMapping(value = "/save/productCoupon")
     public ResultDTO<?> saveMaProductCoupon(HttpServletRequest request, Long sellerId, Long customerId, String goodsDetails, String giftDetails,
                                             Double cashMoney, Double posMoney, Double otherMoney, String posNumber, Double totalMoney,
-                                            String collectMoneyTime, String remarks, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks) throws IOException {
+                                            String collectMoneyTime, String remarks, String salesNumber, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks) throws IOException {
         logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{}," +
-                        "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{}", sellerId, customerId, goodsDetails, giftDetails,
-                cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney);
+                        "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{},salesNumber:{}", sellerId, customerId, goodsDetails, giftDetails,
+                cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney,salesNumber);
         if (null == sellerId) {
             logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,导购id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购id不能为空！", null);
@@ -814,6 +815,7 @@ public class MaOrderRestController extends BaseRestController {
                 logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "未查询到导购信息！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到导购信息！", null);
             }
+
             //获取顾客信息
             AppCustomer appCustomer = appCustomerService.findById(customerId);
             if (null == appCustomer) {
@@ -833,12 +835,17 @@ public class MaOrderRestController extends BaseRestController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到门店信息！", null);
             }
 
-
+            if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType())){
+                if (StringUtils.isBlank(salesNumber)){
+                    logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,销售纸质单号不能为空！");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，销售纸质单号不能为空！", null);
+                }
+            }
             //***********************创建买券订单头*********************
             //生成订单号
             String orderNumber = OrderUtils.generateOrderNumber(city.getCityId());
             OrderBaseInfo orderBaseInfo = maOrderService.createMaOrderBaseInfo(appCustomer, city, appStore, appEmployee,
-                    preDepositMoney, remarks, preDepositRemarks, totalMoney, orderNumber);
+                    preDepositMoney, remarks, preDepositRemarks, totalMoney, orderNumber, salesNumber);
 
             //******************************创建买券订单商品信息******************************
             CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, sellerId, 0, orderNumber);
@@ -861,7 +868,7 @@ public class MaOrderRestController extends BaseRestController {
                     logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS收款金额，请填写POS流水号！！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS收款金额，请填写POS流水号！", null);
                 }
-                if (null != posNumber && posMoney == null) {
+                if (StringUtils.isBlank(posNumber) && posMoney == null) {
                     logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS流水号，请填写POS收款金额！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，有POS流水号，请填写POS收款金额！", null);
                 }

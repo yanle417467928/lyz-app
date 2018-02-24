@@ -33,6 +33,12 @@ public class MaEmployeeResponse {
      */
     private StoreType storeType;
 
+
+    /**
+     * 门店类型
+     */
+    private String storeCode;
+
     /**
      * 门店预存款余额
      */
