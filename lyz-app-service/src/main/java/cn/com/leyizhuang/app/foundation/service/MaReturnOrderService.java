@@ -41,7 +41,7 @@ public interface MaReturnOrderService {
     /**
      * 更新退单状态
      */
-    void updateReturnOrderStatus(String returnNumber, AppReturnOrderStatus status);
+    void updateReturnOrderStatus(String returnNumber, String status);
 
     /**
      * 发送自提单退单收货接口表数据到ebs

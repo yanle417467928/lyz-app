@@ -367,7 +367,7 @@
                 if (0 === result.code) {
                     window.location.reload();
                 } else {
-                    $notify.danger('审核失败，请稍后重试或联系管理员');
+                    $notify.danger('退货失败，请稍后重试或联系管理员');
                 }
             }
         });
