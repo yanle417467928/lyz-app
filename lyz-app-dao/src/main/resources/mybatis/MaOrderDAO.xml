@@ -649,8 +649,7 @@
     </select>
 
 
-    <select id="findOrderGoodsList" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
+    <select id="findOrderGoodsList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
         SELECT
         ogi.gid gid,
         ogi.sku  sku,

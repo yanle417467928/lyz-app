@@ -53,7 +53,7 @@ import java.util.*;
  * Created by caiyu on 2017/12/16.
  */
 @Service("maOrderService")
-public class MaOrderServiceImpl implements MaOrderService {
+public class MaOrderServiceImpl implements MaOrderService  {
 
     @Resource
     private MaOrderDAO maOrderDAO;
@@ -244,7 +244,7 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) {
+    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) throws RuntimeException,SystemBusyException{
         if (null == maOrderTempInfo || null == maOrderTempInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
@@ -258,7 +258,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderShipping.setShippingTime(date);
         this.saveOrderShipping(orderShipping);
         //查询该订单下的所有商品
-       Long storeId = maOrderTempInfo.getStoreId();
+        Long storeId = maOrderTempInfo.getStoreId();
         List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber,storeId);
 
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
@@ -290,7 +290,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             //更新门店库存数量
             Integer goodsQtyAfterChange = storeInventory.getRealIty() - maOrderGoodsInfo.getOrderQty();
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, maOrderGoodsInfo.getLastUpdateTime());
+                int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, storeInventory.getLastUpdateTime());
                 if (affectLine > 0) {
                     break;
                 } else {

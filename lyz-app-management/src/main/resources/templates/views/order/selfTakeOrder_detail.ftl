@@ -592,6 +592,7 @@
         var orderNumber = $("#orderNumber").val();
         var code = $("#code").val();
         if (null == code || '' == code || 4 != code.length) {
+            $('#msg').html('<font color="red">验证失败</font>')
             return false;
         }
         $.ajax({
