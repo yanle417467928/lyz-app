@@ -119,6 +119,15 @@
             AND last_update_time = #{version}
     </update>
 
+    <update id="updateCityInventoryByCityCodeAndSkuAndInventory">
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{inventory}
+        WHERE
+            sku = #{sku}
+            AND city_code = #{cityCode}
+            AND last_update_time = #{version}
+    </update>
+
     <select id="findCityInventoryByCityIdAndGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
         SELECT
@@ -135,6 +144,24 @@
         FROM city_inventory
         WHERE city_id = #{cityId} AND gid = #{goodsId}
     </select>
+
+    <select id="findCityInventoryByCityCodeAndSku"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        SELECT
+            id,
+            city_id,
+            city_code,
+            city_name,
+            gid,
+            sku,
+            sku_name,
+            available_ity,
+            create_time,
+            last_update_time
+        FROM city_inventory
+        WHERE city_code = #{cityCode} AND sku = #{sku}
+    </select>
+
     <insert id="addCityInventoryAvailableQtyChangeLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog">
         INSERT INTO city_inventory_available_qty_change_log

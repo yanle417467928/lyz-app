@@ -69,4 +69,11 @@ public interface CityDAO {
                                                                             @Param("gid") Long index,
                                                                             @Param("qty") Integer integer,
                                                                             @Param(value = "version") Date version);
+
+    CityInventory findCityInventoryByCityCodeAndSku(@Param("cityCode") String cityCode, @Param("sku") String sku);
+
+    Integer updateCityInventoryByCityCodeAndSkuAndInventory(@Param(value = "cityCode") String cityCode,
+                                                            @Param(value = "sku") String sku,
+                                                            @Param(value = "inventory") Integer inventory,
+                                                            @Param(value = "version") Timestamp version);
 }
