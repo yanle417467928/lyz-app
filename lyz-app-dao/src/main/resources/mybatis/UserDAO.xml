@@ -137,4 +137,10 @@
         admin_user
         WHERE LOGIN_NAME = #{loginName}
     </select>
+
+    <select id="findByLoginName"  resultType="User">
+        SELECT *
+        FROM admin_user
+        WHERE login_name = #{loginName};
+    </select>
 </mapper>

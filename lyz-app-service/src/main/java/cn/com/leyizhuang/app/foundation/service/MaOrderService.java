@@ -187,10 +187,10 @@ public interface MaOrderService {
     /**
      * 更新订单费用表订单状态
      *
-     * @param orderNumber 订单号
+     * @param  maOrderAmount
      * @return
      */
-    void updateorderReceivablesStatus(String orderNumber);
+    void updateorderReceivablesStatus(MaOrderAmount maOrderAmount);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber,Long storeId);
 
@@ -310,7 +310,7 @@ public interface MaOrderService {
      * @param paymentDetails
      */
     void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,OrderLogisticsInfo orderLogisticsInfo);
+                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,OrderLogisticsInfo orderLogisticsInfo,Long operatorId);
 
     /**
      * 后台买券订单持久化调用方法
@@ -324,7 +324,7 @@ public interface MaOrderService {
      * @param ipAddress
      */
     void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,OrderLogisticsInfo orderLogisticsInfo);
+                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,OrderLogisticsInfo orderLogisticsInfo,Long operatorId);
 
     /**
      * 后台买券订单创建订单基础信息

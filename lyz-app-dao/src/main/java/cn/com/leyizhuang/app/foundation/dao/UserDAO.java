@@ -34,4 +34,6 @@ public interface UserDAO {
     void saveUserVO(UserVO userVO);
 
     User queryByLoginName(UserVO userVO);
+
+    User findByLoginName(@Param(value = "loginName") String loginName);
 }

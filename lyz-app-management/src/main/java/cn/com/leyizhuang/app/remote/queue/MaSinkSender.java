@@ -62,4 +62,15 @@ public class MaSinkSender {
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
     }
+
+    public void sendOrder(String orderNumber) {
+        log.info("sendOrder,发送需拆单订单到拆单队列,Begin\n 订单号:{}", orderNumber);
+        if (StringUtils.isNotBlank(orderNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER);
+            message.setContent(JSON.toJSONString(orderNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendOrder,发送需拆单订单到拆单队列,End", JSON.toJSONString(orderNumber));
+    }
 }
