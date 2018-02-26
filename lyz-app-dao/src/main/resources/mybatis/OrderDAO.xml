@@ -148,7 +148,7 @@
             obi.delivery_type
             FROM
             ord_base_info AS obi
-            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             WHERE
             obi.customer_id = #{userID}
             AND
