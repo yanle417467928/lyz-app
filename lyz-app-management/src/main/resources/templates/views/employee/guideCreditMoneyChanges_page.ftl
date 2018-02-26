@@ -61,7 +61,7 @@
 
     function showAvailableCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId = $('#guideId').val()
+        var guideId = $('#guideId').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/availableCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,

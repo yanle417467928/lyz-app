@@ -11,9 +11,7 @@ public class SupportHotlineResponse {
     //成都客服电话
     private final  String cdSupportHotline="028-85989720/028-85989719";
     //郑州客服电话
-    private final  String zzSupportHotline="028-85989720/028-85989719";
-    //重庆客服电话
-    private final  String cqSupportHotline="028-85989720/028-85989719";
+    private final  String zzSupportHotline="0371-86060877";
     //导购电话
     private String sellerMobile;
 }

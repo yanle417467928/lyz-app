@@ -14,10 +14,10 @@ import java.util.List;
 public interface CashCouponDAO {
     /**
      *  获取现金券信息
-     * @param cusProductCouponId
+     * @param cusCashCouponId
      * @return
      */
-    CustomerCashCoupon findCusCashCouponByCouponId(@Param("cusProductCouponId")Long cusProductCouponId);
+    CustomerCashCoupon findCusCashCouponByCouponId(@Param("cusCashCouponId")Long cusCashCouponId);
 
     /**
      * 添加现金券模板

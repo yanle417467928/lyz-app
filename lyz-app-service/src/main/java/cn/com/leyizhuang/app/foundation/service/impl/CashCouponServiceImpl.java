@@ -30,8 +30,8 @@ public class CashCouponServiceImpl implements CashCouponService{
     private MaGoodsBrandDAO maGoodsBrandDAO;
 
     @Override
-    public CustomerCashCoupon findCusCashCouponByCouponId(Long cusProductCouponId) {
-        return cashCouponDAO.findCusCashCouponByCouponId(cusProductCouponId);
+    public CustomerCashCoupon findCusCashCouponByCouponId(Long cusCashCouponId) {
+        return cashCouponDAO.findCusCashCouponByCouponId(cusCashCouponId);
     }
 
     @Override

@@ -172,7 +172,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     }
 
     @Override
-    public void sendReturnOrderReceiptInfAndRecord(String returnNumber) {
+    public void sendReturnOrderReceiptInfAndRecord(String returnNumber) throws RuntimeException {
         if (null == returnNumber) {
             throw new RuntimeException("发送接口失败，退单号为空");
         }
@@ -188,7 +188,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser)  {
+    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException  {
         Date date = new Date();
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");

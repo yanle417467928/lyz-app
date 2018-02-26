@@ -47,6 +47,8 @@ public class GuideCreditChangeDetailVO {
     private String operatorName;
     //操作人IP
     private String operatorIp;
+    //修改原因
+    private String changeReason;
 
     public static final GuideCreditChangeDetailVO transform(GuideCreditChangeDetailDO guideCreditChangeDetailDO) {
         if (null != guideCreditChangeDetailDO) {
@@ -62,6 +64,7 @@ public class GuideCreditChangeDetailVO {
             guideCreditChangeDetailVO.setReferenceNumber(guideCreditChangeDetailDO.getReferenceNumber());
             guideCreditChangeDetailVO.setEmpId(guideCreditChangeDetailDO.getEmpId());
             guideCreditChangeDetailVO.setOperatorName(guideCreditChangeDetailDO.getOperatorName());
+            guideCreditChangeDetailVO.setChangeReason(guideCreditChangeDetailDO.getChangeReason());
             return guideCreditChangeDetailVO;
         } else {
             return null;

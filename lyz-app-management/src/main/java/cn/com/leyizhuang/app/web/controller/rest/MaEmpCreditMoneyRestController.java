@@ -63,9 +63,11 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
                 //TODO
                 //没有修改原因字段
+                //随即生成一个单号
                 guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
                 guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ADMIN_RECHARGE);
-                //guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
+                guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
+                guideCreditChangeDetailVO.setChangeReason(modifyReason);
                 guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
                 this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetailVO,lastUpdateTimeFormat);
                 logger.info("restGuideCreditMoneyVOPut ,后台修改员工额度成功");
