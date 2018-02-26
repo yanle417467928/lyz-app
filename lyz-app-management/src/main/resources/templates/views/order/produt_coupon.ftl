@@ -288,10 +288,6 @@
 
                                     <div class="col-xs-6">
                                         <div class="col-xs-4" style="margin-left: 115px;">
-                                        <#--<button type="button" class="btn btn-primary btn-xs"-->
-                                        <#--onclick="selectPaymnet('preDeposit')">-->
-                                        <#--选择预存款支付-->
-                                        <#--</button>-->
                                             <select name="selectPaymnet" id="selectPaymnet" class="form-control select"
                                                     onchange="selectPaymnet(this.value)">
                                                 <option value="-1">请选择支付方式</option>
@@ -1305,7 +1301,7 @@
 
     //保存买券订单
     function save() {
-        $global.timer = setTimeout($loading.show, 2000);
+        $loading.show();
         var storeCode = $('#storeCode').text();
         var cashMoney = $('#cashMoney').val();
         var posMoney = $('#posMoney').val();
@@ -1352,7 +1348,7 @@
             return;
         }
 
-        if (1 == cityId && 'ZY' == storeCode){
+        if (1 == cityId && 'ZY' == storeCode) {
             if ('' == salesNumber || null == salesNumber) {
                 $loading.close();
                 $notify.warning("请填写销售纸质单号");
@@ -1466,8 +1462,8 @@
             success: function (result) {
                 if (result.code === 0) {
                     $loading.close();
-                    $notify.info(result.message);
                     window.location.href = "/views/admin/order/buy/produtCoupon";
+                    $notify.info(result.message);
                 } else {
                     $loading.close();
                     $notify.danger(result.message);
@@ -1627,6 +1623,14 @@
 
     //失去焦点验证收款信息
     function priceBlur(id) {
+        var selectPaymnet = $('#selectPaymnet').val();
+
+        if (selectPaymnet == -1) {
+            $notify.warning("请选择支付方式！");
+            document.getElementById(id).value = 0.00;
+            return;
+        }
+
         var price = document.getElementById(id).value;
 
         if ('posMoney' == id || 'otherMoney' == id || 'totalMoney' == id || 'preDepositMoney' == id) {
@@ -1672,7 +1676,7 @@
         }
         //判断是否显示销售纸质单号输入框
 
-        if (1 == cityId && 'ZY' == storeType){
+        if (1 == cityId && 'ZY' == storeType) {
             document.getElementById("salesNumTitle").style.display = "block";
             document.getElementById("salesNumber").style.display = "block";
         }
@@ -1695,7 +1699,7 @@
         //商品会员价总额
         var totalVipPrice = 0;
         var trs = $("#selectedGoodsTable").find("tr");
-        if (trs.length == 0){
+        if (trs.length == 0) {
             $notify.warning("请选择商品！");
             return;
         }
@@ -1740,9 +1744,10 @@
 
     //验证销售纸质单号
     function verificationSalesNumber() {
-        var salesNumber = $('#salesNum').val();
-        var re = /^[0-9]+.?[0-9]*$/;
+        var salesNumber = $('#salesNumber').val();
+        var re = /^[0-9a-zA-Z]*$/g;
         if (!re.test(salesNumber)) {
+            $("#salesNumber").val("")
             $notify.warning("只能输入数字及字母");
             return;
         }
