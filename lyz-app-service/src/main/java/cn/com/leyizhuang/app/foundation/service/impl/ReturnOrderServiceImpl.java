@@ -98,14 +98,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         baseInfo.setReturnNo(OrderUtils.getReturnNumber());
         baseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
         baseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_PICK_UP);
-        if (creatorIdentityType == 6) {
-            AppCustomer customer = appCustomerService.findById(creatorId);
-            baseInfo.setCustomerType(customer.getCustomerType());
-            baseInfo.setCreatorPhone(customer.getMobile());
-        } else if (creatorIdentityType == 2) {
-            AppEmployee employee = appEmployeeService.findById(creatorId);
-            baseInfo.setCreatorPhone(employee.getMobile());
-        }
         return baseInfo;
     }
 

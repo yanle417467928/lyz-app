@@ -60,7 +60,7 @@ public class ReturnOrderController {
     @Resource
     private AppOrderService appOrderService;
     @Resource
-    private AppCustomerService customerService;
+    private AppCustomerService appCustomerService;
     @Resource
     private GoodsService goodsService;
     @Resource
@@ -420,7 +420,11 @@ public class ReturnOrderController {
                     order.getCreateTime(), param.getRemarksInfo(), userId, identityType, param.getReasonInfo(), returnPic, order.getOrderType(),
                     order.getStoreId(), order.getStoreCode(), order.getStoreStructureCode());
             if (identityType == 6) {
-                AppCustomer customer = customerService.findById(userId);
+                AppCustomer customer = appCustomerService.findById(param.getUserId());
+                returnOrderBaseInfo.setCustomerId(customer.getCusId());
+                returnOrderBaseInfo.setCustomerName(customer.getName());
+                returnOrderBaseInfo.setCustomerPhone(customer.getMobile());
+                returnOrderBaseInfo.setCustomerType(customer.getCustomerType());
                 returnOrderBaseInfo.setCreatorName(customer.getName());
                 returnOrderBaseInfo.setCreatorPhone(customer.getMobile());
             } else {
@@ -428,7 +432,7 @@ public class ReturnOrderController {
                 returnOrderBaseInfo.setCreatorName(employee.getName());
                 returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
                 if (identityType == 0) {
-                    AppCustomer customer = customerService.findById(param.getCusId());
+                    AppCustomer customer = appCustomerService.findById(param.getCusId());
                     if (AssertUtil.isNotEmpty(customer)) {
                         returnOrderBaseInfo.setCustomerId(customer.getCusId());
                         returnOrderBaseInfo.setCustomerName(customer.getName());
