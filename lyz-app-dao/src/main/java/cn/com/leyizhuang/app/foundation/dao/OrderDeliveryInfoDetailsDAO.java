@@ -89,10 +89,10 @@ public interface OrderDeliveryInfoDetailsDAO {
     /**
      * 查询配送员已完成的数量
      *
-     * @param userId
+     * @param operatorNo
      * @return
      */
-    int countAuditFinishOrderByOperatorNo(Long userId);
+    int countAuditFinishOrderByOperatorNo(String operatorNo);
 
     /**
      * 根据物流操作单号获取物流配送信息
