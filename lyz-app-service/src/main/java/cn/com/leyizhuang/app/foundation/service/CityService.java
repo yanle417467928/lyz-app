@@ -2,9 +2,9 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -52,4 +52,8 @@ public interface CityService {
     Integer updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version);
 
     Integer updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version);
+
+    CityInventory findCityInventoryByCityCodeAndSku(String cityCode, String sku);
+
+    Integer lockCityInventoryByCityCodeAndSkuAndInventory(String cityCode, String sku, Integer inventory, Timestamp lastUpdateTime);
 }

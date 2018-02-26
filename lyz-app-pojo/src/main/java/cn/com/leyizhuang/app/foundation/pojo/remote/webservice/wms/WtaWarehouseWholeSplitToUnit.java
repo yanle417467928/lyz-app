@@ -59,7 +59,7 @@ public class WtaWarehouseWholeSplitToUnit {
      */
     private Date createTime;
     /**
-     * 分公司ID
+     * 城市编码
      */
-    private Long companyId;
+    private String companyId;
 }
