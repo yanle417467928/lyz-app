@@ -310,7 +310,7 @@ public interface MaOrderService {
      * @param paymentDetails
      */
     void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails);
+                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,OrderLogisticsInfo orderLogisticsInfo);
 
     /**
      * 后台买券订单持久化调用方法
@@ -324,7 +324,7 @@ public interface MaOrderService {
      * @param ipAddress
      */
     void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress);
+                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,OrderLogisticsInfo orderLogisticsInfo);
 
     /**
      * 后台买券订单创建订单基础信息
@@ -351,4 +351,6 @@ public interface MaOrderService {
      * @return
      */
     List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
+
+    OrderLogisticsInfo createMaOrderLogisticsInfo(AppStore appStore,String orderNumber);
 }
