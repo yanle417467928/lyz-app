@@ -448,9 +448,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty) {
+    public List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long salesConsultId, Long id, Integer qty) {
         if (null != customerIdTemp && null != id && null != qty) {
-            return customerDAO.findProductCouponsByCustomerIdAndGoodsIdAndQty(customerIdTemp, id, qty);
+            return customerDAO.findProductCouponsByCustomerIdAndSalesConsultIdAndGoodsIdAndQty(customerIdTemp, salesConsultId, id, qty);
         }
         return null;
     }
@@ -492,7 +492,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public void unbindingCustomerWeChat(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             customerDAO.unbindingCustomerWeChat(userId);
         }
     }
@@ -551,7 +551,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public SupportHotlineResponse getCustomerSupportHotline(Long userId) {
         String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
         SupportHotlineResponse supportHotlineResponse = new SupportHotlineResponse();
-        if(null !=sellerMobile){
+        if (null != sellerMobile) {
             supportHotlineResponse.setSellerMobile(sellerMobile);
         }
         return supportHotlineResponse;

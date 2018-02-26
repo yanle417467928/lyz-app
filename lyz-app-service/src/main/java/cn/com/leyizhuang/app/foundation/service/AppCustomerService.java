@@ -35,7 +35,7 @@ public interface AppCustomerService {
 
     List<ProductCouponResponse> findProductCouponByCustomerId(Long userId);
 
-    PageInfo<AppCustomer> findListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size);
+    PageInfo<AppCustomer> findListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size);
 
     List<CustomerListResponse> searchByUserIdAndKeywordsAndIdentityType(Long userId, String keywords, Integer identityType);
 
@@ -51,7 +51,7 @@ public interface AppCustomerService {
 
     Map<String, Object> findLeBiByUserIdAndGoodsMoney(Long userId, Double goodsMoney);
 
-    void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType,int qty);
+    void addLeBiQuantityByUserIdAndIdentityType(Long userId, Integer identityType, int qty);
 
     void modifyCustomerMobileByUserId(Long userId, String mobile);
 
@@ -59,11 +59,11 @@ public interface AppCustomerService {
 
     void savePreDeposit(CustomerPreDeposit preDeposit);
 
-    void updateCustomerSignInfoByCustomerId(Long cusId, Date date,int consecutiveSignDays);
+    void updateCustomerSignInfoByCustomerId(Long cusId, Date date, int consecutiveSignDays);
 
-    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit,Timestamp version);
+    int lockCustomerDepositByUserIdAndDeposit(Long userId, Double customerDeposit, Timestamp version);
 
-    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty,Timestamp version);
+    int lockCustomerLebiByUserIdAndQty(Long userId, Integer lebiQty, Timestamp version);
 
     int lockCustomerProductCouponByUserIdAndProductCoupons(Long userId, Map<Long, Integer> productCoupon);
 
@@ -89,11 +89,11 @@ public interface AppCustomerService {
 
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId);
 
-    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId,String keywords);
+    List<ProductCouponCustomer> findProductCouponCustomerBySellerId(Long userId, String keywords);
 
     CustomerCashCoupon findCashCouponByCcid(Long id);
 
-    Integer lockCustomerCashCouponById(Long id,String orderNumber);
+    Integer lockCustomerCashCouponById(Long id, String orderNumber);
 
     CustomerLeBi findCustomerLebiByCustomerId(Long customerId);
 
@@ -108,23 +108,24 @@ public interface AppCustomerService {
     Integer findProductCouponAvailQtyByCustomerId(Long userId);
 
     Integer countSignDaysByCusId(Long cusId, Date startTimeOfThisMonth, Date date);
+
     Integer countTotalSignDaysByCusId(Long cusId);
 
     Integer countSignAwardLebiQtyByCusId(Long cusId);
 
-    PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId,Integer page,Integer size);
+    PageInfo<CustomerSignLogBrief> findCustomerSignDetailByCusIdWithPageable(Long cusId, Integer page, Integer size);
 
     void saveSignLog(CusSignLog log);
 
     List<CustomerCashCoupon> findCashCouponsByCcids(List<Long> cashCouponList);
 
-    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long id, Integer qty);
+    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(Long customerIdTemp, Long salesConsultId, Long id, Integer qty);
 
     Integer lockCustomerProductCouponById(Long couponId, String orderNumber);
 
     List<CustomerProfession> getCustomerProfessionListByStatus(String status);
 
-    Integer updateDepositByUserIdAndVersion(Long userId,Double customerDeposit,Date version);
+    Integer updateDepositByUserIdAndVersion(Long userId, Double customerDeposit, Date version);
 
     List<CustomerCashCoupon> findCashCouponsByids(List<Long> cashCouponList);
 

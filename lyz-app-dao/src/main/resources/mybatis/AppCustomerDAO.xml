@@ -636,31 +636,34 @@
         </foreach>
     </select>
 
-    <select id="findProductCouponsByCustomerIdAndGoodsIdAndQty"
+    <select id="findProductCouponsByCustomerIdAndSalesConsultIdAndGoodsIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
         SELECT
-            id,
-            cus_id,
-            seller_id,
-            store_id,
-            gid,
-            quantity,
-            get_type,
-            get_time,
-            get_ord_no,
-            buy_price,
-            effective_start_time,
-            effective_end_time,
-            is_used,
-            use_time,
-            use_ord_no
+        id,
+        cus_id,
+        seller_id,
+        store_id,
+        gid,
+        quantity,
+        get_type,
+        get_time,
+        get_ord_no,
+        buy_price,
+        effective_start_time,
+        effective_end_time,
+        is_used,
+        use_time,
+        use_ord_no
         FROM cus_customer_product_coupon
         WHERE cus_id = #{customerId}
-              AND gid = #{id}
-              AND status = TRUE
-              AND is_used = FALSE
-              AND effective_start_time &lt; NOW()
-              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
+        <if test="salesConsultId != null and salesConsultId.toString()!=''">
+            AND seller_id = #{salesConsultId}
+        </if>
+        AND gid = #{id}
+        AND status = TRUE
+        AND is_used = FALSE
+        AND effective_start_time &lt; NOW()
+        AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
         ORDER BY get_time
         LIMIT #{qty}
     </select>
@@ -721,23 +724,22 @@
 
     <select id="findCustomerProfessionByTitle" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
-    SELECT
-    id,
-    title,
-    description,
-    create_time,
-    status
-    FROM cus_profession
-    WHERE title = #{customerProfession}
-</select>
+        SELECT
+            id,
+            title,
+            description,
+            create_time,
+            status
+        FROM cus_profession
+        WHERE title = #{customerProfession}
+    </select>
 
 
     <select id="getCustomerSupportHotline" parameterType="java.lang.Long"
             resultType="java.lang.String">
-        SELECT
-        ee.mobile
+        SELECT ee.mobile
         FROM cus_customer cc
-        LEFT JOIN emp_employee ee ON cc.sales_consult_id = ee.emp_id
+            LEFT JOIN emp_employee ee ON cc.sales_consult_id = ee.emp_id
         WHERE cc.cus_id = #{userId}
     </select>
 
