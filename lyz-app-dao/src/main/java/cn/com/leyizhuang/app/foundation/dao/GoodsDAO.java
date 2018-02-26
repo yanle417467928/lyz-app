@@ -126,7 +126,7 @@ public interface GoodsDAO {
 
     void updateGoods(GoodsDO goodsDO);
 
-    List<GoodsDO> queryGoodsPageByInfo(String queryGoodsInfo);
+    List<GoodsDO> queryGoodsPageByInfo(@Param(value ="queryGoodsInfo" ) String queryGoodsInfo);
 
     List<GoodsDO> screenGoodsGrid(@Param("brandCode")Long brandCode,@Param("categoryCode")String categoryCode,@Param("companyCode")String companyCode);
 
