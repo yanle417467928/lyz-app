@@ -130,7 +130,8 @@ public interface AppCustomerDAO {
 
     List<CustomerCashCoupon> findCashCouponsByCcids(@Param(value = "cashCouponList") List<Long> cashCouponList);
 
-    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndGoodsIdAndQty(@Param(value = "customerId") Long customerId,
+    List<CustomerProductCoupon> findProductCouponsByCustomerIdAndSalesConsultIdAndGoodsIdAndQty(@Param(value = "customerId") Long customerId,
+                                                                               @Param(value = "salesConsultId") Long salesConsultId,
                                                                                @Param(value = "id") Long id,
                                                                                @Param(value = "qty") Integer qty);
 

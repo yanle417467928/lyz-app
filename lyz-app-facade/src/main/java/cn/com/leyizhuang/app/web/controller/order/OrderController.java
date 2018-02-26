@@ -1045,7 +1045,7 @@ public class OrderController {
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
-                if ("SELF_TAKE".equals(orderBaseInfo.getDeliveryType())) {
+                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType())) {
                     orderListResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
                 } else {
                     orderListResponse.setShippingAddress(orderLogisticsInfo.getBookingStoreName());

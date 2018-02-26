@@ -922,8 +922,17 @@ public class CommonServiceImpl implements CommonService {
             }
             if (null != productCouponList && productCouponList.size() > 0) {
                 for (OrderGoodsInfo couponGoodsInfo : productCouponList) {
-                    List<CustomerProductCoupon> productCoupons = customerService.findProductCouponsByCustomerIdAndGoodsIdAndQty(
-                            customerIdTemp, couponGoodsInfo.getGid(), couponGoodsInfo.getOrderQuantity());
+                    List<CustomerProductCoupon> productCoupons;
+                    if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                        productCoupons = customerService.findProductCouponsByCustomerIdAndGoodsIdAndQty(
+                                customerIdTemp, orderBaseInfo.getSalesConsultId(), couponGoodsInfo.getGid(), couponGoodsInfo.getOrderQuantity());
+                    } else if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                        productCoupons = customerService.findProductCouponsByCustomerIdAndGoodsIdAndQty(
+                                customerIdTemp, null, couponGoodsInfo.getGid(), couponGoodsInfo.getOrderQuantity());
+                    } else {
+                        productCoupons = null;
+                    }
+
                     if (null == productCoupons || productCoupons.size() < couponGoodsInfo.getOrderQuantity()) {
                         throw new LockCustomerProductCouponException(couponGoodsInfo.getSkuName() + "产品券数量不足!");
                     }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.qrcode;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
@@ -33,12 +34,13 @@ public class QrcodeRegisterController extends BaseController {
     @Autowired
     private AppStoreService appStoreService;
 
-    @RequestMapping(value = "/{phone}", method = RequestMethod.GET, produces = "text/html;charset=utf-8")
-    public String qrcodeRegister(@PathVariable String phone, ModelMap map){
-        logger.info("扫码注册,手机号："+phone);
-        map.addAttribute("phone",phone);
 
-        AppEmployee appEmployee = employeeService.findByMobile(phone);
+    @RequestMapping(value = "/{empId}", method = RequestMethod.GET, produces = "text/html;charset=utf-8")
+    public String qrcodeRegister(@PathVariable String empId, ModelMap map){
+        logger.info("扫码注册,导购id："+empId);
+        map.addAttribute("empId",empId);
+
+        AppEmployee appEmployee = employeeService.findById(Long.valueOf(empId));
 
         if (appEmployee == null){
             map.addAttribute("message", "读取推荐人信息失败");
@@ -56,8 +58,13 @@ public class QrcodeRegisterController extends BaseController {
 
         }
 
-        // TODO 排除分销门店
+        // 排除分销仓库
+        AppStore appStore = appStoreService.findById(appEmployee.getEmpId());
 
+        if (appStore.getStoreType().equals(StoreType.FXCK)){
+            map.addAttribute("message", "分销仓库员工下,不允许注册");
+            return "/views/qrcode/failed";
+        }
 
         return "/views/qrcode/register";
     }

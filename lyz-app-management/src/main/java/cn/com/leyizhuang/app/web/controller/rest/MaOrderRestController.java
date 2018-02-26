@@ -850,6 +850,10 @@ public class MaOrderRestController extends BaseRestController {
             //******************************创建买券订单商品信息******************************
             CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, sellerId, 0, orderNumber);
 
+            //****************** 创建订单物流信息 ******************
+            OrderLogisticsInfo orderLogisticsInfo = maOrderService.createMaOrderLogisticsInfo(appStore,orderNumber);
+
+
             //****************** 处理订单账单相关信息 ***************
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
             orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
@@ -890,7 +894,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null);
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null,orderLogisticsInfo);
 
             logger.warn("saveMaProductCoupon OUT,买券订单创建成功", "买券订单创建成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "买券订单创建成功", null);

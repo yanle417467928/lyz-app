@@ -111,11 +111,17 @@ public class UserHomePageController {
                 }
 
             } else {
+                AppEmployee employee = employeeService.findById(userId);
+                if (null == employee){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该配送员!", null);
+                    logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 EmployeeHomePageResponse employeeHomePageResponse = employeeService.findEmployeeInfoByUserIdAndIdentityType(userId, identityType);
                 if (null != employeeHomePageResponse) {
                     // 配送员还需要查询配送订单数量
                     if (identityType == 1) {
-                        int count = orderDeliveryInfoDetailsService.countAuditFinishOrderByOperatorNo(userId);
+                        int count = orderDeliveryInfoDetailsService.countAuditFinishOrderByOperatorNo(employee.getDeliveryClerkNo());
                         employeeHomePageResponse.setSendQty(count);
                     }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, employeeHomePageResponse);
