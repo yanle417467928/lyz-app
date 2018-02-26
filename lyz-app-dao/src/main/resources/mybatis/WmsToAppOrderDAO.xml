@@ -135,7 +135,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_whole_split_to_unit
-                    WHERE direct_no = #{directNo}
+                    WHERE direct_no = #{directNo} AND sku = #{sku} AND d_sku = #{dSku}
             );
     </insert>
 
@@ -169,7 +169,20 @@
     <insert id="saveWtaWarehouseAllocationGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationGoods">
         INSERT INTO inter_wta_warehouse_allocation_goods (ack_qty, check_time, check_qty, sku, note, allocation_id, allocation_no)
-        VALUES (#{ackQty}, #{checkTime}, #{checkQty}, #{sku}, #{note}, #{allocationId}, #{allocationNo});
+            SELECT
+                #{ackQty},
+                #{checkTime},
+                #{checkQty},
+                #{sku},
+                #{note},
+                #{allocationId},
+                #{allocationNo}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_wta_warehouse_allocation_goods
+                    WHERE allocation_no = #{allocationNo} AND sku = #{sku}
+            );
     </insert>
 
     <insert id="saveWtaWarehousePurchaseHeader"
@@ -196,7 +209,17 @@
     <insert id="saveWtaWarehousePurchaseGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseGoods">
         INSERT INTO inter_wta_warehouse_purchase_goods (rec_id, rec_no, rec_qty, sku)
-        VALUES (#{recId}, #{recNo}, #{recQty}, #{sku});
+            SELECT
+                #{recId},
+                #{recNo},
+                #{recQty},
+                #{sku}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM inter_wta_warehouse_purchase_goods
+                    WHERE rec_no = #{recNo} AND sku = #{sku}
+            );
     </insert>
 
     <insert id="saveWtaWarehouseReportDamageAndOverflow"
@@ -217,7 +240,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_report_damage_overflow
-                    WHERE waste_no = #{wasteNo}
+                    WHERE waste_no = #{wasteNo} AND sku = #{sku}
             );
     </insert>
 
