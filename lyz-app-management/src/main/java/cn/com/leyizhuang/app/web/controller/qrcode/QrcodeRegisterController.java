@@ -59,7 +59,7 @@ public class QrcodeRegisterController extends BaseController {
         }
 
         // 排除分销仓库
-        AppStore appStore = appStoreService.findById(appEmployee.getEmpId());
+        AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
 
         if (appStore.getStoreType().equals(StoreType.FXCK)){
             map.addAttribute("message", "分销仓库员工下,不允许注册");

@@ -47,6 +47,20 @@
 
     .reg_logo img {
         width: 26%;
+
+    }
+
+    .wechat_photo {
+        width: 100%;
+        text-align: center;
+        margin-top: 0.6rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .wechat_photo img {
+        border-radius:50%; overflow:hidden;
+        width: 150px;
+        height: 150px;
     }
 </style>
 <body ng-app="qrcode">
@@ -55,12 +69,12 @@
 </header>
 <section>
     <div class="reg_logo"><img src="/images/big_logo.png"/></div>
-    <div class="emp_logo"><img src="<#if employee?? && employee.picUrl??>${employee.picUrl!""}</#if>"></div>
+    <div class="wechat_photo"><img src="<#if employee?? && employee.picUrl??>${employee.picUrl!""}</#if>"></div>
     <div class="row">
         <!-- left column -->
         <div class="col-md-6">
             <!-- general form elements -->
-            <div class="box">
+            <div class="box box-solid">
 
                 <!-- /.box-header -->
                 <!-- form start -->
