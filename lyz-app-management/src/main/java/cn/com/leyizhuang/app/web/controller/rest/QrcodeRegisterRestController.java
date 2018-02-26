@@ -1,10 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
-import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.VerifyCodeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -12,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -55,6 +54,9 @@ public class QrcodeRegisterRestController extends BaseRestController{
     @Resource
     private SmsAccountServiceImpl smsAccountService;
 
+    @Autowired
+    private AppStoreService appStoreService;
+
     @PostMapping(value = "/save")
     public ResultDTO<?> save(HttpServletRequest req, String name, String phone,String sellerPhone, String sellerName,
                              String storeName, String code, String workNumber){
@@ -76,6 +78,13 @@ public class QrcodeRegisterRestController extends BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号已经注册", null);
         }else{
             AppEmployee appEmployee = employeeService.findByMobile(sellerPhone);
+
+            // 排除分销仓库
+            AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+
+            if (appStore.getStoreType().equals(StoreType.FXCK)){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "分销仓库下不能注册会员", null);
+            }
 
             AppCustomer newCustomer = new AppCustomer();
 
