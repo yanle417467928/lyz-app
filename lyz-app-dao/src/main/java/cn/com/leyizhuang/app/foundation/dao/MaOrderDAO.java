@@ -176,7 +176,7 @@ public interface MaOrderDAO {
 
     void updateOrderStatus(String orderNo);
 
-    void updateorderReceivablesStatus(String orderNo);
+    void updateorderReceivablesStatus(@Param(value = "orderNo")String orderNo,@Param(value = "date")String date);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo,@Param(value = "storeId") Long storeId);
 

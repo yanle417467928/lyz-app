@@ -678,16 +678,19 @@
         WHERE
         o.oid = ogi.oid
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            AND o.customer_id = #{userID}
+            AND (o.customer_id = #{userID}
+            OR (o.creator_id =#{userID} AND o.creator_identity_type =#{identityType}))
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             AND o.creator_id = #{userID}
+            AND o.creator_identity_type = #{identityType}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             AND o.creator_id = #{userID}
+            AND o.creator_identity_type = #{identityType}
         </if>
-        AND o.creator_identity_type = #{identityType}
         AND o.status = 'FINISHED'
+        AND o.is_evaluated =false
     </select>
     <resultMap id="pendingEvaluationOrder" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse">
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>

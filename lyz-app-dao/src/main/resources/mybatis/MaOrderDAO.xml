@@ -649,7 +649,8 @@
     </select>
 
 
-    <select id="findOrderGoodsList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
+    <select id="findOrderGoodsList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
         SELECT
         ogi.gid gid,
         ogi.sku  sku,
@@ -675,8 +676,12 @@
 
     <update id="updateorderReceivablesStatus" parameterType="java.lang.String">
         UPDATE ord_billing_details
-        SET
-        is_pay_up = 1
+        <set>
+            is_pay_up = 1,
+            <if test="date != null">
+                pay_up_time = #{date},
+            </if>
+        </set>
         WHERE ord_no = #{orderNo}
     </update>
 

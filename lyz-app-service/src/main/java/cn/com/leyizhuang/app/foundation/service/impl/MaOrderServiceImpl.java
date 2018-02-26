@@ -38,11 +38,14 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -227,8 +230,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public void updateorderReceivablesStatus(String orderNo) {
-        this.maOrderDAO.updateorderReceivablesStatus(orderNo);
+    public void updateorderReceivablesStatus(String orderNo, String date) {
+        this.maOrderDAO.updateorderReceivablesStatus(orderNo, date);
     }
 
 
@@ -335,19 +338,20 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void orderReceivables(MaOrderAmount maOrderAmount) {
+        Date date = new Date();
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //更新订单收款状态
-        this.updateorderReceivablesStatus(maOrderAmount.getOrderNumber());
+        this.updateorderReceivablesStatus(maOrderAmount.getOrderNumber(), maOrderAmount.getDate());
         //设置订单收款信息并存入订单账款支付明细表
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
         maOrderBillingPaymentDetails.setPayTime(maOrderAmount.getDate());
-        maOrderBillingPaymentDetails.setCreateTime(new Date());
+        maOrderBillingPaymentDetails.setCreateTime(date);
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
         maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
-        maOrderBillingPaymentDetails.setReceiptNumber(maOrderAmount.getSerialNumber());
+        //maOrderBillingPaymentDetails.setReceiptNumber(maOrderAmount.getSerialNumber());
         if (!maOrderAmount.getCashAmount().equals(BigDecimal.ZERO)) {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());

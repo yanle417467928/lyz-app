@@ -418,8 +418,8 @@
                             <span id="message" style="color: red;"></span>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success " data-dismiss="modal"
-                                    id="confirmSubmit" type="submit">确定
+                            <button class="btn btn-success "
+                                    class="btn btn-default" id="confirmSubmit">确定
                             </button>
                             <button type="button" class="btn btn-default"
                                     data-dismiss="modal">取消
@@ -483,12 +483,9 @@
                 serialNumber: {
                     message: '流水号校验失败',
                     validators: {
-                        notEmpty: {
-                            message: '流水号不允许为空'
-                        }, stringLength: {
-                            min: 1,
-                            max: 10,
-                            message: '流水号长度必须在1~10位之间'
+                        regexp: {
+                            regexp: /\d{6}/,
+                            message: '流水号为6位数字'
                         }
                     }
                 },
@@ -521,6 +518,7 @@
                     data: form.serialize(),
                     success: function (result) {
                         if (result.code == 10100) {
+                            $('#confirmReceivables').modal();
                             $("#message").html('所有金额之和不等于总金额');
                         } else if (result.code == -1) {
                             $("#message").html('发生未知错误，请稍后重试或联系管理员');
