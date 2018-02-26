@@ -68,7 +68,8 @@
             id = #{cusProductCouponId}
     </select>
 
-    <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+    <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO cus_customer_product_coupon
         (cus_id, seller_id, store_id, gid, quantity, get_type, get_time, get_ord_no, buy_price, effective_start_time, effective_end_time,is_used,
         use_time, use_ord_no, goods_line_id,disable_time,status,last_update_time)

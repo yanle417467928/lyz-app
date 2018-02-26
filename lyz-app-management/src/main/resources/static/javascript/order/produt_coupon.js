@@ -295,6 +295,10 @@ function initSeller(url) {
         title: 'ID',
         align: 'center'
     }, {
+        field: 'storeName',
+        title: '门店名称',
+        align: 'center'
+    }, {
         field: 'name',
         title: '导购姓名',
         align: 'center',
@@ -318,7 +322,8 @@ function initSeller(url) {
     }, {
         field: 'storeType',
         title: '门店类型',
-        align: 'center'
+        align: 'center',
+        visible: false
     }, {
         field: 'storeCode',
         title: '门店编码',
@@ -327,7 +332,8 @@ function initSeller(url) {
     }, {
         field: 'balance',
         title: '门店预存款',
-        align: 'center'
+        align: 'center',
+        visible: false
     }
     ]);
 }

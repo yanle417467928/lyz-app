@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
@@ -80,6 +81,9 @@ public class MaOrderRestController extends BaseRestController {
 
     @Resource
     private MaSinkSender maSinkSender;
+
+    @Resource
+    private UserService userService;
 
 
     /**
@@ -787,6 +791,11 @@ public class MaOrderRestController extends BaseRestController {
         }
 
         try {
+
+            // 当前登录帐号
+            ShiroUser shiroUser = super.getShiroUser();
+            User user = userService.findByLoginName(shiroUser.getLoginName());
+
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, MaActGoodsMapping.class);
             JavaType javaType2 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
@@ -894,7 +903,10 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null,orderLogisticsInfo);
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null,orderLogisticsInfo,user.getUid());
+
+            //将该订单入拆单消息队列
+            maSinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
             logger.warn("saveMaProductCoupon OUT,买券订单创建成功", "买券订单创建成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "买券订单创建成功", null);
