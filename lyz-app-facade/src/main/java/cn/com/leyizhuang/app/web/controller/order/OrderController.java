@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
@@ -44,7 +45,7 @@ import java.util.*;
  * 订单相关接口
  *
  * @author Richard
- * Created on 2017-10-23 17:02
+ *         Created on 2017-10-23 17:02
  **/
 @RestController
 @RequestMapping(value = "/app/order")
@@ -212,10 +213,21 @@ public class OrderController {
             BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
 
 
-
-            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()){
-                    AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
-
+            //如果是导购下单并且是四川直营门店，判断销售纸质单号是否为空
+            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
+                AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
+                City city = cityService.findById(orderParam.getCityId());
+                AppStore appStore = appStoreService.findById(employee.getStoreId());
+                if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType()) && ("FZY009" == appStore.getStoreCode() || "HLC004" == appStore.getStoreCode() || "ML001" == appStore.getStoreCode() || "QCMJ008" == appStore.getStoreCode() ||
+                        "SB010" == appStore.getStoreCode() || "YC002" == appStore.getStoreCode() || "ZC002" == appStore.getStoreCode() || "RC005" == appStore.getStoreCode() ||
+                        "FZM007" == appStore.getStoreCode() || "SH001" == appStore.getStoreCode() || "YJ001" == appStore.getStoreCode() || "HS001" == appStore.getStoreCode() ||
+                        "XC001" == appStore.getStoreCode())){
+                    if (StringUtils.isBlank(orderParam.getSalesNumber())){
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "四川直营门店销售纸质单号不能为空！", "");
+                        logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
             }
 
             //**********************************开始创建订单 **************************
@@ -274,11 +286,11 @@ public class OrderController {
 
             //******** 分摊现乐币 策略：均摊 *********************
             Integer leBiQty = billing.getLeBiQuantity();
-            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty,orderGoodsInfoList);
+            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty, orderGoodsInfoList);
 
             //******** 分摊现现金返利 策略：均摊 *********************
             Double cashReturnAmount = billing.getStoreSubvention();
-            orderGoodsInfoList = cashReturnDutchService.cashReturnDutch(cashReturnAmount,orderGoodsInfoList);
+            orderGoodsInfoList = cashReturnDutchService.cashReturnDutch(cashReturnAmount, orderGoodsInfoList);
 
             //******** 分摊现金券 策略：使用范围商品 *********************
             orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
@@ -290,15 +302,15 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails,jxPriceDifferenceReturnDetailsList, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
 
-            if (orderBillingDetails.getAmountPayable()<=AppConstant.PAY_UP_LIMIT) {
+            if (orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
                 //如果预存款或信用金已支付完成直接发送到WMS出货单
-               if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                  iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
                 }
                 //将该订单入拆单消息队列
 
@@ -532,7 +544,7 @@ public class OrderController {
             totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
 
             // 运费计算
-            freight = deliveryFeeRuleService.countDeliveryFee(identityType,cityId,totalOrderAmount,goodsInfo);
+            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, totalOrderAmount, goodsInfo);
 
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             if (identityType == 6) {
@@ -1033,9 +1045,9 @@ public class OrderController {
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
-                if ("SELF_TAKE".equals(orderBaseInfo.getDeliveryType())){
+                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType())) {
                     orderListResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
-                }else{
+                } else {
                     orderListResponse.setShippingAddress(orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));

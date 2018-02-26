@@ -45,7 +45,7 @@ public class WtaWarehousePurchaseHeader {
      */
     private String purchaseNo;
     /**
-     * 公司id
+     * 城市编码
      */
-    private Long companyId;
+    private String companyId;
 }

@@ -48,7 +48,7 @@ public class WtaWarehouseReportDamageAndOverflow {
      */
     private String wasteStatus;
     /**
-     * 公司ID
+     * 城市编码
      */
-    private Long companyId;
+    private String companyId;
 }

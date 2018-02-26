@@ -531,7 +531,7 @@
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI,
-            details_image_uri
+            goods_detail goodsDetial
         FROM
             gds_goods
         WHERE
@@ -904,6 +904,19 @@
         </if>
         <if test="null != companyCode ">
             AND g.company_flag = #{companyCode}
+        </if>
+    </select>
+
+    <select id="queryGoodsPageByInfo"  resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+        *
+        FROM
+        gds_goods g
+        WHERE
+        1=1
+        <if test="null != queryGoodsInfo">
+            AND
+            (g.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR g.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
         </if>
     </select>
 

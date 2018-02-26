@@ -17,6 +17,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -129,6 +130,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
      * @param
      * @return
      */
+    @Transactional
     @PutMapping(value = "/returnOrderReceive")
     public ResultDTO<Object> returnOrderReceive(@RequestParam(value = "returnNumber") String returnNumber) {
         logger.warn("returnOrderReceive 后台到店退货单收货 ,入参orderNumbe:{}", returnNumber);

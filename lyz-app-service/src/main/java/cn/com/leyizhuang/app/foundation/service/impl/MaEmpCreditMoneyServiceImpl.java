@@ -28,7 +28,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) {
+    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) throws RuntimeException {
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
             if (null != guideCreditMoneyDetail) {
                 //得到更新后的可用额度

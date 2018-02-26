@@ -177,7 +177,7 @@
 
     <select id="queryCusPredepositByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
         SELECT
-        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name,c.last_update_time
+        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name,cp.last_update_time
         FROM cus_customer c
         LEFT JOIN cus_pre_deposit cp on cp.cus_id = c.cus_id
         LEFT JOIN st_store s ON s.store_id = c.store_id

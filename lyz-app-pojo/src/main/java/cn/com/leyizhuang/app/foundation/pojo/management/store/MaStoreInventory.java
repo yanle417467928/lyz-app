@@ -18,7 +18,7 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class MaStoreInventory {
+public class  MaStoreInventory {
 
     private Long id;
     /**

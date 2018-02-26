@@ -233,18 +233,18 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo,Long storeId) {
-        return this.maOrderDAO.findOrderGoodsList(orderNo,storeId);
+    public List<MaOrderGoodsInfo> findOrderGoodsList(String orderNo, Long storeId) {
+        return this.maOrderDAO.findOrderGoodsList(orderNo, storeId);
     }
 
     @Override
     public void saveOrderShipping(OrderShipping orderShipping) {
-         this.maOrderDAO.saveOrderShipping(orderShipping);
+        this.maOrderDAO.saveOrderShipping(orderShipping);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) {
+    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) throws RuntimeException, SystemBusyException {
         if (null == maOrderTempInfo || null == maOrderTempInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
@@ -258,8 +258,8 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderShipping.setShippingTime(date);
         this.saveOrderShipping(orderShipping);
         //查询该订单下的所有商品
-       Long storeId = maOrderTempInfo.getStoreId();
-        List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber,storeId);
+        Long storeId = maOrderTempInfo.getStoreId();
+        List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findOrderGoodsList(orderNumber, storeId);
 
         for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
             //生成出货记录
@@ -290,7 +290,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             //更新门店库存数量
             Integer goodsQtyAfterChange = storeInventory.getRealIty() - maOrderGoodsInfo.getOrderQty();
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, maOrderGoodsInfo.getLastUpdateTime());
+                int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, storeInventory.getLastUpdateTime());
                 if (affectLine > 0) {
                     break;
                 } else {
@@ -581,21 +581,21 @@ public class MaOrderServiceImpl implements MaOrderService {
             //门店现金
             if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CASH, orderBillingDetails.getStPreDeposit(),
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CASH, orderBillingDetails.getStoreCash(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
             //门店POS
             if (null != orderBillingDetails.getStorePosMoney() && orderBillingDetails.getStorePosMoney() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.POS, orderBillingDetails.getStPreDeposit(),
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.POS, orderBillingDetails.getStorePosMoney(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
             //门店其他
             if (null != orderBillingDetails.getStoreOtherMoney() && orderBillingDetails.getStoreOtherMoney() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.OTHER, orderBillingDetails.getStPreDeposit(),
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.OTHER, orderBillingDetails.getStoreOtherMoney(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
@@ -606,11 +606,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress) {
+                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo) {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         this.deductionsStPreDeposit(identityType, userId, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
-        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails);
+        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo);
     }
 
     @Override
@@ -655,7 +655,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails) {
+                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo) {
         if (null != orderBaseInfo) {
             AppCustomer customer = new AppCustomer();
             Long cusId = orderBaseInfo.getCustomerId();
@@ -684,33 +684,42 @@ public class MaOrderServiceImpl implements MaOrderService {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
                         if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
-                            //创建产品券信息
-                            CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
-                            customerProductCoupon.setCustomerId(customer.getCusId());
-                            customerProductCoupon.setGoodsId(goodsInfo.getGid());
-                            customerProductCoupon.setQuantity(goodsInfo.getOrderQuantity());
-                            customerProductCoupon.setGetType(CouponGetType.BUY);
-                            customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
-                            customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
-                            customerProductCoupon.setEffectiveEndTime(null);
-                            customerProductCoupon.setIsUsed(Boolean.FALSE);
-                            customerProductCoupon.setUseTime(null);
-                            customerProductCoupon.setUseOrderNumber(null);
-                            customerProductCoupon.setGetOrderNumber(orderBaseInfo.getOrderNumber());
-                            if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
-                                customerProductCoupon.setBuyPrice(goodsInfo.getVIPPrice());
-                            } else {
-                                customerProductCoupon.setBuyPrice(goodsInfo.getRetailPrice());
+                            for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
+                                //创建产品券信息
+                                CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                                customerProductCoupon.setCustomerId(customer.getCusId());
+                                customerProductCoupon.setGoodsId(goodsInfo.getGid());
+                                customerProductCoupon.setQuantity(1);
+                                customerProductCoupon.setGetType(CouponGetType.BUY);
+                                customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
+                                customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
+                                customerProductCoupon.setEffectiveEndTime(null);
+                                customerProductCoupon.setIsUsed(Boolean.FALSE);
+                                customerProductCoupon.setUseTime(null);
+                                customerProductCoupon.setUseOrderNumber(null);
+                                customerProductCoupon.setGetOrderNumber(orderBaseInfo.getOrderNumber());
+                                if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getVIPPrice());
+                                } else {
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getRetailPrice());
+                                }
+                                customerProductCoupon.setStoreId(orderBaseInfo.getStoreId());
+                                customerProductCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
+                                customerProductCoupon.setStatus(Boolean.TRUE);
+                                customerProductCoupon.setDisableTime(null);
+                                customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                //保存产品券信息
+                                productCouponService.addCustomerProductCoupon(customerProductCoupon);
+
                             }
-                            customerProductCoupon.setStoreId(orderBaseInfo.getStoreId());
-                            customerProductCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
-                            customerProductCoupon.setStatus(Boolean.TRUE);
-                            customerProductCoupon.setDisableTime(null);
-                            customerProductCoupon.setGoodsLineId(goodsInfo.getId());
-                            //保存产品券信息
-                            productCouponService.addCustomerProductCoupon(customerProductCoupon);
                         }
                     }
+                }
+
+                //保存订单物流信息
+                if (null != orderLogisticsInfo) {
+                    orderLogisticsInfo.setOid(orderBaseInfo.getId());
+                    orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
                 }
                 //保存订单账单信息
                 if (null != orderBillingDetails) {
@@ -1318,5 +1327,16 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber) {
         return maOrderDAO.findPaymentDataByOrderNo(orderNumber);
+    }
+
+    @Override
+    public OrderLogisticsInfo createMaOrderLogisticsInfo(AppStore store, String orderNumber) {
+        OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
+        orderLogisticsInfo.setOrdNo(orderNumber);
+        orderLogisticsInfo.setDeliveryType(AppDeliveryType.PRODUCT_COUPON);
+        orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
+        orderLogisticsInfo.setBookingStoreName(store.getStoreName());
+        orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
+        return orderLogisticsInfo;
     }
 }
