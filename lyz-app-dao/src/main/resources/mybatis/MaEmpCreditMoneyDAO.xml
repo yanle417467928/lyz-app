@@ -136,9 +136,9 @@
     <insert id="saveCreditChange"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO">
     insert into emp_credit_money_change_log
-    (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip,operator_name)
+    (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip,operator_name,change_reason)
     values
-    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId},#{operatorType} ,#{operatorIp},#{operatorName});
+    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId},#{operatorType} ,#{operatorIp},#{operatorName},#{changeReason});
     </insert>
 
     <insert id="saveCreditLimitAvailableChange" useGeneratedKeys="true" keyProperty="id"
