@@ -101,8 +101,8 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     }
 
     @Override
-    public int countAuditFinishOrderByOperatorNo(Long userId) {
-        return orderDeliveryInfoDetailsDAO.countAuditFinishOrderByOperatorNo(userId);
+    public int countAuditFinishOrderByOperatorNo(String operatorNo) {
+        return orderDeliveryInfoDetailsDAO.countAuditFinishOrderByOperatorNo(operatorNo);
     }
 
     @Override

@@ -111,7 +111,7 @@ function findGoodsPhysical() {
 
 //根据城市查询门店
 function findStoreByCity(cityId) {
-
+    //如果有选择城市查询所有门店
     if (cityId == -1) {
         findStorelist();
         return false;
@@ -141,7 +141,23 @@ function findStoreByCity(cityId) {
     });
 }
 
+//选择导购
 function openSellerModal() {
+
+    //关闭支付部分
+    $("#goPay").hide();
+    $("#goPayType").val(1);
+    var price = 0.00;
+    //初始化账单明细
+    $("#totalGoodsPrice").text(price.toFixed(2))
+    $("#vipDiscount").text(price.toFixed(2))
+    $("#promotionsDiscount").text(price.toFixed(2))
+    $("#amountsPayable").text(price.toFixed(2))
+    //清空赠品信息
+    document.getElementById('giftMessage').innerHTML = "";
+    document.getElementById('subAmount_div').innerHTML = "";
+
+
     //查询导购列表
     initSeller('/rest/employees/select/seller');
     $("#sellerModalConfirm").unbind('click').click(function () {
@@ -490,16 +506,28 @@ function openGiftsModal() {
                         var giftList = giftListResponse[i].giftList
                         for (var j = 0; j < giftList.length; j++) {
                             var price = giftList[j].retailPrice.toFixed(2);
+                            if ('否' == isArbitraryChoice ){
+                                title += "<tr>" +
+                                    "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
+                                    "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
+                                    "<td><input id='title' type='text' value='" + giftList[j].skuName + "' style='width:90%;border: none;' readonly></td>" +
+                                    "<td><input id='giftQty' type='number' value='0'></td>" +
+                                    "<td><input id='promotionId' type='hidden' value='" + giftListResponse[i].promotionId + "'></td>" +
+                                    "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
+                                    "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
+                                    "</tr>"
+                            }else{
+                                title += "<tr>" +
+                                    "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
+                                    "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
+                                    "<td><input id='title' type='text' value='" + giftList[j].skuName + "' style='width:90%;border: none;' readonly></td>" +
+                                    "<td><input id='giftQty' type='number' value='"+giftList[j].qty+"' readonly></td>" +
+                                    "<td><input id='promotionId' type='hidden' value='" + giftListResponse[i].promotionId + "'></td>" +
+                                    "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
+                                    "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
+                                    "</tr>"
+                            }
 
-                            title += "<tr>" +
-                                "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
-                                "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
-                                "<td><input id='title' type='text' value='" + giftList[j].skuName + "' style='width:90%;border: none;' readonly></td>" +
-                                "<td><input id='giftQty' type='number' value='0'></td>" +
-                                "<td><input id='promotionId' type='hidden' value='" + giftListResponse[i].promotionId + "'></td>" +
-                                "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
-                                "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
-                                "</tr>"
                         }
                     }
                     title += "</tbody>" +
@@ -1147,7 +1175,7 @@ function verificationSalesNumber() {
 }
 
 //选择支付方式
-function selectPaymnet(id) {
+function selectPaymnets(id) {
     var storeType = $('#storeType').text();
     var balance = $('#balance').text();
     var preDeposit = 0;
@@ -1175,4 +1203,20 @@ function selectPaymnet(id) {
         $("#offlinePayments").hide();
         $("#preDeposit").show();
     }
+}
+
+
+function storeChangeRefresh() {
+    //关闭支付部分
+    $("#goPay").hide();
+    $("#goPayType").val(1);
+    var price = 0.00;
+    //初始化账单明细
+    $("#totalGoodsPrice").text(price.toFixed(2))
+    $("#vipDiscount").text(price.toFixed(2))
+    $("#promotionsDiscount").text(price.toFixed(2))
+    $("#amountsPayable").text(price.toFixed(2))
+    //清空赠品信息
+    document.getElementById('giftMessage').innerHTML = "";
+    document.getElementById('subAmount_div').innerHTML = "";
 }
