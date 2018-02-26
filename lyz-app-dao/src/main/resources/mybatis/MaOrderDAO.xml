@@ -674,15 +674,27 @@
     </update>
 
 
-    <update id="updateorderReceivablesStatus" parameterType="java.lang.String">
+    <update id="updateorderReceivablesStatus" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount">
         UPDATE ord_billing_details
         <set>
             is_pay_up = 1,
             <if test="date != null">
                 pay_up_time = #{date},
             </if>
+            <if test="cashAmount != null">
+                store_cash = #{cashAmount},
+            </if>
+            <if test="otherAmount != null">
+                store_other_money = #{otherAmount},
+            </if>
+            <if test="posAmount != null">
+                store_pos_money = #{posAmount},
+            </if>
+            <if test="serialNumber != null">
+                store_pos_number = #{serialNumber},
+            </if>
         </set>
-        WHERE ord_no = #{orderNo}
+        WHERE ord_no = #{orderNumber}
     </update>
 
 

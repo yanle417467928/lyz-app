@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping;
@@ -176,7 +173,7 @@ public interface MaOrderDAO {
 
     void updateOrderStatus(String orderNo);
 
-    void updateorderReceivablesStatus(@Param(value = "orderNo")String orderNo,@Param(value = "date")String date);
+    void updateorderReceivablesStatus(MaOrderAmount maOrderAmount);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo,@Param(value = "storeId") Long storeId);
 

@@ -187,10 +187,10 @@ public interface MaOrderService {
     /**
      * 更新订单费用表订单状态
      *
-     * @param orderNumber 订单号
+     * @param  maOrderAmount
      * @return
      */
-    void updateorderReceivablesStatus(String orderNumber,String date);
+    void updateorderReceivablesStatus(MaOrderAmount maOrderAmount);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber,Long storeId);
 

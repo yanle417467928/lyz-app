@@ -457,8 +457,13 @@
                     message: '现金校验失败',
                     validators: {
                         regexp: {
-                            regexp: /^(-|\+)?\d+$/,
+                            regexp: /^[+-]?\d+(\.\d+)?$/,
                             message: '现金称只能输入正或负数'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '长度必须在1~10位之间'
                         }
                     }
                 },
@@ -468,6 +473,11 @@
                         regexp: {
                             regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
                             message: 'pos金额称只能输入正数'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '长度必须在1~10位之间'
                         }
                     }
                 },
@@ -477,6 +487,11 @@
                         regexp: {
                             regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
                             message: '其他金额只能输入正数'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 10,
+                            message: '长度必须在1~10位之间'
                         }
                     }
                 },
@@ -484,7 +499,7 @@
                     message: '流水号校验失败',
                     validators: {
                         regexp: {
-                            regexp: /\d{6}/,
+                            regexp: /^\d{6}$/,
                             message: '流水号为6位数字'
                         }
                     }
