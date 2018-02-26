@@ -136,7 +136,7 @@
 
     function showTempCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId = $('#guideId').val()
+        var guideId = $('#guideId').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/tempCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -210,7 +210,7 @@
 
     function showFixedCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId = $('#guideId').val()
+        var guideId = $('#guideId').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/fixedCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
