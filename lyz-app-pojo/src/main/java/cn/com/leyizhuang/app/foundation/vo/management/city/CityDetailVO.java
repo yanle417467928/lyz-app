@@ -34,4 +34,6 @@ public class CityDetailVO {
     private Date enableFalseTime;
     //城市编码
     private String code;
+    //是否开通配送服务
+    private Boolean isOpenDelivery;
 }

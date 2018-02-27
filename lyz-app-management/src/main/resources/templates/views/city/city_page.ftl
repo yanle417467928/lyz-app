@@ -73,6 +73,9 @@
                         <li class="list-group-item">
                             <b>所属分公司ID</b> <a class="pull-right" id="structureId"></a>
                         </li>
+                        <li class="list-group-item">
+                            <b>是否开通配送服务</b> <a class="pull-right" id="isOpenDelivery"></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -98,41 +101,54 @@
                 field: 'cityId',
                 title: '城市ID',
                 align: 'center',
-                visible:false
-            },{
-            field: 'code',
-            title: '城市编码',
-            align: 'center'
-        }, {
-            field: 'name',
-            title: '城市名称',
-            align: 'center',
-            events: {
-                'click .scan': function(e, value, row) {
-                    $page.information.show(row.cityId);
+                visible: false
+            }, {
+                field: 'code',
+                title: '城市编码',
+                align: 'center'
+            }, {
+                field: 'name',
+                title: '城市名称',
+                align: 'center',
+                events: {
+                    'click .scan': function (e, value, row) {
+                        $page.information.show(row.cityId);
+                    }
+                },
+                formatter: function (value) {
+                    return '<a class="scan" href="#">' + value + '</a>';
+                }
+            }, {
+                field: 'structureTitle',
+                title: '所属分公司',
+                align: 'center'
+            }, {
+                field: 'enable',
+                title: '是否生效',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (true == value) {
+                        return '<span class="label label-primary">是</span>';
+                    } else if (false == value) {
+                        return '<span class="label label-danger">否</span>';
+                    } else {
+                        return '<span class="label label-danger">-</span>';
+                    }
+                }
+            }, {
+                field: 'isOpenDelivery',
+                title: '是否开通配送服务',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (true == value) {
+                        return '<span class="label label-primary">是</span>';
+                    } else if (false == value) {
+                        return '<span class="label label-danger">否</span>';
+                    } else {
+                        return '<span class="label label-danger">-</span>';
+                    }
                 }
             },
-            formatter: function(value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            }
-        },{
-            field: 'structureTitle',
-            title: '所属分公司',
-            align: 'center'
-        },{
-            field: 'enable',
-            title: '是否生效',
-            align: 'center',
-                formatter: function(value,row,index){
-                if(true==value){
-                    return '<span class="label label-primary">是</span>';
-                }else if(false==value){
-                    return '<span class="label label-danger">否</span>';
-                }else {
-                    return '<span class="label label-danger">-</span>';
-                }
-            }
-        },
         ]);
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/resource/add?parentMenuId=${(parentMenuId!'0')}');
@@ -210,11 +226,11 @@
                                 }
                                 $('#structureTitle').html(data.structureTitle);
 
-                                if (true==data.enable) {
+                                if (true == data.enable) {
                                     $('#enable').html('<span class="label label-primary">是</span>');
-                                }else if(false==data.enable){
+                                } else if (false == data.enable) {
                                     $('#enable').html('<span class="label label-danger">否</span>');
-                                }else {
+                                } else {
                                     $('#enable').html('<span class="label label-danger">-</span>');
                                 }
 
@@ -224,6 +240,13 @@
                                     $('#enableFalseTime').html(formatDateTime(data.enableFalseTime));
                                 }
 
+                                if (true == data.isOpenDelivery) {
+                                    $('#isOpenDelivery').html('<span class="label label-primary">是</span>');
+                                } else if (false == data.isOpenDelivery) {
+                                    $('#isOpenDelivery').html('<span class="label label-danger">否</span>');
+                                } else {
+                                    $('#isOpenDelivery').html('<span class="label label-danger">-</span>');
+                                }
                                 $('#information').modal();
                             } else {
                                 $notify.danger(result.message);

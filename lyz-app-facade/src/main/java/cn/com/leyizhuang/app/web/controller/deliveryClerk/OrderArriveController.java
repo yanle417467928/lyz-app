@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,13 +170,13 @@ public class OrderArriveController {
             }
 
             //判断是否有代收款
-            if (collectionAmount > 0) {
+            if (collectionAmount > 0 && CountUtil.sub(collectionAmount - ownManey) > 0) {
                 //生成代收款记录
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, collectionAmount - ownManey, remarks);
+                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, CountUtil.sub(collectionAmount - ownManey), remarks);
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
 

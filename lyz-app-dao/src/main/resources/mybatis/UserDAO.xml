@@ -66,12 +66,12 @@
         WHERE uid = #{id};
     </select>
 
-    <insert id="save" parameterType="User">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.User">
         <selectKey keyProperty="uid" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>
         INSERT INTO admin_user ( LOGIN_NAME,NAME,PASSWORD,SEX,AGE,mobile,USER_TYPE,STATUS,CREATE_TIME,SALT)
-        VALUES (#{loginName}, #{name}, #{password}, #{sex}, #{age}, #{phone}, #{userType}, #{status},
+        VALUES (#{loginName}, #{name}, #{password}, #{sex}, #{age}, #{mobile}, #{userType}, #{status},
         #{createTime},#{salt})
     </insert>
 
@@ -114,7 +114,7 @@
         WHERE uid = #{uid}
     </update>
 
-    <select id="                                                                                                                                                                                           existsByLoginName"
+    <select id="existsByLoginName"
             parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 1
         FROM admin_user

@@ -60,6 +60,59 @@ public class MaCityRestController extends BaseRestController {
     }
 
     /**
+     * @title   获取生效的城市列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/26
+     */
+    @GetMapping(value = "/list")
+    public GridDataVO<CityVO> restCitysList(Integer offset, Integer size, String keywords) {
+        logger.info("restCitysList 获取生效的城市列表 ,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CityVO> citys = this.maCityService.queryPageVOByEnableIsTrue(page, size, keywords);
+            return new GridDataVO<CityVO>().transform(citys.getList(), citys.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCitysList EXCEPTION,发生未知错误，获取生效的城市列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 开通配送服务城市分页信息
+     *
+     * @param
+     * @return
+     * @throws
+     * @descripe
+     * @author
+     * @date 2017/11/3
+     */
+    @GetMapping(value = "/page/deliveryTimeGrid")
+    public GridDataVO<CityVO> restCitysDeliveryTimePageGird(Integer offset, Integer size, String keywords) {
+        logger.info("restCitysDeliveryTimePageGird, 开通配送服务城市分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CityVO> cityPage = this.maCityService.queryDeliveryTimePageVO(page, size);
+            List<CityVO> citysList = cityPage.getList();
+            logger.info("restCitysDeliveryTimePageGird , 开通配送服务城市分页查询成功", citysList.size());
+            return new GridDataVO<CityVO>().transform(citysList, cityPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCitysDeliveryTimePageGird EXCEPTION,发生未知错误， 开通配送服务城市分页查询失败");
+            logger.warn("{}", e);
+            return null;
+        }
+
+    }
+    /**
      * @param cityId
      * @return
      * @throws

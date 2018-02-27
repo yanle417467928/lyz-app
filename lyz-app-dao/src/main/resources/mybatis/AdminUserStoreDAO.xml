@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.AdminUserStoreDAO">
+
+    <insert id="batchSave">
+        INSERT INTO admin_user_store(uid, store_id, city_id)
+        VALUES
+          <foreach collection="list" item="item" separator=",">
+              (#{item.uid}, #{item.storeId}, #{item.cityId})
+          </foreach>
+    </insert>
+
+    <select id="findByUid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.AdminUserStoreVO">
+        SELECT us.uid, us.store_id, us.city_id, s.store_name, c.name cityName
+        FROM admin_user_store us
+        LEFT JOIN city c ON c.city_id = us.city_id
+        LEFT JOIN st_store s ON s.store_id = us.store_id
+        WHERE us.uid = #{uid}
+          AND (c.name IS NOT NULL OR s.store_name IS NOT NULL)
+    </select>
+
+</mapper>

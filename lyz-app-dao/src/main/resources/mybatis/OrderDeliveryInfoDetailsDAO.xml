@@ -107,6 +107,8 @@
             WHERE
                 obi.delivery_status = 'SEALED_CAR'
             AND odid.operator_no = #{operatorNo}
+            ORDER BY
+	        odid.create_time DESC
     </select>
 
     <select id="getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber" parameterType="java.lang.String"
