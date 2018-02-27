@@ -44,7 +44,7 @@ public class MaStorePreDepositRestController extends BaseRestController {
      * @date 2018/1/15
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<StorePreDepositVO> restCustomerPreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, String storeType) {
+    public GridDataVO<StorePreDepositVO> restStorePreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, String storeType) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         PageInfo<StorePreDepositVO> storePredeposit = this.maStoreService.findAllStorePredeposit(page, size, cityId, keywords, storeType);

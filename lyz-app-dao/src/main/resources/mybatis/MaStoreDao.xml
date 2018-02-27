@@ -29,6 +29,7 @@
         <id property="storeId" column="store_id" jdbcType="BIGINT"/>
         <result property="storeName" column="store_name"/>
         <result property="storeCode" column="store_code"/>
+        <result property="storeType" column="store_type"/>
         <result property="enable" column="enable"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
@@ -554,5 +555,32 @@
         (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{storeId}, #{operatorId}, #{operatorType},
         #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
+
+    <select id="findAllStoreVO" resultMap="storeVOResultMap" >
+        SELECT
+        s.store_code,
+        s.store_name,
+        s.store_type,
+        s.store_id,
+        c.name
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        WHERE
+        s.enable IS TRUE
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeType and storeType != '-1'">
+            AND s.store_type = #{storeType}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
+            OR s.store_name LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        ORDER BY
+        s.create_time
+        DESC
+    </select>
 
 </mapper>

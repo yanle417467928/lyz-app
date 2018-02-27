@@ -14,4 +14,17 @@
     <select id="findCityVOById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO">
         SELECT * FROM city where city_id = #{cityId}
     </select>
+
+    <select id="findAllCityByEnableIsTrue" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.city.CityVO">
+        select city_id,name,code,structure_title,enable
+        from city
+        WHERE
+            enable IS TRUE
+            <if test="null != keywords and keywords != ''">
+                AND (code LIKE concat(concat('%',#{keywords}),'%')
+                OR name LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+        order by city_id asc
+    </select>
+
 </mapper>

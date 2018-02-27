@@ -47,4 +47,11 @@ public class MaCityServiceImpl implements MaCityService {
         }
         return null;
     }
+
+    @Override
+    public PageInfo<CityVO> queryPageVOByEnableIsTrue(Integer page, Integer size, String keywords) {
+        PageHelper.startPage(page, size);
+        List<CityVO> cityList = maCityDAO.findAllCityByEnableIsTrue(keywords);
+        return new PageInfo<>(cityList);
+    }
 }

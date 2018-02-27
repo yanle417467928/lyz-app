@@ -17,157 +17,8 @@
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
+    <script type="text/javascript" src="/javascript/user/user_edit.js?v=20180227"></script>
 
-    <script>
-        $(function () {
-            $(".select2").select2();
-            $('.btn-cancel').on('click', function () {
-                history.go(-1);
-            });
-
-            if (!$global.validateMobile()) {
-                $('.select').selectpicker();
-            }
-
-            $(function () {
-                $('[data-toggle="tooltip"]').popover();
-            });
-
-            $('.datepicker').datepicker({
-                format: 'yyyy-mm-dd',
-                language: 'zh-CN',
-                autoclose: true
-            });
-
-            $('.switch').bootstrapSwitch();
-
-            $('#user_add').bootstrapValidator({
-                framework: 'bootstrap',
-                feedbackIcons: {
-                    valid: 'glyphicon glyphicon-ok',
-                    invalid: 'glyphicon glyphicon-remove',
-                    validating: 'glyphicon glyphicon-refresh'
-                },
-                verbose: false,
-                fields: {
-                    loginName: {
-                        message: '登录名称校验失败',
-                        validators: {
-                            notEmpty: {
-                                message: '登录名称不能为空'
-                            },
-                            regexp: {
-                                regexp: /^[a-zA-Z0-9\u4E00-\u9FA5]+$/,
-                                message: '登录名称只能输入字母、数字或汉字'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 20,
-                                message: '资源名称的长度必须在2~10位之间'
-                            },
-                        }
-                    },
-                    name: {
-                        message: '用户姓名校验失败',
-                        validators: {
-                            notEmpty: {
-                                message: '用户姓名不能为空'
-                            },
-                            regexp: {
-                                regexp: /^[a-zA-Z0-9\u4E00-\u9FA5]+$/,
-                                message: '用户姓名只能输入字母、数字或汉字'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 20,
-                                message: '资源名称的长度必须在2~20位之间'
-                            }
-                        }
-                    },
-                    description: {
-                        message: '资源描述校验失败',
-                        validators: {
-                            notEmpty: {
-                                message: '资源描述不能为空！'
-                            },
-                            regexp: {
-                                regexp: /^[a-zA-Z0-9\u4E00-\u9FA5]+$/,
-                                message: '资源描述只能输入字母或汉字'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 10,
-                                message: '资源描述的长度必须在2~10位之间'
-                            }
-                        }
-                    },
-                    url: {
-                        message: '资源路径校验失败',
-                        validators: {
-                            notEmpty: {
-                                message: '资源路径不允许为空'
-                            }
-                        }
-                    },
-                    seq: {
-                        message: '排序号校验失败',
-                        validators: {
-                            notEmpty: {
-                                message: '排序号不允许为空!'
-                            }
-                        }
-                    }
-                }
-            }).on('success.form.bv', function (e) {
-                e.preventDefault();
-                var $form = $(e.target);
-                var origin = $form.serializeArray();
-                var data = {};
-
-                $.each(origin, function () {
-                    data[this.name] = this.value;
-                });
-                var reslist = $("#role").select2("data");
-                var roleIds = [];
-                $.each(reslist, function () {
-                    roleIds.push(this.id);
-                });
-                data["roleIdsStr"] = roleIds;
-
-                if (null === $global.timer) {
-                    $global.timer = setTimeout($loading.show, 2000);
-
-                    var url = '/rest/user/' + data.id;
-
-                    data.headImageUri = $('#headImageUri').attr("src");
-                    data.status = (undefined === data.status) ? false : data.status;
-                    $.ajax({
-                        url: url,
-                        method: 'PUT',
-                        data: data,
-                        error: function () {
-                            clearTimeout($global.timer);
-                            $loading.close();
-                            $global.timer = null;
-                            $notify.danger('网络异常，请稍后重试或联系管理员');
-                            $('#user_add').bootstrapValidator('disableSubmitButtons', false);
-                        },
-                        success: function (result) {
-                            if (0 === result.code) {
-                                window.location.href = document.referrer;
-                            } else {
-                                clearTimeout($global.timer);
-                                $loading.close();
-                                $global.timer = null;
-                                $notify.danger(result.message);
-                                $('#user_add').bootstrapValidator('disableSubmitButtons', false);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    </script>
     <style>
         .select {
             -webkit-appearance: none;
@@ -300,6 +151,52 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <label for="title">
+                            </label>
+                            <div class="box box-success ">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">选择管辖门店</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openCityModal('citys')">
+                                            选择城市
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openStoreModal('stores')">
+                                            选择门店
+                                        </button>
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                                class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div id="citys" style="margin-top: 10px; width: 85%;word-wrap:break-word;">
+                                        <#if storeList??>
+                                            <#list storeList as item>
+                                                <#if item?? && item.cityId??>
+                                                    &nbsp;<label id='citys${item.cityId}' style='margin-bottom: 12px;' class='label label-success'>${item.cityName}</label>
+                                                </#if>
+                                            </#list>
+                                        </#if>
+                                    </div>
+                                    <br>
+                                    <div id="stores" style="margin-top: 10px; width: 85%;word-wrap:break-word;">
+                                    <#if storeList??>
+                                        <#list storeList as item>
+                                            <#if item?? && item.storeId??>
+                                                &nbsp;<label id='stores${item.storeId}' style='margin-bottom: 12px;' class='label label-success'>${item.storeName}</label>
+                                            </#if>
+                                        </#list>
+                                    </#if>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
                         <div class="col-xs-12 col-md-2">
                             <button type="submit" class="btn btn-primary footer-btn">
@@ -313,6 +210,108 @@
                         </div>
                     </div>
                 </form>
+
+                <!-- 城市选择框 -->
+                <div id="cityModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document" style="width: 60%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4>选择城市<span style="color: red; font-size: small">（注：如果选择城市，则该城市下的所有门店的数据都可查询）</span></h4>
+                            </div>
+                            <div class="modal-body">
+                                <!--  设置这个div的大小，超出部分显示滚动条 -->
+                                <div id="selectTree" class="ztree" style="height: 60%;overflow:auto; ">
+                                    <section class="content">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="box box-primary">
+                                                    <div id="toolbar2" class="form-inline">
+                                                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                                                            <input type="text" name="queryCityInfo" id="queryCityInfo" class="form-control" style="width:auto;"
+                                                                   placeholder="请输入要查找的城市名或编码..">
+                                                            <span class="input-group-btn">
+                                                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                                                        onclick="return findCityByNameOrCode()">查找</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-body table-reponsive">
+                                                        <table id="cityDataGrid"
+                                                               class="table table-bordered table-hover">
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="cityModalConfirm" type="button" class="btn btn-primary">确定</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 门店选择框 -->
+                <div id="storeModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document" style="width: 60%">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4>选择门店</h4>
+                            </div>
+                            <div class="modal-body">
+                                <!--  设置这个div的大小，超出部分显示滚动条 -->
+                                <div id="selectTree" class="ztree" style="height: 60%;overflow:auto; ">
+                                    <section class="content">
+                                        <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="box box-primary">
+                                                    <div id="toolbar1" class="form-inline">
+                                                        <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                                                                onchange="findStoreByCity(this.value)">
+                                                            <option value="-1">选择城市</option>
+                                                        </select>
+                                                        <select name="storeType" id="storeType" class="form-control select" style="width:auto;"
+                                                                onchange="findStoreByStoreType(this.value)">
+                                                            <option value="-1">选择门店类型</option>
+                                                        <#if storeTypes??>
+                                                            <#list storeTypes as storeType>
+                                                                <option value="${storeType.value}">${storeType.description}</option>
+                                                            </#list>
+                                                        </#if>
+                                                        </select>
+
+                                                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                                                            <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control" style="width:auto;"
+                                                                   placeholder="请输入要查找的店名或编码..">
+                                                            <span class="input-group-btn">
+                                                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                                                        onclick="return findStoreByNameOrCode()">查找</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-body table-reponsive">
+                                                        <table id="storeDataGrid"
+                                                               class="table table-bordered table-hover">
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="storeModalConfirm" type="button" class="btn btn-primary">确定</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
