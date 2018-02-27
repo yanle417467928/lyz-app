@@ -41,12 +41,12 @@ public class JwtTokenFilter implements Filter {
 
         boolean isExcludedPage = false;
         String realPath = ((HttpServletRequest) request).getServletPath();
-        p = Pattern.compile("^(/app/resend/).");
+        String regex = "^(/app/resend/).*";
 
         //判断是否在过滤url之外
         for (String page : excludedPageArray) {
             if (realPath.equals(page) ||
-                    p.matcher(realPath).matches()) {
+                    Pattern.matches(regex, realPath)) {
                 isExcludedPage = true;
                 break;
             }

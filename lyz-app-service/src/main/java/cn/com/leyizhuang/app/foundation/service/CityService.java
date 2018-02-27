@@ -56,4 +56,6 @@ public interface CityService {
     CityInventory findCityInventoryByCityCodeAndSku(String cityCode, String sku);
 
     Integer lockCityInventoryByCityCodeAndSkuAndInventory(String cityCode, String sku, Integer inventory, Timestamp lastUpdateTime);
+
+    void saveCityInventory(CityInventory cityInventory);
 }

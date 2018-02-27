@@ -1192,8 +1192,7 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
-                orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
-                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
+                orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
@@ -1272,6 +1271,7 @@ public class OrderController {
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+
                 return resultDTO;
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);

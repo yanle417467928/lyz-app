@@ -1,10 +1,13 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory;
 
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -57,4 +60,18 @@ public class CityInventory {
      * 上次更新时间
      */
     private Timestamp lastUpdateTime;
+
+    public static CityInventory transform(GoodsDO goodsDO, City city) {
+        CityInventory cityInventory = new CityInventory();
+        cityInventory.setAvailableIty(0);
+        cityInventory.setCityId(city.getCityId());
+        cityInventory.setCityName(city.getName());
+        cityInventory.setCityCode(city.getNumber());
+        cityInventory.setCreateTime(Calendar.getInstance().getTime());
+        cityInventory.setGid(goodsDO.getGid());
+        cityInventory.setSku(goodsDO.getSku());
+        cityInventory.setSkuName(goodsDO.getSkuName());
+        cityInventory.setLastUpdateTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        return cityInventory;
+    }
 }

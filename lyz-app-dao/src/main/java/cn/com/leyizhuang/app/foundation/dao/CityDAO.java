@@ -76,4 +76,6 @@ public interface CityDAO {
                                                             @Param(value = "sku") String sku,
                                                             @Param(value = "inventory") Integer inventory,
                                                             @Param(value = "version") Timestamp version);
+
+    void saveCityInventory(CityInventory cityInventory);
 }

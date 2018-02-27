@@ -109,6 +109,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderLogisticInfo.setReturnStoreCode(returnDeliveryInfo.getReturnStoreCode());
             returnOrderLogisticInfo.setReturnStoreName(returnDeliveryInfo.getReturnStoreName());
             returnOrderLogisticInfo.setReturnStoreAddress(returnDeliveryInfo.getReturnStoreAddress());
+            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getReturnStoreAddress());
         } else if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_PICK.getValue())) {
             returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
             returnOrderLogisticInfo.setDeliveryTime(returnDeliveryInfo.getDeliveryTime());
@@ -126,7 +127,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnDeliveryInfo.getDetailedAddress());
 
         }
-
         return returnOrderLogisticInfo;
     }
 
