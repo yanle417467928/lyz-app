@@ -206,6 +206,12 @@ function formValidate() {
             return false;
         }
 
+        if(parseInt(denomination) > parseInt(condition)){
+            $('#cashCoupon_form').bootstrapValidator('disableSubmitButtons', false);
+            $notify.danger("优惠券面额不能大于条件金额，亲");
+            return false;
+        }
+
         e.preventDefault();
         var $form = $(e.target);
         var origin = $form.serializeArray();

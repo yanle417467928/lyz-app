@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -107,6 +108,7 @@ public class QrcodeRegisterRestController extends BaseRestController{
             newCustomer.setStoreId(appEmployee.getStoreId());
             newCustomer.setSalesConsultId(appEmployee.getEmpId());
             newCustomer.setMobile(phone);
+            newCustomer.setBindingTime(new Date());
 
             // 保存
             commonService.saveCustomerInfo(newCustomer,new CustomerLeBi(),new CustomerPreDeposit());
