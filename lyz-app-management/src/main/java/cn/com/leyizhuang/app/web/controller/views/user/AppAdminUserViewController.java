@@ -87,6 +87,7 @@ public class AppAdminUserViewController extends BaseController {
                 map.addAttribute("roleList", roleList);
                 map.addAttribute("user", user);
                 map.addAttribute("storeList", adminUserStoreVOList);
+                map.addAttribute("storeTypes", StoreType.values());
             }
         }
         return "/views/user/user_edit";

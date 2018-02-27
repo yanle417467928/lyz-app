@@ -15,4 +15,8 @@ public interface AdminUserStoreService {
 
     List<AdminUserStoreVO> findByUid(Long uid);
 
+    void batchUpdateAndSave(List<AdminUserStoreDO> adminUserStoreDOList, Long uid);
+
+    int batchDelete(List<AdminUserStoreDO> adminUserStoreDOList);
+
 }
