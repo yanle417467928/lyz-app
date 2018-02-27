@@ -895,8 +895,40 @@
     </select>
 
     <select id="scanningUnpaidOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-        SELECT
-            *
+       SELECT
+            oid id,
+            ord_no orderNumber,
+            order_type orderType,
+            create_time createTime,
+            effective_end_time effectiveEndTime,
+            `status`,
+            delivery_status deliveryStatus,
+            pick_up_code pickUpCode,
+            delivery_type deliveryType,
+            order_subject_type orderSubjectType,
+            creator_identity_type creatorIdentityType,
+            creator_id creatorId,
+            creator_name creatorName,
+            creator_phone creatorPhone,
+            store_id storeId,
+            store_code storeCode,
+            store_structure_code storeStructureCode,
+            sales_consult_id salesConsultId,
+            sales_consult_name salesConsultName,
+            sales_consult_phone salesConsultPhone,
+            customer_id customerId,
+            customer_name customerName,
+            customer_phone customerPhone,
+            customer_type customerType,
+            total_goods_price totalGoodsPrice,
+            is_evaluated isEvaluated,
+            audit_no auditNo,
+            remark remark,
+            city_id cityId,
+            city_name cityName,
+            sob_id sobId,
+            store_org_id storeOrgId,
+            sales_number salesNumber
         FROM
             ord_base_info
         WHERE
