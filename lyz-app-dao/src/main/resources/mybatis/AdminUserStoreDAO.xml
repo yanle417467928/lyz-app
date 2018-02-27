@@ -19,4 +19,18 @@
           AND (c.name IS NOT NULL OR s.store_name IS NOT NULL)
     </select>
 
+    <select id="findAdminUserStoreDOByUid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO">
+        SELECT us.id, us.uid, us.store_id, us.city_id
+        FROM admin_user_store us
+        WHERE us.uid = #{uid}
+    </select>
+
+    <delete id="batchDelete">
+        DELETE FROM admin_user_store
+        WHERE id IN
+          <foreach collection="list" item="item" open="(" close=")" separator=",">
+              ${item.id}
+          </foreach>
+    </delete>
+
 </mapper>

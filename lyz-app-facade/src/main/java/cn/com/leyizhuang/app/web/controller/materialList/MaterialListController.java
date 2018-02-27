@@ -169,7 +169,7 @@ public class MaterialListController {
                 logger.info("editNumber OUT,编辑下料清单商品数量失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == qty) {
+            if (null == qty || qty <= 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品数量不能为空！", null);
                 logger.info("editNumber OUT,编辑下料清单商品数量失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -621,7 +621,7 @@ public class MaterialListController {
                         msg += "、";
                     }
                     msg += "‘";
-                    msg += quickOrderRelationDO.getGoodsName();
+                    msg += null == quickOrderRelationDO.getGoodsName() ? "" : quickOrderRelationDO.getGoodsName();
                     msg += "’";
                 }
             }

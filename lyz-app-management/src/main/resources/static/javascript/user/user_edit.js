@@ -117,6 +117,19 @@ $(function () {
         });
         data["roleIdsStr"] = roleIds;
 
+        // 已选门店
+        var stores = [];
+        $("#stores > label[class='label label-success']").each(function () {
+            stores.push($(this).prop("id").substring(6));
+        });
+        // 已选城市
+        var citys = [];
+        $("#citys > label[class='label label-success']").each(function () {
+            citys.push($(this).prop("id").substring(5));
+        });
+        data["stores"] = stores;
+        data["citys"] = citys;
+
         if (null === $global.timer) {
             $global.timer = setTimeout($loading.show, 2000);
 

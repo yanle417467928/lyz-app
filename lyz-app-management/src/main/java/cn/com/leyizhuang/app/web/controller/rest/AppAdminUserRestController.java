@@ -161,7 +161,9 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr, BindingResult result) {
+    public ResultDTO<?> restUserIdPut(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr,
+                                      @RequestParam(value = "stores[]", required = false) String[] stores,
+                                      @RequestParam(value = "citys[]", required = false) String[] citys, BindingResult result) {
         if (!result.hasErrors()) {
             if (null != roleIdsStr && roleIdsStr.length > 0) {
                 Long[] roleIds = new Long[roleIdsStr.length];
@@ -171,6 +173,26 @@ public class AppAdminUserRestController extends BaseRestController {
                 userVO.setRoleIds(roleIds);
             }
             commonService.updateUserAndUserRoleByUserVO(userVO);
+            List<AdminUserStoreDO> adminUserStoreDOList = new ArrayList<>();
+            if (null != userVO && null != userVO.getId()) {
+                if (null != citys && citys.length > 0) {
+                    for (int i = 0; i < citys.length; i++) {
+                        AdminUserStoreDO adminUserStoreDO = new AdminUserStoreDO();
+                        adminUserStoreDO.setCityId(Long.parseLong(citys[i]));
+                        adminUserStoreDO.setUid(userVO.getId());
+                        adminUserStoreDOList.add(adminUserStoreDO);
+                    }
+                }
+                if (null != stores && stores.length > 0) {
+                    for (int i = 0; i < stores.length; i++) {
+                        AdminUserStoreDO adminUserStoreDO = new AdminUserStoreDO();
+                        adminUserStoreDO.setStoreId(Long.parseLong(stores[i]));
+                        adminUserStoreDO.setUid(userVO.getId());
+                        adminUserStoreDOList.add(adminUserStoreDO);
+                    }
+                }
+            }
+            this.adminUserStoreService.batchUpdateAndSave(adminUserStoreDOList, userVO.getId());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
             List<ObjectError> allErrors = result.getAllErrors();
