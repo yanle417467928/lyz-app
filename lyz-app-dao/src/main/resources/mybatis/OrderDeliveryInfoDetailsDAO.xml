@@ -199,7 +199,7 @@
         INNER JOIN ord_base_info AS obi ON obi.ord_no = orbi.ord_no
         INNER JOIN ord_return_delivery_detail AS ordd ON ordd.return_no = orli.return_no
         WHERE
-            ordd.return_logistic_status = 'PICKING_GOODS'
+        orbi.return_status = 'RETURNING'
         AND orli.delivery_clerk_no = #{operatorNo}
     </select>
 

@@ -15,10 +15,27 @@ import java.util.List;
 @Repository
 public interface EmployeeCreditMoneyLogDAO {
     /**
-     * 查询导购信用金变动记录
+     * 查询导购临时额度变动记录
      *
      * @param userId
      * @return
      */
-    List<EmployeeCreditMoneyLogResponse> findByUserId(Long userId);
+    List<EmployeeCreditMoneyLogResponse> findEmpTempCreditByUserId(Long userId);
+
+    /**
+     * 查询导购可用额度变动记录
+     *
+     * @param userId
+     * @return
+     */
+    List<EmployeeCreditMoneyLogResponse> findEmpAvailableCreditByUserId(Long userId);
+
+    /**
+     * 查询导购固定额度变动记录
+     *
+     * @param userId
+     * @return
+     */
+    List<EmployeeCreditMoneyLogResponse> findEmpFixedCreditByUserId(Long userId);
+
 }

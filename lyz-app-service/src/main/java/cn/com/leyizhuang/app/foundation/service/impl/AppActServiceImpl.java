@@ -1028,4 +1028,12 @@ public class AppActServiceImpl implements AppActService {
 
         actBaseDAO.update(baseDO);
     }
+
+    @Override
+    public ActBaseDO findById(Long promotionId) {
+        if (null != promotionId) {
+            return actBaseDAO.queryById(promotionId);
+        }
+        return null;
+    }
 }
