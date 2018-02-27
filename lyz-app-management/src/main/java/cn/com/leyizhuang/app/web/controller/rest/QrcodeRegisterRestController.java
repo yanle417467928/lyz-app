@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.response.VerifyCodeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -19,7 +18,6 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -38,7 +37,7 @@ import java.util.Random;
  */
 @RestController
 @RequestMapping(value = QrcodeRegisterRestController.PRE_URL, produces = "application/json;charset=utf-8")
-public class QrcodeRegisterRestController extends BaseRestController{
+public class QrcodeRegisterRestController extends BaseRestController {
     protected final static String PRE_URL = "/rest/qrcode/";
 
     private final Logger logger = LoggerFactory.getLogger(QrcodeRegisterRestController.class);
@@ -59,66 +58,72 @@ public class QrcodeRegisterRestController extends BaseRestController{
     private AppStoreService appStoreService;
 
     @PostMapping(value = "/save")
-    public ResultDTO<?> save(HttpServletRequest req, String name, String phone,String sellerPhone, String sellerName,
-                             String storeName, String code, String workNumber){
+    public ResultDTO<?> save(HttpServletRequest req, String name, String phone, String sellerPhone, String sellerName,
+                             String storeName, String code, String workNumber) {
 
         String smsCode = (String) req.getSession().getAttribute("SMSCODE");
         String smsMobile = (String) req.getSession().getAttribute("SMSMOBILE");
 
-        if (smsCode == null || smsMobile == null){
+        if (smsCode == null || smsMobile == null) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码有误", null);
         }
 
-        if (!smsCode.equals(code) || !phone.equals(smsMobile)){
+        if (!smsCode.equals(code) || !phone.equals(smsMobile)) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码有误", null);
         }
 
-        AppCustomer appCustomer = customerService.findByMobile(phone);
+        AppCustomer appCustomer = null;
+        try {
+            appCustomer = customerService.findByMobile(phone);
 
-        if (appCustomer != null){
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号已经注册", null);
-        }else{
-            AppEmployee appEmployee = employeeService.findByMobile(sellerPhone);
 
-            // 排除分销仓库
-            AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+            if (appCustomer != null) {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号已经注册", null);
+            } else {
+                AppEmployee appEmployee = employeeService.findByMobile(sellerPhone);
 
-            if (appStore.getStoreType().equals(StoreType.FXCK)){
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "分销仓库下不能注册会员", null);
+                // 排除分销仓库
+                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+
+                if (appStore.getStoreType().equals(StoreType.FXCK)) {
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "分销仓库下不能注册会员", null);
+                }
+
+                AppCustomer newCustomer = new AppCustomer();
+
+                if (workNumber.equals(appEmployee.getLoginName())) {
+                    // 有推荐码 设置为会员
+                    newCustomer.setCustomerType(AppCustomerType.MEMBER);
+                } else {
+                    newCustomer.setCustomerType(AppCustomerType.RETAIL);
+                }
+
+                newCustomer.setCreateTime(LocalDateTime.now());
+                newCustomer.setCreateType(AppCustomerCreateType.QRCODE_REGISTRY);
+                newCustomer.setStatus(Boolean.TRUE);
+                newCustomer.setName(name);
+                newCustomer.setSex(SexType.SECRET);
+                newCustomer.setPicUrl(null);
+                newCustomer.setLight(AppCustomerLightStatus.NOT);
+                newCustomer.setIsCashOnDelivery(Boolean.FALSE);
+                newCustomer.setCityId(appEmployee.getCityId());
+                newCustomer.setStoreId(appEmployee.getStoreId());
+                newCustomer.setSalesConsultId(appEmployee.getEmpId());
+                newCustomer.setMobile(phone);
+                newCustomer.setBindingTime(new Date());
+
+                // 保存
+                commonService.saveCustomerInfo(newCustomer, new CustomerLeBi(), new CustomerPreDeposit());
             }
-
-            AppCustomer newCustomer = new AppCustomer();
-
-            if (workNumber.equals(appEmployee.getLoginName())){
-                // 有推荐码 设置为会员
-                newCustomer.setCustomerType(AppCustomerType.MEMBER);
-            }else{
-                newCustomer.setCustomerType(AppCustomerType.RETAIL);
-            }
-
-            newCustomer.setCreateTime(LocalDateTime.now());
-            newCustomer.setCreateType(AppCustomerCreateType.QRCODE_REGISTRY);
-            newCustomer.setStatus(Boolean.TRUE);
-            newCustomer.setName(name);
-            newCustomer.setSex(SexType.SECRET);
-            newCustomer.setPicUrl(null);
-            newCustomer.setLight(AppCustomerLightStatus.NOT);
-            newCustomer.setIsCashOnDelivery(Boolean.FALSE);
-            newCustomer.setCityId(appEmployee.getCityId());
-            newCustomer.setStoreId(appEmployee.getStoreId());
-            newCustomer.setSalesConsultId(appEmployee.getEmpId());
-            newCustomer.setMobile(phone);
-            newCustomer.setBindingTime(new Date());
-
-            // 保存
-            commonService.saveCustomerInfo(newCustomer,new CustomerLeBi(),new CustomerPreDeposit());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！", null);
     }
 
     @PostMapping(value = "/send/code")
-    public ResultDTO<?> sendSmsCode(HttpServletRequest req,String mobile){
+    public ResultDTO<?> sendSmsCode(HttpServletRequest req, String mobile) {
         ResultDTO<?> resultDTO;
         if (null == mobile || mobile.equalsIgnoreCase("") || mobile.trim().length() != 11) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不合法！", null);
@@ -129,8 +134,8 @@ public class QrcodeRegisterRestController extends BaseRestController{
         Random random = new Random();
         String smsCode = random.nextInt(900000) + 100000 + "";
 
-        req.getSession().setAttribute("SMSCODE",smsCode);
-        req.getSession().setAttribute("SMSMOBILE",mobile);
+        req.getSession().setAttribute("SMSCODE", smsCode);
+        req.getSession().setAttribute("SMSMOBILE", mobile);
 
         String info = "您正在注册乐易装app帐号，验证码为" + smsCode + "，请在页面中输入以完成验证。";
         logger.info("生成的验证码为:{}", smsCode);
