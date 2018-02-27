@@ -312,7 +312,7 @@
         SELECT
             ogi.return_qty qty,
             ogi.retail_price,
-            ogi.goods_line_type,
+        ogi.goods_line_type goodType,
             gg.sku_name,
             gg.gid         goodsId,
             gg.goods_specification,

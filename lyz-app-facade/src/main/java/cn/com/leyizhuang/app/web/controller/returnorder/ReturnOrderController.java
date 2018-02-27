@@ -1067,15 +1067,16 @@ public class ReturnOrderController {
         returnOrderGoodsResponse.setSku(goodsInfo.getSku());
         returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
         returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
-        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
         returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
         returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
         returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
         returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
         returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
-
-        ActBaseDO actBaseDO = appActService.findById(Long.parseLong(goodsInfo.getPromotionId()));
-        returnOrderGoodsResponse.setPromotionTitle(null != actBaseDO ? actBaseDO.getTitle() : "无促销");
+        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
+        if (null != goodsInfo.getPromotionId()) {
+            ActBaseDO actBaseDO = appActService.findById(Long.parseLong(goodsInfo.getPromotionId()));
+            returnOrderGoodsResponse.setPromotionTitle(null != actBaseDO ? actBaseDO.getTitle() : "无促销");
+        }
         return returnOrderGoodsResponse;
     }
 

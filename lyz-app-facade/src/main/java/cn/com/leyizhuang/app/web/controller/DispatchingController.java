@@ -2,10 +2,12 @@ package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrderCheckEnter;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -46,6 +49,9 @@ public class DispatchingController {
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
+
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
 
     @Resource
     private ICallWms iCallWms;
@@ -331,6 +337,18 @@ public class DispatchingController {
             iCallWms.sendToWmsReturnOrderCheck(returnNumber);
             //修改退单状态
             returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.PENDING_REFUND);
+            ReturnOrderDeliveryDetail detail = new ReturnOrderDeliveryDetail();
+            detail.setDescription("配送员" + appEmployee.getName() +
+                    "[" + appEmployee.getDeliveryClerkNo() + "]" +
+                    "已确认取货!");
+            detail.setReturnLogisticStatus(ReturnLogisticStatus.PICKUP_COMPLETE);
+            detail.setReturnNo(returnNumber);
+            detail.setCreateTime(Calendar.getInstance().getTime());
+            detail.setPickersNumber(appEmployee.getDeliveryClerkNo());
+            detail.setRoid(returnOrderBaseInfo.getRoid());
+            detail.setPickersId(appEmployee.getEmpId());
+            /*detail.setPicture();*/
+            returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(detail);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getPickUpEnter OUT,配送员取货确认成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
