@@ -23,6 +23,7 @@ public class JwtTokenFilter implements Filter {
     //需要排除的页面
     private String excludedPages;
     private String[] excludedPageArray;
+    private Pattern p = null;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -39,12 +40,13 @@ public class JwtTokenFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         boolean isExcludedPage = false;
-        Pattern p = Pattern.compile("^(/app/resend)/*");
+        String realPath = ((HttpServletRequest) request).getServletPath();
+        p = Pattern.compile("^(/app/resend/).");
 
         //判断是否在过滤url之外
         for (String page : excludedPageArray) {
-            if (((HttpServletRequest) request).getServletPath().equals(page) ||
-                    p.matcher(((HttpServletRequest) request).getServletPath()).matches()) {
+            if (realPath.equals(page) ||
+                    p.matcher(realPath).matches()) {
                 isExcludedPage = true;
                 break;
             }
