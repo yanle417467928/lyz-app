@@ -1,11 +1,11 @@
 <head>
-<link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-<link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
-<link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
-<link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -41,7 +41,7 @@
 </section>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/citys/page/grid', 'get', false, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/citys/page/deliveryTimeGrid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -64,13 +64,16 @@
                 title: '操作',
                 align: 'center',
                 formatter: function (value, row) {
-                    return '<button class="btn btn-primary btn-xs" onclick="showDetail('+row.cityId+',\''+row.name+'\')"> 查看详情</button>';
+                    return '<button class="btn btn-primary btn-xs" onclick="showDetail(' + row.cityId + ',\'' + row.name + '\')"> 查看详情</button>';
                 }
-            }]);
-    });
+            },
+        ])
+        ;
+    })
+    ;
 
 
-    function showDetail(id,name) {
+    function showDetail(id, name) {
         window.location.href = '/views/admin/citysDeliveryTimes/cityDeliveryTimeList/' + id + '?&cityName=' + name;
     }
 </script>

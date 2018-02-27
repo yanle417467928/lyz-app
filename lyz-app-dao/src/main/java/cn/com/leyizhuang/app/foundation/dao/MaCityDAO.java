@@ -13,6 +13,8 @@ public interface MaCityDAO {
 
     List<CityVO> findAllCityVO();
 
+    List<CityVO> queryDeliveryTimePageVO();
+
     List<SimpleCityParam> findAllSimpleCityParam();
 
     CityDetailVO findCityVOById(Long cityId);

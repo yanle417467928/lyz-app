@@ -13,6 +13,8 @@ public interface MaCityService {
 
     PageInfo<CityVO> queryPageVO(Integer page, Integer size);
 
+    PageInfo<CityVO> queryDeliveryTimePageVO(Integer page, Integer size);
+
     CityDetailVO queryCityVOById(Long cityId);
 
     List<SimpleCityParam> findCitysList();

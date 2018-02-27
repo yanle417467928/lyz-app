@@ -3,9 +3,12 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaCityDAO">
 
     <select id="findAllCityVO" resultType="cn.com.leyizhuang.app.foundation.vo.management.city.CityVO">
-        select city_id,name,code,structure_title,enable from city order by city_id asc
+        select city_id,name,code,structure_title,enable,is_open_delivery from city order by city_id asc
     </select>
 
+    <select id="queryDeliveryTimePageVO" resultType="cn.com.leyizhuang.app.foundation.vo.management.city.CityVO">
+        select city_id,name,code,structure_title,enable from city WHERE  is_open_delivery = TRUE order by city_id asc
+    </select>
 
     <select id="findAllSimpleCityParam" resultType="cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam">
         select city_id,name from city order by city_id asc

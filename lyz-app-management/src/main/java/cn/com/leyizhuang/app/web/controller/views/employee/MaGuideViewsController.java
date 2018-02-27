@@ -70,7 +70,7 @@ public class MaGuideViewsController extends BaseController {
         if (id.equals(0L)) {
             return "/error/404";
         } else {
-            map.addAttribute("id",id);
+            map.addAttribute("guideId",id);
         }
         return "/views/employee/guideCreditMoneyChanges_page";
     }

@@ -338,18 +338,17 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void orderReceivables(MaOrderAmount maOrderAmount) {
         //得到订单基本信息
-        //MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
+        MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //更新订单收款状态
         this.updateorderReceivablesStatus(maOrderAmount);
-/*        //设置订单收款信息并存入订单账款支付明细表
+        //设置订单收款信息并存入订单账款支付明细表
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
         maOrderBillingPaymentDetails.setPayTime(maOrderAmount.getDate());
-        maOrderBillingPaymentDetails.setCreateTime(date);
+        maOrderBillingPaymentDetails.setCreateTime(new Date());
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
         maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
-        //maOrderBillingPaymentDetails.setReceiptNumber(maOrderAmount.getSerialNumber());
         if (!maOrderAmount.getCashAmount().equals(BigDecimal.ZERO)) {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
@@ -367,7 +366,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getPosAmount());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
-        }*/
+        }
     }
 
     @Override
