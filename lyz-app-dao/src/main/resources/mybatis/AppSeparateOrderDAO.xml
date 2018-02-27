@@ -1063,4 +1063,15 @@
         </set>
         WHERE id =#{id}
     </update>
+
+    <select id="getCustomerFxStoreRelationByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation">
+        SELECT
+            id,
+            fx_store_code,
+            cus_id,
+            create_time
+        FROM cus_customer_fx_store_relation
+        WHERE cus_id = #{cusId}
+    </select>
 </mapper>

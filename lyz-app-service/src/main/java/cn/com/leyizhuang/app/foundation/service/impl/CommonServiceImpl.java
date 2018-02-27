@@ -158,7 +158,11 @@ public class CommonServiceImpl implements CommonService {
 
     @Transactional
     @Override
-    public AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit) {
+    public AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit) throws UnsupportedEncodingException {
+        if (null != customer.getNickName()) {
+            String utf8NickName = URLEncoder.encode(customer.getNickName(), "utf-8");
+            customer.setNickName(utf8NickName);
+        }
         customerService.save(customer);
         leBi.setCusId(customer.getCusId());
         leBi.setQuantity(leBi.getQuantity() == null ? 0 : leBi.getQuantity());
@@ -619,7 +623,7 @@ public class CommonServiceImpl implements CommonService {
     public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
                                                List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
                                                OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
-                                               List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) {
+                                               List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) throws UnsupportedEncodingException {
 
         if (null != orderBaseInfo) {
             if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {

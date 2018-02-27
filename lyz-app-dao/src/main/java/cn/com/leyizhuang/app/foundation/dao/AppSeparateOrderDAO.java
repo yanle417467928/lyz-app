@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -161,4 +162,6 @@ public interface AppSeparateOrderDAO {
                                                          @Param(value = "msg") String msg,
                                                          @Param(value = "sendTime") Date sendTime,
                                                          @Param(value = "sendFlag") AppWhetherFlag sendFlag);
+
+    AppCustomerFxStoreRelation getCustomerFxStoreRelationByCusId(Long customerIdTemp);
 }

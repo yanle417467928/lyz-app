@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
@@ -94,7 +95,12 @@ public class UserSettingController {
             return resultDTO;
         }
         if (identityType == 6) {
-            AppCustomer appCustomer = customerService.findById(userId);
+            AppCustomer appCustomer = null;
+            try {
+                appCustomer = customerService.findById(userId);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             if (appCustomer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
                 logger.info("personalInformationGet OUT,获取个人信息失败，出参 resultDTO:{}", resultDTO);

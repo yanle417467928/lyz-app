@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -54,33 +57,54 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public AppCustomer findByOpenId(String openId) {
+    public AppCustomer findByOpenId(String openId) throws UnsupportedEncodingException {
         if (null != openId && !"".equalsIgnoreCase(openId)) {
-            return customerDAO.findByOpenId(openId);
+            AppCustomer customer = customerDAO.findByOpenId(openId);
+            if (null != customer.getNickName()) {
+                String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
+                customer.setNickName(nickName);
+            }
+            return customer;
         }
         return null;
     }
 
     @Override
-    public AppCustomer findByMobile(String phone) {
+    public AppCustomer findByMobile(String phone) throws UnsupportedEncodingException {
         if (null != phone) {
-            return customerDAO.findByMobile(phone);
+            AppCustomer customer = customerDAO.findByMobile(phone);
+            if (null != customer.getNickName()) {
+                String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
+                customer.setNickName(nickName);
+            }
+            return customer;
         }
         return null;
     }
 
     @Override
     @Transactional
-    public void update(AppCustomer phoneUser) {
+    public void update(AppCustomer phoneUser) throws UnsupportedEncodingException {
         if (null != phoneUser) {
+            if (null != phoneUser.getNickName()) {
+                String utf8NickName = URLEncoder.encode(phoneUser.getNickName(), "utf-8");
+                phoneUser.setNickName(utf8NickName);
+            }
+
             customerDAO.update(phoneUser);
         }
     }
 
     @Override
-    public AppCustomer findById(Long cusId) {
+    public AppCustomer findById(Long cusId) throws UnsupportedEncodingException {
         if (null != cusId) {
-            return customerDAO.findById(cusId);
+            AppCustomer customer = customerDAO.findById(cusId);
+            if (null != customer.getNickName()) {
+                String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
+                customer.setNickName(nickName);
+            }
+            return customer;
+
         }
         return null;
     }

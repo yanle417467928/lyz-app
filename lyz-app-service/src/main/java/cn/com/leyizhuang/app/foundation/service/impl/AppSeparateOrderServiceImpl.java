@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import org.springframework.stereotype.Service;
@@ -117,6 +118,22 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         orderBaseInf.setCreateTime(new Date());
                         orderBaseInf.setDeliveryTypeTitle(baseInfo.getDeliveryType());
                         orderBaseInf.setOrderSubjectType(baseInfo.getOrderSubjectType());
+                        //分销仓库为分销门店代下单，设置分销门店编码至订单头 attribute3
+                        String fxStoreCode = null;
+                        if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER ||
+                                baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                            Long customerIdTemp;
+                            if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                                customerIdTemp = baseInfo.getCustomerId();
+                            } else {
+                                customerIdTemp = baseInfo.getCreatorId();
+                            }
+                            AppCustomerFxStoreRelation customerFxStoreRelation = separateOrderDAO.getCustomerFxStoreRelationByCusId(customerIdTemp);
+                            if (null != customerFxStoreRelation) {
+                                fxStoreCode = customerFxStoreRelation.getFxStoreCode();
+                                orderBaseInf.setAttribute3(fxStoreCode);
+                            }
+                        }
 
                         //************* 计算分单商品总金额及应付金额 *************
 
@@ -277,6 +294,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         receiptInf.setUserPhone(null == baseInfo.getCustomerPhone() ? baseInfo.getCreatorPhone() : baseInfo.getCustomerPhone());
                         receiptInf.setUsername(null == baseInfo.getCustomerName() ? baseInfo.getCreatorName() : baseInfo.getCustomerName());
                         receiptInf.setGuideId(baseInfo.getSalesConsultId());
+                        if (StringUtils.isNotBlank(orderBaseInfList.get(0).getAttribute3())) {
+                            receiptInf.setAttribute3(orderBaseInfList.get(0).getAttribute3());
+                        }
                         receiptInfList.add(receiptInf);
                     }
                 }
@@ -532,6 +552,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap = new HashMap<>(5);
 
                 //*********************************** 拆退单头及退单商品信息 begin *************************************
+                String fxStoreCode = null;
                 for (String flag : companyFlag) {
                     //查找退单该flag对应的原分单信息
                     OrderBaseInf orderBaseInf = separateOrderDAO.getOrderBaseInfByMainOrderNumberAndCompanFlag(orderBaseInfo.getOrderNumber(), flag);
@@ -561,6 +582,11 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         returnOrderBaseInf.setUserId(orderBaseInf.getUserId());
                         returnOrderBaseInf.setSobId(orderBaseInf.getSobId());
                         returnOrderBaseInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        //分销仓库为分销门店代下单，设置分销门店编码至订单头 attribute3
+                        if (StringUtils.isNotBlank(orderBaseInf.getAttribute3())) {
+                            fxStoreCode = orderBaseInf.getAttribute3();
+                            returnOrderBaseInf.setAttribute3(fxStoreCode);
+                        }
 
                         //创建分退单产品信息
                         List<ReturnOrderGoodsInf> returnOrderGoodsInfList = new ArrayList<>(20);
@@ -648,6 +674,10 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         refundInf.setRefundType(billingDetail.getReturnPayType());
                         refundInf.setSobId(orderBaseInfo.getSobId());
                         refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
+                        //设置分销门店编码至attribute3
+                        if (StringUtils.isNotBlank(fxStoreCode)) {
+                            refundInf.setAttribute3(fxStoreCode);
+                        }
                         returnOrderRefundInfList.add(refundInf);
                     }
                 }
