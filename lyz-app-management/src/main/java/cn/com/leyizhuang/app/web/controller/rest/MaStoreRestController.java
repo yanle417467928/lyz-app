@@ -52,6 +52,32 @@ public class MaStoreRestController extends BaseRestController {
         }
     }
 
+
+    /**
+     * @title   获取生效门店列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/26
+     */
+    @GetMapping(value = "/list")
+    public GridDataVO<StoreVO> restStoresList(Integer offset, Integer size, String keywords, Long cityId, String storeType) {
+        logger.info("restStoresList 获取生效门店列表 ,入参 offset:{},size:{},keywords:{},cityId:{},storeType:{}", offset, size, keywords, cityId, storeType);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<StoreVO> stores = this.maStoreService.queryPageVO(page, size, cityId, keywords, storeType);
+            return new GridDataVO<StoreVO>().transform(stores.getList(), stores.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restStoresList EXCEPTION,发生未知错误，获取生效门店列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
     /**
      * 查询所有门店列表(下拉框)(包括装饰公司)
      *

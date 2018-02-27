@@ -1,10 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.views.user;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.management.Role;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.RoleService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.vo.management.AdminUserStoreVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,9 @@ public class AppAdminUserViewController extends BaseController {
     @Autowired
     private UserRoleService userRoleService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     @GetMapping(value = "/list")
     public String userList() {
         return "/views/user/user_list";
@@ -54,6 +60,7 @@ public class AppAdminUserViewController extends BaseController {
         logger.info("新增用户");
         List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
         model.addAttribute("roleList", roleList);
+        model.addAttribute("storeTypes", StoreType.values());
         return "/views/user/user_add";
     }
 
@@ -75,9 +82,11 @@ public class AppAdminUserViewController extends BaseController {
             } else {
                 List<Role> roleList = roleService.findByStatus(Boolean.TRUE);
                 List<Long> roleIds = userRoleService.findRoleIdsByUserId(id);
+                List<AdminUserStoreVO> adminUserStoreVOList = this.adminUserStoreService.findByUid(id);
                 map.addAttribute("roleIds", roleIds);
                 map.addAttribute("roleList", roleList);
                 map.addAttribute("user", user);
+                map.addAttribute("storeList", adminUserStoreVOList);
             }
         }
         return "/views/user/user_edit";

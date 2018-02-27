@@ -257,4 +257,11 @@ public class MaStoreServiceImpl implements MaStoreService {
          this.mastoreDAO.saveStorePreDepositLog(stPreDepositLogDO);
     }
 
+    @Override
+    public PageInfo<StoreVO> queryPageVO(Integer page, Integer size, Long cityId, String keywords, String storeType) {
+        PageHelper.startPage(page, size);
+        List<StoreVO> pageStoreList = this.mastoreDAO.findAllStoreVO(cityId, keywords, storeType);
+        return new PageInfo<>(pageStoreList);
+    }
+
 }

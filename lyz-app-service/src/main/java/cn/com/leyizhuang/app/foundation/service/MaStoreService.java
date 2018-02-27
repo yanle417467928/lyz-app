@@ -36,9 +36,9 @@ public interface MaStoreService {
 
     PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo);
 
-     void update(Long storeId,Boolean  isSelfDelivery );
+    void update(Long storeId,Boolean  isSelfDelivery );
 
-     PageInfo<StoreDO> queryDecorativeCompanyPageVO(Integer page, Integer size);
+    PageInfo<StoreDO> queryDecorativeCompanyPageVO(Integer page, Integer size);
 
     PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
 
@@ -105,4 +105,6 @@ public interface MaStoreService {
      * @return
      */
     void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
+
+    PageInfo<StoreVO> queryPageVO(Integer page, Integer size, Long cityId, String keywords, String storeType);
 }

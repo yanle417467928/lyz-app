@@ -16,4 +16,6 @@ public interface MaCityService {
     CityDetailVO queryCityVOById(Long cityId);
 
     List<SimpleCityParam> findCitysList();
+
+    PageInfo<CityVO> queryPageVOByEnableIsTrue(Integer page, Integer size, String keywords);
 }

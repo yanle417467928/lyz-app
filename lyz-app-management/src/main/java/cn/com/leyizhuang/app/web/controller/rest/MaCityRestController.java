@@ -60,6 +60,31 @@ public class MaCityRestController extends BaseRestController {
     }
 
     /**
+     * @title   获取生效的城市列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/26
+     */
+    @GetMapping(value = "/list")
+    public GridDataVO<CityVO> restCitysList(Integer offset, Integer size, String keywords) {
+        logger.info("restCitysList 获取生效的城市列表 ,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<CityVO> citys = this.maCityService.queryPageVOByEnableIsTrue(page, size, keywords);
+            return new GridDataVO<CityVO>().transform(citys.getList(), citys.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCitysList EXCEPTION,发生未知错误，获取生效的城市列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
      * @param cityId
      * @return
      * @throws

@@ -4,6 +4,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
@@ -28,9 +29,9 @@ import java.util.Map;
  **/
 public interface CommonService {
 
-    void saveUserAndUserRoleByUserVO(UserVO userVO);
+    User saveUserAndUserRoleByUserVO(UserVO userVO);
 
-    void updateUserAndUserRoleByUserVO(UserVO userVO);
+    User updateUserAndUserRoleByUserVO(UserVO userVO);
 
     void deleteUserAndUserRoleByUserId(Long uid);
 
