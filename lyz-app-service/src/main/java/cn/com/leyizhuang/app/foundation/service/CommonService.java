@@ -38,7 +38,7 @@ public interface CommonService {
 
     AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit) throws UnsupportedEncodingException;
 
-    void customerSign(Long userId, Integer identityType);
+    void customerSign(Long userId, Integer identityType) throws UnsupportedEncodingException;
 
 
     void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
@@ -67,7 +67,7 @@ public interface CommonService {
     List<OrderCouponInfo> createOrderProductCouponInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> productCouponList);
 
     CreateOrderGoodsSupport createOrderGoodsInfo(List<GoodsSimpleInfo> goodsList, Long userId, Integer identityType, Long customerId,
-                                                 List<ProductCouponSimpleInfo> productCouponList, String orderNumber);
+                                                 List<ProductCouponSimpleInfo> productCouponList, String orderNumber) throws UnsupportedEncodingException;
 
     List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 

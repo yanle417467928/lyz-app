@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import com.github.pagehelper.PageInfo;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public interface AppPreDepositWithdrawService {
      * 新增顾客提现申请
      * @param param 提现申请类
      */
-    void cusSave(PreDepositWithdrawParam param);
+    void cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException;
 
     /**
      * 新增门店提现申请

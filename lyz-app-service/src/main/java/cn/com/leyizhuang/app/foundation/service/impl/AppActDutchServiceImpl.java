@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -62,7 +63,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @param orderGoodsInfoList
      * @return
      */
-    public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) {
+    public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) throws UnsupportedEncodingException {
 
         // 最终商品明细集合
         List<OrderGoodsInfo> finallyOrderGoodsInfo = new ArrayList<>();

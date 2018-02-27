@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +70,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
     @Override
     @Transactional
-    public void cusSave(PreDepositWithdrawParam param){
+    public void cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException {
 
         // 获取提现人信息
         AppCustomer appCustomer = appCustomerService.findById(param.getId());

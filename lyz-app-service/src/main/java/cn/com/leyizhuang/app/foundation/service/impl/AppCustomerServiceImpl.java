@@ -60,7 +60,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public AppCustomer findByOpenId(String openId) throws UnsupportedEncodingException {
         if (null != openId && !"".equalsIgnoreCase(openId)) {
             AppCustomer customer = customerDAO.findByOpenId(openId);
-            if (null != customer.getNickName()) {
+            if (null != customer && null != customer.getNickName()) {
                 String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
                 customer.setNickName(nickName);
             }
@@ -73,7 +73,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public AppCustomer findByMobile(String phone) throws UnsupportedEncodingException {
         if (null != phone) {
             AppCustomer customer = customerDAO.findByMobile(phone);
-            if (null != customer.getNickName()) {
+            if (null != customer && null != customer.getNickName()) {
                 String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
                 customer.setNickName(nickName);
             }
@@ -99,7 +99,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public AppCustomer findById(Long cusId) throws UnsupportedEncodingException {
         if (null != cusId) {
             AppCustomer customer = customerDAO.findById(cusId);
-            if (null != customer.getNickName()) {
+            if (null != customer && null != customer.getNickName()) {
                 String nickName = URLDecoder.decode(customer.getNickName(), "utf-8");
                 customer.setNickName(nickName);
             }

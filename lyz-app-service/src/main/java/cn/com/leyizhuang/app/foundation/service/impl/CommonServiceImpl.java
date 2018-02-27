@@ -179,7 +179,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void customerSign(Long userId, Integer identityType) {
+    public void customerSign(Long userId, Integer identityType) throws UnsupportedEncodingException {
         if (null != userId) {
             AppCustomer customer = customerService.findById(userId);
             if (null != customer) {
@@ -962,7 +962,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public CreateOrderGoodsSupport createOrderGoodsInfo(List<GoodsSimpleInfo> goodsList, Long userId, Integer identityType, Long customerId,
-                                                        List<ProductCouponSimpleInfo> productCouponList, String orderNumber) {
+                                                        List<ProductCouponSimpleInfo> productCouponList, String orderNumber) throws UnsupportedEncodingException {
         List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
         //新建一个map,用来存放最终要检核库存的商品和商品数量
         Map<Long, Integer> inventoryCheckMap = new HashMap<>();

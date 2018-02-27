@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -97,7 +98,7 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     @Override
-    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) {
+    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
         List<PromotionsGiftListResponse> giftList = new ArrayList<>();
         PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
 
@@ -116,7 +117,7 @@ public class AppActServiceImpl implements AppActService {
      * @param goodsInfoList
      * @return
      */
-    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) {
+    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
         List<PromotionDiscountListResponse> discountList = new ArrayList<>();
         PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
         if (actResultInfos != null) {
@@ -134,7 +135,7 @@ public class AppActServiceImpl implements AppActService {
      * @param goodsInfoList 本品集合
      * @return
      */
-    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) {
+    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
         //*****促销结果*****
         PromotionsListResponse result = new PromotionsListResponse();
         List<PromotionDiscountListResponse> proDiscountList = new ArrayList<>();

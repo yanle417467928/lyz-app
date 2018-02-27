@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -233,7 +234,7 @@ public class MaterialListController {
      * @date 2017/10/25
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getMaterialList(Long userId, Integer identityType) {
+    public ResultDTO<Object> getMaterialList(Long userId, Integer identityType) throws UnsupportedEncodingException {
         logger.info("getMaterialList CALLED,获取下料清单列表，入参 userId:{} identityType:{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -272,7 +273,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark, String salesNumber) {
+    public OrderBaseInfo createOrderBaseInfo(Long cityId, Long userId, Integer identityType, Long customerId, String deliveryType, String remark, String salesNumber) throws UnsupportedEncodingException {
         OrderBaseInfo tempOrder = new OrderBaseInfo();
         //设置订单创建时间
         Calendar calendar = Calendar.getInstance();
