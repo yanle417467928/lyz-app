@@ -35,6 +35,13 @@ public class MaCityServiceImpl implements MaCityService {
     }
 
     @Override
+    public PageInfo<CityVO> queryDeliveryTimePageVO(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<CityVO> cityList = maCityDAO.queryDeliveryTimePageVO();
+        return new PageInfo<>(cityList);
+    }
+
+    @Override
     public List<SimpleCityParam> findCitysList() {
         List<SimpleCityParam> cityList = maCityDAO.findAllSimpleCityParam();
         return cityList;
@@ -46,5 +53,12 @@ public class MaCityServiceImpl implements MaCityService {
             return maCityDAO.findCityVOById(cityId);
         }
         return null;
+    }
+
+    @Override
+    public PageInfo<CityVO> queryPageVOByEnableIsTrue(Integer page, Integer size, String keywords) {
+        PageHelper.startPage(page, size);
+        List<CityVO> cityList = maCityDAO.findAllCityByEnableIsTrue(keywords);
+        return new PageInfo<>(cityList);
     }
 }

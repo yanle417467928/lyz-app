@@ -99,4 +99,6 @@ public interface MaStoreDAO {
     Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money,@Param("userId")Long userId, @Param("version")Date version);
 
     void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
+
+    List<StoreVO> findAllStoreVO(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
 }

@@ -57,7 +57,7 @@ function initDateGird(url) {
         }
     },{
         field: 'effectiveEndTime',
-        title: '有效期结束',
+        title: '有效期结束时间',
         align: 'left',
         formatter: function (value, row, index) {
             if (null != value) {

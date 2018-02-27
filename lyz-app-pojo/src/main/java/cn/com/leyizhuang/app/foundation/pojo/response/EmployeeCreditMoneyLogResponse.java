@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeLogKind;
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,7 +40,28 @@ public class EmployeeCreditMoneyLogResponse {
      */
     private Double changeMoney;
     /**
+     * 变更记录枚举
+     */
+    private EmpCreditMoneyChangeType changeType;
+    /**
+     * 变更日志类别
+     */
+    private EmpCreditMoneyChangeLogKind kind;
+    /**
      * 变更类型
      */
     private String type;
+
+    public EmployeeCreditMoneyLogResponse attributeKindSetByChangeType(EmployeeCreditMoneyLogResponse response, EmpCreditMoneyChangeType changeType) {
+
+        if (EmpCreditMoneyChangeType.ADMIN_RECHARGE.equals(response.getChangeType()) ||
+                EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.equals(response.getChangeType()) ||
+                EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT.equals(response.getChangeType()) ||
+                EmpCreditMoneyChangeType.TEMPORARY_CLEAR.equals(response.getChangeType())) {
+            response.setKind(EmpCreditMoneyChangeLogKind.SYS_ADJUSTMENT);
+        } else {
+            response.setKind(EmpCreditMoneyChangeLogKind.ORD_ADJUSTMENT);
+        }
+        return response;
+    }
 }

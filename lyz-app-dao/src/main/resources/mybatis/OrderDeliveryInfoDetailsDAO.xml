@@ -107,6 +107,8 @@
             WHERE
                 obi.delivery_status = 'SEALED_CAR'
             AND odid.operator_no = #{operatorNo}
+            ORDER BY
+	        odid.create_time DESC
     </select>
 
     <select id="getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber" parameterType="java.lang.String"
@@ -264,10 +266,10 @@
                 oaa.`status` auditStatus
             FROM
                 ord_base_info AS obi
-            LEFT JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
+            INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
             AND obi.delivery_status = odid.logistic_status
-            LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
-            LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+            INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+            INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
             LEFT JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
             WHERE
                 (
@@ -282,7 +284,7 @@
             AND odid.operator_no = #{operatorNo}
     </select>
 
-    <select id="countAuditFinishOrderByOperatorNo" parameterType="java.lang.Long"
+    <select id="countAuditFinishOrderByOperatorNo" parameterType="java.lang.String"
             resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM
@@ -291,10 +293,17 @@
                                                             AND obi.delivery_status = odid.logistic_status
             INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
-            INNER JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
+            LEFT JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
         WHERE
-            (oaa.`status` = 'AUDIT_NO' OR oaa.`status` = 'AUDIT_PASSED')
-            AND oaa.user_id = #{userId}
+             (
+                    odid.logistic_status = 'CONFIRM_ARRIVAL'
+                    OR odid.logistic_status = 'REJECT'
+                )
+            AND (
+            oaa.`status` = 'AUDIT_NO'
+            OR oaa.`status` = 'AUDIT_PASSED'
+            OR oaa.`status` IS NULL)
+            AND odid.operator_no = #{operatorNo}
     </select>
 
     <select id="countUnreadLogisticsMessage" resultType="java.lang.Integer">

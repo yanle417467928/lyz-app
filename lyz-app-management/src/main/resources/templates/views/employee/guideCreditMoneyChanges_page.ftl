@@ -27,8 +27,7 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#tab_1-1" data-toggle="tab" onclick="showAvailableCredit()">可用额度</a>
-                    </li>
+                    <li class="active"><a href="#tab_1-1" data-toggle="tab" onclick="showAvailableCredit()">可用额度</a></li>
                     <li><a href="#tab_1-3" data-toggle="tab" onclick="showTempCredit()">临时额度</a></li>
                     <li><a href="#tab_1-2" data-toggle="tab" onclick="showFixedCredit()">固定额度</a></li>
                 </ul>
@@ -38,7 +37,7 @@
                     </button>
                 </div>
                 <div class="box-body table-reponsive">
-                    <input type="hidden" name="id" id="guideId" value="${id}">
+                    <input type="hidden" name="id" id="guideId" value="${guideId}">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
                     </table>
@@ -46,7 +45,6 @@
             </div>
         </div>
     </div>
-
 </section>
 
 
@@ -136,7 +134,7 @@
 
     function showTempCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId = $('#guideId').val()
+        var guideId = $('#guideId').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/tempCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -210,7 +208,7 @@
 
     function showFixedCredit() {
         $("#dataGrid").bootstrapTable('destroy');
-        var guideId = $('#guideId').val()
+        var guideId = $('#guideId').val();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/guideLine/fixedCreditChangePage/grid/' + guideId, 'get', false, function (params) {
             return {
                 offset: params.offset,

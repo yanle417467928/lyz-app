@@ -649,7 +649,8 @@
     </select>
 
 
-    <select id="findOrderGoodsList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
+    <select id="findOrderGoodsList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
         SELECT
         ogi.gid gid,
         ogi.sku  sku,
@@ -673,11 +674,27 @@
     </update>
 
 
-    <update id="updateorderReceivablesStatus" parameterType="java.lang.String">
+    <update id="updateorderReceivablesStatus" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount">
         UPDATE ord_billing_details
-        SET
-        is_pay_up = 1
-        WHERE ord_no = #{orderNo}
+        <set>
+            is_pay_up = 1,
+            <if test="date != null">
+                pay_up_time = #{date},
+            </if>
+            <if test="cashAmount != null">
+                store_cash = #{cashAmount},
+            </if>
+            <if test="otherAmount != null">
+                store_other_money = #{otherAmount},
+            </if>
+            <if test="posAmount != null">
+                store_pos_money = #{posAmount},
+            </if>
+            <if test="serialNumber != null">
+                store_pos_number = #{serialNumber},
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber}
     </update>
 
 
@@ -878,8 +895,40 @@
     </select>
 
     <select id="scanningUnpaidOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-        SELECT
-            *
+       SELECT
+            oid id,
+            ord_no orderNumber,
+            order_type orderType,
+            create_time createTime,
+            effective_end_time effectiveEndTime,
+            `status`,
+            delivery_status deliveryStatus,
+            pick_up_code pickUpCode,
+            delivery_type deliveryType,
+            order_subject_type orderSubjectType,
+            creator_identity_type creatorIdentityType,
+            creator_id creatorId,
+            creator_name creatorName,
+            creator_phone creatorPhone,
+            store_id storeId,
+            store_code storeCode,
+            store_structure_code storeStructureCode,
+            sales_consult_id salesConsultId,
+            sales_consult_name salesConsultName,
+            sales_consult_phone salesConsultPhone,
+            customer_id customerId,
+            customer_name customerName,
+            customer_phone customerPhone,
+            customer_type customerType,
+            total_goods_price totalGoodsPrice,
+            is_evaluated isEvaluated,
+            audit_no auditNo,
+            remark remark,
+            city_id cityId,
+            city_name cityName,
+            sob_id sobId,
+            store_org_id storeOrgId,
+            sales_number salesNumber
         FROM
             ord_base_info
         WHERE

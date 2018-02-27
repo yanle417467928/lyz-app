@@ -209,4 +209,11 @@
                         WHERE emp_id = #{userId})
         AND last_update_time = #{version}
     </update>
+
+    <insert id="saveCityInventory"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        INSERT INTO city_inventory (create_time, last_update_time, city_id, city_code, city_name, gid, sku, sku_name, available_ity)
+        VALUES (#{createTime}, #{lastUpdateTime}, #{cityId}, #{cityCode}, #{cityName}, #{gid}, #{sku}, #{skuName},
+                #{availableIty});
+    </insert>
 </mapper>

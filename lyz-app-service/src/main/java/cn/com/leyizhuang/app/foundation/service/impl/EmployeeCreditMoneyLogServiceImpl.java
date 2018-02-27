@@ -28,6 +28,9 @@ public class EmployeeCreditMoneyLogServiceImpl implements EmployeeCreditMoneyLog
         if (userId != null) {
             PageHelper.startPage(page, size);
             List<EmployeeCreditMoneyLogResponse> logResponses = employeeCreditMoneyLogDAO.findByUserId(userId);
+            for (EmployeeCreditMoneyLogResponse response : logResponses) {
+                response.attributeKindSetByChangeType(response, response.getChangeType());
+            }
             return new PageInfo<>(logResponses);
         }
         return null;

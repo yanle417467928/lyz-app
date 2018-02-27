@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.web;
 
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Created on 2017-09-19 14:02
  **/
@@ -16,5 +18,8 @@ public class TestMD5 {
 
 //        String c = Base64Utils.decode("");
 //        System.out.println(c);
+
+
+        System.out.println(Pattern.matches("^(/app/resend/).*", "/app/resend/wms/order/123455"));
     }
 }

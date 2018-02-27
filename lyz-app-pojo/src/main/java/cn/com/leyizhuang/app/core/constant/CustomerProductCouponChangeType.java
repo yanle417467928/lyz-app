@@ -12,7 +12,8 @@ public enum CustomerProductCouponChangeType {
     RETURN_ORDER("RETURN_ORDER", "退单返还"),
     CANCEL_ORDER("CANCEL_ORDER", "取消订单返还"),
     MANUAL_GRANT("MANUAL_GRANT", "管理员手动发放"),
-    MANUAL_DISABLE("MANUAL_DISABLE", "管理员手动停用");
+    MANUAL_DISABLE("MANUAL_DISABLE", "管理员手动停用"),
+    BUY_COUPON("BUY_COUPON", "购买产品券");
 
     private final String value;
     private final String description;

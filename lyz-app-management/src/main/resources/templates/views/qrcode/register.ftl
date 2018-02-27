@@ -47,6 +47,20 @@
 
     .reg_logo img {
         width: 26%;
+
+    }
+
+    .wechat_photo {
+        width: 100%;
+        text-align: center;
+        margin-top: 0.6rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .wechat_photo img {
+        border-radius:50%; overflow:hidden;
+        width: 150px;
+        height: 150px;
     }
 </style>
 <body ng-app="qrcode">
@@ -55,17 +69,18 @@
 </header>
 <section>
     <div class="reg_logo"><img src="/images/big_logo.png"/></div>
+    <div class="wechat_photo"><img src="<#if employee?? && employee.picUrl??>${employee.picUrl!""}</#if>"></div>
     <div class="row">
         <!-- left column -->
         <div class="col-md-6">
             <!-- general form elements -->
-            <div class="box">
+            <div class="box box-solid">
 
                 <!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" id="qrcodeForm">
                     <div class="box-body margin">
-                        <input type="hidden" name="sellerPhone" value="<#if phone??>${phone}</#if>">
+                        <input type="hidden" name="empId" value="<#if empId??>${empId!''}</#if>">
                         <div class="form-group" >
                             <label for="name">姓名</label>
                             <input type="text" class="form-control" id="name" name="name" placeholder="请输入姓名 2~8位字符">

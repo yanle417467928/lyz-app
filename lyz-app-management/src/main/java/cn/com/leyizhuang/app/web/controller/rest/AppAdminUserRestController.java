@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.UserRoleService;
 import cn.com.leyizhuang.app.foundation.service.UserService;
@@ -13,12 +15,14 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +46,9 @@ public class AppAdminUserRestController extends BaseRestController {
 
     @Resource
     private UserRoleService userRoleService;
+
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
 
     /**
      * 管理员列表分页显示
@@ -80,7 +87,9 @@ public class AppAdminUserRestController extends BaseRestController {
     }
 
     @PostMapping
-    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr, BindingResult result) {
+    public ResultDTO<?> restUserPost(@Valid UserVO userVO, @RequestParam(value = "roleIdsStr[]", required = false) String[] roleIdsStr,
+                                     @RequestParam(value = "stores[]", required = false) String[] stores,
+                                     @RequestParam(value = "citys[]", required = false) String[] citys, BindingResult result) {
         if (!result.hasErrors()) {
             userVO.setCreateTime(new Date());
             if (null != roleIdsStr && roleIdsStr.length > 0) {
@@ -91,7 +100,27 @@ public class AppAdminUserRestController extends BaseRestController {
                 userVO.setRoleIds(roleIds);
             }
             userVO.setPassword(null == userVO.getPassword() ? "123456" : userVO.getPassword());
-            commonService.saveUserAndUserRoleByUserVO(userVO);
+            User user = commonService.saveUserAndUserRoleByUserVO(userVO);
+            List<AdminUserStoreDO> adminUserStoreDOList = new ArrayList<>();
+            if (null != user && null != user.getUid()) {
+                if (null != citys && citys.length > 0) {
+                    for (int i = 0; i < citys.length; i++) {
+                        AdminUserStoreDO adminUserStoreDO = new AdminUserStoreDO();
+                        adminUserStoreDO.setCityId(Long.parseLong(citys[i]));
+                        adminUserStoreDO.setUid(user.getUid());
+                        adminUserStoreDOList.add(adminUserStoreDO);
+                    }
+                }
+                if (null != stores && stores.length > 0) {
+                    for (int i = 0; i < stores.length; i++) {
+                        AdminUserStoreDO adminUserStoreDO = new AdminUserStoreDO();
+                        adminUserStoreDO.setStoreId(Long.parseLong(stores[i]));
+                        adminUserStoreDO.setUid(user.getUid());
+                        adminUserStoreDOList.add(adminUserStoreDO);
+                    }
+                }
+            }
+            this.adminUserStoreService.batchSave(adminUserStoreDOList);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } else {
             List<ObjectError> allErrors = result.getAllErrors();

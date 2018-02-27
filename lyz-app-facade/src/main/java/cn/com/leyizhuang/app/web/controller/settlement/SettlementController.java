@@ -89,6 +89,20 @@ public class SettlementController {
             return resultDTO;
         }
         try {
+            AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
+            Integer hour = getHour();
+            if (identityType.equals(AppIdentityType.SELLER.getValue()) && (hour < 6 || hour > 19) && "ZY".equals(store.getStoreType()) && "2121".equals(store.getCityCode())) {
+                if ("FZY009" == store.getStoreCode() || "HLC004" == store.getStoreCode() || "ML001" == store.getStoreCode() || "QCMJ008" == store.getStoreCode() ||
+                        "SB010" == store.getStoreCode() || "YC002" == store.getStoreCode() || "ZC002" == store.getStoreCode() || "RC005" == store.getStoreCode() ||
+                        "FZM007" == store.getStoreCode() || "SH001" == store.getStoreCode() || "YJ001" == store.getStoreCode() || "HS001" == store.getStoreCode() ||
+                        "XC001" == store.getStoreCode()){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该时段此门店不支持门店自提！", null);
+                    logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+
+
             //商品id数组转化成list
             List<Long> goodsIdList = Arrays.asList(goodsIds);
             String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("\\|");
@@ -105,7 +119,6 @@ public class SettlementController {
                         return resultDTO;
                     }
                 }
-                AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
                 if (!store.getIsSelfDelivery()) {
                     response.setIsSelfTakePermitted(false);
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
@@ -191,23 +204,6 @@ public class SettlementController {
             return resultDTO;
         }
         try {
-            AppStore appStore = storeService.findById(storeId);
-            if (null == appStore) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店信息！", null);
-                logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            Integer hour = getHour();
-            if ((hour < 6 || hour > 19) && identityType == AppIdentityType.SELLER.getValue()) {
-                if ("ZY".equals(appStore.getStoreType()) && ("FZY009" == appStore.getStoreCode() || "HLC004" == appStore.getStoreCode() || "ML001" == appStore.getStoreCode() || "QCMJ008" == appStore.getStoreCode() ||
-                        "SB010" == appStore.getStoreCode() || "YC002" == appStore.getStoreCode() || "ZC002" == appStore.getStoreCode() || "RC005" == appStore.getStoreCode() ||
-                        "FZM007" == appStore.getStoreCode() || "SH001" == appStore.getStoreCode() || "YJ001" == appStore.getStoreCode() || "HS001" == appStore.getStoreCode() ||
-                        "XC001" == appStore.getStoreCode())) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该时段此门店不支持门店自提！", null);
-                    logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
-            }
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
             List<GoodsSimpleInfo> simpleInfos = objectMapper.readValue(goodsList, javaType1);

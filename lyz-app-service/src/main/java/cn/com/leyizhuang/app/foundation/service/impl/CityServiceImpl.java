@@ -190,4 +190,12 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
         }
         return null;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveCityInventory(CityInventory cityInventory) {
+        if (null != cityInventory) {
+            cityDAO.saveCityInventory(cityInventory);
+        }
+    }
 }

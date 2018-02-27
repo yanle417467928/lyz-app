@@ -98,14 +98,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         baseInfo.setReturnNo(OrderUtils.getReturnNumber());
         baseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
         baseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_PICK_UP);
-        if (creatorIdentityType == 6) {
-            AppCustomer customer = appCustomerService.findById(creatorId);
-            baseInfo.setCustomerType(customer.getCustomerType());
-            baseInfo.setCreatorPhone(customer.getMobile());
-        } else if (creatorIdentityType == 2) {
-            AppEmployee employee = appEmployeeService.findById(creatorId);
-            baseInfo.setCreatorPhone(employee.getMobile());
-        }
         return baseInfo;
     }
 
@@ -117,6 +109,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderLogisticInfo.setReturnStoreCode(returnDeliveryInfo.getReturnStoreCode());
             returnOrderLogisticInfo.setReturnStoreName(returnDeliveryInfo.getReturnStoreName());
             returnOrderLogisticInfo.setReturnStoreAddress(returnDeliveryInfo.getReturnStoreAddress());
+            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getReturnStoreAddress());
         } else if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_PICK.getValue())) {
             returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
             returnOrderLogisticInfo.setDeliveryTime(returnDeliveryInfo.getDeliveryTime());
@@ -134,7 +127,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnDeliveryInfo.getDetailedAddress());
 
         }
-
         return returnOrderLogisticInfo;
     }
 

@@ -136,5 +136,8 @@ public class AppCustomer implements Serializable {
      */
     private String customerProfessionDesc;
 
-
+    /**
+     * 临时字段 默认导购电话
+     */
+    private String salesPhone;
 }

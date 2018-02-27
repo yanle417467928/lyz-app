@@ -104,7 +104,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void saveUserAndUserRoleByUserVO(UserVO userVO) {
+    public User saveUserAndUserRoleByUserVO(UserVO userVO) {
         User user = BeanUtils.copy(userVO, User.class);
         user.setCreateTime(new Date());
         Map<String, String> paramMap = EncryptUtils.getPasswordAndSalt(userVO.getLoginName(), userVO.getPassword());
@@ -121,11 +121,12 @@ public class CommonServiceImpl implements CommonService {
                 userRoleService.save(userRole);
             }
         }
+        return user;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updateUserAndUserRoleByUserVO(UserVO userVO) {
+    public User updateUserAndUserRoleByUserVO(UserVO userVO) {
         if (null != userVO) {
             User user = userVO.convert2User();
             if (null != user.getPassword() && !"".equalsIgnoreCase(user.getPassword())) {
@@ -144,7 +145,9 @@ public class CommonServiceImpl implements CommonService {
                     userRoleService.save(userRole);
                 }
             }
+            return user;
         }
+        return null;
     }
 
     @Transactional

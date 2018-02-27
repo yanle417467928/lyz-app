@@ -5,9 +5,9 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
 
@@ -136,8 +136,8 @@
 <script>
 
     $(function () {
-        findCitylist()
-        initDateGird(null,null,'-1');
+        findCitylist();
+        initDateGrid(null,null,'-1');
     });
 
     function findCitylist() {
@@ -154,15 +154,15 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
+                    city += "<option value='" + item.cityId + "'>" + item.name + "</option>";
+                });
                 $("#cityCode").append(city);
             }
         });
     }
 
 
-    function initDateGird(keywords,cityId,storeType) {
+    function initDateGrid(keywords,cityId,storeType) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/preDeposit/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -396,7 +396,7 @@
     }
 
     function findStorePreByCityIdOrKeywords(keywords,cityId,storeType){
-        initDateGird(keywords,cityId,storeType);
+        initDateGrid(keywords,cityId,storeType);
     }
 
     function showDetails(storeId){

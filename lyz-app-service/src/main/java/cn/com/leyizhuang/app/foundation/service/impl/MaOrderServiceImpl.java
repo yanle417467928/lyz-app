@@ -43,6 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -227,8 +229,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public void updateorderReceivablesStatus(String orderNo) {
-        this.maOrderDAO.updateorderReceivablesStatus(orderNo);
+    public void updateorderReceivablesStatus(MaOrderAmount maOrderAmount) {
+        this.maOrderDAO.updateorderReceivablesStatus(maOrderAmount);
     }
 
 
@@ -338,7 +340,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //更新订单收款状态
-        this.updateorderReceivablesStatus(maOrderAmount.getOrderNumber());
+        this.updateorderReceivablesStatus(maOrderAmount);
         //设置订单收款信息并存入订单账款支付明细表
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
@@ -347,7 +349,6 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
         maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
-        maOrderBillingPaymentDetails.setReceiptNumber(maOrderAmount.getSerialNumber());
         if (!maOrderAmount.getCashAmount().equals(BigDecimal.ZERO)) {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
@@ -606,11 +607,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo) {
+                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo,Long operatorId) {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         this.deductionsStPreDeposit(identityType, userId, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
-        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo);
+        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo ,operatorId);
     }
 
     @Override
@@ -655,7 +656,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo) {
+                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo,Long operatorId) {
         if (null != orderBaseInfo) {
             AppCustomer customer = new AppCustomer();
             Long cusId = orderBaseInfo.getCustomerId();
@@ -683,35 +684,58 @@ public class MaOrderServiceImpl implements MaOrderService {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
-                        if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
-                            for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
-                                //创建产品券信息
-                                CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
-                                customerProductCoupon.setCustomerId(customer.getCusId());
-                                customerProductCoupon.setGoodsId(goodsInfo.getGid());
-                                customerProductCoupon.setQuantity(1);
-                                customerProductCoupon.setGetType(CouponGetType.BUY);
-                                customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
-                                customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
-                                customerProductCoupon.setEffectiveEndTime(null);
-                                customerProductCoupon.setIsUsed(Boolean.FALSE);
-                                customerProductCoupon.setUseTime(null);
-                                customerProductCoupon.setUseOrderNumber(null);
-                                customerProductCoupon.setGetOrderNumber(orderBaseInfo.getOrderNumber());
-                                if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
-                                    customerProductCoupon.setBuyPrice(goodsInfo.getVIPPrice());
-                                } else {
-                                    customerProductCoupon.setBuyPrice(goodsInfo.getRetailPrice());
-                                }
-                                customerProductCoupon.setStoreId(orderBaseInfo.getStoreId());
-                                customerProductCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
-                                customerProductCoupon.setStatus(Boolean.TRUE);
-                                customerProductCoupon.setDisableTime(null);
-                                customerProductCoupon.setGoodsLineId(goodsInfo.getId());
-                                //保存产品券信息
-                                productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
+                        if (null != goodsInfo.getId()) {
+                            if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
+                                for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
+                                    //创建产品券信息
+                                    CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                                    customerProductCoupon.setCustomerId(customer.getCusId());
+                                    customerProductCoupon.setGoodsId(goodsInfo.getGid());
+                                    customerProductCoupon.setQuantity(1);
+                                    customerProductCoupon.setGetType(CouponGetType.BUY);
+                                    customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
+                                    customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
+                                    customerProductCoupon.setEffectiveEndTime(null);
+                                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                                    customerProductCoupon.setUseTime(null);
+                                    customerProductCoupon.setUseOrderNumber(null);
+                                    customerProductCoupon.setGetOrderNumber(orderBaseInfo.getOrderNumber());
+                                    if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+                                        customerProductCoupon.setBuyPrice(goodsInfo.getVIPPrice());
+                                    } else {
+                                        customerProductCoupon.setBuyPrice(goodsInfo.getRetailPrice());
+                                    }
+                                    customerProductCoupon.setStoreId(orderBaseInfo.getStoreId());
+                                    customerProductCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
+                                    customerProductCoupon.setStatus(Boolean.TRUE);
+                                    customerProductCoupon.setDisableTime(null);
+                                    customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    //保存产品券信息
+                                    productCouponService.addCustomerProductCoupon(customerProductCoupon);
+
+                                    if (null != customerProductCoupon.getId()) {
+                                        //保存顾客产品券变更日志
+                                        CustomerProductCouponChangeLog customerProductCouponChangeLog = new CustomerProductCouponChangeLog();
+                                        customerProductCouponChangeLog.setCusId(orderBaseInfo.getCustomerId());
+                                        customerProductCouponChangeLog.setUseTime(orderBaseInfo.getCreateTime());
+                                        customerProductCouponChangeLog.setCouponId(customerProductCoupon.getId());
+                                        customerProductCouponChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                        customerProductCouponChangeLog.setChangeType(CustomerProductCouponChangeType.BUY_COUPON);
+                                        customerProductCouponChangeLog.setChangeTypeDesc(CustomerProductCouponChangeType.BUY_COUPON.getDescription());
+                                        customerProductCouponChangeLog.setOperatorId(operatorId);
+                                        customerProductCouponChangeLog.setOperatorIp(null);
+                                        customerProductCouponChangeLog.setRemark(null);
+
+                                        productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
+                                    } else {
+                                        throw new OrderSaveException("顾客产品券主键生成失败!");
+                                    }
+
+                                }
                             }
+                        }else {
+                            throw new OrderSaveException("商品主键生成失败!");
                         }
                     }
                 }
@@ -836,6 +860,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {
                     //获取退单号
                     String returnNumber = OrderUtils.getReturnNumber();
+                    System.out.println(new Date() + "：开始处理待付款超时订单，订单号："+orderBaseInfo.getOrderNumber());
                     //创建退单头
                     ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
                     //获取订单账目明细
@@ -1317,6 +1342,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                     }
                     //修改订单状态为已取消
                     appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
+                }else{
+                    System.out.println(new Date() + "：未查询到待付款超市订单，订单号：");
                 }
             }
         }

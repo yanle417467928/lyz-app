@@ -28,7 +28,7 @@
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
-    <script type="text/javascript" src="/javascript/produt_coupon.js"></script>
+    <script type="text/javascript" src="/javascript/order/produt_coupon.js"></script>
 </head>
 <body>
 <section class="content-header">
@@ -53,7 +53,8 @@
                         <label for="title">
                             门店
                         </label>
-                        <select name="store" id="storeId" class="form-control select">
+                        <select name="store" id="storeId" class="form-control select"
+                                onchange="storeChangeRefresh()">
                             <option value="-1">选择门店</option>
                         </select>
                     </div>
@@ -289,7 +290,7 @@
                                     <div class="col-xs-6">
                                         <div class="col-xs-4" style="margin-left: 115px;">
                                             <select name="selectPaymnet" id="selectPaymnet" class="form-control select"
-                                                    onchange="selectPaymnet(this.value)">
+                                                    onchange="selectPaymnets(this.value)">
                                                 <option value="-1">请选择支付方式</option>
                                                 <option value="offlinePayments">线下支付</option>
                                                 <option value="preDeposit">预存款支付</option>
@@ -596,8 +597,6 @@
                             </div>
                         </div>
                     </div>
-
-
             </div>
         </div>
     </div>

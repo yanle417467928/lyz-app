@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo.management.store;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,12 +26,17 @@ public class StoreVO {
     //门店名称
     private String storeName;
 
+    //门店类型
+    private String storeType;
+
     //门店编码
     private String storeCode;
 
     // 是否生效
     private Boolean enable;
 
-
+    public void setStoreType(StoreType storeType){
+        this.storeType = storeType.getDescription();
+    }
 
 }

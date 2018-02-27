@@ -272,9 +272,9 @@
                     return '<span class="label label-danger">红灯</span>';
                 } else if ('YELLOW' === value) {
                     return '<span class="label label-warning">黄灯</span>';
-                } else if('CLOSE' === data.light) {
+                } else if('CLOSE' === value) {
                     return '<span class="label label-deafult">熄灯</span>';
-                }else if('NOT' === data.light){
+                }else if('NOT' === value){
                     return'<span class="label label-danger">无灯</span>';
                 }
             }

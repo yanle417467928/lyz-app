@@ -591,6 +591,23 @@ public class OrderController {
             goodsSettlement.put("freight", freight);
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
+
+            //是否显示纸质销售单号
+            boolean isShowSalesNumber = false;
+            //如果是四川直营门店导购返回门店编码
+            if (identityType == 0){
+                AppEmployee appEmployee = appEmployeeService.findById(userId);
+                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009" == appStore.getStoreCode() || "HLC004" == appStore.getStoreCode() || "ML001" == appStore.getStoreCode() || "QCMJ008" == appStore.getStoreCode() ||
+                        "SB010" == appStore.getStoreCode() || "YC002" == appStore.getStoreCode() || "ZC002" == appStore.getStoreCode() || "RC005" == appStore.getStoreCode() ||
+                        "FZM007" == appStore.getStoreCode() || "SH001" == appStore.getStoreCode() || "YJ001" == appStore.getStoreCode() || "HS001" == appStore.getStoreCode() ||
+                        "XC001" == appStore.getStoreCode())){
+                    isShowSalesNumber = true;
+                    goodsSettlement.put("isShowNumber",isShowSalesNumber);
+                }
+            }else{
+                goodsSettlement.put("isShowNumber",isShowSalesNumber);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
@@ -968,7 +985,7 @@ public class OrderController {
             response.setCurrentPage(responseOrderList.getPageNum());
             response.setData(responseOrderList.getList());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseOrderList.getList());
-            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", response.getCount());
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", responseOrderList.getList().size());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1192,8 +1209,7 @@ public class OrderController {
                 orderDetailsResponse.setOrderNumber(orderNumber);
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
-                orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
-                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
+                orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
@@ -1272,6 +1288,7 @@ public class OrderController {
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+
                 return resultDTO;
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);

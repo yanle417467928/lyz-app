@@ -859,6 +859,41 @@ public class CustomerController {
         }
     }
 
+    /**
+     * 根据 顾客手机号返回顾客信息
+     * @param phone
+     * @return
+     */
+    @PostMapping(value = "/get/customer/info", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getCustomerInfoByPhone(String phone){
+        logger.info("getCustomerInfoByPhone CALLED,顾客信息获取，入参 phone {}",phone);
+        ResultDTO<Object> resultDTO;
 
+        if (phone == null || phone.equals("")){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户手机号为空", null);
+            logger.info("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        AppCustomer appCustomer = new AppCustomer();
+        try {
+            appCustomer = customerService.findByMobile(phone);
+
+            // 设置默认导购电话
+            Long sellerId = appCustomer.getSalesConsultId();
+            if (sellerId != null){
+                AppEmployee appEmployee = employeeService.findById(sellerId);
+                appCustomer.setSalesPhone(appEmployee.getMobile());
+            }
+
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomer);
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取咨询电话失败", null);
+            logger.warn("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
+    }
 }
 

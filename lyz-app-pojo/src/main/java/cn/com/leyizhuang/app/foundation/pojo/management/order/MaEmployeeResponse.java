@@ -24,7 +24,7 @@ public class MaEmployeeResponse {
     private String name;
 
     /**
-     *  手机号
+     * 手机号
      */
     private String mobile;
 
@@ -33,7 +33,10 @@ public class MaEmployeeResponse {
      */
     private StoreType storeType;
 
-
+    /**
+     * 门店名称
+     */
+    private String storeName;
     /**
      * 门店类型
      */

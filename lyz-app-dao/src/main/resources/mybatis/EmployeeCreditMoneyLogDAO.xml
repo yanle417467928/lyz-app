@@ -7,6 +7,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse">
         SELECT
             l.id,
+        l.change_type,
             l.change_type_desc                type,
             l.create_time,
             l.reference_number,

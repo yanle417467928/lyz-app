@@ -25,4 +25,6 @@ public class CityVO {
     private String structureTitle;
     //是否生效
     private Boolean enable;
+    //是否开通配送服务
+    private Boolean isOpenDelivery;
 }
