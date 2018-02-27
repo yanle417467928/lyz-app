@@ -399,9 +399,15 @@ public class ReturnOrderController {
             Integer identityType = param.getIdentityType();
             String orderNo = param.getOrderNo();
             OrderBaseInfo order = appOrderService.getOrderByOrderNumber(orderNo);
+            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNo);
             //不是已完成订单不可申请退货
             if (!AppOrderStatus.FINISHED.equals(order.getStatus())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单状态不可退货!", "");
+                logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (!orderBillingDetails.getIsPayUp()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单还未付清欠款不可退货!", "");
                 logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
