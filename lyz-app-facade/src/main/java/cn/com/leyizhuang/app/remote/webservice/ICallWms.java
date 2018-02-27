@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
+import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -86,12 +87,12 @@ public class ICallWms {
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送取消订单信息***** 出参 OUT, XML:{}", objects);
         } catch (Exception e) {
-            // TODO 发送短信通知传输失败
-//            smsAccountService.commonSendSms();
             errorMsg = "订单号：" + orderNumber + "发送取消订单调用接口失败！";
             cancelOrderRequest.setSendFlag(false);
             cancelOrderRequest.setErrorMessage(errorMsg);
             logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
+            // 发送短信通知传输失败
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
             e.printStackTrace();
         }
         if (errorMsg != null) {
@@ -135,11 +136,12 @@ public class ICallWms {
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送取消退货订单信息***** 出参 OUT, XML:{}", objects);
         } catch (Exception e) {
-            // TODO 发送短信通知传输失败
             errorMsg = "退货单：" + returnNumber + "发送取消退单调用接口失败！";
             returnOrderRequest.setSendFlag(false);
             returnOrderRequest.setErrorMessage(errorMsg);
             logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
+            // 发送短信通知传输失败
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
             e.printStackTrace();
         }
         if (errorMsg != null) {
@@ -183,11 +185,12 @@ public class ICallWms {
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送退货单收货确认订单信息***** 出参 OUT, XML:{}", objects);
         } catch (Exception e) {
-            // TODO 发送短信通知传输失败
             errorMsg = "退货单：" + returnNumber + "发送退货单收货确认调用接口失败！";
             atwReturnOrderCheckEnter.setSendFlag(false);
             atwReturnOrderCheckEnter.setErrorMessage(errorMsg);
             logger.error("发送取消订单出现异常 EXCEPTION, errorMsg:{}", e);
+            // 发送短信通知传输失败
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
             e.printStackTrace();
         }
         if (errorMsg != null) {
@@ -240,11 +243,12 @@ public class ICallWms {
                 errorMsg = AppXmlUtil.checkReturnXml(objects);
                 logger.info("*****WMS返回发送要货单商品信息***** 出参 OUT, XML:{}", objects);
             } catch (Exception e) {
-                // TODO 发送短信通知传输失败
                 errorMsg = "订单号：" + orderNumber + "发送要货单明细调用接口失败！";
                 requisitionOrderGoods.setSendFlag(false);
                 requisitionOrderGoods.setErrorMessage(errorMsg);
                 logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+                // 发送短信通知传输失败
+                smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
                 e.printStackTrace();
             }
             if (errorMsg != null) {
@@ -280,11 +284,12 @@ public class ICallWms {
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送要货单头档信息***** 出参 OUT, XML:{}", objects);
         } catch (Exception e) {
-//            smsAccountService.commonSendSms(requisitionOrder);
             errorMsg = "订单号：" + orderNumber + "发送要货单头档调用接口失败！";
             requisitionOrder.setSendFlag(false);
             requisitionOrder.setErrorMessage(errorMsg);
             logger.error("发送要货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+            // 发送短信通知传输失败
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
             e.printStackTrace();
         }
         //修改发送状态
@@ -344,11 +349,12 @@ public class ICallWms {
                 errorMsg = AppXmlUtil.checkReturnXml(objects);
                 logger.info("*****WMS返回发送退货单商品信息***** 出参 OUT, XML:{}", objects);
             } catch (Exception e) {
-                // TODO 发送短信通知传输失败
                 errorMsg = "订单号：" + returnNumber + "发送退货单明细调用接口失败！";
                 returnOrderGoods.setSendFlag(false);
                 returnOrderGoods.setErrorMessage(errorMsg);
                 logger.error("发送退货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+                // 发送短信通知传输失败
+                smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
                 e.printStackTrace();
             }
             if (errorMsg != null) {
@@ -384,11 +390,12 @@ public class ICallWms {
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送退货单头档信息***** 出参 OUT, XML:{}", objects);
         } catch (Exception e) {
-            // TODO 发送短信通知传输失败
             errorMsg = "订单号：" + returnNumber + "发送退货单头档调用接口失败！";
             returnOrder.setSendFlag(false);
             returnOrder.setErrorMessage(errorMsg);
             logger.error("发送退货单明细出现异常 EXCEPTION, errorMsg:{}", e);
+            // 发送短信通知传输失败
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, errorMsg);
             e.printStackTrace();
         }
         //修改发送状态

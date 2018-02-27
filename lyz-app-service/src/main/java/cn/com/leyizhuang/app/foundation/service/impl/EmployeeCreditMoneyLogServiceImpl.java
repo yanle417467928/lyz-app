@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,13 +25,21 @@ public class EmployeeCreditMoneyLogServiceImpl implements EmployeeCreditMoneyLog
     private EmployeeCreditMoneyLogDAO employeeCreditMoneyLogDAO;
 
     @Override
-    public PageInfo<EmployeeCreditMoneyLogResponse> findByUserId(Long userId, Integer page, Integer size) {
+    public PageInfo<EmployeeCreditMoneyLogResponse> findAllEmployeeCreditMoneyLogByUserId(Long userId, Integer page, Integer size) {
         if (userId != null) {
             PageHelper.startPage(page, size);
-            List<EmployeeCreditMoneyLogResponse> logResponses = employeeCreditMoneyLogDAO.findByUserId(userId);
+            List<EmployeeCreditMoneyLogResponse> logResponses = new ArrayList<>();
+            List<EmployeeCreditMoneyLogResponse> empAvailableCredit = employeeCreditMoneyLogDAO.findEmpAvailableCreditByUserId(userId);
+            List<EmployeeCreditMoneyLogResponse> empFixedCredit = employeeCreditMoneyLogDAO.findEmpFixedCreditByUserId(userId);
+            List<EmployeeCreditMoneyLogResponse> empTempCredit = employeeCreditMoneyLogDAO.findEmpTempCreditByUserId(userId);
+            logResponses.addAll(empAvailableCredit);
+            logResponses.addAll(empFixedCredit);
+            logResponses.addAll(empTempCredit);
             for (EmployeeCreditMoneyLogResponse response : logResponses) {
                 response.attributeKindSetByChangeType(response, response.getChangeType());
             }
+            //按时间排序
+            logResponses.sort((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime()));
             return new PageInfo<>(logResponses);
         }
         return null;

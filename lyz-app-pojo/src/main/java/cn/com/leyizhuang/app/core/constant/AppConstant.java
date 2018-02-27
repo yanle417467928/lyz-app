@@ -64,6 +64,11 @@ public class AppConstant {
     public static final String WMS_URL = "http://120.76.214.99:8199/WmsInterServer.asmx?wsdl";
 
     /**
+     * 传wms接口报错接受错误信息的手机号
+     */
+    public static final String WMS_ERR_MOBILE = "18108117916";
+
+    /**
      * 个推相关参数
      */
     public static final String GE_TUI_HOST = "http://sdk.open.api.igexin.com/apiex.htm";

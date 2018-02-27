@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
@@ -91,7 +92,8 @@ public class ReturnOrderController {
     private OnlinePayRefundService onlinePayRefundService;
     @Resource
     private SmsAccountServiceImpl smsAccountService;
-
+    @Resource
+    private AppActService appActService;
     /**
      * 取消订单
      *
@@ -949,7 +951,7 @@ public class ReturnOrderController {
                     }
                 }
                 //按照退货优先级排个序
-                returnOrderGoodsList.sort((o1, o2) -> o1.getReturnPriority().compareTo(o2.getReturnPriority()));
+                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
@@ -1070,10 +1072,10 @@ public class ReturnOrderController {
         returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
         returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
         returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
-        //TODO 查促销表的标题
-
-        returnOrderGoodsResponse.setPromotionTitle("查询促销标题");
         returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
+
+        ActBaseDO actBaseDO = appActService.findById(Long.parseLong(goodsInfo.getPromotionId()));
+        returnOrderGoodsResponse.setPromotionTitle(null != actBaseDO ? actBaseDO.getTitle() : "无促销");
         return returnOrderGoodsResponse;
     }
 

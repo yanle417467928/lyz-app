@@ -39,6 +39,8 @@ public interface AppActService {
 
     void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount);
 
+    ActBaseDO findById(Long promotionId);
+
     ModelMap getModelMapByActBaseId(ModelMap map, Long id);
 
     int insertBatch();
