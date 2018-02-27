@@ -18,6 +18,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public interface CommonService {
 
     void deleteUserAndUserRoleByUserId(Long uid);
 
-    AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit);
+    AppCustomer saveCustomerInfo(AppCustomer customer, CustomerLeBi leBi, CustomerPreDeposit preDeposit) throws UnsupportedEncodingException;
 
     void customerSign(Long userId, Integer identityType);
 
@@ -50,7 +51,7 @@ public interface CommonService {
     void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                         List<OrderCouponInfo> orderCouponInfoList, OrderBillingDetails orderBillingDetails,
                                         List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails)
-            throws OrderSaveException;
+            throws OrderSaveException, UnsupportedEncodingException;
 
     /**
      * 订单付清后执行的相关操作

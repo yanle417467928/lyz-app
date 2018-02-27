@@ -878,6 +878,14 @@ public class CustomerController {
         AppCustomer appCustomer = new AppCustomer();
         try {
             appCustomer = customerService.findByMobile(phone);
+
+            // 设置默认导购电话
+            Long sellerId = appCustomer.getSalesConsultId();
+            if (sellerId != null){
+                AppEmployee appEmployee = employeeService.findById(sellerId);
+                appCustomer.setSalesPhone(appEmployee.getMobile());
+            }
+
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomer);
         }catch (Exception e){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取咨询电话失败", null);

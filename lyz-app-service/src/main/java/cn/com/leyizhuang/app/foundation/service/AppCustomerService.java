@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import com.github.pagehelper.PageInfo;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -23,13 +24,13 @@ public interface AppCustomerService {
 
     AppCustomer save(AppCustomer appUser);
 
-    AppCustomer findByOpenId(String openId);
+    AppCustomer findByOpenId(String openId) throws UnsupportedEncodingException;
 
-    AppCustomer findByMobile(String phone);
+    AppCustomer findByMobile(String phone) throws UnsupportedEncodingException;
 
-    void update(AppCustomer phoneUser);
+    void update(AppCustomer phoneUser) throws UnsupportedEncodingException;
 
-    AppCustomer findById(Long cusId);
+    AppCustomer findById(Long cusId) throws UnsupportedEncodingException;
 
     List<CashCouponResponse> findCashCouponByCustomerId(Long userId);
 

@@ -860,6 +860,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {
                     //获取退单号
                     String returnNumber = OrderUtils.getReturnNumber();
+                    System.out.println(new Date() + "：开始处理待付款超时订单，订单号："+orderBaseInfo.getOrderNumber());
                     //创建退单头
                     ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
                     //获取订单账目明细
@@ -1341,6 +1342,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                     }
                     //修改订单状态为已取消
                     appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
+                }else{
+                    System.out.println(new Date() + "：未查询到待付款超市订单，订单号：");
                 }
             }
         }

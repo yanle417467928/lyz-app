@@ -47,4 +47,27 @@ public interface AppPreDepositWithdrawService {
      * 门店取消申请
      */
     void stCancelApply(Long applyId,Long stId);
+
+
+    /******************************************** 后台 ********************************************/
+
+    /**
+     * 顾客 预存款提现申请列表
+     * @param page
+     * @param size
+     * @param keywords
+     * @param status
+     * @return
+     */
+    PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status);
+
+    /**
+     * 门店 预存款提现申请列表
+     * @param page
+     * @param size
+     * @param keywords
+     * @param status
+     * @return
+     */
+    PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status);
 }
