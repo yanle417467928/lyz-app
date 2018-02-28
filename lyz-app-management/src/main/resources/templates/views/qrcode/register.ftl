@@ -83,7 +83,7 @@
                         <input type="hidden" name="empId" value="<#if empId??>${empId!''}</#if>">
                         <div class="form-group" >
                             <label for="name">姓名</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入姓名 2~8位字符">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入姓名 2~15位字符">
                         </div>
                         <div class="form-group" >
                             <label for="phone">手机号</label>
@@ -158,8 +158,8 @@
                         },
                         stringLength: {
                             min: 2,
-                            max: 8,
-                            message: '姓名长度在2~8位'
+                            max: 15,
+                            message: '姓名长度在2~15位'
                         }
                     }
                 },
