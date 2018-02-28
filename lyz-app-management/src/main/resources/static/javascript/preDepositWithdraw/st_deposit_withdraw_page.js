@@ -1,6 +1,6 @@
 $(function () {
 
-    var url = "/rest/pre/deposit/withdraw/cus/grid";
+    var url = "/rest/pre/deposit/withdraw/st/grid";
     initDateGird(url);
 })
 
@@ -26,11 +26,11 @@ function initDateGird(url) {
         title: '单号',
         align: 'left'
     },{
-        field: 'applyCusName',
+        field: 'applyStName',
         title: '申请人姓名',
         align: 'left'
     },{
-        field: 'applyCusPhone',
+        field: 'applyStPhone',
         title: '申请人电话',
         align: 'center'
     },{
@@ -107,7 +107,7 @@ function initDateGird(url) {
         }
 
         $.ajax({
-            url: '/rest/pre/deposit/withdraw/cus/pass',
+            url: '/rest/pre/deposit/withdraw/st/pass',
             method: 'PUT',
             data:{'applyId':passApplyId},
             error: function () {
@@ -122,7 +122,7 @@ function initDateGird(url) {
                 if (0 === result.code) {
                     $notify.info(result.message);
                     $("#dataGrid").bootstrapTable('destroy');
-                    initDateGird('/rest/pre/deposit/withdraw/cus/grid');
+                    initDateGird('/rest/pre/deposit/withdraw/st/grid');
                 } else {
                     $notify.danger(result.message);
                 }
@@ -153,7 +153,7 @@ function initDateGird(url) {
         }
 
         $.ajax({
-            url: '/rest/pre/deposit/withdraw/cus/reject',
+            url: '/rest/pre/deposit/withdraw/st/reject',
             method: 'PUT',
             data:{'applyId':rejectApplyId},
             error: function () {
@@ -168,7 +168,7 @@ function initDateGird(url) {
                 if (0 === result.code) {
                     $notify.info(result.message);
                     $("#dataGrid").bootstrapTable('destroy');
-                    initDateGird('/rest/pre/deposit/withdraw/cus/grid');
+                    initDateGird('/rest/pre/deposit/withdraw/st/grid');
                 } else {
                     $notify.danger(result.message);
                 }
@@ -196,7 +196,7 @@ function initDateGird(url) {
         }
 
         $.ajax({
-            url: '/rest/pre/deposit/withdraw/cus/remit',
+            url: '/rest/pre/deposit/withdraw/st/remit',
             method: 'PUT',
             data:{'applyId':applyRemitId},
             error: function () {
@@ -211,7 +211,7 @@ function initDateGird(url) {
                 if (0 === result.code) {
                     $notify.info(result.message);
                     $("#dataGrid").bootstrapTable('destroy');
-                    initDateGird('/rest/pre/deposit/withdraw/cus/grid');
+                    initDateGird('/rest/pre/deposit/withdraw/st/grid');
                 } else {
                     $notify.danger(result.message);
                 }
@@ -226,6 +226,6 @@ function initDateGird(url) {
  * **/
 function findCusByNameOrPhoneOrderNumber(){
     $("#dataGrid").bootstrapTable('destroy');
-    var url = "/rest/pre/deposit/withdraw/cus/grid";
+    var url = "/rest/pre/deposit/withdraw/st/grid";
     initDateGird(url);
 }

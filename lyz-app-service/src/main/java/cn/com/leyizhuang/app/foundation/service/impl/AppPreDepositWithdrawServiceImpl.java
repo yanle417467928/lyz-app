@@ -321,6 +321,15 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Override
     public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status){
         PageHelper.startPage(page, size);
+
+        if (keywords.equals("")){
+            keywords = null;
+        }
+
+        if (status.equals("")){
+            status = null;
+        }
+
         List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords,status);
 
         return new PageInfo<>(cusPreDepositWithdrawList);
@@ -329,6 +338,14 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Override
     public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status){
         PageHelper.startPage(page,size);
+
+        if (keywords.equals("")){
+            keywords = null;
+        }
+
+        if (status.equals("")){
+            status = null;
+        }
 
         List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords,status);
 
