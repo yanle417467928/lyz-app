@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.JwtUtils;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerRegistryParam;
@@ -172,7 +173,7 @@ public class CustomerController {
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
             //如果电话号码已经存在
-            if (phoneUser != null && phoneUser.getOpenId() == null) {
+            if (phoneUser != null && (StringUtils.isBlank(phoneUser.getOpenId().trim()))) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
@@ -666,7 +667,7 @@ public class CustomerController {
             return resultDTO;
         }
     }
-    
+
     /**
      * 获取顾客签到概况
      *
@@ -839,7 +840,7 @@ public class CustomerController {
             logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType||6 != identityType) {
+        if (null == identityType || 6 != identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误",
                     null);
             logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
@@ -861,15 +862,16 @@ public class CustomerController {
 
     /**
      * 根据 顾客手机号返回顾客信息
+     *
      * @param phone
      * @return
      */
     @PostMapping(value = "/get/customer/info", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getCustomerInfoByPhone(String phone){
-        logger.info("getCustomerInfoByPhone CALLED,顾客信息获取，入参 phone {}",phone);
+    public ResultDTO<Object> getCustomerInfoByPhone(String phone) {
+        logger.info("getCustomerInfoByPhone CALLED,顾客信息获取，入参 phone {}", phone);
         ResultDTO<Object> resultDTO;
 
-        if (phone == null || phone.equals("")){
+        if (phone == null || phone.equals("")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户手机号为空", null);
             logger.info("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -881,13 +883,13 @@ public class CustomerController {
 
             // 设置默认导购电话
             Long sellerId = appCustomer.getSalesConsultId();
-            if (sellerId != null){
+            if (sellerId != null) {
                 AppEmployee appEmployee = employeeService.findById(sellerId);
                 appCustomer.setSalesPhone(appEmployee.getMobile());
             }
 
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, appCustomer);
-        }catch (Exception e){
+        } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客获取咨询电话失败", null);
             logger.warn("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
