@@ -167,8 +167,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     }
 
     @Override
-    public MaOrdReturnBilling findReturnOrderBillingList(Long roid) {
-        return maReturnOrderDAO.findReturnOrderBillingList(roid);
+    public MaOrdReturnBilling findReturnOrderBillingList(String returnNumber) {
+        return maReturnOrderDAO.findReturnOrderBillingList(returnNumber);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import lombok.*;
 
 /**
@@ -22,8 +21,4 @@ public class EmpAvailableCreditMoneyChangeLog {
     private Double creditLimitAvailableChangeAmount;
     //可用额度改变后余量
     private Double creditLimitAvailableAfterChange;
-    //变更类型
-    private EmpCreditMoneyChangeType changeType;
-    //变更类型描述
-    private String changeTypeDesc;
 }

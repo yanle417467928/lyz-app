@@ -22,6 +22,4 @@ public interface AdminUserStoreDAO {
 
     int batchDelete(@Param("list") List<AdminUserStoreDO> adminUserStoreDOList);
 
-    List<Long> findStoreIdByUid(Long uid);
-
 }

@@ -32,13 +32,13 @@ public interface MaCustomerService {
 
     Boolean isExistPhoneNumber(Long moblie);
 
-    PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds);
+    PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords);
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 
     void  changeCusPredepositByCusId(CusPreDepositDTO cusPreDepositDTO) throws Exception;
 
-    PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds);
+    PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords);
 
     CustomerLebiVO queryCusLebiByCusId(Long cusId);
 

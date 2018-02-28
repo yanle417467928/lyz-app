@@ -33,10 +33,6 @@
             OR c.mobile LIKE concat(concat('%',#{keywords}),'%')
             OR l.order_num LIKE concat(concat('%',#{keywords}),'%'))
         </if>
-        AND c.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
         ORDER BY l.variation_time DESC
     </select>
 

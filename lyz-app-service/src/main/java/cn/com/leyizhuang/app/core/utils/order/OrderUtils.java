@@ -154,6 +154,37 @@ public class OrderUtils {
         return null;
     }
 
+
+    /**
+     * 生成提现单号
+     *
+     * @param cityId 城市id
+     * @return 提现单号
+     */
+    public static String generateWithdrawNumber(Long cityId) {
+        if (null != cityId) {
+            City city = cityService.findById(cityId);
+            StringBuilder withNumberTemp = new StringBuilder();
+
+            if (null != city && null != city.getBriefSpell()) {
+                String cityBriefNo = city.getBriefSpell();
+                withNumberTemp.append(cityBriefNo);
+            } else {
+                return null;
+            }
+            withNumberTemp.append("_TX");
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            withNumberTemp.append(timeStamp);
+            Random random = new Random();
+            withNumberTemp.append(random.nextInt(900000) + 100000);
+            return withNumberTemp.toString();
+        }
+        return null;
+    }
+
     /**
      * 生成退单号
      *

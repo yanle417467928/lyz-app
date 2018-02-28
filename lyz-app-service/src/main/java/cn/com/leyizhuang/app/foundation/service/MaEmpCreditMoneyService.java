@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
@@ -16,13 +15,13 @@ import java.util.Map;
 public interface MaEmpCreditMoneyService {
 
 
-    void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetail guideCreditChangeDetail);
+    void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO,Date lastUpdate);
 
     int updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney,Date lastUpdateTime);
 
-    void clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetail guideCreditChangeDetail);
+    void clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO);
 
-    void saveCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetail guideCreditChangeDetail);
+    void saveCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetailVO guideCreditChangeDetailVO);
 
     PageInfo<GuideCreditChangeDetailDO> queryAvailableCreditMoneyChangePage(Integer page, Integer size, Long id);
 
@@ -30,7 +29,7 @@ public interface MaEmpCreditMoneyService {
 
     PageInfo<GuideCreditChangeDetailDO> queryFixedCreditMoneyChangePage(Integer page, Integer size, Long id);
 
-    void saveCreditChange(GuideCreditChangeDetail guideCreditChangeDetail);
+    void saveCreditChange(GuideCreditChangeDetailVO guideCreditChangeDetailVO);
 
     Map<String,Long> saveAllCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail);
 

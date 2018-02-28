@@ -31,9 +31,9 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
     private MaMaterialListService maMaterialListService;
 
     @Override
-    public PageInfo<PhotoOrderVO> findAllByCityIdAndStoreId(Integer page, Integer size, Long cityId, Long storeId, String keywords, String status, List<Long> storeIds) {
+    public PageInfo<PhotoOrderVO> findAll(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
         PageHelper.startPage(page, size);
-        List<PhotoOrderVO> photoOrderVOS = maOrderPhotoDAO.findAllByCityIdAndStoreId(cityId, storeId, keywords, status, storeIds);
+        List<PhotoOrderVO> photoOrderVOS = maOrderPhotoDAO.findAll(cityId, storeId, keywords);
         return new PageInfo<>(photoOrderVOS);
     }
 

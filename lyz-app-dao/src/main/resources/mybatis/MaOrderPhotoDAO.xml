@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaOrderPhotoDAO">
 
-    <select id="findAllByCityIdAndStoreId" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
+    <select id="findAll" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
         SELECT p.id, p.photos, p.remark, p.`status`, p.`status` statusEnum, p.create_time, p.photo_order_no, IFNULL(e.`name`,c.`name`) username,
         IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
         FROM photo_order p
@@ -16,19 +16,12 @@
         <if test="null != storeId and storeId != -1">
             AND s.store_id = #{storeId}
         </if>
-        <if test="null != status and status != ''">
-            AND p.status = #{status}
-        </if>
         <if test="null != keywords and keywords != ''">
             AND (p.photo_order_no LIKE concat(concat('%',#{keywords}),'%')
             OR s.store_name LIKE concat(concat('%',#{keywords}),'%')
             OR e.mobile LIKE concat(concat('%',#{keywords}),'%')
             OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
         </if>
-        AND s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
         ORDER BY p.create_time DESC
     </select>
 

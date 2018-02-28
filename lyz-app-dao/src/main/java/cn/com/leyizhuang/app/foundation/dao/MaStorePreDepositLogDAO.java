@@ -16,8 +16,7 @@ public interface MaStorePreDepositLogDAO {
 
     void save(StPreDepositLogDO stPreDepositLogDO);
 
-    List<StorePreDepositLogVO> findAllStorePredepositLog(@Param("storeId")Long storeId, @Param("cityId")Long cityId,
-                                                         @Param("storeType")String storeType, @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
+    List<StorePreDepositLogVO> findAllStorePredepositLog(@Param("storeId")Long storeId, @Param("cityId")Long cityId, @Param("storeType")String storeType, @Param("keywords")String keywords);
 
     StorePreDepositLogVO findStorePredepositLogById(Long id);
 

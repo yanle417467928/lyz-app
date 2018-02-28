@@ -84,8 +84,7 @@ public interface MaStoreDAO {
      */
     List<StoreVO> findSelfDeliveryStoresList();
 
-    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords,
-                                                   @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
 
     StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
 
@@ -102,9 +101,4 @@ public interface MaStoreDAO {
     void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
 
     List<StoreVO> findAllStoreVO(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
-
-    List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
-
-    List<SimpleStoreParam> findStoresListByStoreId(@Param("list") List<Long> storeIds);
-
 }

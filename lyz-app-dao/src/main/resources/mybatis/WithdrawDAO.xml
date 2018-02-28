@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.WithdrawDAO">
+
+    <insert id="saveWithdrawRefundInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo">
+        INSERT INTO withdraw_refund_info (withdraw_no, create_time, withdraw_channel, withdraw_channel_desc, withdraw_subject_type,
+                                          withdraw_subject_type_desc, withdraw_amount, reply_code, refund_number, withdraw_account_type,
+                                          withdraw_account_type_desc)
+            SELECT
+                #{withdrawNo},
+                #{createTime},
+                #{withdrawChannel},
+                #{withdrawChannelDesc},
+                #{withdrawSubjectType},
+                #{withdrawSubjectTypeDesc},
+                #{withdrawAmount},
+                #{replyCode},
+                #{refundNumber},
+                #{withdrawAccountType},
+                #{withdrawAccountTypeDesc}
+            FROM dual
+            WHERE NOT exists(SELECT 1
+                             FROM withdraw_refund_info
+                             WHERE refund_number = #{refundNumber})
+    </insert>
+
+    <select id="getWithdrawRefundInfoByRefundNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo">
+        SELECT
+            id,
+            withdraw_no,
+            create_time,
+            withdraw_channel,
+            withdraw_channel_desc,
+            withdraw_subject_type,
+            withdraw_subject_type_desc,
+            withdraw_amount,
+            reply_code,
+            refund_number,
+            withdraw_account_type,
+            withdraw_account_type_desc
+        FROM withdraw_refund_info
+        WHERE refund_number = #{refundNo}
+    </select>
+</mapper>

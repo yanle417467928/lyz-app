@@ -91,12 +91,11 @@
         FROM cus_pre_deposit_withdraw
         WHERE 1=1
         <if test="keywords != null">
-            and (apply_cus_name LIKE concat("%",#{keywords},"%") or apply_cus_phone like concat(#{keywords},"%") or apply_no like concat(#{keywords},"%"))
+            and (apply_cus_name LIKE concat("%",#{keywords},"%") or apply_cus_phone like concat(#{keywords},"%"))
         </if>
         <if test="status != null">
             and status = #{status}
         </if>
-        ORDER BY create_time DESC
     </select>
 
     <select id="findByCusId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">

@@ -49,7 +49,7 @@ public interface MaReturnOrderDAO {
 
     List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
 
-    MaOrdReturnBilling findReturnOrderBillingList(Long roid);
+    MaOrdReturnBilling findReturnOrderBillingList(String returnNumber);
 
     void saveAppToEbsReturnOrderInf(MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbs);
 

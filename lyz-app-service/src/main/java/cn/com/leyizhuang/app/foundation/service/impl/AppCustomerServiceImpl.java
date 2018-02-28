@@ -572,15 +572,12 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
 
     @Override
-    public List<SupportHotlineResponse> getCustomerSupportHotline(Long userId) {
-        List<SupportHotlineResponse> supportHotlineList = customerDAO.findAllSupportHotline();
+    public SupportHotlineResponse getCustomerSupportHotline(Long userId) {
         String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
+        SupportHotlineResponse supportHotlineResponse = new SupportHotlineResponse();
         if (null != sellerMobile) {
-            SupportHotlineResponse supportHotlineResponse =  new SupportHotlineResponse();
-            supportHotlineResponse.setName("导购热线");
-            supportHotlineResponse.setSupportHotline(sellerMobile);
-            supportHotlineList.add(supportHotlineResponse);
+            supportHotlineResponse.setSellerMobile(sellerMobile);
         }
-        return supportHotlineList;
+        return supportHotlineResponse;
     }
 }

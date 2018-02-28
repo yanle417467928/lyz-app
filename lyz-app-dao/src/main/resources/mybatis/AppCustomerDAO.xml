@@ -743,15 +743,6 @@
         WHERE cc.cus_id = #{userId}
     </select>
 
-
-    <select id="findAllSupportHotline"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.SupportHotlineResponse">
-        SELECT csh.id,csh.name,csh.support_hotline
-        FROM city_support_hotline csh
-       WHERE
-       1=1
-    </select>
-
     <update id="unbindingCustomerWeChat" parameterType="java.lang.Long">
         UPDATE cus_customer
         SET open_id   = NULL,

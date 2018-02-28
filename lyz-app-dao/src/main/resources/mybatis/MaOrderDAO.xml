@@ -881,8 +881,7 @@
     <update id="auditOrderStatus" parameterType="java.lang.String">
         UPDATE ord_arrears_audit
         SET
-        status = #{status},
-        update_time = now()
+        status = #{status}
         WHERE ord_no = #{orderNumber}
     </update>
 

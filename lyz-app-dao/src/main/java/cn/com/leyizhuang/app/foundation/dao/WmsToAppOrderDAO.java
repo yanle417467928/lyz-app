@@ -120,12 +120,4 @@ public interface WmsToAppOrderDAO {
      * @return
      */
     List<WtaWarehousePurchaseGoods> findWtaWarehousePurchaseGoodsListByPurchaseNo(String purchaseNo);
-
-    /**
-     * 根据退货单号查询返配商品
-     *
-     * @param returnOrderNumber
-     * @return
-     */
-    List<WtaReturningOrderGoods> findWtaReturningOrderGoodsByReturnOrderNo(String returnOrderNumber);
 }

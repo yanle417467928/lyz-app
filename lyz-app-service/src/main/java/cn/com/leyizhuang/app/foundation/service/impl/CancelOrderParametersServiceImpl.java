@@ -26,6 +26,6 @@ public class CancelOrderParametersServiceImpl implements CancelOrderParametersSe
 
     @Override
     public void updateCancelStatusByOrderNumber(String orderNumber) {
-        this.cancelOrderParametersDAO.updateCancelStatusByOrderNumber(orderNumber);
+        this.updateCancelStatusByOrderNumber(orderNumber);
     }
 }

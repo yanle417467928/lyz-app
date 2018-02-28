@@ -134,5 +134,5 @@ public interface AppCustomerService {
 
     void unbindingCustomerWeChat(Long userId);
 
-    List<SupportHotlineResponse> getCustomerSupportHotline(Long userId);
+    SupportHotlineResponse getCustomerSupportHotline(Long userId);
 }

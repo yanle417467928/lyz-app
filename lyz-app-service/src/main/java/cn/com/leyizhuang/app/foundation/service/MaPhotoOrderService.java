@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2018/1/19
  */
 public interface MaPhotoOrderService {
-    PageInfo<PhotoOrderVO> findAllByCityIdAndStoreId(Integer page, Integer size, Long cityId, Long storeId, String keywords, String status, List<Long> storeIds);
+    PageInfo<PhotoOrderVO> findAll(Integer page, Integer size, Long cityId, Long storeId, String keywords);
 
     PhotoOrderVO findById(Long id);
 

@@ -128,12 +128,4 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         }
         return null;
     }
-
-    @Override
-    public List<WtaReturningOrderGoods> findWtaReturningOrderGoodsByReturnOrderNo(String returnOrderNumber) {
-        if (AssertUtil.isNotEmpty(returnOrderNumber)) {
-            return wmsToAppOrderDAO.findWtaReturningOrderGoodsByReturnOrderNo(returnOrderNumber);
-        }
-        return null;
-    }
 }

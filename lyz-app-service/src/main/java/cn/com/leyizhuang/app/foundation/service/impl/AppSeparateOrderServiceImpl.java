@@ -6,13 +6,17 @@ import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
+import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import org.springframework.stereotype.Service;
@@ -51,6 +55,15 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private ReturnOrderService returnOrderService;
+
+    @Resource
+    private WithdrawService withdrawService;
+
+    @Resource
+    private AppCustomerService customerService;
+
+    @Resource
+    private CusPreDepositWithdrawDAO cusPreDepositWithdrawDAO;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -872,6 +885,36 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     public void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
         if (null != id) {
             separateOrderDAO.updateOrderKeyInfFlagAndSendTimeAndErrorMsg(id, msg, sendTime, sendFlag);
+        }
+    }
+
+    @Override
+    public Boolean isWithdrawRefundExist(String refundNo) {
+        if (null != refundNo) {
+            separateOrderDAO.isWithdrawRefundExist(refundNo);
+        }
+        return null;
+    }
+
+    @Override
+    public void separateWithdrawRefund(String refundNo) {
+        if (null != refundNo) {
+            WithdrawRefundInfo withdrawRefundInfo = withdrawService.getWithdrawRefundInfoByRefundNo(refundNo);
+            WithdrawRefundInf withdrawRefundInf = new WithdrawRefundInf();
+            withdrawRefundInf.setAmount(withdrawRefundInfo.getWithdrawAmount());
+            withdrawRefundInf.setCreateTime(new Date());
+            withdrawRefundInf.setWithdrawNumber(withdrawRefundInfo.getWithdrawNo());
+            withdrawRefundInf.setWithdrawObj(withdrawRefundInfo.getWithdrawSubjectType());
+            //withdrawRefundInf.setWithdrawType(withdrawRefundInfo);
+            withdrawRefundInf.setRefundType(withdrawRefundInfo.getWithdrawChannel());
+            withdrawRefundInf.setDescription(withdrawRefundInf.getRefundType().getDescription());
+            //获取充值顾客信息
+            if (withdrawRefundInfo.getWithdrawAccountType()==RechargeAccountType.CUS_PREPAY){
+                CusPreDepositWithdraw cusPreDepositWithdraw = cusPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
+                //AppCustomer customer = customerService.find
+            }
+
+            //withdrawRefundInf.set
         }
     }
 

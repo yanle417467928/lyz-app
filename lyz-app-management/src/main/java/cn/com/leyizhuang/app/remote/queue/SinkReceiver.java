@@ -176,6 +176,27 @@ public class SinkReceiver {
                     e.printStackTrace();
                 }
                 break;
+            case WITHDRAW_REFUND:
+                try {
+                    String refundNo = objectMapper.readValue(message.getContent(), String.class);
+                    Boolean isExist = separateOrderService.isWithdrawRefundExist(refundNo);
+                    if (isExist) {
+                        log.info("该充值单已拆单，不能重复拆单!");
+                    } else {
+                        //拆单
+                        separateOrderService.separateWithdrawRefund(refundNo);
+
+                        //发送充值收款信息
+                        //separateOrderService.sendRechargeReceiptInf(rechargeNo);
+                    }
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
             default:
                 break;
         }

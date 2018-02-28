@@ -209,9 +209,9 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType, List<Long> storeIds) {
+    public PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType) {
         PageHelper.startPage(page, size);
-        List<StorePreDepositVO> list = this.mastoreDAO.findAllStorePredeposit(cityId, keywords, storeType, storeIds);
+        List<StorePreDepositVO> list = this.mastoreDAO.findAllStorePredeposit(cityId, keywords, storeType);
         return new PageInfo<>(list);
     }
 
@@ -262,17 +262,6 @@ public class MaStoreServiceImpl implements MaStoreService {
         PageHelper.startPage(page, size);
         List<StoreVO> pageStoreList = this.mastoreDAO.findAllStoreVO(cityId, keywords, storeType);
         return new PageInfo<>(pageStoreList);
-    }
-
-    @Override
-    public List<SimpleStoreParam> findStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds) {
-        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityIdAndStoreId(cityId, storeIds);
-        return storeList;
-    }
-
-    @Override
-    public List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds) {
-        return this.mastoreDAO.findStoresListByStoreId(storeIds);
     }
 
 }

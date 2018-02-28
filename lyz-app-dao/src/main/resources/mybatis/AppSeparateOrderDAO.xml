@@ -1074,4 +1074,10 @@
         FROM cus_customer_fx_store_relation
         WHERE cus_id = #{cusId}
     </select>
+
+    <select id="isWithdrawRefundExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+                      FROM inter_ate_withdraw_refund_inf
+                      WHERE refund_number = #{refundNo})
+    </select>
 </mapper>

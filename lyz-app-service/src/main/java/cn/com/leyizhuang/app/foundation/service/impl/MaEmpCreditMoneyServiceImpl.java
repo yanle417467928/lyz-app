@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.*;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -27,26 +28,25 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetail guideCreditChangeDetail) throws RuntimeException {
-
-        //得到更新后的可用额度
-        BigDecimal CreditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
-        BigDecimal TempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
-        BigDecimal AllChangeAmount = CreditLimitChangeAmount.add(TempCreditLimitChangeAmount);
-        guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(AllChangeAmount));
-        //更新导购信用金
-        GuideCreditMoney guideCreditMoney = new GuideCreditMoney();
-        guideCreditMoney.setCreditLimit(guideCreditMoneyDetail.getCreditLimit());
-        guideCreditMoney.setCreditLimitAvailable(guideCreditMoneyDetail.getCreditLimitAvailable());
-        guideCreditMoney.setEmpId(guideCreditMoneyDetail.getEmpId());
-        guideCreditMoney.setTempCreditLimit(guideCreditMoneyDetail.getTempCreditLimit());
-        guideCreditMoney.setLastUpdateTime(guideCreditMoneyDetail.getLastUpdateTime());
+    public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) throws RuntimeException {
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            if (null != guideCreditMoney) {
-                Integer affectLine = this.maEmpCreditMoneyDAO.update(guideCreditMoney);
+            if (null != guideCreditMoneyDetail) {
+                //得到更新后的可用额度
+                BigDecimal CreditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
+                BigDecimal TempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
+                BigDecimal AllChangeAmount = CreditLimitChangeAmount.add(TempCreditLimitChangeAmount);
+                guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(AllChangeAmount));
+                //更新导购信用金
+                GuideCreditMoney guideCreditMoneyVO = new GuideCreditMoney();
+                guideCreditMoneyVO.setCreditLimit(guideCreditMoneyDetail.getCreditLimit());
+                guideCreditMoneyVO.setCreditLimitAvailable(guideCreditMoneyDetail.getCreditLimitAvailable());
+                guideCreditMoneyVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                guideCreditMoneyVO.setTempCreditLimit(guideCreditMoneyDetail.getTempCreditLimit());
+                guideCreditMoneyVO.setLastUpdateTime(lastUpdateTime);
+                Integer affectLine = this.maEmpCreditMoneyDAO.update(guideCreditMoneyVO);
                 //更新变更详情父表与子表
                 if (affectLine > 0) {
-                    this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetail);
+                    this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetailVO);
                     break;
                 } else {
                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -60,45 +60,29 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
     }
 
     @Override
-    public int updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney, Date lastUpdateTime) {
-        return this.maEmpCreditMoneyDAO.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, lastUpdateTime);
+    public int updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney,Date lastUpdateTime) {
+       return this.maEmpCreditMoneyDAO.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney,lastUpdateTime);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetail guideCreditChangeDetail) {
-        //导购零时额度清零
-        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            Integer affectLine = this.maEmpCreditMoneyDAO.clearTempCreditLimit(guideCreditMoneyDetail);
-            if (affectLine > 0) {
-                //得到存入变更字表的id
-                GuideTempCreditChange guideTempCreditChange = new GuideTempCreditChange();
-                GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange();
-                guideTempCreditChange.setTempCreditLimitAfterChange(BigDecimal.ZERO);
-                guideTempCreditChange.setTempCreditLimitChangeAmount(guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit()));
-                guideTempCreditChange.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.toString());
-                guideTempCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
-
-                guideAvailableCreditChange.setCreditLimitAvailableAfterChange(guideCreditMoneyDetail.getCreditLimitAvailable());
-                guideAvailableCreditChange.setCreditLimitAvailableChangeAmount(guideCreditMoneyDetail.getCreditLimitAvailable().subtract(guideCreditMoneyDetail.getOriginalCreditLimitAvailable()));
-                guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.toString());
-                guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.getDescription());
-
-                maEmpCreditMoneyDAO.saveTempCreditLimitChange(guideTempCreditChange);
-                maEmpCreditMoneyDAO.saveCreditLimitAvailableChange(guideAvailableCreditChange);
-                //补全额度改变明细
-                guideCreditChangeDetail.setAvailableCreditChangId(guideAvailableCreditChange.getId());
-                guideCreditChangeDetail.setTempCreditChangeId(guideTempCreditChange.getId());
-                //存入额度变更明细主表
-                this.saveCreditChange(guideCreditChangeDetail);
-                break;
-            } else {
-                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                    throw new SystemBusyException("系统繁忙，请稍后再试!");
-                }
-            }
+    public void clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
+        if (null != guideCreditMoneyDetail.getEmpId()) {
+            this.maEmpCreditMoneyDAO.clearTempCreditLimit(guideCreditMoneyDetail.getEmpId());
+        } else {
+            throw new RuntimeException("无法清空该员工的临时额度,reason：empId为空");
         }
+        //得到存入变更字表的id
+        guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit()));
+        Map<String, Long> idList = this.saveAllCreditMoneyChange(guideCreditMoneyDetail);
+        Long tempCreditChangeId = idList.get("tempCreditLimitId");
+        Long availableCreditChangId = idList.get("creditLimitAvailableId");
+        //补全额度改变明细VO
+        guideCreditChangeDetailVO.setAvailableCreditChangId(new GuideAvailableCreditChange(availableCreditChangId, null, null));
+        guideCreditChangeDetailVO.setTempCreditChangeId(new GuideTempCreditChange(tempCreditChangeId, null, null));
+        //存入额度变更明细主表
+        this.saveCreditChange(guideCreditChangeDetailVO);
     }
 
     @Override
@@ -123,28 +107,29 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
     }
 
     @Override
-    public void saveCreditChange(GuideCreditChangeDetail guideCreditChangeDetail) {
-        if (null != guideCreditChangeDetail) {
-            guideCreditChangeDetail.setOperatorType(AppIdentityType.ADMINISTRATOR.getDescription());
-            guideCreditChangeDetail.setCreateTime(new Date());
-            this.maEmpCreditMoneyDAO.saveCreditChange(guideCreditChangeDetail);
+    public void saveCreditChange(GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
+        if (null != guideCreditChangeDetailVO) {
+            GuideCreditChangeDetailDO guideCreditChangeDetailDO = GuideCreditChangeDetailDO.transform(guideCreditChangeDetailVO);
+            guideCreditChangeDetailDO.setOperatorType(AppIdentityType.ADMINISTRATOR.getDescription());
+            guideCreditChangeDetailDO.setCreateTime(new Date());
+            this.maEmpCreditMoneyDAO.saveCreditChange(guideCreditChangeDetailDO);
         }
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetail guideCreditChangeDetail) {
+    public void saveCreditMoneyChange(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetailVO guideCreditChangeDetailVO) {
         //得到金额变更字表ID集合
         Map<String, Long> idList = this.saveAllCreditMoneyChange(guideCreditMoneyDetail);
         Long tempCreditChangeId = idList.get("tempCreditLimitId");
         Long fixedCreditChangeId = idList.get("fixedCreditLimitId");
         Long availableCreditChangId = idList.get("creditLimitAvailableId");
-        //更新变更详情
-        guideCreditChangeDetail.setAvailableCreditChangId(availableCreditChangId);
-        guideCreditChangeDetail.setFixedCreditChangeId(fixedCreditChangeId);
-        guideCreditChangeDetail.setTempCreditChangeId(tempCreditChangeId);
-        this.saveCreditChange(guideCreditChangeDetail);
+        //更新变更详情VO
+        guideCreditChangeDetailVO.setAvailableCreditChangId(new GuideAvailableCreditChange(availableCreditChangId, null, null));
+        guideCreditChangeDetailVO.setFixedCreditChangeId(new GuideFixedCreditChange(fixedCreditChangeId, null, null));
+        guideCreditChangeDetailVO.setTempCreditChangeId(new GuideTempCreditChange(tempCreditChangeId, null, null));
+        this.saveCreditChange(guideCreditChangeDetailVO);
     }
 
     @Override
@@ -164,18 +149,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
             //判断可用额度是否有改变 有保存 无返回空
             if (null != guideCreditMoneyDetail.getCreditLimitAvailable() && guideCreditMoneyDetail.getOriginalCreditLimitAvailable().compareTo(guideCreditMoneyDetail.getCreditLimitAvailable()) != 0) {
                 BigDecimal creditLimitAvailableChangeAmount = guideCreditMoneyDetail.getCreditLimitAvailable().subtract(guideCreditMoneyDetail.getOriginalCreditLimitAvailable());
-                GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange();
-                guideAvailableCreditChange.setCreditLimitAvailableAfterChange(guideCreditMoneyDetail.getCreditLimitAvailable());
-                guideAvailableCreditChange.setCreditLimitAvailableChangeAmount(creditLimitAvailableChangeAmount);
-                int isFixEqual = guideCreditMoneyDetail.getCreditLimit().compareTo(guideCreditMoneyDetail.getOriginalCreditLimit());
-                int isTempEqual = guideCreditMoneyDetail.getTempCreditLimit().compareTo(guideCreditMoneyDetail.getOriginalTempCreditLimit());
-                if (0 != isFixEqual && 0 == isTempEqual) {
-                    guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_FIXE.toString());
-                    guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_FIXE.getDescription());
-                } else if (0 != isTempEqual && 0 == isFixEqual) {
-                    guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.toString());
-                    guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.getDescription());
-                }
+                GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange(null, creditLimitAvailableChangeAmount, guideCreditMoneyDetail.getCreditLimitAvailable());
                 this.maEmpCreditMoneyDAO.saveCreditLimitAvailableChange(guideAvailableCreditChange);
                 idMap.put("creditLimitAvailableId", guideAvailableCreditChange.getId());
             } else {
@@ -184,7 +158,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
             //判断临时额度是否有改变 有保存 无返回空
             if (null != guideCreditMoneyDetail.getTempCreditLimit() && guideCreditMoneyDetail.getOriginalTempCreditLimit().compareTo(guideCreditMoneyDetail.getTempCreditLimit()) != 0) {
                 BigDecimal tempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
-                GuideTempCreditChange guideTempCreditChange = new GuideTempCreditChange(null, tempCreditLimitChangeAmount, guideCreditMoneyDetail.getTempCreditLimit(), EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.toString(), EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.getDescription());
+                GuideTempCreditChange guideTempCreditChange = new GuideTempCreditChange(null, tempCreditLimitChangeAmount, guideCreditMoneyDetail.getTempCreditLimit());
                 this.maEmpCreditMoneyDAO.saveTempCreditLimitChange(guideTempCreditChange);
                 idMap.put("tempCreditLimitId", guideTempCreditChange.getId());
             } else {
@@ -193,7 +167,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
             //判断固定额度是否有改变 有保存 无返回空
             if (null != guideCreditMoneyDetail.getCreditLimit() && guideCreditMoneyDetail.getCreditLimit().compareTo(guideCreditMoneyDetail.getOriginalCreditLimit()) != 0) {
                 BigDecimal fixedCreditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
-                GuideFixedCreditChange GuideFixedCreditChange = new GuideFixedCreditChange(null, fixedCreditLimitChangeAmount, guideCreditMoneyDetail.getCreditLimit(), EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT.toString(), EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT.getDescription());
+                GuideFixedCreditChange GuideFixedCreditChange = new GuideFixedCreditChange(null, fixedCreditLimitChangeAmount, guideCreditMoneyDetail.getCreditLimit());
                 this.maEmpCreditMoneyDAO.saveFixedCreditLimitChange(GuideFixedCreditChange);
                 idMap.put("fixedCreditLimitId", GuideFixedCreditChange.getId());
             } else {
@@ -207,52 +181,38 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void autoClearTempCreditMoney() throws RuntimeException {
+    public void autoClearTempCreditMoney() {
         List<GuideCreditMoney> guideCreditMoneyList = this.findAllGuideCreditMoney();
         if (guideCreditMoneyList.size() == 0) {
             throw new RuntimeException("查找到导购信用额度列表为空");
         }
         for (GuideCreditMoney guideCreditMoney : guideCreditMoneyList) {
             if (guideCreditMoney.getTempCreditLimit().compareTo(BigDecimal.ZERO) != 0) {
-                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                    GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
-                    guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
-                    guideCreditMoneyDetail.setOriginalTempCreditLimit(guideCreditMoney.getTempCreditLimit());
-                    guideCreditMoneyDetail.setOriginalCreditLimit(guideCreditMoney.getCreditLimit());
-                    guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit()));
-                    guideCreditMoneyDetail.setTempCreditLimit(BigDecimal.ZERO);
-                    guideCreditMoneyDetail.setCreditLimit(guideCreditMoney.getCreditLimit());
-                    guideCreditMoneyDetail.setEmpId(guideCreditMoney.getEmpId());
-                    guideCreditMoneyDetail.setLastUpdateTime(guideCreditMoney.getLastUpdateTime());
-                    Integer affectLine = this.maEmpCreditMoneyDAO.clearTempCreditLimit(guideCreditMoneyDetail);
-                    if (affectLine > 0) {
-                        GuideTempCreditChange guideTempCreditChange = new GuideTempCreditChange();
-                        GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange();
-                        guideTempCreditChange.setTempCreditLimitAfterChange(BigDecimal.ZERO);
-                        guideTempCreditChange.setTempCreditLimitChangeAmount(BigDecimal.ZERO.subtract(guideCreditMoney.getTempCreditLimit()));
-                        guideTempCreditChange.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.toString());
-                        guideTempCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
-
-                        guideAvailableCreditChange.setCreditLimitAvailableAfterChange(guideCreditMoney.getCreditLimitAvailable().subtract(guideCreditMoney.getTempCreditLimit()));
-                        guideAvailableCreditChange.setCreditLimitAvailableChangeAmount(BigDecimal.ZERO.subtract(guideCreditMoney.getTempCreditLimit()));
-                        guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.toString());
-                        guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.getDescription());
-
-                        maEmpCreditMoneyDAO.saveTempCreditLimitChange(guideTempCreditChange);
-                        maEmpCreditMoneyDAO.saveCreditLimitAvailableChange(guideAvailableCreditChange);
-                        //补全导购信用金变更详情VO
-                        GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
-                        guideCreditChangeDetail.setEmpId(guideCreditMoney.getEmpId());
-                        guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR);
-                        guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
-                        guideCreditChangeDetail.setAvailableCreditChangId(guideAvailableCreditChange.getId());
-                        guideCreditChangeDetail.setTempCreditChangeId(guideTempCreditChange.getId());
-                        this.saveCreditChange(guideCreditChangeDetail);
-                    }
-                }
+                GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
+                guideCreditMoneyDetail.setEmpId(guideCreditMoney.getEmpId());
+                guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
+                guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable().subtract(guideCreditMoney.getTempCreditLimit()));
+                guideCreditMoneyDetail.setOriginalTempCreditLimit(guideCreditMoney.getTempCreditLimit());
+                guideCreditMoneyDetail.setTempCreditLimit(BigDecimal.ZERO);
+                //得到所有存入变更额度的id
+                Map<String, Long> idList = saveAllCreditMoneyChange(guideCreditMoneyDetail);
+                Long tempCreditChangeId = idList.get("tempCreditLimitId");
+                Long fixedCreditChangeId = idList.get("fixedCreditLimitId");
+                Long availableCreditChangId = idList.get("creditLimitAvailableId");
+                //补全导购信用金变更详情VO
+                GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
+                guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR);
+                guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
+                guideCreditChangeDetailVO.setAvailableCreditChangId(new GuideAvailableCreditChange(availableCreditChangId, null, null));
+                guideCreditChangeDetailVO.setFixedCreditChangeId(new GuideFixedCreditChange(fixedCreditChangeId, null, null));
+                guideCreditChangeDetailVO.setTempCreditChangeId(new GuideTempCreditChange(tempCreditChangeId, null, null));
+                this.saveCreditChange(guideCreditChangeDetailVO);
             }
         }
+        this.clearAllTempCredit();
     }
+
 
     @Override
     public void clearAllTempCredit() {

@@ -43,9 +43,9 @@ public class MaCusPreDepositLogServiceImpl implements MaCusPreDepositLogService 
     }
 
     @Override
-    public PageInfo<CusPreDepositLogVO> findAllCusPredepositLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords, List<Long> storeIds) {
+    public PageInfo<CusPreDepositLogVO> findAllCusPredepositLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords) {
         PageHelper.startPage(page, size);
-        List<CusPreDepositLogVO> list = this.maCusPreDepositLogDAO.findAllCusPredepositLog(cusId, cityId, storeId, keywords, storeIds);
+        List<CusPreDepositLogVO> list = this.maCusPreDepositLogDAO.findAllCusPredepositLog(cusId, cityId, storeId, keywords);
         return new PageInfo<>(list);
     }
 

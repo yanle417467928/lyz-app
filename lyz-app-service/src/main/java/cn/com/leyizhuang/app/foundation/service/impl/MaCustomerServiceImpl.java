@@ -114,9 +114,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds) {
+    public PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
         PageHelper.startPage(page, size);
-        List<CustomerPreDepositVO> list = this.maCustomerDAO.findAllCusPredeposit(cityId, storeId, keywords, storeIds);
+        List<CustomerPreDepositVO> list = this.maCustomerDAO.findAllCusPredeposit(cityId, storeId, keywords);
         return new PageInfo<>(list);
     }
 
@@ -147,9 +147,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds) {
+    public PageInfo<CustomerLebiVO> findAllCusLebi(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
         PageHelper.startPage(page, size);
-        List<CustomerLebiVO> list = this.maCustomerDAO.findAllCusLebi(cityId, storeId, keywords, storeIds);
+        List<CustomerLebiVO> list = this.maCustomerDAO.findAllCusLebi(cityId, storeId, keywords);
         return new PageInfo<>(list);
     }
 

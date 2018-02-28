@@ -132,11 +132,10 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ord_return_billing
-        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay,
-        online_pay_type, cash, lb_quantity)
+        (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay, cash, lb_quantity)
         VALUES
             (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention},
-        #{onlinePay},#{onlinePayType},
+             #{onlinePay},
              #{cash}, #{LeBiQuantity})
     </insert>
 
@@ -412,25 +411,6 @@
             refund_number
         FROM ord_return_billing_detail
         WHERE roid = #{roid}
-    </select>
-
-    <select id="getReturnOrderBillingByReturnNo" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling">
-        SELECT
-            id,
-            roid,
-            return_no,
-            pre_deposit,
-            credit_money,
-            st_pre_deposit,
-            st_credit_money,
-            st_subvention,
-            online_pay,
-            online_pay_type,
-            cash,
-            lb_quantity
-        FROM ord_return_billing
-        WHERE return_no = #{returnOrderNumber}
     </select>
 
     <insert id="saveReturnOrderJxPriceDifferenceRefundDetails"

@@ -59,6 +59,22 @@ public class SinkSender {
     }
 
     /**
+     * 提现退款发送消息队列
+     *
+     * @param refundNumber 退款单号
+     */
+    public void sendWithdrawRefund(String refundNumber) {
+        log.info("sendWithdrawRefund,发送提现退款到拆单队列,Begin\n 退款单号:{}", refundNumber);
+        if (StringUtils.isNotBlank(refundNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.WITHDRAW_REFUND);
+            message.setContent(JSON.toJSONString(refundNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendWithdrawRefund,发送提现退款到拆单队列,End", JSON.toJSONString(refundNumber));
+    }
+
+    /**
      * 发送销售记录到
      */
 }

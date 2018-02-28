@@ -104,12 +104,13 @@ public interface AppSeparateOrderDAO {
 
 
     void updateReturnOrderFlagAndSendTimeAndErrorMsg(@Param(value = "rtHeaderId") Long rtHeaderId,
-                                                      @Param(value = "msg") String msg,
-                                                      @Param(value = "sendTime") Date sendTime,
-                                                      @Param(value = "flag") AppWhetherFlag flag);
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "flag") AppWhetherFlag flag);
 
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
+
     //分退单号
     void saveReturnOrderBaseInf(ReturnOrderBaseInf returnOrderBaseInf);
 
@@ -159,9 +160,11 @@ public interface AppSeparateOrderDAO {
     OrderKeyInf getOrderKeyInfByMainOrderNumber(@Param(value = "orderNumber") String orderNumber);
 
     void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(@Param(value = "id") Long id,
-                                                         @Param(value = "msg") String msg,
-                                                         @Param(value = "sendTime") Date sendTime,
-                                                         @Param(value = "sendFlag") AppWhetherFlag sendFlag);
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "sendFlag") AppWhetherFlag sendFlag);
 
     AppCustomerFxStoreRelation getCustomerFxStoreRelationByCusId(Long customerIdTemp);
+
+    void isWithdrawRefundExist(@Param(value = "refundNo") String refundNo);
 }

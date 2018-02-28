@@ -101,4 +101,8 @@ public interface AppSeparateOrderService {
     void sendOrderKeyInf(String orderNumber);
 
     void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag);
+
+    Boolean isWithdrawRefundExist(String refundNo);
+
+    void separateWithdrawRefund(String refundNo);
 }
