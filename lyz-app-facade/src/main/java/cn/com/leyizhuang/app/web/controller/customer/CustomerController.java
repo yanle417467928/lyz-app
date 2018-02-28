@@ -847,7 +847,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            SupportHotlineResponse supportHotline = customerService.getCustomerSupportHotline(userId);
+            List<SupportHotlineResponse> supportHotline = customerService.getCustomerSupportHotline(userId);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, supportHotline);
             logger.info("getCustomerSupportHotline OUT顾客获取咨询电话成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
