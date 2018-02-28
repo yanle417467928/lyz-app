@@ -503,11 +503,11 @@
                     <form id="confirmReceivablesFrom">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="name">总金额(元)</label>
+                                <label for="name">应收金额(元)</label>
                                 <input type="text" class="form-control" id="allAmount"
                                        name="allAmount"
                                        readonly
-                                       value="${orderBillingDetail.amountPayable!'0.00'}">
+                                       value="${repaymentAmount!'0.00'}">
                                 <input type="hidden" class="form-control"
                                        id="orderNumberInfrom"
                                        name="orderNumber"

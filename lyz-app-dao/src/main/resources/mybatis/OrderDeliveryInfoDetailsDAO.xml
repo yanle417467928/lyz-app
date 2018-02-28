@@ -104,8 +104,10 @@
             AND obi.delivery_status = odid.logistic_status
             INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             INNER JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
+            LEFT JOIN ord_arrears_audit AS oaa ON oaa.ord_no = obi.ord_no
             WHERE
                 obi.delivery_status = 'SEALED_CAR'
+            AND (oaa.`status` = 'AUDIT_NO' OR oaa.`status` IS NULL)
             AND odid.operator_no = #{operatorNo}
             ORDER BY
 	        odid.create_time DESC

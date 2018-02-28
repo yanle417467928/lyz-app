@@ -213,7 +213,7 @@ public class SellerArrearsAuditController {
                 orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
-                //生成订单物流详情
+                /*//生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
                 orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), orderArrearsAuditDO.getPicture(), "", "");
                 this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
@@ -223,7 +223,7 @@ public class SellerArrearsAuditController {
                 orderBaseInfo.setOrderNumber(orderNo);
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);*/
 
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());

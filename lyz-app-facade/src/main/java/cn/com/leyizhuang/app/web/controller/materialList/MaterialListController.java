@@ -620,9 +620,12 @@ public class MaterialListController {
                     if (null != msg && !"".equals(msg)) {
                         msg += "、";
                     }
-                    msg += "‘";
-                    msg += null == quickOrderRelationDO.getGoodsName() ? "" : quickOrderRelationDO.getGoodsName();
-                    msg += "’";
+                    if (null != quickOrderRelationDO && null != quickOrderRelationDO.getGoodsName()) {
+                        msg += "‘";
+                        msg += null == quickOrderRelationDO.getGoodsName() ? "" : quickOrderRelationDO.getGoodsName();
+                        msg += "’";
+                    }
+
                 }
             }
             commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);

@@ -630,23 +630,23 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     public void sendReturnOrderReceiptInfAndRecord(MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbsBaseInfo) {
         Map<String, Object> result = sendReturnOrderReceiptToEbs(maStoreReturnOrderAppToEbsBaseInfo);
         if (!(Boolean) result.get("success")) {
-            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getId(), (String) result.get("msg"), null, AppWhetherFlag.N);
         } else {
-            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId(), null, new Date(), AppWhetherFlag.Y);
+            updateReturnOrderFlagAndSendTimeAndErrorMsg(maStoreReturnOrderAppToEbsBaseInfo.getId(), null, new Date(), AppWhetherFlag.Y);
         }
     }
 
     /**
      * 更新门店退货接口信息
      *
-     * @param rtHeaderId id
+     * @param  id
      * @param msg        错误信息
      * @param sendTime   发送成功时间
      * @param flag       标识
      */
-    private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long rtHeaderId, String msg, Date sendTime, AppWhetherFlag flag) {
-        if (null != rtHeaderId) {
-            separateOrderService.updateReturnOrderFlagAndSendTimeAndErrorMsg(rtHeaderId, msg, sendTime, flag);
+    private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != id) {
+            separateOrderService.updateReturnOrderFlagAndSendTimeAndErrorMsg(id, msg, sendTime, flag);
         }
     }
 
@@ -704,9 +704,9 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             storeReturnSecond.setAttribute4(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute4()));
             storeReturnSecond.setAttribute5(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute5()));
             storeReturnSecond.setSobId(toString(maStoreReturnOrderAppToEbsBaseInfo.getSobId()));
-            storeReturnSecond.setRtHeaderId(maStoreReturnOrderAppToEbsBaseInfo.getRtHeaderId().toString());
-            storeReturnSecond.setReturnNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getMainReturnNumber()));
-            storeReturnSecond.setReturnDate(toString(sdf.format(maStoreReturnOrderAppToEbsBaseInfo.getReturnDate())));
+            storeReturnSecond.setReturnDate(maStoreReturnOrderAppToEbsBaseInfo.getReturnDate().toString());
+            storeReturnSecond.setMainOrderNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getMainOrderNumber()));
+            storeReturnSecond.setReturnNumber(toString(sdf.format(maStoreReturnOrderAppToEbsBaseInfo.getReturnNumber())));
         }
         String storeReturnSecondJson = JSON.toJSONString(storeReturnSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();

@@ -54,6 +54,8 @@ public class ArrearsAuditController {
         }
         List<ArrearsAuditStatus> arrearsAuditStatusList = new ArrayList<ArrearsAuditStatus>();
         arrearsAuditStatusList.add(ArrearsAuditStatus.AUDITING);
+        arrearsAuditStatusList.add(ArrearsAuditStatus.AUDIT_PASSED);
+        arrearsAuditStatusList.add(ArrearsAuditStatus.AUDIT_NO);
         List<ArrearsAuditResponse> arrearsAuditResponseList = this.arrearsAuditServiceImpl.findByUserIdAndStatus(userId, arrearsAuditStatusList);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, arrearsAuditResponseList);
         logger.info("getArrearsAuditList OUT,获取待审核欠款申请列表成功，出参 resultDTO:{}", resultDTO);

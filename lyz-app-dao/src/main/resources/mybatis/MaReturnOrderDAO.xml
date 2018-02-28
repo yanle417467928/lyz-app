@@ -214,21 +214,21 @@
 
     <insert id="saveAppToEbsReturnOrderInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo">
-     INSERT INTO inter_ate_return_order_base_inf (main_return_number,sob_id,return_date,main_order_number,userid,seller_id,diy_site_code,create_time,return_type,deliver_type_title)
-     VALUES (#{mainReturnNumber},#{sobId},#{returnDate},#{mainOrderNumber},#{userId},#{sellerId},#{diySiteCode},#{createTime},#{returnType},#{deliverTypeTitle})
+     INSERT INTO inter_ate_return_order_retmd_inf (sob_id,main_order_number,return_number,return_date)
+     VALUES (#{sobId},#{mainOrderNumber},#{returnNumber},#{returnDate})
     </insert>
 
 
     <select id="findMaStoreReturnOrderAppToEbsInfoByReturnNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo">
         SELECT
-        rt_header_id,
-        main_return_number,
+        id,
         sob_id,
-        return_date,
-        main_order_number
-        FROM inter_ate_return_order_base_inf
-        WHERE main_return_number = #{returnNumber}
+        main_order_number,
+        return_number,
+        return_date
+        FROM inter_ate_return_order_retmd_inf
+        WHERE return_number = #{returnNumber}
         ORDER BY  create_time DESC
         limit 1
      </select>

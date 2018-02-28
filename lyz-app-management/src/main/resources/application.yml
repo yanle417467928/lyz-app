@@ -77,6 +77,13 @@ eureka:
   instance:
     lease-expiration-duration-in-seconds: 30
     lease-renewal-interval-in-seconds: 10
+task:
+  executor:
+    id: "AppTaskExecutor-"
+    core-pool-size: 5
+    max-pool-size: 25
+    queue-capacity: 100
+    keep-alive: 120
 
 ---
 # 开发环境配置
