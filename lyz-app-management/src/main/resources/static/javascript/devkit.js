@@ -239,6 +239,7 @@ var $grid = {
 
 var $modal = {
     danger: function (title, content, method) {
+        $('#dangerModalCheckBtn').unbind("click");
         $('#dangerModalTitle').html(' ' + title);
         $('#dangerModalContent').html(' ' + content);
         $('#dangerModalCheckBtn').one('click', function () {
@@ -248,6 +249,7 @@ var $modal = {
         $('#dangerModal').modal('show', {backdrop: 'static', keyboard: false});
     },
     info: function (title, content, method) {
+        $('#infoModalCheckBtn').unbind("click");
         $('#infoModalTitle').html(' ' + title);
         $('#infoModalContent').html(' ' + content);
         $('#infoModalCheckBtn').one('click', function () {
@@ -257,6 +259,7 @@ var $modal = {
         $('#infoModal').modal('show', {backdrop: 'static', keyboard: false});
     },
     warning: function (title, content, method) {
+        $('#warningModalCheckBtn').unbind("click");
         $('#warningModalTitle').html(' ' + title);
         $('#warningModalContent').html(' ' + content);
         $('#warningModalCheckBtn').one('click', function () {
@@ -266,6 +269,7 @@ var $modal = {
         $('#warningModal').modal('show', {backdrop: 'static', keyboard: false});
     },
     success: function (title, content, method) {
+        $('#successModalCheckBtn').unbind("click");
         $('#successModalTitle').html(' ' + title);
         $('#successModalContent').html(' ' + content);
         $('#successModalCheckBtn').one('click', function () {
