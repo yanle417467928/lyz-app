@@ -16,10 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
@@ -29,6 +26,7 @@ import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -198,13 +196,61 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_rec_no{}", header.getRecNo());
 //                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,验收单号" + header.getRecNo() + "");
 //                    }
-                    header.setCreateTime(new Date());
+                    City city = cityService.findByCityNumber(header.getCompanyId());
+                    if (null == city) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取退货单返配上架头失败,任务编号 城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
+                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
+                    }
+                    header.setCreateTime(Calendar.getInstance().getTime());
                     wmsToAppOrderService.saveWtaReturningOrderHeader(header);
 
+                    HashedMap maps = returnOrderService.normalReturnOrderProcessing(header.getPoNo(), header.getCompanyId());
+
+                    ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
+
+                    ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+
+                    if ("SUCCESS".equals(maps.get("code"))) {
+
+                        //如果是待收货、门店自提单则需要返回第三方支付金额
+                        if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                            if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //支付宝退款
+                                onlinePayRefundService.alipayRefundRequest(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+
+                            } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                //微信退款方法类
+                                onlinePayRefundService.wechatReturnMoney(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
+
+                            } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //创建退单退款详情实体
+                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                                //TODO 时间待定
+                                returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                //TODO 第三方回复码
+                                returnOrderBillingDetail.setReplyCode("");
+                                returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                            }
+                        }
+
+                        //发送退单拆单消息到拆单消息队列
+//                        sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                        //修改取消订单处理状态
+                        returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                        logger.info("cancelOrderToWms OUT,正常退货成功");
+                        return AppXmlUtil.resultStrXml(1, "正常退货业务逻辑处理失败!");
+                    } else {
+                        logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
+                    }
                     //保存物流信息
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
-
 
                     // rabbitMq 记录退单销量
                     sellDetailsSender.sendReturnOrderSellDetailsTOManagement(header.getPoNo());
@@ -362,7 +408,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         }
                     }
                 }
-                logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
+                logger.info("GetWMSInfo OUT,获取取消订单结果确认wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
             }
 
@@ -389,7 +435,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
                     }
                 }
-                logger.info("GetWMSInfo OUT,获取返配单商品wms信息成功 出参 code=0");
+                logger.info("GetWMSInfo OUT,获取取消退单结果确认wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
             }
 
@@ -451,8 +497,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     City city = cityService.findByCityNumber(wholeSplitToUnit.getCompanyId());
                     if (null == city) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 城市信息中没有查询到公司ID为" + wholeSplitToUnit.getCompanyId() + "的数据!");
-                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到公司ID为" + wholeSplitToUnit.getCompanyId() + "的数据!");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 城市信息中没有查询到城市code为" + wholeSplitToUnit.getCompanyId() + "的数据!");
+                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + wholeSplitToUnit.getCompanyId() + "的数据!");
                     }
                     GoodsDO goodsDO = goodsService.queryBySku(wholeSplitToUnit.getSku());
                     if (null == goodsDO) {
@@ -561,8 +607,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     City city = cityService.findByCityNumber(allocation.getCompanyId());
                     if (null == city) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 城市信息中没有查询到公司ID为" + allocation.getCompanyId() + "的数据!");
-                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到公司ID为" + allocation.getCompanyId() + "的数据!");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 城市信息中没有查询到城市code为" + allocation.getCompanyId() + "的数据!");
+                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + allocation.getCompanyId() + "的数据!");
                     }
                     List<WtaWarehouseAllocationGoods> allocationGoodsList = wmsToAppOrderService.findWtaWarehouseAllocationGoodsListByAllocationNo(allocation.getAllocationNo());
                     for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
@@ -651,8 +697,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     City city = cityService.findByCityNumber(purchaseHeader.getCompanyId());
                     if (null == city) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购入库失败,任务编号 城市信息中没有查询到公司ID为" + purchaseHeader.getCompanyId() + "的数据!");
-                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到公司ID为" + purchaseHeader.getCompanyId() + "的数据!");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购入库失败,任务编号 城市信息中没有查询到城市code为" + purchaseHeader.getCompanyId() + "的数据!");
+                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + purchaseHeader.getCompanyId() + "的数据!");
                     }
 
                     List<WtaWarehousePurchaseGoods> purchaseGoodsList = wmsToAppOrderService.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
@@ -737,8 +783,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     City city = cityService.findByCityNumber(damageAndOverflow.getCompanyId());
                     if (null == city) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 城市信息中没有查询到公司ID为" + damageAndOverflow.getCompanyId() + "的数据!");
-                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到公司ID为" + damageAndOverflow.getCompanyId() + "的数据!");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 城市信息中没有查询到城市code为" + damageAndOverflow.getCompanyId() + "的数据!");
+                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + damageAndOverflow.getCompanyId() + "的数据!");
                     }
                     GoodsDO goodsDO = goodsService.queryBySku(damageAndOverflow.getSku());
                     if (null == goodsDO) {
@@ -1251,8 +1297,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
             } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    String companyId = childNode.getChildNodes().item(0).getNodeValue();
-                    returningOrderHeader.setCompanyId(companyId != null ? Long.parseLong(companyId) : 0L);
+                    returningOrderHeader.setCompanyId(childNode.getChildNodes().item(0).getNodeValue());
                 }
             }
         }
@@ -1276,7 +1321,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 }
             } else if ("c_rec_qty".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
-                    goods.setRecQty(childNode.getChildNodes().item(0).getNodeValue());
+                    goods.setRecQty((int) Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             }
         }

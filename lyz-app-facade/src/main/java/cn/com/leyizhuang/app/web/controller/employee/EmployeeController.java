@@ -475,8 +475,13 @@ public class EmployeeController {
             return resultDTO;
         }
         if (null == identityType || identityType != 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！",
-                    null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Boolean hasCredit = appEmployeeService.existsSellerCreditByUserId(userId);
+        if (!hasCredit) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该导购未开通信用额度！", null);
             logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

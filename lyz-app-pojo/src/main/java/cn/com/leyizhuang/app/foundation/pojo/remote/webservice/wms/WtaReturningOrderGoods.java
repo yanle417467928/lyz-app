@@ -35,5 +35,5 @@ public class WtaReturningOrderGoods {
     /**
      * 验收数量
      */
-    private String recQty;
+    private Integer recQty;
 }

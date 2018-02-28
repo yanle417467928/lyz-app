@@ -537,10 +537,13 @@ public class ReturnOrderController {
                         cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
                     } else if (OrderBillingPaymentType.ALIPAY.equals(paymentDetails.getPayType())) {
                         onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        returnOrderBilling.setOnlinePayType(OnlinePayType.ALIPAY);
                     } else if (OrderBillingPaymentType.WE_CHAT.equals(paymentDetails.getPayType())) {
                         onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        returnOrderBilling.setOnlinePayType(OnlinePayType.WE_CHAT);
                     } else if (OrderBillingPaymentType.UNION_PAY.equals(paymentDetails.getPayType())) {
                         onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        returnOrderBilling.setOnlinePayType(OnlinePayType.UNION_PAY);
                     }
                 }
             } else {

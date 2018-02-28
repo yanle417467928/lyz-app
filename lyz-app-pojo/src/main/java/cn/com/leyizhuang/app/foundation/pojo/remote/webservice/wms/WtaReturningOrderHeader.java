@@ -55,5 +55,5 @@ public class WtaReturningOrderHeader {
     /**
      * 分公司ID
      */
-    private Long companyId;
+    private String companyId;
 }
