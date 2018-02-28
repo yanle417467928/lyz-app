@@ -57,6 +57,12 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
         return 0;
     }
 
+    @Override
+    public List<Long> findStoreIdByUid(Long uid) {
+
+        return this.adminUserStoreDAO.findStoreIdByUid(uid);
+    }
+
     private List<AdminUserStoreDO> statisticsAdminUserStore(List<AdminUserStoreDO> list1, List<AdminUserStoreDO> list2){
         List<AdminUserStoreDO> list = new ArrayList<>();
         for (int i = 0; i < list1.size(); i++) {

@@ -33,7 +33,7 @@ public interface MaCustomerDAO {
 
     Boolean isExistPhoneNumber(Long moblie);
 
-    List<CustomerPreDepositVO> findAllCusPredeposit(@Param("cityId") Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+    List<CustomerPreDepositVO> findAllCusPredeposit(@Param("cityId") Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
     CustomerPreDepositVO queryCusPredepositByCusId(Long cusId);
 

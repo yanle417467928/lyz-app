@@ -114,9 +114,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords) {
+    public PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerPreDepositVO> list = this.maCustomerDAO.findAllCusPredeposit(cityId, storeId, keywords);
+        List<CustomerPreDepositVO> list = this.maCustomerDAO.findAllCusPredeposit(cityId, storeId, keywords, storeIds);
         return new PageInfo<>(list);
     }
 

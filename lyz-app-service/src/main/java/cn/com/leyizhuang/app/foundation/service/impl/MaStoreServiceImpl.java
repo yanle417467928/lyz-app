@@ -264,4 +264,15 @@ public class MaStoreServiceImpl implements MaStoreService {
         return new PageInfo<>(pageStoreList);
     }
 
+    @Override
+    public List<SimpleStoreParam> findStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityIdAndStoreId(cityId, storeIds);
+        return storeList;
+    }
+
+    @Override
+    public List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds) {
+        return this.mastoreDAO.findStoresListByStoreId(storeIds);
+    }
+
 }

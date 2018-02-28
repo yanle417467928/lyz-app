@@ -13,10 +13,30 @@ public interface AdminUserStoreService {
 
     int batchSave(List<AdminUserStoreDO> adminUserStoreDOList);
 
+    /**
+     * @title   通过userid获取权限门店
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
     List<AdminUserStoreVO> findByUid(Long uid);
 
     void batchUpdateAndSave(List<AdminUserStoreDO> adminUserStoreDOList, Long uid);
 
     int batchDelete(List<AdminUserStoreDO> adminUserStoreDOList);
+
+    /**
+     * @title   通过userId查询权限门店ID列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    List<Long> findStoreIdByUid(Long uid);
 
 }
