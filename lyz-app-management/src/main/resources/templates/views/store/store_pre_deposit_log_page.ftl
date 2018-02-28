@@ -38,14 +38,14 @@
                         <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
                     </button>
                 </#if>
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findStorePreByCity(this.value)">
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByCity(this.value)" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
 
-                    <select name="storeType" id="storeType" class="form-control select" style="width:auto;"
-                            onchange="findStorePreByStoreType(this.value)">
+                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByStoreType(this.value)" data-live-search="true">
                         <option value="-1">选择门店类型</option>
                     <#if storeTypes??>
                         <#list storeTypes as storeType>

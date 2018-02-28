@@ -39,4 +39,15 @@ public interface AdminUserStoreService {
      */
     List<Long> findStoreIdByUid(Long uid);
 
+    /**
+     * @title   查询当前登录用户权限门店ID列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    List<Long> findStoreIdList();
+
 }

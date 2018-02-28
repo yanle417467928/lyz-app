@@ -82,7 +82,7 @@ public interface MaStoreService {
      */
     List<StoreVO> findSelfDeliveryStoresList();
 
-    PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType);
+    PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType, List<Long> storeIds);
 
     StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
 

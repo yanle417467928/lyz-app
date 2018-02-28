@@ -84,7 +84,8 @@ public interface MaStoreDAO {
      */
     List<StoreVO> findSelfDeliveryStoresList();
 
-    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
+    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords,
+                                                   @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
     StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
 

@@ -209,9 +209,9 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType) {
+    public PageInfo<StorePreDepositVO> findAllStorePredeposit(Integer page, Integer size, Long cityId, String keywords, String storeType, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<StorePreDepositVO> list = this.mastoreDAO.findAllStorePredeposit(cityId, keywords, storeType);
+        List<StorePreDepositVO> list = this.mastoreDAO.findAllStorePredeposit(cityId, keywords, storeType, storeIds);
         return new PageInfo<>(list);
     }
 

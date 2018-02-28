@@ -37,14 +37,24 @@
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
 
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByCity(this.value)">
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findCusByCity()" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findCusByStoreId()"   data-live-search="true" >
+                            onchange="findCusByStoreId()" data-live-search="true">
                         <option value="-1">选择门店</option>
+                    </select>
+
+                    <select name="status" id="status" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByStatus()" data-live-search="true">
+                        <option value="">选择订单状态</option>
+                        <#if photoOrderStatus??>
+                            <#list photoOrderStatus as status>
+                                <option value="${status}">${status.value}</option>
+                            </#list>
+                        </#if>
                     </select>
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
@@ -128,7 +138,7 @@
     $(function () {
         findCitylist()
         findStorelist();
-        showAvailableCredit(null,null,null);
+        showAvailableCredit(null,null,null,null);
         $('#btn_back').on('click', function () {
             window.history.back()
         });
@@ -151,6 +161,8 @@
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 })
                 $("#cityCode").append(city);
+                $('#cityCode').selectpicker('refresh');
+                $('#cityCode').selectpicker('render');
             }
         });
     }
@@ -159,7 +171,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findAllStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -179,7 +191,7 @@
         });
     }
 
-    function showAvailableCredit(keywords,cityId,storeId){
+    function showAvailableCredit(keywords,cityId,storeId,status){
         $("#dataGrid").bootstrapTable('destroy');
         $grid.init($('#dataGrid'), $('#toolbar'),'/rest/order/photo/page/grid', 'get', false, function (params) {
             return {
@@ -187,7 +199,8 @@
                 size: params.limit,
                 keywords: keywords,
                 cityId: cityId,
-                storeId: storeId
+                storeId: storeId,
+                status: status
             }
         }, [{
             checkbox: true,
@@ -259,20 +272,22 @@
             $grid.remove($('#dataGrid'), '/rest/order/photo', 'delete');
         });
     }
-    function findCusByCity(cityId) {
+    function findCusByCity() {
         initSelect("#storeCode", "选择门店");
         $("#queryCusInfo").val('');
         var storeId = $("#storeCode").val();
+        var cityId = $("#cityCode").val();
         var keywords = $('#queryCusInfo').val();
+        var status = $("#status").val();
         $("#dataGrid").bootstrapTable('destroy');
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
         if(cityId==-1){
             findStorelist();
             return false;
         };
         var store;
         $.ajax({
-            url: '/rest/stores/findAllStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -292,17 +307,29 @@
         });
     }
 
-    function findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
-        showAvailableCredit(keywords,cityId,storeId);
+    function findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status){
+        showAvailableCredit(keywords,cityId,storeId,status);
     }
 
     function findCusByStoreId() {
         $("#queryCusInfo").val('');
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
+        var status = $("#status").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
+
+    }
+
+    function findStorePreByStatus() {
+        $("#queryCusInfo").val('');
+        var storeId = $("#storeCode").val();
+        var cityId = $("#cityCode").val();
+        var status = $("#status").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        var keywords = $('#queryCusInfo').val();
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
 
     }
 
@@ -311,7 +338,8 @@
         $("#dataGrid").bootstrapTable('destroy');
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
+        var status = $("#status").val();
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId,status);
     }
 
 

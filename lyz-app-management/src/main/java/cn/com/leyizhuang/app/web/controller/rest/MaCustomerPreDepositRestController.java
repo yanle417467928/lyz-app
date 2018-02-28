@@ -53,13 +53,8 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     public GridDataVO<CustomerPreDepositVO> restCustomerPreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        //获取登录用户ID
-        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
-        List<Long> storeIds = new ArrayList<>();
-        if (null != shiroUser) {
-            //查询登录用户门店权限的门店ID
-            storeIds = this.adminUserStoreService.findStoreIdByUid(shiroUser.getId());
-        }
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         PageInfo<CustomerPreDepositVO> custmerPrePage = this.maCustomerService.findAllCusPredeposit(page, size, cityId, storeId, keywords, storeIds);
         return new GridDataVO<CustomerPreDepositVO>().transform(custmerPrePage.getList(), custmerPrePage.getTotal());
     }

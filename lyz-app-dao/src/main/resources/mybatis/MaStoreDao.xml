@@ -494,6 +494,10 @@
             AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
             OR s.store_name LIKE concat(concat('%',#{keywords}),'%'))
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY s.create_time DESC
     </select>
 

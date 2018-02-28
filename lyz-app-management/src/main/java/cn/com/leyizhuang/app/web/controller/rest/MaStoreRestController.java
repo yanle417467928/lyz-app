@@ -403,13 +403,8 @@ public class MaStoreRestController extends BaseRestController {
     public List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@PathVariable(value = "cityId") Long cityId) {
         logger.info("findStoresListByCityIdAndStoreId 后台查询该城市ID的门店列表(下拉框) 入参 cityId:{}", cityId);
         try {
-            //获取登录用户ID
-            ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
-            List<Long> storeIds = new ArrayList<>();
-            if (null != shiroUser) {
-                //查询登录用户门店权限的门店ID
-                storeIds = this.adminUserStoreService.findStoreIdByUid(shiroUser.getId());
-            }
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreId(cityId, storeIds);
             logger.info("findStoresListByCityIdAndStoreId ,后台查询该城市ID的门店列表(下拉框)成功", storesList);
             return storesList;
@@ -434,13 +429,8 @@ public class MaStoreRestController extends BaseRestController {
     public List<SimpleStoreParam> findStoresListByStoreId() {
         logger.info("findStoresListByStoreId 后台查询门店列表(下拉框)");
         try {
-            //获取登录用户ID
-            ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
-            List<Long> storeIds = new ArrayList<>();
-            if (null != shiroUser) {
-                //查询登录用户门店权限的门店ID
-                storeIds = this.adminUserStoreService.findStoreIdByUid(shiroUser.getId());
-            }
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
             logger.info("findStoresListByStoreId ,后台查询门店列表(下拉框)成功", storesList.size());
             return storesList;
