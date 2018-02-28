@@ -212,7 +212,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                     if ("SUCCESS".equals(maps.get("code"))) {
 
-                        //如果是待收货、门店自提单则需要返回第三方支付金额
+                        //返回第三方支付金额
                         if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
                             if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
                                 //支付宝退款
