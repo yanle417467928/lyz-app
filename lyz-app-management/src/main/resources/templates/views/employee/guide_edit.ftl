@@ -93,9 +93,6 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalCreditLimitAvailable" type="hidden" class="form-control"
-                                           id="originalCreditLimitAvailable" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
                                     <input name="creditLimitAvailable" type="text" class="form-control"
                                            id="creditLimitAvailable" readonly
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimitAvailable!''}</#if></#if>">
@@ -123,10 +120,6 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalCreditLimit" type="hidden" class="form-control"
-                                           id="originalCreditLimit"
-                                           readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
                                     <input name="creditLimit" type="text" class="form-control" id="creditLimit"
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.creditLimit!''}</#if></#if>">
 
@@ -140,9 +133,6 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name=" originalTempCreditLimit" type="hidden" class="form-control"
-                                           id="originalTempCreditLimit" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
                                     <input name="tempCreditLimit" type="text" class="form-control" id="tempCreditLimit"
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.tempCreditLimit!''}</#if></#if>">
                                 </div>
@@ -278,23 +268,15 @@
         }).on('success.form.bv', function (e) {
             e.preventDefault();
             var $form = $(e.target);
-            var origin = $form.serializeArray();
-            var data = {};
-            var originalCreditLimitAvailable = parseFloat($('#originalCreditLimitAvailable').val().replace(/,/g, ''));
-            var originalTempCreditLimit = parseFloat($('#originalTempCreditLimit').val().replace(/,/g, ''));
-            var tempCreditLimitAfterChange = parseFloat($('#tempCreditLimit').val().replace(/,/g, ''));
-            var originalCreditLimit = parseFloat($('#originalCreditLimit').val().replace(/,/g, ''));
+            var tempCreditLimit = parseFloat($('#tempCreditLimit').val().replace(/,/g, ''));
             var creditLimit = parseFloat($('#creditLimit').val().replace(/,/g, ''));
             var empId = $('#id').val();
             var modifyReason = $("#modifyReason").val();
             var lastUpdateTime = $("#lastUpdateTime").val();
             data = {
                 'empId': empId,
-                'originalCreditLimitAvailable': originalCreditLimitAvailable,
-                'originalTempCreditLimit': originalTempCreditLimit,
-                'originalCreditLimit': originalCreditLimit,
                 'creditLimit': creditLimit,
-                'tempCreditLimit': tempCreditLimitAfterChange,
+                'tempCreditLimit': tempCreditLimit,
                 "modifyReason": modifyReason,
                 "lastUpdateTime": lastUpdateTime,
             }
@@ -318,7 +300,6 @@
                     },
                     success: function (result) {
                         if (0 === result.code) {
-                            /*      saveCreditChange();*/
                             window.location.href = document.referrer;
                         } else {
                             clearTimeout($global.timer);

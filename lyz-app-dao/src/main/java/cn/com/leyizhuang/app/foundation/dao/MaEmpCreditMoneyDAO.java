@@ -14,7 +14,7 @@ public interface MaEmpCreditMoneyDAO {
 
     int  updateGuideCreditMoneyByRepayment(@Param(value = "sellerId") Long sellerId, @Param(value = "availableCreditMoney") BigDecimal availableCreditMoney,@Param(value = "lastUpdateTime")Date lastUpdateTime);
 
-    void clearTempCreditLimit(Long id);
+    int clearTempCreditLimit(GuideCreditMoneyDetail guideCreditMoneyDetail);
 
     List<GuideCreditChangeDetailDO> queryAvailableCreditMoneyChangePage(Long id);
 
@@ -22,7 +22,7 @@ public interface MaEmpCreditMoneyDAO {
 
     List<GuideCreditChangeDetailDO> queryFixedCreditMoneyChangePage(Long id);
 
-    void saveCreditChange(GuideCreditChangeDetailDO guideCreditChangeDetailDO);
+    void saveCreditChange(GuideCreditChangeDetail guideCreditChangeDetail);
 
     void saveCreditLimitAvailableChange( GuideAvailableCreditChange guideAvailableCreditChange);
 

@@ -882,6 +882,7 @@
         UPDATE ord_arrears_audit
         SET
         status = #{status}
+        update_time = now(),
         WHERE ord_no = #{orderNumber}
     </update>
 

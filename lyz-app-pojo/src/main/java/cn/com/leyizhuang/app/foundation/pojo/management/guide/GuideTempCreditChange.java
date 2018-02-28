@@ -23,4 +23,8 @@ public class GuideTempCreditChange {
     private BigDecimal tempCreditLimitChangeAmount;
    //临时额度改变后余量
     private BigDecimal tempCreditLimitAfterChange;
+    //变更类型
+    private String changeType;
+    //变更类型描述
+    private String changeTypeDesc;
 }

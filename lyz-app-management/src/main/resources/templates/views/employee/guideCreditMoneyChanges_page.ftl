@@ -107,13 +107,14 @@
                         return '订单还款';
                     } else if ('TEMPORARY_CLEAR' == value) {
                         return '临时额度清零';
+                    }else if ('FIXEDAMOUNT_ADJUSTMENT' == value) {
+                        return '固定额度调整';
+                    }else if ('AVALIABLED_CHANGE_BY_FIXE' == value) {
+                        return '可用额度因固定额度调整修改';
+                    }else if ('AVALIABLED_CHANGE_BY_TEMP' == value) {
+                        return '可用额度因临时额度调整修改';
                     }
                 }
-            },
-            {
-                field: 'changeTypeDesc',
-                title: '变更描述',
-                align: 'center'
             },
             {
                 field: 'createTime',
@@ -182,13 +183,14 @@
                         return '订单还款';
                     } else if ('TEMPORARY_CLEAR' == value) {
                         return '临时额度清零';
+                    }else if ('FIXEDAMOUNT_ADJUSTMENT' == value) {
+                        return '固定额度调整';
+                    }else if ('AVALIABLED_CHANGE_BY_FIXE' == value) {
+                        return '可用额度因固定额度调整修改';
+                    }else if ('AVALIABLED_CHANGE_BY_TEMP' == value) {
+                        return '可用额度因临时额度调整修改';
                     }
                 }
-            },
-            {
-                field: 'changeTypeDesc',
-                title: '变更描述',
-                align: 'center'
             },
             {
                 field: 'createTime',
@@ -256,13 +258,14 @@
                         return '订单还款';
                     } else if ('TEMPORARY_CLEAR' == value) {
                         return '临时额度清零';
+                    }else if ('FIXEDAMOUNT_ADJUSTMENT' == value) {
+                        return '固定额度调整';
+                    }else if ('AVALIABLED_CHANGE_BY_FIXE' == value) {
+                        return '可用额度因固定额度调整修改';
+                    }else if ('AVALIABLED_CHANGE_BY_TEMP' == value) {
+                        return '可用额度因临时额度调整修改';
                     }
                 }
-            },
-            {
-                field: 'changeTypeDesc',
-                title: '变更描述',
-                align: 'center'
             },
             {
                 field: 'createTime',

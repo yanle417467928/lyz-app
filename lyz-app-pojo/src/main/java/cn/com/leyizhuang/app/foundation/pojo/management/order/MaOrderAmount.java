@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.order;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
- * 订单账款明细
+ * 订单收款明细
  *
  * @author liuh
  * Created on 2018-1-18
@@ -47,4 +49,5 @@ public class MaOrderAmount {
      * 日期
      */
     private String date;
+
 }

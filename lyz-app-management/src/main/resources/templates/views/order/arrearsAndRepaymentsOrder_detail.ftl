@@ -607,14 +607,10 @@
                 serialNumber: {
                     message: '流水号校验失败',
                     validators: {
-                        notEmpty: {
-                            message: '流水号不允许为空'
-                        }, stringLength: {
-                            min: 1,
-                            max: 10,
-                            message: '流水号长度必须在1~10位之间'
+                        regexp: {
+                            regexp: /^\d{6}$/,
+                            message: '流水号为6位数字'
                         }
-
                     }
                 },
                 date: {
