@@ -1,18 +1,22 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +29,9 @@ public class MaStoreRestController extends BaseRestController {
 
     @Autowired
     private MaStoreService maStoreService;
+
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
 
     /**
      * 初始门店页面
@@ -382,4 +389,57 @@ public class MaStoreRestController extends BaseRestController {
             return null;
         }
     }
+
+    /**
+     * @title   根据城市和门店权限查询门店列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    @GetMapping(value = "/findStoresListByCityIdAndStoreId/{cityId}")
+    public List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@PathVariable(value = "cityId") Long cityId) {
+        logger.info("findStoresListByCityIdAndStoreId 后台查询该城市ID的门店列表(下拉框) 入参 cityId:{}", cityId);
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreId(cityId, storeIds);
+            logger.info("findStoresListByCityIdAndStoreId ,后台查询该城市ID的门店列表(下拉框)成功", storesList);
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findStoresListByCityIdAndStoreId EXCEPTION,发生未知错误，后台查询该城市ID的门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * @title   根据门店权限查询门店列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    @GetMapping(value = "/findStoresListByStoreId")
+    public List<SimpleStoreParam> findStoresListByStoreId() {
+        logger.info("findStoresListByStoreId 后台查询门店列表(下拉框)");
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+            logger.info("findStoresListByStoreId ,后台查询门店列表(下拉框)成功", storesList.size());
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findStoresListByStoreId EXCEPTION,发生未知错误，后台查询门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
 }

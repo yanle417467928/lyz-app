@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -29,6 +32,9 @@ public class MaCustomerPreDepositLogRestController extends BaseRestController{
     @Autowired
     private MaCusPreDepositLogService maCusPreDepositLogService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     /**
      * @title   顾客预存款变更明细列表
      * @descripe
@@ -42,7 +48,9 @@ public class MaCustomerPreDepositLogRestController extends BaseRestController{
     public GridDataVO<CusPreDepositLogVO> restCustomerPreDepositPageGird(Integer offset, Integer size, Long cusId, String keywords, Long cityId, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CusPreDepositLogVO> custmerPreLogPage = this.maCusPreDepositLogService.findAllCusPredepositLog(page, size, cusId, cityId, storeId, keywords);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<CusPreDepositLogVO> custmerPreLogPage = this.maCusPreDepositLogService.findAllCusPredepositLog(page, size, cusId, cityId, storeId, keywords, storeIds);
         return new GridDataVO<CusPreDepositLogVO>().transform(custmerPreLogPage.getList(), custmerPreLogPage.getTotal());
     }
 

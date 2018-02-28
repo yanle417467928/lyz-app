@@ -34,9 +34,9 @@ public class MaCusLebiLogServiceImpl implements MaCusLebiLogService {
     private MaCustomerService maCustomerService;
 
     @Override
-    public PageInfo<CusLebiLogVO> findAllCusLebiLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords) {
+    public PageInfo<CusLebiLogVO> findAllCusLebiLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CusLebiLogVO> list = this.maCusLebiLogDAO.findAllCusLebiLog(cusId, cityId, storeId, keywords);
+        List<CusLebiLogVO> list = this.maCusLebiLogDAO.findAllCusLebiLog(cusId, cityId, storeId, keywords,storeIds);
         return new PageInfo<>(list);
     }
 

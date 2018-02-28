@@ -494,6 +494,10 @@
             AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
             OR s.store_name LIKE concat(concat('%',#{keywords}),'%'))
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY s.create_time DESC
     </select>
 
@@ -581,6 +585,36 @@
         ORDER BY
         s.create_time
         DESC
+    </select>
+
+    <select id="findStoresListByCityIdAndStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        LEFT JOIN city c on s.city_code = c.code
+        WHERE (1 = 1)
+        <if test="null != cityId and cityId != -1">
+          AND c.city_id = #{cityId}
+        </if>
+        AND s.store_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findStoresListByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+        s.store_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
 </mapper>

@@ -38,14 +38,14 @@
                             <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
                         </button>
                     </#if>
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByCity(this.value)">
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findCusByCity(this.value)" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findCusByStoreId()"   data-live-search="true" >
+                            onchange="findCusByStoreId()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
 
@@ -174,7 +174,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -280,7 +280,7 @@
         };
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

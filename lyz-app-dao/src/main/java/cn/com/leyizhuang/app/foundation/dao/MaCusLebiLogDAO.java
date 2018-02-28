@@ -15,7 +15,8 @@ import java.util.List;
 public interface MaCusLebiLogDAO {
     void save(CustomerLeBiVariationLog customerLeBiVariationLog);
 
-    List<CusLebiLogVO> findAllCusLebiLog(@Param("cusId") Long cusId, @Param("cityId")Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+    List<CusLebiLogVO> findAllCusLebiLog(@Param("cusId") Long cusId, @Param("cityId")Long cityId, @Param("storeId")Long storeId,
+                                         @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
     CusLebiLogVO findCusLebiLogById(Long id);
 }

@@ -6,19 +6,19 @@
     <select id="findEmpTempCreditByUserId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse">
         SELECT
-        l.id,
-        l.change_type,
+            l.id,
+            l.change_type,
             l.change_type_desc                type,
-        l.create_time,
+            l.create_time,
             l.reference_number,
             o.customer_name,
-        o.customer_phone,
-        t.temp_credit_limit_change_amount change_money
+            o.customer_phone,
+            t.temp_credit_limit_change_amount change_money
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
-            LEFT JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
-        LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
-        AND e.emp_id = #{userId}
+            INNER JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
+            INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
+                                          AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 
@@ -36,9 +36,9 @@
             a.credit_limit_available_change_amount change_money
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
-            LEFT JOIN emp_available_credit_change_log a ON a.id = l.available_credit_change_id
-            LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
-                                         AND e.emp_id = #{userId}
+        INNER JOIN emp_available_credit_change_log a ON a.id = l.available_credit_change_id
+        INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
+        AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 
@@ -55,8 +55,8 @@
         f.fixed_credit_limit_change_amount change_money
         FROM emp_credit_money_change_log l
         INNER JOIN emp_employee e ON e.emp_id = l.emp_id
-        LEFT JOIN emp_fixed_credit_change_log f ON f.id = l.fixed_credit_change_id
-        LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
+        INNER JOIN emp_fixed_credit_change_log f ON f.id = l.fixed_credit_change_id
+        INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
         AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>

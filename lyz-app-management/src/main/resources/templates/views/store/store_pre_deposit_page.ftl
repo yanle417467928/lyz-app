@@ -35,12 +35,12 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
 
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findStorePreByCity(this.value)">
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByCity(this.value)" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="storeType" id="storeType" class="form-control select" style="width:auto;"
-                            onchange="findStorePreByStoreType(this.value)">
+                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByStoreType(this.value)" data-live-search="true">
                         <option value="-1">选择门店类型</option>
                         <#if storeTypes??>
                             <#list storeTypes as storeType>
