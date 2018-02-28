@@ -18,6 +18,6 @@ public class ScanningUnpaidOrderTask implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println(new Date() + "：开始扫描待付款订单");
         MaOrderService MaOrderService = (MaOrderService) ApplicationContextUtil.getBean("maOrderService");
-        MaOrderService.scanningUnpaidOrder();
+        MaOrderService.findScanningUnpaidOrder();
     }
 }

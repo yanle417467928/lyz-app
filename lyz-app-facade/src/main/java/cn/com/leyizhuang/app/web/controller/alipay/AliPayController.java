@@ -414,7 +414,12 @@ public class AliPayController {
             return resultDTO;
         }
 
-        String totalFee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
+        if (orderBillingDetails.getArrearage() != (orderArrearsAuditDO.getOrderMoney() - orderArrearsAuditDO.getRealMoney())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款金额有误，请联系管理员核查！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        String totalFee = CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getArrearage());
         String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);

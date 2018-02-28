@@ -8,8 +8,10 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -78,6 +80,8 @@ public class WeChatPayController {
 
     @Resource
     private TransactionalSupportService supportService;
+
+
 
     /**
      * 微信支付订单
@@ -246,7 +250,18 @@ public class WeChatPayController {
             logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        String totlefee = CountUtil.retainTwoDecimalPlaces(orderArrearsAuditDO.getOrderMoney());
+        OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+        if (null == orderBillingDetails){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为查询到此订单账单明细！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (orderBillingDetails.getArrearage() != (orderArrearsAuditDO.getOrderMoney() - orderArrearsAuditDO.getRealMoney())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款金额有误，请联系管理员核查！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        String totlefee = CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getArrearage());
         Double totlefeeParse = Double.parseDouble(totlefee);
         String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
 
