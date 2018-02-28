@@ -173,7 +173,7 @@ public class CustomerController {
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
             //如果电话号码已经存在
-            if (phoneUser != null && (StringUtils.isBlank(phoneUser.getOpenId().trim()))) {
+            if (phoneUser != null && (StringUtils.isBlank(phoneUser.getOpenId()))) {
                 phoneUser.setOpenId(registryParam.getOpenId());
                 phoneUser.setNickName(registryParam.getNickName());
                 phoneUser.setPicUrl(registryParam.getPicUrl());
