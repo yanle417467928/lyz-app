@@ -155,9 +155,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     }
 
     @Override
-    public void updateReturnOrderStatus(String returnNumber,String status) {
-        if (StringUtils.isNotBlank(returnNumber)&&StringUtils.isNotBlank(status)) {
-            maReturnOrderDAO.updateReturnOrderStatus(returnNumber,status);
+    public void updateReturnOrderStatus(String returnNumber, String status) {
+        if (StringUtils.isNotBlank(returnNumber) && StringUtils.isNotBlank(status)) {
+            maReturnOrderDAO.updateReturnOrderStatus(returnNumber, status);
         }
     }
 
@@ -188,7 +188,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException  {
+    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException {
         Date date = new Date();
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
@@ -202,7 +202,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             //查看门店下 该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), maOrderGoodsInfo.getGid());
             if (null == storeInventory) {
-                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:"+maReturnOrderDetailInfo.getStoreId()+"商品id:" + maOrderGoodsInfo.getGid());
+                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + maOrderGoodsInfo.getGid());
             }
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //更新门店库存数量及可用量
@@ -238,18 +238,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //生成ebs接口表数据
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maReturnOrderDetailInfo.getOrderNo());
         MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbs = new MaStoreReturnOrderAppToEbsBaseInfo();
-        maStoreReturnOrderAppToEbs.setReturnDate(maReturnOrderDetailInfo.getReturnTime());
-        maStoreReturnOrderAppToEbs.setMainReturnNumber(maReturnOrderDetailInfo.getReturnNo());
-        maStoreReturnOrderAppToEbs.setRtHeaderId(maReturnOrderDetailInfo.getRoid());
         maStoreReturnOrderAppToEbs.setSobId(maOrderTempInfo.getSobId());
-        maStoreReturnOrderAppToEbs.setDiySiteCode(maReturnOrderDetailInfo.getStoreCode());
-        maStoreReturnOrderAppToEbs.setMainOrderNumber(maReturnOrderDetailInfo.getOrderNo());
-        maStoreReturnOrderAppToEbs.setSellerId(maOrderTempInfo.getSalesConsultId());
-        maStoreReturnOrderAppToEbs.setUserId(maOrderTempInfo.getCustomerId());
-        maStoreReturnOrderAppToEbs.setCreateTime(new Date());
-        maStoreReturnOrderAppToEbs.setReturnType(maReturnOrderDetailInfo.getReturnType());
-        maStoreReturnOrderAppToEbs.setDeliverTypeTitle(maOrderTempInfo.getDeliveryType());
-        maStoreReturnOrderAppToEbs.setStoreOrgCode(maOrderTempInfo.getStoreStructureCode());
+        maStoreReturnOrderAppToEbs.setMainOrderNumber(maOrderTempInfo.getOrderNumber());
+        maStoreReturnOrderAppToEbs.setReturnDate(date);
+        maStoreReturnOrderAppToEbs.setReturnNumber(maReturnOrderDetailInfo.getReturnNo());
         maReturnOrderDAO.saveAppToEbsReturnOrderInf(maStoreReturnOrderAppToEbs);
 
         //退款
@@ -438,7 +430,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             }
         }
         //更新订单状态
-        this.updateReturnOrderStatus(returnNumber,AppReturnOrderStatus.FINISHED.toString());
+        this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
     }
 }
 

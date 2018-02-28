@@ -155,6 +155,14 @@ public interface MaOrderService {
     List<MaOrderBillingPaymentDetailResponse> getMaOrderBillingPaymentDetailByOrderNumber(String orderNmber);
 
     /**
+     * 获取欠款应付金额
+     *
+     * @param orderNmber 订单号
+     * @return
+     */
+    String queryRepaymentAmount(String orderNmber);
+
+    /**
      * 后台根据订单号获取物流详情
      *
      * @param orderNmber 订单号
