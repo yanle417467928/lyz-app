@@ -362,8 +362,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
         if (apply != null){
-
-            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+            if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
+                // dai审核状态的单子才可以驳回
+                this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+            }
         }else{
             throw new Exception("预存款提现，申请单不存在！");
         }
@@ -464,8 +466,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         StPreDepositWithdraw apply = stPreDepositWithdrawDAO.findById(applyId);
         if (apply != null){
-
-            this.checkStApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+            if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
+                // dai审核状态的单子才可以驳回
+                this.checkStApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKRETURN);
+            }
         }else{
             throw new Exception("预存款提现，申请单不存在！");
         }
