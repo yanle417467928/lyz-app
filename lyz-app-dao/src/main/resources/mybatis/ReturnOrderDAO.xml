@@ -248,11 +248,11 @@
         return_status
         FROM ord_return_base_info orbi
         WHERE
-         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             (orbi.creator_id = #{userId}
             AND orbi.creator_identityType = #{identityType})
-             or cus_id = #{userId}
-         </if>
+            or cus_id = #{userId}
+        </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             orbi.creator_id = #{userId}
             AND orbi.creator_identityType = #{identityType}
@@ -310,11 +310,11 @@
     <select id="getReturnOrderGoodsDetails" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
-            ogi.return_qty qty,
+        ogi.return_qty qty,
             ogi.retail_price,
-            ogi.goods_line_type,
+        ogi.goods_line_type goodsType,
             gg.sku_name,
-            gg.gid         goodsId,
+        gg.gid goodsId,
             gg.goods_specification,
             gg.cover_image_uri,
             gg.goods_unit

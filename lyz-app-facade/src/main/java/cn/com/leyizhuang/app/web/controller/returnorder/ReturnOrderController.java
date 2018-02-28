@@ -399,9 +399,15 @@ public class ReturnOrderController {
             Integer identityType = param.getIdentityType();
             String orderNo = param.getOrderNo();
             OrderBaseInfo order = appOrderService.getOrderByOrderNumber(orderNo);
+            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNo);
             //不是已完成订单不可申请退货
             if (!AppOrderStatus.FINISHED.equals(order.getStatus())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单状态不可退货!", "");
+                logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (!orderBillingDetails.getIsPayUp()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单还未付清欠款不可退货!", "");
                 logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -1067,15 +1073,16 @@ public class ReturnOrderController {
         returnOrderGoodsResponse.setSku(goodsInfo.getSku());
         returnOrderGoodsResponse.setSkuName(goodsInfo.getSkuName());
         returnOrderGoodsResponse.setRetailPrice(goodsInfo.getRetailPrice());
-        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
         returnOrderGoodsResponse.setOrderQuantity(goodsInfo.getOrderQuantity());
         returnOrderGoodsResponse.setReturnableQuantity(goodsInfo.getReturnableQuantity());
         returnOrderGoodsResponse.setPromotionId(goodsInfo.getPromotionId());
         returnOrderGoodsResponse.setReturnPriority(goodsInfo.getReturnPriority());
         returnOrderGoodsResponse.setGoodsLine(goodsInfo.getGoodsLineType().getValue());
-
-        ActBaseDO actBaseDO = appActService.findById(Long.parseLong(goodsInfo.getPromotionId()));
-        returnOrderGoodsResponse.setPromotionTitle(null != actBaseDO ? actBaseDO.getTitle() : "无促销");
+        returnOrderGoodsResponse.setReturnPrice(goodsInfo.getReturnPrice());
+        if (null != goodsInfo.getPromotionId()) {
+            ActBaseDO actBaseDO = appActService.findById(Long.parseLong(goodsInfo.getPromotionId()));
+            returnOrderGoodsResponse.setPromotionTitle(null != actBaseDO ? actBaseDO.getTitle() : "无促销");
+        }
         return returnOrderGoodsResponse;
     }
 

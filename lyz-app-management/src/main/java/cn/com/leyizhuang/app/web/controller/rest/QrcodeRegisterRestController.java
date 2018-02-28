@@ -75,6 +75,8 @@ public class QrcodeRegisterRestController extends BaseRestController {
         AppCustomer appCustomer = null;
         try {
             appCustomer = customerService.findByMobile(phone);
+
+
             if (appCustomer != null) {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号已经注册", null);
             } else {

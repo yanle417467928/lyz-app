@@ -18,4 +18,8 @@ public interface AdminUserStoreDAO {
 
     List<AdminUserStoreVO> findByUid(Long uid);
 
+    List<AdminUserStoreDO> findAdminUserStoreDOByUid(Long uid);
+
+    int batchDelete(@Param("list") List<AdminUserStoreDO> adminUserStoreDOList);
+
 }
