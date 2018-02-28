@@ -127,6 +127,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         log.setChangeTypeDesc("顾客预存款提现");
         this.cusPreDepositLogServiceImpl.save(log);
 
+        // TODO 调预存款提现接口
     }
 
     @Override
@@ -170,6 +171,8 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         log.setBalance(CountUtil.add(preDeposit.getBalance(), -subBalance));
         log.setChangeTypeDesc("门店预存款提现");
         this.storePreDepositLogService.save(log);
+
+        // TODO 调预存款提现接口
     }
 
     @Override
@@ -223,6 +226,8 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), subBalance));
             log.setChangeTypeDesc("顾客预存款提现取消");
             this.cusPreDepositLogServiceImpl.save(log);
+
+            // TODO 调预存款退款接口
         }else{
             throw new RuntimeException("取消申请失败");
         }
@@ -262,6 +267,8 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setBalance(CountUtil.add(preDeposit.getBalance(), subBalance));
             log.setChangeTypeDesc("门店预存款提现取消");
             this.storePreDepositLogService.save(log);
+
+            // TODO 调预存款退款接口
         }else {
             throw new RuntimeException("取消提现申请失败");
         }
@@ -286,7 +293,6 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         stPreDepositWithdraw.setCheckCode(shiroUser.getName());
         stPreDepositWithdraw.setCheckName(shiroUser.getLoginName());
 
-        // TODO 调用打款方法
 
         // TODO 短信通知
 
@@ -384,6 +390,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
      * 审核顾客预存款提现申请单
      * @param cusPreDepositWithdraw
      */
+    @Transactional
     public void checkCusApply(CusPreDepositWithdraw cusPreDepositWithdraw,ShiroUser shiroUser,PreDepositWithdrawStatus status){
 
         if (cusPreDepositWithdraw == null){
@@ -401,7 +408,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             // 申请退回
             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(cusPreDepositWithdraw.getApplyCusId());
             //退回预存款
-            int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(cusPreDepositWithdraw.getId(),cusPreDepositWithdraw.getWithdrawAmount(),new Timestamp(System.currentTimeMillis()),customerPreDeposit.getLastUpdateTime());
+            int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(cusPreDepositWithdraw.getApplyCusId(),cusPreDepositWithdraw.getWithdrawAmount(),new Timestamp(System.currentTimeMillis()),customerPreDeposit.getLastUpdateTime());
             if (1 != row) {
                 throw new RuntimeException("提现申请失败");
             }
@@ -416,15 +423,15 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setChangeTypeDesc("顾客预存款提现退回");
             this.cusPreDepositLogServiceImpl.save(log);
 
-            // TODO 发送短信
+            // TODO 调预存款退款接口
+
+            //  发送短信
             this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(),cusPreDepositWithdraw.getApplyNo(),cusPreDepositWithdraw.getStatus());
 
         }else if (status.equals(PreDepositWithdrawStatus.REMITED)){
             // 打款
 
-            // TODO 调用打款接口
-
-            // TODO 短信通知
+            //  短信通知
             this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(),cusPreDepositWithdraw.getApplyNo(),cusPreDepositWithdraw.getStatus());
         }
     }
@@ -503,7 +510,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)){
             // 申请退回
             StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(stPreDepositWithdraw.getApplyStId());
-            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getId(),stPreDepositWithdraw.getWithdrawAmount(),preDeposit.getLastUpdateTime());
+            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getApplyStId(),stPreDepositWithdraw.getWithdrawAmount(),preDeposit.getLastUpdateTime());
             if (1 != row) {
                 throw new RuntimeException("提现申请失败");
             }
@@ -518,15 +525,15 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setChangeTypeDesc("门店预存款提现退回");
             this.cusPreDepositLogServiceImpl.save(log);
 
-            // TODO 发送短信
+            // TODO 调预存款退款接口
+
+            //  发送短信
             this.sendSms(stPreDepositWithdraw.getApplyStPhone(),stPreDepositWithdraw.getApplyNo(),stPreDepositWithdraw.getStatus());
 
         }else if(status.equals(PreDepositWithdrawStatus.REMITED)){
             // 打款
 
-            // TODO 调用打款接口
-
-            // TODO 短信通知
+            //  短信通知
             this.sendSms(stPreDepositWithdraw.getApplyStPhone(),stPreDepositWithdraw.getApplyNo(),stPreDepositWithdraw.getStatus());
         }
     }
