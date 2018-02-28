@@ -290,7 +290,11 @@ function chooseStore(tableId) {
 
             // 此商品未添加过
             if (flag) {
-                str += "&nbsp;<label id='stores" +item.storeId+ "' style='margin-bottom: 12px;' class='label label-success'>"+item.storeName+"</label>"
+                str += "<label id='stores" +item.storeId+ "' style='margin-right: 6px;' class='label label-success'>"+item.storeName;
+                str += '&nbsp;<span onclick="deleteHtml(';
+                str += "'stores" +item.storeId + "'";
+                str += ')"';
+                str += ">×</span></label>";
             }
 
         }
@@ -318,9 +322,12 @@ function chooseCity(tableId) {
                 flag = false;
             }
 
-            // 此商品未添加过
             if (flag) {
-                str += "&nbsp;<label id='citys" +item.cityId+ "' style='margin-bottom: 12px;' class='label label-success'>"+item.name+"</label>"
+                str += "<label id='citys" +item.cityId+ "' style='margin-right: 6px;' class='label label-success'>"+item.name;
+                str += '&nbsp;<span onclick="deleteHtml(';
+                str += "'citys" +item.cityId + "'";
+                str += ')"';
+                str += ">×</span></label>";
             }
 
         }
@@ -362,5 +369,9 @@ function findCityByNameOrCode() {
     var queryCityInfo = $("#queryCityInfo").val();
     $("#cityDataGrid").bootstrapTable('destroy');
     initCityGrid(queryCityInfo);
+}
+
+function deleteHtml(id){
+    $('#' + id).remove();
 }
 

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -35,6 +36,9 @@ public class MaCustomerLebiRestController extends BaseRestController{
     @Autowired
     private MaCustomerService maCustomerService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     /**
      * @title   获取顾客乐币列表
      * @descripe
@@ -48,7 +52,9 @@ public class MaCustomerLebiRestController extends BaseRestController{
     public GridDataVO<CustomerLebiVO> restCustomerPreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CustomerLebiVO> customerLebiVOPageInfo = this.maCustomerService.findAllCusLebi(page, size, cityId, storeId, keywords);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<CustomerLebiVO> customerLebiVOPageInfo = this.maCustomerService.findAllCusLebi(page, size, cityId, storeId, keywords, storeIds);
         return new GridDataVO<CustomerLebiVO>().transform(customerLebiVOPageInfo.getList(), customerLebiVOPageInfo.getTotal());
     }
 

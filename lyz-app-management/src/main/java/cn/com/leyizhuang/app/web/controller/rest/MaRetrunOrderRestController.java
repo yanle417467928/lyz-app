@@ -148,7 +148,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
         }
         try {
             ShiroUser shiroUser = this.getShiroUser();
-            MaOrdReturnBilling maOrdReturnBillingList = maReturnOrderService.findReturnOrderBillingList(returnNumber);
+            MaOrdReturnBilling maOrdReturnBillingList = maReturnOrderService.findReturnOrderBillingList(maReturnOrderDetailInfo.getRoid());
             if (null == maOrdReturnBillingList) {
                 logger.warn("returnOrderReceive OUT,后台到店退货单收货失败,该退单支付明细为空");
                 throw new RuntimeException("收货失败，该退单支付明细为空");

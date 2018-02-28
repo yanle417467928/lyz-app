@@ -29,8 +29,25 @@
         DELETE FROM admin_user_store
         WHERE id IN
           <foreach collection="list" item="item" open="(" close=")" separator=",">
-              ${item.id}
+              #{item.id}
           </foreach>
     </delete>
+
+    <select id="findStoreIdByUid" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT DISTINCT st.store_id FROM (
+            SELECT us.store_id
+            FROM admin_user_store us
+            LEFT JOIN st_store s ON s.store_id = us.store_id
+            WHERE us.uid = #{uid}
+                AND s.store_name IS NOT NULL
+            UNION ALL
+            SELECT s.store_id
+            FROM admin_user_store us
+            LEFT JOIN city c ON c.city_id = us.city_id
+            LEFT JOIN st_store s ON s.city_id = c.city_id
+            WHERE us.uid = #{uid}
+                AND c.name IS NOT NULL
+                AND s.store_id IS NOT NULL) st
+    </select>
 
 </mapper>

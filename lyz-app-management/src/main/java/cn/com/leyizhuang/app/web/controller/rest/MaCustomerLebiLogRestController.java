@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCusLebiLogService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CusLebiLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -30,6 +33,9 @@ public class MaCustomerLebiLogRestController extends BaseRestController {
     @Autowired
     private MaCusLebiLogService maCusLebiLogService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     /**
      * @title   顾客乐币变更明细列表
      * @descripe
@@ -43,7 +49,9 @@ public class MaCustomerLebiLogRestController extends BaseRestController {
     public GridDataVO<CusLebiLogVO> restCustomerLebiPageGird(Integer offset, Integer size, Long cusId, String keywords, Long cityId, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CusLebiLogVO> cusLebiLogVOPageInfo = this.maCusLebiLogService.findAllCusLebiLog(page, size, cusId, cityId, storeId, keywords);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<CusLebiLogVO> cusLebiLogVOPageInfo = this.maCusLebiLogService.findAllCusLebiLog(page, size, cusId, cityId, storeId, keywords, storeIds);
         return new GridDataVO<CusLebiLogVO>().transform(cusLebiLogVOPageInfo.getList(), cusLebiLogVOPageInfo.getTotal());
     }
 

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.returnorder;
 
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import lombok.*;
 
 /**
@@ -45,6 +46,10 @@ public class ReturnOrderBilling {
      * 线上支付金额
      */
     private Double onlinePay;
+    /**
+     * 第三方支付方式
+     */
+    private OnlinePayType onlinePayType;
     /**
      * 退现金
      */

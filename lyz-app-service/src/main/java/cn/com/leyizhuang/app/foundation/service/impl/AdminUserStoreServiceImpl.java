@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.dao.AdminUserStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.AdminUserStoreVO;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +57,24 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
             return this.adminUserStoreDAO.batchDelete(adminUserStoreDOList);
         }
         return 0;
+    }
+
+    @Override
+    public List<Long> findStoreIdByUid(Long uid) {
+
+        return this.adminUserStoreDAO.findStoreIdByUid(uid);
+    }
+
+    @Override
+    public List<Long> findStoreIdList() {
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        List<Long> storeIds = new ArrayList<>();
+        if (null != shiroUser) {
+            //查询登录用户门店权限的门店ID
+            storeIds = this.adminUserStoreDAO.findStoreIdByUid(shiroUser.getId());
+        }
+        return storeIds;
     }
 
     private List<AdminUserStoreDO> statisticsAdminUserStore(List<AdminUserStoreDO> list1, List<AdminUserStoreDO> list2){

@@ -35,8 +35,8 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
 
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            onchange="findCusByCity(this.value)">
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findCusByCity(this.value)" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
@@ -176,7 +176,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -479,7 +479,7 @@
         };
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

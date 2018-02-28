@@ -79,10 +79,8 @@
                 <p>您确认要将临时额度清零吗？</p>
             </div>
             <div class="modal-footer">
-                <input type="hidden" id="delId"/>
                 <input type="hidden" id="tempCreditLimit"/>
-                <input type="hidden" id="creditLimitAvailable"/>
-                <a  onclick="clearSubmit()" class="btn btn-danger" data-dismiss="modal">确定</a>
+                <a  onclick="clearSubmit(this.value)" class="btn btn-danger" data-dismiss="modal" id="delId" value="">确定</a>
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
             </div>
         </div><!-- /.modal-content -->
@@ -204,7 +202,7 @@
                 title: '操作',
                 align: 'center',
                 formatter: function(value,row) {
-                    return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.id+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="clearTempCreditLimit('+row.id+','+row.guideCreditMoney.tempCreditLimit+','+row.guideCreditMoney.creditLimitAvailable+')"> 手动清零</button>';
+                    return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.id+')"> 查看明细</button><button class="btn  btn-danger btn-sm" style="margin-left: 10px" onclick="clearTempCreditLimit('+row.id+','+row.guideCreditMoney.tempCreditLimit+')"> 手动清零</button>';
                 }
             }
         ]);
@@ -436,29 +434,20 @@
         });
     }
 
-     function clearTempCreditLimit(id,tempCreditLimit,creditLimitAvailable){
+     function clearTempCreditLimit(id,tempCreditLimit){
          $('#delId').val(id);
          $('#tempCreditLimit').val(tempCreditLimit);
-         $('#creditLimitAvailable').val(creditLimitAvailable);
          $('#delcfmModel').modal();
     }
 
-    function clearSubmit(){
-        var delId=$.trim($("#delId").val());
+    function clearSubmit(id){
         var tempCreditLimit= $('#tempCreditLimit').val();
-        var creditLimitAvailable= $('#creditLimitAvailable').val();
         if(tempCreditLimit==0){
            $notify.warning('临时额度已为0');
            return false
         }
-            var originalCreditLimitAvailable = parseFloat(creditLimitAvailable);
-            var originalTempCreditLimit = parseFloat(tempCreditLimit);
-            var tempCreditLimitAfterChange = parseFloat(0);
         data = {
-            'empId': delId,
-            'originalCreditLimitAvailable': originalCreditLimitAvailable,
-            'originalTempCreditLimit': originalTempCreditLimit,
-            'tempCreditLimit': tempCreditLimitAfterChange,
+            'empId': id,
         }
         $.ajax({
             url: '/rest/guideLine/clearTempCreditLimit',
@@ -471,10 +460,18 @@
                 $notify.danger('网络异常，请稍后重试或联系管理员');
             },
             success: function (result) {
-                clearTimeout($global.timer);
-                $notify.success('临时额度清零成功');
-               $("#dataGrid").bootstrapTable('destroy');
-                initDateGird('/rest/employees/guidePage/grid');
+                if (0 === result.code) {
+                    clearTimeout($global.timer);
+                    $notify.success('临时额度清零成功');
+                    $("#dataGrid").bootstrapTable('destroy');
+                    initDateGird('/rest/employees/guidePage/grid');
+                } else {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger(result.message);
+                    $('#guideCredit_edit').bootstrapValidator('disableSubmitButtons', false);
+                }
             }
         });
     }

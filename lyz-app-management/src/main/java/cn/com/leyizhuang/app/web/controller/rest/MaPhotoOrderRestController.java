@@ -63,6 +63,9 @@ public class MaPhotoOrderRestController extends BaseRestController{
     @Autowired
     private MaPhotoOrderGoodsService maPhotoOrderGoodsService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     /**
      * @title   获取拍照下单列表
      * @descripe
@@ -73,10 +76,12 @@ public class MaPhotoOrderRestController extends BaseRestController{
      * @date 2018/1/11
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<PhotoOrderVO> restPhotoOrderPageGird(Integer offset, Integer size, String keywords, Long cityId, Long storeId) {
+    public GridDataVO<PhotoOrderVO> restPhotoOrderPageGird(Integer offset, Integer size, String keywords, Long cityId, String status, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<PhotoOrderVO> photoOrderVOPageInfo = this.maPhotoOrderService.findAll(page, size, cityId, storeId, keywords);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<PhotoOrderVO> photoOrderVOPageInfo = this.maPhotoOrderService.findAllByCityIdAndStoreId(page, size, cityId, storeId, keywords, status, storeIds);
         return new GridDataVO<PhotoOrderVO>().transform(photoOrderVOPageInfo.getList(), photoOrderVOPageInfo.getTotal());
     }
 

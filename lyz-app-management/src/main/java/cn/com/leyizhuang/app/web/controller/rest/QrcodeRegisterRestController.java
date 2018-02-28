@@ -58,7 +58,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
     private AppStoreService appStoreService;
 
     @PostMapping(value = "/save")
-    public ResultDTO<?> save(HttpServletRequest req, String name, String phone, String sellerPhone, String sellerName,
+    public ResultDTO<?> save(HttpServletRequest req, String name, String phone, Long empId, String sellerName,
                              String storeName, String code, String workNumber) {
 
         String smsCode = (String) req.getSession().getAttribute("SMSCODE");
@@ -80,7 +80,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
             if (appCustomer != null) {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号已经注册", null);
             } else {
-                AppEmployee appEmployee = employeeService.findByMobile(sellerPhone);
+                AppEmployee appEmployee = employeeService.findById(empId);
 
                 // 排除分销仓库
                 AppStore appStore = appStoreService.findById(appEmployee.getStoreId());

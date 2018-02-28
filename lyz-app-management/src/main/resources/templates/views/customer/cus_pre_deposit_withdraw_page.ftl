@@ -33,11 +33,19 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
 
-                    <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 查看详情
-                    </button>
+                <div id="toolbar" class="form-inline">
+                    <#--<button id="btn_edit" type="button" class="btn btn-default">-->
+                        <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 查看详情-->
+                    <#--</button>-->
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryApplyInfo" id="queryApplyInfo" class="form-control" style="width:auto;"
+                               placeholder="关键字：单号、电话、姓名">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findCusByNameOrPhoneOrderNumber()">查找</button>
+                        </span>
+                    </div>
 
                 </div>
                 <div class="box-body table-reponsive">

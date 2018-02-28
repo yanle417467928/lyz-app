@@ -8,10 +8,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class SupportHotlineResponse {
-    //成都客服电话
-    private final  String cdSupportHotline="028-85989720/028-85989719";
-    //郑州客服电话
-    private final  String zzSupportHotline="0371-86060877";
-    //导购电话
-    private String sellerMobile;
+
+    private Long id;
+    //热线名称
+    private String name;
+    //热线电话
+    private  String SupportHotline;
+
 }

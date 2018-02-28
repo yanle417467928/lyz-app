@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,26 +51,39 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
      * @return
      */
     @PutMapping
-    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, @RequestParam(value = "modifyReason") String modifyReason, BindingResult result, HttpServletRequest request,@RequestParam(value = "lastUpdateTime") String lastUpdateTime) {
-        logger.info("restGuideCreditMoneyVOPut 后台修改员工额度 ,入参 guideCreditMoneyDetail:{}, modifyReason:{},", guideCreditMoneyDetail, modifyReason);
+    public ResultDTO<?> restGuideCreditMoneyVOPut(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, BindingResult result, HttpServletRequest request) {
+        logger.info("restGuideCreditMoneyVOPut 后台修改员工额度 ,入参 guideCreditMoneyDetail:{},", guideCreditMoneyDetail);
         try {
             if (!result.hasErrors()) {
-                DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date lastUpdateTimeFormat =dateFormat.parse(lastUpdateTime);
                 ShiroUser shiroUser = this.getShiroUser();
-                GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
-                guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
-                guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
-                guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
+                GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
+                guideCreditChangeDetail.setOperatorId(shiroUser.getId());
+                guideCreditChangeDetail.setOperatorName(shiroUser.getName());
+                guideCreditChangeDetail.setEmpId(guideCreditMoneyDetail.getEmpId());
                 //TODO
-                //没有修改原因字段
                 //随即生成一个单号
-                guideCreditChangeDetailVO.setChangeTypeDesc(modifyReason);
-                guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.ADMIN_RECHARGE);
-                guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
-                guideCreditChangeDetailVO.setChangeReason(modifyReason);
-                guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
-                this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetailVO,lastUpdateTimeFormat);
+
+                //判断修改类型
+                Long id = guideCreditMoneyDetail.getEmpId();
+                GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(id);
+                guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
+                guideCreditMoneyDetail.setOriginalCreditLimit(guideCreditMoney.getCreditLimit());
+                guideCreditMoneyDetail.setOriginalTempCreditLimit(guideCreditMoney.getTempCreditLimit());
+                int isFixEqual = guideCreditMoneyDetail.getOriginalCreditLimit().compareTo(guideCreditMoneyDetail.getCreditLimit());
+                int isTempEqual = guideCreditMoneyDetail.getOriginalTempCreditLimit().compareTo(guideCreditMoneyDetail.getTempCreditLimit());
+                if (0 != isFixEqual && 0 == isTempEqual) {
+                    guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT);
+                    guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT.getDescription());
+                } else if (0 == isFixEqual && 0 != isTempEqual) {
+                    guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT);
+                    guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.getDescription());
+                } else {
+                    logger.info("固定额度和零时额度都修改了,不能判断该导购的主要变更类型");
+                    return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请不要同时修改两个额度", null);
+                }
+                guideCreditChangeDetail.setChangeReason(guideCreditMoneyDetail.getModifyReason());
+                guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
+                this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetail);
                 logger.info("restGuideCreditMoneyVOPut ,后台修改员工额度成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
@@ -96,28 +110,36 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
      * @return
      */
     @PostMapping(value = "/clearTempCreditLimit")
-    public ResultDTO<?> clearTempCreditLimit(@Valid GuideCreditMoneyDetail guideCreditMoneyDetail, BindingResult result, HttpServletRequest request) {
-        logger.info("clearTempCreditLimit 后台手动清零临时额度 ,入参 guideCreditMoneyDetail:{},", guideCreditMoneyDetail);
+    public ResultDTO<?> clearTempCreditLimit(@RequestParam(value = "empId") Long empId ,HttpServletRequest request) {
+        logger.info("clearTempCreditLimit 后台手动清零临时额度 ,入参 empId:{},",empId);
         try {
-            if (!result.hasErrors()) {
-                //获取当前操作人,并设置额度变更明细VO
+            if (null !=empId) {
+                //获取当前操作人,并设置额度变更明细
                 ShiroUser shiroUser = this.getShiroUser();
-                GuideCreditChangeDetailVO guideCreditChangeDetailVO = new GuideCreditChangeDetailVO();
-                guideCreditChangeDetailVO.setOperatorId(shiroUser.getId());
-                guideCreditChangeDetailVO.setOperatorName(shiroUser.getName());
-                guideCreditChangeDetailVO.setEmpId(guideCreditMoneyDetail.getEmpId());
-                guideCreditChangeDetailVO.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR);
-                guideCreditChangeDetailVO.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
-                guideCreditChangeDetailVO.setOperatorIp(IpUtil.getIpAddress(request));
-                this.maEmpCreditMoneyService.clearTempCreditLimit(guideCreditMoneyDetail, guideCreditChangeDetailVO);
+                GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
+                guideCreditChangeDetail.setOperatorId(shiroUser.getId());
+                guideCreditChangeDetail.setOperatorName(shiroUser.getName());
+                guideCreditChangeDetail.setEmpId(empId);
+                guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_CLEAR);
+                guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_CLEAR.getDescription());
+                guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
+                //获取额度变更明细
+                GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
+                GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(empId);
+                guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
+                guideCreditMoneyDetail.setOriginalTempCreditLimit(guideCreditMoney.getTempCreditLimit());
+                guideCreditMoneyDetail.setOriginalCreditLimit(guideCreditMoney.getCreditLimit());
+                guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit()));
+                guideCreditMoneyDetail.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoneyDetail.setCreditLimit(guideCreditMoney.getCreditLimit());
+                guideCreditMoneyDetail.setEmpId(empId);
+                guideCreditMoneyDetail.setLastUpdateTime(guideCreditMoney.getLastUpdateTime());
+                this.maEmpCreditMoneyService.clearTempCreditLimit(guideCreditMoneyDetail, guideCreditChangeDetail);
                 logger.info("clearTempCreditLimit ,后台手动清零临时额度成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
-                List<ObjectError> allErrors = result.getAllErrors();
-                logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
-                System.err.print(allErrors);
-                logger.warn("clearTempCreditLimit ,后台手动清零临时额度,参数有误");
-                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, errorMsgToHtml(allErrors), null);
+                logger.warn("clearTempCreditLimit ,后台手动清零临时额度,参数有误 empId:{}",empId);
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,"参数错误", null);
             }
         } catch (Exception e) {
             e.printStackTrace();

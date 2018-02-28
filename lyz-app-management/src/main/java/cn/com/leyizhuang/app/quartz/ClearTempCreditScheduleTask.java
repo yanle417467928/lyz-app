@@ -16,5 +16,6 @@ public class ClearTempCreditScheduleTask implements Job {
         System.out.println(new Date() + ": 执行清除临时额度任务");
         MaEmpCreditMoneyService maEmpCreditMoneyService = (MaEmpCreditMoneyService) ApplicationContextUtil.getBean("maEmpCreditMoneyService");
         maEmpCreditMoneyService.autoClearTempCreditMoney();
+        System.out.println(new Date() + ": 执行清除临时额度任务成功");
     }
 }

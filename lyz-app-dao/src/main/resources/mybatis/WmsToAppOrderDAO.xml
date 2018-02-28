@@ -259,4 +259,12 @@
         FROM inter_wta_warehouse_purchase_goods
         WHERE rec_no = #{purchaseNo}
     </select>
+
+    <select id="findWtaReturningOrderGoodsByReturnOrderNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
+        SELECT *
+        FROM inter_wta_return_order_back_goods g
+            INNER JOIN inter_wta_return_order_back_header h ON h.rec_no = g.rec_no
+        WHERE h.po_no = #{returnOrderNumber}
+    </select>
 </mapper>
