@@ -190,7 +190,7 @@ public class SellerArrearsAuditController {
             if (result) {
 
                 Double collectionAmount = null == orderArrearsAuditDO.getRealMoney() ? 0D : orderArrearsAuditDO.getRealMoney();
-                Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
+                /*Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
                 //生成代收款记录
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(orderArrearsAuditDO.getUserId(), orderNo, collectionAmountOrder);
@@ -223,7 +223,7 @@ public class SellerArrearsAuditController {
                 orderBaseInfo.setOrderNumber(orderNo);
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);*/
 
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
