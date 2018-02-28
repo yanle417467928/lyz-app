@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -34,6 +35,9 @@ public class MaStorePreDepositRestController extends BaseRestController {
     @Autowired
     private MaStoreService maStoreService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     /**
      * @title   获取门店预存款列表
      * @descripe
@@ -47,7 +51,9 @@ public class MaStorePreDepositRestController extends BaseRestController {
     public GridDataVO<StorePreDepositVO> restStorePreDepositPageGird(Integer offset, Integer size, String keywords, Long cityId, String storeType) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<StorePreDepositVO> storePredeposit = this.maStoreService.findAllStorePredeposit(page, size, cityId, keywords, storeType);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<StorePreDepositVO> storePredeposit = this.maStoreService.findAllStorePredeposit(page, size, cityId, keywords, storeType, storeIds);
         return new GridDataVO<StorePreDepositVO>().transform(storePredeposit.getList(), storePredeposit.getTotal());
     }
 

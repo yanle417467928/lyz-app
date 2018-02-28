@@ -54,13 +54,13 @@
                     </select>-->
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                                                        placeholder="请输入要查找的姓名或电话..">
+                    <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                           placeholder="请输入要查找的姓名或电话..">
                     <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findCusByNameOrPhone()">查找</button>
                         </span>
-                    </div>
+                </div>
 
                 </div>
 

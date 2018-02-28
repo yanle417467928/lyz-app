@@ -182,20 +182,20 @@
                                         <#if storeList??>
                                             <#list storeList as item>
                                                 <#if item?? && item.cityId??>
-                                                    &nbsp;<label id='citys${item.cityId}' style='margin-bottom: 12px;' class='label label-success'>${item.cityName}</label>
+                                                    <label id="citys${item.cityId}" style="margin-right: 3px;" class="label label-success">${item.cityName}&nbsp;<span onclick="deleteHtml('citys${item.cityId}')">×</span></label>
                                                 </#if>
                                             </#list>
                                         </#if>
                                     </div>
                                     <br>
                                     <div id="stores" style="margin-top: 10px; width: 85%;word-wrap:break-word;">
-                                    <#if storeList??>
-                                        <#list storeList as item>
-                                            <#if item?? && item.storeId??>
-                                                &nbsp;<label id='stores${item.storeId}' style='margin-bottom: 12px;' class='label label-success'>${item.storeName}</label>
-                                            </#if>
-                                        </#list>
-                                    </#if>
+                                        <#if storeList??>
+                                            <#list storeList as item>
+                                                <#if item?? && item.storeId??>
+                                                    <label id="stores${item.storeId}" style="margin-right: 3px;" class="label label-success">${item.storeName}&nbsp;<span onclick="deleteHtml('stores${item.storeId}')">×</span></label>
+                                                </#if>
+                                            </#list>
+                                        </#if>
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
@@ -276,12 +276,12 @@
                                             <div class="col-xs-12">
                                                 <div class="box box-primary">
                                                     <div id="toolbar1" class="form-inline">
-                                                        <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                                                                onchange="findStoreByCity(this.value)">
+                                                        <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                                                                onchange="findStoreByCity(this.value)" data-live-search="true">
                                                             <option value="-1">选择城市</option>
                                                         </select>
-                                                        <select name="storeType" id="storeType" class="form-control select" style="width:auto;"
-                                                                onchange="findStoreByStoreType(this.value)">
+                                                        <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                                                                onchange="findStoreByStoreType(this.value)" data-live-search="true">
                                                             <option value="-1">选择门店类型</option>
                                                         <#if storeTypes??>
                                                             <#list storeTypes as storeType>
