@@ -3,17 +3,19 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO">
 
     <select id="findByUserIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse">
-        SELECT id, ord_no orderNumber, customer_name customerName, customer_phone customerPhone,
-        seller_name sellerName, seller_phone sellerPhone, distribution_address distributionAddress,
-        distribution_time distributionTime, agency_money agencyMoney, real_money realMoney,
-        payment_method paymentMethod, status, order_money orderMoney
-        FROM ord_arrears_audit
-        WHERE user_id = #{userId}
-        AND status IN
+        SELECT a.id, a.ord_no orderNumber, a.customer_name customerName, a.customer_phone customerPhone,
+        a.seller_name sellerName, a.seller_phone sellerPhone, a.distribution_address distributionAddress,
+        a.distribution_time distributionTime, a.agency_money agencyMoney, a.real_money realMoney,
+        a.payment_method paymentMethod, a.status, a.order_money orderMoney
+        FROM ord_arrears_audit a
+        LEFT JOIN ord_base_info o ON o.ord_no = a.ord_no
+        WHERE a.user_id = #{userId}
+        AND o.status = 'PENDING_RECEIVE'
+        AND a.status IN
         <foreach collection="list" item="status" open="(" close=")" separator=",">
             #{status}
         </foreach>
-        ORDER BY create_time desc
+        ORDER BY a.create_time desc
     </select>
 
     <select id="findByUserIdAndOrderNoAndStatus"

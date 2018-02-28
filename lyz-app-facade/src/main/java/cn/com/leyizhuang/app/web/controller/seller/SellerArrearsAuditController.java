@@ -190,7 +190,7 @@ public class SellerArrearsAuditController {
             if (result) {
 
                 Double collectionAmount = null == orderArrearsAuditDO.getRealMoney() ? 0D : orderArrearsAuditDO.getRealMoney();
-                /*Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
+                Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
                 //生成代收款记录
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(orderArrearsAuditDO.getUserId(), orderNo, collectionAmountOrder);
@@ -213,7 +213,7 @@ public class SellerArrearsAuditController {
                 orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
-                //生成订单物流详情
+                /*//生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
                 orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), orderArrearsAuditDO.getPicture(), "", "");
                 this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
