@@ -84,18 +84,31 @@ function initDateGird(url) {
     ]);
 }
 
-/**
- * 通过
- * @param id
- */
-function  pass(id) {
+{
+    var passApplyId = "";
+
+    /**
+     * 通过
+     * @param id
+     */
+    function  pass(id) {
+        passApplyId = id;
+        $modal.info("提示","确认通过此条提现申请？",affirmPass)
+    }
 
     function affirmPass() {
+        // 开启遮罩
+        $loading.show;
+
+        if(passApplyId == ""){
+            $notify.danger('请刷新后再试');
+            return false;
+        }
 
         $.ajax({
             url: '/rest/pre/deposit/withdraw/cus/pass',
             method: 'PUT',
-            data:{'applyId':id},
+            data:{'applyId':passApplyId},
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -116,22 +129,32 @@ function  pass(id) {
         });
     }
 
-    $modal.info("提示","确认通过此条提现申请？",affirmPass)
-}
 
+    var rejectApplyId = "";
 
+    /**
+     * 驳回
+     * @param id
+     */
+    function  reject(id) {
 
-/**
- * 驳回
- * @param id
- */
-function  reject(id) {
+        rejectApplyId = id;
+        $modal.danger("提示","确认驳回此条提现申请？",affirmReject);
+    }
 
     function affirmReject() {
+        // 开启遮罩
+        $loading.show;
+
+        if(rejectApplyId == ""){
+            $notify.danger('请刷新后再试');
+            return false;
+        }
+
         $.ajax({
             url: '/rest/pre/deposit/withdraw/cus/reject',
             method: 'PUT',
-            data:{'applyId':id},
+            data:{'applyId':rejectApplyId},
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -152,20 +175,29 @@ function  reject(id) {
         });
     }
 
-    $modal.danger("提示","确认驳回此条提现申请？",affirmReject);
-}
+    var applyRemitId = "";
 
-
-/**
- * 打款
- */
-function remit(id) {
+    /**
+     * 打款
+     */
+    function remit(id) {
+        applyRemitId = id;
+        $modal.success("提示","确认打款？",affirmRemit);
+    }
 
     function affirmRemit() {
+        // 开启遮罩
+        $loading.show;
+
+        if(applyRemitId == ""){
+            $notify.danger('请刷新后再试');
+            return false;
+        }
+
         $.ajax({
             url: '/rest/pre/deposit/withdraw/cus/remit',
             method: 'PUT',
-            data:{'applyId':id},
+            data:{'applyId':applyRemitId},
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -185,9 +217,8 @@ function remit(id) {
             }
         });
     }
-
-    $modal.success("提示","确认打款？",affirmRemit);
 }
+
 
 /**
  * 根据关键字搜索

@@ -45,7 +45,7 @@ import java.util.*;
  * 订单相关接口
  *
  * @author Richard
- *         Created on 2017-10-23 17:02
+ * Created on 2017-10-23 17:02
  **/
 @RestController
 @RequestMapping(value = "/app/order")
@@ -594,17 +594,15 @@ public class OrderController {
 
             //是否显示纸质销售单号
             boolean isShowSalesNumber = false;
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+            AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
             //如果是四川直营门店导购返回门店编码
-            if (identityType == 0) {
-                AppEmployee appEmployee = appEmployeeService.findById(userId);
-                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
-                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
-                        "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
-                        "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
-                        "XC001".equals(appStore.getStoreCode()))) {
-                    isShowSalesNumber = true;
-                    goodsSettlement.put("isShowNumber", isShowSalesNumber);
-                }
+            if (identityType == 0 && "ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                    "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
+                    "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
+                    "XC001".equals(appStore.getStoreCode()))) {
+                isShowSalesNumber = true;
+                goodsSettlement.put("isShowNumber", isShowSalesNumber);
             } else {
                 goodsSettlement.put("isShowNumber", isShowSalesNumber);
             }

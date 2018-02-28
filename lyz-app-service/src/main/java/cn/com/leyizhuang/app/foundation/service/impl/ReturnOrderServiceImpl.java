@@ -1624,8 +1624,104 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         }
                     }
                 }
-            }
+                //******************判断是否是三个月以前的单子,如果是就退预存款****************************
 
+                Calendar calendar = Calendar.getInstance();
+                //获取三个月以前的时间
+                calendar.add(Calendar.MONTH, -3);
+                if (orderBaseInfo.getCreateTime().before(calendar.getTime())) {
+                    maps.put("hasReturnOnlinePay", Boolean.FALSE);
+                    if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                        if (AppIdentityType.CUSTOMER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取顾客预存款
+                                CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
+                                //返还预存款后顾客预存款金额
+                                Double cusPreDeposit = (customerPreDeposit.getBalance() + returnOrderBilling.getOnlinePay());
+                                //更改顾客预存款金额
+                                Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录预存款日志
+                                    CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                                    cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                                    cusPreDepositLogDO.setChangeMoney(returnOrderBilling.getOnlinePay());
+                                    cusPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.RETURN_ORDER);
+                                    cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.RETURN_ORDER.getDescription());
+                                    cusPreDepositLogDO.setCusId(orderBaseInfo.getCustomerId());
+                                    cusPreDepositLogDO.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                                    cusPreDepositLogDO.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                                    cusPreDepositLogDO.setBalance(cusPreDeposit);
+                                    cusPreDepositLogDO.setDetailReason(ReturnOrderType.NORMAL_RETURN.getDescription());
+                                    cusPreDepositLogDO.setTransferTime(LocalDateTime.now());
+                                    cusPreDepositLogDO.setMerchantOrderNumber(returnOrderNumber);
+                                    //保存日志
+                                    appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(calendar.getTime());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
+                        } else if (AppIdentityType.SELLER.equals(returnOrderBaseInfo.getCreatorIdentityType()) ||
+                                AppIdentityType.DECORATE_MANAGER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                                //获取门店预存款
+                                StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
+                                //返还预存款后门店预存款金额
+                                Double stPreDeposit = (storePreDeposit.getBalance() + returnOrderBilling.getOnlinePay());
+                                //修改门店预存款
+                                Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //记录门店预存款变更日志
+                                    StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                                    stPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                                    stPreDepositLogDO.setChangeMoney(returnOrderBilling.getOnlinePay());
+                                    stPreDepositLogDO.setRemarks("退还第三方支付转预存款");
+                                    stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
+                                    stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                                    stPreDepositLogDO.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                                    stPreDepositLogDO.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                                    stPreDepositLogDO.setBalance(stPreDeposit);
+                                    stPreDepositLogDO.setDetailReason(ReturnOrderType.NORMAL_RETURN.getDescription());
+                                    stPreDepositLogDO.setTransferTime(LocalDateTime.now());
+                                    //保存日志
+                                    storePreDepositLogService.save(stPreDepositLogDO);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(calendar.getTime());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
+                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                    returnOrderBillingDetail.setIntoAmountTime(calendar.getTime());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             //********************************退经销差价退还*************************
             AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue());
 
@@ -1636,6 +1732,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("returnOrderBilling", returnOrderBilling);
             maps.put("code", "SUCCESS");
+            maps.put("hasReturnOnlinePay", Boolean.TRUE);
             return maps;
         } catch (Exception e) {
             e.printStackTrace();
