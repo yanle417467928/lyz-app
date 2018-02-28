@@ -149,4 +149,6 @@ public interface AppCustomerDAO {
     void unbindingCustomerWeChat(Long userId);
 
     String getCustomerSupportHotline(Long userId);
+
+    List<SupportHotlineResponse> findAllSupportHotline();
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -210,11 +211,17 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
             EmpCreditMoneyChangeLogDO  empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
             if(null!=log.getCreditLimitAvailableChangeAmount() && 0!=log.getCreditLimitAvailableChangeAmount()){
                 EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog =new EmpAvailableCreditMoneyChangeLog();
-                if("PLACE_ORDER".equals(log.getChangeType())){
+                if("PLACE_ORDER".equals(log.getChangeType().toString())){
+                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
+                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getDescription());
                     empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(BigDecimal.ZERO.subtract(BigDecimal.valueOf(log.getCreditLimitAvailableAfterChange())).doubleValue());
-                }else if("RETURN_ORDER".equals(log.getChangeType())){
+                }else if("RETURN_ORDER".equals(log.getChangeType().toString())){
+                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.RETURN_ORDER);
+                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.RETURN_ORDER.getDescription());
                     empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
-                }else if("CANCEL_ORDER".equals(log.getChangeType())){
+                }else if("CANCEL_ORDER".equals(log.getChangeType().toString())){
+                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.CANCEL_ORDER);
+                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.CANCEL_ORDER.getDescription());
                     empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
                 }else{
                     empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
