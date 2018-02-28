@@ -10,7 +10,7 @@ function initDateGird(url) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search
+            keywords: $("#queryApplyInfo").val()
         }
     }, [{
         checkbox: true,
@@ -187,4 +187,13 @@ function remit(id) {
     }
 
     $modal.success("提示","确认打款？",affirmRemit);
+}
+
+/**
+ * 根据关键字搜索
+ * **/
+function findCusByNameOrPhoneOrderNumber(){
+    $("#dataGrid").bootstrapTable('destroy');
+    var url = "/rest/pre/deposit/withdraw/cus/grid";
+    initDateGird(url);
 }

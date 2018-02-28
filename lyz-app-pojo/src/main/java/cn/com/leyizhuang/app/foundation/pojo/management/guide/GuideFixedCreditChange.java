@@ -23,4 +23,8 @@ public class GuideFixedCreditChange {
     private BigDecimal fixedCreditLimitChangeAmount;
     //固定额度改变余量
     private BigDecimal fixedCreditLimitAfterChange;
+    //变更类型
+    private String changeType;
+    //变更类型描述
+    private String changeTypeDesc;
 }

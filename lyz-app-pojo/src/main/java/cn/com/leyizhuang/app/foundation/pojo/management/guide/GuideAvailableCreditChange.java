@@ -23,5 +23,9 @@ public class GuideAvailableCreditChange {
   private BigDecimal creditLimitAvailableChangeAmount;
   //可用额度改变后余量
   private BigDecimal creditLimitAvailableAfterChange;
+  //变更类型
+  private String changeType;
+  //变更类型描述
+  private String changeTypeDesc;
 
 }

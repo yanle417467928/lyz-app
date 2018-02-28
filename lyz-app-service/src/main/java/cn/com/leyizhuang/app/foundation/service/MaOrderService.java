@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -266,7 +267,7 @@ public interface MaOrderService {
     Long querySellerIdByOrderNumber(String orderNumber);
 
 
-    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime);
+    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime);
 
     /**
      * 后台买券订单创建订单账单信息

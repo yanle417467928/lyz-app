@@ -316,9 +316,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <insert id="saveCreditLimitAvailableChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpAvailableCreditMoneyChangeLog">
         insert into emp_available_credit_change_log
-        (credit_limit_available_change_amount,credit_limit_available_after_change)
+        (credit_limit_available_change_amount,credit_limit_available_after_change,change_type,change_type_desc)
         values
-        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange})
+        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange},#{changeType},#{changeTypeDesc})
     </insert>
 
     <insert id="saveTempCreditLimitChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpTempCreditMoneyChangeLog" >
