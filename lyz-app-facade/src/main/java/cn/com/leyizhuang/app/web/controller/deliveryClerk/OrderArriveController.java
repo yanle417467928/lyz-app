@@ -1,18 +1,14 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
-import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
-import cn.com.leyizhuang.app.core.constant.LogisticStatus;
-import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
-import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
-import cn.com.leyizhuang.app.foundation.service.OrderAgencyFundService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +49,9 @@ public class OrderArriveController {
 
     @Autowired
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
 
     /**
      * @param
@@ -165,6 +165,30 @@ public class OrderArriveController {
                         orderBillingDetails.setOrderNumber(orderNo);
                         orderBillingDetails.setArrearage(0D);
                         this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+
+                        //获取导购信用金
+                        EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+
+                        //返还信用金后导购信用金额度
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
+
+                        //修改导购信用额度
+                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            //记录导购信用金变更日志
+                            EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                            empCreditMoneyChangeLog.setEmpId(userId);
+                            empCreditMoneyChangeLog.setCreateTime(new Date());
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                            empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                            empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                            empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                            empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                            empCreditMoneyChangeLog.setOperatorId(userId);
+                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            //保存日志
+                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                        }
                     }
                 }
             }

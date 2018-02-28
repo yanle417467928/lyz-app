@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.seller;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
-import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
-import cn.com.leyizhuang.app.core.constant.LogisticStatus;
-import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
-import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -31,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,6 +57,9 @@ public class SellerArrearsAuditController {
 
     @Autowired
     private PaymentDataService paymentDataService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
 
 
     /**
@@ -213,7 +216,31 @@ public class SellerArrearsAuditController {
                 orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
-                /*//生成订单物流详情
+                //获取导购信用金
+                EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+
+                //返还信用金后导购信用金额度
+                Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
+
+                //修改导购信用额度
+                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
+                if (affectLine > 0) {
+                    //记录导购信用金变更日志
+                    EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                    empCreditMoneyChangeLog.setEmpId(userId);
+                    empCreditMoneyChangeLog.setCreateTime(new Date());
+                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                    empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                    empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                    empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                    empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                    empCreditMoneyChangeLog.setOperatorId(userId);
+                    empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
+                    //保存日志
+                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+
+                }
+                //生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
                 orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), orderArrearsAuditDO.getPicture(), "", "");
                 this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
@@ -223,7 +250,7 @@ public class SellerArrearsAuditController {
                 orderBaseInfo.setOrderNumber(orderNo);
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);*/
+                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
