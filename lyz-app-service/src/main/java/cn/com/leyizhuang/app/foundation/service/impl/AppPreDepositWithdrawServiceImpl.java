@@ -358,7 +358,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
         if (apply != null){
 
-            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKPASS);
+            this.checkCusApply(apply.getApplyNo(),shiroUser,PreDepositWithdrawStatus.CHECKPASS);
         }else{
             throw new Exception("预存款提现，申请单不存在！");
         }
@@ -376,7 +376,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         if (apply != null){
             if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
                 // dai审核状态的单子才可以驳回
-                this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+                this.checkCusApply(apply.getApplyNo(),shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
             }
         }else{
             throw new Exception("预存款提现，申请单不存在！");
@@ -394,7 +394,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
         if (apply != null){
 
-            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.REMITED);
+            this.checkCusApply(apply.getApplyNo(),shiroUser,PreDepositWithdrawStatus.REMITED);
         }else{
             throw new Exception("预存款提现，申请单不存在！");
         }
@@ -516,7 +516,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         // TODO 短信通知
     }
 
-    public void remitStApply(String applyNo, ShiroUser shiroUser) {
+    /*public void remitStApply(String applyNo, ShiroUser shiroUser) {
 
         // 申请单
         StPreDepositWithdraw stPreDepositWithdraw = stPreDepositWithdrawDAO.findByApplyNo(applyNo);
@@ -535,9 +535,9 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         // TODO 短信通知
 
-    }
+    }*/
 
-    private String createCode() {
+   /* private String createCode() {
         String code = "TX";
 
 //        if (cityCode.equals("2121")){
@@ -553,10 +553,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         Random random = new Random();
         String suiji = random.nextInt(900) + 100 + "";
         return code + "_" + now + suiji;
-    }
+    }*/
 
     /********************************  后台方法 ********************************************/
-
+   /* @Override
     public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status) {
         PageHelper.startPage(page, size);
         List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords, status);
@@ -564,12 +564,13 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         return new PageInfo<>(cusPreDepositWithdrawList);
     }
 
+    @Override
     public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status) {
         PageHelper.startPage(page, size);
 
         List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords, status);
 
         return new PageInfo<>(stPreDepositWithdraws);
-    }
+    }*/
 
 }
