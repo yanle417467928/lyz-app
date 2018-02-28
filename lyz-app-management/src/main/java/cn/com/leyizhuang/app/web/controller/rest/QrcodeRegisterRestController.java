@@ -117,8 +117,8 @@ public class QrcodeRegisterRestController extends BaseRestController {
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "昵称转码错误，注册失败!", null);
         }
-
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！", null);
     }
 
