@@ -17,8 +17,8 @@
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
             INNER JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
-            INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
-                                          AND e.emp_id = #{userId}
+            LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
+        WHERE e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 
@@ -37,8 +37,8 @@
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
         INNER JOIN emp_available_credit_change_log a ON a.id = l.available_credit_change_id
-        INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
-        AND e.emp_id = #{userId}
+        LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
+        WHERE e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 
@@ -56,8 +56,8 @@
         FROM emp_credit_money_change_log l
         INNER JOIN emp_employee e ON e.emp_id = l.emp_id
         INNER JOIN emp_fixed_credit_change_log f ON f.id = l.fixed_credit_change_id
-        INNER JOIN ord_base_info o ON o.ord_no = l.reference_number
-        AND e.emp_id = #{userId}
+        LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
+        WHERE e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 </mapper>

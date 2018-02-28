@@ -211,42 +211,40 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
 
                     if ("SUCCESS".equals(maps.get("code"))) {
+                        if ((Boolean) maps.get("hasReturnOnlinePay")) {
+                            //返回第三方支付金额
+                            if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                                if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                    //支付宝退款
+                                    onlinePayRefundService.alipayRefundRequest(
+                                            returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
 
-                        //返回第三方支付金额
-                        if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
-                            if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
-                                //支付宝退款
-                                onlinePayRefundService.alipayRefundRequest(
-                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+                                } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                    //微信退款方法类
+                                    onlinePayRefundService.wechatReturnMoney(
+                                            returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
 
-                            } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
-                                //微信退款方法类
-                                onlinePayRefundService.wechatReturnMoney(
-                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
-
-                            } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
-                                //创建退单退款详情实体
-                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                                returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
-                                //TODO 时间待定
-                                returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                                //TODO 第三方回复码
-                                returnOrderBillingDetail.setReplyCode("");
-                                returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
-                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                    //创建退单退款详情实体
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                                    //TODO 时间待定
+                                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                    //TODO 第三方回复码
+                                    returnOrderBillingDetail.setReplyCode("");
+                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                }
                             }
                         }
-
-                        //发送退单拆单消息到拆单消息队列
-//                        sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                         //修改取消订单处理状态
                         returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
                         logger.info("cancelOrderToWms OUT,正常退货成功");
-                        return AppXmlUtil.resultStrXml(1, "正常退货业务逻辑处理失败!");
                     } else {
                         logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
+                        return AppXmlUtil.resultStrXml(1, "正常退货业务逻辑处理失败!");
                     }
                     //保存物流信息
                     ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
