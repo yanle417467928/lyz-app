@@ -1,3 +1,4 @@
+
 <head>
 
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
@@ -10,7 +11,7 @@
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
-    <script type="text/javascript" src="/javascript/preDepositWithdraw/cus_deposit_withdraw_page.js"></script>
+    <script type="text/javascript" src="/javascript/preDepositWithdraw/st_deposit_withdraw_page.js"></script>
 </head>
 <body>
 
@@ -25,7 +26,7 @@
         <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
-    <h1>顾客预存款提现申请列表</h1>
+    <h1>门店预存款提现申请列表</h1>
 </#if>
 </section>
 
@@ -48,9 +49,9 @@
                         <option value="REMITED">已打款</option>
                         <option value="CANCEL">已取消</option>
                     </select>
+
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryApplyInfo" id="queryApplyInfo" class="form-control"
-                               style="width:auto;"
+                        <input type="text" name="queryApplyInfo" id="queryApplyInfo" class="form-control" style="width:auto;"
                                placeholder="关键字：单号、电话、姓名">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -86,10 +87,10 @@
                             <b>申请单号</b> <a class="pull-right" id="applyNo"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>申请人</b> <a class="pull-right" id="applyCusName"></a>
+                            <b>申请人</b> <a class="pull-right" id="applyStName"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>电话</b> <a class="pull-right" id="applyCusPhone"></a>
+                            <b>电话</b> <a class="pull-right" id="applyStPhone"></a>
                         </li>
                         <li class="list-group-item">
                             <b>帐号类型</b> <a class="pull-right" id="accountType"></a>

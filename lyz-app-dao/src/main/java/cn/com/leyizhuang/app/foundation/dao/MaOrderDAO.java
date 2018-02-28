@@ -151,6 +151,9 @@ public interface MaOrderDAO {
      */
     List<MaOrderBillingPaymentDetailResponse> getMaOrderBillingPaymentDetailByOrderNumber(@Param("orderNumber") String orderNmber);
 
+
+    String queryRepaymentAmount(String orderNmber);
+
     /**
      * 后台根据订单号获取物流详情
      *

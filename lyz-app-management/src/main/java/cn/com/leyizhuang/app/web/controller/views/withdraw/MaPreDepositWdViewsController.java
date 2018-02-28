@@ -24,4 +24,9 @@ public class MaPreDepositWdViewsController extends BaseController {
     }
 
 
+    @GetMapping("/st/page")
+    public String stListPage(){
+        return "/views/store/st_pre_deposit_withdraw";
+    }
+
 }

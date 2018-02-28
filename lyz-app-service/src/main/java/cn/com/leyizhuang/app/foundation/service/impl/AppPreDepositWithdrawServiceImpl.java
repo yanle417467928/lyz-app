@@ -269,6 +269,137 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         }
     }
 
+
+
+
+
+    public void remitStApply(String applyNo,ShiroUser shiroUser){
+
+        // 申请单
+        StPreDepositWithdraw stPreDepositWithdraw = stPreDepositWithdrawDAO.findByApplyNo(applyNo);
+
+        if (stPreDepositWithdraw == null){
+            throw  new RuntimeException("申请单不存在");
+        }
+
+        // 更新状态
+        stPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.REMITED);
+        stPreDepositWithdraw.setCheckId(shiroUser.getId());
+        stPreDepositWithdraw.setCheckCode(shiroUser.getName());
+        stPreDepositWithdraw.setCheckName(shiroUser.getLoginName());
+
+
+        // TODO 短信通知
+
+    }
+
+    private String createCode(){
+        String code = "TX";
+
+//        if (cityCode.equals("2121")){
+//            code = "CD";
+//        }else if (cityCode.equals("2033")){
+//            code = "ZZ";
+//        }else if (cityCode.equals("2044")){
+//            code = "CQ";
+//        }
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMddhhmmssSSS");
+        String now = LocalDateTime.now().format(format);
+        Random random = new Random();
+        String suiji = random.nextInt(900)+100+"";
+        return  code+"_"+now+suiji;
+    }
+
+    /********************************  后台方法 ********************************************/
+
+    @Override
+    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status){
+        PageHelper.startPage(page, size);
+
+        if (keywords.equals("")){
+            keywords = null;
+        }
+
+        if (status.equals("")){
+            status = null;
+        }
+
+        List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords,status);
+
+        return new PageInfo<>(cusPreDepositWithdrawList);
+    }
+
+    @Override
+    public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status){
+        PageHelper.startPage(page,size);
+
+        if (keywords.equals("")){
+            keywords = null;
+        }
+
+        if (status.equals("")){
+            status = null;
+        }
+
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords,status);
+
+        return new PageInfo<>(stPreDepositWithdraws);
+    }
+
+    /**
+     * 顾客 -- 通过
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    public void cusApplyPass(Long applyId,ShiroUser shiroUser) throws Exception {
+
+        CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
+        if (apply != null){
+
+            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKPASS);
+        }else{
+            throw new Exception("预存款提现，申请单不存在！");
+        }
+    }
+
+    /**
+     * 顾客 -- 驳回
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    public void cusApplyreject(Long applyId,ShiroUser shiroUser) throws Exception {
+
+        CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
+        if (apply != null){
+            if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
+                // dai审核状态的单子才可以驳回
+                this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+            }
+        }else{
+            throw new Exception("预存款提现，申请单不存在！");
+        }
+    }
+
+    /**
+     * 打款
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    public void cusApplyRemit(Long applyId,ShiroUser shiroUser) throws Exception {
+
+        CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
+        if (apply != null){
+
+            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.REMITED);
+        }else{
+            throw new Exception("预存款提现，申请单不存在！");
+        }
+    }
+
     /**
      * 审核顾客预存款提现申请单
      *

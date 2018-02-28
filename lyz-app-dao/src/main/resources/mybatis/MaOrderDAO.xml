@@ -894,6 +894,15 @@
         WHERE oaa.ord_no = #{orderNumber}
     </select>
 
+
+    <select id="queryRepaymentAmount" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        oaa.order_money
+        FROM ord_arrears_audit oaa
+        WHERE oaa.ord_no = #{orderNumber}
+    </select>
+
     <select id="scanningUnpaidOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
        SELECT
             oid id,

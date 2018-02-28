@@ -330,6 +330,8 @@ public class MaOrderViewController {
             GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
             //获取订单支付明细列表
             List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+            //获取应还款金额
+            String repaymentAmount =  maOrderService.queryRepaymentAmount(orderNumber);
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
@@ -349,6 +351,7 @@ public class MaOrderViewController {
             if (null != maOrderBillingPaymentDetailResponseList) {
                 map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
             }
+            map.addAttribute("repaymentAmount", repaymentAmount);
             map.addAttribute("isPayUp", isPayUp);
             map.addAttribute("auditStatus", auditStatus);
             map.addAttribute("lastUpdateTime", guideCreditMoney.getLastUpdateTime());

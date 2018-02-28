@@ -182,6 +182,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
+    public String queryRepaymentAmount(String orderNmber) {
+        return maOrderDAO.queryRepaymentAmount(orderNmber);
+    }
+
+    @Override
     public MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber) {
         return maOrderDAO.getDeliveryInfoByOrderNumber(orderNmber);
     }
