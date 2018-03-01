@@ -1128,12 +1128,11 @@ public class CommonServiceImpl implements CommonService {
                 couponGoodsInfo.setLbSharePrice(0D);
                 couponGoodsInfo.setCashReturnSharePrice(0D);
                 couponGoodsInfo.setCashCouponSharePrice(0D);
+                couponGoodsInfo.setReturnPrice(0D);
                 couponGoodsInfo.setIsReturnable(Boolean.TRUE);
                 if (customer.getCustomerType() == AppCustomerType.MEMBER) {
-                    couponGoodsInfo.setReturnPrice(couponGoods.getVipPrice());
                     couponGoodsInfo.setSettlementPrice(couponGoods.getVipPrice());
                 } else {
-                    couponGoodsInfo.setReturnPrice(couponGoods.getRetailPrice());
                     couponGoodsInfo.setSettlementPrice(couponGoods.getRetailPrice());
                 }
                 couponGoodsInfo.setGid(couponGoods.getGid());

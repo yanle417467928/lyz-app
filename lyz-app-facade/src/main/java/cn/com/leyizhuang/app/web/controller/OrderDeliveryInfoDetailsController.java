@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
@@ -9,13 +10,13 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsMessageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
-import cn.com.leyizhuang.app.foundation.service.WareHouseService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,12 @@ public class OrderDeliveryInfoDetailsController {
 
     @Resource
     private WareHouseService wareHouseService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
+
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
 
     /**
      * 查看物流详情
@@ -122,6 +129,87 @@ public class OrderDeliveryInfoDetailsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取物流详情失败", null);
             logger.warn("getOrderDelicery EXCEPTION,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 查看退货单物流详情
+     *
+     * @param orderNumber 订单号
+     * @return 订单详情
+     */
+    @RequestMapping(value = "/return/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getReturnOrderDelivery(String orderNumber, Long userId, Integer identityType) {
+
+        logger.info("查看退货单物流详情 CALLED,查看退货单物流详情，入参 orderNumber:{},userId:{},identityType:{}", orderNumber, userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空", null);
+            logger.info("查看退货单物流详情 OUT,查看退货单物流详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //创建返回信息
+            LogisticsInformationResponse logisticsInformationResponse = new LogisticsInformationResponse();
+            logisticsInformationResponse.setOrderNumber(orderNumber);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //查询订单基础信息
+            ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(orderNumber);
+
+            if (!returnOrderBaseInfo.getCreatorId().equals(userId)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只能查看自己订单物流详情", null);
+                logger.info("查看退货单物流详情 OUT,查看退货单物流详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            //查询该订单所有物流状态
+            List<ReturnOrderDeliveryDetail> returnOrderDeliveryDetailList = returnOrderDeliveryDetailsService.queryListByReturnOrderNumber(orderNumber);
+
+            if (AssertUtil.isEmpty(returnOrderDeliveryDetailList)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有物流记录", null);
+                logger.info("查看退货单物流详情 OUT,查看退货单物流详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //创建物流详情list
+            List<LogisticsDetailResponse> logisticsDetailResponseList = new ArrayList<>();
+            for (ReturnOrderDeliveryDetail returnOrderDeliveryDetail : returnOrderDeliveryDetailList) {
+                //wms在派送配送员取货的信息中返回配送员编号和仓库编号
+                if (ReturnLogisticStatus.PICKING_GOODS.equals(returnOrderDeliveryDetail.getReturnLogisticStatus())) {
+                    //配送员编号
+                    String deliveryNumber = returnOrderDeliveryDetail.getPickersNumber();
+                    String wareHouseNo = returnOrderDeliveryDetail.getWarehouseNo();
+                    AppEmployee deliveryClerk = appEmployeeService.findDeliveryByClerkNo(deliveryNumber);
+                    if (AssertUtil.isNotEmpty(deliveryClerk)) {
+                        //设置配送员信息
+                        logisticsInformationResponse.setDeliveryName(deliveryClerk.getName());
+                        logisticsInformationResponse.setDeliveryPhone(deliveryClerk.getMobile());
+                    }
+                    //设置仓库名
+                    WareHouseDO wareHouseDO = wareHouseService.findByWareHouseNo(wareHouseNo);
+                    if (AssertUtil.isNotEmpty(wareHouseDO)) {
+                        logisticsInformationResponse.setWarehouseName(wareHouseDO.getWareHouseName());
+                    }
+                }
+                LogisticsDetailResponse logisticsDetailResponse = new LogisticsDetailResponse();
+                logisticsDetailResponse.setCreateTime(sdf.format(returnOrderDeliveryDetail.getCreateTime()));
+                logisticsDetailResponse.setDescribe(returnOrderDeliveryDetail.getDescription());
+                logisticsDetailResponse.setLogisticsType(returnOrderDeliveryDetail.getReturnLogisticStatus().getDescription());
+
+                logisticsDetailResponseList.add(logisticsDetailResponse);
+            }
+            logisticsInformationResponse.setLogisticsDetail(logisticsDetailResponseList);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse);
+            logger.info("查看退货单物流详情 OUT,查看退货单物流详情成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，查看退货单物流详情失败", null);
+            logger.warn("查看退货单物流详情 EXCEPTION,查看退货单物流详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
