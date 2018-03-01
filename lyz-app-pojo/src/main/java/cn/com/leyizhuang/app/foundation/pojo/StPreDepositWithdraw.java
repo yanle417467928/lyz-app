@@ -81,6 +81,17 @@ public class StPreDepositWithdraw {
      */
     private String checkCode;
 
+    /**
+     * 城市id
+     */
+
+    private Long cityId;
+
+    /**
+     * 城市名称
+     */
+    private String cityName;
+
     // 帐号类型
     private String accountTypeStr;
 

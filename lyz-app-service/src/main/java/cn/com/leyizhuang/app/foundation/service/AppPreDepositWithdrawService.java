@@ -59,7 +59,7 @@ public interface AppPreDepositWithdrawService {
      * @param status
      * @return
      */
-    PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status);
+    PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime);
 
 
     /**
@@ -95,7 +95,7 @@ public interface AppPreDepositWithdrawService {
      * @param status
      * @return
      */
-    PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status);
+    PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime);
 
     /**
      * 门店 通过

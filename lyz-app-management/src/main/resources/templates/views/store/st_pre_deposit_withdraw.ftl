@@ -7,10 +7,14 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script type="text/javascript" src="/javascript/preDepositWithdraw/st_deposit_withdraw_page.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script type="text/javascript" src="/javascript/preDepositWithdraw/st_deposit_withdraw_page.js"></script>
 </head>
 <body>
@@ -39,7 +43,11 @@
                 <#--<button id="btn_edit" type="button" class="btn btn-default">-->
                 <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 查看详情-->
                 <#--</button>-->
-
+                    <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
+                           placeholder="开始时间">
+                    至
+                    <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
+                           placeholder="结束时间">
                     <select name="status" id="status" class="form-control select" style="width:auto;margin-left: 10px;"
                             onchange="findCusByNameOrPhoneOrderNumber()">
                         <option value="">选择状态</option>

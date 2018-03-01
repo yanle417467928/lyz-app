@@ -2,6 +2,12 @@ $(function () {
 
     var url = "/rest/pre/deposit/withdraw/cus/grid";
     initDateGird(url);
+
+    $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        autoclose: true
+    });
 })
 
 function initDateGird(url) {
@@ -11,7 +17,9 @@ function initDateGird(url) {
             offset: params.offset,
             size: params.limit,
             keywords: $("#queryApplyInfo").val(),
-            status:$("#status").val()
+            status:$("#status").val(),
+            startDateTime:$("#startDateTime").val(),
+            endDateTime:$("#endDateTime").val()
         }
     }, [{
         checkbox: true,

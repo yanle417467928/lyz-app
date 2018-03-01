@@ -15,7 +15,7 @@ import lombok.*;
 public class PreDepositWithdrawParam {
 
     /**
-     * id
+     * 提现人id
      */
     private Long Id;
 

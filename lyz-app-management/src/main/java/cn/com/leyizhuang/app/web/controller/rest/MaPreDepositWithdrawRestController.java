@@ -34,12 +34,13 @@ public class MaPreDepositWithdrawRestController extends BaseRestController{
     private AppPreDepositWithdrawService appPreDepositWithdrawService;
 
     @GetMapping("/cus/grid")
-    public GridDataVO<CusPreDepositWithdraw> CusGridData(Integer offset, Integer size, String keywords , String status){
+    public GridDataVO<CusPreDepositWithdraw> CusGridData(Integer offset, Integer size, String keywords , String status,String startDateTime,String endDateTime){
         GridDataVO<CusPreDepositWithdraw> gridDataVO = new GridDataVO<>();
         Integer page = getPage(offset, size);
 
-        PageInfo<CusPreDepositWithdraw> pageInfo = appPreDepositWithdrawService.getCusPageInfo(page,size,keywords, status);
+        PageInfo<CusPreDepositWithdraw> pageInfo = appPreDepositWithdrawService.getCusPageInfo(page,size,keywords, status,startDateTime,endDateTime);
         List<CusPreDepositWithdraw> cusPreDepositWithdraws = CusPreDepositWithdraw.transform(pageInfo.getList());
+
         return gridDataVO.transform(cusPreDepositWithdraws,pageInfo.getTotal());
     }
 
@@ -117,11 +118,11 @@ public class MaPreDepositWithdrawRestController extends BaseRestController{
     }
 
     @GetMapping("/st/grid")
-    public GridDataVO<StPreDepositWithdraw> stGridData(Integer offset, Integer size, String keywords , String status){
+    public GridDataVO<StPreDepositWithdraw> stGridData(Integer offset, Integer size, String keywords , String status,String startDateTime,String endDateTime){
         GridDataVO<StPreDepositWithdraw> gridDataVO = new GridDataVO<>();
         Integer page = getPage(offset, size);
 
-        PageInfo<StPreDepositWithdraw> pageInfo = appPreDepositWithdrawService.getStPageInfo(page,size,keywords, status);
+        PageInfo<StPreDepositWithdraw> pageInfo = appPreDepositWithdrawService.getStPageInfo(page,size,keywords, status,startDateTime,endDateTime);
         List<StPreDepositWithdraw> stPreDepositWithdraws = StPreDepositWithdraw.transform(pageInfo.getList());
         return gridDataVO.transform(stPreDepositWithdraws,pageInfo.getTotal());
     }

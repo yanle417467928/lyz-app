@@ -14,8 +14,10 @@ import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -58,6 +60,9 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Autowired
     private AppCustomerService appCustomerService;
 
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
     @Resource
     private AppCustomerDAO customerDAO;
 
@@ -76,12 +81,17 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Resource
     private SmsAccountServiceImpl smsAccountService;
 
+    @Resource
+    private CityService cityService;
+
     @Override
     @Transactional
     public void cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException {
 
         // 获取提现人信息
         AppCustomer appCustomer = appCustomerService.findById(param.getId());
+        // 城市信息
+        City city = cityService.findById(appCustomer.getCityId());
 
         CusPreDepositWithdraw cusPreDepositWithdraw = new CusPreDepositWithdraw();
         cusPreDepositWithdraw.setApplyNo(this.createCode());
@@ -94,6 +104,8 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         cusPreDepositWithdraw.setAccount(param.getAccount());
         cusPreDepositWithdraw.setWithdrawAmount(param.getAmount());
         cusPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CHECKING);
+        cusPreDepositWithdraw.setCityId(city.getCityId());
+        cusPreDepositWithdraw.setCityName(city.getName());
 
         cusPreDepositWithdrawDAO.save(cusPreDepositWithdraw);
 
@@ -130,6 +142,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Transactional
     public void stSave(PreDepositWithdrawParam param){
 
+        AppEmployee appEmployee = appEmployeeService.findById(param.getId());
+        // 城市信息
+        City city = cityService.findById(appEmployee.getCityId());
+
         StPreDepositWithdraw stPreDepositWithdraw = new StPreDepositWithdraw();
 
         stPreDepositWithdraw.setApplyNo(this.createCode());
@@ -140,6 +156,8 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         stPreDepositWithdraw.setAccountType(param.getAccountType());
         stPreDepositWithdraw.setAccount(param.getAccount());
         stPreDepositWithdraw.setWithdrawAmount(param.getAmount());
+        stPreDepositWithdraw.setCityId(city.getCityId());
+        stPreDepositWithdraw.setCityName(city.getName());
         stPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CHECKING);
 
         stPreDepositWithdrawDAO.save(stPreDepositWithdraw);
@@ -315,7 +333,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     /********************************  后台方法 ********************************************/
 
     @Override
-    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status){
+    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime){
         PageHelper.startPage(page, size);
 
         if (keywords.equals("")){
@@ -326,13 +344,12 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             status = null;
         }
 
-        List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords,status);
-
+        List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords,status,startDateTime,endDateTime);
         return new PageInfo<>(cusPreDepositWithdrawList);
     }
 
     @Override
-    public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status){
+    public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime){
         PageHelper.startPage(page,size);
 
         if (keywords.equals("")){
@@ -343,7 +360,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             status = null;
         }
 
-        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords,status);
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords,status,startDateTime,endDateTime);
 
         return new PageInfo<>(stPreDepositWithdraws);
     }

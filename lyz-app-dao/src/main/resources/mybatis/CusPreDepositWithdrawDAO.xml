@@ -4,7 +4,7 @@
 
     <sql id="ALL_FIELDS">
             id, apply_no, create_time, apply_cus_id, apply_cus_name, apply_cus_phone, account_type,
-          account, withdraw_amount, status, check_id, check_name, check_code
+          account, withdraw_amount, status, check_id, check_name, check_code,city_id,city_name
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
@@ -12,12 +12,12 @@
       apply_cus_id, apply_cus_name, apply_cus_phone,
       account_type, account, withdraw_amount,
       status, check_id, check_name,
-      check_code)
+      check_code,city_id,city_name)
     values ( #{applyNo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{applyCusId,jdbcType=BIGINT}, #{applyCusName,jdbcType=VARCHAR}, #{applyCusPhone,jdbcType=VARCHAR},
       #{accountType,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{withdrawAmount,jdbcType=DOUBLE},
       #{status,jdbcType=VARCHAR}, #{checkId,jdbcType=BIGINT}, #{checkName,jdbcType=VARCHAR},
-      #{checkCode,jdbcType=VARCHAR})
+      #{checkCode,jdbcType=VARCHAR},#{cityId},#{cityName})
     </insert>
 
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw">
@@ -60,6 +60,12 @@
             <if test="checkCode != null" >
                 check_code = #{checkCode,jdbcType=VARCHAR},
             </if>
+            <if test="cityId != null">
+                city_id = #{cityId},
+            </if>
+            <if test="cityName != null">
+                city_name = #{cityName}
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -95,6 +101,12 @@
         </if>
         <if test="status != null">
             and status = #{status}
+        </if>
+        <if test="startDateTime != null and startDateTime != '' ">
+            and create_time &gt;= #{startDateTime}
+        </if>
+        <if test="endDateTime != null and endDateTime != ''">
+            and create_time &lt;= #{endDateTime}
         </if>
         ORDER BY create_time DESC
     </select>
