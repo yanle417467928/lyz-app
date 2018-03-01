@@ -229,7 +229,7 @@ public class SellerArrearsAuditController {
                     EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                     empCreditMoneyChangeLog.setEmpId(userId);
                     empCreditMoneyChangeLog.setCreateTime(new Date());
-                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
                     empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                     empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                     empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
@@ -255,6 +255,8 @@ public class SellerArrearsAuditController {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
                 this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
+
+                //传ebs收款接口
             } else {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());

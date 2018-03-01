@@ -394,10 +394,11 @@
     <insert id="savePaymentDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
-        (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number)
+        (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number,
+        pay_type_desc, payment_subject_type, payment_subject_type_desc)
         VALUES
-            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
-             #{receiptNumber})
+            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode}, #{receiptNumber},
+            #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc})
     </insert>
 
     <update id="updateOwnMoneyByOrderNo"
