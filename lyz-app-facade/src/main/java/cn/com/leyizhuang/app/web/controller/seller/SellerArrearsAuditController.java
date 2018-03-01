@@ -366,10 +366,12 @@ public class SellerArrearsAuditController {
 
             List<RepaymentMoneyListResponse> repaymentMoneyListResponseList = new ArrayList<>();
             for (OrderBillingPaymentDetails orderBillingPaymentDetails : orderBillingPaymentDetailsList.getList()) {
+                OrderBaseInfo orderBaseInfo = appOrderServiceImpl.getOrderByOrderNumber(orderBillingPaymentDetails.getOrderNumber());
                 RepaymentMoneyListResponse repaymentMoneyListResponse = new RepaymentMoneyListResponse();
                 repaymentMoneyListResponse.setRepaymentTime(sdf.format(orderBillingPaymentDetails.getPayTime()));
                 repaymentMoneyListResponse.setRepaymentMoney(orderBillingPaymentDetails.getAmount());
                 repaymentMoneyListResponse.setOrderNumber(orderBillingPaymentDetails.getOrderNumber());
+                repaymentMoneyListResponse.setCustomerName(orderBaseInfo.getCustomerName());
                 repaymentMoneyListResponseList.add(repaymentMoneyListResponse);
             }
             PageInfo<RepaymentMoneyListResponse> pageInfo = new PageInfo<>(repaymentMoneyListResponseList);

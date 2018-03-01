@@ -1240,44 +1240,44 @@ public class OrderController {
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
                     //会员
                     CustomerBillingDetailResponse customerBillingDetailResponse = new CustomerBillingDetailResponse();
-                    customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                    customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount());
-                    customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                    customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount());
-                    customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit());
-                    customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                    customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                    customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+                    customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
+                    customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
+                    customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
+                    customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount()==null?0:orderBillingDetails.getLebiCashDiscount());
+                    customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
+                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit()==null?0:orderBillingDetails.getCusPreDeposit());
+                    customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
+                    customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
+                    customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setCustomerBillingDetailResponse(customerBillingDetailResponse);
                 } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
                     //经理
                     ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
-                    managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                    managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount());
-                    managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                    managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention());
-                    managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
+                    managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
+                    managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
+                    managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
+                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention()==null?0:orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
+                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit()==null?0:orderBillingDetails.getStPreDeposit());
+                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney()==null?0:orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
+                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
                 } else {
                     //导购
                     SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
-                    sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                    sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount());
-                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney());
-                    sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight());
-                    sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount());
-                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit());
-                    sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount());
-                    sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount());
-                    sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice());
+                    sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
+                    sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
+                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney()==null?0:orderBillingDetails.getEmpCreditMoney());
+                    sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
+                    sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
+                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit()==null?0:orderBillingDetails.getStPreDeposit());
+                    sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
+                    sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
+                    sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }
