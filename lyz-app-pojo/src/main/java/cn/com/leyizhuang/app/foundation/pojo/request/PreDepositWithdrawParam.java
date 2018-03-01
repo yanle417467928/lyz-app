@@ -17,7 +17,7 @@ public class PreDepositWithdrawParam {
     /**
      * id
      */
-    private Long Id;
+    private Long id;
 
     /**
      * 真实姓名
