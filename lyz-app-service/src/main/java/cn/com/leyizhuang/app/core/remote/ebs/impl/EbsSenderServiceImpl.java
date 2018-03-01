@@ -639,10 +639,10 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     /**
      * 更新门店退货接口信息
      *
-     * @param  id
-     * @param msg        错误信息
-     * @param sendTime   发送成功时间
-     * @param flag       标识
+     * @param id
+     * @param msg      错误信息
+     * @param sendTime 发送成功时间
+     * @param flag     标识
      */
     private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != id) {
@@ -1058,7 +1058,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
     }
 
-    private Map<String,Object> sendWithdrawRefundToEbs(WithdrawRefundInf refundInf) {
+    private Map<String, Object> sendWithdrawRefundToEbs(WithdrawRefundInf refundInf) {
         log.info("sendWithdrawRefundToEbs, refundInf=" + refundInf);
         RechargeReceiptSecond receiptSecond = new RechargeReceiptSecond();
        /* receiptSecond.setAmount(toString(receiptInf.getAmount()));
@@ -1078,7 +1078,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
         receiptSecond.setSobId(toString(receiptInf.getSobId()));
         receiptSecond.setStoreOrgCode(toString(receiptInf.getStoreOrgCode()));
-        receiptSecond.setUserid(toString(receiptInf.getUserid()));
+        receiptSecond.setUserid(toString(receiptInf.getUserid()));*/
         String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         parameters.add(new BasicNameValuePair("rechargeReceiptJson", rechargeReceiptSecondJson));
@@ -1089,7 +1089,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             result.put("content", JSON.toJSONString(content));
         }
         log.info("sendRechargeReceiptToEbs, result=" + result);
-        return result;*/
+        return result;
     }
 
     private void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag) {
