@@ -9,12 +9,12 @@
         SELECT
             l.id,
             t.change_type,
-            t.change_type_desc                type,
-            l.create_time,
+            t.change_type_desc                              type,
+            date_format(l.create_time, '%Y-%m-%d %H:%i:%s') createTime,
             l.reference_number,
             o.customer_name,
             o.customer_phone,
-            t.temp_credit_limit_change_amount change_money
+            t.temp_credit_limit_change_amount               change_money
         FROM
             emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
@@ -26,12 +26,12 @@
         SELECT
             l.id,
             a.change_type,
-            a.change_type_desc                     type,
-            l.create_time,
+            a.change_type_desc                              type,
+            date_format(l.create_time, '%Y-%m-%d %H:%i:%s') createTime,
             l.reference_number,
             o.customer_name,
             o.customer_phone,
-            a.credit_limit_available_change_amount change_money
+            a.credit_limit_available_change_amount          change_money
         FROM
             emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
@@ -43,12 +43,12 @@
         SELECT
             l.id,
             f.change_type,
-            f.change_type_desc                 type,
-            l.create_time,
+            f.change_type_desc                              type,
+            date_format(l.create_time, '%Y-%m-%d %H:%i:%s') createTime,
             l.reference_number,
             o.customer_name,
             o.customer_phone,
-            f.fixed_credit_limit_change_amount change_money
+            f.fixed_credit_limit_change_amount              change_money
         FROM
             emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
@@ -85,7 +85,7 @@
             l.id,
         a.change_type,
         a.change_type_desc type,
-            l.create_time,
+        date_format(l.create_time, '%Y-%m-%d %H:%i:%s') createTime,
             l.reference_number,
             o.customer_name,
             o.customer_phone,
@@ -104,7 +104,7 @@
         l.id,
         f.change_type,
         f.change_type_desc type,
-        l.create_time,
+        date_format(l.create_time, '%Y-%m-%d %H:%i:%s') createTime,
         l.reference_number,
         o.customer_name,
         o.customer_phone,
