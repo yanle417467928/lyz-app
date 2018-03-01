@@ -67,15 +67,19 @@
     <select id="findArrearsListByUserId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ArrearageListResponse">
         SELECT
-            customer_name customerName,
-            ord_no        orderNumber,
-            order_money   arrearageMoney
+            oaa.customer_name customerName,
+            oaa.ord_no orderNumber,
+            obd.arrearage arrearageMoney
         FROM
-            ord_arrears_audit
+            ord_arrears_audit AS oaa
+        INNER JOIN ord_billing_details AS obd ON obd.ord_no = oaa.ord_no
         WHERE
-            seller_id = #{userID}
-            AND `status` = 'AUDIT_PASSED'
-            AND (whether_repayments = 0 OR whether_repayments IS NULL);
+            oaa.seller_id = #{userID}
+        AND oaa.`status` = 'AUDIT_PASSED'
+        AND (
+            oaa.whether_repayments = 0
+            OR oaa.whether_repayments IS NULL
+        )
     </select>
 
     <select id="findById" parameterType="java.lang.Long"
@@ -161,6 +165,7 @@
             ord_arrears_audit AS oaa
             INNER JOIN ord_billing_payment_details AS obpd ON obpd.ord_no = oaa.ord_no
         WHERE oaa.seller_id = #{userID}
+              AND obpd.payment_subject_type = 'SELLER'
               AND oaa.whether_repayments = 1
     </select>
 
