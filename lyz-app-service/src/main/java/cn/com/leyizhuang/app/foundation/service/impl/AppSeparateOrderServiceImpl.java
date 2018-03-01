@@ -897,7 +897,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public Boolean isWithdrawRefundExist(String refundNo) {
         if (null != refundNo) {
-            separateOrderDAO.isWithdrawRefundExist(refundNo);
+            return separateOrderDAO.isWithdrawRefundExist(refundNo);
         }
         return null;
     }
@@ -910,10 +910,32 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             withdrawRefundInf.setAmount(withdrawRefundInfo.getWithdrawAmount());
             withdrawRefundInf.setCreateTime(new Date());
             withdrawRefundInf.setWithdrawNumber(withdrawRefundInfo.getWithdrawNo());
-            withdrawRefundInf.setWithdrawObj(withdrawRefundInfo.getWithdrawSubjectType());
+            withdrawRefundInf.setRefundNumber(withdrawRefundInfo.getRefundNumber());
+            switch (withdrawRefundInfo.getWithdrawSubjectType()) {
+                case CUSTOMER:
+                    withdrawRefundInf.setWithdrawObj(1);
+                    break;
+                case STORE:
+                    withdrawRefundInf.setWithdrawObj(2);
+                    break;
+                default:
+                    break;
+            }
             //withdrawRefundInf.setWithdrawType(withdrawRefundInfo);
-            withdrawRefundInf.setRefundType(withdrawRefundInfo.getWithdrawChannel());
-            withdrawRefundInf.setDescription(withdrawRefundInf.getRefundType().getDescription());
+            switch (withdrawRefundInfo.getWithdrawChannel()) {
+                case ALIPAY:
+                    withdrawRefundInf.setWithdrawObj(1);
+                    break;
+                case WE_CHAT:
+                    withdrawRefundInf.setWithdrawObj(2);
+                    break;
+                case UNION_PAY:
+                    withdrawRefundInf.setWithdrawObj(3);
+                    break;
+                default:
+                    break;
+            }
+            withdrawRefundInf.setDescription(withdrawRefundInfo.getWithdrawChannel().getDescription());
             withdrawRefundInf.setRefundDate(withdrawRefundInfo.getCreateTime());
 
             //获取充值顾客信息
@@ -934,6 +956,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
                 withdrawRefundInf.setSobId(store.getSobId());
             }
+
 
             //保存提现退款接口信息
             separateOrderDAO.saveWithdrawRefundInf(withdrawRefundInf);

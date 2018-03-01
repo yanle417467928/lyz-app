@@ -2,9 +2,6 @@ package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs;
 
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
-import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
-import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
-import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -59,7 +56,7 @@ public class WithdrawRefundInf implements Serializable {
     /**
      * 提现对象
      */
-    private PaymentSubjectType withdrawObj;
+    private Integer withdrawObj;
     /**
      * 充值类型（银行清单）
      */
@@ -68,7 +65,7 @@ public class WithdrawRefundInf implements Serializable {
     /**
      * 收款方式
      */
-    private OrderBillingPaymentType refundType;
+    private Integer refundType;
 
     /**
      * 用户id

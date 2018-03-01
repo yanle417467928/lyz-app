@@ -104,9 +104,9 @@ public interface AppSeparateOrderDAO {
 
 
     void updateReturnOrderFlagAndSendTimeAndErrorMsg(@Param(value = "rtHeaderId") Long rtHeaderId,
-                                                      @Param(value = "msg") String msg,
-                                                      @Param(value = "sendTime") Date sendTime,
-                                                      @Param(value = "flag") AppWhetherFlag flag);
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "flag") AppWhetherFlag flag);
 
     OrderBaseInf getOrderBaseInfByMainOrderNumberAndCompanFlag(@Param(value = "orderNumber") String orderNumber,
                                                                @Param(value = "flag") String flag);
@@ -166,7 +166,7 @@ public interface AppSeparateOrderDAO {
 
     AppCustomerFxStoreRelation getCustomerFxStoreRelationByCusId(Long customerIdTemp);
 
-    void isWithdrawRefundExist(@Param(value = "refundNo") String refundNo);
+    Boolean isWithdrawRefundExist(@Param(value = "refundNo") String refundNo);
 
     void saveWithdrawRefundInf(WithdrawRefundInf withdrawRefundInf);
 
