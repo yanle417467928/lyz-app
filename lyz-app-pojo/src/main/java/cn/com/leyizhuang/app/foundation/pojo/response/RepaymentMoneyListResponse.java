@@ -24,4 +24,8 @@ public class RepaymentMoneyListResponse {
      * 订单号
      */
     private String orderNumber;
+    /**
+     * 顾客名称
+     */
+    private String customerName;
 }
