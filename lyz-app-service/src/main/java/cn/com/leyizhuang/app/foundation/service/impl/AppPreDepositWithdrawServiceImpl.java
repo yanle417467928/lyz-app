@@ -348,7 +348,6 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     /********************************  后台方法 ********************************************/
 
     @Override
-    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status) {
     public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime){
         PageHelper.startPage(page, size);
 
