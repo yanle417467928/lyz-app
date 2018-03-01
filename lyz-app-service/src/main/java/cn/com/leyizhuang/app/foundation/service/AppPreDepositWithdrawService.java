@@ -16,12 +16,14 @@ public interface AppPreDepositWithdrawService {
 
     /**
      * 新增顾客提现申请
+     *
      * @param param 提现申请类
      */
-    void cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException;
+    String cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException;
 
     /**
      * 新增门店提现申请
+     *
      * @param param
      */
     void stSave(PreDepositWithdrawParam param);
@@ -29,9 +31,10 @@ public interface AppPreDepositWithdrawService {
 
     /**
      * 顾客申请列表
+     *
      * @return
      */
-    PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page,Integer size,Long cusId);
+    PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId);
 
     /**
      * 门店申请列表
@@ -41,18 +44,19 @@ public interface AppPreDepositWithdrawService {
     /**
      * 顾客取消申请
      */
-    void cusCancelApply(Long applyId,Long cusId);
+    void cusCancelApply(Long applyId, Long cusId);
 
     /**
      * 门店取消申请
      */
-    void stCancelApply(Long applyId,Long stId);
+    void stCancelApply(Long applyId, Long stId);
 
 
     /******************************************** 后台 ********************************************/
 
     /**
      * 顾客 预存款提现申请列表
+     *
      * @param page
      * @param size
      * @param keywords
@@ -64,31 +68,35 @@ public interface AppPreDepositWithdrawService {
 
     /**
      * 顾客 通过申请
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void cusApplyPass(Long applyId,ShiroUser shiroUser)throws Exception;
+    void cusApplyPass(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 顾客 驳回
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void cusApplyreject(Long applyId,ShiroUser shiroUser)throws Exception;
+    void cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 顾客 打款
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void cusApplyRemit(Long applyId,ShiroUser shiroUser)throws Exception;
+    void cusApplyRemit(Long applyId, ShiroUser shiroUser) throws Exception;
 
 
     /**
      * 门店 预存款提现申请列表
+     *
      * @param page
      * @param size
      * @param keywords
@@ -99,25 +107,28 @@ public interface AppPreDepositWithdrawService {
 
     /**
      * 门店 通过
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void stApplyPass(Long applyId,ShiroUser shiroUser)throws Exception;
+    void stApplyPass(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 门店 驳回
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void stApplyreject(Long applyId,ShiroUser shiroUser)throws Exception;
+    void stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 门店 打款
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
-    void stApplyRemit(Long applyId,ShiroUser shiroUser)throws Exception;
+    void stApplyRemit(Long applyId, ShiroUser shiroUser) throws Exception;
 }

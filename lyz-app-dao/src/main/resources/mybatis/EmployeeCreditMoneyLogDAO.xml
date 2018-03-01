@@ -8,8 +8,8 @@
 
         SELECT
             l.id,
-            l.change_type,
-            l.change_type_desc                type,
+            t.change_type,
+            t.change_type_desc                type,
             l.create_time,
             l.reference_number,
             o.customer_name,
@@ -25,8 +25,8 @@
         UNION
         SELECT
             l.id,
-            l.change_type,
-            l.change_type_desc                     type,
+            a.change_type,
+            a.change_type_desc                     type,
             l.create_time,
             l.reference_number,
             o.customer_name,
@@ -42,8 +42,8 @@
         UNION
         SELECT
             l.id,
-            l.change_type,
-            l.change_type_desc                 type,
+            f.change_type,
+            f.change_type_desc                 type,
             l.create_time,
             l.reference_number,
             o.customer_name,
@@ -63,8 +63,8 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.EmployeeCreditMoneyLogResponse">
         SELECT
             l.id,
-        t.change_type,
-        t.change_type_desc type,
+            t.change_type,
+            t.change_type_desc                type,
             l.create_time,
             l.reference_number,
             o.customer_name,
@@ -72,9 +72,9 @@
             t.temp_credit_limit_change_amount change_money
         FROM emp_credit_money_change_log l
             INNER JOIN emp_employee e ON e.emp_id = l.emp_id
-            LEFT JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
-        LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
-        AND e.emp_id = #{userId}
+            INNER JOIN emp_temp_credit_change_log t ON t.id = l.temp_credit_change_id
+            LEFT JOIN ord_base_info o ON o.ord_no = l.reference_number
+                                         AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC
     </select>
 

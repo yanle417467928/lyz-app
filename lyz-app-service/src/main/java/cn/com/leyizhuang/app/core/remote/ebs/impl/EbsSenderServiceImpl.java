@@ -1060,35 +1060,35 @@ public class EbsSenderServiceImpl implements EbsSenderService {
 
     private Map<String, Object> sendWithdrawRefundToEbs(WithdrawRefundInf refundInf) {
         log.info("sendWithdrawRefundToEbs, refundInf=" + refundInf);
-        RechargeReceiptSecond receiptSecond = new RechargeReceiptSecond();
-       /* receiptSecond.setAmount(toString(receiptInf.getAmount()));
-        receiptSecond.setAttribute1(toString(receiptInf.getAttribute1()));
-        receiptSecond.setAttribute2(toString(receiptInf.getAttribute2()));
-        receiptSecond.setAttribute3(toString(receiptInf.getAttribute3()));
-        receiptSecond.setAttribute4(toString(receiptInf.getAttribute4()));
-        receiptSecond.setAttribute5(toString(receiptInf.getAttribute5()));
-        receiptSecond.setChargeNumber(toString(receiptInf.getChargeNumber()));
-        receiptSecond.setChargeObj(toString(receiptInf.getChargeObj()));
-        receiptSecond.setChargeType(toString(receiptInf.getChargeType()));
-        receiptSecond.setDescription(toString(receiptInf.getDescription()));
-        receiptSecond.setDiySiteCode(toString(receiptInf.getDiySiteCode()));
-        receiptSecond.setReceiptDate(toString(DateFormatUtils.format(receiptInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
-        receiptSecond.setReceiptId(toString(receiptInf.getReceiptId()));
-        receiptSecond.setReceiptNumber(toString(receiptInf.getReceiptNumber()));
-        receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
-        receiptSecond.setSobId(toString(receiptInf.getSobId()));
-        receiptSecond.setStoreOrgCode(toString(receiptInf.getStoreOrgCode()));
-        receiptSecond.setUserid(toString(receiptInf.getUserid()));*/
-        String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
+        WithdrawRefundSecond refundSecond = new WithdrawRefundSecond();
+        refundSecond.setAmount(toString(refundInf.getAmount()));
+        refundSecond.setAttribute1(toString(refundInf.getAttribute1()));
+        refundSecond.setAttribute2(toString(refundInf.getAttribute2()));
+        refundSecond.setAttribute3(toString(refundInf.getAttribute3()));
+        refundSecond.setAttribute4(toString(refundInf.getAttribute4()));
+        refundSecond.setAttribute5(toString(refundInf.getAttribute5()));
+        refundSecond.setDescription(toString(refundInf.getDescription()));
+        refundSecond.setDiySiteCode(toString(refundInf.getDiySiteCode()));
+        refundSecond.setRefundDate(toString(DateFormatUtils.format(refundInf.getRefundDate(), "yyyy-MM-dd HH:mm:ss")));
+        refundSecond.setRefundId(toString(refundInf.getRefundId()));
+        refundSecond.setRefundNumber(toString(refundInf.getRefundNumber()));
+        refundSecond.setRefundType(toString(refundInf.getRefundType()));
+        refundSecond.setSobId(toString(refundInf.getSobId()));
+        refundSecond.setStoreOrgCode(toString(refundInf.getStoreOrgCode()));
+        refundSecond.setUserid(toString(refundInf.getUserid()));
+        refundSecond.setWithdrawNumber(toString(refundInf.getWithdrawNumber()));
+        refundSecond.setWithdrawObj(toString(refundInf.getWithdrawObj()));
+        refundSecond.setWithdrawType(toString(refundInf.getWithdrawType()));
+        String withdrawRefundSecondJson = JSON.toJSONString(refundSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        parameters.add(new BasicNameValuePair("rechargeReceiptJson", rechargeReceiptSecondJson));
-        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callChargeReceiptSecond", parameters);
+        parameters.add(new BasicNameValuePair("withdrawRefundJson", withdrawRefundSecondJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callWithdrawRefundSecond", parameters);
         if (!(Boolean) result.get("success")) {
             JSONObject content = new JSONObject();
-            content.put("rechargeReceiptSecondJson", rechargeReceiptSecondJson);
+            content.put("withdrawRefundSecondJson", withdrawRefundSecondJson);
             result.put("content", JSON.toJSONString(content));
         }
-        log.info("sendRechargeReceiptToEbs, result=" + result);
+        log.info("sendWithdrawRefundToEbs, result=" + result);
         return result;
     }
 
