@@ -706,7 +706,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             storeReturnSecond.setSobId(toString(maStoreReturnOrderAppToEbsBaseInfo.getSobId()));
             storeReturnSecond.setReturnDate(toString(sdf.format(maStoreReturnOrderAppToEbsBaseInfo.getReturnDate())));
             storeReturnSecond.setMainOrderNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getMainOrderNumber()));
-            storeReturnSecond.setReturnNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getReturnNumber()));
+            storeReturnSecond.setMainReturnNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getReturnNumber()));
         }
         String storeReturnSecondJson = JSON.toJSONString(storeReturnSecond);
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
