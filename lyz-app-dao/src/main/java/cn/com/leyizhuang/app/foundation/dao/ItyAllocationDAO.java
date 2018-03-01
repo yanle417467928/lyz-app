@@ -25,7 +25,7 @@ public interface ItyAllocationDAO {
      * @param keywords
      * @return
      */
-    List<AllocationVO> queryListVO(@Param("keywords") String keywords);
+    List<AllocationVO> queryListVO(@Param("keywords") String keywords,@Param("storeId") Long storeId);
 
     /**
      * 查询调拨单

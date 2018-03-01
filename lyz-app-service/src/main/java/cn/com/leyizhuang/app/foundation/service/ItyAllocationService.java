@@ -55,7 +55,7 @@ public interface ItyAllocationService {
      * @param keywords
      * @return
      */
-    PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query);
+    PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query,Long storeId);
 
     /**
      * 作废
@@ -88,9 +88,9 @@ public interface ItyAllocationService {
      * 新增调拨单
      * @param allocation
      * @param goodsDetails
-     * @param shiroUser
+     * @param toStoreId
      */
-    void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser);
+    void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser, Long toStoreId);
 
     Model queryAllocationDetail(Long id, Model model);
 

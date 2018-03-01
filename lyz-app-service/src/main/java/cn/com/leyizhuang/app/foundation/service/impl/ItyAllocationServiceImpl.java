@@ -62,13 +62,14 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     private EbsSenderService ebsSenderService;
 
     @Override
-    public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query) {
+    public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query,Long storeId) {
         PageHelper.startPage(offset, size);
         List<AllocationVO> allocationVOList;
         if (StringUtils.isNotBlank(keywords)) {
-            allocationVOList = ityAllocationDAO.queryListVO(keywords);
+            allocationVOList = ityAllocationDAO.queryListVO(keywords,storeId);
             return new PageInfo<>(allocationVOList);
         }
+        query.setStoreId(storeId);
         allocationVOList = ityAllocationDAO.queryByAllocationQuery(query);
         return new PageInfo<>(allocationVOList);
     }
@@ -221,20 +222,25 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Override
     @Transactional
-    public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser) {
+    public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser,Long toStoreId) {
 
         // 调出门店id
         Long storeId = allocation.getAllocationFrom();
-        StoreDetailVO store = maStoreService.queryStoreVOById(storeId);
+        StoreDetailVO fromStore = maStoreService.queryStoreVOById(storeId);
+        StoreDetailVO toStore = maStoreService.queryStoreVOById(toStoreId);
 
         allocation.setNumber(this.getAllocationNumber());
         allocation.setCreateTime(new Date());
         allocation.setCreator(shiroUser.getLoginName());
         allocation.setModifier(shiroUser.getLoginName());
         allocation.setModifyTime(new Date());
-        allocation.setAllocationFromName(store.getStoreName());
+        allocation.setAllocationFromName(fromStore.getStoreName());
+        allocation.setAllocationTo(toStore.getStoreId());
+        allocation.setAllocationToName(toStore.getStoreName());
+        allocation.setCityId(fromStore.getCityCode().getCityId());
+        allocation.setCityName(fromStore.getCityCode().getName());
         allocation.setStatus(AllocationTypeEnum.NEW);
-        // TODO 城市 门店信息
+
 
         ityAllocationDAO.insertAllocation(allocation);
         for (AllocationDetail detail : goodsDetails) {
