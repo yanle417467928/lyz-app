@@ -406,7 +406,7 @@ public class OrderController {
             Map<String, Object> goodsSettlement = new HashMap<>();
             Long cityId = 0L;
             AppCustomer customer = new AppCustomer();
-
+            boolean isShowSalesNumber = false;
             if (identityType == 6) {
                 customer = appCustomerService.findById(userId);
                 cityId = customer.getCityId();
@@ -420,6 +420,17 @@ public class OrderController {
                 Long customerId = goodsSimpleRequest.getCustomerId();
                 customer = appCustomerService.findById(customerId);
                 cityId = customer.getCityId();
+
+                //是否显示纸质销售单号
+                AppEmployee appEmployee = appEmployeeService.findById(userId);
+                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+                //如果是四川直营门店导购返回门店编码
+                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                        "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
+                        "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
+                        "XC001".equals(appStore.getStoreCode()))) {
+                    isShowSalesNumber = true;
+                }
             }
             if (identityType == 2) {
                 AppEmployee employee = appEmployeeService.findById(userId);
@@ -525,7 +536,13 @@ public class OrderController {
             //判断库存的特殊处理
             Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
             if (gid != null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", null);
+                //如果这里出现问题还是要返回去商品列表
+                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
+                goodsSettlement.put("totalPrice", totalPrice);
+                goodsSettlement.put("totalGoodsInfo", goodsInfo);
+                goodsSettlement.put("isShowNumber", isShowSalesNumber);
+                goodsSettlement.put("totalOrderAmount", totalOrderAmount);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", goodsSettlement);
                 logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -591,19 +608,6 @@ public class OrderController {
             goodsSettlement.put("freight", freight);
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
-            boolean isShowSalesNumber = false;
-            if (identityType == 0) {
-                //是否显示纸质销售单号
-                AppEmployee appEmployee = appEmployeeService.findById(userId);
-                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
-                //如果是四川直营门店导购返回门店编码
-                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
-                        "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
-                        "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
-                        "XC001".equals(appStore.getStoreCode()))) {
-                    isShowSalesNumber = true;
-                }
-            }
             goodsSettlement.put("isShowNumber", isShowSalesNumber);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
