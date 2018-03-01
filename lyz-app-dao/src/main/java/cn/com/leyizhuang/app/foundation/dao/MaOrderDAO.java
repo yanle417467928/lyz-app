@@ -210,7 +210,7 @@ public interface MaOrderDAO {
      * 定时查找待付款订单
      * @return
      */
-    List<OrderBaseInfo> scanningUnpaidOrder();
+    List<OrderBaseInfo> scanningUnpaidOrder(@Param(value = "findDate") String findDate);
 
     List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
 

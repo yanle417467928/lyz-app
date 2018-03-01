@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaGoodsDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderDAO;
+import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
@@ -45,6 +46,7 @@ import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +116,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     private AppOrderService appOrderServiceImpl;
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
+    @Resource
+    private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
 
 
     @Override
@@ -965,8 +969,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public void findScanningUnpaidOrder() {
         Date date = new Date();
+        //获取当前时间5小时前时间
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - 5);
+        String findDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
         //获取所有待付款订单
-        List<OrderBaseInfo> orderBaseInfoList = maOrderDAO.scanningUnpaidOrder();
+        List<OrderBaseInfo> orderBaseInfoList = maOrderDAO.scanningUnpaidOrder(findDate);
         if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {
@@ -982,9 +990,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Async
     public void scanningUnpaidOrder(OrderBaseInfo orderBaseInfo) {
+        Date date = new Date();
         try {
-
-            Date date = new Date();
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
             System.out.println(new Date() + "：开始处理待付款超时订单，订单号：" + orderBaseInfo.getOrderNumber());
@@ -1076,6 +1083,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1109,6 +1121,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1156,6 +1173,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1200,6 +1222,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1245,6 +1272,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1276,6 +1308,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1321,6 +1358,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1354,6 +1396,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1386,6 +1433,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
+                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                timingTaskErrorMessageDO.setRecordTime(date);
+                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1471,8 +1523,13 @@ public class MaOrderServiceImpl implements MaOrderService {
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
             System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());
+            TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+            timingTaskErrorMessageDO.setMessage(e.getMessage());
+            timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+            timingTaskErrorMessageDO.setRecordTime(date);
+            timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
         }
 
     }
