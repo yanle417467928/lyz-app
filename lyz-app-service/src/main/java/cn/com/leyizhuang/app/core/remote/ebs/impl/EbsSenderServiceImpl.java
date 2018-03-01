@@ -1090,6 +1090,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
         log.info("sendRechargeReceiptToEbs, result=" + result);
         return result;*/
+        return null;
     }
 
     private void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag) {
