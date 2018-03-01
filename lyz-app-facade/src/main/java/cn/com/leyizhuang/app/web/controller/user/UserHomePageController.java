@@ -21,9 +21,7 @@ import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -118,7 +116,7 @@ public class UserHomePageController {
 
             } else {
                 AppEmployee employee = employeeService.findById(userId);
-                if (null == employee) {
+                if (null == employee){
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该配送员!", null);
                     logger.info("personalHomepage OUT,获取个人主页失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -463,9 +461,7 @@ public class UserHomePageController {
                 return resultDTO;
             }
 
-            String refundNumber = appPreDepositWithdrawService.cusSave(param);
-            sinkSender.sendWithdrawRefund(refundNumber);
-
+            appPreDepositWithdrawService.cusSave(param);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "提现申请成功", null);
             logger.info("顾客提现申请成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;

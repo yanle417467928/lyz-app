@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -216,6 +217,7 @@ public interface MaOrderService {
 
 
     String getShippingTime(String orderNumber);
+
     /**
      * 查询订单审核状态
      *
@@ -350,17 +352,23 @@ public interface MaOrderService {
      * @return
      */
     OrderBaseInfo createMaOrderBaseInfo(AppCustomer appCustomer, City city, AppStore appStore, AppEmployee appEmployee,
-                                        Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber,String salesNumber);
+                                        Double preDepositMoney, String remarks, String preDepositRemarks, Double totalMoney, String orderNumber, String salesNumber);
 
-    void scanningUnpaidOrder();
+    /**
+     * 查询当天所有待付款订单
+     */
+    void findScanningUnpaidOrder();
+
+    void scanningUnpaidOrder(OrderBaseInfo orderBaseInfo);
 
 
     /**
      * 查询该订单的支付信息
+     *
      * @param orderNumber
      * @return
      */
     List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
 
-    OrderLogisticsInfo createMaOrderLogisticsInfo(AppStore appStore,String orderNumber);
+    OrderLogisticsInfo createMaOrderLogisticsInfo(AppStore appStore, String orderNumber);
 }

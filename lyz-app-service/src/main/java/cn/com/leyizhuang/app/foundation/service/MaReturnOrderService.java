@@ -50,7 +50,7 @@ public interface MaReturnOrderService {
 
     List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
 
-    MaOrdReturnBilling findReturnOrderBillingList(String returnNumber);
+    MaOrdReturnBilling findReturnOrderBillingList(Long roid);
 
     void saveReturnOrderBillingDetail(List<MaOrdReturnBillingDetail> maOrdReturnBillingDetailList);
 

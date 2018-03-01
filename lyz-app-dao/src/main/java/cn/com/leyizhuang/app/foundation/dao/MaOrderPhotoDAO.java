@@ -13,7 +13,8 @@ import java.util.List;
  */
 @Repository
 public interface MaOrderPhotoDAO {
-    List<PhotoOrderVO> findAll(@Param("cityId")Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+    List<PhotoOrderVO> findAllByCityIdAndStoreId(@Param("cityId")Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords,
+                                                 @Param("status") String status, @Param("list") List<Long> storeIds);
 
     PhotoOrderVO findById(Long id);
 
