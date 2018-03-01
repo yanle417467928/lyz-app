@@ -710,8 +710,8 @@ function chooseGoods(tableId) {
                     "<td><input type='text' id='gid'value=" + item.gid + " style='width:90%;border: none;' readonly /></td>" +
                     "<td><input id='sku' type='text' value='" + item.sku + "' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='title' type='text' value='" + item.skuName + "' style='width:90%;border: none;' readonly></td>" +
-                    "<td><input id='vipPrice' type='number' value='" + item.vipPrice + "' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='retailPrice' type='number' value='" + item.retailPrice + "' style='width:90%;border: none;' readonly></td>" +
+                    "<td><input id='vipPrice' type='number' value='" + item.vipPrice + "' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='qty' type='number' value='0'></td>" +
                     "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>" +
                     "</tr>"

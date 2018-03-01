@@ -202,7 +202,11 @@
         INNER JOIN ord_return_delivery_detail AS ordd ON ordd.return_no = orli.return_no
         WHERE
         orbi.return_status = 'RETURNING'
+        AND ordd.return_logistic_status = 'PICKING_GOODS'
         AND orli.delivery_clerk_no = #{operatorNo}
+        ORDER BY
+        ordd.create_time
+        DESC;
     </select>
 
     <select id="getPickUpDetailByOperatorNoAndReturnNo" parameterType="java.lang.String"
@@ -264,8 +268,7 @@
                 oli.receiver receiver,
                 oli.receiver_phone receiverPhone,
                 odid.task_no shipperNumber,
-                obd.collection_amount collectionAmount,
-                oaa.`status` auditStatus
+                obd.collection_amount collectionAmount
             FROM
                 ord_base_info AS obi
             INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no

@@ -218,7 +218,7 @@ public class OrderController {
                 AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
                 City city = cityService.findById(orderParam.getCityId());
                 AppStore appStore = appStoreService.findById(employee.getStoreId());
-                if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                if ("ZY".equals(appStore.getStoreType().getValue()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
                         "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
                         "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
                         "XC001".equals(appStore.getStoreCode()))) {
@@ -425,7 +425,7 @@ public class OrderController {
                 AppEmployee appEmployee = appEmployeeService.findById(userId);
                 AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
                 //如果是四川直营门店导购返回门店编码
-                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                if ("ZY".equals(appStore.getStoreType().getValue()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
                         "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
                         "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
                         "XC001".equals(appStore.getStoreCode()))) {
@@ -1143,6 +1143,13 @@ public class OrderController {
                     if (time > 0) {
                         orderListResponse.setEndTime(time);
                     }
+                }
+                //获取订单物流相关信息
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
+                } else {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?

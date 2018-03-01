@@ -48,8 +48,4 @@ public class AuditFinishResponse {
      * 代收金额
      */
     private Double collectionAmount;
-    /**
-     * 审核状态
-     */
-    private String auditStatus;
 }

@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.core.exception.OrderSaveException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaGoodsDAO;
@@ -581,7 +582,9 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderBillingDetails.setStPreDeposit(0D);
         }
         orderBillingDetails.setStPreDeposit(stPreDeposit);
-        orderBillingDetails.setPayUpTime(DateUtil.parseDateTime(payTime));
+        if (StringUtils.isNotBlank(payTime)) {
+            orderBillingDetails.setPayUpTime(DateUtil.parseDateTime(payTime));
+        }
         return orderBillingDetails;
     }
 
