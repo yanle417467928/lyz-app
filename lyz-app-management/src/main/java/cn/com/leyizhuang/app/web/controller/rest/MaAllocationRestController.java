@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
@@ -49,12 +50,22 @@ public class MaAllocationRestController extends BaseRestController{
     @Autowired
     private MaSinkSender maSinkSender;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     @GetMapping(value = "/page/grid")
     public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, AllocationQuery query) {
 
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存调拨分页查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords, query);
 
-        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(offset, size, keywords, query);
+        Long storeId = 0L;
+        List<Long> storeIds = adminUserStoreService.findStoreIdList();
+
+        if (storeIds != null && storeIds.size() == 1){
+            storeId = storeIds.get(0);
+        }
+
+        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(offset, size, keywords, query,storeId);
         return new GridDataVO<AllocationVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
     }
 
@@ -92,10 +103,16 @@ public class MaAllocationRestController extends BaseRestController{
                     "调拨商品数据有误，请联系管理员", null);
         }
 
-        // 当前登录帐号
-        ShiroUser shiroUser = super.getShiroUser();
+        Long storeId = null;
+        List<Long> storeIds = adminUserStoreService.findStoreIdList();
 
-        ityAllocationService.addAllocation(allocation,allocationDetailList,shiroUser);
+        if (storeIds != null && storeIds.size() == 1){
+            storeId = storeIds.get(0);
+        }else{
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "调拨单新增失败！帐号门店信息有误", allocation);
+        }
+
+        ityAllocationService.addAllocation(allocation,allocationDetailList,super.getShiroUser(),storeId);
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "调拨单新增成功！", allocation);
     }
 

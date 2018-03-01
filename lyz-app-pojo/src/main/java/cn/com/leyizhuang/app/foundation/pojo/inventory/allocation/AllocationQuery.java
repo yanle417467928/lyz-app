@@ -42,4 +42,6 @@ public class AllocationQuery {
      */
     private String endDateTime;
 
+    // 当前登录门店ID
+    private Long storeId;
 }
