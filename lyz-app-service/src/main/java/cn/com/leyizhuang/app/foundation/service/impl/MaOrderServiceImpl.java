@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
@@ -475,7 +476,7 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetailVO guideCreditChangeDetailVO, Date lastUpdateTime) {
+    public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime) {
         //更新订单支付信息
         this.orderReceivables(maOrderAmount);
         //得到导购id
@@ -495,8 +496,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                 guideCreditMoneyDetail.setEmpId(sellerId);
                 guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
                 guideCreditMoneyDetail.setCreditLimitAvailable(availableCreditMoney);
-                guideCreditChangeDetailVO.setEmpId(sellerId);
-                maEmpCreditMoneyService.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetailVO);
+                guideCreditChangeDetail.setEmpId(sellerId);
+                maEmpCreditMoneyService.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetail);
                 break;
             } else {
                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
