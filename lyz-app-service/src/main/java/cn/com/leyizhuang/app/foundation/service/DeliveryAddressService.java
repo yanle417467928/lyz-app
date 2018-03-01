@@ -5,8 +5,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import com.github.pagehelper.PageInfo;
 
-import java.util.List;
-
 /**
  * @author GenerationRoad
  * @date 2017/9/28

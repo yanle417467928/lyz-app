@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeD
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;

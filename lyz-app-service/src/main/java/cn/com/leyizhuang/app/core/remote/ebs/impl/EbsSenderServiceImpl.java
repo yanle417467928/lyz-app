@@ -639,10 +639,10 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     /**
      * 更新门店退货接口信息
      *
-     * @param  id
-     * @param msg        错误信息
-     * @param sendTime   发送成功时间
-     * @param flag       标识
+     * @param id
+     * @param msg      错误信息
+     * @param sendTime 发送成功时间
+     * @param flag     标识
      */
     private void updateReturnOrderFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != id) {
@@ -1046,6 +1046,56 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             updateOrderKeyInfFlagAndSendTimeAndErrorMsg(orderKeyInf.getId(), null, new Date(), AppWhetherFlag.Y);
         }
 
+    }
+
+    @Override
+    public void sendWithdrawRefundInfAndRecord(WithdrawRefundInf refundInf) {
+        Map<String, Object> result = sendWithdrawRefundToEbs(refundInf);
+        if (!(Boolean) result.get("success")) {
+            updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundInf.getRefundId(), (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundInf.getRefundId(), null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+    private Map<String, Object> sendWithdrawRefundToEbs(WithdrawRefundInf refundInf) {
+        log.info("sendWithdrawRefundToEbs, refundInf=" + refundInf);
+        RechargeReceiptSecond receiptSecond = new RechargeReceiptSecond();
+       /* receiptSecond.setAmount(toString(receiptInf.getAmount()));
+        receiptSecond.setAttribute1(toString(receiptInf.getAttribute1()));
+        receiptSecond.setAttribute2(toString(receiptInf.getAttribute2()));
+        receiptSecond.setAttribute3(toString(receiptInf.getAttribute3()));
+        receiptSecond.setAttribute4(toString(receiptInf.getAttribute4()));
+        receiptSecond.setAttribute5(toString(receiptInf.getAttribute5()));
+        receiptSecond.setChargeNumber(toString(receiptInf.getChargeNumber()));
+        receiptSecond.setChargeObj(toString(receiptInf.getChargeObj()));
+        receiptSecond.setChargeType(toString(receiptInf.getChargeType()));
+        receiptSecond.setDescription(toString(receiptInf.getDescription()));
+        receiptSecond.setDiySiteCode(toString(receiptInf.getDiySiteCode()));
+        receiptSecond.setReceiptDate(toString(DateFormatUtils.format(receiptInf.getReceiptDate(), "yyyy-MM-dd HH:mm:ss")));
+        receiptSecond.setReceiptId(toString(receiptInf.getReceiptId()));
+        receiptSecond.setReceiptNumber(toString(receiptInf.getReceiptNumber()));
+        receiptSecond.setReceiptType(toString(receiptInf.getReceiptType()));
+        receiptSecond.setSobId(toString(receiptInf.getSobId()));
+        receiptSecond.setStoreOrgCode(toString(receiptInf.getStoreOrgCode()));
+        receiptSecond.setUserid(toString(receiptInf.getUserid()));*/
+        String rechargeReceiptSecondJson = JSON.toJSONString(receiptSecond);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("rechargeReceiptJson", rechargeReceiptSecondJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callChargeReceiptSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("rechargeReceiptSecondJson", rechargeReceiptSecondJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendRechargeReceiptToEbs, result=" + result);
+        return result;
+    }
+
+    private void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != refundId) {
+            separateOrderService.updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundId, msg, sendTime, flag);
+        }
     }
 
     private Map<String, Object> sendOrderKeyInfToEbs(OrderKeyInf orderKeyInf) {

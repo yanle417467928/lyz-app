@@ -7,13 +7,16 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
+import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,6 +67,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private CusPreDepositWithdrawDAO cusPreDepositWithdrawDAO;
+
+    @Resource
+    private StPreDepositWithdrawDAO stPreDepositWithdrawDAO;
 
     @Override
     public Boolean isOrderExist(String orderNumber) {
@@ -896,7 +903,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
-    public void separateWithdrawRefund(String refundNo) {
+    public void separateWithdrawRefund(String refundNo) throws UnsupportedEncodingException {
         if (null != refundNo) {
             WithdrawRefundInfo withdrawRefundInfo = withdrawService.getWithdrawRefundInfoByRefundNo(refundNo);
             WithdrawRefundInf withdrawRefundInf = new WithdrawRefundInf();
@@ -907,13 +914,46 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             //withdrawRefundInf.setWithdrawType(withdrawRefundInfo);
             withdrawRefundInf.setRefundType(withdrawRefundInfo.getWithdrawChannel());
             withdrawRefundInf.setDescription(withdrawRefundInf.getRefundType().getDescription());
+            withdrawRefundInf.setRefundDate(withdrawRefundInfo.getCreateTime());
+
             //获取充值顾客信息
             if (withdrawRefundInfo.getWithdrawAccountType() == RechargeAccountType.CUS_PREPAY) {
                 CusPreDepositWithdraw cusPreDepositWithdraw = cusPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
-                //AppCustomer customer = customerService.find
+                AppCustomer customer = customerService.findById(cusPreDepositWithdraw.getApplyCusId());
+                AppStore store = storeService.findById(customer.getStoreId());
+                withdrawRefundInf.setUserid(cusPreDepositWithdraw.getApplyCusId());
+                withdrawRefundInf.setSobId(store.getSobId());
+                withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
+                withdrawRefundInf.setDiySiteCode(store.getStoreCode());
+            }
+            //获取门店充值信息
+            else if (withdrawRefundInfo.getWithdrawAccountType() == RechargeAccountType.ST_PREPAY) {
+                StPreDepositWithdraw stPreDepositWithdraw = stPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
+                AppStore store = storeService.findById(stPreDepositWithdraw.getApplyStId());
+                withdrawRefundInf.setDiySiteCode(store.getStoreCode());
+                withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
+                withdrawRefundInf.setSobId(store.getSobId());
             }
 
-            //withdrawRefundInf.set
+            //保存提现退款接口信息
+            separateOrderDAO.saveWithdrawRefundInf(withdrawRefundInf);
+        }
+    }
+
+    @Override
+    public void sendWithdrawRefundInf(String refundNo) {
+        if (null != refundNo) {
+            WithdrawRefundInf refundInf = separateOrderDAO.getWithdrawRefundInfByRefundNo(refundNo);
+            if (null != refundInf) {
+                ebsSenderService.sendWithdrawRefundInfAndRecord(refundInf);
+            }
+        }
+    }
+
+    @Override
+    public void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != refundId) {
+            separateOrderDAO.updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundId, msg, sendTime, flag);
         }
     }
 

@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.core.utils;
 
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Random;
 
 public class RandomUtil {

@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
@@ -104,5 +105,9 @@ public interface AppSeparateOrderService {
 
     Boolean isWithdrawRefundExist(String refundNo);
 
-    void separateWithdrawRefund(String refundNo);
+    void separateWithdrawRefund(String refundNo) throws UnsupportedEncodingException;
+
+    void sendWithdrawRefundInf(String refundNo);
+
+    void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag);
 }

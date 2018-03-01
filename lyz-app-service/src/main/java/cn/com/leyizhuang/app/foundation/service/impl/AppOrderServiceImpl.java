@@ -2,15 +2,14 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
+import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.ArrearsAuditDAO;
 import cn.com.leyizhuang.app.foundation.dao.CityDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
@@ -73,6 +72,9 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Resource
     private CityService cityService;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
 
     @Override
     public int lockUserExpendOfOrder(OrderLockExpendRequest lockExpendRequest) {
@@ -719,11 +721,42 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
         orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
         orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
-        orderBillingPaymentDetails.setCreateTime(new Date());
+        orderBillingPaymentDetails.setCreateTime(repaymentTime);
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
         arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
+
+        //退还导购信用额度
+        for (int i = 1; i <= 5; i++) {
+            //获取导购信用金
+            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
+            //返还信用金后导购信用金额度
+            Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + money);
+            //修改导购信用额度
+            Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), money, empCreditMoney.getLastUpdateTime());
+            if (affectLine > 0) {
+                //记录导购信用金变更日志
+                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                empCreditMoneyChangeLog.setEmpId(orderBaseInfo.getSalesConsultId());
+                empCreditMoneyChangeLog.setCreateTime(repaymentTime);
+                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(money);
+                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                empCreditMoneyChangeLog.setOperatorId(orderBaseInfo.getSalesConsultId());
+                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
+                //保存日志
+                appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                break;
+            } else {
+                if (i == 5) {
+                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                }
+            }
+        }
+
     }
 
     @Override
@@ -761,6 +794,36 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
         arrearsAuditDAO.updateStatusAndrRepaymentTimeByOrderNumber(repaymentTime, orderNumber);
+
+        //退还导购信用额度
+        for (int i = 1; i <= 5; i++) {
+            //获取导购信用金
+            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
+            //返还信用金后导购信用金额度
+            Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + money);
+            //修改导购信用额度
+            Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), money, empCreditMoney.getLastUpdateTime());
+            if (affectLine > 0) {
+                //记录导购信用金变更日志
+                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                empCreditMoneyChangeLog.setEmpId(orderBaseInfo.getSalesConsultId());
+                empCreditMoneyChangeLog.setCreateTime(repaymentTime);
+                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(money);
+                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                empCreditMoneyChangeLog.setOperatorId(orderBaseInfo.getSalesConsultId());
+                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
+                //保存日志
+                appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                break;
+            } else {
+                if (i == 5) {
+                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                }
+            }
+        }
     }
 
     @Override

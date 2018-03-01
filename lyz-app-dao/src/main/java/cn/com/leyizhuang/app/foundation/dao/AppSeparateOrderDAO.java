@@ -167,4 +167,13 @@ public interface AppSeparateOrderDAO {
     AppCustomerFxStoreRelation getCustomerFxStoreRelationByCusId(Long customerIdTemp);
 
     void isWithdrawRefundExist(@Param(value = "refundNo") String refundNo);
+
+    void saveWithdrawRefundInf(WithdrawRefundInf withdrawRefundInf);
+
+    WithdrawRefundInf getWithdrawRefundInfByRefundNo(@Param(value = "refundNo") String refundNo);
+
+    void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(@Param(value = "refundId") Long refundId,
+                                                        @Param(value = "msg") String msg,
+                                                        @Param(value = "sendTime") Date sendTime,
+                                                        @Param(value = "flag") AppWhetherFlag flag);
 }
