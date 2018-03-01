@@ -986,7 +986,7 @@ public class OrderController {
             response.setCurrentPage(responseOrderList.getPageNum());
             response.setData(responseOrderList.getList());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseOrderList.getList());
-            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", responseOrderList.getList().size());
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", responseOrderList.getList());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
