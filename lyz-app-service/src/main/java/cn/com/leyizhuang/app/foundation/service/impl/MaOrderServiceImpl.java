@@ -182,7 +182,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public String queryRepaymentAmount(String orderNmber) {
+    public Long queryRepaymentAmount(String orderNmber) {
         return maOrderDAO.queryRepaymentAmount(orderNmber);
     }
 

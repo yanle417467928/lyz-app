@@ -896,9 +896,9 @@
 
 
     <select id="queryRepaymentAmount" parameterType="java.lang.String"
-            resultType="java.lang.String">
+            resultType="java.lang.Long">
         SELECT
-        oaa.order_money
+        oaa.order_money-oaa.real_money
         FROM ord_arrears_audit oaa
         WHERE oaa.ord_no = #{orderNumber}
     </select>
