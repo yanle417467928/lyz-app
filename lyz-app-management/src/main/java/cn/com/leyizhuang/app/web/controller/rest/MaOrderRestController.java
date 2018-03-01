@@ -29,6 +29,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOr
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -550,7 +551,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (0!=acount.compareTo(maOrderAmount.getAllAmount())) {
+        if (0 != acount.compareTo(maOrderAmount.getAllAmount())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -670,6 +671,12 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
+        String orderStatus = maOrderService.queryAuditStatus(orderNumber);
+        if (StringUtils.isBlank(orderStatus)|| !(orderStatus.equals(ArrearsAuditStatus.AUDITING))) {
+            logger.info("欠款审核单信息错误！ 该订单不在审核状态");
+            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
+                    null);
+        }
         try {
             this.maOrderService.auditOrderStatus(orderNumber, status);
             logger.info("auditOrderStatus ,审核订单成功");
@@ -704,6 +711,7 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
+        Long repaymentAmount =  maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
         if (null == maOrderAmount.getAllAmount()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
@@ -720,7 +728,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!acount.equals(maOrderAmount.getAllAmount())) {
+        if (0 !=acount.compareTo(BigDecimal.valueOf(repaymentAmount))) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -776,7 +784,7 @@ public class MaOrderRestController extends BaseRestController {
                                             String collectMoneyTime, String remarks, String salesNumber, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks) throws IOException {
         logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{}," +
                         "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{},salesNumber:{}", sellerId, customerId, goodsDetails, giftDetails,
-                cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney,salesNumber);
+                cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney, salesNumber);
         if (null == sellerId) {
             logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,导购id不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购id不能为空！", null);
@@ -904,7 +912,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null,orderLogisticsInfo,user.getUid());
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid());
 
             //将该订单入拆单消息队列
             maSinkSender.sendRechargeReceipt(orderBaseInfo.getOrderNumber());

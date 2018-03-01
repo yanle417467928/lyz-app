@@ -198,7 +198,7 @@ public interface MaOrderService {
      * @param  maOrderAmount
      * @return
      */
-    void updateorderReceivablesStatus(MaOrderAmount maOrderAmount);
+    void updateOrderReceivablesStatus(MaOrderAmount maOrderAmount);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(String orderNumber,Long storeId);
 
@@ -367,4 +367,22 @@ public interface MaOrderService {
     List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
 
     OrderLogisticsInfo createMaOrderLogisticsInfo(AppStore appStore, String orderNumber);
+
+
+    /**
+     * 查询订单审核信息
+     *
+     * @param orderNumber
+     * @return
+     */
+    MaOrderArrearsAudit getArrearsAuditInfo(String orderNumber);
+
+
+    /**
+     * 更新欠款审核表
+     * @param orderNumber
+     * @param orderNumber
+     * @return
+     */
+    void updateOrderArrearsAudit(String orderNumber,Date date);
 }

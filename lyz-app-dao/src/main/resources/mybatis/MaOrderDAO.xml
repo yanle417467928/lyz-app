@@ -674,10 +674,12 @@
     </update>
 
 
-    <update id="updateorderReceivablesStatus" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount">
+    <update id="updateOrderReceivablesStatus"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount">
         UPDATE ord_billing_details
         <set>
             is_pay_up = 1,
+            arrearage = 0,
             <if test="date != null">
                 pay_up_time = #{date},
             </if>
@@ -896,6 +898,14 @@
     </select>
 
 
+    <select id="queryRepaymentAmount" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT
+        oaa.order_money
+        FROM ord_arrears_audit oaa
+        WHERE oaa.ord_no = #{orderNumber}
+    </select>
+
 
     <select id="queryRepaymentAmount" parameterType="java.lang.String"
             resultType="java.lang.Long">
@@ -903,6 +913,40 @@
         FROM ord_arrears_audit oaa
         WHERE oaa.ord_no = #{orderNumber}
     </select>
+
+
+    <select id="getArrearsAuditInfo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit">
+        SELECT
+        id,
+        user_id,
+        ord_no               orderNumber,
+        customer_name,
+        customer_phone,
+        seller_id,
+        seller_name,
+        seller_phone,
+        distribution_address distributionAddress,
+        distribution_time    distributionTime,
+        agency_money,
+        order_money,
+        real_money,
+        payment_method,
+        status,
+        cash_money,
+        pos_money,
+        alipay_money,
+        wechat_money,
+        remarks,
+        create_time,
+        update_time,
+        whether_repayments   whetherRepayments,
+        repayment_time       repaymentTime,
+        picture
+        FROM ord_arrears_audit
+        WHERE ord_no = #{orderNumber}
+    </select>
+
 
     <select id="scanningUnpaidOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
        SELECT
@@ -959,5 +1003,15 @@
         trade_status='TRADE_SUCCESS'
         ORDER BY id DESC
     </select>
+
+
+    <update id="updateOrderArrearsAudit">
+        UPDATE ord_arrears_audit
+        SET whether_repayments = 1,
+        repayment_time = #{repaymentTime}
+        WHERE
+        ord_no = #{orderNumber}
+        AND `status` = 'AUDIT_PASSED'
+    </update>
 
 </mapper>

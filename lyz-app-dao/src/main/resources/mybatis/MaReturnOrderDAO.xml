@@ -229,7 +229,7 @@
         return_date
         FROM inter_ate_return_order_retmd_inf
         WHERE return_number = #{returnNumber}
-        ORDER BY  create_time DESC
+        ORDER BY  return_date DESC
         limit 1
      </select>
 

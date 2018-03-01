@@ -48,6 +48,7 @@ public class MaOrderAmount {
     /**
      * 日期
      */
-    private String date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date date;
 
 }

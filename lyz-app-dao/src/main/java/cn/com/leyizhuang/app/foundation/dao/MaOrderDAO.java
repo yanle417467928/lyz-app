@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -176,7 +177,7 @@ public interface MaOrderDAO {
 
     void updateOrderStatus(String orderNo);
 
-    void updateorderReceivablesStatus(MaOrderAmount maOrderAmount);
+    void updateOrderReceivablesStatus(MaOrderAmount maOrderAmount);
 
     List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo,@Param(value = "storeId") Long storeId);
 
@@ -213,4 +214,7 @@ public interface MaOrderDAO {
 
     List<MaPaymentData> findPaymentDataByOrderNo(String orderNumber);
 
+    MaOrderArrearsAudit getArrearsAuditInfo(String orderNumber);
+
+    void  updateOrderArrearsAudit(@Param(value = "orderNumber") String orderNumber,@Param(value = "date") Date repaymentTime);
 }

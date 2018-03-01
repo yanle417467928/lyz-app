@@ -639,12 +639,12 @@ public class AppOrderServiceImpl implements AppOrderService {
     public Map<String, Integer> getAppOrderQuantityByEmpId(Long id) {
         Integer unpaidOrderQuantity = this.orderDAO.getUnpaidOrderQuantityByEmpId(id);
         Integer pendingReceiveOrderQuantity = this.orderDAO.getPendingReceiveOrderQuantityByEmpId(id);
-        Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
+        //Integer isEvaluatedOrderQuantity = this.orderDAO.getIsEvaluatedOrderQuantityByEmpId(id);
         Integer returningOrderQuantity = this.orderDAO.getReturningOrderQuantityByEmpId(id);
         Map quantityMap = new HashMap();
         quantityMap.put("unpaidOrderQuantity", unpaidOrderQuantity);
         quantityMap.put("pendingReceiveOrderQuantity", pendingReceiveOrderQuantity);
-        quantityMap.put("isEvaluatedOrderQuantity", isEvaluatedOrderQuantity);
+        //quantityMap.put("isEvaluatedOrderQuantity", isEvaluatedOrderQuantity);
         quantityMap.put("returningOrderQuantity", returningOrderQuantity);
         return quantityMap;
     }

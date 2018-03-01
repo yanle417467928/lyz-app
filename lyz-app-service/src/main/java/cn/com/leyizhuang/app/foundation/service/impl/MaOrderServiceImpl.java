@@ -39,6 +39,8 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -49,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -105,6 +108,13 @@ public class MaOrderServiceImpl implements MaOrderService {
     private CityService cityService;
     @Resource
     private MaEmpCreditMoneyDAO maEmpCreditMoneyDAO;
+    @Resource
+    private OrderAgencyFundService orderAgencyFundServiceImpl;
+    @Resource
+    private AppOrderService appOrderServiceImpl;
+    @Resource
+    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
+
 
     @Override
     public List<MaOrderVO> findMaOrderVOAll() {
@@ -240,8 +250,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public void updateorderReceivablesStatus(MaOrderAmount maOrderAmount) {
-        this.maOrderDAO.updateorderReceivablesStatus(maOrderAmount);
+    public void updateOrderReceivablesStatus(MaOrderAmount maOrderAmount) {
+        this.maOrderDAO.updateOrderReceivablesStatus(maOrderAmount);
     }
 
 
@@ -346,16 +356,25 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
+    public void updateOrderArrearsAudit(String orderNumber,Date date) {
+        this.maOrderDAO.updateOrderArrearsAudit(orderNumber,date);
+    }
+
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void orderReceivables(MaOrderAmount maOrderAmount) {
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
-        //更新订单收款状态
-        this.updateorderReceivablesStatus(maOrderAmount);
+        //更新订单收款信息
+        this.updateOrderReceivablesStatus(maOrderAmount);
+        //更新欠款审核表
+        this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(),maOrderAmount.getDate());
         //设置订单收款信息并存入订单账款支付明细表
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
-        maOrderBillingPaymentDetails.setPayTime(maOrderAmount.getDate());
+        maOrderBillingPaymentDetails.setPayTime(sdf.format(maOrderAmount.getDate()));
         maOrderBillingPaymentDetails.setCreateTime(new Date());
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
@@ -474,14 +493,84 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public void auditOrderStatus(String orderNumber, String status) {
+    public void auditOrderStatus(String orderNumber, String status) throws RuntimeException {
+        if (ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status)) {
+            OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNumber);
+            MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfo(orderNumber);
+
+            Double collectionAmount = orderTempInfo.getCollectionAmount();
+            Double realMoney = maOrderArrearsAudit.getRealMoney();
+            //生成代收款记录
+            OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
+            orderAgencyFundDO.setOrderInfo(maOrderArrearsAudit.getUserId(), orderNumber, collectionAmount);
+            orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), maOrderArrearsAudit.getCustomerPhone(),
+                    maOrderArrearsAudit.getSellerId(), maOrderArrearsAudit.getSellerName(), maOrderArrearsAudit.getSellerphone());
+            orderAgencyFundDO.setAgencyFundInfo(maOrderArrearsAudit.getPaymentMethod(), realMoney, 0D, maOrderArrearsAudit.getRemarks());
+            this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+
+            //创建收款记录
+            OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
+                    orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(maOrderArrearsAudit.getPaymentMethod()),
+                    maOrderArrearsAudit.getPaymentMethod(), orderNumber, PaymentSubjectType.DELIVERY_CLERK,
+                    PaymentSubjectType.DELIVERY_CLERK.getDescription(), realMoney, null, null);
+            this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+
+            //修改订单欠款
+            OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOrderNumber(orderNumber);
+            orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), realMoney));
+            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+
+            //获取导购信用金
+            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+
+            //返还信用金后导购信用金额度
+            Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + realMoney);
+
+            //修改导购信用额度
+            Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(null, realMoney, empCreditMoney.getLastUpdateTime());
+            if (affectLine > 0) {
+                //记录导购信用金变更日志
+                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                empCreditMoneyChangeLog.setEmpId(null);
+                empCreditMoneyChangeLog.setCreateTime(new Date());
+                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(realMoney);
+                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                //保存日志
+                appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+
+            }
+            //生成订单物流详情
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+            orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), maOrderArrearsAudit.getPicture(), "", "");
+            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+
+            //修改订单状态
+            OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+            orderBaseInfo.setOrderNumber(orderNumber);
+            orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+            orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
+            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+            //传ebs收款接口
+        }
+        //修改审核状态
         this.maOrderDAO.auditOrderStatus(orderNumber, status);
+    }
+
+
+    @Override
+    public MaOrderArrearsAudit getArrearsAuditInfo(String orderNumber) {
+        return this.maOrderDAO.getArrearsAuditInfo(orderNumber);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime) {
-        //更新订单支付信息
+        // 更新订单支付信息
         this.orderReceivables(maOrderAmount);
         //得到导购id
         Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
@@ -628,7 +717,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo,Long operatorId) throws UnsupportedEncodingException {
+                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo, Long operatorId) throws UnsupportedEncodingException {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         this.deductionsStPreDeposit(identityType, userId, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
@@ -677,7 +766,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo,Long operatorId) throws UnsupportedEncodingException {
+                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo, Long operatorId) throws UnsupportedEncodingException {
         if (null != orderBaseInfo) {
             AppCustomer customer = new AppCustomer();
             Long cusId = orderBaseInfo.getCustomerId();
@@ -1381,9 +1470,9 @@ public class MaOrderServiceImpl implements MaOrderService {
             }
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
-            System.out.println("异常错误，待付款超时订单处理失败，订单号："+orderBaseInfo.getOrderNumber());
+            System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());
         }
 
     }
