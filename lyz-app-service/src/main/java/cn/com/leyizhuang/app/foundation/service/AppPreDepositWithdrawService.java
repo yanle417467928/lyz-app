@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
@@ -19,7 +20,7 @@ public interface AppPreDepositWithdrawService {
      * 新增顾客提现申请
      * @param param 提现申请类
      */
-    String cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException;
+    void cusSave(PreDepositWithdrawParam param) throws UnsupportedEncodingException;
 
     /**
      * 新增门店提现申请
@@ -62,6 +63,32 @@ public interface AppPreDepositWithdrawService {
      */
     PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status);
 
+
+    /**
+     * 顾客 通过申请
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void cusApplyPass(Long applyId,ShiroUser shiroUser)throws Exception;
+
+    /**
+     * 顾客 驳回
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void cusApplyreject(Long applyId,ShiroUser shiroUser)throws Exception;
+
+    /**
+     * 顾客 打款
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void cusApplyRemit(Long applyId,ShiroUser shiroUser)throws Exception;
+
+
     /**
      * 门店 预存款提现申请列表
      * @param page
@@ -71,4 +98,28 @@ public interface AppPreDepositWithdrawService {
      * @return
      */
     PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status);
+
+    /**
+     * 门店 通过
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void stApplyPass(Long applyId,ShiroUser shiroUser)throws Exception;
+
+    /**
+     * 门店 驳回
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void stApplyreject(Long applyId,ShiroUser shiroUser)throws Exception;
+
+    /**
+     * 门店 打款
+     * @param applyId
+     * @param shiroUser
+     * @throws Exception
+     */
+    void stApplyRemit(Long applyId,ShiroUser shiroUser)throws Exception;
 }

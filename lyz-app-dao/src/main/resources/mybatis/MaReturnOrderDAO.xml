@@ -233,7 +233,7 @@
         limit 1
      </select>
 
-    <select id="findReturnOrderBillingList" parameterType="java.lang.String"
+    <select id="findReturnOrderBillingList" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaOrdReturnBilling">
         SELECT
         id,
@@ -248,7 +248,7 @@
       cash,
       lb_quantity
         FROM ord_return_billing orb
-        WHERE orb.return_no = #{returnNumber}
+        WHERE orb.roid = #{roid}
     </select>
 
     <insert id="saveReturnOrderBillingDetail" parameterType="java.util.List">

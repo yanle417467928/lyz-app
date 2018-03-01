@@ -128,4 +128,6 @@ public interface ReturnOrderDAO {
     List<ReturnOrderBaseInfo> findReturnOrderListByStroe(Long store);
 
     void updateReturnLogisticInfo(ReturnOrderLogisticInfo returnOrderLogisticInfo);
+
+    ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
 }

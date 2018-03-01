@@ -179,7 +179,7 @@ public class OrderArriveController {
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(userId);
                             empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                             empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);

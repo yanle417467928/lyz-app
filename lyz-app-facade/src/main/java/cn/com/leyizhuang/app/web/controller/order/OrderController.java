@@ -591,21 +591,20 @@ public class OrderController {
             goodsSettlement.put("freight", freight);
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
-
-            //是否显示纸质销售单号
             boolean isShowSalesNumber = false;
-            AppEmployee appEmployee = appEmployeeService.findById(userId);
-            AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
-            //如果是四川直营门店导购返回门店编码
-            if (identityType == 0 && "ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
-                    "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
-                    "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
-                    "XC001".equals(appStore.getStoreCode()))) {
-                isShowSalesNumber = true;
-                goodsSettlement.put("isShowNumber", isShowSalesNumber);
-            } else {
-                goodsSettlement.put("isShowNumber", isShowSalesNumber);
+            if (identityType == 0) {
+                //是否显示纸质销售单号
+                AppEmployee appEmployee = appEmployeeService.findById(userId);
+                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+                //如果是四川直营门店导购返回门店编码
+                if ("ZY".equals(appStore.getStoreCode()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                        "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
+                        "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
+                        "XC001".equals(appStore.getStoreCode()))) {
+                    isShowSalesNumber = true;
+                }
             }
+            goodsSettlement.put("isShowNumber", isShowSalesNumber);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
@@ -1061,9 +1060,9 @@ public class OrderController {
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
                 if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
                 } else {
-                    orderListResponse.setShippingAddress(orderLogisticsInfo.getBookingStoreName());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));

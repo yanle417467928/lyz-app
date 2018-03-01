@@ -102,7 +102,7 @@ public class AppActServiceImpl implements AppActService {
         List<PromotionsGiftListResponse> giftList = new ArrayList<>();
         PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
 
-        if (actResultInfos != null) {
+        if (actResultInfos != null && actResultInfos.getPromotionGiftList() != null) {
             giftList = actResultInfos.getPromotionGiftList();
         }
 
@@ -120,7 +120,7 @@ public class AppActServiceImpl implements AppActService {
     public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
         List<PromotionDiscountListResponse> discountList = new ArrayList<>();
         PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
-        if (actResultInfos != null) {
+        if (actResultInfos != null && actResultInfos.getPromotionDiscountList() != null) {
             discountList = actResultInfos.getPromotionDiscountList();
         }
 

@@ -16,7 +16,8 @@ public interface MaCusPreDepositLogDAO {
 
     void save(CusPreDepositLogDO cusPreDepositLogDO);
 
-    List<CusPreDepositLogVO> findAllCusPredepositLog(@Param("cusId") Long cusId, @Param("cityId")Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords);
+    List<CusPreDepositLogVO> findAllCusPredepositLog(@Param("cusId") Long cusId, @Param("cityId")Long cityId, @Param("storeId")Long storeId,
+                                                     @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
     CusPreDepositLogVO findCusPredepositLogById(Long id);
 

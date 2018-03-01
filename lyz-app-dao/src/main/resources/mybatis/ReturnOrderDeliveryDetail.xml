@@ -8,6 +8,7 @@
         FROM ord_return_delivery_detail
         WHERE
             return_no = #{returnNumber}
+        ORDER BY create_time DESC
     </select>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail">

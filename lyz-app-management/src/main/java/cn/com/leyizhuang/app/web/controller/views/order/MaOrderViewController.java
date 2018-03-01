@@ -331,7 +331,7 @@ public class MaOrderViewController {
             //获取订单支付明细列表
             List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
             //获取应还款金额
-            String repaymentAmount =  maOrderService.queryRepaymentAmount(orderNumber);
+            Long repaymentAmount =  maOrderService.queryRepaymentAmount(orderNumber);
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);

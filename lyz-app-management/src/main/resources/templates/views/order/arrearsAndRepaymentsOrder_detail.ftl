@@ -542,11 +542,9 @@
                             <span id="message" style="color: red;"></span>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success " data-dismiss="modal"
-                                    id="confirmSubmit" type="submit">确定
+                            <button class="btn btn-success " id="confirmSubmit">确定
                             </button>
-                            <button type="button" class="btn btn-default"
-                                    data-dismiss="modal">取消
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消
                             </button>
                         </div>
                     </form>

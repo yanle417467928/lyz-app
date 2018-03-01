@@ -50,14 +50,17 @@
         last_update_time = #{lastUpdateTime}
     </update>
 
-    <update id="clearTempCreditLimit" parameterType="java.lang.Long">
+    <update id="clearTempCreditLimit" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail">
         UPDATE
         emp_credit_money
         <set>
-            credit_limit_available = credit_limit_available - temp_credit_limit,
+            <if test="null != creditLimitAvailable">
+            credit_limit_available = #{creditLimitAvailable},
+            </if>
             temp_credit_limit = 0
         </set>
-        WHERE emp_id = #{id}
+        WHERE emp_id = #{empId}
+        AND last_update_time =#{lastUpdateTime}
     </update>
 
 
@@ -78,8 +81,8 @@
             ecmcl.id,
             ecmcl.create_time,
             ecmcl.reference_number,
-            ecmcl.change_type,
-            ecmcl.change_type_desc,
+            ea.change_type,
+            ea.change_type_desc,
             ea.credit_limit_available_change_amount,
             ea.credit_limit_available_after_change,
             ecmcl.operator_id,
@@ -98,8 +101,8 @@
         ecmcl.id,
         ecmcl.create_time,
         ecmcl.reference_number,
-        ecmcl.change_type,
-        ecmcl.change_type_desc,
+        et.change_type,
+        et.change_type_desc,
         et.temp_credit_limit_change_amount,
         et.temp_credit_limit_after_change,
         ecmcl.operator_id,
@@ -118,8 +121,8 @@
         ecmcl.id,
         ecmcl.create_time,
         ecmcl.reference_number,
-        ecmcl.change_type,
-        ecmcl.change_type_desc,
+        ef.change_type,
+        ef.change_type_desc,
         ecmcl.operator_id,
         ecmcl.operator_name,
         ef.fixed_credit_limit_change_amount,
@@ -134,42 +137,42 @@
     </select>
 
     <insert id="saveCreditChange"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO">
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail">
     insert into emp_credit_money_change_log
     (emp_id,create_time,temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,reference_number,change_type,change_type_desc,operator_id,operator_type,operator_ip,operator_name,change_reason)
     values
-    (#{empId},#{createTime},#{tempCreditChangeId.id},#{availableCreditChangId.id},#{fixedCreditChangeId.id},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId},#{operatorType} ,#{operatorIp},#{operatorName},#{changeReason});
+    (#{empId},#{createTime},#{tempCreditChangeId},#{availableCreditChangId},#{fixedCreditChangeId},#{referenceNumber},#{changeType},#{changeTypeDesc},#{operatorId},#{operatorType} ,#{operatorIp},#{operatorName},#{changeReason});
     </insert>
 
     <insert id="saveCreditLimitAvailableChange" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideAvailableCreditChange">
         insert into emp_available_credit_change_log
-        (credit_limit_available_change_amount,credit_limit_available_after_change)
+        (credit_limit_available_change_amount,credit_limit_available_after_change,change_type,change_type_desc)
         values
-        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange})
+        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange},#{changeType},#{changeTypeDesc})
     </insert>
 
     <insert id="saveTempCreditLimitChange" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideTempCreditChange">
         insert into emp_temp_credit_change_log
-        (temp_credit_limit_change_amount,temp_credit_limit_after_change )
+        (temp_credit_limit_change_amount,temp_credit_limit_after_change,change_type,change_type_desc)
         values
-        (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange})
+        (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange},#{changeType},#{changeTypeDesc})
     </insert>
 
     <insert id="saveFixedCreditLimitChange" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideFixedCreditChange">
         insert into emp_fixed_credit_change_log
-        (fixed_credit_limit_change_amount,fixed_credit_limit_after_change)
+        (fixed_credit_limit_change_amount,fixed_credit_limit_after_change,change_type,change_type_desc)
         values
-        (#{fixedCreditLimitChangeAmount},#{fixedCreditLimitAfterChange})
+        (#{fixedCreditLimitChangeAmount},#{fixedCreditLimitAfterChange},#{changeType},#{changeTypeDesc})
     </insert>
 
 
     <select id="findAllGuideCreditMoney"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
         SELECT
-        id,emp_id,temp_credit_limit,credit_limit_available
+        id,emp_id,temp_credit_limit,credit_limit_available,last_update_time
         FROM emp_credit_money
     </select>
 
@@ -178,6 +181,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
         SELECT
         emp_id,
+        credit_limit,
         temp_credit_limit,
         credit_limit_available,
         last_update_time
