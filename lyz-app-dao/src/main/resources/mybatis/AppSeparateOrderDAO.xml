@@ -1080,4 +1080,84 @@
                       FROM inter_ate_withdraw_refund_inf
                       WHERE refund_number = #{refundNo})
     </select>
+
+    <insert id="saveWithdrawRefundInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.WithdrawRefundInf">
+        INSERT INTO inter_ate_withdraw_refund_inf (refund_number, withdraw_number, sob_id, withdraw_type, withdraw_obj, refund_type,
+                                                   userid, diy_site_code, store_org_code, refund_date, amount, description, attribute1, attribute2,
+                                                   attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time)
+            SELECT
+                #{refundNumber},
+                #{withdrawNumber},
+                #{sobId},
+                #{withdrawType},
+                #{withdrawObj},
+                #{refundType},
+                #{userid},
+                #{diySiteCode},
+                #{storeOrgCode},
+                #{refundDate},
+                #{amount},
+                #{description},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime}
+            FROM dual
+            WHERE NOT exists(
+                    SELECT 1
+                    FROM inter_ate_withdraw_refund_inf
+                    WHERE refund_number = #{refundNumber}
+            )
+    </insert>
+
+    <select id="getWithdrawRefundInfByRefundNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.WithdrawRefundInf">
+        SELECT
+            refund_id,
+            refund_number,
+            withdraw_number,
+            sob_id,
+            withdraw_type,
+            withdraw_obj,
+            refund_type,
+            userid,
+            diy_site_code,
+            store_org_code,
+            refund_date,
+            amount,
+            description,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time
+        FROM inter_ate_withdraw_refund_inf
+        WHERE refund_number = #{refundNo}
+    </select>
+
+    <select id="updateWithdrawRefundFlagAndSendTimeAndErrorMsg" parameterType="java.lang.Long">
+        UPDATE inter_ate_withdraw_refund_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime}
+            </if>
+        </set>
+        WHERE refund_id = #{refundId}
+    </select>
 </mapper>

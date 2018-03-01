@@ -186,8 +186,8 @@ public class SinkReceiver {
                         //拆单
                         separateOrderService.separateWithdrawRefund(refundNo);
 
-                        //发送充值收款信息
-                        //separateOrderService.sendRechargeReceiptInf(rechargeNo);
+                        //发送提现收款信息
+                        separateOrderService.sendWithdrawRefundInf(refundNo);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
