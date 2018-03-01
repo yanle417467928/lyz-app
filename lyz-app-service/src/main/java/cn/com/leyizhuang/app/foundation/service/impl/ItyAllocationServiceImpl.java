@@ -17,7 +17,6 @@ import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
-
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationDetailSecond;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationHeaderSecond;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationReceiveSecond;
@@ -33,11 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-import static cn.com.leyizhuang.app.core.utils.DateUtil.*;
+import static cn.com.leyizhuang.app.core.utils.DateUtil.getCurrentTimeStr;
 
 /**
  * @author Jerry.Ren
