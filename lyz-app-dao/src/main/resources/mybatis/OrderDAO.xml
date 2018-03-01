@@ -691,6 +691,7 @@
         </if>
         AND o.status = 'FINISHED'
         AND o.is_evaluated =false
+        ORDER BY  o.create_time DESC
     </select>
     <resultMap id="pendingEvaluationOrder" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse">
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>

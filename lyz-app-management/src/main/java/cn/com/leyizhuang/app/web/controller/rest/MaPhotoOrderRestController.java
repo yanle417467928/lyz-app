@@ -76,10 +76,9 @@ public class MaPhotoOrderRestController extends BaseRestController{
      * @date 2018/1/11
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<PhotoOrderVO> restPhotoOrderPageGird(Integer offset, Integer size, String keywords, Long cityId, String status, Long storeId)  {
+    public GridDataVO<PhotoOrderVO> restPhotoOrderPageGird(Integer offset, Integer size, String keywords, Long cityId, String status, Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        //查询登录用户门店权限的门店ID
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         PageInfo<PhotoOrderVO> photoOrderVOPageInfo = this.maPhotoOrderService.findAllByCityIdAndStoreId(page, size, cityId, storeId, keywords, status, storeIds);

@@ -229,9 +229,11 @@
         return_date
         FROM inter_ate_return_order_retmd_inf
         WHERE return_number = #{returnNumber}
+        ORDER BY  create_time DESC
+        limit 1
      </select>
 
-    <select id="findReturnOrderBillingList" parameterType="java.lang.String"
+    <select id="findReturnOrderBillingList" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaOrdReturnBilling">
         SELECT
         id,
@@ -246,7 +248,7 @@
       cash,
       lb_quantity
         FROM ord_return_billing orb
-        WHERE orb.return_no = #{returnNumber}
+        WHERE orb.roid = #{roid}
     </select>
 
     <insert id="saveReturnOrderBillingDetail" parameterType="java.util.List">
