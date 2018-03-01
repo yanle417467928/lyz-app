@@ -94,6 +94,7 @@ public class ReturnOrderController {
     private SmsAccountServiceImpl smsAccountService;
     @Resource
     private AppActService appActService;
+
     /**
      * 取消订单
      *
@@ -883,6 +884,14 @@ public class ReturnOrderController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已退货完成，不可取消！", null);
                     logger.info("cancelReturnOrder OUT,用户取消退货单失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
+                } else if (ReturnLogisticStatus.PICKING_GOODS.equals(orderDeliveryDetail.getReturnLogisticStatus())) {
+                    String smsMsg = "【乐易装】请注意有退货单已被客户取消了,退单号:"
+                            + returnOrderBaseInfo.getReturnNo() +
+                            ",如有疑问,请登陆APP与客户联系。";
+                    AppEmployee appEmployee = appEmployeeService.findDeliveryByClerkNo(orderDeliveryDetail.getPickersNumber());
+                    if (AssertUtil.isNotEmpty(appEmployee) && null != appEmployee.getMobile()) {
+                        smsAccountService.commonSendSms(appEmployee.getMobile(), smsMsg);
+                    }
                 }
             }
             AtwCancelReturnOrderRequest atwCancelOrderRequest = AtwCancelReturnOrderRequest.transform(returnOrderBaseInfo);

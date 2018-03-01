@@ -431,6 +431,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                         //修改退货单状态
                         returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
+                    } else {
+                        //如果申请取消退货单失败退回为原来的退货申请状态
+                        returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.PENDING_PICK_UP);
                     }
                 }
                 logger.info("GetWMSInfo OUT,获取取消退单结果确认wms信息成功 出参 code=0");
