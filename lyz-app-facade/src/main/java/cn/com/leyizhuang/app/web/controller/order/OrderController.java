@@ -1144,6 +1144,13 @@ public class OrderController {
                         orderListResponse.setEndTime(time);
                     }
                 }
+                //获取订单物流相关信息
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
+                } else {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
+                }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
                         AppOrderStatus.PENDING_RECEIVE.getValue() : orderBaseInfo.getStatus().getValue());

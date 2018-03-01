@@ -63,14 +63,14 @@ public class MaSinkSender {
         }
     }
 
-    public void sendOrder(String orderNumber) {
-        log.info("sendOrder,发送需拆单订单到拆单队列,Begin\n 订单号:{}", orderNumber);
-        if (StringUtils.isNotBlank(orderNumber)) {
+    public void sendRechargeReceipt(String rechargeNo) {
+        log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,Begin\n 充值单号:{}", rechargeNo);
+        if (StringUtils.isNotBlank(rechargeNo)) {
             MqMessage message = new MqMessage();
-            message.setType(MqMessageType.ORDER);
-            message.setContent(JSON.toJSONString(orderNumber));
+            message.setType(MqMessageType.RECHARGE_RECEIPT);
+            message.setContent(JSON.toJSONString(rechargeNo));
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
-        log.info("sendOrder,发送需拆单订单到拆单队列,End", JSON.toJSONString(orderNumber));
+        log.info("sendRechargeReceipt,发送充值收款信息到拆单队列,End", JSON.toJSONString(rechargeNo));
     }
 }

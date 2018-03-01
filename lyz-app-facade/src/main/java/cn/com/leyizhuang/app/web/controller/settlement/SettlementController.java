@@ -91,7 +91,7 @@ public class SettlementController {
         try {
             AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
             Integer hour = getHour();
-            if (identityType.equals(AppIdentityType.SELLER.getValue()) && (hour < 6 || hour > 19) && "ZY".equals(store.getStoreType()) && "2121".equals(store.getCityCode())) {
+            if (identityType == AppIdentityType.SELLER.getValue() && (hour < 6 || hour > 19) && "ZY".equals(store.getStoreType().getValue()) && "2121".equals(store.getCityCode())) {
                 if ("FZY009".equals(store.getStoreCode()) || "HLC004".equals(store.getStoreCode()) || "ML001".equals(store.getStoreCode()) || "QCMJ008".equals(store.getStoreCode()) ||
                         "SB010".equals(store.getStoreCode()) || "YC002".equals(store.getStoreCode()) || "ZC002".equals(store.getStoreCode()) || "RC005".equals(store.getStoreCode()) ||
                         "FZM007".equals(store.getStoreCode()) || "SH001".equals(store.getStoreCode()) || "YJ001".equals(store.getStoreCode()) || "HS001".equals(store.getStoreCode()) ||

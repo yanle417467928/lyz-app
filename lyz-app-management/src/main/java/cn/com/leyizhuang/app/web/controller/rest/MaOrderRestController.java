@@ -845,7 +845,7 @@ public class MaOrderRestController extends BaseRestController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到门店信息！", null);
             }
 
-            if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType())){
+            if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType().getValue())){
                 if (StringUtils.isBlank(salesNumber)){
                     logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,销售纸质单号不能为空！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，销售纸质单号不能为空！", null);
@@ -876,7 +876,7 @@ public class MaOrderRestController extends BaseRestController {
                 posMoney = null;
                 posNumber = null;
                 otherMoney = null;
-                payTime = preDepositCollectMoneyTime;
+                payTime = null;
             } else {
                 if (null != posMoney && posNumber == null) {
                     logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "有POS收款金额，请填写POS流水号！！");
@@ -907,7 +907,7 @@ public class MaOrderRestController extends BaseRestController {
             maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null,orderLogisticsInfo,user.getUid());
 
             //将该订单入拆单消息队列
-            maSinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+            maSinkSender.sendRechargeReceipt(orderBaseInfo.getOrderNumber());
 
             logger.warn("saveMaProductCoupon OUT,买券订单创建成功", "买券订单创建成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "买券订单创建成功", null);
