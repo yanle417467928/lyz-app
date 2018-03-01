@@ -361,7 +361,6 @@ public interface MaOrderService {
 
     void scanningUnpaidOrder(OrderBaseInfo orderBaseInfo);
 
-
     /**
      * 查询该订单的支付信息
      *

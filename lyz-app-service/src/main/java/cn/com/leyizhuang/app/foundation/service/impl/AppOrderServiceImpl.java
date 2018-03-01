@@ -713,9 +713,13 @@ public class AppOrderServiceImpl implements AppOrderService {
 
         orderBillingPaymentDetails.setPayTime(repaymentTime);
         orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.WE_CHAT);
+        orderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.WE_CHAT.getDescription());
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);
         orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
+        orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+        orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+        orderBillingPaymentDetails.setCreateTime(new Date());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
@@ -746,9 +750,13 @@ public class AppOrderServiceImpl implements AppOrderService {
 
         orderBillingPaymentDetails.setPayTime(repaymentTime);
         orderBillingPaymentDetails.setPayType(OrderBillingPaymentType.ALIPAY);
+        orderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.ALIPAY.getDescription());
         orderBillingPaymentDetails.setAmount(money);
         orderBillingPaymentDetails.setReplyCode(replyNumber);
         orderBillingPaymentDetails.setReceiptNumber(receiptNumber);
+        orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+        orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+        orderBillingPaymentDetails.setCreateTime(new Date());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表

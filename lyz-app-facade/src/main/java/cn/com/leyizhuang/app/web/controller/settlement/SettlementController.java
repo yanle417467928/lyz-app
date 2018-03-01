@@ -92,10 +92,10 @@ public class SettlementController {
             AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
             Integer hour = getHour();
             if (identityType.equals(AppIdentityType.SELLER.getValue()) && (hour < 6 || hour > 19) && "ZY".equals(store.getStoreType()) && "2121".equals(store.getCityCode())) {
-                if ("FZY009" == store.getStoreCode() || "HLC004" == store.getStoreCode() || "ML001" == store.getStoreCode() || "QCMJ008" == store.getStoreCode() ||
-                        "SB010" == store.getStoreCode() || "YC002" == store.getStoreCode() || "ZC002" == store.getStoreCode() || "RC005" == store.getStoreCode() ||
-                        "FZM007" == store.getStoreCode() || "SH001" == store.getStoreCode() || "YJ001" == store.getStoreCode() || "HS001" == store.getStoreCode() ||
-                        "XC001" == store.getStoreCode()){
+                if ("FZY009".equals(store.getStoreCode()) || "HLC004".equals(store.getStoreCode()) || "ML001".equals(store.getStoreCode()) || "QCMJ008".equals(store.getStoreCode()) ||
+                        "SB010".equals(store.getStoreCode()) || "YC002".equals(store.getStoreCode()) || "ZC002".equals(store.getStoreCode()) || "RC005".equals(store.getStoreCode()) ||
+                        "FZM007".equals(store.getStoreCode()) || "SH001".equals(store.getStoreCode()) || "YJ001".equals(store.getStoreCode()) || "HS001".equals(store.getStoreCode()) ||
+                        "XC001".equals(store.getStoreCode())){
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该时段此门店不支持门店自提！", null);
                     logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;

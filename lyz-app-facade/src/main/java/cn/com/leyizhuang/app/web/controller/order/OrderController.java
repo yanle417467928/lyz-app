@@ -1061,9 +1061,9 @@ public class OrderController {
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
                 if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
                 } else {
-                    orderListResponse.setShippingAddress(orderLogisticsInfo.getBookingStoreName());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));

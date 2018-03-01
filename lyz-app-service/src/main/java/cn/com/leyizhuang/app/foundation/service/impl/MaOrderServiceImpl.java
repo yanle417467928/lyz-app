@@ -953,6 +953,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
+                returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
                 returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);

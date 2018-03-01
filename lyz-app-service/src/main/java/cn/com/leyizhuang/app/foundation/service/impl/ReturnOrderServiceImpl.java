@@ -367,6 +367,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             }
             returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
             returnOrderBaseInfo.setCustomerName(orderBaseInfo.getCustomerName());
+            returnOrderBaseInfo.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+            returnOrderBaseInfo.setCustomerType(orderBaseInfo.getCustomerType());
             returnOrderBaseInfo.setReasonInfo(reasonInfo);
             returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
             returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
@@ -393,6 +395,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
+                returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
                 returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
