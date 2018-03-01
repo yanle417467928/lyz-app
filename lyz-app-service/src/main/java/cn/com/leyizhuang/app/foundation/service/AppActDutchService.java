@@ -3,7 +3,6 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
-import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;

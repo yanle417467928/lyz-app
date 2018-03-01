@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
-import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import com.github.pagehelper.PageHelper;

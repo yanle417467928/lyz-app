@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
-import org.springframework.stereotype.Service;
 
 /**
  * Created by caiyu on 2018/1/29.

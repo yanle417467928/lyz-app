@@ -5,7 +5,6 @@ import cn.com.leyizhuang.app.foundation.dao.AdminUserStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.AdminUserStoreVO;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.Decora
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
 import cn.com.leyizhuang.app.foundation.service.MaDecorativeCompanyCreditService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 

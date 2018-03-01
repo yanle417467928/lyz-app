@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 
 import java.util.Date;
 

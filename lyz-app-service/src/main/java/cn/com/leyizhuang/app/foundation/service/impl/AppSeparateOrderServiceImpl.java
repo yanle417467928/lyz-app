@@ -917,34 +917,4 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
-    @Override
-    public Boolean isWithdrawRefundExist(String refundNo) {
-        if (null != refundNo) {
-            separateOrderDAO.isWithdrawRefundExist(refundNo);
-        }
-        return null;
-    }
-
-    @Override
-    public void separateWithdrawRefund(String refundNo) {
-        if (null != refundNo) {
-            WithdrawRefundInfo withdrawRefundInfo = withdrawService.getWithdrawRefundInfoByRefundNo(refundNo);
-            WithdrawRefundInf withdrawRefundInf = new WithdrawRefundInf();
-            withdrawRefundInf.setAmount(withdrawRefundInfo.getWithdrawAmount());
-            withdrawRefundInf.setCreateTime(new Date());
-            withdrawRefundInf.setWithdrawNumber(withdrawRefundInfo.getWithdrawNo());
-            withdrawRefundInf.setWithdrawObj(withdrawRefundInfo.getWithdrawSubjectType());
-            //withdrawRefundInf.setWithdrawType(withdrawRefundInfo);
-            withdrawRefundInf.setRefundType(withdrawRefundInfo.getWithdrawChannel());
-            withdrawRefundInf.setDescription(withdrawRefundInf.getRefundType().getDescription());
-            //获取充值顾客信息
-            if (withdrawRefundInfo.getWithdrawAccountType()==RechargeAccountType.CUS_PREPAY){
-                CusPreDepositWithdraw cusPreDepositWithdraw = cusPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
-                //AppCustomer customer = customerService.find
-            }
-
-            //withdrawRefundInf.set
-        }
-    }
-
 }

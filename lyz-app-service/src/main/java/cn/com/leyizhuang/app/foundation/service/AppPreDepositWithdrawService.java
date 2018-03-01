@@ -1,14 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 /**
  * 预存款提现接口 服务类

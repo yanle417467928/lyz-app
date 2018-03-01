@@ -2,10 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 public interface MaCityInventoryService {

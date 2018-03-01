@@ -18,7 +18,6 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;

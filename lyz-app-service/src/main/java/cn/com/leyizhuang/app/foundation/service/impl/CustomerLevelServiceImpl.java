@@ -1,22 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
-import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
-import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
-import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.CustomerLevelService;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
-import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
