@@ -91,7 +91,7 @@
         FROM st_pre_deposit_withdraw
         WHERE 1=1
         <if test="keywords != null">
-            and (apply_cus_name LIKE concat("%",#{keywords},"%") or apply_cus_phone like concat(#{keywords},"%") or apply_no like concat(#{keywords},"%"))
+            and (apply_st_name LIKE concat("%",#{keywords},"%") or apply_st_phone like concat(#{keywords},"%") or apply_no like concat(#{keywords},"%"))
         </if>
         <if test="status != null">
             and status = #{status}
