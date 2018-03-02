@@ -9,10 +9,6 @@ import cn.com.leyizhuang.app.foundation.dao.AppStoreDAO;
 import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -166,7 +162,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         StPreDepositWithdraw stPreDepositWithdraw = new StPreDepositWithdraw();
 
-        stPreDepositWithdraw.setApplyNo(this.createCode());
+        stPreDepositWithdraw.setApplyNo(OrderUtils.generateWithdrawNumber(appEmployee.getCityId()));
         stPreDepositWithdraw.setCreateTime(new Date());
         stPreDepositWithdraw.setApplyStId(param.getId());
         stPreDepositWithdraw.setApplyStName(param.getRealName());
@@ -348,40 +344,41 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     /********************************  后台方法 ********************************************/
 
     @Override
-    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime){
+    public PageInfo<CusPreDepositWithdraw> getCusPageInfo(Integer page, Integer size, String keywords, String status, String startDateTime, String endDateTime) {
         PageHelper.startPage(page, size);
 
         if (keywords.equals("")) {
             keywords = null;
         }
 
-        if (status.equals("")){
+        if (status.equals("")) {
             status = null;
         }
 
-        List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords,status,startDateTime,endDateTime);
+        List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords, status, startDateTime, endDateTime);
         return new PageInfo<>(cusPreDepositWithdrawList);
     }
 
     @Override
-    public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status,String startDateTime,String endDateTime){
-        PageHelper.startPage(page,size);
+    public PageInfo<StPreDepositWithdraw> getStPageInfo(Integer page, Integer size, String keywords, String status, String startDateTime, String endDateTime) {
+        PageHelper.startPage(page, size);
 
-        if (keywords.equals("")){
+        if (keywords.equals("")) {
             keywords = null;
         }
 
-        if (status.equals("")){
+        if (status.equals("")) {
             status = null;
         }
 
-        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords,status,startDateTime,endDateTime);
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords, status, startDateTime, endDateTime);
 
         return new PageInfo<>(stPreDepositWithdraws);
     }
 
     /**
      * 顾客 -- 通过
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
@@ -400,51 +397,54 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
     /**
      * 顾客 -- 驳回
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
     @Override
-    public void cusApplyreject(Long applyId,ShiroUser shiroUser) throws Exception {
+    public void cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
 
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
-        if (apply != null){
-            if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)){
+        if (apply != null) {
+            if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
                 // dai审核状态的单子才可以驳回
-                this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKRETURN);
+                this.checkCusApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKRETURN);
             }
-        }else{
+        } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
     }
 
     /**
      * 打款
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
     @Override
-    public void cusApplyRemit(Long applyId,ShiroUser shiroUser) throws Exception {
+    public void cusApplyRemit(Long applyId, ShiroUser shiroUser) throws Exception {
 
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
-        if (apply != null){
+        if (apply != null) {
 
-            this.checkCusApply(apply,shiroUser,PreDepositWithdrawStatus.REMITED);
-        }else{
+            this.checkCusApply(apply, shiroUser, PreDepositWithdrawStatus.REMITED);
+        } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
     }
 
     /**
      * 审核顾客预存款提现申请单
+     *
      * @param cusPreDepositWithdraw
      */
     @Transactional
-    public void checkCusApply(CusPreDepositWithdraw cusPreDepositWithdraw,ShiroUser shiroUser,PreDepositWithdrawStatus status){
+    public void checkCusApply(CusPreDepositWithdraw cusPreDepositWithdraw, ShiroUser shiroUser, PreDepositWithdrawStatus status) {
 
-        if (cusPreDepositWithdraw == null){
-            throw  new RuntimeException("申请单不存在");
+        if (cusPreDepositWithdraw == null) {
+            throw new RuntimeException("申请单不存在");
         }
 
         cusPreDepositWithdraw.setStatus(status);
@@ -454,11 +454,11 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         cusPreDepositWithdrawDAO.update(cusPreDepositWithdraw);
 
-        if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)){
+        if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)) {
             // 申请退回
             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(cusPreDepositWithdraw.getApplyCusId());
             //退回预存款
-            int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(cusPreDepositWithdraw.getApplyCusId(),cusPreDepositWithdraw.getWithdrawAmount(),new Timestamp(System.currentTimeMillis()),customerPreDeposit.getLastUpdateTime());
+            int row = customerDAO.updateDepositByUserIdAndLastUpdateTime(cusPreDepositWithdraw.getApplyCusId(), cusPreDepositWithdraw.getWithdrawAmount(), new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
             if (1 != row) {
                 throw new RuntimeException("提现申请失败");
             }
@@ -476,82 +476,86 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             // TODO 调预存款退款接口
 
             //  发送短信
-            this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(),cusPreDepositWithdraw.getApplyNo(),cusPreDepositWithdraw.getStatus());
+            this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(), cusPreDepositWithdraw.getApplyNo(), cusPreDepositWithdraw.getStatus());
 
-        }else if (status.equals(PreDepositWithdrawStatus.REMITED)){
+        } else if (status.equals(PreDepositWithdrawStatus.REMITED)) {
             // 打款
 
             //  短信通知
-            this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(),cusPreDepositWithdraw.getApplyNo(),cusPreDepositWithdraw.getStatus());
+            this.sendSms(cusPreDepositWithdraw.getApplyCusPhone(), cusPreDepositWithdraw.getApplyNo(), cusPreDepositWithdraw.getStatus());
         }
     }
 
 
     /**
      * 门店 -- 通过
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
     @Override
-    public void stApplyPass(Long applyId,ShiroUser shiroUser) throws Exception {
+    public void stApplyPass(Long applyId, ShiroUser shiroUser) throws Exception {
 
         StPreDepositWithdraw apply = stPreDepositWithdrawDAO.findById(applyId);
-        if (apply != null){
+        if (apply != null) {
 
-            this.checkStApply(apply,shiroUser,PreDepositWithdrawStatus.CHECKPASS);
-        }else{
+            this.checkStApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKPASS);
+        } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
     }
 
     /**
      * 门店 -- 驳回
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
     @Override
-    public void stApplyreject(Long applyId,ShiroUser shiroUser) throws Exception {
+    public void stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
 
         StPreDepositWithdraw apply = stPreDepositWithdrawDAO.findById(applyId);
-        if (apply != null){
+        if (apply != null) {
             if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
                 // dai审核状态的单子才可以驳回
                 this.checkStApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKRETURN);
             }
-        }else{
+        } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
     }
 
     /**
      * 门店 -- 打款
+     *
      * @param applyId
      * @param shiroUser
      * @throws Exception
      */
     @Override
-    public void stApplyRemit(Long applyId,ShiroUser shiroUser) throws Exception {
+    public void stApplyRemit(Long applyId, ShiroUser shiroUser) throws Exception {
 
         StPreDepositWithdraw apply = stPreDepositWithdrawDAO.findById(applyId);
-        if (apply != null){
+        if (apply != null) {
 
-            this.checkStApply(apply,shiroUser,PreDepositWithdrawStatus.REMITED);
-        }else{
+            this.checkStApply(apply, shiroUser, PreDepositWithdrawStatus.REMITED);
+        } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
     }
 
     /**
      * 审核门店预存款提现申请单
+     *
      * @param stPreDepositWithdraw
      * @param shiroUser
      * @param status
      */
-    public void checkStApply(StPreDepositWithdraw stPreDepositWithdraw,ShiroUser shiroUser,PreDepositWithdrawStatus status){
+    public void checkStApply(StPreDepositWithdraw stPreDepositWithdraw, ShiroUser shiroUser, PreDepositWithdrawStatus status) {
 
-        if (stPreDepositWithdraw == null){
+        if (stPreDepositWithdraw == null) {
             throw new RuntimeException("申请单不存在");
         }
 
@@ -562,10 +566,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         stPreDepositWithdrawDAO.update(stPreDepositWithdraw);
 
-        if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)){
+        if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)) {
             // 申请退回
             StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(stPreDepositWithdraw.getApplyStId());
-            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getApplyStId(),stPreDepositWithdraw.getWithdrawAmount(),preDeposit.getLastUpdateTime());
+            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getApplyStId(), stPreDepositWithdraw.getWithdrawAmount(), preDeposit.getLastUpdateTime());
             if (1 != row) {
                 throw new RuntimeException("提现申请失败");
             }
@@ -583,19 +587,19 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             // TODO 调预存款退款接口
 
             //  发送短信
-            this.sendSms(stPreDepositWithdraw.getApplyStPhone(),stPreDepositWithdraw.getApplyNo(),stPreDepositWithdraw.getStatus());
+            this.sendSms(stPreDepositWithdraw.getApplyStPhone(), stPreDepositWithdraw.getApplyNo(), stPreDepositWithdraw.getStatus());
 
-        }else if(status.equals(PreDepositWithdrawStatus.REMITED)){
+        } else if (status.equals(PreDepositWithdrawStatus.REMITED)) {
             // 打款
 
             //  短信通知
-            this.sendSms(stPreDepositWithdraw.getApplyStPhone(),stPreDepositWithdraw.getApplyNo(),stPreDepositWithdraw.getStatus());
+            this.sendSms(stPreDepositWithdraw.getApplyStPhone(), stPreDepositWithdraw.getApplyNo(), stPreDepositWithdraw.getStatus());
         }
     }
 
-    public void sendSms(String phone,String applyNo,PreDepositWithdrawStatus status){
+    public void sendSms(String phone, String applyNo, PreDepositWithdrawStatus status) {
 
-        String msg = "您的预存款提现申请:"+status.getDescription()+", 单号："+applyNo;
+        String msg = "您的预存款提现申请:" + status.getDescription() + ", 单号：" + applyNo;
         String content = null;
 
         try {
