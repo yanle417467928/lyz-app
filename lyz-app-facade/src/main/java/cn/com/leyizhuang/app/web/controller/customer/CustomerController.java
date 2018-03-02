@@ -15,6 +15,9 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +70,14 @@ public class CustomerController {
      * @param response 请求响应
      * @return resultDTO
      */
+    @ApiOperation(value = "顾客登录", notes = "微信授权登录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "openId", value = "微信open_id", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "systemType", value = "顾客设备类型", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "clientId", value = "个推客户端id", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "deviceId", value = "设备序列号", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "response", value = "响应对象（后端生成，不用传值）", required = false, dataType = "Object")
+    })
     @PostMapping(value = "/login", produces = "application/json;charset=UTF-8")
     public ResultDTO<CustomerLoginResponse> customerLogin(String openId, String systemType, String clientId, String deviceId, HttpServletResponse response) {
         //logger.info("customerLogin CALLED,顾客登录，入参 openId:{}", openId);

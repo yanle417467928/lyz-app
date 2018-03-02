@@ -9,6 +9,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author CrazyApeDX
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableEurekaClient
 @MapperScan(basePackages = "cn.com.leyizhuang.app.foundation.dao")
 @EnableTransactionManagement
+@EnableSwagger2
 public class ApplicationStarter {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStarter.class, args);

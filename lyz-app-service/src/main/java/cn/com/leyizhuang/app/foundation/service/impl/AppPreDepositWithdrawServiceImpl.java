@@ -217,7 +217,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         withdrawRefundInfo.setWithdrawSubjectType(PaymentSubjectType.STORE);
         withdrawRefundInfo.setWithdrawSubjectTypeDesc(withdrawRefundInfo.getWithdrawSubjectType().getDescription());
         withdrawService.saveWithdrawRefundInfo(withdrawRefundInfo);
-
+        return withdrawRefundInfo.getRefundNumber();
         // TODO 调预存款提现接口
     }
 
