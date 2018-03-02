@@ -1,10 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
+import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -38,6 +43,9 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
 
     @Autowired
     private AdminUserStoreService adminUserStoreService;
+
+    @Autowired
+    private RechargeService rechargeService;
 
 
     /**
@@ -74,7 +82,16 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
             if (null != cusPreDepositDTO && null != cusPreDepositDTO.getCusId() && cusPreDepositDTO.getCusId() != 0){
                 if (null != cusPreDepositDTO.getChangeMoney() && cusPreDepositDTO.getChangeMoney() != 0) {
                     try {
+                        Long cityId = this.maCustomerService.findCityIdByCusId(cusPreDepositDTO.getCusId());
+                        //生成单号
+                        String rechargeNo = OrderUtils.generateRechargeNumber(cityId);
                         this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
+                        //生成充值单
+                        RechargeOrder rechargeOrder = rechargeService.createRechargeOrder(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO.getCusId(),
+                                cusPreDepositDTO.getChangeMoney(), rechargeNo);
+                        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+                        //谁充值？充值方式？
+                        rechargeService.saveRechargeOrder(rechargeOrder);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);

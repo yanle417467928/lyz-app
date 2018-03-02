@@ -204,7 +204,7 @@ public class OrderArriveController {
             }
 
             //判断是否有代收款
-            if (collectionAmount > 0 && CountUtil.sub(collectionAmount - ownManey) > 0) {
+            if (collectionAmount > 0) {
                 //生成代收款记录
                 OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);

@@ -333,4 +333,10 @@
         #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
         #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
+
+    <select id="findCityIdByCusId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT city_id FROM cus_customer WHERE cus_id = #{cusId}
+    </select>
+
+
 </mapper>
