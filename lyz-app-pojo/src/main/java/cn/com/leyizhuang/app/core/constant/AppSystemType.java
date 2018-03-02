@@ -9,7 +9,7 @@ package cn.com.leyizhuang.app.core.constant;
 public enum AppSystemType {
 
     ANDROID("ANDROID", "安卓"),
-    IOS("IOS ", "苹果");
+    IOS("IOS", "苹果");
 
     private final String value;
     private final String description;
