@@ -543,7 +543,7 @@ public class OrderController {
                 goodsSettlement.put("isShowNumber", isShowSalesNumber);
                 goodsSettlement.put("totalOrderAmount", totalOrderAmount);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", goodsSettlement);
-                logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
+                logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             //计算订单金额小计

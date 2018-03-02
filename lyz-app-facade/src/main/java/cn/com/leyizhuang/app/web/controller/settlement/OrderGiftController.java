@@ -150,12 +150,12 @@ public class OrderGiftController {
             giftListResponse.setPromotionsGiftList(promotionsGiftList);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, giftListResponse);
-            logger.info("materialListStepToGiftList OUT,确认商品计算工人订单总金额成功，出参 resultDTO:{}", resultDTO);
+            logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,下料清单跳转赠品列表失败!", null);
-            logger.warn("materialListStepToGiftList EXCEPTION,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("materialListStepToGiftList EXCEPTION,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

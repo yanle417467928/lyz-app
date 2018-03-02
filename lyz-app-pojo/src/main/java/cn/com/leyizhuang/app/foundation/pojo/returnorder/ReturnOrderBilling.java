@@ -58,4 +58,16 @@ public class ReturnOrderBilling {
      * 使用乐币数量
      */
     private Double LeBiQuantity;
+
+    public ReturnOrderBilling(String returnNo, Double preDeposit, Double creditMoney, Double stPreDeposit, Double stCreditMoney, Double stSubvention, Double onlinePay, Double cash, Double leBiQuantity) {
+        this.returnNo = returnNo;
+        this.preDeposit = preDeposit;
+        this.creditMoney = creditMoney;
+        this.stPreDeposit = stPreDeposit;
+        this.stCreditMoney = stCreditMoney;
+        this.stSubvention = stSubvention;
+        this.onlinePay = onlinePay;
+        this.cash = cash;
+        LeBiQuantity = leBiQuantity;
+    }
 }

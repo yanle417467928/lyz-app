@@ -330,13 +330,7 @@ public class DispatchingController {
                 logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            AtwReturnOrderCheckEnter checkEnter = AtwReturnOrderCheckEnter.transform(returnOrderBaseInfo);
-
-            //发送wms
-            appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
-            iCallWms.sendToWmsReturnOrderCheck(returnNumber);
-            //修改退单状态
-            returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.PENDING_REFUND);
+            //新增物流信息
             ReturnOrderDeliveryDetail detail = new ReturnOrderDeliveryDetail();
             detail.setDescription("配送员" + appEmployee.getName() +
                     "[" + appEmployee.getDeliveryClerkNo() + "]" +
@@ -349,6 +343,14 @@ public class DispatchingController {
             detail.setPickersId(appEmployee.getEmpId());
             /*detail.setPicture();*/
             returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(detail);
+
+            //修改退单状态
+            returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.PENDING_REFUND);
+            //转换传WMS数据
+            AtwReturnOrderCheckEnter checkEnter = AtwReturnOrderCheckEnter.transform(returnOrderBaseInfo);
+            //发送wms
+            appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
+            iCallWms.sendToWmsReturnOrderCheck(returnNumber);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getPickUpEnter OUT,配送员取货确认成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

@@ -87,6 +87,7 @@ public class CusPreDepositLogDO {
         this.createTime = createTime;
         this.changeMoney = changeMoney;
         this.changeType = changeType;
+        this.changeTypeDesc = changeType.getDescription();
     }
 
     public void setOrderNumberAndRemarksAndDetailReason(String orderNumber, String remarks, String detailReason) {

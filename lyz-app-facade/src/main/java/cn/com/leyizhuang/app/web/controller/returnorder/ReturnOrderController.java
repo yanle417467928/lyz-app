@@ -469,6 +469,7 @@ public class ReturnOrderController {
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
                 for (GoodsSimpleInfo simpleInfo : simpleInfos) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        logger.info("前台传入的商品行ID和我查询的商品行ID进行比较, 出参 goodsInfo.getId():{},simpleInfo.getId()", goodsInfo.getId(), simpleInfo.getId());
                         if (goodsInfo.getId().equals(simpleInfo.getId())) {
                             if (simpleInfo.getGoodsLineType().equals(goodsInfo.getGoodsLineType().getValue())) {
                                 if (simpleInfo.getQty() > goodsInfo.getReturnableQuantity()) {
@@ -548,17 +549,21 @@ public class ReturnOrderController {
             //******************* 创建退货单金额信息 ************************
             List<OrderBillingPaymentDetails> orderPaymentDetails = appOrderService.
                     getOrderBillingDetailListByOrderNo(orderNo);
-            ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
-            returnOrderBilling.setReturnNo(returnNo);
-            //退款优先级
+            //初始化退货账单信息
+            ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling(
+                    returnNo, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D);
+
+            //退款优先级:
             //顾客：现金POS ——> 第三方支付 ——> 预存款 ——> 未提货产品券
             //导购：现金POS ——> 第三方支付 ——> 门店预存款 ——> 未提货产品券
             //装饰经理：第三方支付 ——> 门店预存款 ——> 门店信用金 ——> 门店现金返利
 
             //取现金支付和预存款
-            Double cashPosPrice = 0.00;
-            Double onlinePayPrice = 0.00;
-            Double tempPrice = 0.00;
+            Double cashPosPrice = 0D;
+            Double onlinePayPrice = 0D;
+            Double tempPrice = 0D;
+            Double customerPrePay = 0D;
+            Double storePrePay = 0D;
 
             if (AssertUtil.isNotEmpty(orderPaymentDetails)) {
                 for (OrderBillingPaymentDetails paymentDetails : orderPaymentDetails) {
@@ -566,15 +571,21 @@ public class ReturnOrderController {
                         cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
                     } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
                         cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                    } else if (OrderBillingPaymentType.OTHER.equals(paymentDetails.getPayType())) {
+                        cashPosPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
                     } else if (OrderBillingPaymentType.ALIPAY.equals(paymentDetails.getPayType())) {
-                        onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        onlinePayPrice = paymentDetails.getAmount();
                         returnOrderBilling.setOnlinePayType(OnlinePayType.ALIPAY);
                     } else if (OrderBillingPaymentType.WE_CHAT.equals(paymentDetails.getPayType())) {
-                        onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        onlinePayPrice = paymentDetails.getAmount();
                         returnOrderBilling.setOnlinePayType(OnlinePayType.WE_CHAT);
                     } else if (OrderBillingPaymentType.UNION_PAY.equals(paymentDetails.getPayType())) {
-                        onlinePayPrice = CountUtil.add(cashPosPrice, paymentDetails.getAmount());
+                        onlinePayPrice = paymentDetails.getAmount();
                         returnOrderBilling.setOnlinePayType(OnlinePayType.UNION_PAY);
+                    } else if (OrderBillingPaymentType.CUS_PREPAY.equals(paymentDetails.getPayType())) {
+                        customerPrePay = paymentDetails.getAmount();
+                    } else if (OrderBillingPaymentType.ST_PREPAY.equals(paymentDetails.getPayType())) {
+                        storePrePay = paymentDetails.getAmount();
                     }
                 }
             } else {
@@ -596,40 +607,27 @@ public class ReturnOrderController {
                     //大于第三方再判断预存款支付
                     returnOrderBilling.setOnlinePay(onlinePayPrice);
                     tempPrice = CountUtil.sub(tempPrice, onlinePayPrice);
-                    OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNo);
-                    if (null != billingDetails && billingDetails.getCusPreDeposit() != null) {
-                        if (identityType == 6) {
-                            //小于预存款，顾客结束
-                            if (tempPrice <= billingDetails.getCusPreDeposit()) {
-                                returnOrderBilling.setPreDeposit(tempPrice);
-                            }
-                        } else {
-                            //导购小于门店预存款
-                            if (tempPrice <= billingDetails.getStPreDeposit()) {
-                                returnOrderBilling.setPreDeposit(tempPrice);
-                            } else {
-                                //如果大于再判断导购信用金
-                                returnOrderBilling.setPreDeposit(billingDetails.getStPreDeposit());
-                                tempPrice = CountUtil.sub(tempPrice, billingDetails.getStPreDeposit());
-                                if (identityType == 0) {
-                                    //小于导购信用金，导购结束
-                                    if (tempPrice <= billingDetails.getEmpCreditMoney()) {
-                                        returnOrderBilling.setCreditMoney(tempPrice);
-                                    }
-                                } else {
-                                    //如果大于就判断装饰公司门店信用金
-                                    if (tempPrice <= billingDetails.getStoreCreditMoney()) {
-                                        returnOrderBilling.setStCreditMoney(tempPrice);
-                                    } else {
-                                        returnOrderBilling.setStCreditMoney(billingDetails.getStoreCreditMoney());
-                                        tempPrice = CountUtil.sub(tempPrice, billingDetails.getStoreCreditMoney());
-                                        //如果大于就判断装饰公司门店现金返利,经理结束
-                                        if (tempPrice <= billingDetails.getStoreSubvention()) {
-                                            returnOrderBilling.setStSubvention(tempPrice);
-                                        }
-                                    }
-                                }
-                            }
+                    if (identityType == 6) {
+                        //小于预存款，顾客结束
+                        if (tempPrice <= customerPrePay) {
+                            returnOrderBilling.setPreDeposit(tempPrice);
+                        }
+                    } else {
+                        //导购小于门店预存款
+                        if (tempPrice <= storePrePay) {
+                            returnOrderBilling.setStPreDeposit(tempPrice);
+//                        } else {
+//                            //如果大于就判断装饰公司门店信用金
+//                            if (tempPrice <= billingDetails.getStoreCreditMoney()) {
+//                                returnOrderBilling.setStCreditMoney(tempPrice);
+//                            } else {
+//                                returnOrderBilling.setStCreditMoney(billingDetails.getStoreCreditMoney());
+//                                tempPrice = CountUtil.sub(tempPrice, billingDetails.getStoreCreditMoney());
+//                                //如果大于就判断装饰公司门店现金返利,经理结束
+//                                if (tempPrice <= billingDetails.getStoreSubvention()) {
+//                                    returnOrderBilling.setStSubvention(tempPrice);
+//                                }
+//                            }
                         }
                     }
                 }
