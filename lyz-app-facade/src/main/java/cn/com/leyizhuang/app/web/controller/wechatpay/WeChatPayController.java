@@ -11,7 +11,6 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -439,6 +438,8 @@ public class WeChatPayController {
                                             || paymentDataDO.getPaymentType().equals(PaymentDataType.DEC_PRE_DEPOSIT)) {
                                         this.appStoreService.preDepositRecharge(paymentDataDO, StorePreDepositChangeType.WECHAT_RECHARGE);
                                     }
+                                    //将收款记录入拆单消息队列
+                                    sinkSender.sendRechargeReceipt(outTradeNo);
                                 }
                             } else if (outTradeNo.contains("_HK")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "欠款还款");
