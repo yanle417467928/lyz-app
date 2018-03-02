@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 充值API实现
@@ -140,7 +141,7 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo) {
+    public List<RechargeReceiptInfo> findRechargeReceiptInfoByRechargeNo(String rechargeNo) {
         if (null != rechargeNo) {
             return rechargeDAO.findRechargeReceiptInfoByRechargeNo(rechargeNo);
         }
@@ -148,7 +149,7 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo) {
+    public List<RechargeOrder> findRechargeOrderByRechargeNo(String rechargeNo) {
         if (null != rechargeNo) {
             return rechargeDAO.findRechargeOrderByRechargeNo(rechargeNo);
         }

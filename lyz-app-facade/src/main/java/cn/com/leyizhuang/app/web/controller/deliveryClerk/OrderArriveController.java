@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
@@ -9,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -52,6 +54,9 @@ public class OrderArriveController {
 
     @Autowired
     private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private SinkSender sinkSender;
 
     /**
      * @param
@@ -152,11 +157,13 @@ public class OrderArriveController {
                     return resultDTO;
                 } else { //欠款金额 <= 收款金额
                     if (ownManey > 0) {
+                        //生成收款单号
+                        String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
                         //创建收款记录
                         OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
                                 Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentMethod),
                                 OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentMethod).getDescription(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
-                                PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", "");
+                                PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
 
                         this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
@@ -189,6 +196,9 @@ public class OrderArriveController {
                             //保存日志
                             appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
                         }
+
+                        //将收款记录录入拆单消息队列
+                        this.sinkSender.sendOrderReceipt(receiptNumber);
                     }
                 }
             }

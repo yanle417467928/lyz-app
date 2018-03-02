@@ -155,4 +155,6 @@ public interface AppOrderService {
     void saveAliPayOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber);
 
     void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo);
+
+    List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber);
 }

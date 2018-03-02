@@ -159,4 +159,14 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
             jxPriceDifferenceRefundInfList.forEach(p -> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
         }
     }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderReceiptInf(OrderReceiptInf receiptInf) {
+        //保存收款信息
+        if (null != receiptInf) {
+            separateOrderService.saveOrderReceiptInf(receiptInf);
+        }
+    }
 }

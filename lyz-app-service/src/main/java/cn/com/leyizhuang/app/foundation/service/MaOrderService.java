@@ -7,6 +7,8 @@ import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeD
 import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -19,6 +21,7 @@ import com.github.pagehelper.PageInfo;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by caiyu on 2017/12/16.
@@ -297,7 +300,7 @@ public interface MaOrderService {
      * @param orderBillingDetails
      * @return
      */
-    List<OrderBillingPaymentDetails> createMaOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
+   Map<Object,Object> createMaOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails,AppStore store,AppCustomer customer,Long creatorId);
 
     /**
      * 后台买券订单扣减门店预存款
@@ -319,7 +322,8 @@ public interface MaOrderService {
      * @param paymentDetails
      */
     void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,OrderLogisticsInfo orderLogisticsInfo,Long operatorId) throws UnsupportedEncodingException;
+                                          OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
+                                          OrderLogisticsInfo orderLogisticsInfo,Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException;
 
     /**
      * 后台买券订单持久化调用方法
@@ -333,7 +337,8 @@ public interface MaOrderService {
      * @param ipAddress
      */
     void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,OrderLogisticsInfo orderLogisticsInfo,Long operatorId) throws UnsupportedEncodingException;
+                               List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,
+                               OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException;
 
     /**
      * 后台买券订单创建订单基础信息

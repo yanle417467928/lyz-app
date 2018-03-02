@@ -137,4 +137,6 @@ public interface OrderDAO {
     void updateOrderGoodsShippingQuantity(@Param("orderNo") String orderNo, @Param("sku") String gCode, @Param("qty") Integer dAckQty);
 
     void updateOrderLogisticInfo(OrderLogisticsInfo logisticsInfo);
+
+    List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber);
 }

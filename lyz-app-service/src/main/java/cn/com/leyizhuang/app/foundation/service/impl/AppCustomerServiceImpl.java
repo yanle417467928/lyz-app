@@ -562,7 +562,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         log.setOrderNumber(paymentDataDO.getOutTradeNo());
         log.setMerchantOrderNumber(paymentDataDO.getTradeNo());
         log.setBalance(CountUtil.add(customerPreDeposit.getBalance(), money));
-        log.setChangeTypeDesc(paymentDataDO.getPaymentTypeDesc());
+        log.setChangeTypeDesc(type.getDescription());
         this.cusPreDepositLogServiceImpl.save(log);
     }
 

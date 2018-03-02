@@ -842,4 +842,14 @@ public class AppOrderServiceImpl implements AppOrderService {
             orderDAO.updateOrderLogisticInfo(logisticsInfo);
         }
     }
+
+    @Override
+    public List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber) {
+        if (StringUtils.isNotBlank(receiptNumber)) {
+            return orderDAO.getOrderBillingDetailListByReceiptNumber(receiptNumber);
+        }
+        return null;
+    }
+
+
 }

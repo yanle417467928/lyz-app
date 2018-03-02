@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 充值API
@@ -25,7 +26,7 @@ public interface RechargeService {
 
     void updateRechargeOrderStatusAndPayUpTime(String rechargeNo, Date payUpTime, AppRechargeOrderStatus status);
 
-    RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo);
+    List<RechargeReceiptInfo> findRechargeReceiptInfoByRechargeNo(String rechargeNo);
 
-    RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo);
+    List<RechargeOrder> findRechargeOrderByRechargeNo(String rechargeNo);
 }

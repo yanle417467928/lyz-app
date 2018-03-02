@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TimingTaskErrorMessageDAO {
     void saveTimingTaskErrorMessage(TimingTaskErrorMessageDO timingTaskErrorMessageDO);
+
+    TimingTaskErrorMessageDO findTimingTaskErrorMessageByOrderNumber(@Param(value = "orderNumber")String orderNumber);
 }
