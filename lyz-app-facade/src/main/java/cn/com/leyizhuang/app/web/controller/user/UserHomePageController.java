@@ -464,7 +464,9 @@ public class UserHomePageController {
             }
 
             String refundNumber = appPreDepositWithdrawService.cusSave(param);
+            //提现退款接口信息发送EBS
             sinkSender.sendWithdrawRefund(refundNumber);
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "提现申请成功", null);
             logger.info("顾客提现申请成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -523,7 +525,11 @@ public class UserHomePageController {
                 return resultDTO;
             }
 
-            appPreDepositWithdrawService.stSave(param);
+            String refundNumber = appPreDepositWithdrawService.stSave(param);
+
+            //提现退款接口信息发送EBS
+            sinkSender.sendWithdrawRefund(refundNumber);
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "提现申请成功", null);
             logger.info("门店提现申请成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;

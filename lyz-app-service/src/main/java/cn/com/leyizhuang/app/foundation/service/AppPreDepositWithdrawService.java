@@ -26,7 +26,7 @@ public interface AppPreDepositWithdrawService {
      *
      * @param param
      */
-    void stSave(PreDepositWithdrawParam param);
+    String stSave(PreDepositWithdrawParam param);
 
 
     /**

@@ -173,19 +173,29 @@ public class CustomerController {
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
             //如果电话号码已经存在
-            if (phoneUser != null && (StringUtils.isBlank(phoneUser.getOpenId()))) {
-                phoneUser.setOpenId(registryParam.getOpenId());
-                phoneUser.setNickName(registryParam.getNickName());
-                phoneUser.setPicUrl(registryParam.getPicUrl());
-                customerService.update(phoneUser);
-                String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
-                        JwtConstant.EXPPIRES_SECOND * 1000);
-                System.out.println(accessToken);
-                response.setHeader("token", accessToken);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
-                logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
+            if (phoneUser != null) {
+                //open_id为空
+                if (StringUtils.isBlank(phoneUser.getOpenId())) {
+                    phoneUser.setOpenId(registryParam.getOpenId());
+                    phoneUser.setNickName(registryParam.getNickName());
+                    phoneUser.setPicUrl(registryParam.getPicUrl());
+                    customerService.update(phoneUser);
+                    String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
+                            JwtConstant.EXPPIRES_SECOND * 1000);
+                    System.out.println(accessToken);
+                    response.setHeader("token", accessToken);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                            new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
+                    logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                } else {
+                    //open_id不为空
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户当前已绑定微信，请解绑当前微信后再绑定新微信！",
+                            new CustomerRegistResponse(Boolean.TRUE, phoneUser.getCusId()));
+                    logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+
             } else {//如果电话号码不存在
                 AppCustomer newUser = new AppCustomer();
                 newUser.setCreateTime(LocalDateTime.now());

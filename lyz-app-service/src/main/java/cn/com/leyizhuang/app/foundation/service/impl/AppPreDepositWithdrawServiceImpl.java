@@ -154,7 +154,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
     @Override
     @Transactional
-    public void stSave(PreDepositWithdrawParam param) {
+    public String stSave(PreDepositWithdrawParam param) {
 
         AppEmployee appEmployee = appEmployeeService.findById(param.getId());
         // 城市信息
@@ -199,6 +199,24 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         log.setBalance(CountUtil.add(preDeposit.getBalance(), -subBalance));
         log.setChangeTypeDesc("门店预存款提现");
         this.storePreDepositLogService.save(log);
+
+        //生成提现退款信息
+        WithdrawRefundInfo withdrawRefundInfo = new WithdrawRefundInfo();
+        withdrawRefundInfo.setCreateTime(new Date());
+        if (null != appEmployee.getCityId()) {
+            withdrawRefundInfo.setWithdrawNo(stPreDepositWithdraw.getApplyNo());
+            withdrawRefundInfo.setRefundNumber(OrderUtils.getRefundNumber());
+        } else {
+            throw new RuntimeException("顾客城市信息为空！");
+        }
+        withdrawRefundInfo.setWithdrawChannel(stPreDepositWithdraw.getAccountType());
+        withdrawRefundInfo.setWithdrawChannelDesc(withdrawRefundInfo.getWithdrawChannel().getDescription());
+        withdrawRefundInfo.setWithdrawAccountType(RechargeAccountType.ST_PREPAY);
+        withdrawRefundInfo.setWithdrawAccountTypeDesc(withdrawRefundInfo.getWithdrawAccountType().getDescription());
+        withdrawRefundInfo.setWithdrawAmount(stPreDepositWithdraw.getWithdrawAmount());
+        withdrawRefundInfo.setWithdrawSubjectType(PaymentSubjectType.STORE);
+        withdrawRefundInfo.setWithdrawSubjectTypeDesc(withdrawRefundInfo.getWithdrawSubjectType().getDescription());
+        withdrawService.saveWithdrawRefundInfo(withdrawRefundInfo);
 
         // TODO 调预存款提现接口
     }
