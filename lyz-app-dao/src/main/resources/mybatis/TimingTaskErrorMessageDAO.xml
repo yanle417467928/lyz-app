@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO">
+
+    <insert id="saveTimingTaskErrorMessage"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO">
+        INSERT INTO timing_task_error_message (message, order_number, record_time)
+              VALUES
+        (
+        #{message}, #{orderNumber},#{recordTime}
+        )
+    </insert>
+
+</mapper>
