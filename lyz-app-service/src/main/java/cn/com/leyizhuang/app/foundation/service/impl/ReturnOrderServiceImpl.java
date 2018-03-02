@@ -110,6 +110,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Override
     public ReturnOrderLogisticInfo createReturnOrderLogisticInfo(ReturnDeliverySimpleInfo returnDeliveryInfo) {
         ReturnOrderLogisticInfo returnOrderLogisticInfo = new ReturnOrderLogisticInfo();
+        if (AssertUtil.isEmpty(returnDeliveryInfo)) {
+            return returnOrderLogisticInfo;
+        }
         if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.RETURN_STORE.getValue())) {
             returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
             returnOrderLogisticInfo.setReturnStoreCode(returnDeliveryInfo.getReturnStoreCode());

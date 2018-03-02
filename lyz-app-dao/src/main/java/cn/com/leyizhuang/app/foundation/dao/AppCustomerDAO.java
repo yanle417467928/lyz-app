@@ -151,4 +151,6 @@ public interface AppCustomerDAO {
     String getCustomerSupportHotline(Long userId);
 
     List<SupportHotlineResponse> findAllSupportHotline();
+
+    List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber);
 }

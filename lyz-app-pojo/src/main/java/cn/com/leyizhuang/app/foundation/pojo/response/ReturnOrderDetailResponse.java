@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import lombok.*;
 
 import java.util.List;
@@ -34,7 +35,11 @@ public class ReturnOrderDetailResponse {
     /**
      * 退货单状态
      */
-    private String returnStatus;
+    private AppReturnOrderStatus returnOrderStatus;
+    /**
+     * 退货单状态描述
+     */
+    private String returnStatusDesc;
     /**
      * 退货原因
      */

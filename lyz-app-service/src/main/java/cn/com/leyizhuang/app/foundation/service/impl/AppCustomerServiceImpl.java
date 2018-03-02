@@ -583,4 +583,12 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         }
         return supportHotlineList;
     }
+
+    @Override
+    public List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            return customerDAO.findProductCouponsByGetOrderNumber(orderNumber);
+        }
+        return null;
+    }
 }

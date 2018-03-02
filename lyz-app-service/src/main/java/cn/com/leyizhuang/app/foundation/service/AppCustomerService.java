@@ -135,4 +135,6 @@ public interface AppCustomerService {
     void unbindingCustomerWeChat(Long userId);
 
     List<SupportHotlineResponse> getCustomerSupportHotline(Long userId);
+
+    List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber);
 }

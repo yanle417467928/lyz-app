@@ -7,8 +7,10 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
@@ -29,6 +31,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +42,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Jerry.Ren
@@ -94,6 +94,8 @@ public class ReturnOrderController {
     private SmsAccountServiceImpl smsAccountService;
     @Resource
     private AppActService appActService;
+    @Resource
+    private CityService cityService;
 
     /**
      * 取消订单
@@ -494,6 +496,33 @@ public class ReturnOrderController {
             //********************创建退货单退券信息*********************************
             //创建退券对象
             List<ReturnOrderProductCoupon> productCouponList = new ArrayList<>();
+            /***********************退买券订单的券****************************/
+            //如果是退券只有订单商品中可查询到要退的券
+            if (AppOrderType.COUPON.equals(order.getOrderType())) {
+                //根据买券订单查到该单的券
+                List<CustomerProductCoupon> customerProductCouponList = appCustomerService.findProductCouponsByGetOrderNumber(orderNo);
+                if (AssertUtil.isNotEmpty(customerProductCouponList)) {
+                    for (CustomerProductCoupon productCoupon : customerProductCouponList) {
+                        for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
+                            if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
+                                    productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
+
+                                ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
+                                returnOrderProductCoupon.setGid(returnOrderGoodsInfo.getGid());
+                                returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
+                                returnOrderProductCoupon.setOrderNo(orderNo);
+                                returnOrderProductCoupon.setPcid(productCoupon.getId());
+                                returnOrderProductCoupon.setQty(1);
+                                returnOrderProductCoupon.setSku(returnOrderGoodsInfo.getSku());
+                                returnOrderProductCoupon.setReturnQty(1);
+                                returnOrderProductCoupon.setReturnNo(returnNo);
+                                productCouponList.add(returnOrderProductCoupon);
+                            }
+                        }
+                    }
+                }
+            }
+            /***********************退正常退单使用的券*****************************/
             //获取订单使用产品
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndOrderId(order.getId(), OrderCouponType.PRODUCT_COUPON);
             if (AssertUtil.isNotEmpty(orderProductCouponList)) {
@@ -520,6 +549,7 @@ public class ReturnOrderController {
             List<OrderBillingPaymentDetails> orderPaymentDetails = appOrderService.
                     getOrderBillingDetailListByOrderNo(orderNo);
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
+            returnOrderBilling.setReturnNo(returnNo);
             //退款优先级
             //顾客：现金POS ——> 第三方支付 ——> 预存款 ——> 未提货产品券
             //导购：现金POS ——> 第三方支付 ——> 门店预存款 ——> 未提货产品券
@@ -606,15 +636,59 @@ public class ReturnOrderController {
             }
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
                     productCouponList, orderGoodsInfoList);
-            //保存发送wms退货单头
-            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
-            SalesConsult salesConsult = appEmployeeService.findSellerByUserIdAndIdentityType(userId, identityType);
-            AtwReturnOrder atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
-            appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
-            //发送退货单到wms
-            callWms.sendToWmsReturnOrderAndGoods(returnNo);
+            //如果是买券订单直接处理退款退货
+            if (AppOrderType.COUPON.equals(order.getOrderType())) {
+                City city = cityService.findById(order.getCityId());
+                HashedMap map = returnOrderService.normalReturnOrderProcessing(returnNo, city.getNumber());
+
+                if ("SUCCESS".equals(map.get("code"))) {
+                    if ((Boolean) map.get("hasReturnOnlinePay")) {
+                        //返回第三方支付金额
+                        if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                            if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //支付宝退款
+                                onlinePayRefundService.alipayRefundRequest(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
+                                        returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+
+                            } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                //微信退款方法类
+                                onlinePayRefundService.wechatReturnMoney(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
+                                        returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
+
+                            } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //创建退单退款详情实体
+                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                                //TODO 时间待定
+                                returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                //TODO 第三方回复码
+                                returnOrderBillingDetail.setReplyCode("");
+                                returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                            }
+                        }
+                    }
+                    //修改取消订单处理状态
+                    returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                    logger.info("cancelOrderToWms OUT,买券正常退货成功");
+                }
+            }
+            //只有配送单退货才发WMS.
+            if (AppDeliveryType.HOUSE_PICK.equals(returnOrderLogisticInfo.getDeliveryType())) {
+                //保存发送wms退货单头
+                AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                SalesConsult salesConsult = appEmployeeService.findSellerByUserIdAndIdentityType(userId, identityType);
+                AtwReturnOrder atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
+                appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
+                //发送退货单到wms
+                callWms.sendToWmsReturnOrderAndGoods(returnNo);
+            }
             //发送退单拆单消息到拆单消息队列
-            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+            sinkSender.sendReturnOrder(returnNo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -766,7 +840,8 @@ public class ReturnOrderController {
             detailResponse.setReturnTime(sdf.format(returnBaseInfo.getReturnTime()));
             detailResponse.setTotalReturnPrice(returnBaseInfo.getReturnPrice());
             detailResponse.setReasonInfo(returnBaseInfo.getReasonInfo());
-            detailResponse.setReturnStatus(null != returnBaseInfo.getReturnStatus() ? returnBaseInfo.getReturnStatus().getDescription() : null);
+            detailResponse.setReturnOrderStatus(returnBaseInfo.getReturnStatus());
+            detailResponse.setReturnStatusDesc(null != returnBaseInfo.getReturnStatus() ? returnBaseInfo.getReturnStatus().getDescription() : null);
             detailResponse.setReturnType(null != returnBaseInfo.getReturnType() ? returnBaseInfo.getReturnType().getDescription() : null);
             //取货方式（上门取货，送货到店）
             if (AssertUtil.isNotEmpty(returnOrderLogisticInfo)) {
