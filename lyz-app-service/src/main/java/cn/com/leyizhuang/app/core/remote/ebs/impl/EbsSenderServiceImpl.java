@@ -703,6 +703,7 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             storeReturnSecond.setAttribute3(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute3()));
             storeReturnSecond.setAttribute4(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute4()));
             storeReturnSecond.setAttribute5(toString(maStoreReturnOrderAppToEbsBaseInfo.getAttribute5()));
+            storeReturnSecond.setId(toString(maStoreReturnOrderAppToEbsBaseInfo.getId()));
             storeReturnSecond.setSobId(toString(maStoreReturnOrderAppToEbsBaseInfo.getSobId()));
             storeReturnSecond.setReturnDate(toString(sdf.format(maStoreReturnOrderAppToEbsBaseInfo.getReturnDate())));
             storeReturnSecond.setMainOrderNumber(toString(maStoreReturnOrderAppToEbsBaseInfo.getMainOrderNumber()));
