@@ -852,7 +852,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             e.printStackTrace();
             logger.info("异常错误", e);
             maps.put("code", "FAILURE");
-            return maps;
+            throw new RuntimeException();
         }
     }
 
@@ -1108,7 +1108,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还信用金后导购信用金额度
                         Double creditMoney = (empCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getEmpCreditMoney());
                         //修改导购信用额度
-                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
+                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
 
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
@@ -1359,6 +1359,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         } catch (Exception e) {
             e.printStackTrace();
             maps.put("code", "FAILURE");
+
             return maps;
         }
     }
@@ -1743,7 +1744,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         } catch (Exception e) {
             e.printStackTrace();
             maps.put("code", "FAILURE");
-            return maps;
+            throw new RuntimeException();
         }
     }
 

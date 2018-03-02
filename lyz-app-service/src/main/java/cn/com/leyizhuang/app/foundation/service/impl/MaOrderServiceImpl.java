@@ -1577,6 +1577,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
             timingTaskErrorMessageDO.setRecordTime(date);
             timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+            throw new RuntimeException();
         }
 
     }
