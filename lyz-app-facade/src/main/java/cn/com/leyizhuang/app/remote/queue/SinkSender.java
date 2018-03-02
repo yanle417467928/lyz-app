@@ -77,4 +77,25 @@ public class SinkSender {
     /**
      * 发送销售记录到
      */
+
+
+    /**
+     * @title  订单收款消息队列
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/2
+     */
+    public void sendOrderReceipt(String receiptNumber) {
+        log.info("sendOrderReceipt,发送订单收款信息到拆单队列,Begin\n 收款单号:{}", receiptNumber);
+        if (StringUtils.isNotBlank(receiptNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER_RECEIPT);
+            message.setContent(JSON.toJSONString(receiptNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendOrderReceipt,发送订单收款信息到拆单队列,End", JSON.toJSONString(receiptNumber));
+    }
 }

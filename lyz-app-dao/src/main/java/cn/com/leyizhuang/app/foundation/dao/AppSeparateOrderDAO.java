@@ -176,4 +176,9 @@ public interface AppSeparateOrderDAO {
                                                         @Param(value = "msg") String msg,
                                                         @Param(value = "sendTime") Date sendTime,
                                                         @Param(value = "flag") AppWhetherFlag flag);
+
+    Boolean isReceiptExist(@Param(value = "receiptNumber") String receiptNumber);
+
+    List<OrderReceiptInf> getOrderReceiptInfByReceiptNumber(String receiptNumber);
+
 }

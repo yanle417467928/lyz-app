@@ -110,4 +110,10 @@ public interface AppSeparateOrderService {
     void sendWithdrawRefundInf(String refundNo);
 
     void updateWithdrawRefundFlagAndSendTimeAndErrorMsg(Long refundId, String msg, Date sendTime, AppWhetherFlag flag);
+
+    Boolean isReceiptExist(String receiptNumber);
+
+    void separateOrderReceipt(String receiptNumber);
+
+    void sendOrderReceiptInfByReceiptNumber(String receiptNumber);
 }

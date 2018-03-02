@@ -383,7 +383,8 @@
             ol.shipping_address    shippingAddress,
             ob.oid                 orderId,
             ol.delivery_clerk_no   operatorNo,
-            ob.sales_consult_id    sellerId
+            ob.sales_consult_id    sellerId,
+            ob.city_id             cityId
         FROM ord_base_info ob
             LEFT JOIN ord_billing_details od ON od.ord_no = ob.ord_no
             LEFT JOIN ord_logistics_info ol ON ol.ord_no = ob.ord_no
@@ -892,4 +893,26 @@
         </set>
         WHERE ord_no = #{ordNo}
     </update>
+
+    <select id="getOrderBillingDetailListByReceiptNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
+        SELECT
+        id,
+        oid    orderId,
+        ord_no orderNumber,
+        create_time,
+        pay_time,
+        pay_type,
+        pay_type_desc,
+        payment_subject_type,
+        payment_subject_type_desc,
+        amount,
+        reply_code,
+        receipt_number
+        FROM
+        ord_billing_payment_details
+        WHERE
+        receipt_number = #{receiptNumber}
+    </select>
+
 </mapper>

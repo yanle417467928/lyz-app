@@ -985,4 +985,70 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
+    @Override
+    public Boolean isReceiptExist(String receiptNumber) {
+        if (null != receiptNumber) {
+            return separateOrderDAO.isReceiptExist(receiptNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public void separateOrderReceipt(String receiptNumber) {
+        //生成订单收款接口表信息
+        List<OrderBillingPaymentDetails> billingPaymentDetailsList = orderService.getOrderBillingDetailListByReceiptNumber(receiptNumber);
+        if (null != billingPaymentDetailsList && billingPaymentDetailsList.size() == 1) {
+            for (OrderBillingPaymentDetails billing : billingPaymentDetailsList) {
+                OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(billing.getOrderNumber());
+                if (null != baseInfo) {
+                    OrderReceiptInf receiptInf = new OrderReceiptInf();
+                    receiptInf.setMainOrderNumber(billing.getOrderNumber());
+                    receiptInf.setDescription(billing.getPayTypeDesc());
+                    receiptInf.setAmount(billing.getAmount());
+                    receiptInf.setCreateTime(new Date());
+                    receiptInf.setReceiptDate(billing.getPayTime());
+                    receiptInf.setReceiptType(billing.getPayType());
+                    receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
+                    receiptInf.setDiySiteCode(baseInfo.getStoreCode());
+                    receiptInf.setReceiptNumber(billing.getReceiptNumber());
+                    receiptInf.setSobId(baseInfo.getSobId());
+                    receiptInf.setUserId(null == baseInfo.getCustomerId() ? baseInfo.getCreatorId() : baseInfo.getCustomerId());
+                    receiptInf.setUserPhone(null == baseInfo.getCustomerPhone() ? baseInfo.getCreatorPhone() : baseInfo.getCustomerPhone());
+                    receiptInf.setUsername(null == baseInfo.getCustomerName() ? baseInfo.getCreatorName() : baseInfo.getCustomerName());
+                    receiptInf.setGuideId(baseInfo.getSalesConsultId());
+
+                    //分销仓库为分销门店代下单，设置分销门店编码至订单头 attribute3
+                    String fxStoreCode = null;
+                    if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER ||
+                            baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                        Long customerIdTemp;
+                        if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                            customerIdTemp = baseInfo.getCustomerId();
+                        } else {
+                            customerIdTemp = baseInfo.getCreatorId();
+                        }
+                        AppCustomerFxStoreRelation customerFxStoreRelation = separateOrderDAO.getCustomerFxStoreRelationByCusId(customerIdTemp);
+                        if (null != customerFxStoreRelation) {
+                            fxStoreCode = customerFxStoreRelation.getFxStoreCode();
+                        }
+                    }
+                    if (StringUtils.isNotBlank(fxStoreCode)) {
+                        receiptInf.setAttribute3(fxStoreCode);
+                    }
+                    this.supportService.saveOrderReceiptInf(receiptInf);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sendOrderReceiptInfByReceiptNumber(String receiptNumber) {
+        if (null != receiptNumber) {
+            List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInf(receiptNumber);
+            if (null != receiptInfList && receiptInfList.size() == 1) {
+                ebsSenderService.sendOrderReceiptInfAndRecord(receiptInfList);
+            }
+        }
+    }
+
 }

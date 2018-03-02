@@ -30,4 +30,7 @@ public interface TransactionalSupportService {
    /* void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList);*/
 
     void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap, List<ReturnOrderCouponInf> returnOrderCouponInfList, List<ReturnOrderRefundInf> returnOrderRefundInfList, List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList);
+
+    void saveOrderReceiptInf(OrderReceiptInf receiptInf);
+
 }

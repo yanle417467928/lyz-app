@@ -42,5 +42,7 @@ public class OrderTempInfo {
     private String shippingAddress;
     //操作人(配送员)编号
     private String operatorNo;
+    //城市ID
+    private Long cityId;
 
 }

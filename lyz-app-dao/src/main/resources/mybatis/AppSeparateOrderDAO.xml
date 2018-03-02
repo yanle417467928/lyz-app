@@ -1160,4 +1160,41 @@
         </set>
         WHERE refund_id = #{refundId}
     </select>
+
+    <select id="isReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+        FROM inter_ate_order_receipt_inf
+        WHERE receipt_number = #{receiptNumber})
+    </select>
+
+    <select id="getOrderReceiptInfByReceiptNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
+        SELECT
+        receipt_id,
+        create_time,
+        send_flag,
+        error_msg,
+        send_time,
+        main_order_number,
+        receipt_number,
+        receipt_type,
+        store_org_id,
+        diy_site_code,
+        receipt_date,
+        amount,
+        description,
+        sob_id,
+        user_id,
+        username,
+        user_phone,
+        guide_id,
+        attribute1,
+        attribute2,
+        attribute3,
+        attribute4,
+        attribute5
+        FROM inter_ate_order_receipt_inf
+        WHERE receipt_number = #{receiptNumber}
+    </select>
+
 </mapper>

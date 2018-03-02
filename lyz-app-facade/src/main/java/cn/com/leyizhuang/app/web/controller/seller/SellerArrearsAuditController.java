@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.seller;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.RepaymentMoneyListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -60,6 +62,9 @@ public class SellerArrearsAuditController {
 
     @Autowired
     private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private SinkSender sinkSender;
 
 
     /**
@@ -202,11 +207,14 @@ public class SellerArrearsAuditController {
                 orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
                 this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
 
+                //生成收款单号
+                String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
+
                 //创建收款记录
                 OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
                         orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
                         orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
-                        PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, null);
+                        PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
                 //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
                 this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
@@ -256,7 +264,8 @@ public class SellerArrearsAuditController {
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
                 this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
 
-                //传ebs收款接口
+                //将收款记录录入拆单消息队列
+                this.sinkSender.sendOrderReceipt(receiptNumber);
             } else {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());

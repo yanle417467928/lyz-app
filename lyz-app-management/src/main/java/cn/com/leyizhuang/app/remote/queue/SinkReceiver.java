@@ -197,6 +197,28 @@ public class SinkReceiver {
                     e.printStackTrace();
                 }
                 break;
+            case ORDER_RECEIPT:
+                try {
+                    String receiptNumber = objectMapper.readValue(message.getContent(), String.class);
+                    Boolean isExist = separateOrderService.isReceiptExist(receiptNumber);
+                    if (isExist) {
+                        log.info("该充值单已拆单，不能重复拆单!");
+                    } else {
+                        //拆单
+                        separateOrderService.separateOrderReceipt(receiptNumber);
+
+
+                        //发送订单收款信息到EBS
+                        separateOrderService.sendOrderReceiptInf(receiptNumber);
+                    }
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
             default:
                 break;
         }
