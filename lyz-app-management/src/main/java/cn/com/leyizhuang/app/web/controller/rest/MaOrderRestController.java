@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -17,6 +18,9 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
@@ -50,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 后台门店订单管理
@@ -911,7 +916,10 @@ public class MaOrderRestController extends BaseRestController {
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
             //****************** 处理订单账单支付明细信息 ************
-            List<OrderBillingPaymentDetails> paymentDetails = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
+            Map<Object,Object> map = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails,appStore,appCustomer,user.getUid());
+            List<OrderBillingPaymentDetails> paymentDetails = (List<OrderBillingPaymentDetails>) map.get("billingPaymentDetails");
+            List<RechargeReceiptInfo> rechargeReceiptInfoList = (List<RechargeReceiptInfo>) map.get("rechargeReceiptInfoList");
+            List<RechargeOrder> rechargeOrderList = (List<RechargeOrder>) map.get("rechargeOrderList");
 
             //********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ****************
             List<OrderGoodsInfo> orderGoodsInfoList;
@@ -922,7 +930,8 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid());
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(),rechargeReceiptInfoList,rechargeOrderList);
+
 
             //将该订单入拆单消息队列
             maSinkSender.sendRechargeReceipt(orderBaseInfo.getOrderNumber());

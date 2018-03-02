@@ -73,6 +73,7 @@
         SELECT
             e.`name`      deliveryName,
             e.mobile      deliveryPhone,
+            e.pic_url     pictuerUrl,
             odi.order_no  orderNumber,
             oli.warehouse warehouseName
         FROM

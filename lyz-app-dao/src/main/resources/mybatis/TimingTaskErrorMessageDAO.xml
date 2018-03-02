@@ -11,4 +11,13 @@
         )
     </insert>
 
+    <select id="findTimingTaskErrorMessageByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO">
+        SELECT
+            *
+        FROM
+            timing_task_error_message
+        WHERE
+            order_number = #{orderNumber}
+    </select>
+
 </mapper>

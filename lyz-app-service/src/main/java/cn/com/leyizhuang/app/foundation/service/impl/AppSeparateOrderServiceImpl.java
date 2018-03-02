@@ -451,41 +451,44 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void separateRechargeReceipt(String rechargeNo) {
-        RechargeReceiptInfo rechargeReceiptInfo = rechargeService.findRechargeReceiptInfoByRechargeNo(rechargeNo);
-        RechargeOrder rechargeOrder = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
-        AppStore store = storeService.findById(rechargeOrder.getStoreId());
-        if (null != rechargeReceiptInfo) {
-            RechargeReceiptInf rechargeReceiptInf = new RechargeReceiptInf();
-            rechargeReceiptInf.setAmount(rechargeReceiptInfo.getAmount());
-            rechargeReceiptInf.setChargeNumber(rechargeReceiptInfo.getRechargeNo());
-            rechargeReceiptInf.setReceiptNumber(rechargeReceiptInfo.getReceiptNumber());
-            switch (rechargeReceiptInfo.getRechargeAccountType()) {
-                case CUS_PREPAY:
-                    rechargeReceiptInf.setChargeObj(ChargeObjType.CUSTOMER);
-                    break;
-                case ST_PREPAY:
-                    rechargeReceiptInf.setChargeObj(ChargeObjType.STORE);
-                    break;
-                case PRODUCT_COUPON:
-                    rechargeReceiptInf.setChargeObj(ChargeObjType.PRODUCT_COUPON);
-                    break;
-                case BOND:
-                    rechargeReceiptInf.setChargeObj(ChargeObjType.BOND);
-                    break;
-                default:
-                    break;
+        List<RechargeReceiptInfo> rechargeReceiptInfoList = rechargeService.findRechargeReceiptInfoByRechargeNo(rechargeNo);
+        List<RechargeOrder>  rechargeOrderList = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
+        AppStore store = storeService.findById(rechargeOrderList.get(0).getStoreId());
+
+        if (null != rechargeReceiptInfoList && rechargeReceiptInfoList.size() > 0) {
+            for (RechargeReceiptInfo rechargeReceiptInfo : rechargeReceiptInfoList) {
+                RechargeReceiptInf rechargeReceiptInf = new RechargeReceiptInf();
+                rechargeReceiptInf.setAmount(rechargeReceiptInfo.getAmount());
+                rechargeReceiptInf.setChargeNumber(rechargeReceiptInfo.getRechargeNo());
+                rechargeReceiptInf.setReceiptNumber(rechargeReceiptInfo.getReceiptNumber());
+                switch (rechargeReceiptInfo.getRechargeAccountType()) {
+                    case CUS_PREPAY:
+                        rechargeReceiptInf.setChargeObj(ChargeObjType.CUSTOMER);
+                        break;
+                    case ST_PREPAY:
+                        rechargeReceiptInf.setChargeObj(ChargeObjType.STORE);
+                        break;
+                    case PRODUCT_COUPON:
+                        rechargeReceiptInf.setChargeObj(ChargeObjType.PRODUCT_COUPON);
+                        break;
+                    case BOND:
+                        rechargeReceiptInf.setChargeObj(ChargeObjType.BOND);
+                        break;
+                    default:
+                        break;
+                }
+                rechargeReceiptInf.setChargeType(rechargeReceiptInfo.getChargeType());
+                rechargeReceiptInf.setReceiptType(rechargeReceiptInfo.getPayType());
+                rechargeReceiptInf.setDescription(rechargeReceiptInf.getReceiptType().getDescription());
+                rechargeReceiptInf.setDiySiteCode(store.getStoreCode());
+                rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
+                rechargeReceiptInf.setSobId(store.getSobId());
+                rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
+                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY) {
+                    rechargeReceiptInf.setUserid(rechargeOrderList.get(0).getCustomerId());
+                }
+                separateOrderDAO.saveRechargeReceiptInf(rechargeReceiptInf);
             }
-            rechargeReceiptInf.setChargeType(rechargeReceiptInfo.getChargeType());
-            rechargeReceiptInf.setReceiptType(rechargeReceiptInfo.getPayType());
-            rechargeReceiptInf.setDescription(rechargeReceiptInf.getReceiptType().getDescription());
-            rechargeReceiptInf.setDiySiteCode(store.getStoreCode());
-            rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
-            rechargeReceiptInf.setSobId(store.getSobId());
-            rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
-            if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY) {
-                rechargeReceiptInf.setUserid(rechargeOrder.getCustomerId());
-            }
-            separateOrderDAO.saveRechargeReceiptInf(rechargeReceiptInf);
         } else {
             //todo 记录充值收款拆单错误日志
         }
@@ -496,9 +499,11 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public void sendRechargeReceiptInf(String rechargeNo) {
         if (null != rechargeNo) {
-            RechargeReceiptInf receiptInf = separateOrderDAO.getRechargeReceiptInfByRechargeNo(rechargeNo);
-            if (null != receiptInf) {
-                ebsSenderService.sendRechargeReceiptInfAndRecord(receiptInf);
+            List<RechargeReceiptInf> receiptInfList = separateOrderDAO.getRechargeReceiptInfByRechargeNo(rechargeNo);
+            if (null != receiptInfList && receiptInfList.size() > 0) {
+                for (RechargeReceiptInf receiptInf : receiptInfList) {
+                    ebsSenderService.sendRechargeReceiptInfAndRecord(receiptInf);
+                }
             }
         }
     }

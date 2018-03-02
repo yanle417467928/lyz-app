@@ -31,6 +31,10 @@ public class LogisticsInformationResponse {
      */
     private String warehouseName;
     /**
+     * 配送员头像
+     */
+    private String pictuerUrl;
+    /**
      * 物流信息
      */
     private List<LogisticsDetailResponse> logisticsDetail;

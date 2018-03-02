@@ -416,7 +416,7 @@ public class AliPayController {
 
         if (orderBillingDetails.getArrearage() != (orderArrearsAuditDO.getOrderMoney() - orderArrearsAuditDO.getRealMoney())){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款金额有误，请联系管理员核查！", null);
-            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("wechatDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String totalFee = CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getArrearage());

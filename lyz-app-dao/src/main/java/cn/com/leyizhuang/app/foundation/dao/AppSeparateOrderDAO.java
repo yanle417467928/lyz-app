@@ -69,7 +69,7 @@ public interface AppSeparateOrderDAO {
 
     void saveRechargeReceiptInf(RechargeReceiptInf rechargeReceiptInf);
 
-    RechargeReceiptInf getRechargeReceiptInfByRechargeNo(String rechargeNo);
+    List<RechargeReceiptInf> getRechargeReceiptInfByRechargeNo(String rechargeNo);
 
     void updateRechargeReceiptFlagAndSendTimeAndErrorMsg(@Param(value = "receiptId") Long receiptId,
                                                          @Param(value = "msg") String msg,

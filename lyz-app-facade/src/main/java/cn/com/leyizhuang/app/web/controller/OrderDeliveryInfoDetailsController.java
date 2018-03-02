@@ -63,10 +63,10 @@ public class OrderDeliveryInfoDetailsController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getOrderDelivery(String orderNumber, Long userId, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getOrderDelicery CALLED,获取物流详情，入参 orderNumber:{}", orderNumber);
+        logger.info("getOrderDelivery CALLED,获取物流详情，入参 orderNumber:{}", orderNumber);
         if (StringUtils.isBlank(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空", null);
-            logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderDelivery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
@@ -76,13 +76,13 @@ public class OrderDeliveryInfoDetailsController {
             if (AppIdentityType.CUSTOMER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))) {
                 if (!orderBaseInfo.getCustomerId().equals(userId)) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只能查看自己订单物流详情", null);
-                    logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                    logger.info("getOrderDelivery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             } else if (AppIdentityType.SELLER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))) {
                 if (!orderBaseInfo.getSalesConsultId().equals(userId)) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "只能查看自己订单物流详情", null);
-                    logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                    logger.info("getOrderDelivery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             }
@@ -94,7 +94,7 @@ public class OrderDeliveryInfoDetailsController {
                 deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有物流记录", null);
-                logger.info("getOrderDelicery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getOrderDelivery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             //创建物流详情list
@@ -123,12 +123,12 @@ public class OrderDeliveryInfoDetailsController {
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
-            logger.info("getOrderDelicery OUT,获取物流详情成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getOrderDelivery OUT,获取物流详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取物流详情失败", null);
-            logger.warn("getOrderDelicery EXCEPTION,获取物流详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getOrderDelivery EXCEPTION,获取物流详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

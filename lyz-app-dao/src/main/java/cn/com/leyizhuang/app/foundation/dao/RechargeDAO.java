@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 充值相关数据仓库
@@ -26,7 +27,7 @@ public interface RechargeDAO {
                                                       @Param(value = "payUpTime") Date payUpTime,
                                                       @Param(value = "status") AppRechargeOrderStatus status);
 
-    RechargeReceiptInfo findRechargeReceiptInfoByRechargeNo(String rechargeNo);
+    List<RechargeReceiptInfo> findRechargeReceiptInfoByRechargeNo(String rechargeNo);
 
-    RechargeOrder findRechargeOrderByRechargeNo(String rechargeNo);
+    List<RechargeOrder> findRechargeOrderByRechargeNo(String rechargeNo);
 }

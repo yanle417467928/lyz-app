@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
@@ -29,6 +30,9 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -45,6 +49,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -55,10 +60,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by caiyu on 2017/12/16.
@@ -119,6 +121,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Resource
     private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
 
+    @Resource
+    private RechargeService rechargeService;
 
     @Override
     public List<MaOrderVO> findMaOrderVOAll() {
@@ -685,8 +689,12 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public List<OrderBillingPaymentDetails> createMaOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
+    public Map<Object,Object> createMaOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails,AppStore store,AppCustomer customer,Long creatorId) {
+        Map<Object,Object> map = new HashMap<>();
+
         List<OrderBillingPaymentDetails> billingPaymentDetails = new ArrayList<>();
+        List<RechargeReceiptInfo> rechargeReceiptInfoList = new ArrayList<>();
+        List<RechargeOrder> rechargeOrderList = new ArrayList<>();
         if (null != orderBaseInfo && null != orderBillingDetails) {
             //门店预存款
             if (null != orderBillingDetails.getStPreDeposit() && orderBillingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
@@ -694,6 +702,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
+
+                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),OrderBillingPaymentType.ST_PREPAY,details.getReceiptNumber());
+                rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),store.getStoreId(),OrderBillingPaymentType.ST_PREPAY,creatorId,customer.getCusId());
+                rechargeOrderList.add(rechargeOrder);
             }
             //门店现金
             if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() > AppConstant.DOUBLE_ZERO) {
@@ -701,6 +714,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CASH, orderBillingDetails.getStoreCash(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
+
+                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),OrderBillingPaymentType.CASH,details.getReceiptNumber());
+                rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),store.getStoreId(),OrderBillingPaymentType.CASH,creatorId,customer.getCusId());
+                rechargeOrderList.add(rechargeOrder);
             }
             //门店POS
             if (null != orderBillingDetails.getStorePosMoney() && orderBillingDetails.getStorePosMoney() > AppConstant.DOUBLE_ZERO) {
@@ -708,6 +726,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.POS, orderBillingDetails.getStorePosMoney(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
+
+                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),OrderBillingPaymentType.POS,details.getReceiptNumber());
+                rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),store.getStoreId(),OrderBillingPaymentType.POS,creatorId,customer.getCusId());
+                rechargeOrderList.add(rechargeOrder);
             }
             //门店其他
             if (null != orderBillingDetails.getStoreOtherMoney() && orderBillingDetails.getStoreOtherMoney() > AppConstant.DOUBLE_ZERO) {
@@ -715,19 +738,28 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.OTHER, orderBillingDetails.getStoreOtherMoney(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
+
+                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),OrderBillingPaymentType.OTHER,details.getReceiptNumber());
+                rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStPreDeposit(),orderBaseInfo.getOrderNumber(),store.getStoreId(),OrderBillingPaymentType.OTHER,creatorId,customer.getCusId());
+                rechargeOrderList.add(rechargeOrder);
             }
         }
-        return billingPaymentDetails;
+        map.put("billingPaymentDetails",billingPaymentDetails);
+        map.put("rechargeReceiptInfoList",rechargeReceiptInfoList);
+        map.put("rechargeOrderList",rechargeOrderList);
+        return map;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
-                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress, OrderLogisticsInfo orderLogisticsInfo, Long operatorId) throws UnsupportedEncodingException {
+                                      List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,
+                                      OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         this.deductionsStPreDeposit(identityType, userId, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
-        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo, operatorId);
+        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo, operatorId, rechargeReceiptInfoList, rechargeOrderList);
     }
 
     @Override
@@ -772,7 +804,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
-                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails, OrderLogisticsInfo orderLogisticsInfo, Long operatorId) throws UnsupportedEncodingException {
+                                                 OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
+                                                 OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException {
         if (null != orderBaseInfo) {
             AppCustomer customer = new AppCustomer();
             Long cusId = orderBaseInfo.getCustomerId();
@@ -875,6 +908,18 @@ public class MaOrderServiceImpl implements MaOrderService {
                 }
             } else {
                 throw new OrderSaveException("订单主键生成失败!");
+            }
+
+            //保存传EBS信息
+            if (null != rechargeReceiptInfoList && rechargeReceiptInfoList.size() > 0){
+                for (RechargeReceiptInfo rechargeReceiptInfo : rechargeReceiptInfoList){
+                    rechargeService.saveRechargeReceiptInfo(rechargeReceiptInfo);
+                }
+            }
+            if (null != rechargeOrderList && rechargeOrderList.size() > 0){
+                for (RechargeOrder rechargeOrder : rechargeOrderList){
+                    rechargeService.saveRechargeOrder(rechargeOrder);
+                }
             }
         }
     }
@@ -1552,4 +1597,48 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
         return orderLogisticsInfo;
     }
+
+    public RechargeReceiptInfo createRechargeReceiptInfo(Double money, String orderNumber,OrderBillingPaymentType orderBillingPaymentType,String receiptNumber){
+        Date date = new Date();
+        RechargeReceiptInfo createRechargeReceiptInfo = new RechargeReceiptInfo();
+        createRechargeReceiptInfo.setRechargeNo(orderNumber);
+        createRechargeReceiptInfo.setCreateTime(date);
+        createRechargeReceiptInfo.setPayTime(date);
+        createRechargeReceiptInfo.setPayType(orderBillingPaymentType);
+        createRechargeReceiptInfo.setPayTypeDesc(orderBillingPaymentType.getDescription());
+        createRechargeReceiptInfo.setPaymentSubjectType(PaymentSubjectType.STORE);
+        createRechargeReceiptInfo.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
+        createRechargeReceiptInfo.setRechargeAccountType(RechargeAccountType.PRODUCT_COUPON);
+        createRechargeReceiptInfo.setPaymentSubjectTypeDesc(RechargeAccountType.PRODUCT_COUPON.getDescription());
+        createRechargeReceiptInfo.setChargeType(null);
+        createRechargeReceiptInfo.setChargeTypeDesc(null);
+        createRechargeReceiptInfo.setAmount(money);
+        createRechargeReceiptInfo.setReplyCode(null);
+        createRechargeReceiptInfo.setReceiptNumber(receiptNumber);
+
+        return createRechargeReceiptInfo;
+    }
+
+    public RechargeOrder createRechargeOrder(Double money, String orderNumber, Long storeId, OrderBillingPaymentType orderBillingPaymentType,Long creatorId,Long customerId){
+        Date date = new Date();
+        RechargeOrder rechargeOrder = new RechargeOrder();
+        rechargeOrder.setRechargeNo(orderNumber);
+        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+        rechargeOrder.setCreateTime(date);
+        rechargeOrder.setCreatorIdentityType(AppIdentityType.ADMINISTRATOR);
+        rechargeOrder.setCreatorId(creatorId);
+        rechargeOrder.setRechargeAccountType(RechargeAccountType.PRODUCT_COUPON);
+        rechargeOrder.setRechargeAccountTypeDesc(RechargeAccountType.PRODUCT_COUPON.getDescription());
+        rechargeOrder.setCustomerId(customerId);
+        rechargeOrder.setStoreId(storeId);
+        rechargeOrder.setAmount(money);
+        rechargeOrder.setPayType(orderBillingPaymentType);
+        rechargeOrder.setPayTypeDesc(orderBillingPaymentType.getDescription());
+        rechargeOrder.setPaymentSubjectType(PaymentSubjectType.STORE);
+        rechargeOrder.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
+        rechargeOrder.setPayUpTime(date);
+        return rechargeOrder;
+    }
+
+
 }
