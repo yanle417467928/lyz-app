@@ -977,16 +977,26 @@ public class OrderController {
             PageInfo<OrderListResponse> responseOrderList = appOrderService.getPendingEvaluationOrderListByUserIDAndIdentityType(userId,
                     identityType, page, size);
             for (OrderListResponse response : responseOrderList.getList()) {
+                if("PRODUCT_COUPON".equals(response.getDeliveryType())||"SELF_TAKE".equals(response.getDeliveryType())){
+                    AppStore appStore= appStoreService.findById(response.getStoreId());
+                    response.setShippingAddress(appStore.getDetailedAddress());
+                }
                 response.setCount(response.getGoodsImgList().size());
             }
+
+            GridDataVO<OrderListResponse> gridDataVO = new GridDataVO<OrderListResponse>();
+
             CustomerSignDetailResponse response = new CustomerSignDetailResponse();
             response.setCount(responseOrderList.getTotal());
             response.setNumsPerPage(responseOrderList.getPageSize());
             response.setTotalPage(responseOrderList.getPages());
             response.setCurrentPage(responseOrderList.getPageNum());
             response.setData(responseOrderList.getList());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, responseOrderList.getList());
-            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", responseOrderList.getList());
+            responseOrderList.setTotal(responseOrderList.getList().size());
+            double pages =(Math.ceil((double)responseOrderList.getTotal()/(double)responseOrderList.getPageSize()));
+            responseOrderList.setPages((int)pages);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<OrderListResponse>().transform(responseOrderList.getList(), responseOrderList));
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}",responseOrderList);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

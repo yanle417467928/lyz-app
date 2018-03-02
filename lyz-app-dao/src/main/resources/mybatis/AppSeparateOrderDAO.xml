@@ -859,7 +859,7 @@
 
 
     <update id="updateReturnOrderFlagAndSendTimeAndErrorMsg">
-        UPDATE inter_ate_return_order_base_inf
+        UPDATE inter_ate_return_order_retmd_inf
         <set>
             <if test="null != flag">
                 send_flag = #{flag},
@@ -871,7 +871,7 @@
                 send_time = #{sendTime}
             </if>
         </set>
-        WHERE rt_header_id = #{rtHeaderId}
+        WHERE id = #{rtHeaderId}
     </update>
 
     <select id="getReturnOrderCouponInf" parameterType="java.lang.String"

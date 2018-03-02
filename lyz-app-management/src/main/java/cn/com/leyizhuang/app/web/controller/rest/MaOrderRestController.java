@@ -521,7 +521,7 @@ public class MaOrderRestController extends BaseRestController {
     }
 
     /**
-     * 后台订单收款
+     * 后台自提单收款
      *
      * @param
      * @param maOrderAmount
@@ -553,6 +553,11 @@ public class MaOrderRestController extends BaseRestController {
         }
         if (0 != acount.compareTo(maOrderAmount.getAllAmount())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (maOrderAmount.getDate().after(new Date())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "收款时间大于当前时间", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -671,10 +676,15 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
+        if (!(ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status) || ArrearsAuditStatus.AUDIT_NO.toString().equals(status))) {
+            logger.warn("订单状态错误,审核订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "审核订单失败", null);
+        }
         String orderStatus = maOrderService.queryAuditStatus(orderNumber);
-        if (StringUtils.isBlank(orderStatus)|| !(orderStatus.equals(ArrearsAuditStatus.AUDITING))) {
+        if (StringUtils.isBlank(orderStatus) || !(orderStatus.equals(ArrearsAuditStatus.AUDITING))) {
             logger.info("欠款审核单信息错误！ 该订单不在审核状态");
-            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
                     null);
         }
         try {
@@ -711,7 +721,7 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
-        Long repaymentAmount =  maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
+        Long repaymentAmount = maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
         if (null == maOrderAmount.getAllAmount()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
@@ -728,7 +738,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (0 !=acount.compareTo(BigDecimal.valueOf(repaymentAmount))) {
+        if (0 != acount.compareTo(BigDecimal.valueOf(repaymentAmount))) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -853,8 +863,8 @@ public class MaOrderRestController extends BaseRestController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，未查询到门店信息！", null);
             }
 
-            if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType().getValue())){
-                if (StringUtils.isBlank(salesNumber)){
+            if ("2121".equals(city.getNumber()) && "ZY".equals(appStore.getStoreType().getValue())) {
+                if (StringUtils.isBlank(salesNumber)) {
                     logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,销售纸质单号不能为空！");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，销售纸质单号不能为空！", null);
                 }
@@ -869,7 +879,7 @@ public class MaOrderRestController extends BaseRestController {
             CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, sellerId, 0, orderNumber);
 
             //****************** 创建订单物流信息 ******************
-            OrderLogisticsInfo orderLogisticsInfo = maOrderService.createMaOrderLogisticsInfo(appStore,orderNumber);
+            OrderLogisticsInfo orderLogisticsInfo = maOrderService.createMaOrderLogisticsInfo(appStore, orderNumber);
 
 
             //****************** 处理订单账单相关信息 ***************

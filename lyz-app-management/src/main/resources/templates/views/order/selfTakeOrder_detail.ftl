@@ -510,10 +510,10 @@
                         notEmpty: {
                             message: '日期不允许为空!'
                         },
-                        regexp: {
-                            regexp: /^([1][7-9][0-9][0-9]|[2][0][0-9][0-9])(\-)([0][1-9]|[1][0-2])(\-)([0-2][1-9]|[3][0-1])$/g,
-                            message: '日期格式:yyyy-MM-dd'
-                        }
+                        date: {//验证指定的日期格式
+                            format: 'YYYY-MM-DD',
+                            message: '日期格式不正确'
+                        },
                     }
                 }
             }
@@ -534,7 +534,7 @@
                     success: function (result) {
                         if (result.code == 10100) {
                             $('#confirmReceivables').modal();
-                            $("#message").html('所有金额之和不等于总金额');
+                            $("#message").html(result.message);
                         } else if (result.code == -1) {
                             $("#message").html('发生未知错误，请稍后重试或联系管理员');
                         } else if (result.code == 0) {

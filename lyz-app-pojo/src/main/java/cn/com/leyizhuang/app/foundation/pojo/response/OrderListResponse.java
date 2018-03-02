@@ -25,6 +25,10 @@ public class OrderListResponse {
      */
     private Long customerId;
     /**
+     * 门店id
+     */
+    private Long storeId;
+    /**
      * 顾客姓名
      */
     private String customerName;
@@ -68,4 +72,5 @@ public class OrderListResponse {
      * 配送地址或门店地址
      */
     private String shippingAddress;
+
 }

@@ -666,6 +666,7 @@
         SELECT
         o.status,
         o.is_evaluated,
+        o.store_id,
         o.ord_no,
         o.effective_end_time,
         o.delivery_type,
@@ -673,9 +674,15 @@
         o.customer_name,
         o.customer_phone,
         ob.amount_payable,
-        ogi.cover_image_uri
-        FROM ord_base_info o INNER JOIN ord_billing_details ob ON
-        o.oid = ob.oid,ord_goods_info ogi
+        ogi.cover_image_uri,
+        oli.shipping_address
+        FROM ord_base_info o
+        INNER JOIN ord_billing_details ob ON
+        o.oid = ob.oid
+        INNER JOIN ord_logistics_info oli ON
+        oli.oid =o.oid
+        LEFT JOIN ord_goods_info ogi ON
+        o.oid = ogi.oid
         WHERE
         o.oid = ogi.oid
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
@@ -697,6 +704,7 @@
     <resultMap id="pendingEvaluationOrder" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse">
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="store_id" property="storeId" jdbcType="BIGINT"/>
         <result column="amount_payable" property="price" jdbcType="DECIMAL"/>
         <result column="effective_end_time" property="endTime" jdbcType="TIMESTAMP"/>
         <result column="is_evaluated" property="isEvaluated" jdbcType="BIT"/>
@@ -705,6 +713,7 @@
         <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
         <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
         <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
+        <result column="shipping_address" property="shippingAddress" jdbcType="VARCHAR"/>
         <collection property="goodsImgList" ofType="java.lang.String" javaType="list">
             <result column="cover_image_uri"/>
         </collection>

@@ -363,71 +363,74 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     }
                 }
             }
-            //TODO 是否退导购信用额度
-            if (null != creditMoneyAmount && creditMoneyAmount > 0) {
-            }
+        }
+        //TODO 是否退导购信用额度
+        if (null != creditMoneyAmount && creditMoneyAmount > 0) {
+        }
 
-            //TODO 是否退门店信用额度
-            if (null != stCreditMoneyAmount && stCreditMoneyAmount > 0) {
-            }
+        //TODO 是否退门店信用额度
+        if (null != stCreditMoneyAmount && stCreditMoneyAmount > 0) {
+        }
 
+        if (maOrdReturnBillingDetailList.size() > 0) {
             this.saveReturnOrderBillingDetail(maOrdReturnBillingDetailList);
-            //退劵
-            //获取订单使用产品券
-            List<MaProductCouponInfo> orderProductCouponList = maCouponService.findProductCouponTypeByReturnOrder(returnNumber);
-            if (orderProductCouponList != null && orderProductCouponList.size() > 0) {
-                for (MaProductCouponInfo maProductCouponInfo : orderProductCouponList) {
-                    //查询使用产品券信息
-                    CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(maProductCouponInfo.getPcid());
-                    customerProductCoupon.setLastUpdateTime(new Date());
-                    customerProductCoupon.setIsUsed(Boolean.FALSE);
-                    //修改原产品券是否使用和修改时间
-                    productCouponService.updateCustomerProductCoupon(customerProductCoupon);
+        }
+        //退劵
+        //获取订单使用产品券
+        List<MaProductCouponInfo> orderProductCouponList = maCouponService.findProductCouponTypeByReturnOrder(returnNumber);
+        if (orderProductCouponList != null && orderProductCouponList.size() > 0) {
+            for (MaProductCouponInfo maProductCouponInfo : orderProductCouponList) {
+                //查询使用产品券信息
+                CustomerProductCoupon customerProductCoupon = productCouponService.findCusProductCouponByCouponId(maProductCouponInfo.getPcid());
+                customerProductCoupon.setLastUpdateTime(new Date());
+                customerProductCoupon.setIsUsed(Boolean.FALSE);
+                //修改原产品券是否使用和修改时间
+                productCouponService.updateCustomerProductCoupon(customerProductCoupon);
 
-                    //增加日志
-                    CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
-                    changeLog.setCusId(maReturnOrderDetailInfo.getCustomerId());
-                    changeLog.setCouponId(maProductCouponInfo.getPcid());
-                    changeLog.setChangeType(CustomerProductCouponChangeType.RETURN_ORDER);
-                    changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.RETURN_ORDER.getDescription());
-                    changeLog.setReferenceNumber(returnNumber);
-                    changeLog.setOperatorId(shiroUser.getId());
-                    changeLog.setOperatorIp(null);
-                    changeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                    changeLog.setUseTime(new Date());
-                    // 日志变更保存
-                    productCouponService.addCustomerProductCouponChangeLog(changeLog);
-                }
-            }
-
-            //获取订单使用现金券
-            List<MaCashCouponInfo> orderCashCouponList = maCouponService.findCashCouponTypeByReturnOrderId(maReturnOrderDetailInfo.getRoid());
-            if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
-                for (MaCashCouponInfo maCashCouponInfo : orderCashCouponList) {
-                    //查询现金券原信息
-                    CustomerCashCoupon customerCashCoupon = cashCouponService.findCusCashCouponByCouponId(maCashCouponInfo.getCcid());
-                    customerCashCoupon.setLastUpdateTime(new Date());
-                    customerCashCoupon.setIsUsed(Boolean.FALSE);
-                    //修改原现金券是否使用和修改时间
-                    cashCouponService.updateCustomerCashCoupon(customerCashCoupon);
-
-                    //记录现金券变更日志
-                    CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
-                    customerCashCouponChangeLog.setCusId(maReturnOrderDetailInfo.getCustomerId());
-                    customerCashCouponChangeLog.setUseTime(date);
-                    customerCashCouponChangeLog.setCouponId(maCashCouponInfo.getCcid());
-                    customerCashCouponChangeLog.setReferenceNumber(returnNumber);
-                    customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.RETURN_ORDER);
-                    customerCashCouponChangeLog.setChangeTypeDesc(CustomerCashCouponChangeType.RETURN_ORDER.getDescription());
-                    customerCashCouponChangeLog.setOperatorId(shiroUser.getId());
-                    customerCashCouponChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                    customerCashCouponChangeLog.setRemark(null);
-                    //保存日志
-                    appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
-
-                }
+                //增加日志
+                CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
+                changeLog.setCusId(maReturnOrderDetailInfo.getCustomerId());
+                changeLog.setCouponId(maProductCouponInfo.getPcid());
+                changeLog.setChangeType(CustomerProductCouponChangeType.RETURN_ORDER);
+                changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.RETURN_ORDER.getDescription());
+                changeLog.setReferenceNumber(returnNumber);
+                changeLog.setOperatorId(shiroUser.getId());
+                changeLog.setOperatorIp(null);
+                changeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                changeLog.setUseTime(new Date());
+                // 日志变更保存
+                productCouponService.addCustomerProductCouponChangeLog(changeLog);
             }
         }
+
+        //获取订单使用现金券
+        List<MaCashCouponInfo> orderCashCouponList = maCouponService.findCashCouponTypeByReturnOrderId(maReturnOrderDetailInfo.getRoid());
+        if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
+            for (MaCashCouponInfo maCashCouponInfo : orderCashCouponList) {
+                //查询现金券原信息
+                CustomerCashCoupon customerCashCoupon = cashCouponService.findCusCashCouponByCouponId(maCashCouponInfo.getCcid());
+                customerCashCoupon.setLastUpdateTime(new Date());
+                customerCashCoupon.setIsUsed(Boolean.FALSE);
+                //修改原现金券是否使用和修改时间
+                cashCouponService.updateCustomerCashCoupon(customerCashCoupon);
+
+                //记录现金券变更日志
+                CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();
+                customerCashCouponChangeLog.setCusId(maReturnOrderDetailInfo.getCustomerId());
+                customerCashCouponChangeLog.setUseTime(date);
+                customerCashCouponChangeLog.setCouponId(maCashCouponInfo.getCcid());
+                customerCashCouponChangeLog.setReferenceNumber(returnNumber);
+                customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.RETURN_ORDER);
+                customerCashCouponChangeLog.setChangeTypeDesc(CustomerCashCouponChangeType.RETURN_ORDER.getDescription());
+                customerCashCouponChangeLog.setOperatorId(shiroUser.getId());
+                customerCashCouponChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                customerCashCouponChangeLog.setRemark(null);
+                //保存日志
+                appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
+
+            }
+        }
+
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
     }

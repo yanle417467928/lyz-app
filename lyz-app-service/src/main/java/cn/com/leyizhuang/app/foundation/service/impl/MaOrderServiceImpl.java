@@ -373,12 +373,12 @@ public class MaOrderServiceImpl implements MaOrderService {
         //更新订单收款信息
         this.updateOrderReceivablesStatus(maOrderAmount);
         //更新欠款审核表
-        this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(),maOrderAmount.getDate());
+        //this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(),maOrderAmount.getDate());
         //设置订单收款信息并存入订单账款支付明细表
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
-        maOrderBillingPaymentDetails.setPayTime(sdf.format(maOrderAmount.getDate()));
+        maOrderBillingPaymentDetails.setPayTime(sdf.format(new Date()));
         maOrderBillingPaymentDetails.setCreateTime(new Date());
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
@@ -576,6 +576,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     public void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime) {
         // 更新订单支付信息
         this.orderReceivables(maOrderAmount);
+        //更新欠款审核表
+        this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(),maOrderAmount.getDate());
         //得到导购id
         Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
         if (null == sellerId) {
