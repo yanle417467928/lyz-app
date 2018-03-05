@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.*;
 
 import java.util.List;
@@ -113,5 +114,17 @@ public class OrderDetailsResponse {
      */
     private String pickUpCode;
 
-
+    //************导购获取详情***********
+    /**
+     * 是否主家收货
+     */
+    private Boolean isOwnerReceiving;
+    /**
+     * 顾客姓名
+     */
+    private String customerName;
+    /**
+     * 顾客电话
+     */
+    private String customerPhone;
 }
