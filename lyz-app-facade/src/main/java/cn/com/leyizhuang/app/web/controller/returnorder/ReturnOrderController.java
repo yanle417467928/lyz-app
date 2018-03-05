@@ -683,7 +683,7 @@ public class ReturnOrderController {
                 }
             }
             //只有配送单退货才发WMS.
-            if (AppDeliveryType.HOUSE_PICK.equals(returnOrderLogisticInfo.getDeliveryType())) {
+            if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
                 //保存发送wms退货单头
                 AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
                 SalesConsult salesConsult = appEmployeeService.findSellerByUserIdAndIdentityType(userId, identityType);
