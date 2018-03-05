@@ -219,9 +219,9 @@
                                    data-content="选择预存款变更类型"></i>
                             </label>
                             <select class="form-control select" name="changeType" id="changeType">
-                                <option value="ADMIN_CHANGE">管理员修改</option>
-                                <option value="0">HR代收</option>
-                                <option value="1">交现金充值</option>
+                                <if >
+
+                                </if>
                             </select>
                         </div>
                         </div>

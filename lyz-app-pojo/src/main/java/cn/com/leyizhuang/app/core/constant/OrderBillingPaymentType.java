@@ -17,7 +17,8 @@ public enum OrderBillingPaymentType {
     UNION_PAY("UNION_PAY", "银联"),
     POS("POS", "POS"),
     CASH("CASH", "现金"),
-    OTHER("OTHER", "门店其它（对公转账）");
+    OTHER("OTHER", "门店其它（对公转账）"),
+    TRANSFER_ACCOUNTS("TRANSFER_ACCOUNTS","转账");
 
 
     private String value;
@@ -44,5 +45,14 @@ public enum OrderBillingPaymentType {
 
     public String getDescription() {
         return description;
+    }
+
+    public static OrderBillingPaymentType getOrderBillingPaymentTypeByDescription(String description) {
+        for (OrderBillingPaymentType paymentType : OrderBillingPaymentType.values()) {
+            if (Objects.equals(description, paymentType.getDescription())) {
+                return paymentType;
+            }
+        }
+        return null;
     }
 }

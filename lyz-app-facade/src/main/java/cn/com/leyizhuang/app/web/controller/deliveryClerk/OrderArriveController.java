@@ -161,8 +161,8 @@ public class OrderArriveController {
                         String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
                         //创建收款记录
                         OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
-                                Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentMethod),
-                                OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentMethod).getDescription(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
+                                Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
+                                paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
                                 PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
 
                         this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
