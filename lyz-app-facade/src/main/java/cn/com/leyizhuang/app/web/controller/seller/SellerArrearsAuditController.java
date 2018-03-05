@@ -213,7 +213,7 @@ public class SellerArrearsAuditController {
 
                 //创建收款记录
                 OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
-                        orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(orderArrearsAuditDO.getPaymentMethod()),
+                        orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(orderArrearsAuditDO.getPaymentMethod()),
                         orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
                         PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
                 //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");

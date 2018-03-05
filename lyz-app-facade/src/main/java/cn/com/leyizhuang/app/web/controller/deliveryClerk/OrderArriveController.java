@@ -93,6 +93,9 @@ public class OrderArriveController {
             logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if(paymentMethod.contains("POS")){
+            paymentMethod = "POS";
+        }
         try {
             //根据订单号查询订单信息
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
