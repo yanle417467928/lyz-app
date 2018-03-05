@@ -327,7 +327,7 @@
                                                     <label class="col-xs-3" style="padding-right: 0px;text-align:right">POS流水号
                                                         &ensp;</label>
                                                     <div class=" col-xs-8" style="padding-left: 0px">
-                                                        <input type="number" name="posNumber" id="posNumber"
+                                                        <input type="text" name="posNumber" id="posNumber"
                                                                class="form-control" placeholder="POS交易流水号后六位"
                                                                onKeyUp="if(this.value.length>6){this.value=this.value.substr(0,6)};this.value=this.value.replace(/[^\d]/g,'');"
                                                                \>
