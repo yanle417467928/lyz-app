@@ -261,7 +261,7 @@ function  send(customerId) {
     $("#send_"+customerId).attr("href","#");
     $http.ajax('/rest/cashCoupon/send','POST',{'customerId':customerId,'cashCouponId':cashCouponId,'qty': qty},function (result) {
         // 防止重复发送
-        $("#send_"+customerId).attr("href","javascript:send("+customerId+")");
+        //$("#send_"+customerId).attr("href","javascript:send("+customerId+")");
         if (0 === result.code) {
             $notify.info(result.message);
 
@@ -305,7 +305,7 @@ function  sendBatch() {
     // 防止重复请求
     $("#oneButtonSend").attr("onclick","");
     $http.ajax('/rest/cashCoupon/sendBatch','POST',{'customerIds':customerIds,'cashCouponId':cashCouponId,'qty': qty},function (result) {
-        $("#oneButtonSend").attr("onclick","sendBatch()");
+       // $("#oneButtonSend").attr("onclick","sendBatch()");
         if (0 === result.code) {
             $notify.info(result.message);
 
