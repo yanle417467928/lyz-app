@@ -175,7 +175,7 @@ public interface MaOrderDAO {
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
-    void updateOrderStatus(String orderNo);
+    void updateOrderStatus(@Param(value = "orderNo")String orderNo,@Param(value = "status")String status);
 
     void updateOrderReceivablesStatus(MaOrderAmount maOrderAmount);
 

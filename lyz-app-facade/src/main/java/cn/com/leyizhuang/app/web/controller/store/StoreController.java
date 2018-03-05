@@ -210,7 +210,7 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if(identityType == 0){
+            if(identityType == 0&&"SUPERVISOR".equals(appEmployeeService.isSupervisor(userId))){
                 List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getRechargeType();
                 PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList, page, size);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
@@ -267,7 +267,7 @@ public class StoreController {
             return resultDTO;
         }
         try {
-            if(identityType == 0) {
+            if(identityType == 0&&"SUPERVISOR".equals(appEmployeeService.isSupervisor(userId))) {
                 List<StorePreDepositChangeType> preDepositChangeTypeList = StorePreDepositChangeType.getConsumptionType();
                 PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, preDepositChangeTypeList,page, size);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));

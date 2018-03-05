@@ -35,6 +35,9 @@ public class StoreVO {
     // 是否生效
     private Boolean enable;
 
+    // 门店组织id
+    private Long storeOrgId;
+
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();
     }
