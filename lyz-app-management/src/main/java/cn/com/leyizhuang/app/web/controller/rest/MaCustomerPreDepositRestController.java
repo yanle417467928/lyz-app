@@ -85,6 +85,7 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
      */
     @PostMapping(value = "/edit")
     public ResultDTO<String> modifyPreDeposit(@Valid CusPreDepositDTO cusPreDepositDTO, BindingResult result) {
+        logger.info("顾客预存款变更及日志保存 modifyPreDeposit 入参 cusPreDepositDTO{}，result", cusPreDepositDTO, result);
         if (!result.hasErrors()) {
             if (null != cusPreDepositDTO && null != cusPreDepositDTO.getCusId() && cusPreDepositDTO.getCusId() != 0){
                 if (null != cusPreDepositDTO.getChangeMoney() && cusPreDepositDTO.getChangeMoney() != 0) {
@@ -103,20 +104,25 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
                         rechargeService.saveRechargeOrder(rechargeOrder);
 
                         //创建充值单收款
-                        RechargeReceiptInfo receiptInfo = rechargeService.createPayRechargeReceiptInfo(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO, rechargeNo);
+                        RechargeReceiptInfo receiptInfo = rechargeService.createCusPayRechargeReceiptInfo(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO, rechargeNo);
                         rechargeService.saveRechargeReceiptInfo(receiptInfo);
 
                         //将收款记录入拆单消息队列
                         sinkSender.sendRechargeReceipt(rechargeNo);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        List<ObjectError> allErrors = result.getAllErrors();
+                        logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
                         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
                     }
+                    logger.info("顾客预存款变更及日志保存成功", null,null);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 } else{
+                    logger.info("顾客预存款变更及日志保存失败", null,null);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);
                 }
             } else {
+                logger.info("顾客预存款变更及日志保存失败", null,null);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信息错误！", null);
             }
 
