@@ -126,7 +126,7 @@ public class OrderController {
      */
     @ApiOperation(value = "创建订单", notes = "创建订单信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "cityId", value = "下单人城市id", required = true, dataType = "Long",example ="1"),
+            @ApiImplicitParam(name = "cityId", value = "下单人城市id", required = true, dataType = "Long", example = "1"),
             @ApiImplicitParam(name = "userId", value = "下单人id", required = true, dataType = "Long"),
             @ApiImplicitParam(name = "identityType", value = "下单人身份类型", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "customerId", value = "顾客id", required = true, dataType = "Long"),
@@ -348,7 +348,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException | DutchException e) {
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -1247,7 +1247,7 @@ public class OrderController {
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
                 orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
-                if (AppIdentityType.SELLER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))){
+                if (AppIdentityType.SELLER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))) {
                     orderDetailsResponse.setCustomerName(orderBaseInfo.getCustomerName());
                     orderDetailsResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                     orderDetailsResponse.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());

@@ -485,8 +485,11 @@ public class ReturnOrderController {
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
-                                returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
-                                        CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                                //如果不是产品券就要算进退总价里
+                                if (!AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
+                                    returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
+                                            CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                                }
                                 break;
                             }
                         }
@@ -529,8 +532,8 @@ public class ReturnOrderController {
             //获取订单使用产品
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndOrderId(order.getId(), OrderCouponType.PRODUCT_COUPON);
             if (AssertUtil.isNotEmpty(orderProductCouponList)) {
-                for (OrderCouponInfo couponInfo : orderProductCouponList) {
-                    for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
+                for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
+                    for (OrderCouponInfo couponInfo : orderProductCouponList) {
                         if (AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()) &&
                                 goodsInfo.getSku().equals(couponInfo.getSku())) {
 
@@ -544,6 +547,7 @@ public class ReturnOrderController {
                             productCoupon.setReturnQty(1);
                             productCoupon.setReturnNo(returnNo);
                             productCouponList.add(productCoupon);
+                            break;
                         }
                     }
                 }
@@ -1044,8 +1048,9 @@ public class ReturnOrderController {
                         }
                     }
                 }
+                // TODO returnPriority
                 //按照退货优先级排个序
-                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
+//                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
@@ -1125,7 +1130,7 @@ public class ReturnOrderController {
                 }
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderLogisticsInfo);
-            logger.info("getReturnOrderDetail OUT,用户点击退货获取可退商品列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getReturnOrderDetail OUT,获取用户退货方式和取货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

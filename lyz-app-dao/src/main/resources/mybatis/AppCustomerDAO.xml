@@ -6,8 +6,8 @@
             keyColumn="cus_id" keyProperty="cusId">
         INSERT INTO cus_customer
         (store_id, name, mobile, birthday, status, sex, open_id,
-        pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type,
-        customer_type,
+         pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type,
+         customer_type,
          last_sign_time, binding_time, last_consumption_time, customer_profession, customer_profession_desc
         )
         VALUES
@@ -727,6 +727,7 @@
 
     <select id="findCashCouponsByids" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         SELECT
+        id,
         cus_id,
         ccid,
         qty,
@@ -773,12 +774,12 @@
     <select id="findAllSupportHotline"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SupportHotlineResponse">
         SELECT
-        csh.id,
-        csh.name,
-        csh.support_hotline
+            csh.id,
+            csh.name,
+            csh.support_hotline
         FROM city_support_hotline csh
         WHERE
-        1 = 1
+            1 = 1
     </select>
 
     <update id="unbindingCustomerWeChat" parameterType="java.lang.Long">

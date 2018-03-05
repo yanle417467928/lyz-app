@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -81,6 +82,9 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
     @Resource
     private WithdrawService withdrawService;
+
+    @Resource
+    private RechargeService rechargeService;
 
     @Override
     @Transactional
@@ -218,7 +222,6 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         withdrawRefundInfo.setWithdrawSubjectTypeDesc(withdrawRefundInfo.getWithdrawSubjectType().getDescription());
         withdrawService.saveWithdrawRefundInfo(withdrawRefundInfo);
         return withdrawRefundInfo.getRefundNumber();
-        // TODO 调预存款提现接口
     }
 
     @Override
@@ -238,7 +241,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
     @Override
     @Transactional
-    public void cusCancelApply(Long applyId, Long cusId) {
+    public String cusCancelApply(Long applyId, Long cusId) {
 
         CusPreDepositWithdraw cusPreDepositWithdraw = cusPreDepositWithdrawDAO.findById(applyId);
 
@@ -274,17 +277,29 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             this.cusPreDepositLogServiceImpl.save(log);
 
             // TODO 调预存款退款接口
+            RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+            receiptInfo.setCreateTime(new Date());
+            receiptInfo.setPayTime(new Date());
+            receiptInfo.setAmount(cusPreDepositWithdraw.getWithdrawAmount());
+            receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+            receiptInfo.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+            receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+            receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+            receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
+            receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(cusPreDepositWithdraw.getCityId()));
+            receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+            receiptInfo.setWithdrawNo(cusPreDepositWithdraw.getApplyNo());
+            receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(cusPreDepositWithdraw.getCityId()));
+            rechargeService.saveRechargeReceiptInfo(receiptInfo);
+            return receiptInfo.getRechargeNo();
         } else {
             throw new RuntimeException("取消申请失败");
         }
-
-
     }
 
     @Override
     @Transactional
-    public void stCancelApply(Long applyId, Long stId) {
-
+    public String stCancelApply(Long applyId, Long stId) {
         StPreDepositWithdraw stPreDepositWithdraw = this.stPreDepositWithdrawDAO.findById(stId);
         if (stPreDepositWithdraw != null && stPreDepositWithdraw.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
             stPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CANCEL);
@@ -314,7 +329,21 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setChangeTypeDesc("门店预存款提现取消");
             this.storePreDepositLogService.save(log);
 
-            // TODO 调预存款退款接口
+            RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+            receiptInfo.setCreateTime(new Date());
+            receiptInfo.setPayTime(new Date());
+            receiptInfo.setAmount(stPreDepositWithdraw.getWithdrawAmount());
+            receiptInfo.setPaymentSubjectType(PaymentSubjectType.STORE);
+            receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+            receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+            receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+            receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
+            receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+            receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(stPreDepositWithdraw.getCityId()));
+            receiptInfo.setWithdrawNo(stPreDepositWithdraw.getApplyNo());
+            receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(stPreDepositWithdraw.getCityId()));
+            rechargeService.saveRechargeReceiptInfo(receiptInfo);
+            return receiptInfo.getRechargeNo();
         } else {
             throw new RuntimeException("取消提现申请失败");
         }

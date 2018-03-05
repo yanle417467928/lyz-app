@@ -18,92 +18,104 @@ public interface WmsToAppOrderDAO {
      * 持久化订单出货头档
      *
      * @param header 订单出货头档
+     * @return 返回所影响行数
      */
-    void saveWtaShippingOrderHeader(WtaShippingOrderHeader header);
+    int saveWtaShippingOrderHeader(WtaShippingOrderHeader header);
 
     /**
      * 保存订单出货商品明细
      *
      * @param goods 出货商品
+     * @return 返回所影响行数
      */
-    void saveWtaShippingOrderGoods(WtaShippingOrderGoods goods);
+    int saveWtaShippingOrderGoods(WtaShippingOrderGoods goods);
 
     /**
      * 保存返配商品头档
      *
      * @param header 返配单头
+     * @return 返回所影响行数
      */
-    void saveWtaReturningOrderHeader(WtaReturningOrderHeader header);
+    int saveWtaReturningOrderHeader(WtaReturningOrderHeader header);
 
     /**
      * 保存返配单商品
      *
      * @param goods 返配单商品
+     * @return 返回所影响行数
      */
-    void saveWtaReturningOrderGoods(WtaReturningOrderGoods goods);
+    int saveWtaReturningOrderGoods(WtaReturningOrderGoods goods);
 
     /**
      * 保存退货单配送员
      *
      * @param deliveryClerk
      */
-    void saveWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
+    int saveWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
 
     /**
      * 保存取消订单结果
      *
      * @param orderResultEnter
+     * @return 返回所影响行数
      */
-    void saveWtaCancelOrderResultEnter(WtaCancelOrderResultEnter orderResultEnter);
+    int saveWtaCancelOrderResultEnter(WtaCancelOrderResultEnter orderResultEnter);
 
     /**
      * 保存取消退单结果
      *
      * @param returnOrderResultEnter
+     * @return 返回所影响行数
      */
-    void saveWtaCancelReturnOrderResultEnter(WtaCancelReturnOrderResultEnter returnOrderResultEnter);
+    int saveWtaCancelReturnOrderResultEnter(WtaCancelReturnOrderResultEnter returnOrderResultEnter);
 
     /**
      * 保存整转零信息
      *
      * @param wholeSplitToUnit
+     * @return 返回所影响行数
      */
-    void saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
+    int saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
 
     /**
      * 保存仓库调拨头档
      *
      * @param header
+     * @return 返回所影响行数
      */
-    void saveWtaWarehouseAllocationHeader(WtaWarehouseAllocationHeader header);
+    int saveWtaWarehouseAllocationHeader(WtaWarehouseAllocationHeader header);
 
     /**
      * 保存仓库调拨明细
      *
      * @param allocationGoods
+     * @return 返回所影响行数
      */
-    void saveWtaWarehouseAllocationGoods(WtaWarehouseAllocationGoods allocationGoods);
+    int saveWtaWarehouseAllocationGoods(WtaWarehouseAllocationGoods allocationGoods);
 
     /**
      * 保存仓库采购头档
      *
      * @param purchaseHeader
+     * @return 返回所影响行数
      */
-    void saveWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader);
+    int saveWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader);
 
     /**
      * 保存仓库采购明细
      *
      * @param purchaseGoods
+     * @return 返回所影响行数
      */
-    void saveWtaWarehousePurchaseGoods(WtaWarehousePurchaseGoods purchaseGoods);
+    int saveWtaWarehousePurchaseGoods(WtaWarehousePurchaseGoods purchaseGoods);
 
     /**
      * 保存仓库报损报溢
      *
      * @param damageAndOverflow
+     * @return 返回所影响行数
      */
-    void saveWtaWarehouseReportDamageAndOverflow(WtaWarehouseReportDamageAndOverflow damageAndOverflow);
+    int saveWtaWarehouseReportDamageAndOverflow(WtaWarehouseReportDamageAndOverflow damageAndOverflow);
 
     /**
      * 根据调拨单号查询调拨单商品
@@ -128,4 +140,11 @@ public interface WmsToAppOrderDAO {
      * @return
      */
     List<WtaReturningOrderGoods> findWtaReturningOrderGoodsByReturnOrderNo(String returnOrderNumber);
+
+    /**
+     * 根据退单号修改分配配送员信息
+     *
+     * @param deliveryClerk
+     */
+    void updateWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
 }
