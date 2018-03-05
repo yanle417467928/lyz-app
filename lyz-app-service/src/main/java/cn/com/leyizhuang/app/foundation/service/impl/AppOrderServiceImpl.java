@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.OrderCreditMoneyException;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -26,7 +27,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.retry.annotation.Recover;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -562,15 +562,20 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
-        if (amountPayable < - AppConstant.PAY_UP_LIMIT) {
+        if (amountPayable < -AppConstant.PAY_UP_LIMIT) {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
-        // orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
         //根据应付金额判断订单账单是否已付清
         if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
         } else {
             orderBillingDetails.setIsPayUp(false);
+        }
+        //若使用信用额度，必须付清，不能再使用第三方支付
+        if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)){
+            if (orderBillingDetails.getAmountPayable() > 0) {
+                throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
+            }
         }
         return orderBillingDetails;
     }
