@@ -552,6 +552,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -597,6 +598,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -673,6 +675,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1039,6 +1042,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1085,6 +1089,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1164,6 +1169,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1491,10 +1497,61 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
 
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                returnOrderBillingDetail.setCreateTime(new Date());
+                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderNumber);
                                 returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                                 returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getPreDeposit());
+                                returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setReplyCode(null);
+                                returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("refusedOrder OUT,正常退货失败，更改顾客预存款金额失败");
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //如果是现金退款,转化退预存款
+                else if (null != returnOrderBilling.getCash() && returnOrderBilling.getCash() > AppConstant.PAY_UP_LIMIT) {
+                    if (AppIdentityType.CUSTOMER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            //获取顾客预存款
+                            CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
+                            //返还预存款后顾客预存款金额
+                            Double cusPreDeposit = (customerPreDeposit.getBalance() + returnOrderBilling.getCash());
+                            //更改顾客预存款金额
+                            Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(
+                                    returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getCash(), customerPreDeposit.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                //记录预存款日志
+                                CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                                cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                                cusPreDepositLogDO.setChangeMoney(returnOrderBilling.getCash());
+                                cusPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.RETURN_ORDER);
+                                cusPreDepositLogDO.setChangeTypeDesc("现金退款转化预存款");
+                                cusPreDepositLogDO.setCusId(orderBaseInfo.getCustomerId());
+                                cusPreDepositLogDO.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                                cusPreDepositLogDO.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                                cusPreDepositLogDO.setBalance(cusPreDeposit);
+                                cusPreDepositLogDO.setDetailReason(ReturnOrderType.NORMAL_RETURN.getDescription());
+                                cusPreDepositLogDO.setTransferTime(LocalDateTime.now());
+                                cusPreDepositLogDO.setMerchantOrderNumber(returnOrderNumber);
+                                //保存日志
+                                appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
+
+                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
+                                returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getCash());
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setReplyCode(null);
                                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
@@ -1541,6 +1598,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                 returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderNumber);
                                 returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                                 returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getStPreDeposit());
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
@@ -1668,6 +1726,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                     returnOrderBillingDetail.setCreateTime(calendar.getTime());
                                     returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
                                     returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                                     returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
                                     returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
@@ -1711,6 +1770,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                     ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                     returnOrderBillingDetail.setCreateTime(calendar.getTime());
                                     returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
                                     returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                                     returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
                                     returnOrderBillingDetail.setIntoAmountTime(calendar.getTime());
@@ -1765,6 +1825,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     public ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber) {
         if (StringUtils.isNotBlank(returnOrderNumber)) {
             return returnOrderDAO.getReturnOrderBillingByReturnNo(returnOrderNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber) {
+        if (StringUtils.isNotBlank(refundNumber)) {
+            return returnOrderDAO.getReturnOrderBillingDetailByRefundNumber(refundNumber);
         }
         return null;
     }

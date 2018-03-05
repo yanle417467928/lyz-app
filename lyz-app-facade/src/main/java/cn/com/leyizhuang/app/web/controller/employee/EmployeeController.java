@@ -489,7 +489,7 @@ public class EmployeeController {
             PageInfo<EmployeeCreditMoneyLogResponse> employeeCreditMoneyLogResponseList = this.employeeCreditMoneyLogService.findAllEmployeeCreditMoneyLogByUserId(userId, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     AssertUtil.isNotEmpty(employeeCreditMoneyLogResponseList) ? new GridDataVO<EmployeeCreditMoneyLogResponse>().transform(employeeCreditMoneyLogResponseList) : null);
-            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getSellerCreditMoneyLog OUT, 获取导购信用金变更记录成功，出参 resultDTO:{}", employeeCreditMoneyLogResponseList.getList());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

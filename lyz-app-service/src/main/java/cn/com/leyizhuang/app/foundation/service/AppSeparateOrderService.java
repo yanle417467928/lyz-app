@@ -116,4 +116,6 @@ public interface AppSeparateOrderService {
     void separateOrderReceipt(String receiptNumber);
 
     void sendOrderReceiptInfByReceiptNumber(String receiptNumber);
+
+    void separateOrderRefund(String refundNumber);
 }

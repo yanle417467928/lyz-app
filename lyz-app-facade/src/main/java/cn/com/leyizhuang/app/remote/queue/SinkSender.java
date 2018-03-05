@@ -98,4 +98,15 @@ public class SinkSender {
         }
         log.info("sendOrderReceipt,发送订单收款信息到拆单队列,End", JSON.toJSONString(receiptNumber));
     }
+
+    public void sendOrderRefund(String refundNumber) {
+        log.info("refundNumber,发送订单退款信息到拆单队列,Begin\n 退款单号:{}", refundNumber);
+        if (StringUtils.isNotBlank(refundNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER_REFUND);
+            message.setContent(JSON.toJSONString(refundNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendOrderReceipt,发送订单退款信息到拆单队列,End", JSON.toJSONString(refundNumber));
+    }
 }

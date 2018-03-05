@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
-import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
@@ -32,7 +31,6 @@ import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderRe
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -49,9 +47,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1260,6 +1256,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1310,6 +1307,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1396,6 +1394,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());

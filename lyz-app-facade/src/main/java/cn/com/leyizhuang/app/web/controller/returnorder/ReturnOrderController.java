@@ -195,6 +195,7 @@ public class ReturnOrderController {
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                 returnOrderBillingDetail.setCreateTime(new Date());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                                 returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
                                 //TODO 时间待定
                                 returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -316,6 +317,7 @@ public class ReturnOrderController {
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                         returnOrderBillingDetail.setCreateTime(new Date());
                         returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                         returnOrderBillingDetail.setRefundNumber(null);
                         //TODO 时间待定
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -660,6 +662,7 @@ public class ReturnOrderController {
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                 returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnNo);
                                 returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
                                 //TODO 时间待定
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());

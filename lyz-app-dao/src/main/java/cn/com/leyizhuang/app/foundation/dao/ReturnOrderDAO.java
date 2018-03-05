@@ -130,4 +130,6 @@ public interface ReturnOrderDAO {
     void updateReturnLogisticInfo(ReturnOrderLogisticInfo returnOrderLogisticInfo);
 
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
+
+    List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber);
 }
