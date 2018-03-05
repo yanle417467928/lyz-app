@@ -484,9 +484,10 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
                 rechargeReceiptInf.setSobId(store.getSobId());
                 rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
-                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY) {
+                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON ) {
                     rechargeReceiptInf.setUserid(rechargeOrderList.get(0).getCustomerId());
                 }
+
                 separateOrderDAO.saveRechargeReceiptInf(rechargeReceiptInf);
             }
         } else {

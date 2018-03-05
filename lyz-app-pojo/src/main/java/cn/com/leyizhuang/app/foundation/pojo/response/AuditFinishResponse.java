@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import lombok.*;
 
+import java.util.Date;
+
 /**
  * 配送员已完成单返回类
  * Created by caiyu on 2017/12/18.
@@ -48,4 +50,12 @@ public class AuditFinishResponse {
      * 代收金额
      */
     private Double collectionAmount;
+    /**
+     * 订单“Y”退单“N”
+     */
+    private String isOrderOrReturnOrder;
+    /**
+     * 用于排序时间
+     */
+    private Date createTime;
 }

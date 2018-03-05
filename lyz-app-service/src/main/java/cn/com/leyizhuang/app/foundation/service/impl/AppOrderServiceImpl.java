@@ -787,7 +787,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         separateOrderService.saveOrderReceiptInf(receiptInf);
 
         //发送订单收款信息到EBS
-        separateOrderService.sendOrderReceiptInf(orderNumber);
+        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
     }
 
     @Override
@@ -875,7 +875,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         separateOrderService.saveOrderReceiptInf(receiptInf);
 
         //发送订单收款信息到EBS
-        separateOrderService.sendOrderReceiptInf(orderNumber);
+        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
     }
 
     @Override

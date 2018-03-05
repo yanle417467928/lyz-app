@@ -918,11 +918,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setUseTime(null);
                                     customerProductCoupon.setUseOrderNumber(null);
                                     customerProductCoupon.setGetOrderNumber(orderBaseInfo.getOrderNumber());
-                                    if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
-                                        customerProductCoupon.setBuyPrice(goodsInfo.getVIPPrice());
-                                    } else {
-                                        customerProductCoupon.setBuyPrice(goodsInfo.getRetailPrice());
-                                    }
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getReturnPrice());
                                     customerProductCoupon.setStoreId(orderBaseInfo.getStoreId());
                                     customerProductCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
                                     customerProductCoupon.setStatus(Boolean.TRUE);

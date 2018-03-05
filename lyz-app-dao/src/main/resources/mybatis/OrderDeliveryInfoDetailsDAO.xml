@@ -260,7 +260,7 @@
 
     <select id="getAuditFinishOrderByOperatorNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.AuditFinishResponse">
-            SELECT
+            SELECT DISTINCT
                 obi.sales_consult_name sellerName,
                 obi.sales_consult_phone sellerPhone,
                 obi.ord_no orderNumber,
@@ -269,7 +269,9 @@
                 oli.receiver receiver,
                 oli.receiver_phone receiverPhone,
                 odid.task_no shipperNumber,
-                obd.collection_amount collectionAmount
+                obd.collection_amount collectionAmount,
+                'y' isOrderOrReturnOrder,
+               IF(obi.delivery_status = 'CONFIRM_ARRIVAL',IF(oaa.`status` = 'AUDIT_PASSED',oaa.update_time,odid.create_time),odid.create_time ) createTime
             FROM
                 ord_base_info AS obi
             INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
@@ -280,14 +282,37 @@
             WHERE
                 (
                     odid.logistic_status = 'CONFIRM_ARRIVAL'
-                    OR odid.logistic_status = 'REJECT'
-                )
-            AND (
-                oaa.`status` = 'AUDIT_NO'
-                OR oaa.`status` = 'AUDIT_PASSED'
+                    OR odid.logistic_status = 'REJECT')
+
+                AND(
+                 oaa.`status` = 'AUDIT_PASSED'
                 OR oaa.`status` IS NULL
             )
             AND odid.operator_no = #{operatorNo}
+            UNION
+            SELECT
+                obi.sales_consult_name sellerName,
+                obi.sales_consult_phone sellerPhone,
+                orli.return_no orderNumber,
+                orli.return_full_address shippingAddress,
+                orli.delivery_time deliveryTime,
+                orli.rejecter receiver,
+                orli.rejecter_phone receiverPhone,
+                ordd.task_no shipperNumber,
+                null,
+                'n' isOrderOrReturnOrder,
+                ordd.create_time createTime
+
+            FROM
+                ord_return_logistic_info AS orli
+            INNER JOIN ord_return_base_info AS orbi ON orli.return_no = orbi.return_no
+            INNER JOIN ord_base_info AS obi ON obi.ord_no = orbi.ord_no
+            INNER JOIN ord_return_delivery_detail AS ordd ON ordd.return_no = orli.return_no
+            WHERE
+             ordd.return_logistic_status = 'PICKUP_COMPLETE'
+            AND orli.delivery_clerk_no = #{operatorNo}
+
+            ORDER BY createTime DESC
     </select>
 
     <select id="countAuditFinishOrderByOperatorNo" parameterType="java.lang.String"
