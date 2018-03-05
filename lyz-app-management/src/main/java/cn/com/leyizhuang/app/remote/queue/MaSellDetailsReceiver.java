@@ -46,6 +46,9 @@ public class MaSellDetailsReceiver {
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
+
+                    // 记录日志
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
                 }
                 break;
             case SELL_RETURN_ORDER_DETAILS:
@@ -60,6 +63,9 @@ public class MaSellDetailsReceiver {
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
+
+                    // 记录日志
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
                 }
                 break;
             default:

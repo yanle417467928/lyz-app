@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
@@ -111,7 +112,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
            }else{
                logger.info("订单："+orderNumber+"数据异常，生成销量明细失败！");
-               // TODO 记录错误日志
+               //  记录错误日志
+               this.recordeErrorLog(orderNumber);
            }
         }
     }
@@ -165,7 +167,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                 }
             }else{
                 logger.info("订单："+returnOrderNumber+"数据异常，生成销量明细失败！");
-                // TODO 记录错误日志
+                // 记录错误日志
+                this.recordeErrorLog(returnOrderNumber);
             }
         }
     }
@@ -174,6 +177,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
      * 根据销量时间倒叙取四条记录单号
      * @return
      */
+    @Override
     public List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(Long cusId,LocalDateTime dateTime,Long sellerId){
         if (cusId == null || sellerId == null || dateTime == null){
             return  null;
@@ -182,11 +186,24 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         return sellDetailsDAO.getCustomerSellDetailsOrderByCreateTimeDescLimit4(cusId,dateTime,sellerId);
     }
 
+    @Override
     public List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(Long cusId,LocalDateTime dateTime,Long sellerId){
         if (cusId == null || sellerId == null || dateTime == null){
             return  null;
         }
 
         return sellDetailsDAO.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(cusId,dateTime,sellerId);
+    }
+
+    @Override
+    public void recordeErrorLog(String orderNo){
+        if (orderNo != null || !orderNo.equals("")){
+            SellDetailsErrorLogDO log = new SellDetailsErrorLogDO();
+            log.setOrderNo(orderNo);
+            log.setRecordTime(new Date());
+            log.setStatus(false);
+
+            sellDetailsDAO.recordeErrorLog(log);
+        }
     }
 }

@@ -40,4 +40,7 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="recordeErrorLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO">
+        INSERT INTO  sell_details_error_log (order_no,record_time,status) VALUES (#{orderNo},#{recordTime},#{status})
+    </select>
 </mapper>
