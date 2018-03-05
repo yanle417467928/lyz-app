@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
@@ -111,4 +112,6 @@ public interface MaStoreService {
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds);
+
+    AppStore findAppStoreByStoreId(Long storeId);
 }

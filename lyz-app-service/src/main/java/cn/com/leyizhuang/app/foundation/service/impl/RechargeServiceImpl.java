@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -189,6 +191,63 @@ public class RechargeServiceImpl implements RechargeService {
         receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(city.getCityId()));
         receiptInfo.setReplyCode(cusPreDepositDTO.getMerchantOrderNumber());
         return receiptInfo;
+    }
+
+    @Override
+    public RechargeOrder createCusRechargeOrder(Integer identityType, Long userId, Double money, String rechargeNo, OrderBillingPaymentType payType) {
+        RechargeOrder rechargeOrder = new RechargeOrder();
+        rechargeOrder.setCreateTime(new Date());
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        rechargeOrder.setCreatorId(shiroUser.getId());
+        rechargeOrder.setCreatorIdentityType(AppIdentityType.
+                getAppIdentityTypeByValue(identityType));
+        if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+            AppStore store = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
+            rechargeOrder.setStoreId(store.getStoreId());
+            rechargeOrder.setCustomerId(userId);
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+
+        }
+        rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+        rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+        rechargeOrder.setAmount(money);
+        rechargeOrder.setRechargeNo(rechargeNo);
+        rechargeOrder.setPayType(payType);
+        rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+        rechargeOrder.setPayUpTime(new Date());
+        return rechargeOrder;
+    }
+
+    @Override
+    public RechargeOrder createStoreRechargeOrder(Integer identityType, Long storeId, Double money, String rechargeNo, OrderBillingPaymentType payType) {
+        RechargeOrder rechargeOrder = new RechargeOrder();
+        rechargeOrder.setCreateTime(new Date());
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        rechargeOrder.setCreatorId(shiroUser.getId());
+        rechargeOrder.setCreatorIdentityType(AppIdentityType.
+                getAppIdentityTypeByValue(identityType));
+         if (identityType == AppIdentityType.SELLER.getValue()) {
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+            rechargeOrder.setStoreId(storeId);
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.SELLER);
+        } else if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+            rechargeOrder.setStoreId(storeId);
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+        }
+        rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+        rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+        rechargeOrder.setAmount(money);
+        rechargeOrder.setRechargeNo(rechargeNo);
+        rechargeOrder.setPayType(payType);
+        rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+        rechargeOrder.setPayUpTime(new Date());
+        return rechargeOrder;
     }
 
 }
