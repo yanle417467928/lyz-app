@@ -185,7 +185,7 @@ public interface MaOrderService {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
-    void orderReceivables(MaOrderAmount maOrderAmount);
+    List<String> orderReceivables(MaOrderAmount maOrderAmount);
 
     /**
      * 更新订单基础表订单状态
@@ -269,7 +269,7 @@ public interface MaOrderService {
     /**
      * 审核订单
      */
-    void auditOrderStatus(String orderNumber, String status);
+    String auditOrderStatus(String orderNumber, String status);
 
     /**
      * 通过订单id得到销售id
@@ -277,7 +277,7 @@ public interface MaOrderService {
     Long querySellerIdByOrderNumber(String orderNumber);
 
 
-    void arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime);
+    List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime);
 
     /**
      * 后台买券订单创建订单账单信息

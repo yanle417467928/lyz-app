@@ -1048,8 +1048,9 @@ public class ReturnOrderController {
                         }
                     }
                 }
+                // TODO returnPriority
                 //按照退货优先级排个序
-                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
+//                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
@@ -1129,7 +1130,7 @@ public class ReturnOrderController {
                 }
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderLogisticsInfo);
-            logger.info("getReturnOrderDetail OUT,用户点击退货获取可退商品列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getReturnOrderDetail OUT,获取用户退货方式和取货地址成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
