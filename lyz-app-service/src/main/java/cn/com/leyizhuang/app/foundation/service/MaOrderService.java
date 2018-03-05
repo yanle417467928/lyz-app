@@ -193,7 +193,7 @@ public interface MaOrderService {
      * @param orderNumber 订单号
      * @return
      */
-    void updateOrderStatus(String orderNumber);
+    void updateOrderStatus(String orderNumber,String status);
 
     /**
      * 更新订单费用表订单状态

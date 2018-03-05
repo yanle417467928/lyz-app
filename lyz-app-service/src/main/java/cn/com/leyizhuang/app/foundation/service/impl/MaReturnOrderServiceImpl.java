@@ -367,10 +367,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //TODO 是否退导购信用额度
         if (null != creditMoneyAmount && creditMoneyAmount > 0) {
         }
-
         //TODO 是否退门店信用额度
         if (null != stCreditMoneyAmount && stCreditMoneyAmount > 0) {
         }
+
 
         if (maOrdReturnBillingDetailList.size() > 0) {
             this.saveReturnOrderBillingDetail(maOrdReturnBillingDetailList);

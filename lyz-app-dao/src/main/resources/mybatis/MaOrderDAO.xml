@@ -669,7 +669,7 @@
     <update id="updateOrderStatus" parameterType="java.lang.String">
         UPDATE ord_base_info
         SET
-        status = 'FINISHED'
+        status = #{status}
         WHERE ord_no = #{orderNo}
     </update>
 

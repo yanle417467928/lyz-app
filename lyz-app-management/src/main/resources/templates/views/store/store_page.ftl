@@ -78,6 +78,9 @@
                             <b>门店id</b> <a class="pull-right" id="storeId"></a>
                         </li>
                         <li class="list-group-item">
+                            <b>门店组织id</b> <a class="pull-right" id="storeOrgId"></a>
+                        </li>
+                        <li class="list-group-item">
                             <b>门店编码</b> <a class="pull-right" id="storeCode"></a>
                         </li>
                         <li class="list-group-item">
@@ -174,6 +177,10 @@
             align: 'center',
             visible: false
         }, {
+            field: 'storeOrgId',
+            title: '门店组织id',
+            align: 'center'
+        },{
             field: 'storeCode',
             title: '门店编码',
             align: 'center'
@@ -259,6 +266,11 @@
                                     data.storeId = '-';
                                 }
                                 $('#storeId').html(data.storeId);
+
+                                if (null === data.storeOrgId) {
+                                    data.storeOrgId = '-';
+                                }
+                                $('#storeOrgId').html(data.storeOrgId);
 
                                 if (null === data.storeCode) {
                                     data.storeCode = '-';

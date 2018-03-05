@@ -214,7 +214,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
                 if("PLACE_ORDER".equals(log.getChangeType().toString())){
                     empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
                     empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getDescription());
-                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(BigDecimal.ZERO.subtract(BigDecimal.valueOf(log.getCreditLimitAvailableAfterChange())).doubleValue());
+                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
                 }else if("RETURN_ORDER".equals(log.getChangeType().toString())){
                     empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.RETURN_ORDER);
                     empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.RETURN_ORDER.getDescription());

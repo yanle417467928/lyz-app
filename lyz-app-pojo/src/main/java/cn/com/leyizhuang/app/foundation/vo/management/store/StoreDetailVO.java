@@ -67,6 +67,9 @@ public class StoreDetailVO {
     // 是否支持门店自提
     private Boolean isSelfDelivery;
 
+    // 门店组织id
+    private Long storeOrgId;
+
 /*    //城市ID
     private CityVO cityId;*/
 }

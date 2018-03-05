@@ -17,6 +17,7 @@
         <result property="province" column="province"/>
         <result property="city" column="city"/>
         <result property="area" column="area"/>
+        <result property="storeOrgId" column="store_org_id"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
         <association property="cityCode" javaType="SimpleCityParam">
@@ -31,6 +32,8 @@
         <result property="storeCode" column="store_code"/>
         <result property="storeType" column="store_type"/>
         <result property="enable" column="enable"/>
+        <result property="enable" column="enable"/>
+        <result property="storeOrgId" column="store_org_id"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -94,6 +97,7 @@
         s.enable,
         s.store_type,
         s.store_id,
+        s.store_org_id,
         c.name
         FROM
         st_store s
@@ -167,6 +171,7 @@
         s.enable,
         s.store_type,
         s.store_id,
+        s.store_org_id,
         c.name
         FROM
         st_store s
@@ -184,6 +189,7 @@
         s.enable,
         s.store_type,
         s.store_id,
+        s.store_org_id,
         c.name
         FROM
         st_store s
@@ -209,6 +215,7 @@
         s.enable,
         s.store_type,
         s.store_id,
+        s.store_org_id,
         c.name
         FROM
         st_store s
