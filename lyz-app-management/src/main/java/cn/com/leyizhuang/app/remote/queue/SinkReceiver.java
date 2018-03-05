@@ -209,7 +209,7 @@ public class SinkReceiver {
 
 
                         //发送订单收款信息到EBS
-                        separateOrderService.sendOrderReceiptInf(receiptNumber);
+                        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
                     }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");

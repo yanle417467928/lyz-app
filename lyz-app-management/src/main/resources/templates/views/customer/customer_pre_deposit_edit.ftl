@@ -219,8 +219,10 @@
                                    data-content="选择预存款变更类型"></i>
                             </label>
                             <select class="form-control select" name="changeType" id="changeType">
-                                <if >
-
+                                <if paymentTypes??>
+                                    <#list paymentTypes as paymentType>
+                                        <option value="${paymentType.value}">${paymentType.description}</option>
+                                    </#list>
                                 </if>
                             </select>
                         </div>
