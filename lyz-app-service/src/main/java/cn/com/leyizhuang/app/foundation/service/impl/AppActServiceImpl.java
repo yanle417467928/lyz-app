@@ -631,7 +631,8 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
-        logger.info("享受："+act.getTitle());
+        logger.info("享受："+act.getTitle()+",赠品"+giftListResponseGoods.size()+"件");
+
         response.setGiftList(giftListResponseGoods);
         return response;
     }

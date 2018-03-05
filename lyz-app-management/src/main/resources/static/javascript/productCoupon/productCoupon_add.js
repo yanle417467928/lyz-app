@@ -17,9 +17,9 @@ $(function () {
     $commonForm.goodsBrand("/rest/goodsBrand/page/brandGrid","brandCode");
     $commonForm.goodsCategory("/rest/goods/page/physicalClassifyGrid","categoryCode");
 
-    $("select").each(function () {
-        $(this).selectpicker('refresh');
-    })
+    // $(".select").each(function () {
+    //     $(this).selectpicker();
+    // })
 
 })
 
@@ -197,5 +197,24 @@ function chooseOneGoods(goodsGridID, tableId) {
         $('#' + goodsGridID).bootstrapTable("uncheckAll");
         $("#goodsModal").modal('hide');
 
+    }
+}
+
+function screenGoods() {
+    var brandCode=$('#brandCode').val();
+    var categoryCode=$('#categoryCode').val();
+    var companyCode=$('#companyCode').val();
+    $("#goodsDataGrid").bootstrapTable('destroy');
+    initGoodsGrid('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode+'&categoryCode='+categoryCode+'&companyCode='+companyCode,"goodsDataGrid");
+
+}
+
+function findGoodsByNameOrCode() {
+    var queryGoodsInfo = $("#queryGoodsInfo").val();
+    $("#goodsDataGrid").bootstrapTable('destroy');
+    if (null == queryGoodsInfo || "" == queryGoodsInfo) {
+        initGoodsGrid('/rest/goods/page/grid',"goodsDataGrid");
+    }else{
+        initGoodsGrid('/rest/goods/page/goodsGrid/' + queryGoodsInfo,"goodsDataGrid");
     }
 }

@@ -258,7 +258,7 @@ function findGoodsByNameOrCode() {
     if (null == queryGoodsInfo || "" == queryGoodsInfo) {
         initGoodsGrid('/rest/goods/page/grid');
     }else{
-        initGoodsGrid('/rest/goods/page/goodsGrid/' + queryGoodsInfo);
+        initGoodsGrid('/rest/goods/page/goodsGrid/' + queryGoodsInfo,"goodsDataGrid");
     }
 }
 
