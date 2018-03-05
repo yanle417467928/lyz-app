@@ -73,4 +73,7 @@ public interface MaCustomerService {
      * @param customerPreDeposit
      */
     void saveCusPreDepositLog( MaCustomerPreDeposit customerPreDeposit);
+
+    Long findCityIdByCusId(Long cusId);
+
 }

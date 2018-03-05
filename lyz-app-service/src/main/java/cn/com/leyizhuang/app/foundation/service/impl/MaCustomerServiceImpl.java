@@ -199,5 +199,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     public void saveCusPreDepositLog( MaCustomerPreDeposit customerPreDeposit) {
         this.maCustomerDAO.saveCusPreDepositLog(customerPreDeposit);
     }
+
+    @Override
+    public Long findCityIdByCusId(Long cusId) {
+        return this.maCustomerDAO.findCityIdByCusId(cusId);
+    }
 }
 

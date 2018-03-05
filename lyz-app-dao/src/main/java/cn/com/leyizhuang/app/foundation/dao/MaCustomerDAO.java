@@ -86,4 +86,6 @@ public interface MaCustomerDAO {
 
     void saveCusPreDepositLog(MaCustomerPreDeposit customerPreDeposit);
 
+    Long findCityIdByCusId(Long cusId);
+
 }
