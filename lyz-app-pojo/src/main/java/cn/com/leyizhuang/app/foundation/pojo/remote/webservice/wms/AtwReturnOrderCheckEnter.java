@@ -53,7 +53,7 @@ public class AtwReturnOrderCheckEnter {
         checkEnter.setReturnNo(returnOrderBaseInfo.getReturnNo());
         checkEnter.setCreateTime(new Date());
         checkEnter.setCheckGoodsTime(new Date());
-        checkEnter.setReturnStatus(returnOrderBaseInfo.getReturnStatus());
+        checkEnter.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
 
         return checkEnter;
     }

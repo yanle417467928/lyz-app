@@ -1042,6 +1042,57 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void separateOrderRefund(String refundNumber) {
+        if (null != refundNumber) {
+            List<ReturnOrderRefundInf> returnOrderRefundInfList = new ArrayList<>(10);
+            List<ReturnOrderBillingDetail> returnOrderBillingDetailList = returnOrderService.
+                    getReturnOrderBillingDetailByRefundNumber(refundNumber);
+            if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() > 0) {
+                for (ReturnOrderBillingDetail billingDetail : returnOrderBillingDetailList) {
+
+                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(billingDetail.getReturnNo());
+                    OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(null != returnOrderBaseInfo ? returnOrderBaseInfo.getOrderNo() : null);
+                    if (null != orderBaseInfo) {
+                        ReturnOrderRefundInf refundInf = new ReturnOrderRefundInf();
+                        refundInf.setAmount(billingDetail.getReturnMoney());
+                        refundInf.setCreateTime(billingDetail.getCreateTime());
+                        refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                        refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                        refundInf.setMainReturnNumber(null != returnOrderBaseInfo ? returnOrderBaseInfo.getReturnNo() : null);
+                        refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        refundInf.setUserId(returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
+                                returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
+                        refundInf.setRefundDate(billingDetail.getIntoAmountTime());
+                        refundInf.setRefundNumber(OrderUtils.getRefundNumber());
+                        refundInf.setRefundType(billingDetail.getReturnPayType());
+                        refundInf.setSobId(orderBaseInfo.getSobId());
+                        refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
+
+                        //设置分销门店编码至attribute3
+                        String fxStoreCode = null;
+                        if (AppOrderSubjectType.STORE.equals(orderBaseInfo.getOrderSubjectType())) {
+                            Long customerIdTemp;
+                            if (AppIdentityType.SELLER.equals(orderBaseInfo.getCreatorIdentityType())) {
+                                customerIdTemp = orderBaseInfo.getCustomerId();
+                            } else {
+                                customerIdTemp = orderBaseInfo.getCreatorId();
+                            }
+                            AppCustomerFxStoreRelation customerFxStoreRelation = separateOrderDAO.getCustomerFxStoreRelationByCusId(customerIdTemp);
+                            if (null != customerFxStoreRelation) {
+                                fxStoreCode = customerFxStoreRelation.getFxStoreCode();
+                            }
+                        }
+                        if (StringUtils.isNotBlank(fxStoreCode)) {
+                            refundInf.setAttribute3(fxStoreCode);
+                        }
+                        returnOrderRefundInfList.add(refundInf);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void sendOrderReceiptInfByReceiptNumber(String receiptNumber) {
         if (null != receiptNumber) {
             List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInf(receiptNumber);

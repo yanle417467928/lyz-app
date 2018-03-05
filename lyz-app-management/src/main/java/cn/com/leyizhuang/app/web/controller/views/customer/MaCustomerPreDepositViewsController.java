@@ -68,7 +68,7 @@ public class MaCustomerPreDepositViewsController extends BaseController {
             paymentTypes.add(OrderBillingPaymentType.CASH);
             paymentTypes.add(OrderBillingPaymentType.POS);
             paymentTypes.add(OrderBillingPaymentType.TRANSFER_ACCOUNTS);
-            map.addAttribute("paymentType", paymentTypes);
+            map.addAttribute("paymentTypes", paymentTypes);
             map.addAttribute("customerPreDepositVO", customerPreDepositVO);
         }
         return "/views/customer/customer_pre_deposit_edit";

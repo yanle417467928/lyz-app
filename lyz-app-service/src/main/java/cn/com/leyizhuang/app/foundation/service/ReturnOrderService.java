@@ -213,4 +213,6 @@ public interface ReturnOrderService {
     void updateReturnLogisticInfo(String driver, String returnNo);
 
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
+
+    List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber);
 }

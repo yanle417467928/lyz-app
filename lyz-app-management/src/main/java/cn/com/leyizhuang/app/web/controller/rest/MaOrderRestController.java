@@ -545,6 +545,7 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
+        MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
         if (null == maOrderAmount.getAllAmount()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
@@ -558,6 +559,11 @@ public class MaOrderRestController extends BaseRestController {
         }
         if (0 != acount.compareTo(maOrderAmount.getAllAmount())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消,不能收款", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

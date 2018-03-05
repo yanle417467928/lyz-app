@@ -638,6 +638,7 @@
         }
     };
 
+
     //转换时间
     var formatDateTime = function (date) {
         var dt = new Date(date);
@@ -663,6 +664,8 @@
             $('#ship').attr("disabled", true);
         }
         if (isPayUp == 'true') {
+            $('#receivable').attr("disabled", true);
+        }else if(status = 'CANCELED'){
             $('#receivable').attr("disabled", true);
         }
         $('#confirmShip').attr("disabled", true);

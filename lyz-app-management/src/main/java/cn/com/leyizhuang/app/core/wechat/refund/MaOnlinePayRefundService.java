@@ -101,6 +101,7 @@ public class MaOnlinePayRefundService {
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                         returnOrderBillingDetail.setCreateTime(new Date());
                         returnOrderBillingDetail.setRoid(null);
+                        returnOrderBillingDetail.setReturnNo(outTradeNo);
                         returnOrderBillingDetail.setRefundNumber(refundNo);
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
                         returnOrderBillingDetail.setReplyCode(map.get("number"));
@@ -190,6 +191,7 @@ public class MaOnlinePayRefundService {
                 Date date = new Date();
                 returnOrderBillingDetail.setCreateTime(date);
                 returnOrderBillingDetail.setRoid(null);
+                returnOrderBillingDetail.setReturnNo(response.getOutTradeNo());
                 returnOrderBillingDetail.setRefundNumber(refundNo);
                 returnOrderBillingDetail.setIntoAmountTime(date);
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());

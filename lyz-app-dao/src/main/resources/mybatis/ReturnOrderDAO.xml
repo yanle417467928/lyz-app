@@ -136,16 +136,17 @@
         online_pay_type, cash, lb_quantity)
         VALUES
             (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention},
-        #{onlinePay},#{onlinePayType},
-             #{cash}, #{LeBiQuantity})
+        #{onlinePay}, #{onlinePayType},
+        #{cash}, #{LeBiQuantity})
     </insert>
 
     <insert id="saveReturnOrderBillingDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
         INSERT INTO ord_return_billing_detail
-        (roid, return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time)
+        (roid, return_no,return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time)
         VALUES
-            (#{roid}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber}, #{createTime})
+        (#{roid}, #{returnNo}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber},
+        #{createTime})
     </insert>
 
     <insert id="saveReturnOrderCashCoupon"
@@ -223,44 +224,41 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
 
         SELECT
-        roid roid,
-        oid orderId,
-        ord_no orderNo,
-        order_time orderTime,
-        return_time returnTime,
-        return_no returnNo,
-        return_type returnType,
-        return_price returnPrice,
-        remarks_info remarksInfo,
-        creator_id creatorId,
-        creator_name creatorName,
-        creator_identityType creatorIdentityType,
-        creator_phone creatorPhone,
-        store_id storeId,
-        store_code storeCode,
-        store_structure_code storeStructureCode,
-        cus_id customerId,
-        cus_name customerName,
-        cus_phone customerPhone,
-        cus_type customerType,
-        reason_info reasonInfo,
-        return_pic returnPic,
-        ord_type orderType,
-        return_status
+        orbi.roid roid,
+        orbi.oid orderId,
+        orbi.ord_no orderNo,
+        orbi.order_time orderTime,
+        orbi.return_time returnTime,
+        orbi.return_no returnNo,
+        orbi.return_type returnType,
+        orbi.return_price returnPrice,
+        orbi.remarks_info remarksInfo,
+        orbi.creator_id creatorId,
+        orbi.creator_name creatorName,
+        orbi.creator_identityType creatorIdentityType,
+        orbi.creator_phone creatorPhone,
+        orbi.store_id storeId,
+        orbi.store_code storeCode,
+        orbi.store_structure_code storeStructureCode,
+        orbi.cus_id customerId,
+        orbi.cus_name customerName,
+        orbi.cus_phone customerPhone,
+        orbi.cus_type customerType,
+        orbi.reason_info reasonInfo,
+        orbi.return_pic returnPic,
+        orbi.ord_type orderType,
+        orbi.return_status
         FROM ord_return_base_info orbi
+        INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         WHERE
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            (orbi.creator_id = #{userId}
-            AND orbi.creator_identityType = #{identityType})
-            or cus_id = #{userId}
+            obi.creator_id = #{userId} or orbi.creator_id = #{userId}
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
-            orbi.creator_id = #{userId}
-            AND orbi.creator_identityType = #{identityType}
+            obi.creator_id = #{userId}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
-            orbi.creator_id = #{userId}
-            AND orbi.creator_identityType = #{identityType}
+            obi.creator_id = #{userId}
         </if>
         ORDER BY orbi.return_time DESC
     </select>
@@ -568,5 +566,21 @@
         return_status
         FROM ord_return_base_info
         WHERE store_id = #{store};
+    </select>
+
+    <select id="getReturnOrderBillingDetailByRefundNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
+        SELECT
+            id,
+            create_time,
+            roid,
+            return_no,
+            return_pay_type,
+            return_money,
+            into_amount_time,
+            reply_code,
+            refund_number
+        FROM ord_return_billing_detail
+        WHERE refund_number = #{refundNumber}
     </select>
 </mapper>

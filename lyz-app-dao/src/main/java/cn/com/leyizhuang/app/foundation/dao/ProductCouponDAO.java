@@ -80,6 +80,12 @@ public interface ProductCouponDAO {
      */
     void updateCustomerProductCoupon(CustomerProductCoupon customerProductCoupon);
 
+
+    /**
+     * 更新产品劵是否已退
+     */
+    void updateProductCouponIsReturn(@Param(value = "id") Long id,@Param(value = "isReturn") Boolean isReturn);
+
     /**
      * 添加顾客产品券变更日志
      * @param customerProductCouponChangeLog

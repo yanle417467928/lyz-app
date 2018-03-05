@@ -233,6 +233,18 @@
         where id = #{id}
     </update>
 
+
+
+    <update id="updateProductCouponIsReturn" >
+        UPDATE ord_return_product_coupon
+        <set >
+            <if test="isReturn != null" >
+                is_return = #{isReturn},
+            </if>
+        </set>
+        where pcid = #{id}
+    </update>
+
     <insert id="addCustomerProductCouponChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog">
         INSERT INTO cus_product_coupon_change_log
         (cus_id, use_time, coupon_id, reference_number, change_type, change_type_desc, operator_id, operator_type, operator_ip, remark)
