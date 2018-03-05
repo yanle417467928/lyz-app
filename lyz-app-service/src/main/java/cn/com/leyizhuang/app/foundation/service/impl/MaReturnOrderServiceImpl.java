@@ -233,7 +233,6 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 }
             }
         }
-
         //生成ebs接口表数据
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maReturnOrderDetailInfo.getOrderNo());
         MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbs = new MaStoreReturnOrderAppToEbsBaseInfo();

@@ -207,8 +207,6 @@ public class SinkReceiver {
                     } else {
                         //拆单
                         separateOrderService.separateOrderReceipt(receiptNumber);
-
-
                         //发送订单收款信息到EBS
                         separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
                     }
