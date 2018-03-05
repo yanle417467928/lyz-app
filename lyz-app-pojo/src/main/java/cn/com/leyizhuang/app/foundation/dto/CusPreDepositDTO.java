@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dto;
 
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -26,6 +27,13 @@ public class CusPreDepositDTO {
      * 变更类型
      */
     private CustomerPreDepositChangeType changeType;
+
+    /**
+     * 支付类型:
+     * 顾客预存款、门店预存款、支付宝、微信、银联、POS、现金、其它
+     */
+    private OrderBillingPaymentType payType;
+
     /**
      * 变更金额
      */

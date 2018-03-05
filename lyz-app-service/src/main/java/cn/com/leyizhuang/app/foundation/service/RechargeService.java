@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
@@ -29,4 +30,6 @@ public interface RechargeService {
     List<RechargeReceiptInfo> findRechargeReceiptInfoByRechargeNo(String rechargeNo);
 
     List<RechargeOrder> findRechargeOrderByRechargeNo(String rechargeNo);
+
+    RechargeReceiptInfo createPayRechargeReceiptInfo(Integer identityType, CusPreDepositDTO cusPreDepositDTO, String rechargeNo);
 }

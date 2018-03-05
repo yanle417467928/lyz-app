@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.RechargeDAO;
+import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
@@ -155,4 +157,38 @@ public class RechargeServiceImpl implements RechargeService {
         }
         return null;
     }
+
+
+    @Override
+    public RechargeReceiptInfo createPayRechargeReceiptInfo(Integer identityType, CusPreDepositDTO cusPreDepositDTO, String rechargeNo) {
+        RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+        receiptInfo.setCreateTime(new Date());
+        if (OrderBillingPaymentType.CASH.equals(cusPreDepositDTO.getPayType()) || OrderBillingPaymentType.POS.equals(cusPreDepositDTO.getPayType())){
+            receiptInfo.setPayTime(DateUtil.parseDate(cusPreDepositDTO.getTransferTime()));
+        } else {
+            receiptInfo.setPayTime(new Date());
+        }
+
+        receiptInfo.setAmount(cusPreDepositDTO.getChangeMoney());
+        if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+                receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+        } else if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                receiptInfo.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+        } else if (identityType == AppIdentityType.SELLER.getValue()) {
+                receiptInfo.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+        }
+        receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+        receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+        receiptInfo.setPayType(cusPreDepositDTO.getPayType());
+        receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+        receiptInfo.setRechargeNo(rechargeNo);
+        City city = cityService.findCityByUserIdAndIdentityType(cusPreDepositDTO.getCusId(), AppIdentityType.getAppIdentityTypeByValue(identityType));
+        receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(city.getCityId()));
+        receiptInfo.setReplyCode(cusPreDepositDTO.getMerchantOrderNumber());
+        return receiptInfo;
+    }
+
 }

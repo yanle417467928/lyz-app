@@ -84,6 +84,7 @@ public class SinkReceiver {
                         separateOrderService.separateRechargeReceipt(rechargeNo);
 
                         //发送充值收款信息
+                        log.info("订单二次传ebs");
                         separateOrderService.sendRechargeReceiptInf(rechargeNo);
                     }
                 } catch (IOException e) {

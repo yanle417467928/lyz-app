@@ -1095,7 +1095,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public void sendOrderReceiptInfByReceiptNumber(String receiptNumber) {
         if (null != receiptNumber) {
-            List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInf(receiptNumber);
+            List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInfByReceiptNumber(receiptNumber);
             if (null != receiptInfList && receiptInfList.size() == 1) {
                 ebsSenderService.sendOrderReceiptInfAndRecord(receiptInfList);
             }

@@ -213,12 +213,12 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
-                            <label for="changeType">
+                            <label for="payType">
                                 变更类型
                                 <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
                                    data-content="选择预存款变更类型"></i>
                             </label>
-                            <select class="form-control select" name="changeType" id="changeType">
+                            <select class="form-control select" name="payType" id="payType">
                                 <if paymentTypes??>
                                     <#list paymentTypes as paymentType>
                                         <option value="${paymentType.value}">${paymentType.description}</option>
