@@ -23,94 +23,107 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     private WmsToAppOrderDAO wmsToAppOrderDAO;
 
     @Override
-    public void saveWtaShippingOrderHeader(WtaShippingOrderHeader header) {
+    public int saveWtaShippingOrderHeader(WtaShippingOrderHeader header) {
         if (AssertUtil.isNotEmpty(header)) {
-            wmsToAppOrderDAO.saveWtaShippingOrderHeader(header);
+            return wmsToAppOrderDAO.saveWtaShippingOrderHeader(header);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaShippingOrderGoods(WtaShippingOrderGoods goods) {
+    public int saveWtaShippingOrderGoods(WtaShippingOrderGoods goods) {
         if (AssertUtil.isNotEmpty(goods)) {
-            wmsToAppOrderDAO.saveWtaShippingOrderGoods(goods);
+            return wmsToAppOrderDAO.saveWtaShippingOrderGoods(goods);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaReturningOrderHeader(WtaReturningOrderHeader header) {
+    public int saveWtaReturningOrderHeader(WtaReturningOrderHeader header) {
         if (AssertUtil.isNotEmpty(header)) {
-            wmsToAppOrderDAO.saveWtaReturningOrderHeader(header);
+            return wmsToAppOrderDAO.saveWtaReturningOrderHeader(header);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaReturningOrderGoods(WtaReturningOrderGoods goods) {
+    public int saveWtaReturningOrderGoods(WtaReturningOrderGoods goods) {
         if (AssertUtil.isNotEmpty(goods)) {
-            wmsToAppOrderDAO.saveWtaReturningOrderGoods(goods);
+            return wmsToAppOrderDAO.saveWtaReturningOrderGoods(goods);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk) {
+    public int saveWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk) {
         if (AssertUtil.isNotEmpty(deliveryClerk)) {
-            wmsToAppOrderDAO.saveWtaReturnOrderDeliveryClerk(deliveryClerk);
+            return wmsToAppOrderDAO.saveWtaReturnOrderDeliveryClerk(deliveryClerk);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaCancelOrderResultEnter(WtaCancelOrderResultEnter orderResultEnter) {
+    public int saveWtaCancelOrderResultEnter(WtaCancelOrderResultEnter orderResultEnter) {
         if (AssertUtil.isNotEmpty(orderResultEnter)) {
-            wmsToAppOrderDAO.saveWtaCancelOrderResultEnter(orderResultEnter);
+            return wmsToAppOrderDAO.saveWtaCancelOrderResultEnter(orderResultEnter);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaCancelReturnOrderResultEnter(WtaCancelReturnOrderResultEnter returnOrderResultEnter) {
+    public int saveWtaCancelReturnOrderResultEnter(WtaCancelReturnOrderResultEnter returnOrderResultEnter) {
         if (AssertUtil.isNotEmpty(returnOrderResultEnter)) {
-            wmsToAppOrderDAO.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
+            return wmsToAppOrderDAO.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit) {
+    public int saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit) {
         if (AssertUtil.isNotEmpty(wholeSplitToUnit)) {
-            wmsToAppOrderDAO.saveWtaWarehouseWholeSplitToUnit(wholeSplitToUnit);
+            return wmsToAppOrderDAO.saveWtaWarehouseWholeSplitToUnit(wholeSplitToUnit);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehouseAllocationHeader(WtaWarehouseAllocationHeader header) {
+    public int saveWtaWarehouseAllocationHeader(WtaWarehouseAllocationHeader header) {
         if (AssertUtil.isNotEmpty(header)) {
-            wmsToAppOrderDAO.saveWtaWarehouseAllocationHeader(header);
+            return wmsToAppOrderDAO.saveWtaWarehouseAllocationHeader(header);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehouseAllocationGoods(WtaWarehouseAllocationGoods allocationGoods) {
+    public int saveWtaWarehouseAllocationGoods(WtaWarehouseAllocationGoods allocationGoods) {
         if (AssertUtil.isNotEmpty(allocationGoods)) {
-            wmsToAppOrderDAO.saveWtaWarehouseAllocationGoods(allocationGoods);
+            return wmsToAppOrderDAO.saveWtaWarehouseAllocationGoods(allocationGoods);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader) {
+    public int saveWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader) {
         if (AssertUtil.isNotEmpty(purchaseHeader)) {
-            wmsToAppOrderDAO.saveWtaWarehousePurchaseHeader(purchaseHeader);
+            return wmsToAppOrderDAO.saveWtaWarehousePurchaseHeader(purchaseHeader);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehousePurchaseGoods(WtaWarehousePurchaseGoods purchaseGoods) {
+    public int saveWtaWarehousePurchaseGoods(WtaWarehousePurchaseGoods purchaseGoods) {
         if (AssertUtil.isNotEmpty(purchaseGoods)) {
-            wmsToAppOrderDAO.saveWtaWarehousePurchaseGoods(purchaseGoods);
+            return wmsToAppOrderDAO.saveWtaWarehousePurchaseGoods(purchaseGoods);
         }
+        return -1;
     }
 
     @Override
-    public void saveWtaWarehouseReportDamageAndOverflow(WtaWarehouseReportDamageAndOverflow damageAndOverflow) {
+    public int saveWtaWarehouseReportDamageAndOverflow(WtaWarehouseReportDamageAndOverflow damageAndOverflow) {
         if (AssertUtil.isNotEmpty(damageAndOverflow)) {
-            wmsToAppOrderDAO.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
+            return wmsToAppOrderDAO.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
         }
+        return -1;
     }
 
     @Override
@@ -135,5 +148,12 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             return wmsToAppOrderDAO.findWtaReturningOrderGoodsByReturnOrderNo(returnOrderNumber);
         }
         return null;
+    }
+
+    @Override
+    public void updateWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk) {
+        if (AssertUtil.isNotEmpty(deliveryClerk)) {
+            wmsToAppOrderDAO.updateWtaReturnOrderDeliveryClerk(deliveryClerk);
+        }
     }
 }
