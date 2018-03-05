@@ -96,6 +96,9 @@ public class OrderArriveController {
         if(paymentMethod.contains("POS")){
             paymentMethod = "POS";
         }
+        if(paymentMethod.contains("现金")){
+            paymentMethod = "现金";
+        }
         try {
             //根据订单号查询订单信息
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
@@ -163,7 +166,7 @@ public class OrderArriveController {
                         //生成收款单号
                         String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
                         //创建收款记录
-                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
+                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
                                 Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
                                 paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
                                 PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
@@ -174,6 +177,15 @@ public class OrderArriveController {
                         OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
                         orderBillingDetails.setOrderNumber(orderNo);
                         orderBillingDetails.setArrearage(0D);
+                        orderBillingDetails.setIsPayUp(true);
+                        orderBillingDetails.setPayUpTime(new Date());
+                        if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
+                            orderBillingDetails.setDeliveryCash(0D);
+                            orderBillingDetails.setDeliveryPos(ownManey);
+                        } else if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
+                            orderBillingDetails.setDeliveryCash(ownManey);
+                            orderBillingDetails.setDeliveryPos(0D);
+                        }
                         this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
                         //获取导购信用金
