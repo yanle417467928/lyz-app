@@ -212,7 +212,7 @@ public class SellerArrearsAuditController {
                 String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
 
                 //创建收款记录
-                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
+                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(),
                         orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(orderArrearsAuditDO.getPaymentMethod()),
                         orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
                         PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
@@ -223,6 +223,19 @@ public class SellerArrearsAuditController {
                 OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
                 orderBillingDetails.setOrderNumber(orderNo);
                 orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
+                if (orderBillingDetails.getArrearage() > 0D){
+                    orderBillingDetails.setIsPayUp(false);
+                    orderBillingDetails.setPayUpTime(new Date());
+                } else {
+                    orderBillingDetails.setIsPayUp(true);
+                }
+                if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
+                    orderBillingDetails.setDeliveryCash(collectionAmount);
+                    orderBillingDetails.setDeliveryPos(0D);
+                } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
+                    orderBillingDetails.setDeliveryCash(0D);
+                    orderBillingDetails.setDeliveryPos(collectionAmount);
+                }
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
                 //获取导购信用金

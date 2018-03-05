@@ -91,4 +91,20 @@ public class OrderBillingPaymentDetails {
         this.setPaymentSubjectTypeDesc(subjectType.getDescription());
     }
 
+    public OrderBillingPaymentDetails(Date createTime, Long orderId, Date payTime, OrderBillingPaymentType payType, String payTypeDesc,
+                                      String orderNumber, PaymentSubjectType paymentSubjectType, String paymentSubjectTypeDesc, Double amount,
+                                      String replyCode, String receiptNumber){
+        this.createTime = createTime;
+        this.orderId = orderId;
+        this.payTime = payTime;
+        this.payType = payType;
+        this.payTypeDesc = payTypeDesc;
+        this.orderNumber = orderNumber;
+        this.paymentSubjectType = paymentSubjectType;
+        this.paymentSubjectTypeDesc = paymentSubjectTypeDesc;
+        this.amount = amount;
+        this.replyCode = replyCode;
+        this.receiptNumber = receiptNumber;
+    }
+
 }

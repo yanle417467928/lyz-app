@@ -418,6 +418,18 @@
             <if test="null != arrearage">
                 arrearage = #{arrearage},
             </if>
+            <if test="null != isPayUp">
+                is_pay_up = #{isPayUp},
+            </if>
+            <if test="null != payUpTime">
+                pay_up_time = #{payUpTime},
+            </if>
+            <if test="null != deliveryPos">
+                delivery_pos = #{deliveryPos},
+            </if>
+            <if test="null != deliveryCash">
+                delivery_cash = #{deliveryCash},
+            </if>
         </set>
         WHERE ord_no = #{orderNumber}
     </update>

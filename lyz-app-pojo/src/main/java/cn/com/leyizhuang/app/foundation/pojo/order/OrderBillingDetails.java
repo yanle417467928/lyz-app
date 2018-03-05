@@ -154,4 +154,14 @@ public class OrderBillingDetails {
      * POS流水号后六位
      */
     private String storePosNumber;
+
+    /**
+     *  配送现金
+     */
+    private Double deliveryCash;
+
+    /**
+     * 配送pos
+     */
+    private Double deliveryPos;
 }
