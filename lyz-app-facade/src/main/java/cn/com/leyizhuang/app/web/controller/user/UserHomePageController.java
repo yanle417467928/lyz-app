@@ -608,10 +608,13 @@ public class UserHomePageController {
         }
 
         try {
-            appPreDepositWithdrawService.cusCancelApply(applyId, cusId);
+            String rechargeNo = appPreDepositWithdrawService.cusCancelApply(applyId, cusId);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
+            sinkSender.sendRechargeReceipt(rechargeNo);
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
+            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
         return resultDTO;
     }
@@ -628,7 +631,8 @@ public class UserHomePageController {
         }
 
         try {
-            appPreDepositWithdrawService.stCancelApply(applyId, stId);
+            String rechargeNo = appPreDepositWithdrawService.stCancelApply(applyId, stId);
+            sinkSender.sendRechargeReceipt(rechargeNo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "取消成功", null);
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,取消申请失败", null);
