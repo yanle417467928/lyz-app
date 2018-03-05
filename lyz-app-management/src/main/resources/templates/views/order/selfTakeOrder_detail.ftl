@@ -665,7 +665,7 @@
         }
         if (isPayUp == 'true') {
             $('#receivable').attr("disabled", true);
-        }else if(status = 'CANCELED'){
+        }else if(status == 'CANCELED'){
             $('#receivable').attr("disabled", true);
         }
         $('#confirmShip').attr("disabled", true);

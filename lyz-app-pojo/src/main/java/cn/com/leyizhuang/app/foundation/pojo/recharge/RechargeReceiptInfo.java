@@ -91,4 +91,11 @@ public class RechargeReceiptInfo {
      * 收款编号
      */
     private String receiptNumber;
+
+    /**
+     * 原提现单号(仅提现取消或驳回生成的充值收款才有值)
+     */
+    private String withdrawNo;
+
+
 }

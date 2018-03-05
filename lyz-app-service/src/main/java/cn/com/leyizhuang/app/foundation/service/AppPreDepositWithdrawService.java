@@ -44,12 +44,12 @@ public interface AppPreDepositWithdrawService {
     /**
      * 顾客取消申请
      */
-    void cusCancelApply(Long applyId, Long cusId);
+    String cusCancelApply(Long applyId, Long cusId);
 
     /**
      * 门店取消申请
      */
-    void stCancelApply(Long applyId, Long stId);
+    String stCancelApply(Long applyId, Long stId);
 
 
     /******************************************** 后台 ********************************************/

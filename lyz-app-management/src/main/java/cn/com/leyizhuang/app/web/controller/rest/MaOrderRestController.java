@@ -42,6 +42,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -562,7 +563,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())){
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消,不能收款", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -573,7 +574,10 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            this.maOrderService.orderReceivables(maOrderAmount);
+            List<String> ReceiptNumberList = this.maOrderService.orderReceivables(maOrderAmount);
+            for (String receiptNumber : ReceiptNumberList) {
+                this.maSinkSender.sendOrderReceipt(receiptNumber);
+            }
             logger.warn("orderReceivablesForCustomer ,后台订单收款成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台订单收款成功", null);
@@ -693,13 +697,17 @@ public class MaOrderRestController extends BaseRestController {
                     "审核订单失败", null);
         }
         String orderStatus = maOrderService.queryAuditStatus(orderNumber);
-        if (StringUtils.isBlank(orderStatus) || !(orderStatus.equals(ArrearsAuditStatus.AUDITING))) {
-            logger.info("欠款审核单信息错误！ 该订单不在审核状态");
+        if (StringUtils.isBlank(orderStatus) || !(orderStatus.equals(ArrearsAuditStatus.AUDITING.toString()))) {
+            logger.info("欠款审核单信息错误！ 该订单不在审核状态,orderStatus{}" + orderStatus);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
                     null);
         }
         try {
-            this.maOrderService.auditOrderStatus(orderNumber, status);
+          String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status);
+          if(null!=receiptNumber){
+              //将收款记录录入拆单消息队列
+              this.maSinkSender.sendOrderReceipt(receiptNumber);
+          }
             logger.info("auditOrderStatus ,审核订单成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "审核订单成功", null);
@@ -765,7 +773,10 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetail.setReferenceNumber(maOrderAmount.getOrderNumber());
-            this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetail, lastUpdateTimeFormat);
+            List<String> receiptNumberList =this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetail, lastUpdateTimeFormat);
+            for(String receiptNumber:receiptNumberList){
+                this.maSinkSender.sendOrderReceipt(receiptNumber);
+            }
             logger.warn("arrearsOrderRepayment ,后台欠款订单还款成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台欠款订单还款成功", null);
@@ -922,7 +933,7 @@ public class MaOrderRestController extends BaseRestController {
             orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
 
             //****************** 处理订单账单支付明细信息 ************
-            Map<Object,Object> map = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails,appStore,appCustomer,user.getUid());
+            Map<Object, Object> map = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails, appStore, appCustomer, user.getUid());
             List<OrderBillingPaymentDetails> paymentDetails = (List<OrderBillingPaymentDetails>) map.get("billingPaymentDetails");
             List<RechargeReceiptInfo> rechargeReceiptInfoList = (List<RechargeReceiptInfo>) map.get("rechargeReceiptInfoList");
             List<RechargeOrder> rechargeOrderList = (List<RechargeOrder>) map.get("rechargeOrderList");
@@ -936,7 +947,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(),rechargeReceiptInfoList,rechargeOrderList);
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(), rechargeReceiptInfoList, rechargeOrderList);
 
 
             //将该订单入拆单消息队列
