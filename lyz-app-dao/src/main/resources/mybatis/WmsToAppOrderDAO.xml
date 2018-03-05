@@ -24,16 +24,26 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_order_shipping_header
-                    WHERE task_no = #{taskNo}
-            );
+        WHERE task_no = #{taskNo} AND order_no = #{orderNo});
     </insert>
 
     <insert id="saveWtaShippingOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
         INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
                                                     task_no, g_code, d_ack_qty, op_status, source_no)
-        VALUES (#{orderNo}, #{taskType},
-        #{taskNo}, #{gCode}, #{dAckQty}, #{opStatus}, #{sourceNo});
+        SELECT
+        #{orderNo},
+        #{taskType},
+        #{taskNo},
+        #{gCode},
+        #{dAckQty},
+        #{opStatus},
+        #{sourceNo}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_wta_order_shipping_goods
+        WHERE task_no = #{taskNo} AND g_code = #{gCode});
     </insert>
 
     <insert id="saveWtaReturningOrderHeader"
@@ -60,7 +70,17 @@
     <insert id="saveWtaReturningOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
         INSERT INTO inter_wta_return_order_back_goods (gcode, rec_id, rec_no, rec_qty)
-        VALUES (#{gcode}, #{recId}, #{recNo}, #{recQty});
+        SELECT
+        #{gcode},
+        #{recId},
+        #{recNo},
+        #{recQty}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_wta_return_order_back_goods
+        WHERE rec_id = #{recId} AND rec_no = #{recNo}
+        );
     </insert>
 
     <insert id="saveWtaReturnOrderDeliveryClerk"
@@ -76,9 +96,29 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_return_order_delivery_clerk
-        WHERE return_number = #{returnNo}
+        WHERE return_number = #{returnNo} AND driver = #{driver}
             );
     </insert>
+
+    <update id="updateWtaReturnOrderDeliveryClerk"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturnOrderDeliveryClerk">
+        UPDATE inter_wta_return_order_delivery_clerk
+        <set>
+            <if test="null != createTime">
+                create_time = #{createTime},
+            </if>
+            <if test="null != warehouseNo">
+                c_wh_no = #{warehouseNo},
+            </if>
+            <if test="null != driver">
+                driver = #{driver},
+            </if>
+            <if test="null != note">
+                note = #{note}
+            </if>
+        </set>
+        WHERE return_number = #{returnNo}
+    </update>
 
     <insert id="saveWtaCancelOrderResultEnter"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter">
@@ -181,7 +221,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_allocation_goods
-                    WHERE allocation_no = #{allocationNo} AND sku = #{sku}
+        WHERE allocation_no = #{allocationNo} AND allocation_id = #{allocationId}
             );
     </insert>
 
@@ -218,7 +258,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_purchase_goods
-                    WHERE rec_no = #{recNo} AND sku = #{sku}
+        WHERE rec_no = #{recNo} AND rec_id = #{recId}
             );
     </insert>
 
@@ -240,7 +280,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_report_damage_overflow
-                    WHERE waste_no = #{wasteNo} AND sku = #{sku}
+        WHERE waste_no = #{wasteNo} AND waste_id = #{wasteId}
             );
     </insert>
 

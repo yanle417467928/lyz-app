@@ -480,6 +480,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         result.setPriceItemId(goods.getPriceItemId());
         result.setCompanyFlag(goods.getCompanyFlag());
         result.setSettlementPrice(info.getSettlementPrice());
+        result.setLbSharePrice(0D);
+        result.setCashCouponSharePrice(0D);
+        result.setCashReturnSharePrice(0D);
+        result.setReturnPriority(2);
+        result.setShippingQuantity(0);
+        result.setReturnQuantity(0);
+        result.setReturnableQuantity(goods.getQty());
         return result;
     }
 
