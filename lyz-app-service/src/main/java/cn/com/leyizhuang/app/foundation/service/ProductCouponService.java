@@ -24,6 +24,14 @@ public interface ProductCouponService {
     /**
      * 查询订单使用券
      *
+     * @param id    id
+     * @param isReturn 是否已退
+     * @return
+     */
+     void updateProductCouponIsReturn(Long id,Boolean isReturn);
+    /**
+     * 查询订单使用券
+     *
      * @param orderId    用户id
      * @param couponType 券类型
      * @return 订单券

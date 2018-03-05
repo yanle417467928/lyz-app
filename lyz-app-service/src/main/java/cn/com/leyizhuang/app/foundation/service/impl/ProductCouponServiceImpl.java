@@ -137,6 +137,12 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
+    public void updateProductCouponIsReturn(Long id,Boolean isReturn) {
+        productCouponDAO.updateProductCouponIsReturn(id,isReturn);
+    }
+
+
+    @Override
     public void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog) {
         productCouponDAO.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
     }
