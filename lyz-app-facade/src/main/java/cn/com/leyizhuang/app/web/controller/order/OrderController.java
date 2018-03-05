@@ -28,6 +28,9 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -121,6 +124,21 @@ public class OrderController {
      * @param request    request对象
      * @return 订单创建结果
      */
+    @ApiOperation(value = "创建订单", notes = "创建订单信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cityId", value = "下单人城市id", required = true, dataType = "Long",example ="1"),
+            @ApiImplicitParam(name = "userId", value = "下单人id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "identityType", value = "下单人身份类型", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "customerId", value = "顾客id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "remark", value = "备注信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "goodsInfo", value = "商品信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "productCouponInfo", value = "产品券商品信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "promotionInfo", value = "促销信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "deliveryInfo", value = "配送信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "billingInfo", value = "账单信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "auditNo", value = "物料审核单号", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "salesNumber", value = "纸质单号", required = false, dataType = "String")
+    })
     @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
         logger.info("createOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
@@ -977,8 +995,8 @@ public class OrderController {
             PageInfo<OrderListResponse> responseOrderList = appOrderService.getPendingEvaluationOrderListByUserIDAndIdentityType(userId,
                     identityType, page, size);
             for (OrderListResponse response : responseOrderList.getList()) {
-                if("PRODUCT_COUPON".equals(response.getDeliveryType())||"SELF_TAKE".equals(response.getDeliveryType())){
-                    AppStore appStore= appStoreService.findById(response.getStoreId());
+                if ("PRODUCT_COUPON".equals(response.getDeliveryType()) || "SELF_TAKE".equals(response.getDeliveryType())) {
+                    AppStore appStore = appStoreService.findById(response.getStoreId());
                     response.setShippingAddress(appStore.getDetailedAddress());
                 }
                 response.setCount(response.getGoodsImgList().size());
@@ -993,10 +1011,10 @@ public class OrderController {
             response.setCurrentPage(responseOrderList.getPageNum());
             response.setData(responseOrderList.getList());
             responseOrderList.setTotal(responseOrderList.getList().size());
-            double pages =(Math.ceil((double)responseOrderList.getTotal()/(double)responseOrderList.getPageSize()));
-            responseOrderList.setPages((int)pages);
+            double pages = (Math.ceil((double) responseOrderList.getTotal() / (double) responseOrderList.getPageSize()));
+            responseOrderList.setPages((int) pages);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<OrderListResponse>().transform(responseOrderList.getList(), responseOrderList));
-            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}",responseOrderList);
+            logger.info("getPendingEvaluationOrderList OUT,用户获取待评价订单列表成功，出参 resultDTO:{}", responseOrderList);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1074,9 +1092,9 @@ public class OrderController {
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
                 if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
                 } else {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));
@@ -1157,9 +1175,9 @@ public class OrderController {
                 //获取订单物流相关信息
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
                 if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress())?null:orderLogisticsInfo.getShippingAddress());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
                 } else {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName())?null:orderLogisticsInfo.getBookingStoreName());
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
                 orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
@@ -1261,44 +1279,44 @@ public class OrderController {
                 if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
                     //会员
                     CustomerBillingDetailResponse customerBillingDetailResponse = new CustomerBillingDetailResponse();
-                    customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
-                    customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
-                    customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
-                    customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount()==null?0:orderBillingDetails.getLebiCashDiscount());
-                    customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
-                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit()==null?0:orderBillingDetails.getCusPreDeposit());
-                    customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
-                    customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
-                    customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
+                    customerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable() == null ? 0 : orderBillingDetails.getAmountPayable());
+                    customerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
+                    customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
+                    customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount() == null ? 0 : orderBillingDetails.getLebiCashDiscount());
+                    customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
+                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
+                    customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                    customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                    customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setCustomerBillingDetailResponse(customerBillingDetailResponse);
                 } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.DECORATE_MANAGER)) {
                     //经理
                     ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
-                    managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
-                    managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
-                    managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
-                    managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
-                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention()==null?0:orderBillingDetails.getStoreSubvention());
-                    managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
-                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit()==null?0:orderBillingDetails.getStPreDeposit());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney()==null?0:orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
-                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable() == null ? 0 : orderBillingDetails.getAmountPayable());
+                    managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
+                    managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
+                    managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
+                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
                 } else {
                     //导购
                     SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
-                    sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable()==null?0:orderBillingDetails.getAmountPayable());
-                    sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount()==null?0:orderBillingDetails.getCashCouponDiscount());
-                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney()==null?0:orderBillingDetails.getEmpCreditMoney());
-                    sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight()==null?0:orderBillingDetails.getFreight());
-                    sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount()==null?0:orderBillingDetails.getMemberDiscount());
-                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit()==null?0:orderBillingDetails.getStPreDeposit());
-                    sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount()==null?0:orderBillingDetails.getProductCouponDiscount());
-                    sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount()==null?0:orderBillingDetails.getPromotionDiscount());
-                    sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice()==null?0:orderBaseInfo.getTotalGoodsPrice());
+                    sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable() == null ? 0 : orderBillingDetails.getAmountPayable());
+                    sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
+                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
+                    sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
+                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                    sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                    sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
 
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }

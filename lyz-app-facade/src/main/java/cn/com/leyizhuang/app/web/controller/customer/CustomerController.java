@@ -73,7 +73,7 @@ public class CustomerController {
      */
     @ApiOperation(value = "顾客登录", notes = "微信授权登录")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "openId", value = "微信open_id", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "openId", value = "微信open_id", required = true, dataType = "String"),
             @ApiImplicitParam(name = "systemType", value = "顾客设备类型", required = true, dataType = "String"),
             @ApiImplicitParam(name = "clientId", value = "个推客户端id", required = true, dataType = "String"),
             @ApiImplicitParam(name = "deviceId", value = "设备序列号", required = true, dataType = "String"),
