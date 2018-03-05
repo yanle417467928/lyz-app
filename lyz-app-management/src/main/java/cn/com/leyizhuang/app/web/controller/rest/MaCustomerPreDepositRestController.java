@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
+import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -51,8 +52,8 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     @Autowired
     private RechargeService rechargeService;
 
-//    @Autowired
-//    private SinkSender sinkSender;
+    @Autowired
+    private MaSinkSender sinkSender;
 
     /**
      * @title   获取顾客预存款列表
@@ -95,13 +96,10 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
                         cusPreDepositDTO.setChangeType(CustomerPreDepositChangeType.ADMIN_CHANGE);
                         this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
                         //生成充值单
-                        RechargeOrder rechargeOrder = rechargeService.createRechargeOrder(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO.getCusId(),
-                                cusPreDepositDTO.getChangeMoney(), rechargeNo);
-                        rechargeOrder.setPayType(cusPreDepositDTO.getPayType());
-                        rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
-                        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
-                        rechargeOrder.setPayUpTime(new Date());
-                        //谁充值？充值方式？
+                        RechargeOrder rechargeOrder = rechargeService.createCusRechargeOrder(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO.getCusId(),
+                                cusPreDepositDTO.getChangeMoney(), rechargeNo, cusPreDepositDTO.getPayType());
+
+
                         rechargeService.saveRechargeOrder(rechargeOrder);
 
                         //创建充值单收款
@@ -109,7 +107,7 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
                         rechargeService.saveRechargeReceiptInfo(receiptInfo);
 
                         //将收款记录入拆单消息队列
-//                        sinkSender.sendRechargeReceipt(rechargeNo);
+                        sinkSender.sendRechargeReceipt(rechargeNo);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);

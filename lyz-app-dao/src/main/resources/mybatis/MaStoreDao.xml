@@ -624,4 +624,8 @@
         </foreach>
     </select>
 
+    <select id="findAppStoreByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+        SELECT city_id, storeId, storeType, storeName FROM st_store WHERE store_id = #{storeId}
+    </select>
+
 </mapper>
