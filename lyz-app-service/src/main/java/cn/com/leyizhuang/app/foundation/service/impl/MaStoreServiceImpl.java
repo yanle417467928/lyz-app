@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
@@ -272,6 +273,11 @@ public class MaStoreServiceImpl implements MaStoreService {
     @Override
     public List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds) {
         return this.mastoreDAO.findStoresListByStoreId(storeIds);
+    }
+
+    @Override
+    public AppStore findAppStoreByStoreId(Long storeId) {
+        return this.mastoreDAO.findAppStoreByStoreId(storeId);
     }
 
 }

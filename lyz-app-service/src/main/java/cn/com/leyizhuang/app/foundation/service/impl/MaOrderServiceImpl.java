@@ -1260,6 +1260,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1310,6 +1311,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1396,6 +1398,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnNumber);
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());

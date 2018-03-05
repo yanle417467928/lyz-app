@@ -181,20 +181,21 @@ public class ReturnOrderController {
                 String code = (String) maps.get("code");
                 if ("SUCCESS".equals(code)) {
                     //如果是待收货、门店自提单则需要返回第三方支付金额
-                    if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
+                    if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) || orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                         if (null != orderBillingDetails.getOnlinePayType()) {
-                            if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                            if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
                                 onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
 
-                            } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                            } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
                                 Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
-                            } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                            } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //创建退单退款详情实体
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                 returnOrderBillingDetail.setCreateTime(new Date());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                                 returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
                                 //TODO 时间待定
                                 returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -304,18 +305,19 @@ public class ReturnOrderController {
                 //********************************退第三方支付**************************
                 //如果是待收货、门店自提单则需要返回第三方支付金额
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
-                    if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                    if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                         //支付宝退款
                         onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
 
-                    } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                    } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                         //微信退款方法类
                         onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
-                    } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                    } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                         returnOrderBillingDetail.setCreateTime(new Date());
                         returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                         returnOrderBillingDetail.setRefundNumber(null);
                         //TODO 时间待定
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -660,6 +662,7 @@ public class ReturnOrderController {
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                 returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnNo);
                                 returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
                                 //TODO 时间待定
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());

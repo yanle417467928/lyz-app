@@ -280,7 +280,6 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 maOrdReturnBillingDetail.setRoid(roid);
                 maOrdReturnBillingDetailList.add(maOrdReturnBillingDetail);
             }
-
         }
 
         //退顾客预存款
@@ -386,6 +385,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 customerProductCoupon.setIsUsed(Boolean.FALSE);
                 //修改原产品券是否使用和修改时间
                 productCouponService.updateCustomerProductCoupon(customerProductCoupon);
+                //更改产品卷是否已退
+                productCouponService.updateProductCouponIsReturn(maProductCouponInfo.getPcid(), true);
 
                 //增加日志
                 CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
@@ -413,6 +414,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 customerCashCoupon.setIsUsed(Boolean.FALSE);
                 //修改原现金券是否使用和修改时间
                 cashCouponService.updateCustomerCashCoupon(customerCashCoupon);
+                //TODO
+                //更改现金卷是否已退
+                //productCouponService.updateCashCouponIsReturn(maCashCouponInfo.getCcid(), true);
 
                 //记录现金券变更日志
                 CustomerCashCouponChangeLog customerCashCouponChangeLog = new CustomerCashCouponChangeLog();

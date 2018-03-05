@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.customer;
 
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -11,6 +12,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -58,6 +62,13 @@ public class MaCustomerPreDepositViewsController extends BaseController {
             error404();
             return "/error/404";
         } else {
+            List<OrderBillingPaymentType> paymentTypes = new ArrayList<>();
+            paymentTypes.add(OrderBillingPaymentType.ALIPAY);
+            paymentTypes.add(OrderBillingPaymentType.WE_CHAT);
+            paymentTypes.add(OrderBillingPaymentType.CASH);
+            paymentTypes.add(OrderBillingPaymentType.POS);
+            paymentTypes.add(OrderBillingPaymentType.TRANSFER_ACCOUNTS);
+            map.addAttribute("paymentTypes", paymentTypes);
             map.addAttribute("customerPreDepositVO", customerPreDepositVO);
         }
         return "/views/customer/customer_pre_deposit_edit";

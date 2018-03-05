@@ -10,6 +10,8 @@
     <link href="https://cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css"/>
+    <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
@@ -76,7 +78,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="effectiveStartTime" type="text" class="form-control" id="effectiveStartTime"
+                                    <input name="effectiveStartTime" type="text" class="form-control"
+                                           id="effectiveStartTime"
                                            readonly placeholder="使用开始日期">
                                 </div>
                             </div>
@@ -88,7 +91,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="effectiveEndTime" type="text" class="form-control" id="effectiveEndTime"
+                                    <input name="effectiveEndTime" type="text" class="form-control"
+                                           id="effectiveEndTime"
                                            readonly placeholder="使用结束日期">
                                 </div>
                             </div>
@@ -125,11 +129,13 @@
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-xs-12 col-md-2">
-                                            <button id="checkAllStoreButton" type="button" class="btn btn-default btn-xs"
-                                                    >全选
+                                            <button id="checkAllStoreButton" type="button"
+                                                    class="btn btn-default btn-xs"
+                                            >全选
                                             </button>
-                                            <button id="unCheckAllStoreButton" type="button" class="btn btn-default btn-xs"
-                                                    >反选
+                                            <button id="unCheckAllStoreButton" type="button"
+                                                    class="btn btn-default btn-xs"
+                                            >反选
                                             </button>
                                         </div>
 
@@ -173,7 +179,7 @@
                                 <label for="title">
                                     选择限定公司
                                 </label>
-                                <select name="companySelect" id="companySelect" class="form-control select" multiple >
+                                <select name="companySelect" id="companySelect" class="form-control select" multiple>
                                     <option value="LYZ">乐易装</option>
                                     <option value="HR">华润</option>
                                     <option value="YR">莹润</option>
@@ -188,7 +194,7 @@
                                 <label for="title">
                                     选择限定品牌
                                 </label>
-                                <select name="brandSelect" id="brandSelect" class="form-control select" multiple >
+                                <select name="brandSelect" id="brandSelect" class="form-control select" multiple>
 
                                 </select>
                             </div>
@@ -204,7 +210,7 @@
 
                                     <div class="box-tools">
                                         <button id="chooseGoodsButton" type="button" class="btn btn-primary btn-xs"
-                                                >
+                                        >
                                             选择商品
                                         </button>
 
@@ -246,7 +252,7 @@
                     </div>
 
                     <!-- 满足最低金额 -->
-                    <div class="row" >
+                    <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
@@ -261,7 +267,7 @@
                     </div>
 
                     <!-- 面额 -->
-                    <div class="row"  >
+                    <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="description">
@@ -278,11 +284,12 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
-                                   初始数量
+                                    初始数量
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="initialQuantity" type="number" class="form-control" id="initialQuantity" value="99">
+                                    <input name="initialQuantity" type="number" class="form-control"
+                                           id="initialQuantity" value="99">
                                 </div>
                             </div>
                         </div>
@@ -332,17 +339,20 @@
                                                 <div class="box box-primary">
                                                     <div id="toolbar" class="form-inline">
                                                         <select name="brandCode" id="brandCode"
-                                                                class="form-control select" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择品牌</option>
                                                         </select>
                                                         <select name="categoryCode" id="categoryCode"
-                                                                class="form-control select" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择分类</option>
                                                         </select>
                                                         <select name="companyCode" id="companyCode"
-                                                                class="form-control select" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择公司</option>
                                                             <option value="LYZ">乐易装</option>
@@ -381,14 +391,14 @@
                 </div>
             </div>
 
-            </div>
         </div>
+    </div>
 </section>
 <script>
 
     $(function () {
         // 初始化城市、门店信息
-        $commonForm.cityAndStore("/rest/citys/findCitylist","cityId","/rest/stores/findStoresListByCityId","stores");
+        $commonForm.cityAndStore("/rest/citys/findCitylist", "cityId", "/rest/stores/findStoresListByCityId", "stores");
 
     })
 

@@ -874,7 +874,7 @@
         LEFT JOIN
         ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
-        obi.ord_no=#{info}
+        obi.ord_no=LIKE concat(concat('%',#{info}),'%')
         ORDER BY
         obi.create_time DESC
     </select>

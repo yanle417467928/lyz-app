@@ -11,6 +11,7 @@ public enum MqMessageType {
     ORDER("ORDER", "订单头"),
     ORDER_GOODS("ORDER_GOODS", "订单产品"),
     ORDER_RECEIPT("ORDER_RECEIPT", "订单收款"),
+    ORDER_REFUND("ORDER_REFUND", "订单退款"),
     RECHARGE_RECEIPT("RECHARGE_RECEIPT", "充值收款"),
     ALLOCATION_INBOUND("ALLOCATION_INBOUND", "调拨入库"),
     ALLOCATION_OUTBOUND("ALLOCATION_OUTBOUND", "调拨出库"),
@@ -21,6 +22,7 @@ public enum MqMessageType {
     ORDER_RECEIVE("ORDER_RECEIVE", "自提单发货"),
     RETURN_ORDER_RECEIPT("RETURN_ORDER_RECEIPT", "自提单退单收货"),
     WITHDRAW_REFUND("WITHDRAW_REFUND", "提现退款");
+
     private String value;
 
     private String description;

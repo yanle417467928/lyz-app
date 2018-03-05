@@ -321,7 +321,7 @@ function  send(customerId) {
     $("#send_"+customerId).attr("href","#");
     $http.ajax('/rest/productCoupon/send','POST',{'customerId':customerId,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
         // 防止重复发送
-        $("#send_"+customerId).attr("href","javascript:send("+customerId+")");
+        // $("#send_"+customerId).attr("href","javascript:send("+customerId+")");
         if (0 === result.code) {
             $notify.info(result.message);
 
@@ -375,7 +375,7 @@ function  sendBatch() {
     $("#oneButtonSend").attr("onclick","");
     $http.ajax('/rest/productCoupon/sendBatch','POST',{'customerIds':customerIds,'productCouponId':productCouponId,'sellerId':seller,'qty': qty},function (result) {
         // 防止重复请求
-        $("#oneButtonSend").attr("onclick","sendBatch()");
+        //$("#oneButtonSend").attr("onclick","sendBatch()");
 
         if (0 === result.code) {
             $notify.info(result.message);

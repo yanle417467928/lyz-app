@@ -27,6 +27,11 @@ public class ReturnOrderBillingDetail {
      * 退款单id
      */
     private Long roid;
+
+    /**
+     * 退单号
+     */
+    private String returnNo;
     /**
      * 退款类型
      */

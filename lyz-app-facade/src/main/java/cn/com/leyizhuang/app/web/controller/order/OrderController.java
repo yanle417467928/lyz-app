@@ -1247,6 +1247,12 @@ public class OrderController {
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
                 orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
+                if (AppIdentityType.SELLER.equals(AppIdentityType.getAppIdentityTypeByValue(identityType))){
+                    orderDetailsResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderDetailsResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                    orderDetailsResponse.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
+                }
+
                 orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
                         OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
                 orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
