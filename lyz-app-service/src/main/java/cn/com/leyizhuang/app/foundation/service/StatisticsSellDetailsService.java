@@ -50,5 +50,11 @@ public interface StatisticsSellDetailsService {
      * @param sellerId
      * @return
      */
-    List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(@Param("cusId") Long cusId, @Param("dateTime") LocalDateTime dateTime, @Param("sellerId") Long sellerId);
+    List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(Long cusId,  LocalDateTime dateTime,  Long sellerId);
+
+    /**
+     * 记录错误日志
+     * @param orderNo
+     */
+    void recordeErrorLog(String orderNo);
 }

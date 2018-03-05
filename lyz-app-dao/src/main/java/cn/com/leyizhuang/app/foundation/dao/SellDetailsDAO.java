@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -51,4 +52,10 @@ public interface SellDetailsDAO {
      * @return
      */
     List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(@Param("cusId") Long cusId, @Param("dateTime") LocalDateTime dateTime, @Param("sellerId") Long sellerId);
+
+    /**
+     * 销量生成失败日志记录
+     * @param logDO
+     */
+    void recordeErrorLog(SellDetailsErrorLogDO logDO);
 }

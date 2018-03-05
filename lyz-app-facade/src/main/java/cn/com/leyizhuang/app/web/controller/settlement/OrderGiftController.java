@@ -54,7 +54,7 @@ public class OrderGiftController {
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {
 
-        logger.info("materialListStepToGiftList CALLED,下料清单跳转赠品列表,入参 goodsArray:{}", goodsArray);
+        logger.info("materialListStepToGiftList CALLED,下料清单跳转赠品列表,入参userId {} identityType{} goodsArray:{}",userId,identityType, goodsArray);
 
         ResultDTO<GiftListResponse> resultDTO;
         //获取商品相关信息（id，数量，是否赠品）

@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.RechargeDAO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
+import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
@@ -162,7 +163,7 @@ public class RechargeServiceImpl implements RechargeService {
 
 
     @Override
-    public RechargeReceiptInfo createPayRechargeReceiptInfo(Integer identityType, CusPreDepositDTO cusPreDepositDTO, String rechargeNo) {
+    public RechargeReceiptInfo createCusPayRechargeReceiptInfo(Integer identityType, CusPreDepositDTO cusPreDepositDTO, String rechargeNo) {
         RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
         receiptInfo.setCreateTime(new Date());
         if (OrderBillingPaymentType.CASH.equals(cusPreDepositDTO.getPayType()) || OrderBillingPaymentType.POS.equals(cusPreDepositDTO.getPayType())){
@@ -248,6 +249,37 @@ public class RechargeServiceImpl implements RechargeService {
         rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
         rechargeOrder.setPayUpTime(new Date());
         return rechargeOrder;
+    }
+
+    @Override
+    public RechargeReceiptInfo createStorePayRechargeReceiptInfo(Integer identityType, StorePreDepositDTO storePreDepositDTO, String rechargeNo, AppStore store) {
+        RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+        receiptInfo.setCreateTime(new Date());
+        if (OrderBillingPaymentType.CASH.equals(storePreDepositDTO.getPayType()) || OrderBillingPaymentType.POS.equals(storePreDepositDTO.getPayType())){
+            receiptInfo.setPayTime(DateUtil.parseDate(storePreDepositDTO.getTransferTime()));
+        } else {
+            receiptInfo.setPayTime(new Date());
+        }
+
+        receiptInfo.setAmount(storePreDepositDTO.getChangeMoney());
+        if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+            receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+            receiptInfo.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+        } else if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+            receiptInfo.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+            receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+        } else if (identityType == AppIdentityType.SELLER.getValue()) {
+            receiptInfo.setPaymentSubjectType(PaymentSubjectType.SELLER);
+            receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+        }
+        receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+        receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+        receiptInfo.setPayType(storePreDepositDTO.getPayType());
+        receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+        receiptInfo.setRechargeNo(rechargeNo);
+        receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(store.getCityId()));
+        receiptInfo.setReplyCode(storePreDepositDTO.getMerchantOrderNumber());
+        return receiptInfo;
     }
 
 }
