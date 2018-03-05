@@ -24,41 +24,41 @@
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw">
 
         update st_pre_deposit_withdraw
-        <set >
-            <if test="applyNo != null" >
+        <set>
+            <if test="applyNo != null">
                 apply_no = #{applyNo,jdbcType=VARCHAR},
             </if>
-            <if test="createTime != null" >
+            <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="applyStId != null" >
+            <if test="applyStId != null">
                 apply_st_id = #{applyStId,jdbcType=BIGINT},
             </if>
-            <if test="applyStName != null" >
+            <if test="applyStName != null">
                 apply_st_name = #{applyStName,jdbcType=VARCHAR},
             </if>
-            <if test="applyStPhone != null" >
+            <if test="applyStPhone != null">
                 apply_st_phone = #{applyStPhone,jdbcType=VARCHAR},
             </if>
-            <if test="accountType != null" >
+            <if test="accountType != null">
                 account_type = #{accountType,jdbcType=VARCHAR},
             </if>
-            <if test="account != null" >
+            <if test="account != null">
                 account = #{account,jdbcType=VARCHAR},
             </if>
-            <if test="withdrawAmount != null" >
+            <if test="withdrawAmount != null">
                 withdraw_amount = #{withdrawAmount,jdbcType=DOUBLE},
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 status = #{status,jdbcType=VARCHAR},
             </if>
-            <if test="checkId != null" >
+            <if test="checkId != null">
                 check_id = #{checkId,jdbcType=BIGINT},
             </if>
-            <if test="checkName != null" >
+            <if test="checkName != null">
                 check_name = #{checkName,jdbcType=VARCHAR},
             </if>
-            <if test="checkCode != null" >
+            <if test="checkCode != null">
                 check_code = #{checkCode,jdbcType=VARCHAR},
             </if>
             <if test="cityId != null">
@@ -97,7 +97,8 @@
         FROM st_pre_deposit_withdraw
         WHERE 1=1
         <if test="keywords != null">
-            and (apply_st_name LIKE concat("%",#{keywords},"%") or apply_st_phone like concat(#{keywords},"%") or apply_no like concat(#{keywords},"%"))
+            and (apply_st_name LIKE concat("%",#{keywords},"%") or apply_st_phone like concat(#{keywords},"%") or
+            apply_no like concat(#{keywords},"%"))
         </if>
         <if test="status != null">
             and status = #{status}

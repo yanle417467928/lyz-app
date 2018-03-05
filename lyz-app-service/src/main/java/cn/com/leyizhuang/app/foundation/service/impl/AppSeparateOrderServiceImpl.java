@@ -929,13 +929,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             //withdrawRefundInf.setWithdrawType(withdrawRefundInfo);
             switch (withdrawRefundInfo.getWithdrawChannel()) {
                 case ALIPAY:
-                    withdrawRefundInf.setWithdrawObj(1);
+                    withdrawRefundInf.setRefundType(1);
                     break;
                 case WE_CHAT:
-                    withdrawRefundInf.setWithdrawObj(2);
+                    withdrawRefundInf.setRefundType(2);
                     break;
                 case UNION_PAY:
-                    withdrawRefundInf.setWithdrawObj(3);
+                    withdrawRefundInf.setRefundType(3);
                     break;
                 default:
                     break;
