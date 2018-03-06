@@ -61,6 +61,10 @@ public class OrderListResponse {
      */
     private Double price;
     /**
+     * 应付款
+     */
+    private Double amountPayable;
+    /**
      * 过期时间
      */
     private Long endTime;

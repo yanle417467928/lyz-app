@@ -1097,7 +1097,9 @@ public class OrderController {
                     orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                orderListResponse.setPrice(appOrderService.getTotalGoodsPriceByOrderNumber(orderBaseInfo.getOrderNumber()));
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
                 orderListResponse.setGoodsImgList(goodsImgList);
                 if (identityType == 0) {
                     orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
