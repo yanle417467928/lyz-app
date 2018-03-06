@@ -158,6 +158,7 @@ public class OrderArriveController {
                     orderArrearsAuditDO.setPicture(picture);
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
+
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
