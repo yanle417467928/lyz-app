@@ -52,9 +52,11 @@ public class EmployeeCreditMoneyLogResponse {
      */
     private String type;
 
-    public EmployeeCreditMoneyLogResponse attributeKindSetByChangeType(EmployeeCreditMoneyLogResponse response, EmpCreditMoneyChangeType changeType) {
+    public void attributeKindSetByChangeType(EmployeeCreditMoneyLogResponse response) {
 
         if (EmpCreditMoneyChangeType.ADMIN_RECHARGE.equals(response.getChangeType()) ||
+                EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_FIXE.equals(response.getChangeType()) ||
+                EmpCreditMoneyChangeType.AVALIABLED_CHANGE_BY_TEMP.equals(response.getChangeType()) ||
                 EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.equals(response.getChangeType()) ||
                 EmpCreditMoneyChangeType.FIXEDAMOUNT_ADJUSTMENT.equals(response.getChangeType()) ||
                 EmpCreditMoneyChangeType.TEMPORARY_CLEAR.equals(response.getChangeType())) {
@@ -62,6 +64,5 @@ public class EmployeeCreditMoneyLogResponse {
         } else {
             response.setKind(EmpCreditMoneyChangeLogKind.ORD_ADJUSTMENT);
         }
-        return response;
     }
 }

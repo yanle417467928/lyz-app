@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStoreResponse;
@@ -115,14 +114,14 @@ public class SettlementController {
                     if (forbiddenSelfTakeCompanyList.contains(flag)) {
                         response.setIsSelfTakePermitted(false);
                         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
-                        logger.info("getCityDeliveryTime CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
+                        logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }
                 }
                 if (!store.getIsSelfDelivery()) {
                     response.setIsSelfTakePermitted(false);
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
-                    logger.info("getCityDeliveryTime CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
+                    logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 //导购下单，或非默认门店顾客下单，带出其所在门店信息
@@ -136,7 +135,7 @@ public class SettlementController {
                     selfTakeStoreList.add(selfTakeStore);
                     response.setStoreList(selfTakeStoreList);
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
-                    logger.info("getCityDeliveryTime CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
+                    logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 //默认门店顾客下单
@@ -146,20 +145,20 @@ public class SettlementController {
                     selfTakeStoreList = storeService.findSelfTakePermittedStoreByCityId(customer.getCityId());
                     response.setStoreList(selfTakeStoreList);
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
-                    logger.info("getCityDeliveryTime CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
+                    logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
 
             }
             response.setIsSelfTakePermitted(false);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
-            logger.info("getCityDeliveryTime CALLED,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取可选自提门店信息失败",
                     null);
-            logger.warn("getCityDeliveryTime EXCEPTION,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getSelfTakeStoreAvailable EXCEPTION,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
@@ -232,7 +231,7 @@ public class SettlementController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,选择自提门店失败",
                     null);
-            logger.warn("getCityDeliveryTime EXCEPTION,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("chooseSelfTakeStore EXCEPTION,获取可选自提门店信息失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

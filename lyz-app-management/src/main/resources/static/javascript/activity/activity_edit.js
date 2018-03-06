@@ -691,6 +691,15 @@ function cheackGoodsDetail(details, tableId) {
             // 是否任选数量
             var isGiftOptionalQty = $("#is_gift_optional_qty").prop('checked');
 
+            var promotionType = $("#resultType").val();
+            if (promotionType == "ADD"){
+                // 加价购 赠品必填任选数量
+                if (!isGiftOptionalQty){
+                    $notify.warning("亲，加价购 任选数量必填");
+                    return false;
+                }
+            }
+
             if (isGiftOptionalQty) {
                 var num = $('#giftChooseNumber').val();
                 if (num == '' || num == 0 || !re.test(num)) {

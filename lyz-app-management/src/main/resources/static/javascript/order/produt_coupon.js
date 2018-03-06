@@ -317,6 +317,11 @@ function initSeller(url) {
         }
     }, {
         field: 'mobile',
+        title: '导购电话',
+        align: 'center',
+        visible:false
+    }, {
+        field: 'loginName',
         title: '导购登录名',
         align: 'center'
     }, {
@@ -512,7 +517,7 @@ function openGiftsModal() {
                         var giftList = giftListResponse[i].giftList
                         for (var j = 0; j < giftList.length; j++) {
                             var price = giftList[j].retailPrice.toFixed(2);
-                            if ('否' == isArbitraryChoice ){
+                            if ('是' == isArbitraryChoice ){
                                 title += "<tr>" +
                                     "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
                                     "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
@@ -730,6 +735,7 @@ function chooseGoods(tableId) {
 function save() {
     $loading.show();
     var storeCode = $('#storeCode').text();
+    var storeType = $('#storeType').text();
     var cashMoney = $('#cashMoney').val();
     var posMoney = $('#posMoney').val();
     var posNumber = $('#posNumber').val();
@@ -775,15 +781,14 @@ function save() {
         return;
     }
 
-    if (1 == cityId && 'ZY' == storeCode) {
-        if ('' == salesNumber || null == salesNumber) {
+    if (1 == cityId && 'ZY' == storeType && ('' == salesNumber || null == salesNumber)) {
             $loading.close();
             $notify.warning("请填写销售纸质单号");
             return;
-        }
+
     }
 
-    var totalMoneys = (Number(cashMoney) + Number(posMoney) + Number(otherMoney));
+    var totalMoneys = (Number(cashMoney)*100 + Number(posMoney)*100 + Number(otherMoney)*100)/100;
 
     var availableMoney = $('#availableMoney').val();
     var preDepositMoney = $('#preDepositMoney').val();
@@ -940,9 +945,9 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
         var retailMoney = $(n).find("#retailPrice").val();
         var memberMoney = $(n).find("#vipPrice").val();
         if ('RETAIL' == customerType) {
-            retailTotalMoney += (Number(retailMoney) * Number(num));
+            retailTotalMoney += (Number(retailMoney)*100* Number(num))/100;
         } else if ('MEMBER' == customerType) {
-            memberTotalMoney += (Number(memberMoney) * Number(num));
+            memberTotalMoney += (Number(memberMoney)*100* Number(num))/100;
         }
         goodsSkus.push(goodsSku);
         details.push({
@@ -1078,7 +1083,7 @@ function priceBlur(id) {
         var otherMoney = $("#otherMoney").val();
         var cashMoney = $("#cashMoney").val();
 
-        var totalMoney = (Number(posMoney) + Number(otherMoney) + Number(cashMoney));
+        var totalMoney = (Number(posMoney)*100 + Number(otherMoney)*100 + Number(cashMoney)*100)/100;
         document.getElementById("totalMoney").value = totalMoney.toFixed(2);
     }
 
@@ -1147,8 +1152,8 @@ function openGoPay() {
             $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
             return;
         }
-        totalPrice += $(n).find("#retailPrice").val() * num;
-        totalVipPrice += $(n).find("#vipPrice").val() * num;
+        totalPrice += ($(n).find("#retailPrice").val() *100* num)/100;
+        totalVipPrice += ($(n).find("#vipPrice").val() *100* num)/100;
 
         $("#totalGoodsPrice").text(totalPrice.toFixed(2));
         $("#vipDiscount").text((totalVipPrice - totalPrice).toFixed(2));
@@ -1159,11 +1164,11 @@ function openGoPay() {
         //设置应付金额
         $("#amountsPayable").text(totalVipPrice.toFixed(2))
     } else {
-        amountsPayable1 = Number(totalVipPrice) - Number(subAmount);
+        amountsPayable1 = (Number(totalVipPrice)*100 - Number(subAmount)*100)/100;
         //设置应付金额
         $("#amountsPayable").text(amountsPayable1.toFixed(2))
         //设置促销折扣
-        $("#promotionsDiscount").text((0 - Number(subAmount)).toFixed(2))
+        $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
     }
     $("#goPay").show();
     $("#goPayType").val(0);

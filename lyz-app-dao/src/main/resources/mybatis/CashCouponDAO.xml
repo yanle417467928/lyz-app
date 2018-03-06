@@ -242,72 +242,72 @@
 
     <update id="updateCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         UPDATE cus_customer_cash_coupon
-        <set >
-            <if test="cusId != null" >
+        <set>
+            <if test="cusId != null">
                 cus_id = #{cusId},
             </if>
-            <if test="ccid != null" >
+            <if test="ccid != null">
                 ccid = #{ccid},
             </if>
-            <if test="qty != null" >
+            <if test="qty != null">
                 qty = #{qty},
             </if>
-            <if test="getTime != null" >
+            <if test="getTime != null">
                 get_time = #{getTime},
             </if>
-            <if test="isUsed != null" >
+            <if test="isUsed != null">
                 is_used = #{isUsed},
             </if>
-            <if test="useTime != null" >
+            <if test="useTime != null">
                 use_time = #{useTime},
             </if>
-            <if test="useOrderNumber != null" >
+            <if test="useOrderNumber != null">
                 use_ord_no = #{useOrderNumber},
             </if>
-            <if test="downTime != null" >
+            <if test="downTime != null">
                 down_time = #{downTime},
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 `status` = #{status},
             </if>
-            <if test="condition != null" >
-                condition = #{condition},
+            <if test="condition != null">
+                `condition` = #{condition},
             </if>
-            <if test="denomination != null" >
+            <if test="denomination != null">
                 denomination = #{denomination},
             </if>
-            <if test="effectiveStartTime != null" >
+            <if test="effectiveStartTime != null">
                 effective_start_time = #{effectiveStartTime},
             </if>
-            <if test="effectiveEndTime != null" >
+            <if test="effectiveEndTime != null">
                 effective_end_time = #{effectiveEndTime},
             </if>
-            <if test="description != null" >
+            <if test="description != null">
                 descripttion = #{description},
             </if>
-            <if test="title != null" >
+            <if test="title != null">
                 title = #{title},
             </if>
-            <if test="getType != null" >
+            <if test="getType != null">
                 get_type = #{getType},
             </if>
-            <if test="purchasePrice != null" >
+            <if test="purchasePrice != null">
                 pruchase_price = #{purchasePrice},
             </if>
-            <if test="cityId != null" >
+            <if test="cityId != null">
                 city_id = #{cityId},
             </if>
-            <if test="cityName != null" >
+            <if test="cityName != null">
                 city_name = #{cityName},
             </if>
             <if test="type != null" >
                 `type` = #{type},
             </if>
-            <if test="isSpecifiedStore != null" >
+            <if test="isSpecifiedStore != null">
                 is_specified_store = #{isSpecifiedStore},
             </if>
-            <if test="lastUpdateTime != null" >
-                last_update_time = #{lastUpdateTime},
+            <if test="lastUpdateTime != null">
+                last_update_time = #{lastUpdateTime}
             </if>
         </set>
         where id = #{id}

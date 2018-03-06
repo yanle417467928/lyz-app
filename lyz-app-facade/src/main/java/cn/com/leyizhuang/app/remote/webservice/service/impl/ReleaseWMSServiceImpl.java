@@ -29,6 +29,7 @@ import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -142,14 +143,20 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         return AppXmlUtil.resultStrXml(1, "App没有找到该订单");
                     }
                     WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(header.getWhNo());
-                    //保存物流信息
-                    OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header,
-                            null != wareHouse ? wareHouse.getWareHouseName() : header.getWhNo());
-                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
-                    //修改订单配送信息加入配送员
-                    appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
-                    //修改订单头状态
-                    appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
+                    try {
+                        //保存物流信息
+                        OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header,
+                                null != wareHouse ? wareHouse.getWareHouseName() : header.getWhNo());
+                        orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+                        //修改订单配送信息加入配送员
+                        appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
+                        //修改订单头状态
+                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
+                    } catch (Exception e) {
+                        logger.info("GetWMSInfo OUT,获取出货单头档wms信息失败,发生未知异常 出参 e:{}", e);
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return AppXmlUtil.resultStrXml(1, "处理出货单头档事务失败!");
+                    }
                     //推送物流信息
                     NoticePushUtils.pushOrderLogisticInfo(header.getOrderNo());
                     // rabbit 记录下单销量
@@ -208,59 +215,66 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取退货单返配上架头失败,任务编号 城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
                         return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
                     }
-                    header.setCreateTime(Calendar.getInstance().getTime());
-                    int result = wmsToAppOrderService.saveWtaReturningOrderHeader(header);
-                    if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
-                    }
+                    try {
+                        header.setCreateTime(Calendar.getInstance().getTime());
+                        int result = wmsToAppOrderService.saveWtaReturningOrderHeader(header);
+                        if (result == 0) {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
+                            return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
+                        }
 
-                    HashedMap maps = returnOrderService.normalReturnOrderProcessing(header.getPoNo(), header.getCompanyId());
+                        HashedMap maps = returnOrderService.normalReturnOrderProcessing(header.getPoNo(), header.getCompanyId());
 
-                    ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
+                        ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
 
-                    ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                        ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
 
-                    if ("SUCCESS".equals(maps.get("code"))) {
-                        if ((Boolean) maps.get("hasReturnOnlinePay")) {
-                            //返回第三方支付金额
-                            if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
-                                if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
-                                    //支付宝退款
-                                    onlinePayRefundService.alipayRefundRequest(
-                                            returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+                        if ("SUCCESS".equals(maps.get("code"))) {
+                            if ((Boolean) maps.get("hasReturnOnlinePay")) {
+                                //返回第三方支付金额
+                                if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                                    if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //支付宝退款
+                                        onlinePayRefundService.alipayRefundRequest(
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
 
-                                } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
-                                    //微信退款方法类
-                                    onlinePayRefundService.wechatReturnMoney(
-                                            returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
+                                    } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //微信退款方法类
+                                        onlinePayRefundService.wechatReturnMoney(
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
 
-                                } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
-                                    //创建退单退款详情实体
-                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                                    returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
-                                    returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
-                                    //TODO 时间待定
-                                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                                    //TODO 第三方回复码
-                                    returnOrderBillingDetail.setReplyCode("");
-                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
-                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                    } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //创建退单退款详情实体
+                                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                                        returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                                        //TODO 时间待定
+                                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                        //TODO 第三方回复码
+                                        returnOrderBillingDetail.setReplyCode("");
+                                        returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                    }
                                 }
                             }
+                            //修改取消订单处理状态
+                            returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+
+                            logger.info("cancelOrderToWms OUT,正常退货成功");
+                        } else {
+                            logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
+                            return AppXmlUtil.resultStrXml(1, "正常退货业务逻辑处理失败!");
                         }
-                        //修改取消订单处理状态
-                        returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
-                        logger.info("cancelOrderToWms OUT,正常退货成功");
-                    } else {
-                        logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
-                        return AppXmlUtil.resultStrXml(1, "正常退货业务逻辑处理失败!");
+                        //保存物流信息
+                        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
+                        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+                    } catch (Exception e) {
+                        logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常! 出参 e:{}", e);
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        return AppXmlUtil.resultStrXml(1, "返配上架事务出现异常!");
                     }
-                    //保存物流信息
-                    ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(header);
-                    returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
                     // rabbitMq 记录退单销量
                     sellDetailsSender.sendReturnOrderSellDetailsTOManagement(header.getPoNo());
@@ -361,7 +375,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         //调用取消订单通用方法
                         Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
                         ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-                        if (maps.get("code").equals("SUCCESS")) {
+                        if ("SUCCESS".equals(maps.get("code"))) {
 
                             //如果是待收货、门店自提单则需要返回第三方支付金额
                             if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
@@ -395,9 +409,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             //修改取消订单处理状态
                             cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
                             logger.info("cancelOrderToWms OUT,取消订单成功");
-                            return AppXmlUtil.resultStrXml(1, "取消订单业务逻辑处理失败!");
                         } else {
                             logger.info("getReturnOrderList OUT,取消订单失败");
+                            return AppXmlUtil.resultStrXml(1, "取消订单业务逻辑处理失败!");
                         }
                     } else {
                         logger.info("cancelOrderToWms CALLED,发送提货码，入参 mobile:{}", orderBaseInfo.getCreatorPhone());
@@ -465,6 +479,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     } else {
                         //如果申请取消退货单失败退回为原来的退货申请状态
                         returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.PENDING_PICK_UP);
+                        // TODO 推送取消订单失败的个人系统消息
+
+
+
                     }
                 }
                 logger.info("GetWMSInfo OUT,获取取消退单结果确认wms信息成功 出参 code=0");

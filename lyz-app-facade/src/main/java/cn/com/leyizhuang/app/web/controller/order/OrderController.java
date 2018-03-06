@@ -465,6 +465,7 @@ public class OrderController {
             //取出所有赠品的id和计算赠品数量
             if (AssertUtil.isNotEmpty(giftList)) {
                 for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
+
                     if (null != promotionSimpleInfo.getPresentInfo()) {
                         giftsList.addAll(promotionSimpleInfo.getPresentInfo());
                         for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {

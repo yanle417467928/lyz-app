@@ -151,8 +151,8 @@
                                                 <th>ID</th>
                                                 <th>sku</th>
                                                 <th>商品名</th>
-                                                <th>会员价</th>
                                                 <th>零售价</th>
+                                                <th>会员价</th>
                                                 <th>数量</th>
                                                 <th>操作</th>
                                             </tr>

@@ -1299,7 +1299,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
             //获取订单使用现金券
-            List<OrderCouponInfo> orderCashCouponList = productCouponService.findOrderCouponByCouponTypeAndOrderId(orderBaseInfo.getCreatorId(), OrderCouponType.CASH_COUPON);
+            List<OrderCouponInfo> orderCashCouponList = productCouponService.findOrderCouponByCouponTypeAndOrderId(orderBaseInfo.getId(), OrderCouponType.CASH_COUPON);
             if (AssertUtil.isNotEmpty(orderCashCouponList)) {
                 for (OrderCouponInfo orderCashCoupon : orderCashCouponList) {
                     //查询现金券原信息

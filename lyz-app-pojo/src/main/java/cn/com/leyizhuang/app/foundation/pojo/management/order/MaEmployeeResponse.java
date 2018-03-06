@@ -46,4 +46,9 @@ public class MaEmployeeResponse {
      * 门店预存款余额
      */
     private Double balance;
+
+    /**
+     * 员工登录名
+     */
+    private String loginName;
 }
