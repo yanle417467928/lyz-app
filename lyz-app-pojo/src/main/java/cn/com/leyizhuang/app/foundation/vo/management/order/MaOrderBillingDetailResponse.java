@@ -33,6 +33,10 @@ public class MaOrderBillingDetailResponse {
      */
     private Double memberDiscount;
     /**
+     * 订单金额小计
+     */
+    private Double orderAmountSubtotal;
+    /**
      * 应付金额
      */
     private Double amountPayable;

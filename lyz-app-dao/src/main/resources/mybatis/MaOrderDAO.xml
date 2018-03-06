@@ -428,7 +428,8 @@
         lebi_cash_discount lebiCashDiscount,
         cash_coupon_discount cashCouponDiscount,
         st_subvention subvention,
-        order_amount_subtotal amountPayable,
+        amount_payable amountPayable,
+        order_amount_subtotal orderAmountSubtotal,
         product_coupon_discount productCouponDiscount
         FROM
         ord_billing_details

@@ -353,6 +353,11 @@
                                     <td>-¥${orderBillingDetail.lebiCashDiscount!'0.00'}</td>
                                 </tr>
                                 <tr>
+                                    <th>订单金额小计</th>
+                                    <td style="color: red;font-weight:bold">
+                                        &nbsp¥${orderBillingDetail.orderAmountSubtotal!'0.00'}</td>
+                                </tr>
+                                <tr>
                                     <th>应付金额</th>
                                     <td style="color: red;font-weight:bold">
                                         &nbsp¥${orderBillingDetail.amountPayable!'0.00'}</td>

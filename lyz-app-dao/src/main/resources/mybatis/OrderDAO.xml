@@ -783,8 +783,7 @@
         FROM ord_base_info
         WHERE creator_id = #{id}
               AND creator_identity_type != 'CUSTOMER'
-              AND (status = 'PENDING_RECEIVE'
-              OR  status = 'PENDING_SHIPMENT')
+              AND status = 'PENDING_RECEIVE'
     </select>
 
 
@@ -793,8 +792,7 @@
         FROM ord_base_info
         WHERE (customer_id = #{id}
                OR (creator_id = #{id} AND creator_identity_type = 'CUSTOMER'))
-               AND (status = 'PENDING_RECEIVE'
-               OR  status = 'PENDING_SHIPMENT')
+               AND status = 'PENDING_RECEIVE'
     </select>
 
 

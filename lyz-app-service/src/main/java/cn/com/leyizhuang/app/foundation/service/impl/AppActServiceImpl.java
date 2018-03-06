@@ -598,6 +598,7 @@ public class AppActServiceImpl implements AppActService {
                 }
             }
         }
+        logger.info("促销："+act.getTitle()+",包含赠品"+giftIdList.size()+"件");
 
         List<GiftListResponseGoods> giftListResponseGoods = new ArrayList<>();
         giftListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
@@ -631,7 +632,7 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
-        logger.info("享受："+act.getTitle()+",赠品"+giftListResponseGoods.size()+"件");
+        logger.info("享受："+act.getTitle()+",价目表下存在 有效赠品"+giftListResponseGoods.size()+"件");
 
         response.setGiftList(giftListResponseGoods);
         return response;
