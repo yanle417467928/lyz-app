@@ -784,7 +784,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 rechargeOrderList.add(rechargeOrder);
             }
             //门店现金
-            if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() > AppConstant.DOUBLE_ZERO) {
+            if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() != 0D) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CASH, orderBillingDetails.getStoreCash(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
