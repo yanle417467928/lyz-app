@@ -522,13 +522,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Transactional
     public String auditOrderStatus(String orderNumber, String status) throws RuntimeException {
         if (ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status)) {
+            Date date = new Date();
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNumber);
             MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfo(orderNumber);
-
-
             //生成收款单号
             String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
-
             Double collectionAmount = orderTempInfo.getCollectionAmount();
             Double realMoney = maOrderArrearsAudit.getRealMoney();
             //生成代收款记录
@@ -545,41 +543,50 @@ public class MaOrderServiceImpl implements MaOrderService {
                     maOrderArrearsAudit.getPaymentMethod(), orderNumber, PaymentSubjectType.DELIVERY_CLERK,
                     PaymentSubjectType.DELIVERY_CLERK.getDescription(), realMoney, null, receiptNumber);
             this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
-
-            //修改订单欠款
-            OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-            orderBillingDetails.setOrderNumber(orderNumber);
-            orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), realMoney));
-            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
-
-            //获取导购信用金
-            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
-
-            //返还信用金后导购信用金额度
-            Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + realMoney);
-
-            //修改导购信用额度
-            Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(empCreditMoney.getEmpId(), realMoney, empCreditMoney.getLastUpdateTime());
-            if (affectLine > 0) {
-                //记录导购信用金变更日志
-                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                empCreditMoneyChangeLog.setEmpId(null);
-                empCreditMoneyChangeLog.setCreateTime(new Date());
-                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(realMoney);
-                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
-                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-                empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
-                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
-                //保存日志
-                appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
-
+            if (realMoney >= 0) {
+                //修改订单欠款
+                OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                orderBillingDetails.setOrderNumber(orderNumber);
+                orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), realMoney));
+                if (orderBillingDetails.getArrearage() > 0D) {
+                    orderBillingDetails.setIsPayUp(false);
+                } else {
+                    orderBillingDetails.setIsPayUp(true);
+                    orderBillingDetails.setPayUpTime(date);
+                }
+                if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
+                    orderBillingDetails.setDeliveryCash(collectionAmount);
+                    orderBillingDetails.setDeliveryPos(0D);
+                } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
+                    orderBillingDetails.setDeliveryCash(0D);
+                    orderBillingDetails.setDeliveryPos(collectionAmount);
+                }
+                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                //获取导购信用金
+                EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+                //返还信用金后导购信用金额度
+                Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + realMoney);
+                //修改导购信用额度
+                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(empCreditMoney.getEmpId(), realMoney, empCreditMoney.getLastUpdateTime());
+                if (affectLine > 0) {
+                    //记录导购信用金变更日志
+                    EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                    empCreditMoneyChangeLog.setEmpId(null);
+                    empCreditMoneyChangeLog.setCreateTime(date);
+                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(realMoney);
+                    empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                    empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
+                    empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                    empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                    empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                    //保存日志
+                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+                }
             }
             //生成订单物流详情
             OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
             orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), maOrderArrearsAudit.getPicture(), "", "");
             this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-
             //修改订单状态
             OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
             orderBaseInfo.setOrderNumber(orderNumber);
@@ -646,7 +653,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //设置订单收款信息并存入订单账款支付明细表
-       //返回收款单号
+        //返回收款单号
         List<String> receiptNumberList = new ArrayList<String>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
