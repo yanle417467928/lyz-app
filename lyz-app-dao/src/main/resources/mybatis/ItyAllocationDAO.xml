@@ -23,7 +23,7 @@
         city_name,
         DATE_FORMAT(modify_time,'%Y-%m-%d %H:%i:%s') modify_time
         from ity_allocation
-        WHERE allocation_from = #{storeId} or allocation_to = #{}
+        WHERE (allocation_from = #{storeId} or allocation_to = #{storeId})
         <if test="null != keywords">
              and ity_allocation.number LIKE concat('%',#{keywords},'%')
         </if>
@@ -71,7 +71,7 @@
         city_name,
         DATE_FORMAT(modify_time,'%Y-%m-%d %H:%i:%s') modify_time
         from ity_allocation
-        WHERE TRUE
+        WHERE (allocation_from = #{storeId} or allocation_to = #{storeId})
         <if test="null != city and city != -1">
             AND city_id = #{city}
         </if>

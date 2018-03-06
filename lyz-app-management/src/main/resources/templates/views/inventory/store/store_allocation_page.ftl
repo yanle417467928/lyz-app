@@ -24,7 +24,7 @@
         <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
-    <h1>加载中...</h1>
+    <h1>调拨单管理</h1>
 </#if>
 </section>
 
@@ -42,9 +42,9 @@
                         <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
                             <i class="fa fa-search"></i> 查询
                         </button>
-                        <button type="reset" class="btn btn-default">
-                            <i class="fa fa-print"></i> 重置
-                        </button>
+                        <#--<button type="reset" class="btn btn-default">-->
+                            <#--<i class="fa fa-print"></i> 重置-->
+                        <#--</button>-->
                         <input type="hidden" id="formName" name="formName">
                         <input type="hidden" id="toName" name="toName">
                         <input type="hidden" id="city" name="city">

@@ -72,6 +72,12 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
+    public List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(Long cityId,Long storeId) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityIdExcludeStoreId(cityId,storeId);
+        return storeList;
+    }
+
+    @Override
     public StoreDetailVO queryStoreVOById(Long storeId) {
         StoreDetailVO storeVO = this.mastoreDAO.findStoresVOById(storeId);
         return storeVO;
