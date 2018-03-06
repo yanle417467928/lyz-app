@@ -251,7 +251,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         // 记录调拨轨迹
         AllocationTrail trail = new AllocationTrail();
         trail.setAllocationId(allocation.getId());
-        trail.setOperator(shiroUser.getName());
+        trail.setOperator(shiroUser.getLoginName());
         trail.setOperateTime(new Date());
         trail.setOperation(AllocationTypeEnum.NEW);
         ityAllocationDAO.insertAllocationTrail(trail);

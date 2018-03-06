@@ -1,11 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.views.inventory;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
-import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
-import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,12 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
     @Autowired
     private MaStoreService storeService;
+
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
+    @Autowired
+    private CityService cityService;
 
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
@@ -72,8 +77,18 @@ public class AppAdminStoreInventoryViewController extends BaseController {
 
         // 获取当前登录帐号
         ShiroUser user = super.getShiroUser();
-        // TODO 获取用户下城市信息
-        List<SimpleStoreParam> storeList =  storeService.findStoresListByCityId(1L);
+
+        List<Long> storeIds = adminUserStoreService.findStoreIdList();
+        if (storeIds == null || storeIds.size() == 0){
+            // 没有门店信息 重新登录
+            return "/views/user/login";
+        }
+
+        AppStore appStore = storeService.findAppStoreByStoreId(storeIds.get(0));
+
+        // 获取用户城市下门店信息
+        List<SimpleStoreParam> storeList =  storeService.findStoresListByCityIdExcludeStoreId(appStore.getCityId(),appStore.getStoreId());
+
         model.addAttribute("stores",storeList);
         return "/views/inventory/store/store_allocation_add";
     }
@@ -86,6 +101,15 @@ public class AppAdminStoreInventoryViewController extends BaseController {
      */
     @RequestMapping("/allocation/detail/{id}")
     public String allocationDetail(@PathVariable Long id, Model model){
+
+        List<Long> storeIds = adminUserStoreService.findStoreIdList();
+        if (storeIds == null || storeIds.size() == 0){
+            // 没有门店信息 重新登录
+            return "/views/user/login";
+        }
+
+        AppStore appStore = storeService.findAppStoreByStoreId(storeIds.get(0));
+        model.addAttribute("store",appStore);
 
         // 获取调拨单详情
         allocationService.queryAllocationDetail(id,model);

@@ -35,7 +35,8 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="allocation_form" enctype="multipart/form-data">
-                    <input type="hidden" id="allocationId" value="<#if allocation?? && allocation.id??>${allocation.id?c}</#if>"/>
+                    <input type="hidden" id="allocationId"
+                           value="<#if allocation?? && allocation.id??>${allocation.id?c}</#if>"/>
 
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
@@ -263,27 +264,44 @@
 
                     <#if allocation?? && allocation.status??>
                         <#if allocation.status == "NEW">
-                            <div class="col-xs-12 col-md-2">
-                                <button id="sent_btn" type="button" class="btn btn-primary footer-btn">
-                                    <i class="fa fa-check"></i> 出库
-                                </button>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
-                                <button id="cancelled_btn" type="button" class="btn btn-warning footer-btn">
-                                    <i class="fa fa-close"></i> 作废
-                                </button>
-                            </div>
+                            <#if allocation.allocationFrom == store.storeId>
+                                <div class="col-xs-12 col-md-2">
+
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                    <button id="sent_btn" type="button" class="btn btn-primary footer-btn">
+                                        <i class="fa fa-check"></i> 出库
+                                    </button>
+                                </div>
+                            </#if>
+
+                            <#if allocation.allocationTo == store.storeId>
+                                <div class="col-xs-12 col-md-2">
+
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                    <button id="cancelled_btn" type="button" class="btn btn-warning footer-btn">
+                                        <i class="fa fa-close"></i> 作废
+                                    </button>
+                                </div>
+                            </#if>
+
                         <#elseif allocation.status == "SENT">
                             <div class="col-xs-12 col-md-2">
-                                <button id="entered_btn" type="button" class="btn btn-success footer-btn">
-                                    <i class="fa fa-check"></i> 入库
-                                </button>
+
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <button id="cancelled_btn" type="button" class="btn btn-warning footer-btn">
-                                    <i class="fa fa-close"></i> 作废
-                                </button>
-                            </div>
+                            <#if allocation.allocationTo == store.storeId>
+                                <div class="col-xs-12 col-md-2">
+                                    <button id="entered_btn" type="button" class="btn btn-success footer-btn">
+                                        <i class="fa fa-check"></i> 入库
+                                    </button>
+                                </div>
+                            <#else>
+                                <div class="col-xs-12 col-md-2">
+
+                                </div>
+                            </#if>
+
                         <#elseif allocation.status == "ENTERED">
                             <div class="col-xs-12 col-md-2">
 
