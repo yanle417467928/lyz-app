@@ -209,28 +209,16 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log) {
         if (null !=log){
             EmpCreditMoneyChangeLogDO  empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
-            if(null!=log.getCreditLimitAvailableChangeAmount() && 0!=log.getCreditLimitAvailableChangeAmount()){
+            if(null!=log.getCreditLimitAvailableChangeAmount() && 0D!=log.getCreditLimitAvailableChangeAmount()){
                 EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog =new EmpAvailableCreditMoneyChangeLog();
-                if("PLACE_ORDER".equals(log.getChangeType().toString())){
-                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
-                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getDescription());
-                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
-                }else if("RETURN_ORDER".equals(log.getChangeType().toString())){
-                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.RETURN_ORDER);
-                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.RETURN_ORDER.getDescription());
-                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
-                }else if("CANCEL_ORDER".equals(log.getChangeType().toString())){
-                    empAvailableCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.CANCEL_ORDER);
-                    empAvailableCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.CANCEL_ORDER.getDescription());
-                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
-                }else{
-                    empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
-                }
+                empAvailableCreditMoneyChangeLog.setChangeType(log.getChangeType());
+                empAvailableCreditMoneyChangeLog.setChangeTypeDesc(log.getChangeType().getDescription());
+                empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
                 empAvailableCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(log.getCreditLimitAvailableChangeAmount());
                 Long id = employeeDAO.saveCreditLimitAvailableChange(empAvailableCreditMoneyChangeLog);
                 empCreditMoneyChangeLogDO.setAvailableCreditChangId(empAvailableCreditMoneyChangeLog.getId());
             }
-            if(null!=log.getTempCreditLimitChangeAmount()&& 0!=log.getTempCreditLimitChangeAmount()){
+            if(null!=log.getTempCreditLimitChangeAmount()&& 0D!=log.getTempCreditLimitChangeAmount()){
                 EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog = new EmpTempCreditMoneyChangeLog();
                 empTempCreditMoneyChangeLog.setTempCreditLimitAfterChange(log.getTempCreditLimitAfterChange());
                 empTempCreditMoneyChangeLog.setTempCreditLimitChangeAmount(log.getTempCreditLimitChangeAmount());

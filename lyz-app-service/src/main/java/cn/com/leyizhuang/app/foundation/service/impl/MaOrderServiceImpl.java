@@ -555,11 +555,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                     orderBillingDetails.setPayUpTime(date);
                 }
                 if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
-                    orderBillingDetails.setDeliveryCash(collectionAmount);
+                    orderBillingDetails.setDeliveryCash(realMoney);
                     orderBillingDetails.setDeliveryPos(0D);
                 } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
                     orderBillingDetails.setDeliveryCash(0D);
-                    orderBillingDetails.setDeliveryPos(collectionAmount);
+                    orderBillingDetails.setDeliveryPos(realMoney);
                 }
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
                 //获取导购信用金
