@@ -331,6 +331,7 @@
         ee.emp_id,
         ee.`name`,
         ee.mobile,
+        ee.login_name,
         ss.store_type,
         ss.store_code,
         ss.store_name,
