@@ -790,4 +790,13 @@
         WHERE cus_id = #{userId}
     </update>
 
+    <select id="findCusRankinfoByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse">
+        SELECT
+          c.cus_id, c.name, c.mobile, rc.rank_name, rc.rank_code, rc.city_id, cr.number, cr.create_time
+        FROM cus_customer c
+        INNER JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        INNER JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        WHERE c.cus_id = #{cusId}
+    </select>
+
 </mapper>

@@ -4,12 +4,14 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +34,9 @@ public class GoodsController {
 
     @Resource
     private GoodsService goodsService;
+
+    @Autowired
+    private AppCustomerService appCustomerService;
 
     /**
      * 获取商品列表
@@ -397,6 +402,63 @@ public class GoodsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，筛选商品失败", null);
             logger.warn("filterGoodsList EXCEPTION,筛选商品失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取会员专供商品列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/6
+     */
+    @RequestMapping(value = "/rank/list", method = RequestMethod.POST)
+    public ResultDTO<Object> getRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getRankGoodsListByUserIdAndIdentityType CALLED,获取会员专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
+
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        //只有顾客身份才能购买专供商品
+        if (null == identityType && identityType != 6) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
+            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            CustomerRankInfoResponse rankInfo = this.appCustomerService.findCusRankinfoByCusId(userId);
+            if (null == rankInfo){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
+                logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
+            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取会员专供商品列表失败", null);
+            logger.warn("getRankGoodsListByUserIdAndIdentityType EXCEPTION,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

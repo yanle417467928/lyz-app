@@ -137,4 +137,6 @@ public interface AppCustomerService {
     List<SupportHotlineResponse> getCustomerSupportHotline(Long userId);
 
     List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber);
+
+    CustomerRankInfoResponse findCusRankinfoByCusId(Long cusId);
 }

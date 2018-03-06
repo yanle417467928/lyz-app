@@ -153,4 +153,6 @@ public interface AppCustomerDAO {
     List<SupportHotlineResponse> findAllSupportHotline();
 
     List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber);
+
+    CustomerRankInfoResponse findCusRankinfoByCusId(Long cusId);
 }
