@@ -317,6 +317,11 @@ function initSeller(url) {
         }
     }, {
         field: 'mobile',
+        title: '导购电话',
+        align: 'center',
+        visible:false
+    }, {
+        field: 'loginName',
         title: '导购登录名',
         align: 'center'
     }, {

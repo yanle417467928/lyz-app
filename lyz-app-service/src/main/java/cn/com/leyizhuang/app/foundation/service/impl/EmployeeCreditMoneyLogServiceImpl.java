@@ -29,7 +29,7 @@ public class EmployeeCreditMoneyLogServiceImpl implements EmployeeCreditMoneyLog
             PageHelper.startPage(page, size);
             List<EmployeeCreditMoneyLogResponse> empAvailableCredit = employeeCreditMoneyLogDAO.findEmpAvailableCreditByUserId(userId);
             for (EmployeeCreditMoneyLogResponse response : empAvailableCredit) {
-                response.attributeKindSetByChangeType(response, response.getChangeType());
+                response.attributeKindSetByChangeType(response);
             }
             return new PageInfo<>(empAvailableCredit);
         }
