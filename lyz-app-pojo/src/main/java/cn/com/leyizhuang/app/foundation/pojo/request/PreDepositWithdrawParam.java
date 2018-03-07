@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import lombok.*;
 
@@ -18,6 +19,11 @@ public class PreDepositWithdrawParam {
      * 提现人id
      */
     private Long Id;
+
+    /**
+     * 身份
+     */
+    private AppIdentityType identityType;
 
     /**
      * 真实姓名
