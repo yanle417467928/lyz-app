@@ -10,4 +10,6 @@ public interface MaDecorativeCompanyCreditDAO {
    int updateDecorativeCompanyCredit(DecorativeCompanyCredit decorativeCompanyCredit);
 
    int  updateDecorativeCompanySubvention(DecorativeCompanySubvention decorativeCompanySubvention);
+
+   DecorativeCompanyCredit findDecorativeCompanyCreditByStoreId(Long id);
 }

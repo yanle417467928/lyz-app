@@ -536,10 +536,9 @@ public class MaOrderServiceImpl implements MaOrderService {
                     maOrderArrearsAudit.getSellerId(), maOrderArrearsAudit.getSellerName(), maOrderArrearsAudit.getSellerphone());
             orderAgencyFundDO.setAgencyFundInfo(maOrderArrearsAudit.getPaymentMethod(), realMoney, 0D, maOrderArrearsAudit.getRemarks());
             this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
-
             //创建收款记录
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
-                    orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(maOrderArrearsAudit.getPaymentMethod()),
+                    orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(maOrderArrearsAudit.getPaymentMethod()),
                     maOrderArrearsAudit.getPaymentMethod(), orderNumber, PaymentSubjectType.DELIVERY_CLERK,
                     PaymentSubjectType.DELIVERY_CLERK.getDescription(), realMoney, null, receiptNumber);
             this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
@@ -593,6 +592,8 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
             orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
             this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+            //修改审核状态
+            this.maOrderDAO.auditOrderStatus(orderNumber, status);
             //传ebs收款接口
             return receiptNumber;
         }

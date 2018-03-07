@@ -1,6 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StoreCreditMoneyChangeType;
+import cn.com.leyizhuang.app.core.utils.IpUtil;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
@@ -12,11 +17,14 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -148,11 +156,23 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
      * @return
      */
     @PutMapping
-    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyCredit decorativeCompanyCredit, @Valid DecorativeCompanySubvention decorativeCompanySubvention, BindingResult result) {
+    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyCredit decorativeCompanyCredit, @Valid DecorativeCompanySubvention decorativeCompanySubvention, BindingResult result, HttpServletRequest request) {
         logger.info("updateDecorativeCompanyCredit 编辑装饰公司信用金 ,入参 decorativeCompanyCredit:{}, decorativeCompanySubvention:{}", decorativeCompanyCredit, decorativeCompanySubvention);
         try {
             if (!result.hasErrors()) {
-                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit);
+                ShiroUser shiroUser = this.getShiroUser();
+                DecorativeCompanyCredit decorativeCompanyCreditBefore = maDecorativeCompanyCreditService.findDecorativeCompanyCreditByStoreId(decorativeCompanyCredit.getStoreId());
+                StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+                storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyCredit.getCredit().subtract(decorativeCompanyCreditBefore.getCredit()).doubleValue());
+                storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.ADMIN_RECHARGE);
+                storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
+                storeCreditMoneyChangeLog.setCreateTime(new Date());
+                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyCredit.getCredit().doubleValue());
+                storeCreditMoneyChangeLog.setStoreId(decorativeCompanyCredit.getStoreId());
+                storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
+                storeCreditMoneyChangeLog.setOperatorIp(IpUtil.getIpAddress(request));
+                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit,storeCreditMoneyChangeLog);
                 this.maDecorativeCompanyCreditService.updateDecorativeCompanySubvention(decorativeCompanySubvention);
                 logger.info("updateDecorativeCompanyCredit ,编辑装饰公司信用金成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

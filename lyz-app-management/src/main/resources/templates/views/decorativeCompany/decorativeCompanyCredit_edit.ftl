@@ -49,7 +49,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input type="hidden" name="id" id="id"
+                                    <input type="hidden" name="storeId" id="id"
                                     <#if decorativeCompanyVO?? && decorativeCompanyVO.id??>
                                            value="${(decorativeCompanyVO.id)?c}"
                                     <#else>

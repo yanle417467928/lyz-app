@@ -11,6 +11,8 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaCashCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
@@ -18,9 +20,14 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -29,7 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,11 +64,16 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private MaCouponService maCouponService;
     @Resource
     private ProductCouponService productCouponService;
-
     @Resource
     private CashCouponService cashCouponService;
     @Resource
     private AppCustomerService appCustomerService;
+    @Resource
+    private AppSeparateOrderService appSeparateOrderService;
+    @Resource
+    private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
+
+
 
     @Override
     public PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size) {
@@ -192,7 +206,6 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
-
         //查询该订单下的所有商品
         List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findReturnOrderGoodsList(returnNumber);
 
@@ -233,7 +246,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 }
             }
         }
-        //生成ebs接口表数据
+        //门店退货生成ebs接口表数据
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maReturnOrderDetailInfo.getOrderNo());
         MaStoreReturnOrderAppToEbsBaseInfo maStoreReturnOrderAppToEbs = new MaStoreReturnOrderAppToEbsBaseInfo();
         maStoreReturnOrderAppToEbs.setSobId(maOrderTempInfo.getSobId());
@@ -251,8 +264,22 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         Double stPreDepositAmount = maOrdReturnBillingList.getStPreDeposit();
         Long roid = maOrdReturnBillingList.getRoid();
 
+        //退款生成ebs接口表数据
         List<MaOrdReturnBillingDetail> maOrdReturnBillingDetailList = new ArrayList<MaOrdReturnBillingDetail>();
         Date ReturnDate = new Date();
+
+        //设置接口表类退款信息
+        ReturnOrderRefundInf returnOrderRefundInf = new ReturnOrderRefundInf();
+        returnOrderRefundInf.setMainOrderNumber(maOrderTempInfo.getOrderNumber());
+        returnOrderRefundInf.setMainReturnNumber(returnNumber);
+        returnOrderRefundInf.setRefundNumber(OrderUtils.getRefundNumber());
+        returnOrderRefundInf.setUserId(maOrderTempInfo.getCustomerId());
+        returnOrderRefundInf.setDiySiteCode(maOrderTempInfo.getStoreCode());
+        returnOrderRefundInf.setStoreOrgCode(maOrderTempInfo.getStoreStructureCode());
+        returnOrderRefundInf.setRefundDate(date);
+        returnOrderRefundInf.setSobId(maOrderTempInfo.getSobId());
+        returnOrderRefundInf.setCreateTime(date);
+
         //退现金
         if (null != cashAmount && cashAmount > 0) {
             MaOrdReturnBillingDetail maOrdReturnBillingCash = new MaOrdReturnBillingDetail();
@@ -263,11 +290,122 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             maOrdReturnBillingCash.setReturnPayType(OrderBillingPaymentType.CASH.getValue());
             maOrdReturnBillingCash.setRoid(roid);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingCash);
+            //退款信息保存到ebs接口表
+            returnOrderRefundInf.setAmount(cashAmount);
+            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CASH);
+            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CASH.getDescription());
+            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
         }
 
         //退线上支付
         if (null != onlinePayAmount && onlinePayAmount > 0) {
-            //查询原订单线上支付方式
+            Calendar calendar = Calendar.getInstance();
+            //获取三个月以前的时间
+            calendar.add(Calendar.MONTH, -3);
+            //判断是否查过三个月 如果超过三个月退预存款 否则原路退回
+            if (maOrderTempInfo.getCreateTime().before(calendar.getTime())) {
+                if (AppIdentityType.CUSTOMER.equals(maReturnOrderDetailInfo.getCreatorIdentityType())) {
+                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                        //获取顾客预存款
+                        CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(maReturnOrderDetailInfo.getCustomerId());
+                        //返还预存款后顾客预存款金额
+                        Double cusPreDeposit = (customerPreDeposit.getBalance() + onlinePayAmount);
+                        //更改顾客预存款金额
+                        Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(maReturnOrderDetailInfo.getCustomerId(), maOrdReturnBillingList.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            //记录预存款日志
+                            CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                            cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                            cusPreDepositLogDO.setChangeMoney(maOrdReturnBillingList.getOnlinePay());
+                            cusPreDepositLogDO.setOrderNumber(maOrderTempInfo.getOrderNumber());
+                            cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.RETURN_ORDER);
+                            cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.RETURN_ORDER.getDescription());
+                            cusPreDepositLogDO.setCusId(maOrderTempInfo.getCustomerId());
+                            cusPreDepositLogDO.setOperatorId(maReturnOrderDetailInfo.getCreatorId());
+                            cusPreDepositLogDO.setOperatorType(maReturnOrderDetailInfo.getCreatorIdentityType());
+                            cusPreDepositLogDO.setBalance(cusPreDeposit);
+                            cusPreDepositLogDO.setDetailReason(ReturnOrderType.NORMAL_RETURN.getDescription());
+                            cusPreDepositLogDO.setTransferTime(LocalDateTime.now());
+                            cusPreDepositLogDO.setRemarks("退还第三方支付转预存款");
+                            cusPreDepositLogDO.setMerchantOrderNumber(returnNumber);
+                            //保存日志
+                            appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
+                            //保存订单退款详情
+                            MaOrdReturnBillingDetail maOrdReturnBillingPreDeposit = new MaOrdReturnBillingDetail();
+                            maOrdReturnBillingPreDeposit.setCreateTime(calendar.getTime());
+                            maOrdReturnBillingPreDeposit.setRoid(maReturnOrderDetailInfo.getRoid());
+                            maOrdReturnBillingPreDeposit.setReturnNo(returnNumber);
+                            maOrdReturnBillingPreDeposit.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY.getValue());
+                            maOrdReturnBillingPreDeposit.setReturnMoney(BigDecimal.valueOf(onlinePayAmount));
+                            maOrdReturnBillingPreDeposit.setIntoAmountTime(Calendar.getInstance().getTime());
+                            maOrdReturnBillingPreDeposit.setReplyCode(null);
+                            maOrdReturnBillingPreDeposit.setRefundNumber(OrderUtils.getRefundNumber());
+                            maOrdReturnBillingDetailList.add(maOrdReturnBillingPreDeposit);
+
+                            //退款信息保存到ebs接口表
+                            returnOrderRefundInf.setAmount(onlinePayAmount);
+                            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CUS_PREPAY);
+                            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CUS_PREPAY.getDescription());
+                            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    }
+                } else if (AppIdentityType.SELLER.equals(maReturnOrderDetailInfo.getCreatorIdentityType()) ||
+                        AppIdentityType.DECORATE_MANAGER.equals(maReturnOrderDetailInfo.getCreatorIdentityType())) {
+                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                        //获取门店预存款
+                        StorePreDepositVO storePreDeposit = maStoreService.queryStorePredepositByStoreId(maReturnOrderDetailInfo.getStoreId());
+                        //返还预存款后门店预存款金额
+                        Double stPreDeposit = (Double.parseDouble(storePreDeposit.getBalance()) + onlinePayAmount);
+                        //修改门店预存款
+                        Integer affectLine = maStoreService.updateStPreDepositByUserIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+
+                            StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                            stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                            stPreDepositLogDO.setChangeMoney(stPreDepositAmount);
+                            stPreDepositLogDO.setRemarks("退还第三方支付转预存款");
+                            stPreDepositLogDO.setOrderNumber(maReturnOrderDetailInfo.getOrderNo());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
+                            stPreDepositLogDO.setStoreId(maReturnOrderDetailInfo.getStoreId());
+                            stPreDepositLogDO.setOperatorId(null);
+                            stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                            stPreDepositLogDO.setBalance(stPreDeposit);
+                            stPreDepositLogDO.setDetailReason(StorePreDepositChangeType.RETURN_ORDER.getDescription());
+                            stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
+                            //保存日志
+                            maStoreService.saveStorePreDepositLog(stPreDepositLogDO);
+
+                            MaOrdReturnBillingDetail maOrdReturnBillingStPreDeposit = new MaOrdReturnBillingDetail();
+                            maOrdReturnBillingStPreDeposit.setCreateTime(ReturnDate);
+                            maOrdReturnBillingStPreDeposit.setIntoAmountTime(ReturnDate);
+                            maOrdReturnBillingStPreDeposit.setRefundNumber(OrderUtils.getRefundNumber());
+                            maOrdReturnBillingStPreDeposit.setReturnMoney(BigDecimal.valueOf(stPreDepositAmount));
+                            maOrdReturnBillingStPreDeposit.setReturnPayType(OrderBillingPaymentType.ST_PREPAY.getValue());
+                            maOrdReturnBillingStPreDeposit.setRoid(roid);
+                            maOrdReturnBillingStPreDeposit.setReturnNo(returnNumber);
+                            maOrdReturnBillingDetailList.add(maOrdReturnBillingStPreDeposit);
+
+                            //退款信息保存到ebs接口表
+                            returnOrderRefundInf.setAmount(onlinePayAmount);
+                            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
+                            returnOrderRefundInf.setDescription(OrderBillingPaymentType.ST_PREPAY.getDescription());
+                            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    }
+                }
+            }
+
+/*            //查询原订单线上支付方式
             List<MaPaymentData> paymentDataList = maOrderService.findPaymentDataByOrderNo(maReturnOrderDetailInfo.getOrderNo());
             for (MaPaymentData maPaymentData : paymentDataList) {
                 MaOrdReturnBillingDetail maOrdReturnBillingDetail = new MaOrdReturnBillingDetail();
@@ -277,8 +415,12 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 maOrdReturnBillingDetail.setReturnMoney(BigDecimal.valueOf(maPaymentData.getTotalFee()));
                 maOrdReturnBillingDetail.setReturnPayType(maPaymentData.getOnlinePayType().toString());
                 maOrdReturnBillingDetail.setRoid(roid);
+                returnOrderRefundInf.setAmount(onlinePayAmount);
+                returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CASH);
+                returnOrderRefundInf.setDescription(OrderBillingPaymentType.CASH.getDescription());
+                appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
                 maOrdReturnBillingDetailList.add(maOrdReturnBillingDetail);
-            }
+            }*/
         }
 
         //退顾客预存款
@@ -291,6 +433,13 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             maOrdReturnBillingPreDeposit.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY.getValue());
             maOrdReturnBillingPreDeposit.setRoid(roid);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingPreDeposit);
+
+            //退款信息保存到ebs接口表
+            returnOrderRefundInf.setAmount(preDepositAmount);
+            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CUS_PREPAY);
+            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CUS_PREPAY.getDescription());
+            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
+
             //获得顾客预存款
             Long customerId = maReturnOrderDetailInfo.getCustomerId();
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -332,6 +481,13 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             maOrdReturnBillingStPreDepositAmount.setReturnPayType(OrderBillingPaymentType.ST_PREPAY.getValue());
             maOrdReturnBillingStPreDepositAmount.setRoid(roid);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingStPreDepositAmount);
+
+            //退款信息保存到ebs接口表
+            returnOrderRefundInf.setAmount(stPreDepositAmount);
+            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
+            returnOrderRefundInf.setDescription(OrderBillingPaymentType.ST_PREPAY.getDescription());
+            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
+
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //获取门店预存款
                 StorePreDepositVO storePreDeposit = maStoreService.queryStorePredepositByStoreId(maReturnOrderDetailInfo.getStoreId());
@@ -365,8 +521,26 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //TODO 是否退导购信用额度
         if (null != creditMoneyAmount && creditMoneyAmount > 0) {
         }
-        //TODO 是否退门店信用额度
+        //退装饰公司信用金
         if (null != stCreditMoneyAmount && stCreditMoneyAmount > 0) {
+            Long storeId = maReturnOrderDetailInfo.getStoreId();
+            StoreDetailVO storeVO = maStoreService.queryStoreVOById(storeId);
+            if("ZS".equals(storeVO.getStoreType())){
+                DecorativeCompanyInfo decorativeCompanyInfo =maStoreService.queryDecorativeCompanyCreditById(storeId);
+                DecorativeCompanyCredit decorativeCompanyCredit = decorativeCompanyInfo.getCredit();
+                decorativeCompanyCredit.setCredit(decorativeCompanyCredit.getCredit().add(BigDecimal.valueOf(stCreditMoneyAmount)));
+                StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+                storeCreditMoneyChangeLog.setChangeAmount(stCreditMoneyAmount);
+                storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);
+                storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.RETURN_ORDER.getDescription());
+                storeCreditMoneyChangeLog.setCreateTime(date);
+                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(stCreditMoneyAmount+decorativeCompanyCredit.getCredit().doubleValue());
+                storeCreditMoneyChangeLog.setStoreId(storeId);
+                storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
+                storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                storeCreditMoneyChangeLog.setReferenceNumber(returnNumber);
+                maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit,storeCreditMoneyChangeLog);
+            }
         }
 
 

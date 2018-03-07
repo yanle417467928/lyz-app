@@ -512,7 +512,6 @@ public class ReturnOrderController {
                         for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
                             if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
                                     productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
-
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
                                 returnOrderProductCoupon.setGid(returnOrderGoodsInfo.getGid());
                                 returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
