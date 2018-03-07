@@ -1359,6 +1359,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
             //修改订单状态为拒签,物流状态拒签
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED, LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
+            maps.put("returnOrderGoodsInfos",returnOrderGoodsInfos);
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
