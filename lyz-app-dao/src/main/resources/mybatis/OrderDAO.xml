@@ -242,9 +242,9 @@
     <select id="getTotalGoodsPriceByOrderNumber" resultType="java.lang.Double">
         SELECT total_goods_price
         FROM
-        ord_billing_details
+            ord_billing_details
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
     <select id="querySumQtyByOrderNumber" resultType="java.lang.Integer">
@@ -266,7 +266,40 @@
 
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-        SELECT *
+        SELECT
+            oid id,
+            ord_no order_number,
+            order_type,
+            create_time,
+            effective_end_time,
+            status,
+            delivery_status,
+            pick_up_code,
+            delivery_type,
+            order_subject_type,
+            creator_identity_type,
+            creator_id,
+            creator_name,
+            creator_phone,
+            store_id,
+            store_code,
+            store_structure_code,
+            sales_consult_id,
+            sales_consult_name,
+            sales_consult_phone,
+            customer_id,
+            customer_name,
+            customer_phone,
+            customer_type,
+            total_goods_price,
+            is_evaluated,
+            audit_no,
+            remark,
+            city_id,
+            city_name,
+            sob_id,
+            store_org_id,
+            sales_number
         FROM
             ord_base_info
         WHERE
@@ -405,10 +438,11 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
         (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number,
-        pay_type_desc, payment_subject_type, payment_subject_type_desc)
+         pay_type_desc, payment_subject_type, payment_subject_type_desc)
         VALUES
-            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode}, #{receiptNumber},
-            #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc})
+            (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
+                         #{receiptNumber},
+                         #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc})
     </insert>
 
     <update id="updateOwnMoneyByOrderNo"
@@ -488,8 +522,8 @@
         (
             oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
             is_price_share, promotion_share_price, lb_share_price, cash_coupon_share_price, cash_return_share_price,
-            return_price, is_returnable, return_priority, order_qty, shipping_qty,return_qty, returnable_qty, settlement_price,
-            price_item_id, company_flag,cover_image_uri
+            return_price, is_returnable, return_priority, order_qty, shipping_qty, return_qty, returnable_qty, settlement_price,
+            price_item_id, company_flag, cover_image_uri
         )
         VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
@@ -498,7 +532,7 @@
                                          #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity},
                                          #{shippingQuantity},
                                          #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
-                #{priceItemId}, #{companyFlag},#{coverImageUri})
+                #{priceItemId}, #{companyFlag}, #{coverImageUri})
 
     </insert>
 
@@ -508,7 +542,7 @@
                                          lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-                                         online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money,store_pos_number)
+                                         online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -517,7 +551,8 @@
                 #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
                 #{storeSubvention}, #{orderAmountSubtotal},
                 #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
-             #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney}, #{storePosNumber}
+                                  #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
+                                  #{storePosNumber}
             )
     </insert>
 
@@ -721,7 +756,7 @@
         </if>
         AND o.status = 'FINISHED'
         AND o.is_evaluated =false
-        ORDER BY  o.create_time DESC
+        ORDER BY o.create_time DESC
     </select>
     <resultMap id="pendingEvaluationOrder" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse">
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>
@@ -792,7 +827,7 @@
         FROM ord_base_info
         WHERE (customer_id = #{id}
                OR (creator_id = #{id} AND creator_identity_type = 'CUSTOMER'))
-               AND status = 'PENDING_RECEIVE'
+              AND status = 'PENDING_RECEIVE'
     </select>
 
 
@@ -822,7 +857,7 @@
         WHERE creator_id = #{id}
               AND creator_identityType != 'CUSTOMER'
               AND return_status != 'FINISHED'
-               AND return_status != 'CANCELED'
+              AND return_status != 'CANCELED'
     </select>
 
 
@@ -831,8 +866,8 @@
         FROM ord_return_base_info
         WHERE (cus_id = #{id}
                OR (creator_id = #{id} AND creator_identityType = 'CUSTOMER'))
-               AND return_status != 'FINISHED'
-               AND return_status != 'CANCELED'
+              AND return_status != 'FINISHED'
+              AND return_status != 'CANCELED'
     </select>
 
     <insert id="saveOrderJxPriceDifferenceReturnDetails"
@@ -854,7 +889,6 @@
                              FROM ord_jx_price_difference_return_details
                              WHERE receipt_number = #{receiptNumber})
     </insert>
-
 
 
     <select id="getOrderJxPriceDifferenceReturnDetailsByOrderNumber" parameterType="java.lang.String"
@@ -916,22 +950,22 @@
     <select id="getOrderBillingDetailListByReceiptNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         SELECT
-        id,
-        oid    orderId,
-        ord_no orderNumber,
-        create_time,
-        pay_time,
-        pay_type,
-        pay_type_desc,
-        payment_subject_type,
-        payment_subject_type_desc,
-        amount,
-        reply_code,
-        receipt_number
+            id,
+            oid    orderId,
+            ord_no orderNumber,
+            create_time,
+            pay_time,
+            pay_type,
+            pay_type_desc,
+            payment_subject_type,
+            payment_subject_type_desc,
+            amount,
+            reply_code,
+            receipt_number
         FROM
-        ord_billing_payment_details
+            ord_billing_payment_details
         WHERE
-        receipt_number = #{receiptNumber}
+            receipt_number = #{receiptNumber}
     </select>
 
 </mapper>
