@@ -164,4 +164,7 @@ public interface GoodsDAO {
      * @return
      */
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId,@Param("queryGoodsInfo") String queryGoodsInfo);
+
+    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId, @Param("identityType") AppIdentityType identityType);
+
 }

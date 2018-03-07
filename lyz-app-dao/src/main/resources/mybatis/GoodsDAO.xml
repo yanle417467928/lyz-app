@@ -397,7 +397,7 @@
             g.cid      category_id,
             g.brd_id   brand_id,
             g.gtid     type_id,
-            m.qty materialQty
+            m.qty      materialQty
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -423,7 +423,7 @@
             g.cid      category_id,
             g.brd_id   brand_id,
             g.gtid     type_id,
-            m.qty materialQty
+            m.qty      materialQty
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -501,7 +501,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
 
         SELECT
-        DISTINCT
+            DISTINCT
             g.gid      id,
             g.cover_image_uri,
             g.sku_name goods_name,
@@ -512,14 +512,14 @@
             g.cid      category_id,
             g.brd_id   brand_id,
             g.gtid     type_id,
-            m.qty materialQty
+            m.qty      materialQty
         FROM
             gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-             LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type
         WHERE
             acg.user_id = #{userId}
             AND acg.identity_type = #{type,
@@ -550,7 +550,7 @@
             g.cid      category_id,
             g.brd_id   brand_id,
             g.gtid     type_id,
-            m.qty materialQty
+            m.qty      materialQty
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -578,7 +578,7 @@
             g.cid      category_id,
             g.brd_id   brand_id,
             g.gtid     type_id,
-            m.qty materialQty
+            m.qty      materialQty
         FROM
             emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -787,10 +787,9 @@
         m.qty materialQty
         FROM
         cus_customer c
-        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
-        AND p.start_time &lt; NOW()
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
         INNER JOIN gds_goods g ON p.gid = g.gid
         INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -907,7 +906,7 @@
         </if>
     </select>
 
-    <select id="queryGoodsPageByInfo"  resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+    <select id="queryGoodsPageByInfo" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
         *
         FROM
@@ -1006,7 +1005,8 @@
         )
     </select>
 
-    <select id="findMaStoreGoodsByStoreId" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+    <select id="findMaStoreGoodsByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
         SELECT
             gg.gid,
             gg.sku,
@@ -1019,13 +1019,14 @@
             ggp.vip_price
         FROM
             gds_goods AS gg
-        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+            INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
         WHERE
             ggp.store_id = #{storeId}
         ORDER BY gid DESC
     </select>
 
-    <select id="screenMaGoodsGrid" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+    <select id="screenMaGoodsGrid"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
         SELECT
         gg.gid,
         gg.sku,
@@ -1053,7 +1054,8 @@
         ORDER BY gid DESC
     </select>
 
-    <select id="queryGoodsPageByStoreIdAndInfo" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+    <select id="queryGoodsPageByStoreIdAndInfo"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
         SELECT
         gg.gid,
         gg.sku,
@@ -1073,4 +1075,36 @@
             AND (gg.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR gg.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
         </if>
     </select>
+
+
+    <select id="findGoodsListByCustomerIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid      id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid      category_id,
+            g.brd_id   brand_id,
+            g.gtid     type_id
+            FROM
+            cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND rc.rank_code = p.price_type
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            WHERE
+            c.cus_id = #{userId}
+        </if>
+    </select>
+
+
 </mapper>

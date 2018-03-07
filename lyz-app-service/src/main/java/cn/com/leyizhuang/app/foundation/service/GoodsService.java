@@ -125,4 +125,6 @@ public interface GoodsService {
      * @return
      */
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Long storeId,String queryGoodsInfo);
+
+    PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, Integer page, Integer size);
 }

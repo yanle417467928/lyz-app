@@ -591,4 +591,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         }
         return null;
     }
+
+    @Override
+    public CustomerRankInfoResponse findCusRankinfoByCusId(Long cusId) {
+        return this.customerDAO.findCusRankinfoByCusId(cusId);
+    }
 }

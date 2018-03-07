@@ -255,7 +255,8 @@ public class WeChatPayController {
             logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (orderBillingDetails.getArrearage() != (orderArrearsAuditDO.getOrderMoney() - orderArrearsAuditDO.getRealMoney())){
+        Double money = CountUtil.sub(orderArrearsAuditDO.getOrderMoney(),orderArrearsAuditDO.getRealMoney());
+        if (orderBillingDetails.getArrearage().equals(money)){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款金额有误，请联系管理员核查！", null);
             logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;

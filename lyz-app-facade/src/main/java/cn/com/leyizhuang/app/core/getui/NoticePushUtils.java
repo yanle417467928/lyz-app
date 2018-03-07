@@ -312,4 +312,36 @@ public class NoticePushUtils {
         System.out.println(ret.getResponse().toString());
 
     }
+
+    /**
+     * 欠款审核信息推送
+     */
+    public static void pushApplyArrearageInfo(Long sellerId) {
+        IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
+        TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
+                new Payload("page/guide/debateAudit.html&", "跳转欠款审核列表"),
+                "您有新的欠款审核，请及时处理!", "欠款审核");
+        ListMessage message = new ListMessage();
+        message.setData(template);
+        // 设置消息离线，并设置离线时间
+        message.setOffline(true);
+        // 离线有效时间，单位为毫秒，可选
+        message.setOfflineExpireTime(24 * 1000 * 3600);
+        // 配置推送目标
+        List<Target> targetList = new ArrayList(5);
+        List<AppUserDevice> userDeviceList = new ArrayList<>();
+        List<AppUserDevice> sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(sellerId, AppIdentityType.SELLER);
+        userDeviceList.addAll(sellerDeviceList);
+        userDeviceList.forEach(p -> {
+            Target target = new Target();
+            target.setAppId(AppConstant.APP_ID);
+            target.setClientId(p.getClientId());
+            targetList.add(target);
+        });
+        // taskId用于在推送时去查找对应的message
+        String taskId = push.getContentId(message);
+        IPushResult ret = push.pushMessageToList(taskId, targetList);
+        System.out.println(ret.getResponse().toString());
+
+    }
 }

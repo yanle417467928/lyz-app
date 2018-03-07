@@ -447,4 +447,11 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         return goodsDAO.queryGoodsPageByStoreIdAndInfo(storeId, queryGoodsInfo);
     }
 
+    @Override
+    public PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType);
+        return new PageInfo<>(list);
+    }
+
 }

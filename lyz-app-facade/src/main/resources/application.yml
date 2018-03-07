@@ -170,3 +170,43 @@ deploy:
 # 生产环境配置
 spring:
   profiles: prod
+  datasource:
+      druid:
+        config:
+          url: jdbc:mysql://rm-wz9805x7ngck809dg.mysql.rds.aliyuncs.com:3306/lyz_app_prd?useUnicode=true&autoReconnect=true&useSSL=true
+          username: root
+          password: root
+          initial-size: 10
+          max-active: 20
+          min-idle: 10
+          max-wait: 60000
+  rabbitmq:
+    host: 119.23.149.7
+    port: 5672
+    username: guest
+    password: guest
+eureka:
+  client:
+    service-url:
+      defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
+
+deploy:
+  image-path: /mnt/root/images/goods
+  alipay:
+    url:
+    async:
+      url: http://119.23.149.7:9999/app/alipay/return/async
+  wechat:
+    async:
+      url: http://119.23.149.7:9999/app/wechatpay/return/async
+    cert:
+      path: /cert/apiclient_cert.p12
+  oss:
+    cdnHosts: img-dev.leyizhuang.com.cn
+    folder: lyz-app/images/
+    bucket: leyizhuang-dev
+  wms:
+    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
+  ebs:
+    url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
+    newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/

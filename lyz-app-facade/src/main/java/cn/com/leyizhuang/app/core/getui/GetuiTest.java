@@ -17,4 +17,9 @@ public class GetuiTest {
         return "success";
     }
 
+    @RequestMapping(value = "/test/getui/arrearage", method = RequestMethod.GET)
+    public String testArrearageInfo() {
+        NoticePushUtils.pushApplyArrearageInfo(1L);
+        return "success";
+    }
 }
