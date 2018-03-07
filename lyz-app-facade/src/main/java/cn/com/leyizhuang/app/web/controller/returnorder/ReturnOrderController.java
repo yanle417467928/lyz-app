@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -299,8 +300,10 @@ public class ReturnOrderController {
 
             String code = (String) maps.get("code");
             ReturnOrderBaseInfo returnOrderBaseInfo = null;
+
             if ("SUCCESS".equals(code)) {
                 returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>)maps.get("returnOrderGoodsInfos");
                 //获取退单基础表信息
                 //********************************退第三方支付**************************
                 //如果是待收货、门店自提单则需要返回第三方支付金额
@@ -327,17 +330,54 @@ public class ReturnOrderController {
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                     }
                 }
+                //发送拆单消息到消息队列
+                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+
+                Date date = new Date();
+                //保存发送wms退货单头
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+                AtwReturnOrder atwReturnOrder = new AtwReturnOrder();
+                atwReturnOrder.setCreateTime(date);
+                atwReturnOrder.setDiySiteAddress(null);
+                atwReturnOrder.setDiySiteId(null);
+                atwReturnOrder.setDiySiteTitle(null);
+                atwReturnOrder.setDiySiteTel(null);
+                atwReturnOrder.setRemarkInfo(null);
+                atwReturnOrder.setOrderNumber(orderNumber);
+                atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                atwReturnOrder.setReturnTime(date);
+                atwReturnOrder.setStatusId(returnOrderBaseInfo.getReturnStatus().getValue());
+                atwReturnOrder.setDeliverTypeTitle(AppDeliveryType.HOUSE_DELIVERY.getDescription());
+                atwReturnOrder.setReturnPrice(returnOrderBaseInfo.getReturnPrice());
+                atwReturnOrder.setShoppingAddress(orderLogisticsInfo.getShippingAddress());
+                atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
+                atwReturnOrder.setGoodsLineQuantity(returnOrderGoodsInfos.size());
+                atwReturnOrder.setCreator(returnOrderBaseInfo.getCreatorName());
+                atwReturnOrder.setCreatorPhone(returnOrderBaseInfo.getCreatorPhone());
+                atwReturnOrder.setRejecter(orderLogisticsInfo.getReceiver());
+                atwReturnOrder.setRejecterPhone(orderLogisticsInfo.getReceiverPhone());
+                atwReturnOrder.setRejecterAddress(orderLogisticsInfo.getDetailedAddress());
+                atwReturnOrder.setSendFlag(null);
+                atwReturnOrder.setSendTime(null);
+                appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
+                //保存发送WMS退货商品详情
+                if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() >0){
+                    for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos){
+                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
+                    }
+                }
+                //发送退货单到wms
+                callWms.sendToWmsReturnOrderAndGoods(returnOrderBaseInfo.getReturnNo());
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
                 logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-
-            //发送拆单消息到消息队列
-            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，拒签退货失败", null);
