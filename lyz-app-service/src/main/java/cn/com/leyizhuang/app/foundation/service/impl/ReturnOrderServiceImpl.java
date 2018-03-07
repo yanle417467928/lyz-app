@@ -1446,6 +1446,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     customerProductCoupon.setIsUsed(Boolean.FALSE);
                     //修改原产品券是否使用和修改时间
                     productCouponService.updateCustomerProductCoupon(customerProductCoupon);
+                    //修改订单退券表中的券为已退
+                    returnOrderDAO.updateReturnOrderProductCouponStatus(productCoupon.getId(), Boolean.TRUE);
 
                     //增加日志
                     CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();

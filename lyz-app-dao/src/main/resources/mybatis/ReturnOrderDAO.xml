@@ -583,4 +583,10 @@
         FROM ord_return_billing_detail
         WHERE refund_number = #{refundNumber}
     </select>
+
+    <update id="updateReturnOrderProductCouponStatus">
+        UPDATE ord_return_product_coupon
+        SET is_return = #{isReturn}
+        WHERE id = #{id}
+    </update>
 </mapper>

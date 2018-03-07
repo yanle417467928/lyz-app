@@ -132,4 +132,6 @@ public interface ReturnOrderDAO {
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
 
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber);
+
+    void updateReturnOrderProductCouponStatus(@Param("id") Long id, @Param("isReturn") Boolean isReturn);
 }
