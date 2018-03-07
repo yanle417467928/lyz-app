@@ -240,6 +240,7 @@
         WHERE
             c.cus_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
     </select>
 
     <select id="findGoodsListByCategoryCodeAndEmployeeIdAndIdentityType"
@@ -264,6 +265,7 @@
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE e.emp_id = #{userId}
               AND gc.p_category_code = #{categoryCode}
+              AND p.price_type = 'COMMON'
     </select>
 
     <select id="findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType"
@@ -282,6 +284,7 @@
         WHERE
             c.cus_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY gc.sort_id
     </select>
 
@@ -301,6 +304,7 @@
         WHERE
             e.emp_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY gc.sort_id
     </select>
 
@@ -321,6 +325,7 @@
         WHERE
             c.cus_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY b.sort_id
     </select>
 
@@ -341,6 +346,7 @@
         WHERE
             e.emp_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY b.sort_id
     </select>
 
@@ -361,6 +367,7 @@
         WHERE
             c.cus_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY t.sort_id
     </select>
 
@@ -381,6 +388,7 @@
         WHERE
             e.emp_id = #{userId}
             AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = 'COMMON'
         ORDER BY t.sort_id
     </select>
 
@@ -400,9 +408,13 @@
             m.qty      materialQty
         FROM
             cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND (rc.rank_code = p.price_type
+                OR p.price_type = 'COMMON')
             INNER JOIN gds_goods g ON p.gid = g.gid
             LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
         WHERE
@@ -434,6 +446,7 @@
         WHERE
             e.emp_id = #{userId}
             AND g.is_hot = 1
+            AND p.price_type = 'COMMON'
     </select>
 
     <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
@@ -516,9 +529,14 @@
         FROM
             gds_goods_often_buy acg
             INNER JOIN gds_goods g ON g.gid = acg.gid
+            LEFT JOIN cus_customer c ON c.cus_id = acg.user_id
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON p.gid = g.gid
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND (rc.rank_code = p.price_type
+                OR p.price_type = 'COMMON')
             LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type
         WHERE
             acg.user_id = #{userId}
@@ -553,9 +571,13 @@
             m.qty      materialQty
         FROM
             cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND (rc.rank_code = p.price_type
+                OR p.price_type = 'COMMON')
             INNER JOIN gds_goods g ON p.gid = g.gid
             LEFT JOIN material_list AS m ON m.gid = p.gid AND m.user_id = #{userId}
         WHERE
@@ -592,6 +614,7 @@
                 g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%')
             )
+            AND p.price_type = 'COMMON'
     </select>
 
     <insert id="saveCollectGoodsByUserIdAndGoodsIdAndIdentityType">
@@ -631,8 +654,11 @@
             (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = c.cus_id and gc.identity_type = c.identity_type
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW()),
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND (rc.rank_code = p.price_type OR p.price_type = 'COMMON'),
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
@@ -644,7 +670,8 @@
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = e.emp_id and gc.identity_type = e.identity_type
             LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
-            AND (p.end_time IS NULL OR p.end_time &gt; NOW()),
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND p.price_type = 'COMMON',
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
@@ -809,6 +836,7 @@
         <if test="null != specification and specification != ''">
             AND g.goods_specification = #{specification}
         </if>
+        AND p.price_type = 'COMMON'
     </select>
 
     <select id="filterGoodsEmployee" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
@@ -849,6 +877,7 @@
         <if test="null != specification and specification != ''">
             AND g.goods_specification = #{specification}
         </if>
+        AND p.price_type = 'COMMON'
     </select>
 
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
@@ -1083,14 +1112,15 @@
             SELECT
             g.cover_image_uri,
             g.sku_name goods_name,
-            g.gid      id,
+            g.gid id,
             g.goods_specification,
             g.goods_unit,
             p.vip_price,
             p.retail_price,
-            g.cid      category_id,
-            g.brd_id   brand_id,
-            g.gtid     type_id
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id,
+            m.qty materialQty
             FROM
             cus_customer c
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
@@ -1099,6 +1129,7 @@
             AND rc.rank_code = p.price_type
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             WHERE

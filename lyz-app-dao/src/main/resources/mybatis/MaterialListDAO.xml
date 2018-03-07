@@ -45,9 +45,13 @@
             m.qty,p.retail_price
             FROM material_list m
             LEFT JOIN cus_customer c ON c.cus_id = m.user_id
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND (rc.rank_code = p.price_type
+            OR p.price_type = 'COMMON')
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.audit_no IS NULL
             AND m.cus_id IS NULL
