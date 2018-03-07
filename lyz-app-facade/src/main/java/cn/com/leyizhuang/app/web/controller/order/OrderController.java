@@ -302,15 +302,15 @@ public class OrderController {
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
 
-            //******** 分摊现乐币 策略：均摊 *********************
+            //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
             Integer leBiQty = billing.getLeBiQuantity();
             orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty, orderGoodsInfoList);
 
-            //******** 分摊现现金返利 策略：均摊 *********************
+            //******** 分摊现现金返利 策略：每个商品 按单价占比 分摊 *********************
             Double cashReturnAmount = billing.getStoreSubvention();
             orderGoodsInfoList = cashReturnDutchService.cashReturnDutch(cashReturnAmount, orderGoodsInfoList);
 
-            //******** 分摊现金券 策略：使用范围商品 *********************
+            //******** 分摊现金券 策略：使用范围商品 按单价占比 分摊 *********************
             orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
 
             //******** 分摊完毕 计算退货 单价 ***************************

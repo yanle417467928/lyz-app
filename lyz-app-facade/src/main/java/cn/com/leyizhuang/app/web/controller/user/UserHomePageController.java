@@ -547,7 +547,7 @@ public class UserHomePageController {
      * 顾客申请提现列表
      */
     @PostMapping("/cus/apply/list")
-    public ResultDTO cusApplyList(Integer page, Integer size, Long cusId) {
+    public ResultDTO cusApplyList(Integer page, Integer size, Long cusId,Integer status) {
         ResultDTO<Object> resultDTO;
         if (page == null || size == null) {
             page = 1;
@@ -559,7 +559,7 @@ public class UserHomePageController {
         }
 
         try {
-            PageInfo<CusPreDepositWithdraw> preDepositWithdrawPageInfo = appPreDepositWithdrawService.cusApplyList(page, size, cusId);
+            PageInfo<CusPreDepositWithdraw> preDepositWithdrawPageInfo = appPreDepositWithdrawService.cusApplyList(page, size, cusId,status);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<CusPreDepositWithdraw>().transform(preDepositWithdrawPageInfo));
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客提现申请列表失败", null);
@@ -572,7 +572,7 @@ public class UserHomePageController {
      * 门店提现申请列表
      */
     @PostMapping("/st/apply/list")
-    public ResultDTO stApplyList(Integer page, Integer size, Long stId) {
+    public ResultDTO stApplyList(Integer page, Integer size, Long stId ,Integer status) {
         ResultDTO<Object> resultDTO;
         if (page == null || size == null) {
             page = 1;
@@ -584,7 +584,7 @@ public class UserHomePageController {
         }
 
         try {
-            PageInfo<StPreDepositWithdraw> stPreDepositWithdrawPageInfo = appPreDepositWithdrawService.stApplyList(page, size, stId);
+            PageInfo<StPreDepositWithdraw> stPreDepositWithdrawPageInfo = appPreDepositWithdrawService.stApplyList(page, size, stId,status);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "获取数据成功", new GridDataVO<StPreDepositWithdraw>().transform(stPreDepositWithdrawPageInfo));
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取门店提现申请列表失败", null);

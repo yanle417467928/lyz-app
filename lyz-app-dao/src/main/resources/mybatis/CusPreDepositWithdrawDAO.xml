@@ -116,5 +116,8 @@
         <include refid="ALL_FIELDS"></include>
         FROM cus_pre_deposit_withdraw
         where apply_cus_id = #{cusId}
+        <if test="status != null">
+            and status = #{status}
+        </if>
     </select>
 </mapper>

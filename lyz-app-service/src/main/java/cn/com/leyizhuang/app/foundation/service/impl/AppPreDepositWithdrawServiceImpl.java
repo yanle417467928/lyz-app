@@ -225,17 +225,34 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     }
 
     @Override
-    public PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId) {
+    public PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId,Integer status) {
 
         PageHelper.startPage(page, size);
-        List<CusPreDepositWithdraw> cusPreDepositWithdraws = cusPreDepositWithdrawDAO.findByCusId(cusId);
+
+        PreDepositWithdrawStatus preDepositWithdrawStatus;
+
+        if (status == null){
+            preDepositWithdrawStatus = null;
+        }else{
+            preDepositWithdrawStatus = PreDepositWithdrawStatus.getPreDepositWithdrawStatusByValue(status);
+        }
+
+        List<CusPreDepositWithdraw> cusPreDepositWithdraws = cusPreDepositWithdrawDAO.findByCusId(cusId,preDepositWithdrawStatus);
         return new PageInfo<>(cusPreDepositWithdraws);
     }
 
     @Override
-    public PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId) {
+    public PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId,Integer status) {
         PageHelper.startPage(page, size);
-        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByStId(stId);
+
+        PreDepositWithdrawStatus preDepositWithdrawStatus;
+
+        if (status == null){
+            preDepositWithdrawStatus = null;
+        }else{
+            preDepositWithdrawStatus = PreDepositWithdrawStatus.getPreDepositWithdrawStatusByValue(status);
+        }
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByStId(stId,preDepositWithdrawStatus);
         return new PageInfo<>(stPreDepositWithdraws);
     }
 
@@ -300,7 +317,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     @Override
     @Transactional
     public String stCancelApply(Long applyId, Long stId) {
-        StPreDepositWithdraw stPreDepositWithdraw = this.stPreDepositWithdrawDAO.findById(stId);
+        StPreDepositWithdraw stPreDepositWithdraw = this.stPreDepositWithdrawDAO.findById(applyId);
         if (stPreDepositWithdraw != null && stPreDepositWithdraw.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
             stPreDepositWithdraw.setStatus(PreDepositWithdrawStatus.CANCEL);
 

@@ -117,5 +117,8 @@
         <include refid="ALL_FIELDS"></include>
         FROM st_pre_deposit_withdraw
         where apply_st_id = #{stId}
+        <if test="status != null">
+            and status = #{status}
+        </if>
     </select>
 </mapper>
