@@ -522,7 +522,7 @@ public class ReturnOrderController {
                         for (CustomerProductCoupon productCoupon : customerProductCouponList) {
                             if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
                                     productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
-                                if (index > returnOrderGoodsInfo.getReturnQty()) {
+                                if (index == returnOrderGoodsInfo.getReturnQty()) {
                                     break;
                                 }
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
@@ -553,7 +553,7 @@ public class ReturnOrderController {
                         int index = 0;
                         for (OrderCouponInfo orderCouponInfo : orderProductCouponList) {
                             if (goodsInfo.getSku().equals(orderCouponInfo.getSku())) {
-                                if (index > goodsInfo.getReturnQty()) {
+                                if (index == goodsInfo.getReturnQty()) {
                                     break;
                                 }
                                 ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
