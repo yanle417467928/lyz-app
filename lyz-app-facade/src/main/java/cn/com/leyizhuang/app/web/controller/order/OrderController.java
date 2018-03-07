@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
@@ -428,8 +429,7 @@ public class OrderController {
             if (identityType == 6) {
                 customer = appCustomerService.findById(userId);
                 cityId = customer.getCityId();
-            }
-            if (identityType == 0) {
+            } else if (identityType == 0) {
                 if (null == goodsSimpleRequest.getCustomerId()) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购代下单客户不能为空", null);
                     logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
@@ -449,8 +449,7 @@ public class OrderController {
                         "XC001".equals(appStore.getStoreCode()))) {
                     isShowSalesNumber = true;
                 }
-            }
-            if (identityType == 2) {
+            } else if (identityType == 2) {
                 AppEmployee employee = appEmployeeService.findById(userId);
                 cityId = employee.getCityId();
             }
@@ -555,13 +554,13 @@ public class OrderController {
             //判断库存的特殊处理
             Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
             if (gid != null) {
+                GoodsDO goodsDO = goodsService.queryById(gid);
                 //如果这里出现问题还是要返回去商品列表
                 goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
                 goodsSettlement.put("totalPrice", totalPrice);
                 goodsSettlement.put("totalGoodsInfo", goodsInfo);
                 goodsSettlement.put("isShowNumber", isShowSalesNumber);
-                goodsSettlement.put("totalOrderAmount", totalOrderAmount);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + gid + ";商品库存不足！", goodsSettlement);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品:" + goodsDO.getSkuName() + "对不起,商品库存不足！", goodsSettlement);
                 logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }

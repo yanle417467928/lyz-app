@@ -465,6 +465,10 @@ public class ReturnOrderController {
             List<GoodsSimpleInfo> simpleInfos = param.getReturnGoodsInfo();
 
             Double returnTotalGoodsPrice = 0D;
+            //判断是否整单退的flag
+            Boolean isReturnAll = true;
+            //判断是否整单是产品券
+            Boolean isReturnAllProCoupon = true;
             //获取原单商品信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
 
@@ -478,6 +482,9 @@ public class ReturnOrderController {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
+                                    //如果订单商品数量不等于退货商品数量,整单退条件失败
+                                } else if (!simpleInfo.getQty().equals(goodsInfo.getReturnableQuantity())) {
+                                    isReturnAll = false;
                                 }
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
@@ -485,10 +492,11 @@ public class ReturnOrderController {
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
-                                //如果不是产品券就要算进退总价里
+                                //如果不是产品券就要算进退总价里,并且仅退产品券订单条件失败
                                 if (!AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
                                     returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
                                             CountUtil.mul(goodsInfo.getReturnPrice(), simpleInfo.getQty()));
+                                    isReturnAllProCoupon = false;
                                 }
                                 break;
                             }
@@ -508,10 +516,15 @@ public class ReturnOrderController {
                 //根据买券订单查到该单的券
                 List<CustomerProductCoupon> customerProductCouponList = appCustomerService.findProductCouponsByGetOrderNumber(orderNo);
                 if (AssertUtil.isNotEmpty(customerProductCouponList)) {
-                    for (CustomerProductCoupon productCoupon : customerProductCouponList) {
-                        for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
+                    //goodsInfos里面的券每一种券有数量并未制定某张券
+                    for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
+                        int index = 0;
+                        for (CustomerProductCoupon productCoupon : customerProductCouponList) {
                             if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
                                     productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
+                                if (index > returnOrderGoodsInfo.getReturnQty()) {
+                                    break;
+                                }
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
                                 returnOrderProductCoupon.setGid(returnOrderGoodsInfo.getGid());
                                 returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
@@ -522,31 +535,38 @@ public class ReturnOrderController {
                                 returnOrderProductCoupon.setReturnQty(1);
                                 returnOrderProductCoupon.setReturnNo(returnNo);
                                 productCouponList.add(returnOrderProductCoupon);
+                                index++;
                             }
                         }
                     }
                 }
             }
             /***********************退正常退单使用的券*****************************/
-            //获取订单使用产品
+            //获取订单使用产品(这里面的券一张券是一行)
             List<OrderCouponInfo> orderProductCouponList = productCouponService.findOrderCouponByCouponTypeAndOrderId(order.getId(), OrderCouponType.PRODUCT_COUPON);
             if (AssertUtil.isNotEmpty(orderProductCouponList)) {
+                //goodsInfos里面的券每一种券有数量并未制定某张券
                 for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
-                    for (OrderCouponInfo couponInfo : orderProductCouponList) {
-                        if (AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()) &&
-                                goodsInfo.getSku().equals(couponInfo.getSku())) {
-
-                            ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
-                            productCoupon.setGid(goodsInfo.getGid());
-                            productCoupon.setIsReturn(Boolean.FALSE);
-                            productCoupon.setOrderNo(orderNo);
-                            productCoupon.setPcid(couponInfo.getCouponId());
-                            productCoupon.setQty(1);
-                            productCoupon.setSku(goodsInfo.getSku());
-                            productCoupon.setReturnQty(1);
-                            productCoupon.setReturnNo(returnNo);
-                            productCouponList.add(productCoupon);
-                            break;
+                    if (AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
+                        //这里取退的券的数量.来返还适合订单使用同种SKU的券
+                        int index = 0;
+                        for (OrderCouponInfo orderCouponInfo : orderProductCouponList) {
+                            if (goodsInfo.getSku().equals(orderCouponInfo.getSku())) {
+                                if (index > goodsInfo.getReturnQty()) {
+                                    break;
+                                }
+                                ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
+                                productCoupon.setGid(goodsInfo.getGid());
+                                productCoupon.setIsReturn(Boolean.FALSE);
+                                productCoupon.setOrderNo(orderNo);
+                                productCoupon.setPcid(orderCouponInfo.getCouponId());
+                                productCoupon.setQty(1);
+                                productCoupon.setSku(goodsInfo.getSku());
+                                productCoupon.setReturnQty(1);
+                                productCoupon.setReturnNo(returnNo);
+                                productCouponList.add(productCoupon);
+                                index++;
+                            }
                         }
                     }
                 }
@@ -569,6 +589,8 @@ public class ReturnOrderController {
             Double tempPrice = 0D;
             Double customerPrePay = 0D;
             Double storePrePay = 0D;
+            Double storeCredit = 0D;
+            Double storeSubvention = 0D;
 
             if (AssertUtil.isNotEmpty(orderPaymentDetails)) {
                 for (OrderBillingPaymentDetails paymentDetails : orderPaymentDetails) {
@@ -593,34 +615,36 @@ public class ReturnOrderController {
                         storePrePay = paymentDetails.getAmount();
                     }
                 }
-            } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
-                logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            //判断退款是否小于现金支付
-            if (returnTotalGoodsPrice <= cashPosPrice) {
-                returnOrderBilling.setCash(returnTotalGoodsPrice);
-            } else {
-                //大于就判断减去再判断第三方支付
-                returnOrderBilling.setCash(cashPosPrice);
-                tempPrice = CountUtil.sub(returnTotalGoodsPrice, cashPosPrice);
-                //如果小于第三方支付
-                if (tempPrice <= onlinePayPrice) {
-                    returnOrderBilling.setOnlinePay(tempPrice);
-                } else {
-                    //大于第三方再判断预存款支付
+
+                if (isReturnAll) {
+                    returnOrderBilling.setCash(cashPosPrice);
                     returnOrderBilling.setOnlinePay(onlinePayPrice);
-                    tempPrice = CountUtil.sub(tempPrice, onlinePayPrice);
-                    if (identityType == 6) {
-                        //小于预存款，顾客结束
-                        if (tempPrice <= customerPrePay) {
-                            returnOrderBilling.setPreDeposit(tempPrice);
-                        }
+                    returnOrderBilling.setPreDeposit(customerPrePay);
+                    returnOrderBilling.setStPreDeposit(storePrePay);
+                } else {
+                    //判断退款是否小于现金支付
+                    if (returnTotalGoodsPrice <= cashPosPrice) {
+                        returnOrderBilling.setCash(returnTotalGoodsPrice);
                     } else {
-                        //导购小于门店预存款
-                        if (tempPrice <= storePrePay) {
-                            returnOrderBilling.setStPreDeposit(tempPrice);
+                        //大于就判断减去再判断第三方支付
+                        returnOrderBilling.setCash(cashPosPrice);
+                        tempPrice = CountUtil.sub(returnTotalGoodsPrice, cashPosPrice);
+                        //如果小于第三方支付
+                        if (tempPrice <= onlinePayPrice) {
+                            returnOrderBilling.setOnlinePay(tempPrice);
+                        } else {
+                            //大于第三方再判断预存款支付
+                            returnOrderBilling.setOnlinePay(onlinePayPrice);
+                            tempPrice = CountUtil.sub(tempPrice, onlinePayPrice);
+                            if (identityType == 6) {
+                                //小于预存款，顾客结束
+                                if (tempPrice <= customerPrePay) {
+                                    returnOrderBilling.setPreDeposit(tempPrice);
+                                }
+                            } else {
+                                //导购小于门店预存款
+                                if (tempPrice <= storePrePay) {
+                                    returnOrderBilling.setStPreDeposit(tempPrice);
 //                        } else {
 //                            //如果大于就判断装饰公司门店信用金
 //                            if (tempPrice <= billingDetails.getStoreCreditMoney()) {
@@ -633,10 +657,19 @@ public class ReturnOrderController {
 //                                    returnOrderBilling.setStSubvention(tempPrice);
 //                                }
 //                            }
+                                }
+                            }
                         }
                     }
                 }
+            } else {
+                if (!isReturnAllProCoupon) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
             }
+
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
                     productCouponList, orderGoodsInfoList);
             //如果是买券订单直接处理退款退货
