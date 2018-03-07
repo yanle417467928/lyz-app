@@ -533,6 +533,7 @@ public class ReturnOrderController {
                                 returnOrderProductCoupon.setQty(1);
                                 returnOrderProductCoupon.setSku(returnOrderGoodsInfo.getSku());
                                 returnOrderProductCoupon.setReturnQty(1);
+                                returnOrderProductCoupon.setPurchasePrice(productCoupon.getBuyPrice());
                                 returnOrderProductCoupon.setReturnNo(returnNo);
                                 productCouponList.add(returnOrderProductCoupon);
                                 index++;
@@ -563,6 +564,7 @@ public class ReturnOrderController {
                                 productCoupon.setQty(1);
                                 productCoupon.setSku(goodsInfo.getSku());
                                 productCoupon.setReturnQty(1);
+                                productCoupon.setPurchasePrice(orderCouponInfo.getPurchasePrice());
                                 productCoupon.setReturnNo(returnNo);
                                 productCouponList.add(productCoupon);
                                 index++;
