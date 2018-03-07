@@ -27,5 +27,5 @@ public interface StPreDepositWithdrawDAO {
     List<StPreDepositWithdraw> findByKeywords(@Param("keywords") String keywords,@Param("status") String status
                                             ,@Param("startDateTime") String startDateTime,@Param("endDateTime") String endDateTime);
 
-    List<StPreDepositWithdraw> findByStId(@Param("stId") Long stId);
+    List<StPreDepositWithdraw> findByStId(@Param("stId") Long stId,@Param("status") PreDepositWithdrawStatus status);
 }

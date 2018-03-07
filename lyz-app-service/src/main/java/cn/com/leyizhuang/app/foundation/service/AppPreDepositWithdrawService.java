@@ -34,12 +34,12 @@ public interface AppPreDepositWithdrawService {
      *
      * @return
      */
-    PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId);
+    PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId,Integer status);
 
     /**
      * 门店申请列表
      */
-    PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId);
+    PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId,Integer status);
 
     /**
      * 顾客取消申请
