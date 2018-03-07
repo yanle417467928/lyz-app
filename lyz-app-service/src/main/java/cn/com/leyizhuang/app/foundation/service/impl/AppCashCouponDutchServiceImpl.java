@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.CashCouponDAO;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
@@ -63,7 +64,9 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                         throw new DutchException("通用现金券分摊，商品数量和单价有误！");
                     }
 
-                    totalPrice = (price * qty) + totalPrice;
+                    if(goods.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
+                        totalPrice = (price * qty) + totalPrice;
+                    }
                 }
 
                 goodsInfs = dutchPrice(goodsInfs,totalPrice,denomination);
@@ -101,7 +104,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                     }
                     String companyFlag = goodsDO.getCompanyFlag();
 
-                    if(companys.contains(companyFlag)){
+                    if(companys.contains(companyFlag) && goods.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
                         totalPrice = (price * qty) + totalPrice;
                         dutchGoodsInfos.add(goods);
                         goodsInfs.remove(goods);
@@ -142,7 +145,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                     }
                     Long brandId = goodsDO.getBrdId();
 
-                    if(brandIds.contains(brandId)){
+                    if(brandIds.contains(brandId) && goods.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
                         totalPrice = (price * qty) + totalPrice;
                         dutchGoodsInfos.add(goods);
                         goodsInfs.remove(goods);
@@ -175,7 +178,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                         throw new DutchException("指定商品现金券分摊，商品数量或单价信息有误！");
                     }
 
-                    if(goodsIds.contains(goods.getGid())){
+                    if(goodsIds.contains(goods.getGid()) && goods.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
                         totalPrice = (price * qty) + totalPrice;
                         dutchGoodsInfos.add(goods);
                         goodsInfs.remove(goods);
@@ -195,15 +198,22 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
             throw  new DutchException("现金券分摊有误！无本品");
         }
 
+        if (totalPrice < denomination){
+            // 分摊金额不能大于总价
+            denomination = totalPrice;
+        }
+
         // 记录N-1次分摊金额 采用倒挤法
         Double dutchedPrice = 0.00;
 
         for (int i = 0 ; i < goodsInfs.size() ; i++){
             OrderGoodsInfo goods = goodsInfs.get(i);
-            Double price = goods.getSettlementPrice();
+
+            /** 扣除促销分摊金额、乐币分摊金额、现金返利分摊金额 避免退货单价出现负数 **/
+            Double price = CountUtil.sub(goods.getSettlementPrice(),goods.getPromotionSharePrice());
 
             if (i != (goodsInfs.size()-1)){
-                Double dutchPrice = CountUtil.mul((price/totalPrice),denomination);
+                Double dutchPrice = CountUtil.mul2((price/totalPrice),denomination);
 
                 Double sharePrice = null == goods.getCashCouponSharePrice() ? 0.00 : goods.getCashCouponSharePrice();
                 goods.setCashCouponSharePrice(dutchPrice + sharePrice);
@@ -214,7 +224,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
                 Double dutchPrice = CountUtil.sub(denomination,dutchedPrice);
 
                 Double sharePrice = null == goods.getCashCouponSharePrice() ? 0.00 : goods.getCashCouponSharePrice();
-                goods.setCashCouponSharePrice(CountUtil.div((dutchPrice + sharePrice),goods.getOrderQuantity()));
+                goods.setCashCouponSharePrice(CountUtil.add(CountUtil.div((dutchPrice),goods.getOrderQuantity()),sharePrice));
             }
         }
 

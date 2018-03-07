@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppLeBiDutchService;
@@ -41,7 +42,9 @@ public class AppLeBiDutchServiceImpl implements AppLeBiDutchService {
                  throw new DutchException("乐币分摊，商品数量和单价有误！");
              }
 
-             totalPrice = (price * qty) + totalPrice;
+             if(goods.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
+                 totalPrice = (price * qty) + totalPrice;
+             }
          }
 
          try {
@@ -61,10 +64,12 @@ public class AppLeBiDutchServiceImpl implements AppLeBiDutchService {
 
         for (int i = 0 ; i < goodsInfs.size() ; i++){
             OrderGoodsInfo goods = goodsInfs.get(i);
-            Double price = goods.getSettlementPrice();
+
+            /** 扣除促销分摊金额 避免退货单价出现负数 **/
+            Double price = CountUtil.sub(goods.getSettlementPrice(),goods.getPromotionSharePrice());
 
             if (i != (goodsInfs.size()-1)){
-                Double dutchPrice = CountUtil.mul((price/totalPrice),leBiAmount);
+                Double dutchPrice = CountUtil.mul2((price/totalPrice),leBiAmount);
 
                 Double sharePrice = null == goods.getCashCouponSharePrice() ? 0.00 : goods.getCashCouponSharePrice();
                 goods.setLbSharePrice(dutchPrice + sharePrice);

@@ -517,7 +517,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 goodsInfo.setReturnPrice(0.00);
             }else {
                 Double returnPrice = CountUtil.sub(price , promotionPrice , lbPrice , cashCouponPrice , cashReturnPrice);
-                goodsInfo.setReturnPrice(returnPrice);
+                //goodsInfo.setReturnPrice(returnPrice);
+                // 如果推货价出现负数 则设置为0
+                if (returnPrice < 0){
+                    goodsInfo.setReturnPrice(0.00);
+                }else{
+                    goodsInfo.setReturnPrice(returnPrice);
+                }
                 totalReturnPrice = CountUtil.add(totalReturnPrice,CountUtil.mul(returnPrice , goodsInfo.getOrderQuantity()));
             }
 
