@@ -812,9 +812,9 @@ function save() {
         }
         if (posMoney > 0) {
             if (null == posNumber || '' == posNumber) {
-                $loading.close();
-                $notify.warning("请输入POS流水号后六位！");
-                return;
+                    $loading.close();
+                    $notify.warning("请输入POS流水号后六位！");
+                    return;
             }
         }
         if (null != posNumber && '' != posNumber) {

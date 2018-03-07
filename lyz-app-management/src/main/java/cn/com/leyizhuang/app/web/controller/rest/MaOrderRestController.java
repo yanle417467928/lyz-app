@@ -830,7 +830,10 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,商品信息不能为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空！", null);
         }
-
+        if (StringUtils.isNotBlank(posNumber) && posNumber.length() < 6) {
+            logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,POS流水号小于6位！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "请输入POS流水号后6位数！", null);
+        }
         try {
 
             // 当前登录帐号

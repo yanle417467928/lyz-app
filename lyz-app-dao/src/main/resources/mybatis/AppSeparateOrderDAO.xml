@@ -374,7 +374,7 @@
             FROM dual
             WHERE NOT exists(SELECT 1
                              FROM inter_ate_recharge_receipt_inf
-                             WHERE charge_number = #{chargeNumber})
+                             WHERE receipt_number = #{receiptNumber})
     </insert>
 
     <select id="getRechargeReceiptInfByRechargeNo" parameterType="java.lang.String"
