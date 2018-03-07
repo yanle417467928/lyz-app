@@ -32,4 +32,16 @@
     </update>
 
 
+    <select id="findDecorativeCompanyCreditByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit">
+        SELECT
+              id cid,
+              store_id storeId,
+              credit_limit_available  credit,
+              last_update_time creditLastUpdateTime
+              FROM
+        st_credit_money
+        WHERE store_id = #{id}
+    </select>
+
 </mapper>

@@ -22,6 +22,8 @@ import java.util.Date;
 public class DecorativeCompanyCredit {
 
     private Long  cid;
+    //门店id
+    private Long storeId;
    //装饰公司信用金
     private BigDecimal credit;
     //上次更新时间

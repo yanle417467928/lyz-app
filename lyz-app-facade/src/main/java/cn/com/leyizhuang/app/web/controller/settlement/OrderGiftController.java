@@ -2,11 +2,15 @@ package cn.com.leyizhuang.app.web.controller.settlement;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.customer.CustomerController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -51,6 +55,9 @@ public class OrderGiftController {
     @Resource
     private GoodsService goodsService;
 
+    @Resource
+    private AppOrderService appOrderService;
+
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {
 
@@ -62,6 +69,11 @@ public class OrderGiftController {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
             List<GoodsSimpleInfo> goodsList = objectMapper.readValue(goodsArray, javaType1);
+            //创建计算库存参数
+            Long cityId = 0L;
+            List<GoodsIdQtyParam> giftsList = new ArrayList<>();
+            List<GoodsIdQtyParam> couponList = new ArrayList<>();
+            List<GoodsIdQtyParam> goodsItyList = new ArrayList<>();
 
             // 普通商品ids
             List<Long> goodsIdList = new ArrayList<>();
@@ -70,8 +82,14 @@ public class OrderGiftController {
             for (GoodsSimpleInfo goodsSimpleInfo : goodsList) {
                 if (AppGoodsLineType.PRODUCT_COUPON.getValue().equalsIgnoreCase(goodsSimpleInfo.getGoodsLineType())) {
                     coupunGoodsIdList.add(goodsSimpleInfo.getId());
+                    //取产品券数量后面计算库存
+                    GoodsIdQtyParam param = new GoodsIdQtyParam(goodsSimpleInfo.getId(), goodsSimpleInfo.getQty());
+                    couponList.add(param);
                 }else{
                     goodsIdList.add(goodsSimpleInfo.getId());
+                    //取本品数量后面计算库存
+                    GoodsIdQtyParam param = new GoodsIdQtyParam(goodsSimpleInfo.getId(), goodsSimpleInfo.getQty());
+                    goodsItyList.add(param);
                 }
             }
 
@@ -79,12 +97,20 @@ public class OrderGiftController {
             List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
             List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
             if(identityType == 6){
+                //取城市ID
+                AppCustomer customer = appCustomerService.findById(userId);
+                cityId = customer.getCityId();
                 //获取商品信息
                 goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
             }else if(identityType == 0){
+                //取城市ID
+                AppEmployee employee = appEmployeeService.findById(userId);
+                cityId = employee.getCityId();
                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
             }else if(identityType == 2){
-
+                //取城市ID
+                AppEmployee employee = appEmployeeService.findById(userId);
+                cityId = employee.getCityId();
             }
 
             if (goodsInfo != null && goodsInfo.size() > 0){
@@ -142,7 +168,16 @@ public class OrderGiftController {
                     }
                 }
             }
-
+            // 取赠品数量后面计算库存
+            promotionsGiftList.forEach(promotionsGiftListResponse -> giftsList.addAll(promotionsGiftListForEach(promotionsGiftListResponse)));
+            //判断库存的特殊处理
+            Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
+            if (gid != null) {
+                GoodsDO goodsDO = goodsService.queryById(gid);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品:" + goodsDO.getSkuName() + "对不起,商品库存不足！", null);
+                logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
 
             GiftListResponse giftListResponse = new GiftListResponse();
             giftListResponse.setGoodsList(responseGoodsList);
@@ -150,7 +185,7 @@ public class OrderGiftController {
             giftListResponse.setPromotionsGiftList(promotionsGiftList);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, giftListResponse);
-            logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表，出参 resultDTO:{}", resultDTO);
+            logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,5 +194,18 @@ public class OrderGiftController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
+
+    private List<GoodsIdQtyParam> promotionsGiftListForEach(PromotionsGiftListResponse response) {
+
+        List<GoodsIdQtyParam> idQtyParamList = new ArrayList<>();
+        if (null != response.getGiftList() && response.getGiftList().size() > 0) {
+            List<GiftListResponseGoods> giftList = response.getGiftList();
+            for (GiftListResponseGoods giftListResponseGoods : giftList) {
+                GoodsIdQtyParam param = new GoodsIdQtyParam(giftListResponseGoods.getGoodsId(), giftListResponseGoods.getQty());
+                idQtyParamList.add(param);
+            }
+        }
+        return idQtyParamList;
     }
 }

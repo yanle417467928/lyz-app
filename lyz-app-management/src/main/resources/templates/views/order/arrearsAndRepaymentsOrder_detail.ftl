@@ -357,11 +357,6 @@
                                     <td style="color: red;font-weight:bold">
                                         &nbsp¥${orderBillingDetail.orderAmountSubtotal!'0.00'}</td>
                                 </tr>
-                                <tr>
-                                    <th>应付金额</th>
-                                    <td style="color: red;font-weight:bold">
-                                        &nbsp¥${orderBillingDetail.amountPayable!'0.00'}</td>
-                                </tr>
                             </table>
                         </dd>
                     </dl>
