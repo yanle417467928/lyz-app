@@ -101,6 +101,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         cusPreDepositWithdraw.setApplyCusId(param.getId());
         cusPreDepositWithdraw.setApplyCusName(param.getRealName());
         cusPreDepositWithdraw.setApplyCusPhone(param.getRealPhone());
+        cusPreDepositWithdraw.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(param.getIdentityType()));
         cusPreDepositWithdraw.setWithdrawAmount(param.getAmount());
         cusPreDepositWithdraw.setAccountType(param.getAccountType());
         cusPreDepositWithdraw.setAccount(param.getAccount());
@@ -171,6 +172,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         stPreDepositWithdraw.setApplyStId(param.getId());
         stPreDepositWithdraw.setApplyStName(param.getRealName());
         stPreDepositWithdraw.setApplyStPhone(param.getRealPhone());
+        stPreDepositWithdraw.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(param.getIdentityType()));
         stPreDepositWithdraw.setAccountType(param.getAccountType());
         stPreDepositWithdraw.setAccount(param.getAccount());
         stPreDepositWithdraw.setWithdrawAmount(param.getAmount());

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.user;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PreDepositWithdrawStatus;
 import lombok.*;
@@ -45,6 +46,11 @@ public class CusPreDepositWithdraw {
      * 申请人电话
      */
     private String applyCusPhone;
+
+    /**
+     * 身份类型
+     */
+    private AppIdentityType identityType;
 
     /**
      * 帐号类型

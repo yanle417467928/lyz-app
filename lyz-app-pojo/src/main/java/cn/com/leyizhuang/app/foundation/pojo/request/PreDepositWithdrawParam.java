@@ -23,7 +23,7 @@ public class PreDepositWithdrawParam {
     /**
      * 身份
      */
-    private AppIdentityType identityType;
+    private Integer identityType;
 
     /**
      * 真实姓名

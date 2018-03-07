@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PreDepositWithdrawStatus;
 import lombok.*;
@@ -32,14 +33,19 @@ public class StPreDepositWithdraw {
     private Date createTime;
 
     /**
-     * 申请门店id
+     * 申请人id
      */
     private Long applyStId;
 
     /**
-     * 申请门店名称
+     * 申请人名称
      */
     private String applyStName;
+
+    /**
+     * 身份类型
+     */
+    private AppIdentityType identityType;
 
     /**
      * 申请门店电话
