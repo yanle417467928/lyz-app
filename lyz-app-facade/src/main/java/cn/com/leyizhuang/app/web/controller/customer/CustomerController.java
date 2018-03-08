@@ -90,6 +90,7 @@ public class CustomerController {
                 return resultDTO;
             }
             if (null == clientId || "".equalsIgnoreCase(clientId)) {
+
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "clientId为空！", null);
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -108,7 +109,7 @@ public class CustomerController {
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您还不是乐易装的会员，先来注册一个吧！",
-                        new CustomerLoginResponse(Boolean.FALSE, null, null, null));
+                        new CustomerLoginResponse(Boolean.FALSE, null, null, null, null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -126,8 +127,15 @@ public class CustomerController {
                     JwtConstant.EXPPIRES_SECOND * 1000);
             System.out.println(accessToken);
             response.setHeader("token", accessToken);
+            //判断是否是专供会员
+            CustomerRankInfoResponse rankInfo = this.customerService.findCusRankinfoByCusId(customer.getCusId());
+            String rankCode = null;
+            if (null != rankInfo && null != rankInfo.getRankCode() && !("".equals(rankInfo.getRankCode()))){
+                rankCode = rankInfo.getRankCode();
+            }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(), customer.getCityId()));
+                    new CustomerLoginResponse(Boolean.TRUE, customer.getCusId(), customer.getMobile(), customer.getCityId(), rankCode));
             //logger.info("customerLogin OUT,顾客登录成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
