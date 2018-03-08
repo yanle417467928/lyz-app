@@ -300,6 +300,18 @@ public class AppActServiceImpl implements AppActService {
                     // 结束本次促销循环
                     continue;
                 }
+                //***************** 普通-满数量-打折 ************
+            }else if (actType.equals("COMMON_FQTY_DIS")){
+                // 判断本品是否满足数量要求 得出参与此促销次数
+                int enjoyTimes = checkActGoodsNum(goodsPool, act);
+                // 满足条件的商品总价
+                Double totalPrice = 0.00;
+
+                if (enjoyTimes > 0) {
+                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes,totalPrice));
+                    // 结束本次促销循环
+                    continue;
+                }
             }
 
         }
@@ -660,6 +672,11 @@ public class AppActServiceImpl implements AppActService {
     }
 
     private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act, int enjoyTimes,Double totalPrice) {
+
+        // 如果促销不能重复参与 参与次数只能为1
+        if(act.getIsDouble() == false){
+            enjoyTimes = 1;
+        }
 
         // 创建一个促销结果
         PromotionDiscountListResponse proDiscount = new PromotionDiscountListResponse();
