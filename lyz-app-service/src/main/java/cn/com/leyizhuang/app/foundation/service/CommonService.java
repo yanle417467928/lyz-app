@@ -76,7 +76,8 @@ public interface CommonService {
     void deductionOrderJxPriceDifferenceRefund(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderGoodsInfo> goodsInfos);
 
     /**
-     *  后台买券订单创建商品信息
+     * 后台买券订单创建商品信息
+     *
      * @param goodsList
      * @param customer
      * @param userId
@@ -85,4 +86,12 @@ public interface CommonService {
      * @return
      */
     CreateOrderGoodsSupport createMaOrderGoodsInfo(List<MaActGoodsMapping> goodsList, AppCustomer customer, Long userId, Integer identityType, String orderNumber);
+
+    /**
+     * 创建订单需检核的库存列表
+     *
+     * @param orderGoodsInfoList 订单商品列表
+     * @return 需检核的库存列表
+     */
+    public Map<Long, Integer> createInventoryCheckMap(List<OrderGoodsInfo> orderGoodsInfoList);
 }

@@ -317,6 +317,12 @@ public class OrderController {
             //******** 分摊完毕 计算退货 单价 ***************************
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
+            support.setOrderGoodsInfoList(orderGoodsInfoList);
+
+            //**************** 创建要检核库存的商品和商品数量的Map ***********
+            Map<Long, Integer> inventoryCheckMap = commonService.createInventoryCheckMap(orderGoodsInfoList);
+            support.setInventoryCheckMap(inventoryCheckMap);
+
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
@@ -998,7 +1004,7 @@ public class OrderController {
                 if ("PRODUCT_COUPON".equals(response.getDeliveryType()) || "SELF_TAKE".equals(response.getDeliveryType())) {
                     AppStore appStore = appStoreService.findById(response.getStoreId());
                     response.setShippingAddress(appStore.getDetailedAddress());
-            }
+                }
                 response.setCount(response.getGoodsImgList().size());
             }
             CustomerSignDetailResponse response = new CustomerSignDetailResponse();

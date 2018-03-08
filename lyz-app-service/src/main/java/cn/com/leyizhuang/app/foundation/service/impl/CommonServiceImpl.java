@@ -1163,7 +1163,7 @@ public class CommonServiceImpl implements CommonService {
         }
         CreateOrderGoodsSupport support = new CreateOrderGoodsSupport();
         support.setGoodsTotalPrice(goodsTotalPrice);
-        support.setInventoryCheckMap(inventoryCheckMap);
+        //support.setInventoryCheckMap(inventoryCheckMap);
         support.setMemberDiscount(memberDiscount);
         support.setOrderGoodsInfoList(orderGoodsInfoList);
         support.setProductCouponGoodsList(productCouponGoodsList);
@@ -1485,6 +1485,22 @@ public class CommonServiceImpl implements CommonService {
         support.setProductCouponGoodsList(null);
         support.setPromotionDiscount(promotionDiscount);
         return support;
+    }
+
+
+    @Override
+    public Map<Long, Integer> createInventoryCheckMap(List<OrderGoodsInfo> orderGoodsInfoList) {
+
+        //新建一个map,用来存放最终要检核库存的商品和商品数量
+        Map<Long, Integer> inventoryCheckMap = new HashMap<>();
+        for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+            if (inventoryCheckMap.containsKey(orderGoodsInfo.getGid())) {
+                inventoryCheckMap.put(orderGoodsInfo.getGid(), inventoryCheckMap.get(orderGoodsInfo.getGid()) + orderGoodsInfo.getOrderQuantity());
+            } else {
+                inventoryCheckMap.put(orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity());
+            }
+        }
+        return inventoryCheckMap;
     }
 
 }
