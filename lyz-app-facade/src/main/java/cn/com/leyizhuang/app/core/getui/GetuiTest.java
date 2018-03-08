@@ -12,13 +12,13 @@ public class GetuiTest {
 
 
     @RequestMapping(value = "/test/getui/logistic", method = RequestMethod.GET)
-    public String testLogisticInfo() {
-        NoticePushUtils.pushOrderLogisticInfo("CD_XN20180223162149331244");
+    public String testLogisticInfo(String orderNo) {
+        NoticePushUtils.pushOrderLogisticInfo(orderNo);
         return "success";
     }
 
     @RequestMapping(value = "/test/getui/arrearage", method = RequestMethod.GET)
-    public String testArrearageInfo() {
+    public String testArrearageInfo(Long sellerId) {
         NoticePushUtils.pushApplyArrearageInfo(1L);
         return "success";
     }

@@ -174,17 +174,17 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         Double separateOrderSubventionDiscount = 0D;
 
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoListTemp) {
-                            if (goodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
+                            if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
+                                separateOrderGoodsTotalPrice += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
+                                separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
+                                separateOrderProductCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
+                            } else {
                                 separateOrderGoodsTotalPrice += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
                                 separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
                                 separateOrderPromotionDiscount += goodsInfo.getPromotionSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderCashCouponDiscount += goodsInfo.getCashCouponSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderSubventionDiscount += goodsInfo.getCashReturnSharePrice() * goodsInfo.getOrderQuantity();
-                            } else if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
-                                separateOrderGoodsTotalPrice += goodsInfo.getRetailPrice() * goodsInfo.getOrderQuantity();
-                                separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
-                                separateOrderProductCouponDiscount += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
                             }
 
                             OrderGoodsInf goodsInf = new OrderGoodsInf();
@@ -452,7 +452,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public void separateRechargeReceipt(String rechargeNo) {
         List<RechargeReceiptInfo> rechargeReceiptInfoList = rechargeService.findRechargeReceiptInfoByRechargeNo(rechargeNo);
-        List<RechargeOrder>  rechargeOrderList = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
+        List<RechargeOrder> rechargeOrderList = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
         AppStore store = storeService.findById(rechargeOrderList.get(0).getStoreId());
 
         if (null != rechargeReceiptInfoList && rechargeReceiptInfoList.size() > 0) {
@@ -484,7 +484,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
                 rechargeReceiptInf.setSobId(store.getSobId());
                 rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
-                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON ) {
+                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON) {
                     rechargeReceiptInf.setUserid(rechargeOrderList.get(0).getCustomerId());
                 }
 
