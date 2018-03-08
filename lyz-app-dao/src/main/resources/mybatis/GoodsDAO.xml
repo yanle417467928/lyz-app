@@ -760,6 +760,7 @@
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND p.price_type = 'COMMON'
         INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
         e.emp_id = #{userId}
@@ -786,9 +787,12 @@
         g.company_flag
         FROM
         cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND (rc.rank_code = p.price_type OR p.price_type = 'COMMON')
         INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
         c.cus_id = #{userId}
@@ -906,7 +910,12 @@
         gp.wholesale_price,
         g.company_flag,
         gp.price_line_id price_item_id
-        FROM cus_customer c INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
+        FROM cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
+        AND (rc.rank_code = gp.price_type
+        OR gp.price_type = 'COMMON')
         INNER JOIN gds_goods g ON gp.gid = g.gid
         where c.cus_id = #{userId}
         AND gp.start_time &lt; NOW()
@@ -1005,7 +1014,9 @@
         g.company_flag,
         g.cover_image_uri,
         gp.price_line_id price_item_id
-        FROM emp_employee e INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
+        FROM emp_employee e
+        INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
+        AND gp.price_type = 'COMMON'
         INNER JOIN gds_goods g ON gp.gid = g.gid
         where e.emp_id = #{userId}
         AND gp.start_time &lt; NOW()
