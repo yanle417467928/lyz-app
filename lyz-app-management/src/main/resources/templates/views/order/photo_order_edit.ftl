@@ -258,9 +258,9 @@
                     <div class="box-header">
                         <h3 class="box-title">选择商品</h3>
                     </div>
-                    <div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px;">
+                    <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px;">
                         <b>&nbsp; </b>
-                    </div>
+                    </div>-->
                     <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="WATER" name="category1" onclick="findCategory('WATER')">水</a></b>
                     </div>
@@ -276,9 +276,12 @@
                     <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="OIL" name="category1" onclick="findCategory('OIL')">油</a></b>
                     </div>
-                    <div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-width: 1px;">
-                        <b>&nbsp; </b>
+                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-width: 1px; text-align: center;">
+                        <b><a id="category0" name="category1" onclick="findGoodsByCategoryId(0)">专供</a></b>
                     </div>
+                    <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-width: 1px;">
+                        <b>&nbsp; </b>
+                    </div>-->
                     <div class="col-sm-12 invoice-col" style="height: 10px"></div>
                     <div class="col-sm-12 invoice-col">
                         <div class="col-sm-2 invoice-col">
@@ -337,8 +340,8 @@
                 var category = '';
                 var goods = '';
                 var photoId = $('#photoId').val();
-                $("[name='category1']").css('color','#72afd2')
-                $('#'+ categoryCode).css('color','red')
+                $("[name='category1']").css('color','#72afd2');
+                $('#'+ categoryCode).css('color','red');
                 $.ajax({
                     url: '/rest/order/photo/findCategory',
                     method: 'GET',
@@ -386,8 +389,12 @@
             function findGoodsByCategoryId(categoryId) {
                 var goods = '';
                 var photoId = $('#photoId').val();
-                $("[name='category2']").css('color','#72afd2')
-                $('#category'+ categoryId).css('color','red')
+                if (categoryId == 0){
+                    $("#category").html('');
+                    $("[name='category1']").css('color','#72afd2');
+                }
+                $("[name='category2']").css('color','#72afd2');
+                $('#category'+ categoryId).css('color','red');
                 $.ajax({
                     url: '/rest/order/photo/findGoods',
                     method: 'GET',

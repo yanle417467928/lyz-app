@@ -20,5 +20,7 @@ public interface MaGoodsDAO {
 
     GoodsDO findGoodsById(Long id);
 
+    List<GoodsResponseVO> findGoodsByCidAndCusIdAndUserRank(@Param("cusId") Long cusId);
+
 }
 

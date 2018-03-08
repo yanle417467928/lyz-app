@@ -162,10 +162,16 @@ public class MaPhotoOrderRestController extends BaseRestController{
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findById(id);
         List<GoodsResponseVO> goodsList = null;
         if (null != photoOrderVO){
-            if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())){
-                goodsList = this.maGoodsService.findGoodsByCidAndCusId(photoOrderVO.getUserId(), cids);
+            if (categoryId.equals(0L)){
+                if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())) {
+                    goodsList = this.maGoodsService.findGoodsByCidAndCusIdAndUserRank(photoOrderVO.getUserId());
+                }
             } else {
-                goodsList = this.maGoodsService.findGoodsByCidAndEmpId(photoOrderVO.getUserId(), cids);
+                if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())) {
+                    goodsList = this.maGoodsService.findGoodsByCidAndCusId(photoOrderVO.getUserId(), cids);
+                } else {
+                    goodsList = this.maGoodsService.findGoodsByCidAndEmpId(photoOrderVO.getUserId(), cids);
+                }
             }
         }
         if (null == goodsList) {

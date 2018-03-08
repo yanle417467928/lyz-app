@@ -38,4 +38,9 @@ public class MaGoodsServiceImpl implements MaGoodsService {
         }
         return null;
     }
+
+    @Override
+    public List<GoodsResponseVO> findGoodsByCidAndCusIdAndUserRank(Long cusId) {
+        return this.maGoodsDAO.findGoodsByCidAndCusIdAndUserRank(cusId);
+    }
 }
