@@ -1093,6 +1093,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
+
     @Override
     public void sendOrderReceiptInfByReceiptNumber(String receiptNumber) {
         if (null != receiptNumber) {

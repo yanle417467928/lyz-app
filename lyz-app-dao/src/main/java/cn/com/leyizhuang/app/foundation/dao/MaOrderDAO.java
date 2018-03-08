@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
@@ -153,7 +154,7 @@ public interface MaOrderDAO {
     List<MaOrderBillingPaymentDetailResponse> getMaOrderBillingPaymentDetailByOrderNumber(@Param("orderNumber") String orderNmber);
 
 
-    Long queryRepaymentAmount(String orderNmber);
+    Double queryRepaymentAmount(String orderNmber);
 
     /**
      * 后台根据订单号获取物流详情
@@ -184,8 +185,6 @@ public interface MaOrderDAO {
     Boolean isPayUp(String orderNo);
 
     String getShippingTime(String orderNo);
-
-    String queryAuditStatus(String orderNumber);
 
     void saveOrderShipping(OrderShipping orderShipping);
 

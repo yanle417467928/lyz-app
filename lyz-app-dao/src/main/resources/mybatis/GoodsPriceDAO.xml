@@ -92,10 +92,13 @@
         g.goods_unit,
         gp.retail_price
         FROM
-        cus_customer c INNER JOIN
-        gds_goods_price gp ON c.store_id = gp.store_id
+        cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
         AND gp.start_time &lt; NOW()
         AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND (rc.rank_code = gp.price_type OR gp.price_type = 'COMMON')
         INNER JOIN gds_goods g ON gp.gid = g.gid
         WHERE
         gp.gid IN
@@ -119,6 +122,7 @@
         gds_goods_price gp ON e.store_id = gp.store_id
         AND gp.start_time &lt; NOW()
         AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND gp.price_type = 'COMMON'
         INNER JOIN gds_goods g ON gp.gid = g.gid
         WHERE
         gp.gid IN

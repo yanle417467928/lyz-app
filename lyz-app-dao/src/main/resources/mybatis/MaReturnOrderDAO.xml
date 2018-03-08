@@ -193,13 +193,9 @@
 
 
     <select id="findReturnOrderGoodsList" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo">
-        SELECT
-        orgi.gid gid,
-        orgi.sku  sku,
-        orgi.sku_name  skuName,
-        orgi.return_qty orderQty,
-        orgi.return_price returnPrice
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo">
+       SELECT
+        *
         FROM ord_return_goods_info orgi
         WHERE orgi.return_no = #{returnNumber}
     </select>
@@ -252,11 +248,12 @@
     </select>
 
     <insert id="saveReturnOrderBillingDetail" parameterType="java.util.List">
-        insert into ord_return_billing_detail (create_time, roid, return_pay_type, return_money,
+        insert into ord_return_billing_detail (create_time, roid,return_no, return_pay_type, return_money,
         into_amount_time,reply_code,refund_number)
         values
         <foreach collection="maOrdReturnBillingDetailList" item="item" index="index" separator=",">
-            ( #{item.createTime}, #{item.roid},#{item.returnPayType}, #{item.returnMoney}, #{item.intoAmountTime},
+            ( #{item.createTime}, #{item.roid},#{item.returnNo}, #{item.returnPayType}, #{item.returnMoney},
+            #{item.intoAmountTime},
             #{item.replyCode}, #{item.refundNumber})
         </foreach>
     </insert>

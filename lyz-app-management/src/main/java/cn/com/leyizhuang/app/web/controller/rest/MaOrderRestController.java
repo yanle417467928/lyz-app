@@ -30,6 +30,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaSelfTakeOrderVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
@@ -558,8 +559,10 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (0 != acount.compareTo(maOrderAmount.getAllAmount())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
+        //获取订单账目明细
+        MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(maOrderAmount.getOrderNumber());
+        if (0 != acount.compareTo(BigDecimal.valueOf(maOrderBillingDetailResponse.getArrearage()))) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "收款金额之和不等于总金额", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -696,7 +699,7 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
-        String orderStatus = maOrderService.queryAuditStatus(orderNumber);
+        String orderStatus = maOrderService.getArrearsAuditInfo(orderNumber).getStatus().getValue();
         if (StringUtils.isBlank(orderStatus) || !(orderStatus.equals(ArrearsAuditStatus.AUDITING.toString()))) {
             logger.info("欠款审核单信息错误！ 该订单不在审核状态,orderStatus{}" + orderStatus);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
@@ -740,7 +743,7 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
-        Long repaymentAmount = maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
+        Double repaymentAmount = maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
         if (null == maOrderAmount.getAllAmount()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);

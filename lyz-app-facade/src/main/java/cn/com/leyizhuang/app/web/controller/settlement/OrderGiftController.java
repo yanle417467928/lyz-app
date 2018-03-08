@@ -12,7 +12,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.app.web.controller.customer.CustomerController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -39,7 +38,7 @@ import java.util.List;
 @RequestMapping(value = "/app/gift")
 public class OrderGiftController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderGiftController.class);
     @Autowired
     private GoodsPriceService goodsPriceService;
 

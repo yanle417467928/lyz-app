@@ -31,6 +31,9 @@ public interface OrderDAO {
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    //根据头id获取商品信息
+    OrderGoodsInfo getOrderGoodsInfoById(Long id);
+
     //获取订单应付/实付金额
     Double getAmountPayableByOrderNumber(@Param("orderNumber") String orderNumber);
 

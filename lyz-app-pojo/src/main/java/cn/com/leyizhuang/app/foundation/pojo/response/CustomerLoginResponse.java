@@ -25,7 +25,9 @@ public class CustomerLoginResponse implements Serializable {
     private Long userId;
     //用户电话
     private String mobile;
-
+    //城市ID
     private Long cityId;
+    //等级编码
+    private String rankCode;
 
 }

@@ -904,4 +904,12 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
 
+    @Override
+    public OrderGoodsInfo getOrderGoodsInfoById(Long id) {
+        if (null != id) {
+            return orderDAO.getOrderGoodsInfoById(id);
+        }
+        return null;
+    }
+
 }

@@ -215,4 +215,6 @@ public interface ReturnOrderService {
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
 
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber);
+
+    List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByReturndNumber(String returnNo);
 }

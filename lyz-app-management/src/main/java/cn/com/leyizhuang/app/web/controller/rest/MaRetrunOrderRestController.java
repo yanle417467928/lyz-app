@@ -17,6 +17,7 @@ import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -156,17 +158,19 @@ public class MaRetrunOrderRestController extends BaseRestController {
                 throw new RuntimeException("收货失败，该退单支付明细为空");
             }
             //后台收货并存入接口表
-            maReturnOrderService.returnOrderReceive(returnNumber, maReturnOrderDetailInfo, maOrdReturnBillingList, shiroUser);
+            HashedMap maps = maReturnOrderService.returnOrderReceive(returnNumber, maReturnOrderDetailInfo, maOrdReturnBillingList, shiroUser);
             //线上支付退款
-            if (null != maOrdReturnBillingList.getOnlinePay() && maOrdReturnBillingList.getOnlinePay() > 0) {
-                List<MaPaymentData> paymentDataList = maOrderService.findPaymentDataByOrderNo(maReturnOrderDetailInfo.getOrderNo());
-                for (MaPaymentData maPaymentData : paymentDataList) {
-                    if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
-                        maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maPaymentData.getTotalFee());
-                    } else if ("WE_CHAT".equals(maPaymentData.getOnlinePayType().toString())) {
-                        maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
-                    } else if ("银联".equals(maPaymentData.getOnlinePayType().toString())) {
-                        //TODO
+            if ((Boolean) maps.get("hasReturnOnlinePay")) {
+                if (null != maOrdReturnBillingList.getOnlinePay() && maOrdReturnBillingList.getOnlinePay() > 0) {
+                    List<MaPaymentData> paymentDataList = maOrderService.findPaymentDataByOrderNo(maReturnOrderDetailInfo.getOrderNo());
+                    for (MaPaymentData maPaymentData : paymentDataList) {
+                        if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
+                            maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maPaymentData.getTotalFee());
+                        } else if ("WE_CHAT".equals(maPaymentData.getOnlinePayType().toString())) {
+                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
+                        } else if ("银联".equals(maPaymentData.getOnlinePayType().toString())) {
+                            //TODO
+                        }
                     }
                 }
             }

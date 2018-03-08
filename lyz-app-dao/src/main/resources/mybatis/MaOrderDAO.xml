@@ -429,6 +429,7 @@
         cash_coupon_discount cashCouponDiscount,
         st_subvention subvention,
         amount_payable amountPayable,
+        arrearage arrearage,
         order_amount_subtotal orderAmountSubtotal,
         product_coupon_discount productCouponDiscount
         FROM
@@ -701,15 +702,7 @@
     </update>
 
 
-    <select id="queryAuditStatus" parameterType="java.lang.String"
-            resultType="java.lang.String">
-        SELECT
-        oaa.status
-        FROM ord_arrears_audit oaa
-        WHERE oaa.ord_no = #{orderNumber}
-        ORDER  BY  id DESC
-        LIMIT 1
-    </select>
+
     <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
         INSERT
         ord_shipping(oid,ord_no,shipping_no,shipping_time)
@@ -900,7 +893,7 @@
 
 
     <select id="queryRepaymentAmount" parameterType="java.lang.String"
-            resultType="java.lang.Long">
+            resultType="java.lang.Double">
         SELECT oaa.order_money - oaa.real_money
         FROM ord_arrears_audit oaa
         WHERE oaa.ord_no = #{orderNumber}
