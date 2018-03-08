@@ -149,11 +149,9 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (((AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus()) || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus()) && orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY))
-                    || ((AppOrderStatus.PENDING_RECEIVE == orderBaseInfo.getStatus() || AppOrderStatus.UNPAID == orderBaseInfo.getStatus()) &&
-                    AppDeliveryType.SELF_TAKE == orderBaseInfo.getDeliveryType())) {
+            if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus()) || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
                 //判断收货类型和订单状态
-                if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.HOUSE_DELIVERY)) {
+                if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
                     //创建取消订单参数存储类
                     CancelOrderParametersDO cancelOrderParametersDO = new CancelOrderParametersDO();
                     cancelOrderParametersDO.setOrderNumber(orderNumber);

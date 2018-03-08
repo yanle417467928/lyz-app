@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQt
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationDetailSecond;
@@ -60,6 +61,9 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Autowired
     private EbsSenderService ebsSenderService;
+
+    @Autowired
+    private MaStoreInventoryService maStoreInventoryService;
 
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query,Long storeId) {
@@ -121,17 +125,29 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         AppStore from = appStoreService.findById(allocation.getAllocationFrom());
 
         for (AllocationDetail goods : allocationDetailList) {
-            try {
-                // 扣除商品库存
-                appStoreService.updateStoreInventoryByStoreCodeAndGoodsId(from.getStoreCode(), goods.getGoodsId(), -goods.getRealQty());
-            } catch (RuntimeException e) {
-                throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
-            }
 
             StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(from.getStoreCode(), goods.getGoodsId());
-            if (storeInventory == null || storeInventory.getRealIty() <= 0) {
+
+            if (storeInventory == null || storeInventory.getRealIty() <= 0 || storeInventory.getAvailableIty() <= 0) {
                 throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
             } else {
+
+                // 扣减后 库存 及 可用量
+                Integer inventory = storeInventory.getRealIty() - goods.getRealQty();
+                Integer availableIty = storeInventory.getAvailableIty() - goods.getRealQty();
+
+                if(availableIty < 0 || inventory < 0 ){
+                    throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
+                }
+
+                try {
+
+                    // 扣减门店真实库存 和 可用量
+                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(from.getStoreId(),goods.getGoodsId(),inventory,availableIty,storeInventory.getLastUpdateTime());
+
+                } catch (RuntimeException e) {
+                    throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
+                }
 
                 // 创建库存变化日志
                 StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
@@ -182,8 +198,19 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 // 无此库存 TODO 新建门店库存
 
             }else{
-                // 增加商品库存
-                appStoreService.updateStoreInventoryByStoreCodeAndGoodsId(to.getStoreCode(), detail.getGoodsId(), detail.getRealQty());
+
+                // 求和后 库存 及 可用量
+                Integer inventory = storeInventory.getRealIty() + detail.getRealQty();
+                Integer availableIty = storeInventory.getAvailableIty() + detail.getRealQty();
+
+                try {
+
+                    // 更新门店真实库存 和 可用量
+                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(to.getStoreId(),detail.getGoodsId(),inventory,availableIty,storeInventory.getLastUpdateTime());
+
+                } catch (RuntimeException e) {
+                    throw new RuntimeException("入库失败");
+                }
 
                 // 创建库存变化日志
                 StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();

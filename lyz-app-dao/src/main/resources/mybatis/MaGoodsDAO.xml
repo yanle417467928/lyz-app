@@ -26,8 +26,9 @@
         FROM
             cus_customer c
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND p.price_type = 'COMMON'
             INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
             c.cus_id = #{cusId}
@@ -54,8 +55,9 @@
         FROM
           emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND p.price_type = 'COMMON'
         INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
           e.emp_id = #{empId}
@@ -78,6 +80,33 @@
         company_flag
         FROM gds_goods
         WHERE gid = #{gid}
+    </select>
+
+    <select id="findGoodsByCidAndCusIdAndUserRank" resultType="cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO">
+        SELECT
+        g.cover_image_uri,
+        g.sku_name goods_name,
+        g.gid id,
+        g.goods_specification,
+        g.goods_unit,
+        p.vip_price,
+        p.retail_price,
+        g.category_name categoryName,
+        g.brd_id brand_id,
+        g.type_name typeName,
+        g.sku
+        FROM
+        cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND rc.rank_code = p.price_type
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        WHERE
+        c.cus_id = #{cusId}
+
     </select>
     
 </mapper>

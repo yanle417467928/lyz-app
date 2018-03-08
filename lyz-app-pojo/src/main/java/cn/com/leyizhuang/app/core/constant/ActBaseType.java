@@ -7,6 +7,8 @@ package cn.com.leyizhuang.app.core.constant;
 public enum ActBaseType {
 
     COMMON("COMMON","普通促销"),
+    ACCUMULATE("ACCUMULATE","累计促销"),
+    FRIST("","首单促销"),
     LADDER("LADDER","阶梯促销");
 
     private final String value;

@@ -17,4 +17,6 @@ public interface MaGoodsService {
 
     GoodsDO findGoodsById(Long id);
 
+    List<GoodsResponseVO> findGoodsByCidAndCusIdAndUserRank(Long cusId);
+
 }

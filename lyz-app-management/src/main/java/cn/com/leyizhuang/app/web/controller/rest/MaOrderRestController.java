@@ -473,6 +473,9 @@ public class MaOrderRestController extends BaseRestController {
             maOrderService.orderShipping(orderNumber, shiroUser, maOrderTempInfo);
             //发送门店自提单消息队列
             maSinkSender.sendStorePickUpReceivedToEBSAndRecord(orderNumber);
+
+            // 记录销量
+
             logger.info("orderShipping ,后台自提单发货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台自提单发货成功", null);
