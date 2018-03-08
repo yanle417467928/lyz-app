@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.LockCustomerCashCouponException;
 import cn.com.leyizhuang.app.core.exception.OrderCreditMoneyException;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
@@ -453,7 +454,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                             cashCouponDiscount += cashCoupon.getDenomination();
                         }
                     } else {
-                        throw new RuntimeException("优惠券不存在！");
+                        throw new LockCustomerCashCouponException("优惠券不存在！");
                     }
                 }
             }
