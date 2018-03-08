@@ -1807,5 +1807,13 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         }
         return null;
     }
+
+    @Override
+    public List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByReturndNumber(String returndNumber) {
+        if (StringUtils.isNotBlank(returndNumber)) {
+            return returnOrderDAO.getReturnOrderBillingDetailByReturndNumber(returndNumber);
+        }
+        return null;
+    }
 }
 

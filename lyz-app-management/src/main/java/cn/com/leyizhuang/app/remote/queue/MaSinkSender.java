@@ -22,8 +22,8 @@ public class MaSinkSender {
     private MqOrderChannel orderChannel;
 
     public void sendAllocationToEBSAndRecord(String number) {
-        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号："+number);
-        if (StringUtils.isNotBlank(number)){
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨出库接口，调拨单号：" + number);
+        if (StringUtils.isNotBlank(number)) {
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.ALLOCATION_OUTBOUND);
             message.setContent(JSON.toJSONString(number));
@@ -32,8 +32,8 @@ public class MaSinkSender {
     }
 
     public void sendAllocationReceivedToEBSAndRecord(String number) {
-        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号："+number);
-        if (StringUtils.isNotBlank(number)){
+        log.info("sendAllocationToEBSAndRecord,发送门店调拨入库接口，调拨单号：" + number);
+        if (StringUtils.isNotBlank(number)) {
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.ALLOCATION_INBOUND);
             message.setContent(JSON.toJSONString(number));
@@ -43,8 +43,8 @@ public class MaSinkSender {
 
 
     public void sendStorePickUpReceivedToEBSAndRecord(String number) {
-        log.info("sendStorePickUpReceivedToEBSAndRecord,发送门店自提单发货接口，调拨单号："+number);
-        if (null !=number){
+        log.info("sendStorePickUpReceivedToEBSAndRecord,发送门店自提单发货接口，调拨单号：" + number);
+        if (null != number) {
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.ORDER_RECEIVE);
             message.setContent(JSON.toJSONString(number));
@@ -54,8 +54,8 @@ public class MaSinkSender {
 
 
     public void sendStorePickUpReturnOrderReceiptToEBSAndRecord(String returnNumber) {
-        log.info("sendStorePickUpReceivedToEBSAndRecord,发送门店自提单收货接口，调拨单号："+returnNumber);
-        if (null !=returnNumber){
+        log.info("sendStorePickUpReceivedToEBSAndRecord,发送门店自提单收货接口，调拨单号：" + returnNumber);
+        if (null != returnNumber) {
             MqMessage message = new MqMessage();
             message.setType(MqMessageType.RETURN_ORDER_RECEIPT);
             message.setContent(JSON.toJSONString(returnNumber));
@@ -76,11 +76,11 @@ public class MaSinkSender {
 
 
     /**
-     * @title  订单收款消息队列
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 订单收款消息队列
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/2
      */
@@ -93,5 +93,16 @@ public class MaSinkSender {
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
         log.info("sendOrderReceipt,发送订单收款信息到拆单队列,End", JSON.toJSONString(receiptNumber));
+    }
+
+    public void sendOrderRefund(String refundNumber) {
+        log.info("refundNumber,发送订单退款信息到拆单队列,Begin\n 退款单号:{}", refundNumber);
+        if (StringUtils.isNotBlank(refundNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.ORDER_REFUND);
+            message.setContent(JSON.toJSONString(refundNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendOrderReceipt,发送订单退款信息到拆单队列,End", JSON.toJSONString(refundNumber));
     }
 }

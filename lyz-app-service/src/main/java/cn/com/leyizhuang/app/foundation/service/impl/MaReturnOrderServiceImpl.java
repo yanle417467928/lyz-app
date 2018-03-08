@@ -20,8 +20,11 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
@@ -31,6 +34,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +76,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private AppSeparateOrderService appSeparateOrderService;
     @Resource
     private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
-
-
+    @Resource
+    private ReturnOrderService returnOrderService;
+    @Resource
+    private AppOrderService appOrderService;
 
     @Override
     public PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size) {
@@ -175,7 +181,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     }
 
     @Override
-    public List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber) {
+    public List<ReturnOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber) {
         return maReturnOrderDAO.findReturnOrderGoodsList(returnNumber);
     }
 
@@ -201,26 +207,33 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException {
+    public HashedMap returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException {
+        HashedMap maps = new HashedMap();
         Date date = new Date();
+        ReturnOrderGoodsInf returnGoodsInf = new ReturnOrderGoodsInf();
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
         //查询该订单下的所有商品
-        List<MaOrderGoodsInfo> MaOrderGoodsInfoList = this.findReturnOrderGoodsList(returnNumber);
-
+        List<ReturnOrderGoodsInfo> MaOrderGoodsInfoList = this.findReturnOrderGoodsList(returnNumber);
         //门店库存,可用量及生成日志信息
-        for (MaOrderGoodsInfo maOrderGoodsInfo : MaOrderGoodsInfoList) {
+        for (ReturnOrderGoodsInfo returnOrderGoodsInfo : MaOrderGoodsInfoList) {
             //查看门店下 该商品的库存
-            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), maOrderGoodsInfo.getGid());
+            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid());
             if (null == storeInventory) {
-                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + maOrderGoodsInfo.getGid());
+                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
             }
+            //得到订单头商品信息
+            OrderGoodsInfo orderGoodsInfo = appOrderService.getOrderGoodsInfoById(returnOrderGoodsInfo.getOrderGoodsId());
+            //更改订单头商品已退数量和可退数量
+            Integer returnQuantity = orderGoodsInfo.getReturnQuantity() + returnOrderGoodsInfo.getReturnQty();
+            Integer returnableQuantity = orderGoodsInfo.getReturnableQuantity() - returnOrderGoodsInfo.getReturnQty();
+            returnOrderService.updateReturnableQuantityAndReturnQuantityById(returnQuantity, returnableQuantity, returnOrderGoodsInfo.getOrderGoodsId());
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //更新门店库存数量及可用量
-                Integer goodsQtyAfterChange = storeInventory.getRealIty() + maOrderGoodsInfo.getOrderQty();
-                Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + maOrderGoodsInfo.getOrderQty();
-                Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(maReturnOrderDetailInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
+                Integer goodsQtyAfterChange = storeInventory.getRealIty() + returnOrderGoodsInfo.getReturnQty();
+                Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + returnOrderGoodsInfo.getReturnQty();
+                Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
                 //增加门店库变更日志存可用量
                 if (affectLine > 0) {
                     MaStoreInventoryChange storeInventoryChange = new MaStoreInventoryChange();
@@ -229,12 +242,12 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     storeInventoryChange.setStoreId(storeInventory.getStoreId());
                     storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
                     storeInventoryChange.setReferenceNumber(returnNumber);
-                    storeInventoryChange.setGid(maOrderGoodsInfo.getGid());
-                    storeInventoryChange.setSku(maOrderGoodsInfo.getSku());
-                    storeInventoryChange.setSkuName(maOrderGoodsInfo.getSkuName());
+                    storeInventoryChange.setGid(returnOrderGoodsInfo.getGid());
+                    storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
+                    storeInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
                     storeInventoryChange.setChangeTime(date);
                     storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
-                    storeInventoryChange.setChangeQty(maOrderGoodsInfo.getOrderQty());
+                    storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
                     storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                     storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
                     maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
@@ -268,33 +281,18 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         List<MaOrdReturnBillingDetail> maOrdReturnBillingDetailList = new ArrayList<MaOrdReturnBillingDetail>();
         Date ReturnDate = new Date();
 
-        //设置接口表类退款信息
-        ReturnOrderRefundInf returnOrderRefundInf = new ReturnOrderRefundInf();
-        returnOrderRefundInf.setMainOrderNumber(maOrderTempInfo.getOrderNumber());
-        returnOrderRefundInf.setMainReturnNumber(returnNumber);
-        returnOrderRefundInf.setRefundNumber(OrderUtils.getRefundNumber());
-        returnOrderRefundInf.setUserId(maOrderTempInfo.getCustomerId());
-        returnOrderRefundInf.setDiySiteCode(maOrderTempInfo.getStoreCode());
-        returnOrderRefundInf.setStoreOrgCode(maOrderTempInfo.getStoreStructureCode());
-        returnOrderRefundInf.setRefundDate(date);
-        returnOrderRefundInf.setSobId(maOrderTempInfo.getSobId());
-        returnOrderRefundInf.setCreateTime(date);
-
         //退现金
         if (null != cashAmount && cashAmount > 0) {
             MaOrdReturnBillingDetail maOrdReturnBillingCash = new MaOrdReturnBillingDetail();
+            String refundNumber = OrderUtils.getRefundNumber();
             maOrdReturnBillingCash.setCreateTime(ReturnDate);
             maOrdReturnBillingCash.setIntoAmountTime(ReturnDate);
-            maOrdReturnBillingCash.setRefundNumber(OrderUtils.getRefundNumber());
+            maOrdReturnBillingCash.setRefundNumber(refundNumber);
             maOrdReturnBillingCash.setReturnMoney(BigDecimal.valueOf(cashAmount));
             maOrdReturnBillingCash.setReturnPayType(OrderBillingPaymentType.CASH.getValue());
             maOrdReturnBillingCash.setRoid(roid);
+            maOrdReturnBillingCash.setReturnNo(returnNumber);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingCash);
-            //退款信息保存到ebs接口表
-            returnOrderRefundInf.setAmount(cashAmount);
-            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CASH);
-            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CASH.getDescription());
-            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
         }
 
         //退线上支付
@@ -304,6 +302,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             calendar.add(Calendar.MONTH, -3);
             //判断是否查过三个月 如果超过三个月退预存款 否则原路退回
             if (maOrderTempInfo.getCreateTime().before(calendar.getTime())) {
+                maps.put("hasReturnOnlinePay", Boolean.FALSE);
                 if (AppIdentityType.CUSTOMER.equals(maReturnOrderDetailInfo.getCreatorIdentityType())) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取顾客预存款
@@ -331,6 +330,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                             //保存日志
                             appCustomerService.addCusPreDepositLog(cusPreDepositLogDO);
                             //保存订单退款详情
+                            String refundNumber = OrderUtils.getRefundNumber();
                             MaOrdReturnBillingDetail maOrdReturnBillingPreDeposit = new MaOrdReturnBillingDetail();
                             maOrdReturnBillingPreDeposit.setCreateTime(calendar.getTime());
                             maOrdReturnBillingPreDeposit.setRoid(maReturnOrderDetailInfo.getRoid());
@@ -339,14 +339,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                             maOrdReturnBillingPreDeposit.setReturnMoney(BigDecimal.valueOf(onlinePayAmount));
                             maOrdReturnBillingPreDeposit.setIntoAmountTime(Calendar.getInstance().getTime());
                             maOrdReturnBillingPreDeposit.setReplyCode(null);
-                            maOrdReturnBillingPreDeposit.setRefundNumber(OrderUtils.getRefundNumber());
+                            maOrdReturnBillingPreDeposit.setRefundNumber(refundNumber);
+                            maOrdReturnBillingPreDeposit.setReturnNo(returnNumber);
                             maOrdReturnBillingDetailList.add(maOrdReturnBillingPreDeposit);
-
-                            //退款信息保存到ebs接口表
-                            returnOrderRefundInf.setAmount(onlinePayAmount);
-                            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CUS_PREPAY);
-                            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CUS_PREPAY.getDescription());
-                            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -381,20 +376,16 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                             maStoreService.saveStorePreDepositLog(stPreDepositLogDO);
 
                             MaOrdReturnBillingDetail maOrdReturnBillingStPreDeposit = new MaOrdReturnBillingDetail();
+                            String refundNumber = OrderUtils.getRefundNumber();
                             maOrdReturnBillingStPreDeposit.setCreateTime(ReturnDate);
                             maOrdReturnBillingStPreDeposit.setIntoAmountTime(ReturnDate);
-                            maOrdReturnBillingStPreDeposit.setRefundNumber(OrderUtils.getRefundNumber());
+                            maOrdReturnBillingStPreDeposit.setRefundNumber(refundNumber);
                             maOrdReturnBillingStPreDeposit.setReturnMoney(BigDecimal.valueOf(stPreDepositAmount));
                             maOrdReturnBillingStPreDeposit.setReturnPayType(OrderBillingPaymentType.ST_PREPAY.getValue());
                             maOrdReturnBillingStPreDeposit.setRoid(roid);
                             maOrdReturnBillingStPreDeposit.setReturnNo(returnNumber);
+                            maOrdReturnBillingStPreDeposit.setReturnNo(returnNumber);
                             maOrdReturnBillingDetailList.add(maOrdReturnBillingStPreDeposit);
-
-                            //退款信息保存到ebs接口表
-                            returnOrderRefundInf.setAmount(onlinePayAmount);
-                            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
-                            returnOrderRefundInf.setDescription(OrderBillingPaymentType.ST_PREPAY.getDescription());
-                            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -426,20 +417,15 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //退顾客预存款
         if (null != preDepositAmount && preDepositAmount > 0) {
             MaOrdReturnBillingDetail maOrdReturnBillingPreDeposit = new MaOrdReturnBillingDetail();
+            String refundNumber = OrderUtils.getRefundNumber();
             maOrdReturnBillingPreDeposit.setCreateTime(ReturnDate);
             maOrdReturnBillingPreDeposit.setIntoAmountTime(ReturnDate);
-            maOrdReturnBillingPreDeposit.setRefundNumber(OrderUtils.getRefundNumber());
+            maOrdReturnBillingPreDeposit.setRefundNumber(refundNumber);
             maOrdReturnBillingPreDeposit.setReturnMoney(BigDecimal.valueOf(preDepositAmount));
             maOrdReturnBillingPreDeposit.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY.getValue());
             maOrdReturnBillingPreDeposit.setRoid(roid);
+            maOrdReturnBillingPreDeposit.setReturnNo(returnNumber);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingPreDeposit);
-
-            //退款信息保存到ebs接口表
-            returnOrderRefundInf.setAmount(preDepositAmount);
-            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.CUS_PREPAY);
-            returnOrderRefundInf.setDescription(OrderBillingPaymentType.CUS_PREPAY.getDescription());
-            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
-
             //获得顾客预存款
             Long customerId = maReturnOrderDetailInfo.getCustomerId();
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -474,19 +460,15 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //退门店预存款
         if (null != stPreDepositAmount && stPreDepositAmount > 0) {
             MaOrdReturnBillingDetail maOrdReturnBillingStPreDepositAmount = new MaOrdReturnBillingDetail();
+            String refundNumber = OrderUtils.getRefundNumber();
             maOrdReturnBillingStPreDepositAmount.setCreateTime(ReturnDate);
             maOrdReturnBillingStPreDepositAmount.setIntoAmountTime(ReturnDate);
-            maOrdReturnBillingStPreDepositAmount.setRefundNumber(OrderUtils.getRefundNumber());
+            maOrdReturnBillingStPreDepositAmount.setRefundNumber(refundNumber);
             maOrdReturnBillingStPreDepositAmount.setReturnMoney(BigDecimal.valueOf(stPreDepositAmount));
             maOrdReturnBillingStPreDepositAmount.setReturnPayType(OrderBillingPaymentType.ST_PREPAY.getValue());
             maOrdReturnBillingStPreDepositAmount.setRoid(roid);
+            maOrdReturnBillingStPreDepositAmount.setReturnNo(returnNumber);
             maOrdReturnBillingDetailList.add(maOrdReturnBillingStPreDepositAmount);
-
-            //退款信息保存到ebs接口表
-            returnOrderRefundInf.setAmount(stPreDepositAmount);
-            returnOrderRefundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
-            returnOrderRefundInf.setDescription(OrderBillingPaymentType.ST_PREPAY.getDescription());
-            appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
 
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //获取门店预存款
@@ -525,8 +507,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         if (null != stCreditMoneyAmount && stCreditMoneyAmount > 0) {
             Long storeId = maReturnOrderDetailInfo.getStoreId();
             StoreDetailVO storeVO = maStoreService.queryStoreVOById(storeId);
-            if("ZS".equals(storeVO.getStoreType())){
-                DecorativeCompanyInfo decorativeCompanyInfo =maStoreService.queryDecorativeCompanyCreditById(storeId);
+            if ("ZS".equals(storeVO.getStoreType())) {
+                DecorativeCompanyInfo decorativeCompanyInfo = maStoreService.queryDecorativeCompanyCreditById(storeId);
                 DecorativeCompanyCredit decorativeCompanyCredit = decorativeCompanyInfo.getCredit();
                 decorativeCompanyCredit.setCredit(decorativeCompanyCredit.getCredit().add(BigDecimal.valueOf(stCreditMoneyAmount)));
                 StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
@@ -534,12 +516,12 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);
                 storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.RETURN_ORDER.getDescription());
                 storeCreditMoneyChangeLog.setCreateTime(date);
-                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(stCreditMoneyAmount+decorativeCompanyCredit.getCredit().doubleValue());
+                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(stCreditMoneyAmount + decorativeCompanyCredit.getCredit().doubleValue());
                 storeCreditMoneyChangeLog.setStoreId(storeId);
                 storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 storeCreditMoneyChangeLog.setReferenceNumber(returnNumber);
-                maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit,storeCreditMoneyChangeLog);
+                maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit, storeCreditMoneyChangeLog);
             }
         }
 
@@ -607,9 +589,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
             }
         }
-
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
+        maps.put("hasReturnOnlinePay", Boolean.TRUE);
+        return maps;
     }
 }
 

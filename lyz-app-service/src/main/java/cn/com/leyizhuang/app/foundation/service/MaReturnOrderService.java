@@ -4,7 +4,9 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.map.HashedMap;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public interface MaReturnOrderService {
 
     Long findReturnOrderBillingId(String returnNumber);
 
-   void returnOrderReceive(String returnNumber,MaReturnOrderDetailInfo maReturnOrderDetailInfo,MaOrdReturnBilling maOrdReturnBillingList,ShiroUser shiroUser);
+    HashedMap returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser);
     /**
      * 更新退单状态
      */
@@ -44,7 +46,7 @@ public interface MaReturnOrderService {
      */
     void sendReturnOrderReceiptInfAndRecord(String returnNumber);
 
-    List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
+    List<ReturnOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
 
     MaOrdReturnBilling findReturnOrderBillingList(Long roid);
 

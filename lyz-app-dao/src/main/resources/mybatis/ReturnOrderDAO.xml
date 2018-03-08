@@ -584,6 +584,22 @@
         WHERE refund_number = #{refundNumber}
     </select>
 
+    <select id="getReturnOrderBillingDetailByReturndNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
+        SELECT
+        id,
+        create_time,
+        roid,
+        return_no,
+        return_pay_type,
+        return_money,
+        into_amount_time,
+        reply_code,
+        refund_number
+        FROM ord_return_billing_detail
+        WHERE return_no = #{returnNumber}
+    </select>
+
     <update id="updateReturnOrderProductCouponStatus">
         UPDATE ord_return_product_coupon
         SET is_return = #{isReturn}

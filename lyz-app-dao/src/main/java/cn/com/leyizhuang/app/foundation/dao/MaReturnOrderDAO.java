@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -47,7 +48,7 @@ public interface MaReturnOrderDAO {
 
     void updateReturnOrderStatus(@Param(value = "returnNumber") String returnNumber,@Param(value = "status")String status);
 
-    List<MaOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
+    List<ReturnOrderGoodsInfo> findReturnOrderGoodsList(String returnNumber);
 
     MaOrdReturnBilling findReturnOrderBillingList(Long roid);
 

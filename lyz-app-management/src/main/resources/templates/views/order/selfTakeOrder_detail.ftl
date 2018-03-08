@@ -208,9 +208,9 @@
                                         &nbsp¥${orderBillingDetail.orderAmountSubtotal!'0.00'}</td>
                                 </tr>
                                 <tr>
-                                    <th>应付金额</th>
+                                    <th>欠款金额</th>
                                     <td style="color: red;font-weight:bold">
-                                        &nbsp¥${orderBillingDetail.amountPayable!'0.00'}</td>
+                                        &nbsp¥${orderBillingDetail.arrearage!'0.00'}</td>
                                 </tr>
                             </table>
                         </dd>
@@ -388,7 +388,7 @@
                                 <input type="text" class="form-control" id="count"
                                        name="allAmount"
                                        readonly
-                                       value="${orderBillingDetail.amountPayable!'0.00'}">
+                                       value="${orderBillingDetail.arrearage!'0.00'}">
                                 <input type="hidden" class="form-control"
                                        id="orderNumberInfrom"
                                        name="orderNumber"
@@ -515,7 +515,7 @@
                         notEmpty: {
                             message: '日期不允许为空!'
                         },
-                        date: {//验证指定的日期格式
+                        date: {
                             format: 'YYYY-MM-DD',
                             message: '日期格式不正确'
                         },

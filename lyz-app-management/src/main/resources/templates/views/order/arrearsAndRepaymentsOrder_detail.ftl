@@ -57,7 +57,7 @@
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
                     <input type="hidden" id="auditStatus" readonly value="${auditStatus!""}">
                     <input type="hidden" id="lastUpdateTime" readonly
-                           value="${lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}">
+                           value="<#if lastUpdateTime??>${lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>">
                 </div>
             </div>
         </div>

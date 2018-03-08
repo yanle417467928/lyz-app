@@ -452,7 +452,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public void separateRechargeReceipt(String rechargeNo) {
         List<RechargeReceiptInfo> rechargeReceiptInfoList = rechargeService.findRechargeReceiptInfoByRechargeNo(rechargeNo);
-        List<RechargeOrder>  rechargeOrderList = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
+        List<RechargeOrder> rechargeOrderList = rechargeService.findRechargeOrderByRechargeNo(rechargeNo);
         AppStore store = storeService.findById(rechargeOrderList.get(0).getStoreId());
 
         if (null != rechargeReceiptInfoList && rechargeReceiptInfoList.size() > 0) {
@@ -484,7 +484,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
                 rechargeReceiptInf.setSobId(store.getSobId());
                 rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
-                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON ) {
+                if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON) {
                     rechargeReceiptInf.setUserid(rechargeOrderList.get(0).getCustomerId());
                 }
 
@@ -1092,6 +1092,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             }
         }
     }
+
 
     @Override
     public void sendOrderReceiptInfByReceiptNumber(String receiptNumber) {

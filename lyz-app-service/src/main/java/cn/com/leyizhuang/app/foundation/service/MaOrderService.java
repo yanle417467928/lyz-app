@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
@@ -160,7 +161,7 @@ public interface MaOrderService {
      * @param orderNmber 订单号
      * @return
      */
-    Long queryRepaymentAmount(String orderNmber);
+    Double queryRepaymentAmount(String orderNmber);
 
     /**
      * 后台根据订单号获取物流详情
@@ -218,13 +219,6 @@ public interface MaOrderService {
 
     String getShippingTime(String orderNumber);
 
-    /**
-     * 查询订单审核状态
-     *
-     * @param orderNumber 订单号
-     * @return
-     */
-    String queryAuditStatus(String orderNumber);
 
     /**
      * 新增订单收款记录

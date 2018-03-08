@@ -998,12 +998,9 @@ public class OrderController {
                 if ("PRODUCT_COUPON".equals(response.getDeliveryType()) || "SELF_TAKE".equals(response.getDeliveryType())) {
                     AppStore appStore = appStoreService.findById(response.getStoreId());
                     response.setShippingAddress(appStore.getDetailedAddress());
-                }
+            }
                 response.setCount(response.getGoodsImgList().size());
             }
-
-            GridDataVO<OrderListResponse> gridDataVO = new GridDataVO<OrderListResponse>();
-
             CustomerSignDetailResponse response = new CustomerSignDetailResponse();
             response.setCount(responseOrderList.getTotal());
             response.setNumsPerPage(responseOrderList.getPageSize());

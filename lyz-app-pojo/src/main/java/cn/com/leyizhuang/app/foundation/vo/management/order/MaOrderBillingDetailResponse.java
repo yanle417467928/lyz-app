@@ -52,4 +52,9 @@ public class MaOrderBillingDetailResponse {
      * 产品券抵现金额
      */
     private Double productCouponDiscount;
+    /**
+     * 欠款金额
+     */
+    private Double arrearage;
+
 }

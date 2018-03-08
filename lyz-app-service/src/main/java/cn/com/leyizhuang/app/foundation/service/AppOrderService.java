@@ -157,4 +157,7 @@ public interface AppOrderService {
     void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo);
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber);
+
+    OrderGoodsInfo getOrderGoodsInfoById(Long id);
+
 }

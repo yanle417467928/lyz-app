@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.web.controller.views.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
@@ -252,12 +254,12 @@ public class MaOrderViewController {
             //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             //查询出货时间
-            String  time = maOrderService.getShippingTime(orderNumber);
+            String time = maOrderService.getShippingTime(orderNumber);
             logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 time:{}", time);
-            if(null!=time){
-                try{
+            if (null != time) {
+                try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date shippingTime  =sdf.parse(time);
+                    Date shippingTime = sdf.parse(time);
                     map.addAttribute("shippingTime", shippingTime);
                 } catch (ParseException e) {
                     logger.info("出货日期转换错误");
@@ -319,25 +321,24 @@ public class MaOrderViewController {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             //查询订单是否还清
             Boolean isPayUp = maOrderService.isPayUp(orderNumber);
-            //查询审核状态
-            String auditStatus = maOrderService.queryAuditStatus(orderNumber);
+            //查询审核订单信息
+            MaOrderArrearsAudit maOrderArrearsAudit = maOrderService.getArrearsAuditInfo(orderNumber);
             //查询订单商品信息
             List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
             //获取订单账目明细
             MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
-            //导购信用额度更新时间
-            Long sellerId = maOrderService.querySellerIdByOrderNumber(orderNumber);
-            GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
-            //获取订单支付明细列表
-            List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
-            //获取应还款金额
-            Long repaymentAmount =  maOrderService.queryRepaymentAmount(orderNumber);
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
                 map.addAttribute("type", 1);
+                //导购信用额度更新时间
+                Long sellerId = maOrderService.querySellerIdByOrderNumber(orderNumber);
+                if (null != sellerId) {
+                    GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
+                    map.addAttribute("lastUpdateTime", guideCreditMoney.getLastUpdateTime());
+                }
             } else if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaCompanyOrderDetailResponse maCompanyOrderDetailResponse = maOrderService.findMaCompanyOrderDetailByOrderNumber(orderNumber);
@@ -345,6 +346,10 @@ public class MaOrderViewController {
                 map.addAttribute("maOrderDetail", maCompanyOrderDetailResponse);
                 map.addAttribute("type", 2);
             }
+            //获取订单支付明细列表
+            List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+            //获取应还款金额
+            Double repaymentAmount = maOrderArrearsAudit.getOrderMoney()-maOrderArrearsAudit.getRealMoney();
             if (null != maOrderBillingDetailResponse) {
                 map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
             }
@@ -353,8 +358,7 @@ public class MaOrderViewController {
             }
             map.addAttribute("repaymentAmount", repaymentAmount);
             map.addAttribute("isPayUp", isPayUp);
-            map.addAttribute("auditStatus", auditStatus);
-            map.addAttribute("lastUpdateTime", guideCreditMoney.getLastUpdateTime());
+            map.addAttribute("auditStatus", maOrderArrearsAudit.getStatus());
             return "/views/order/arrearsAndRepaymentsOrder_detail";
         }
         logger.warn("orderNumber为空");

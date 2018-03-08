@@ -36,6 +36,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptI
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -209,7 +210,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public Long queryRepaymentAmount(String orderNmber) {
+    public Double queryRepaymentAmount(String orderNmber) {
         return maOrderDAO.queryRepaymentAmount(orderNmber);
     }
 
@@ -436,10 +437,6 @@ public class MaOrderServiceImpl implements MaOrderService {
         return this.maOrderDAO.getShippingTime(orderNumber);
     }
 
-    @Override
-    public String queryAuditStatus(String orderNumber) {
-        return this.maOrderDAO.queryAuditStatus(orderNumber);
-    }
 
     @Override
     public Boolean judgmentVerification(String orderNumber, String code) {
