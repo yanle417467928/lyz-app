@@ -576,10 +576,7 @@ public class OrderController {
 
             totalOrderAmount = CountUtil.sub(totalPrice, memberDiscount, orderDiscount);
 
-            // 运费计算
-            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, totalOrderAmount, goodsInfo);
 
-            totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             if (identityType == 6) {
                 //计算顾客乐币
                 Map<String, Object> leBi = appCustomerService.findLeBiByUserIdAndGoodsMoney(userId, totalOrderAmount);
@@ -614,6 +611,12 @@ public class OrderController {
                 goodsSettlement.put("storeSubvention", storeSubvention);
             }
 
+            //由于运费不抵扣乐币及优惠券,避免分摊出现负,运费放最后计算
+            // 运费计算
+            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, totalOrderAmount, goodsInfo);
+
+            totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
+
             goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
             goodsSettlement.put("totalPrice", totalPrice);
             goodsSettlement.put("totalGoodsInfo", goodsInfo);
@@ -624,7 +627,8 @@ public class OrderController {
             goodsSettlement.put("promotionInfo", giftList);
             goodsSettlement.put("isShowNumber", isShowSalesNumber);
 
-            if (AppDeliveryType.HOUSE_DELIVERY.equals(goodsSimpleRequest.getSysDeliveryType())) {
+            //非门店自提,为城市库存充足及门店库存充足
+            if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
                 //判断库存的特殊处理
                 Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
                 if (gid != null) {
