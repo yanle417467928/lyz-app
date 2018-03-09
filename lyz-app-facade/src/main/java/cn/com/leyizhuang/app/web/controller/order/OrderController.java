@@ -1192,7 +1192,9 @@ public class OrderController {
                         AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
                 orderListResponse.setGoodsImgList(goodsImgList);
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);

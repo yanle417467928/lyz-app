@@ -1005,4 +1005,56 @@
             receipt_number = #{receiptNumber}
     </select>
 
+
+    <select id="getPendingShipmentAndPendingReceive" resultMap="orderBeseInfoList">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
+            obi.customer_id = #{userId}
+            AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            ORDER BY obi.create_time DESC
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type
+            FROM
+            ord_base_info AS obi
+            WHERE
+            obi.creator_id = #{userId}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'SELLER'
+            AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            ORDER BY obi.create_time DESC
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obi.customer_id,
+            obi.customer_name,
+            obi.customer_phone
+            FROM
+            ord_base_info AS obi
+            WHERE
+            obi.creator_id = #{userId}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'DECORATE_MANAGER'
+            AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            ORDER BY obi.create_time DESC
+        </if>
+    </select>
 </mapper>
