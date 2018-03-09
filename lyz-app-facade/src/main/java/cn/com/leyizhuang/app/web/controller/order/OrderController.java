@@ -152,11 +152,13 @@ public class OrderController {
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Long userId = orderParam.getUserId();
         if (null == orderParam.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Integer identityType = orderParam.getIdentityType();
         if (null == orderParam.getIdentityType()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
@@ -342,12 +344,14 @@ public class OrderController {
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
+                //判断是否可选择货到付款
+                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, orderProductCouponInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -1188,7 +1192,9 @@ public class OrderController {
                         AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
                 orderListResponse.setGoodsImgList(goodsImgList);
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);

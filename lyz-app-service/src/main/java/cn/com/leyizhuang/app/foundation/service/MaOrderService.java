@@ -271,7 +271,7 @@ public interface MaOrderService {
     Long querySellerIdByOrderNumber(String orderNumber);
 
 
-    List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime);
+    List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail);
 
     /**
      * 后台买券订单创建订单账单信息

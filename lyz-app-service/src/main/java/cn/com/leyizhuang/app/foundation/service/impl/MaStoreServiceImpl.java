@@ -252,6 +252,10 @@ public class MaStoreServiceImpl implements MaStoreService {
        return mastoreDAO.findStoreByStoreCode(code);
     }
 
+    @Override
+    public StorePreDeposit findByStoreId(Long storeId){
+        return mastoreDAO.findByStoreId(storeId);
+    }
 
     @Override
     public Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version){

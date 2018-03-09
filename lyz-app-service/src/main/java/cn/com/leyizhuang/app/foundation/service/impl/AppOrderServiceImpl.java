@@ -468,6 +468,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 cusPreDeposit = billing.getCusPreDeposit();
             }
             orderBillingDetails.setCusPreDeposit(cusPreDeposit);
+        } else {
+            orderBillingDetails.setCusPreDeposit(0D);
         }
         //设置门店预存款
         if (identityType == AppIdentityType.SELLER.getValue() ||
@@ -574,7 +576,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             orderBillingDetails.setIsPayUp(false);
         }
         //若使用信用额度，必须付清，不能再使用第三方支付
-        if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)){
+        if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
             if (orderBillingDetails.getAmountPayable() > 0) {
                 throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
             }
@@ -914,4 +916,10 @@ public class AppOrderServiceImpl implements AppOrderService {
         return null;
     }
 
+    @Override
+    public PageInfo<OrderBaseInfo> getPendingShipmentAndPendingReceive(Long userId, Integer identityType, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderBaseInfo> orderBaseInfoList = orderDAO.getPendingShipmentAndPendingReceive(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        return new PageInfo<>(orderBaseInfoList);
+    }
 }

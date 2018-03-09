@@ -41,6 +41,9 @@ public interface AppOrderService {
     //用户获取我的订单列表
     PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
 
+    //获取物流单列表
+    PageInfo<OrderBaseInfo> getPendingShipmentAndPendingReceive(Long userId, Integer identityType, Integer page, Integer size);
+
     //获取订单所有商品
     List<OrderGoodsInfo> getOrderGoodsInfoByOrderNumber(String orderNumber);
 

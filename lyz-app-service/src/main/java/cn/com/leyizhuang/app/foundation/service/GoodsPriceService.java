@@ -34,4 +34,8 @@ public interface GoodsPriceService {
      * @return
      */
     GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID,Long storeID);
+
+
+    List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserId(List<Long> goodsIdList, Long userId,
+                                                                                     AppIdentityType identityType);
 }
