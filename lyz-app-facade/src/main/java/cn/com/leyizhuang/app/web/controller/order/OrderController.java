@@ -1468,12 +1468,12 @@ public class OrderController {
                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量成功，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App各状态订单数量失败", null);
-            logger.warn("getAppOrderQuantity EXCEPTION,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理货到付款的订单业务失败", null);
+            logger.warn("handleOrderRelevantBusinessAfterOnlinePayCashDelivery EXCEPTION,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
