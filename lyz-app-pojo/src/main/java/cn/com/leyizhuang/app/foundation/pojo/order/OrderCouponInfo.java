@@ -59,4 +59,9 @@ public class OrderCouponInfo {
      */
     private String sku;
 
+    /**
+     * 商品id
+     */
+    private Long goodsId;
+
 }

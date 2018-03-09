@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -58,4 +59,12 @@ public interface SellDetailsDAO {
      * @param logDO
      */
     void recordeErrorLog(SellDetailsErrorLogDO logDO);
+
+
+    /******              专供销量                *******/
+
+    /**
+     * 插入专供销量
+     */
+    void insertZgSellDetails(SellZgDetailsDO detailsDO);
 }

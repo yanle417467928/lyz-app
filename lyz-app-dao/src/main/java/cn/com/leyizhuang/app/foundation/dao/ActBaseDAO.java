@@ -60,4 +60,6 @@ public interface ActBaseDAO{
      */
     int insertBatch(List<ActBaseDO> trainRecordList);
 
+    void insertActLjGoodsMapping();
+
 }

@@ -74,4 +74,15 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     public GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID, Long storeID) {
         return goodsPriceDAO.findGoodsPriceByGoodsIDAndStoreID(goodsID, storeID);
     }
+
+    @Override
+    public List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserId(
+            List<Long> goodsIdList, Long userId, AppIdentityType identityType) {
+        if (goodsIdList != null && goodsIdList.size() > 0 && userId != null && identityType != null) {
+            if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
+                return goodsPriceDAO.findCustomerGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId);
+            }
+        }
+        return null;
+    }
 }

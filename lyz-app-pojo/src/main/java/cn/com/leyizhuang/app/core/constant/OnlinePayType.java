@@ -6,7 +6,7 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum OnlinePayType {
 
-    ALIPAY(0, "支付宝"), WE_CHAT(1, "微信"), UNION_PAY(2, "银联"), NO(3, "无");
+    ALIPAY(0, "支付宝"), WE_CHAT(1, "微信"), UNION_PAY(2, "银联"), NO(3, "无"), CASH_DELIVERY(4, "货到付款");
 
     private final int value;
     private final String description;

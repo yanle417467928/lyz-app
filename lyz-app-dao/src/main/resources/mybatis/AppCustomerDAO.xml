@@ -644,7 +644,7 @@
         cus_id,
         seller_id,
         store_id,
-        gid,
+        gid goodsId,
         quantity,
         get_type,
         get_time,
@@ -799,4 +799,27 @@
         WHERE c.cus_id = #{cusId}
     </select>
 
+    <select id="findCustomerByCusPhone" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
+        SELECT
+            cus_id cusId,
+	        mobile cusPhone,
+	        `name` cusName
+        FROM
+            cus_customer
+        WHERE
+            city_id = #{cityId}
+        AND mobile = #{mobile}
+    </select>
+
+    <select id="findCustomerByCusName" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
+        SELECT
+        cus_id cusId,
+        mobile cusPhone,
+        `name` cusName
+        FROM
+        cus_customer
+        WHERE
+        store_id = #{storeId}
+        AND `name` LIKE concat('%', #{keywords}, '%')
+    </select>
 </mapper>

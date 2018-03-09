@@ -64,7 +64,7 @@ public class OrderGiftController {
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {
 
-        logger.info("materialListStepToGiftList CALLED,下料清单跳转赠品列表,入参userId {} identityType{} goodsArray:{}",userId,identityType, goodsArray);
+        logger.info("materialListStepToGiftList CALLED,下料清单跳转赠品列表,入参userId {} identityType{} goodsArray:{}", userId, identityType, goodsArray);
 
         ResultDTO<GiftListResponse> resultDTO;
         //获取商品相关信息（id，数量，是否赠品）
@@ -88,7 +88,7 @@ public class OrderGiftController {
                     //取产品券数量后面计算库存
                     GoodsIdQtyParam param = new GoodsIdQtyParam(goodsSimpleInfo.getId(), goodsSimpleInfo.getQty());
                     couponList.add(param);
-                }else{
+                } else {
                     goodsIdList.add(goodsSimpleInfo.getId());
                     //取本品数量后面计算库存
                     GoodsIdQtyParam param = new GoodsIdQtyParam(goodsSimpleInfo.getId(), goodsSimpleInfo.getQty());
@@ -99,24 +99,24 @@ public class OrderGiftController {
             /******计算促销******/
             List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
             List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
-            if(identityType == 6){
+            if (identityType == 6) {
                 //取城市ID
                 AppCustomer customer = appCustomerService.findById(userId);
                 cityId = customer.getCityId();
                 //获取商品信息
                 goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
-            }else if(identityType == 0){
+            } else if (identityType == 0) {
                 //取城市ID
                 AppEmployee employee = appEmployeeService.findById(userId);
                 cityId = employee.getCityId();
                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
-            }else if(identityType == 2){
+            } else if (identityType == 2) {
                 //取城市ID
                 AppEmployee employee = appEmployeeService.findById(userId);
                 cityId = employee.getCityId();
             }
 
-            if (goodsInfo != null && goodsInfo.size() > 0){
+            if (goodsInfo != null && goodsInfo.size() > 0) {
                 //为商品设置数量
                 Iterator<OrderGoodsSimpleResponse> orderGoodsSimpleResponseiterator = goodsInfo.iterator();
                 while (orderGoodsSimpleResponseiterator.hasNext()) {
@@ -128,7 +128,7 @@ public class OrderGiftController {
                         }
                     }
                 }
-                promotionsGiftList = actService.countGift(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),goodsInfo);
+                promotionsGiftList = actService.countGift(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
             }
 
             /******计算促销******/
@@ -136,7 +136,7 @@ public class OrderGiftController {
             List<GiftListResponseGoods> responseGoodsList = new ArrayList<>();
             responseGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     goodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-            if (responseGoodsList != null && responseGoodsList.size() > 0){
+            if (responseGoodsList != null && responseGoodsList.size() > 0) {
                 //为返商品集合设置数量和赠品属性
                 Iterator<GiftListResponseGoods> iterator = responseGoodsList.iterator();
                 while (iterator.hasNext()) {
@@ -157,7 +157,7 @@ public class OrderGiftController {
             responseCouponGoodsList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     coupunGoodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
 
-            if(responseCouponGoodsList != null && responseCouponGoodsList.size() > 0){
+            if (responseCouponGoodsList != null && responseCouponGoodsList.size() > 0) {
                 //为返商品集合设置数量和赠品属性
                 Iterator<GiftListResponseGoods> iterator2 = responseCouponGoodsList.iterator();
                 while (iterator2.hasNext()) {
@@ -206,12 +206,14 @@ public class OrderGiftController {
                                         + "' 库存不足，请更改购买数量!", null);
                                 logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
                                 return resultDTO;
+                            } else {
+                                deliveryType = AppDeliveryType.SELF_TAKE;
                             }
                         }
-
                     }
+                } else {
+                    deliveryType = AppDeliveryType.HOUSE_DELIVERY;
                 }
-                deliveryType = AppDeliveryType.HOUSE_DELIVERY;
             } else {
                 for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
                     GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());

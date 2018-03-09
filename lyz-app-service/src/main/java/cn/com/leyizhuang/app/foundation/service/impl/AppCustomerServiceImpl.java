@@ -596,4 +596,22 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public CustomerRankInfoResponse findCusRankinfoByCusId(Long cusId) {
         return this.customerDAO.findCusRankinfoByCusId(cusId);
     }
+
+    @Override
+    public List<FindCustomerResponse> findCustomerByCusPhone(Long cityId, String mobile) {
+        if (null != cityId && null != mobile){
+            return customerDAO.findCustomerByCusPhone(cityId, mobile);
+        }else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<FindCustomerResponse> findCustomerByCusName(Long storeId, String keywords) {
+        if (null != storeId && null != keywords){
+           return customerDAO.findCustomerByCusName(storeId, keywords);
+        }else {
+            return null;
+        }
+    }
 }

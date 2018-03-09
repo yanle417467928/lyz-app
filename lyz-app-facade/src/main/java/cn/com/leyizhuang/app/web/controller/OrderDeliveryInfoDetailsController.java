@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller;
 
+import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
@@ -7,9 +8,13 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsDetailResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsInformationResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.LogisticsMessageResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -17,6 +22,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +59,9 @@ public class OrderDeliveryInfoDetailsController {
 
     @Resource
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
+
+    @Resource
+    private GoodsService goodsService;
 
     /**
      * 查看物流详情
@@ -342,6 +351,95 @@ public class OrderDeliveryInfoDetailsController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，配送员修改物流状态失败", null);
             logger.warn("updateLogisticsStatus EXCEPTION,配送员修改物流状态失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 获取物流单列表
+     * @param identityType  用户类型
+     * @param userId    用户id
+     * @return  物流单列表
+     */
+    @RequestMapping(value = "/logistics/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPendingShipmentAndPendingReceive(Integer identityType,Long userId, Integer page, Integer size){
+        ResultDTO<Object> resultDTO;
+        logger.info("getPendingShipmentAndPendingReceive CALLED,获取物流单列表，入参 userId:{}, identityType:{}, page:{}, size:{}", userId, identityType, page, size);
+
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getPendingShipmentAndPendingReceive OUT,获取物流单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("getPendingShipmentAndPendingReceive OUT,获取物流单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getPendingShipmentAndPendingReceive OUT,获取物流单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getPendingShipmentAndPendingReceive OUT,获取物流单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取物流单列表
+            PageInfo<OrderBaseInfo> orderBaseInfoLists = appOrderService.getPendingShipmentAndPendingReceive(userId, identityType, page, size);
+            List<OrderBaseInfo> orderBaseInfoList = orderBaseInfoLists.getList();
+            //创建一个返回对象list
+            List<OrderListResponse> orderListResponses = new ArrayList<>();
+            //循环遍历订单列表
+            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                //创建有个存放图片地址的list
+                List<String> goodsImgList = new ArrayList<>();
+                //创建一个返回类
+                OrderListResponse orderListResponse = new OrderListResponse();
+                //获取订单商品
+                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                //遍历订单商品
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+                }
+                orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
+                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                //获取订单物流相关信息
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
+                } else {
+                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
+                }
+                orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                orderListResponse.setGoodsImgList(goodsImgList);
+                if (identityType == 0) {
+                    orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
+                    orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                }
+                //添加到返回类list中
+                orderListResponses.add(orderListResponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
+            logger.info("getPendingShipmentAndPendingReceive OUT,获取物流单列表成功，出参 resultDTO:{}", orderListResponses);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取物流单列表失败", null);
+            logger.warn("getPendingShipmentAndPendingReceive EXCEPTION,获取物流单列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
