@@ -359,6 +359,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         orderResultEnter = mapping(orderResultEnter, childNode);
                     }
+                    String orderNo = orderResultEnter.getOrderNo();
+                    if (AssertUtil.isEmpty(orderNo)) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,订单号不可为空,退单号 出参 order_no{}");
+                        return AppXmlUtil.resultStrXml(1, "订单号(order_no)不可为空");
+                    }
                     int result = wmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
 
                     if (result == 0) {
@@ -463,26 +468,29 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         returnOrderResultEnter = mapping(returnOrderResultEnter, childNode);
                     }
+                    String returnNo = returnOrderResultEnter.getReturnNumber();
+                    if (AssertUtil.isEmpty(returnNo)) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,退单号不可为空,退单号 出参 return_no{}");
+                        return AppXmlUtil.resultStrXml(1, "退单号(return_no)不可为空");
+                    }
                     int result = wmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
                     if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", returnOrderResultEnter.getReturnNumber());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,该单" + returnOrderResultEnter.getReturnNumber() + "已存在!");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", returnNo);
+                        return AppXmlUtil.resultStrXml(1, "重复传输,该单" + returnNo + "已存在!");
                     }
                     if (returnOrderResultEnter.getIsCancel()) {
                         // 修改回原订单的可退和已退！
-                        List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnOrderResultEnter.getReturnNumber());
+                        List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNo);
                         returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
                                 returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getOrderGoodsId()));
 
                         //修改退货单状态
-                        returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.CANCELED);
+                        returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.CANCELED);
                     } else {
-                        //如果申请取消退货单失败退回为原来的退货申请状态
-                        returnOrderService.updateReturnOrderStatus(returnOrderResultEnter.getReturnNumber(), AppReturnOrderStatus.PENDING_PICK_UP);
-                        // TODO 推送取消订单失败的个人系统消息
-
-
-
+                        // 如果申请取消退货单失败退回为原来的退货申请状态
+                        returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.PENDING_PICK_UP);
+                        // 推送取消订单失败的个人系统消息
+                        NoticePushUtils.pushApplyCancelReturnOrderInfo(returnNo);
                     }
                 }
                 logger.info("GetWMSInfo OUT,获取取消退单结果确认wms信息成功 出参 code=0");

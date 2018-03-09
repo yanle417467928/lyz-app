@@ -6,15 +6,13 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudi
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.MaEmpCreditMoneyService;
-import cn.com.leyizhuang.app.foundation.service.MaOrderService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -49,6 +47,8 @@ public class MaOrderViewController {
     private MaEmpCreditMoneyService maEmpCreditMoneyService;
     @Resource
     private MaStoreInventoryService maStoreInventoryService;
+    @Resource
+    private MaStoreService maStoreService;
 
     /**
      * 返回门店订单列表页
@@ -255,16 +255,7 @@ public class MaOrderViewController {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             //查询出货时间
             String time = maOrderService.getShippingTime(orderNumber);
-            logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 time:{}", time);
-            if (null != time) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date shippingTime = sdf.parse(time);
-                    map.addAttribute("shippingTime", shippingTime);
-                } catch (ParseException e) {
-                    logger.info("出货日期转换错误");
-                }
-            }
+            map.addAttribute("shippingTime", time);
             if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
                 //查询订单详细信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
@@ -333,12 +324,6 @@ public class MaOrderViewController {
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
                 map.addAttribute("type", 1);
-                //导购信用额度更新时间
-                Long sellerId = maOrderService.querySellerIdByOrderNumber(orderNumber);
-                if (null != sellerId) {
-                    GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
-                    map.addAttribute("lastUpdateTime", guideCreditMoney.getLastUpdateTime());
-                }
             } else if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaCompanyOrderDetailResponse maCompanyOrderDetailResponse = maOrderService.findMaCompanyOrderDetailByOrderNumber(orderNumber);
@@ -349,7 +334,7 @@ public class MaOrderViewController {
             //获取订单支付明细列表
             List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
             //获取应还款金额
-            Double repaymentAmount = maOrderArrearsAudit.getOrderMoney()-maOrderArrearsAudit.getRealMoney();
+            Double repaymentAmount = maOrderArrearsAudit.getOrderMoney() - maOrderArrearsAudit.getRealMoney();
             if (null != maOrderBillingDetailResponse) {
                 map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
             }

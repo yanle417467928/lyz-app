@@ -26,6 +26,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -100,15 +101,15 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList) {
 
-        if (null == cityId || null == goodsList) {
+        if (null == cityId || AssertUtil.isEmpty(goodsList)) {
             return null;
         }
         //如果赠品不为空合并赠品
-        if (null != giftList && !giftList.isEmpty()) {
+        if (AssertUtil.isNotEmpty(giftList)) {
             goodsList.addAll(giftList);
         }
         //如果券商品不为空合并券商品
-        if (null != couponList && !couponList.isEmpty()) {
+        if (AssertUtil.isNotEmpty(couponList)) {
             goodsList.addAll(couponList);
         }
         //合并所有商品，相同商品数量相加
@@ -467,6 +468,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                 cusPreDeposit = billing.getCusPreDeposit();
             }
             orderBillingDetails.setCusPreDeposit(cusPreDeposit);
+        } else {
+            orderBillingDetails.setCusPreDeposit(0D);
         }
         //设置门店预存款
         if (identityType == AppIdentityType.SELLER.getValue() ||
@@ -573,7 +576,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             orderBillingDetails.setIsPayUp(false);
         }
         //若使用信用额度，必须付清，不能再使用第三方支付
-        if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)){
+        if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
             if (orderBillingDetails.getAmountPayable() > 0) {
                 throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
             }

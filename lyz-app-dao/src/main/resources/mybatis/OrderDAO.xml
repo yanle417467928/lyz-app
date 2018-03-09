@@ -379,7 +379,8 @@
             arrearage,
             is_owner_receiving,
             is_pay_up,
-            pay_up_time
+            pay_up_time,
+            store_cas
         FROM
             ord_billing_details
         WHERE
@@ -790,6 +791,7 @@
         o.customer_id,
         o.customer_name,
         o.customer_phone,
+        ob.total_goods_price,
         ob.amount_payable,
         ogi.cover_image_uri,
         oli.shipping_address
@@ -822,7 +824,7 @@
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
         <result column="store_id" property="storeId" jdbcType="BIGINT"/>
-        <result column="amount_payable" property="price" jdbcType="DECIMAL"/>
+        <result column="total_goods_price" property="price" jdbcType="DECIMAL"/>
         <result column="effective_end_time" property="endTime" jdbcType="TIMESTAMP"/>
         <result column="is_evaluated" property="isEvaluated" jdbcType="BIT"/>
         <result column="delivery_type" property="deliveryType"

@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1000,6 +1001,12 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         List<OrderBillingPaymentDetails> billingPaymentDetailsList = orderService.getOrderBillingDetailListByReceiptNumber(receiptNumber);
         if (null != billingPaymentDetailsList && billingPaymentDetailsList.size() == 1) {
             for (OrderBillingPaymentDetails billing : billingPaymentDetailsList) {
+                if ("POS".equals(billing.getPayType().getValue())) {
+                    OrderBillingDetails orderBillingDetails = orderService.getOrderBillingDetail(billing.getOrderNumber());
+                    if (null!=orderBillingDetails.getStoreCash()&&orderBillingDetails.getStoreCash() < 0) {
+                        billing.setAmount(CountUtil.add(billing.getAmount(),orderBillingDetails.getStoreCash()));
+                    }
+                }
                 OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(billing.getOrderNumber());
                 if (null != baseInfo) {
                     OrderReceiptInf receiptInf = new OrderReceiptInf();

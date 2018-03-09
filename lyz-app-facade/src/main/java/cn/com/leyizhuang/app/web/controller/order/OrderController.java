@@ -443,10 +443,10 @@ public class OrderController {
                 }
                 Long customerId = goodsSimpleRequest.getCustomerId();
                 customer = appCustomerService.findById(customerId);
-                cityId = customer.getCityId();
 
                 //是否显示纸质销售单号
                 AppEmployee appEmployee = appEmployeeService.findById(userId);
+                cityId = appEmployee.getCityId();
                 AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
                 //如果是四川直营门店导购返回门店编码
                 if ("ZY".equals(appStore.getStoreType().getValue()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
@@ -557,19 +557,6 @@ public class OrderController {
                 }
             }
 
-            //判断库存的特殊处理
-            Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
-            if (gid != null) {
-                GoodsDO goodsDO = goodsService.queryById(gid);
-                //如果这里出现问题还是要返回去商品列表
-                goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-                goodsSettlement.put("totalPrice", totalPrice);
-                goodsSettlement.put("totalGoodsInfo", goodsInfo);
-                goodsSettlement.put("isShowNumber", isShowSalesNumber);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品:" + goodsDO.getSkuName() + "对不起,商品库存不足！", goodsSettlement);
-                logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
             //计算订单金额小计
             //********* 计算促销立减金额 *************
             List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
@@ -599,8 +586,7 @@ public class OrderController {
                 goodsSettlement.put("leBi", leBi);
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("preDeposit", preDeposit);
-            }
-            if (identityType == 0) {
+            } else if (identityType == 0) {
                 //现金券还需要传入订单金额判断是否满减
                 cashCouponResponseList = appCustomerService.findCashCouponUseableByCustomerId(customer.getCusId(), totalOrderAmount);
                 //查询导购预存款和信用金
@@ -612,8 +598,7 @@ public class OrderController {
                 goodsSettlement.put("cashCouponList", cashCouponResponseList);
                 goodsSettlement.put("creditMoney", creditMoney);
                 goodsSettlement.put("storePreDeposit", storePreDeposit);
-            }
-            if (identityType == 2) {
+            } else if (identityType == 2) {
                 //获取装饰公司门店预存款，信用金，现金返利。
                 Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
                 Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
@@ -633,6 +618,18 @@ public class OrderController {
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
             goodsSettlement.put("isShowNumber", isShowSalesNumber);
+
+            if (AppDeliveryType.HOUSE_DELIVERY.equals(goodsSimpleRequest.getSysDeliveryType())) {
+                //判断库存的特殊处理
+                Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
+                if (gid != null) {
+                    GoodsDO goodsDO = goodsService.queryById(gid);
+                    //如果这里发现库存不足还是要返回去商品列表
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "改商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
+                    logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);

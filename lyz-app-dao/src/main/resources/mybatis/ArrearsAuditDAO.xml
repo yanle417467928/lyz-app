@@ -80,6 +80,7 @@
             oaa.whether_repayments = 0
             OR oaa.whether_repayments IS NULL
         )
+        AND obd.arrearage > 0
     </select>
 
     <select id="findById" parameterType="java.lang.Long"

@@ -104,5 +104,9 @@ public class AppStore {
      */
     private Long sobId;
 
+    /**
+     * 是否开通门店自提
+     */
+    private Boolean isOpenDelivery;
 
 }

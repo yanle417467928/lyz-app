@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import lombok.*;
 
@@ -46,5 +47,9 @@ public class OrderGoodsSimpleRequest implements Serializable {
      * 产品券商品集合
      */
     private List<GoodsIdQtyParam> productCouponList;
+    /**
+     * 系统判定配送方式
+     */
+    private AppDeliveryType sysDeliveryType;
 
 }
