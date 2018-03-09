@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
@@ -94,4 +95,7 @@ public interface CommonService {
      * @return 需检核的库存列表
      */
     public Map<Long, Integer> createInventoryCheckMap(List<OrderGoodsInfo> orderGoodsInfoList);
+
+    Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderProductCouponInfoList, Long userId, AppIdentityType identityType);
+
 }

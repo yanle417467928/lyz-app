@@ -143,4 +143,29 @@
         AND start_time &lt; NOW()
         AND (end_time IS NULL OR end_time &gt; NOW())
     </select>
+    <select id="findCustomerGoodsPriceListByGoodsIdsAndUserId" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
+        SELECT
+        g.gid goods_id,
+        g.sku_name,
+        g.goods_specification,
+        g.cover_image_uri,
+        g.goods_unit,
+        gp.retail_price
+        FROM
+        cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        INNER JOIN gds_goods_price gp ON c.store_id = gp.store_id
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND rc.rank_code = gp.price_type
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        WHERE
+        gp.gid IN
+        <foreach collection="list" item="goodsId" open="(" close=")" separator=",">
+            #{goodsId}
+        </foreach>
+        AND c.cus_id = #{userId}
+    </select>
 </mapper>

@@ -30,4 +30,9 @@ public class CreateOrderResponse implements Serializable {
      * 是否已付清
      */
     private Boolean isPayUp;
+
+    /**
+     * 是否货到付款
+     */
+    private Boolean isCashDelivery;
 }

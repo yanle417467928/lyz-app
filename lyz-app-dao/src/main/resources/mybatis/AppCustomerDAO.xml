@@ -644,7 +644,7 @@
         cus_id,
         seller_id,
         store_id,
-        gid,
+        gid goodsId,
         quantity,
         get_type,
         get_time,
