@@ -4,7 +4,7 @@
 
     <sql id="ALL_FILED">
         store_id, area, city, city_code, create_time, creator_type, detailed_address, enable, is_default,
-        is_self_delivery,
+        is_self_delivery, is_open_delivery,
         modifier_type, modify_time, phone, province, store_code, store_name, store_type
     </sql>
 
@@ -160,11 +160,12 @@
     <insert id="saveStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         INSERT INTO st_store
         (CREATOR_TYPE, CREATE_TIME, MODIFIER_TYPE, MODIFY_TIME, CITY_CODE, STORE_NAME, STORE_CODE,
-         IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILED_ADDRESS, ENABLE, IS_SELF_DELIVERY)
+        IS_DEFAULT, STORE_TYPE, PHONE, PROVINCE, CITY, AREA, DETAILED_ADDRESS, ENABLE, IS_SELF_DELIVERY,
+        is_open_delivery)
         VALUES
             (#{creatorType}, #{createTime}, #{modifierType}, #{modifyTime}, #{cityCode}, #{storeName},
                              #{storeCode}, #{isDefault}, #{storeType}, #{phone}, #{province}, #{city}, #{area},
-             #{detailedAddress}, #{enable}, #{isSelfDelivery})
+        #{detailedAddress}, #{enable}, #{isSelfDelivery}, #{isOpenDelivery})
     </insert>
 
     <update id="modifyStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
@@ -217,6 +218,9 @@
             </if>
             <if test="null != isSelfDelivery">
                 IS_SELF_DELIVERY = #{isSelfDelivery},
+            </if>
+            <if test="null != isOpenDelivery">
+                is_open_delivery = #{isOpenDelivery},
             </if>
         </set>
         WHERE STORE_CODE = #{storeCode}

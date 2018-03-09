@@ -71,7 +71,7 @@ public class HqAppCityController {
                     city.setStructureId(hqAppCityDTO.getStructureId());
                     city.setStructureTitle(hqAppCityDTO.getStructureTitle());
                     city.setEnable(hqAppCityDTO.getEnable());
-                    if (StringUtils.isBlank(hqAppCityDTO.getEnableFalseTime())) {
+                    if (StringUtils.isNotBlank(hqAppCityDTO.getEnableFalseTime())) {
                         city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
                     }
                     cityService.save(city);

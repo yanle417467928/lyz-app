@@ -1,7 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StoreType;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -24,9 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 计算订单赠品
@@ -56,6 +57,9 @@ public class OrderGiftController {
 
     @Resource
     private AppOrderService appOrderService;
+
+    @Resource
+    private AppStoreService appStoreService;
 
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Integer identityType, String goodsArray) {
@@ -167,21 +171,68 @@ public class OrderGiftController {
                     }
                 }
             }
+            /********************************判断库存的特殊处理************************************/
             // 取赠品数量后面计算库存
-            promotionsGiftList.forEach(promotionsGiftListResponse -> giftsList.addAll(promotionsGiftListForEach(promotionsGiftListResponse)));
-            //判断库存的特殊处理
-            Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
-            if (gid != null) {
-                GoodsDO goodsDO = goodsService.queryById(gid);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品:" + goodsDO.getSkuName() + "对不起,商品库存不足！", null);
-                logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
+//            promotionsGiftList.forEach(promotionsGiftListResponse -> giftsList.addAll(promotionsGiftListForEach(promotionsGiftListResponse)));
+
+            Map<Long, Integer> goodsQuantity = new HashMap<>();
+            //系统根据库存建议顾客配送方式
+            AppDeliveryType deliveryType = null;
+            //取归属门店
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+            Long storeId = appStore.getStoreId();
+            for (GoodsSimpleInfo info : goodsList) {
+                if (!goodsQuantity.containsKey(info.getId())) {
+                    goodsQuantity.put(info.getId(), info.getQty());
+                } else {
+                    goodsQuantity.put(info.getId(), info.getQty() + goodsQuantity.get(info.getId()));
+                }
             }
+            //先判断是否开通门店配送,没有只判断门店库存
+            if (appStore.getIsOpenDelivery()) {
+                //默认门店.装饰公司.普通门店都先判断城市库存
+                Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
+                if (gid != null) {
+                    if (StoreType.ZY.equals(appStore.getStoreType()) ||
+                            StoreType.JM.equals(appStore.getStoreType()) ||
+                            StoreType.FX.equals(appStore.getStoreType()) ||
+                            StoreType.FXCK.equals(appStore.getStoreType())) {
+                        //如果城市库存不足则判断门店库存,若无就报错提示库存不足
+                        for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
+                            GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
+                            Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
+                            if (!enoughInvFlag) {
+                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品 '" + goodsDO.getSkuName()
+                                        + "' 库存不足，请更改购买数量!", null);
+                                logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
+                                return resultDTO;
+                            }
+                        }
+
+                    }
+                }
+                deliveryType = AppDeliveryType.HOUSE_DELIVERY;
+            } else {
+                for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
+                    GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
+                    Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
+                    if (!enoughInvFlag) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该门店 '" + goodsDO.getSkuName()
+                                + "' 库存不足，请重新选购!", null);
+                        logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表判断库存不足失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+                deliveryType = AppDeliveryType.SELF_TAKE;
+            }
+
+            /**************************************判断库存END*******************************************/
 
             GiftListResponse giftListResponse = new GiftListResponse();
             giftListResponse.setGoodsList(responseGoodsList);
             giftListResponse.setCouponGoodsList(responseCouponGoodsList);
             giftListResponse.setPromotionsGiftList(promotionsGiftList);
+            giftListResponse.setSysDeliveryType(deliveryType);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, giftListResponse);
             logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表成功，出参 resultDTO:{}", resultDTO);

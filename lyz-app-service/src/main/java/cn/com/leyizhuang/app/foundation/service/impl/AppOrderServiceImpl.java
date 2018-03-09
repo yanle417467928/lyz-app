@@ -26,6 +26,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -100,15 +101,15 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList) {
 
-        if (null == cityId || null == goodsList) {
+        if (null == cityId || AssertUtil.isEmpty(goodsList)) {
             return null;
         }
         //如果赠品不为空合并赠品
-        if (null != giftList && !giftList.isEmpty()) {
+        if (AssertUtil.isNotEmpty(giftList)) {
             goodsList.addAll(giftList);
         }
         //如果券商品不为空合并券商品
-        if (null != couponList && !couponList.isEmpty()) {
+        if (AssertUtil.isNotEmpty(couponList)) {
             goodsList.addAll(couponList);
         }
         //合并所有商品，相同商品数量相加
