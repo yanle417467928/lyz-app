@@ -1439,7 +1439,7 @@ public class OrderController {
      * @author GenerationRoad
      * @date 2018/3/9
      */
-    @PostMapping(value = "/handle/CashDelivery", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/handle/cashDelivery", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> handleOrderRelevantBusinessAfterOnlinePayCashDelivery(Long userId, Integer identityType, String orderNumber) {
         ResultDTO<Object> resultDTO;
         logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery CALLED,处理货到付款的订单业务，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
