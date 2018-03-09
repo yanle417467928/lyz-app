@@ -19,7 +19,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ProductCouponSimpleInfo implements Serializable {
 
+    /**
+     * 产品券商品id
+     */
     private Long id;
 
+    /**
+     * 产品券商品数量
+     */
     private Integer qty;
 }
