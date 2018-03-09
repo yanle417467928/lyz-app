@@ -1453,7 +1453,7 @@ public class OrderController {
             logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isNotBlank(orderNumber)) {
+        if (!StringUtils.isNotBlank(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
             logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
