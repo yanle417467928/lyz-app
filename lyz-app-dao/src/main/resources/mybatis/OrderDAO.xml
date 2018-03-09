@@ -380,7 +380,7 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cas
+            store_cash
         FROM
             ord_billing_details
         WHERE
