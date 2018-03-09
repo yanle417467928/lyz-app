@@ -303,7 +303,7 @@ public class OrderController {
             List<OrderGoodsInfo> orderGoodsInfoList;
 
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo());
 
             //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
             // 乐币暂时不分摊
