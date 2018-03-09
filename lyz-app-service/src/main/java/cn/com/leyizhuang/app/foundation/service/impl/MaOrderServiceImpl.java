@@ -787,11 +787,12 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CASH, orderBillingDetails.getStoreCash(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
-
-                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStoreCash(), orderBaseInfo.getOrderNumber(), OrderBillingPaymentType.CASH, details.getReceiptNumber());
-                rechargeReceiptInfoList.add(rechargeReceiptInfo);
-                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStoreCash(), orderBaseInfo.getOrderNumber(), store.getStoreId(), OrderBillingPaymentType.CASH, creatorId, customer.getCusId());
-                rechargeOrderList.add(rechargeOrder);
+                if (orderBillingDetails.getStoreCash() > 0) {
+                    RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStoreCash(), orderBaseInfo.getOrderNumber(), OrderBillingPaymentType.CASH, details.getReceiptNumber());
+                    rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                    RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStoreCash(), orderBaseInfo.getOrderNumber(), store.getStoreId(), OrderBillingPaymentType.CASH, creatorId, customer.getCusId());
+                    rechargeOrderList.add(rechargeOrder);
+                }
             }
             //门店POS
             if (null != orderBillingDetails.getStorePosMoney() && orderBillingDetails.getStorePosMoney() > AppConstant.DOUBLE_ZERO) {
@@ -799,11 +800,18 @@ public class MaOrderServiceImpl implements MaOrderService {
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.POS, orderBillingDetails.getStorePosMoney(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
-
-                RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStorePosMoney(), orderBaseInfo.getOrderNumber(), OrderBillingPaymentType.POS, details.getReceiptNumber());
-                rechargeReceiptInfoList.add(rechargeReceiptInfo);
-                RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStorePosMoney(), orderBaseInfo.getOrderNumber(), store.getStoreId(), OrderBillingPaymentType.POS, creatorId, customer.getCusId());
-                rechargeOrderList.add(rechargeOrder);
+                if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() < 0){
+                    Double addCashAndPos = CountUtil.add(orderBillingDetails.getStoreCash(),orderBillingDetails.getStorePosMoney());
+                    RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(addCashAndPos, orderBaseInfo.getOrderNumber(), OrderBillingPaymentType.POS, details.getReceiptNumber());
+                    rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                    RechargeOrder rechargeOrder = this.createRechargeOrder(addCashAndPos, orderBaseInfo.getOrderNumber(), store.getStoreId(), OrderBillingPaymentType.POS, creatorId, customer.getCusId());
+                    rechargeOrderList.add(rechargeOrder);
+                }else {
+                    RechargeReceiptInfo rechargeReceiptInfo = this.createRechargeReceiptInfo(orderBillingDetails.getStorePosMoney(), orderBaseInfo.getOrderNumber(), OrderBillingPaymentType.POS, details.getReceiptNumber());
+                    rechargeReceiptInfoList.add(rechargeReceiptInfo);
+                    RechargeOrder rechargeOrder = this.createRechargeOrder(orderBillingDetails.getStorePosMoney(), orderBaseInfo.getOrderNumber(), store.getStoreId(), OrderBillingPaymentType.POS, creatorId, customer.getCusId());
+                    rechargeOrderList.add(rechargeOrder);
+                }
             }
             //门店其他
             if (null != orderBillingDetails.getStoreOtherMoney() && orderBillingDetails.getStoreOtherMoney() > AppConstant.DOUBLE_ZERO) {

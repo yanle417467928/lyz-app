@@ -37,6 +37,7 @@ import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
@@ -839,6 +840,13 @@ public class MaOrderRestController extends BaseRestController {
         if (StringUtils.isNotBlank(posNumber) && posNumber.length() < 6) {
             logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,POS流水号小于6位！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "请输入POS流水号后6位数！", null);
+        }
+        if (null != cashMoney && cashMoney < 0){
+            Double addCashAndPos = CountUtil.add(cashMoney,posMoney == null?0:posMoney);
+            if (addCashAndPos <= 0){
+                logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,当现金金额为负数时，POS金额+现金金额必须大于0！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当现金金额为负数时，POS金额+现金金额必须大于0！", null);
+            }
         }
         try {
 

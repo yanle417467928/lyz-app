@@ -817,6 +817,13 @@ function save() {
                     return;
             }
         }
+        if (cashMoney < 0){
+            if ((Number(cashMoney)*100 + Number(posMoney)*100)/100 <= 0 ){
+                $loading.close();
+                $notify.warning("当现金金额为负数时，POS金额+现金金额必须大于0");
+                return;
+            }
+        }
         if (null != posNumber && '' != posNumber) {
             if ('' == posMoney || null == posMoney) {
                 $loading.close();
@@ -999,7 +1006,7 @@ function giftDetail(details, divId) {
             enjoyTimes = $(m).find("#enjoyTimes").val();
             maxChooseNumber = $(n).find("#maxChooseNumber").val();
             totalQty += Number(qty);
-            if (qty != '' || qty > 0 || qty != 0) {
+            if (qty != '' && qty > 0 && qty != 0) {
                 giftGoodsList.push({
                     id: id,
                     qty: qty
