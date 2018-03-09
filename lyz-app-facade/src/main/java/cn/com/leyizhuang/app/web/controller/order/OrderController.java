@@ -304,8 +304,9 @@ public class OrderController {
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getOrderGoodsInfoList());
 
             //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
-            Integer leBiQty = billing.getLeBiQuantity();
-            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty, orderGoodsInfoList);
+            // 乐币暂时不分摊
+//            Integer leBiQty = billing.getLeBiQuantity();
+//            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty, orderGoodsInfoList);
 
             //******** 分摊现现金返利 策略：每个商品 按单价占比 分摊 *********************
             Double cashReturnAmount = billing.getStoreSubvention();

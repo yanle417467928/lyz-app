@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.order;
 
 import lombok.*;
 
+import java.util.Date;
+
 /**
  * 专供产品销售明细
  * Created by panjie on 2018/3/8.
@@ -44,5 +46,11 @@ public class OrderGoodsZgInfo {
     /**
      * 创建时间
      */
-    private Data createTime;
+    private Date createTime;
+
+    /**
+     * 数量
+     */
+    private Integer qty;
+
 }

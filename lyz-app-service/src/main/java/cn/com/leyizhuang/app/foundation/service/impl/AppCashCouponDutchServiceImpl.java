@@ -209,7 +209,7 @@ public class AppCashCouponDutchServiceImpl implements AppCashCouponDutchService 
         for (int i = 0 ; i < goodsInfs.size() ; i++){
             OrderGoodsInfo goods = goodsInfs.get(i);
 
-            /** 扣除促销分摊金额、乐币分摊金额、现金返利分摊金额 避免退货单价出现负数 **/
+            /** 扣除促销分摊金额、 避免退货单价出现负数 **/
             Double price = CountUtil.sub(goods.getSettlementPrice(),goods.getPromotionSharePrice());
 
             if (i != (goodsInfs.size()-1)){
