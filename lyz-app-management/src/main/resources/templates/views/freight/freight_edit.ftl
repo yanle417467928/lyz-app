@@ -109,10 +109,6 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="originalFreight" type="hidden" class="form-control"
-                                           id="originalFreight"
-                                           readonly
-                                           value="<#if orderFreightVO??><#if orderFreightVO.simpleOrderBillingDetails??>${orderFreightVO.simpleOrderBillingDetails.freight!''}</#if></#if>">
                                     <input name="freight" type="text" class="form-control" id="freight"
                                            value="<#if orderFreightVO??><#if orderFreightVO.simpleOrderBillingDetails??>${orderFreightVO.simpleOrderBillingDetails.freight!''}</#if></#if>">
                                 </div>
@@ -210,15 +206,11 @@
             }
         }).on('success.form.bv', function (e) {
             e.preventDefault();
-            var oid = $("#oid").val();
+            var oid = parseFloat($('#oid').val().replace(/,/g, ''));
             var freight = $("#freight").val();
-            var originalFreight = $("#originalFreight").val();
             var modifyReason = $("#modifyReason").val();
             var data = {
-                "oid": oid,
-                "freight": freight,
                 "orderId": oid,
-                "freightChangeBefore": originalFreight,
                 "freightChangeAfter": freight,
                 "modifyReason": modifyReason
             };

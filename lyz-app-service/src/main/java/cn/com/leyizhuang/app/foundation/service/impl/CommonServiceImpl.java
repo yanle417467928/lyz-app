@@ -1518,17 +1518,15 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderProductCouponInfoList, Long userId, AppIdentityType identityType) {
+    public Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType) {
         logger.info("checkCashDelivery CALLED,判断是否可选择货到付款,入参:orderGoodsInfoList:{}, orderProductCouponInfoList:{}, userId:{},identityType:{}",
-                JSON.toJSONString(orderGoodsInfoList), JSON.toJSONString(orderProductCouponInfoList), userId, identityType);
+                JSON.toJSONString(orderGoodsInfoList), userId, identityType);
         List<Long> goodsIdList = new ArrayList<>();
         try {
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 goodsIdList.add(orderGoodsInfo.getGid());
             }
-            for (OrderCouponInfo orderCouponInfo : orderProductCouponInfoList) {
-                goodsIdList.add(orderCouponInfo.getGoodsId());
-            }
+
             if (goodsIdList != null && goodsIdList.size() > 0 && userId != null && identityType != null) {
                 if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
                     List<GiftListResponseGoods> goodsList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId, identityType);

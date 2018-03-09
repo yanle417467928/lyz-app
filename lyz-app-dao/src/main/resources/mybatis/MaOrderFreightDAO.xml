@@ -191,24 +191,17 @@
     </select>
 
 
-     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.SimpleOrderBillingDetails">
-         UPDATE
-         ord_billing_details
-         <set>
-             <if test="null != freight">
-                 freight = #{freight},
-             </if>
-         </set>
-         WHERE oid = #{oid}
-
-     </update>
-
-    <update id="updateOrderPrice">
+    <update id="updateOrderBillingPrice">
         UPDATE
-        ord_base_info
+        ord_billing_details
         <set>
+            <if test="null != changAmount">
+                order_amount_subtotal =order_amount_subtotal - #{changAmount},
+                arrearage =arrearage - #{changAmount},
+                amount_payable =amount_payable - #{changAmount},
+            </if>
             <if test="null != freight">
-                total_goods_price =total_goods_price - #{freight},
+                freight = #{freight},
             </if>
         </set>
         WHERE oid = #{orderId}

@@ -195,18 +195,27 @@ public interface ReturnOrderService {
                                              String orderNumber, String reasonInfo, String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 
     /**
-     * 拒签退货
-     *
+     * 拒签退货退钱
+     * @param orderNumber
+     * @return
+     */
+    HashedMap refusedOrder(String orderNumber, OrderBaseInfo orderBaseInfo,
+                                     OrderBillingDetails orderBillingDetails,ReturnOrderBaseInfo returnOrderBaseInfo ,List<ReturnOrderGoodsInfo> returnOrderGoodsInfos);
+
+    /**
+     * 退货保存实体
      * @param userId
      * @param identityType
      * @param orderNumber
      * @param reasonInfo
      * @param remarksInfo
+     * @param orderBaseInfo
+     * @param orderBillingDetails
+     * @param returnPic
      * @return
      */
-    Map<Object, Object> refusedOrder(Logger logger, Long userId, Integer identityType, String orderNumber, String reasonInfo,
-                                     String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic);
-
+     Map<Object, Object> saveRefusedOrder(Long userId, Integer identityType, String orderNumber, String reasonInfo,
+                                                String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic);
 
     HashedMap normalReturnOrderProcessing(String returnOrderNumber, String cityCode);
 

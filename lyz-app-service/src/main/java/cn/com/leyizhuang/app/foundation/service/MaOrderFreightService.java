@@ -23,9 +23,9 @@ public interface MaOrderFreightService {
 
     OrderFreightVO queryOrderFreightVOById(Long id);
 
-    void update(SimpleOrderBillingDetails simpleOrderBillingDetails,OrderFreightChange orderFreightChange);
+    void update(OrderFreightChange orderFreightChange);
 
-    void updateOrderPrice(Long orderId, BigDecimal freight);
+    void updateOrderBillingPrice(Long orderId, BigDecimal freight,BigDecimal changAmount);
 
     PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size);
 
