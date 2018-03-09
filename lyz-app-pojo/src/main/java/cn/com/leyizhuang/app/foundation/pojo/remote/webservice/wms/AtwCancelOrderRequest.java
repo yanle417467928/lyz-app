@@ -1,10 +1,12 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -53,13 +55,13 @@ public class AtwCancelOrderRequest {
      */
     private Date sendTime;
 
-    public static AtwCancelOrderRequest transform(String orderNo, String cancelReason, AppOrderStatus appOrderStatus) {
+    public static AtwCancelOrderRequest transform(String cancelReason, OrderBaseInfo orderBaseInfo) {
         AtwCancelOrderRequest atwCancelOrderRequest = new AtwCancelOrderRequest();
-        atwCancelOrderRequest.setOrderNo(orderNo);
+        atwCancelOrderRequest.setOrderNo(orderBaseInfo.getOrderNumber());
         atwCancelOrderRequest.setCancelReason(cancelReason);
-        atwCancelOrderRequest.setCancelTime(new Date());
-        atwCancelOrderRequest.setCreateTime(new Date());
-        atwCancelOrderRequest.setOrderStatus(appOrderStatus);
+        atwCancelOrderRequest.setCancelTime(Calendar.getInstance().getTime());
+        atwCancelOrderRequest.setCreateTime(orderBaseInfo.getCreateTime());
+        atwCancelOrderRequest.setOrderStatus(orderBaseInfo.getStatus());
 
         return atwCancelOrderRequest;
     }

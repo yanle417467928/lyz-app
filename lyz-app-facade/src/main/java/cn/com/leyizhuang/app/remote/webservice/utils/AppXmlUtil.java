@@ -171,7 +171,7 @@ public class AppXmlUtil {
                 "<cancel_time>" + cancelTime + "</cancel_time>" +
                 "<cancel_reason>" + cancelOrderRequest.getCancelReason() + "</cancel_reason>" +
                 "<order_no>" + cancelOrderRequest.getOrderNo() + "</order_no>" +
-                "<order_status>" + cancelOrderRequest.getOrderStatus() + "</order_status>" +
+                "<order_status>" + cancelOrderRequest.getOrderStatus().getDescription() + "</order_status>" +
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");
