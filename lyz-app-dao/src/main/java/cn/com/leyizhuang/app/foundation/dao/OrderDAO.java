@@ -146,4 +146,8 @@ public interface OrderDAO {
     void updateOrderLogisticInfo(OrderLogisticsInfo logisticsInfo);
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber);
+
+    //用户获取查看物流单列表
+    List<OrderBaseInfo> getPendingShipmentAndPendingReceive(@Param("userId") Long userId,
+                                                            @Param("identityType") AppIdentityType identityType);
 }

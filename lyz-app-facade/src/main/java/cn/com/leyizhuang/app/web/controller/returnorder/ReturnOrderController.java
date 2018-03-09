@@ -163,7 +163,7 @@ public class ReturnOrderController {
                     cancelOrderParametersService.addCancelOrderParameters(cancelOrderParametersDO);
 
                     // 发送到wms通知WMS
-                    AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(orderNumber, reasonInfo, orderBaseInfo.getStatus());
+                    AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(reasonInfo, orderBaseInfo);
                     appToWmsOrderService.saveAtwCancelOrderRequest(atwCancelOrderRequest);
                     callWms.sendToWmsCancelOrder(orderNumber);
                     //修改订单状态为取消中
@@ -301,7 +301,7 @@ public class ReturnOrderController {
 
             if ("SUCCESS".equals(code)) {
                 returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-                List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>)maps.get("returnOrderGoodsInfos");
+                List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>) maps.get("returnOrderGoodsInfos");
                 //获取退单基础表信息
                 //********************************退第三方支付**************************
                 //如果是待收货、门店自提单则需要返回第三方支付金额
@@ -359,8 +359,8 @@ public class ReturnOrderController {
                 atwReturnOrder.setSendTime(null);
                 appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
                 //保存发送WMS退货商品详情
-                if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() >0){
-                    for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos){
+                if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() > 0) {
+                    for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
                         AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
                                 goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);

@@ -152,11 +152,13 @@ public class OrderController {
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Long userId = orderParam.getUserId();
         if (null == orderParam.getUserId()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Integer identityType = orderParam.getIdentityType();
         if (null == orderParam.getIdentityType()) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
             logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
@@ -343,12 +345,14 @@ public class OrderController {
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true));
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
+                //判断是否可选择货到付款
+                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, orderProductCouponInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false));
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -1189,7 +1193,9 @@ public class OrderController {
                         AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                orderListResponse.setPrice(appOrderService.getAmountPayableByOrderNumber(orderBaseInfo.getOrderNumber()));
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
                 orderListResponse.setGoodsImgList(goodsImgList);
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
@@ -1413,6 +1419,55 @@ public class OrderController {
                 return resultDTO;
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, quantity);
+            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App各状态订单数量失败", null);
+            logger.warn("getAppOrderQuantity EXCEPTION,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   处理货到付款的订单业务
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/9
+     */
+    @PostMapping(value = "/handle/CashDelivery", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> handleOrderRelevantBusinessAfterOnlinePayCashDelivery(Long userId, Integer identityType, String orderNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery CALLED,处理货到付款的订单业务，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            this.commonService.handleOrderRelevantBusinessAfterOnlinePayCashDelivery(orderNumber, OnlinePayType.CASH_DELIVERY);
+            //发送订单到拆单消息队列
+            sinkSender.sendOrder(orderNumber);
+            //发送订单到WMS
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getAppOrderQuantity OUT,获取App各状态订单数量成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

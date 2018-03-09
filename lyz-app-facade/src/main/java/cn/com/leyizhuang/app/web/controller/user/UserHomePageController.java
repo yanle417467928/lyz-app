@@ -227,14 +227,25 @@ public class UserHomePageController {
             return resultDTO;
         }
         if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空！", null);
+            logger.info("getCustomersList OUT,搜索我的顾客失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (identityType != 0){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户身份不能进行此操作！", null);
             logger.info("getCustomersList OUT,搜索我的顾客失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            List<CustomerListResponse> appCustomerList = customerService.searchByUserIdAndKeywordsAndIdentityType(userId, keywords, identityType);
+            AppEmployee employee = employeeService.findById(userId);
+            List<FindCustomerResponse> findCustomerResponseList;
+            if (keywords.matches("[0-9]{11}")){
+                findCustomerResponseList = customerService.findCustomerByCusPhone(employee.getCityId(),keywords);
+            }else {
+                findCustomerResponseList = customerService.findCustomerByCusName(employee.getStoreId(),keywords);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    (appCustomerList != null && appCustomerList.size() > 0) ? appCustomerList : null);
+                    (findCustomerResponseList != null && findCustomerResponseList.size() > 0) ? findCustomerResponseList : null);
             logger.info("searchCustomerList OUT,搜索我的顾客成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

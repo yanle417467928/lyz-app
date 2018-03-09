@@ -408,7 +408,7 @@ public class ICallWms {
             returnOrder.setSendFlag(true);
 
             ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
-            returnOrderDeliveryDetail.setDescription("物流已接收");
+            returnOrderDeliveryDetail.setDescription("该退货单已受理");
             returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.RECEIVED);
             returnOrderDeliveryDetail.setReturnNo(returnOrder.getReturnNumber());
             returnOrderDeliveryDetail.setCreateTime(new Date());

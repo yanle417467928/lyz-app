@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
@@ -139,4 +140,19 @@ public interface AppCustomerService {
     List<CustomerProductCoupon> findProductCouponsByGetOrderNumber(String orderNumber);
 
     CustomerRankInfoResponse findCusRankinfoByCusId(Long cusId);
+    /**
+     * 导购代下单根据电话号码查询顾客
+     * @param cityId    城市id
+     * @param mobile    电话号码
+     * @return  顾客list
+     */
+    List<FindCustomerResponse> findCustomerByCusPhone(@Param("cityId")Long cityId, @Param("mobile")String mobile);
+    /**
+     * 导购代下单根据姓名查询顾客
+     * @param storeId    门店id
+     * @param keywords    姓名
+     * @return  顾客list
+     */
+    List<FindCustomerResponse> findCustomerByCusName(@Param("storeId")Long storeId,@Param("keywords")String keywords);
+
 }

@@ -334,7 +334,7 @@ public class DispatchingController {
             ReturnOrderDeliveryDetail detail = new ReturnOrderDeliveryDetail();
             detail.setDescription("配送员" + appEmployee.getName() +
                     "[" + appEmployee.getDeliveryClerkNo() + "]" +
-                    "已确认取货!");
+                    "已确认取货,等待退款!");
             detail.setReturnLogisticStatus(ReturnLogisticStatus.PICKUP_COMPLETE);
             detail.setReturnNo(returnNumber);
             detail.setCreateTime(Calendar.getInstance().getTime());

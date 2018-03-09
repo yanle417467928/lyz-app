@@ -65,7 +65,7 @@ public class ReturnOrderDeliveryDetail {
         returnOrderDeliveryDetail.setTaskNo(header.getRecNo());
         returnOrderDeliveryDetail.setReturnNo(header.getPoNo());
         returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.AGAIN_ON_SALE);
-        returnOrderDeliveryDetail.setDescription("退单商品已返配上架");
+        returnOrderDeliveryDetail.setDescription("商家已退款,退货完成");
         return returnOrderDeliveryDetail;
     }
 }

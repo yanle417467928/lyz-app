@@ -916,4 +916,10 @@ public class AppOrderServiceImpl implements AppOrderService {
         return null;
     }
 
+    @Override
+    public PageInfo<OrderBaseInfo> getPendingShipmentAndPendingReceive(Long userId, Integer identityType, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderBaseInfo> orderBaseInfoList = orderDAO.getPendingShipmentAndPendingReceive(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+        return new PageInfo<>(orderBaseInfoList);
+    }
 }
