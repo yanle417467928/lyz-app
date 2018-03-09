@@ -102,7 +102,9 @@ public class OrderArriveController {
         try {
             //根据订单号查询订单信息
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
-            if (null == orderTempInfo || !(orderTempInfo.getOrderStatus().equals(AppOrderStatus.PENDING_RECEIVE.getValue()))) {
+            //根据订单号查询订单账单信息
+            OrderBillingDetails billingDetails = this.appOrderServiceImpl.getOrderBillingDetail(orderNo);
+            if (null == orderTempInfo || null == billingDetails || !(orderTempInfo.getOrderStatus().equals(AppOrderStatus.PENDING_RECEIVE.getValue()))) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息错误！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -128,6 +130,13 @@ public class OrderArriveController {
             collectionAmount = null == collectionAmount ? 0D : collectionAmount;
             Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
             Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
+            //判断是否货到付款--如果是订单欠款必须付清
+            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails) && collectionAmount < ownManey) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
+                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             //判断配送员代收金额是否大于导购输入的代收金额
             if (collectionAmount > collectionAmountOrder) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能大于代收金额！", null);
