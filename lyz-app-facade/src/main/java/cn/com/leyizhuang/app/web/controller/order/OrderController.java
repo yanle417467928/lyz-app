@@ -1428,4 +1428,53 @@ public class OrderController {
             return resultDTO;
         }
     }
+
+    /**
+     * @title   处理货到付款的订单业务
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/9
+     */
+    @PostMapping(value = "/AppOrderQuantity", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> handleOrderRelevantBusinessAfterOnlinePayCashDelivery(Long userId, Integer identityType, String orderNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery CALLED,处理货到付款的订单业务，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            this.commonService.handleOrderRelevantBusinessAfterOnlinePayCashDelivery(orderNumber, OnlinePayType.CASH_DELIVERY);
+            //发送订单到拆单消息队列
+            sinkSender.sendOrder(orderNumber);
+            //发送订单到WMS
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("getAppOrderQuantity OUT,获取App各状态订单数量成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取App各状态订单数量失败", null);
+            logger.warn("getAppOrderQuantity EXCEPTION,获取App各状态订单数量失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 }

@@ -98,4 +98,6 @@ public interface CommonService {
 
     Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderProductCouponInfoList, Long userId, AppIdentityType identityType);
 
+    void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException;
+
 }

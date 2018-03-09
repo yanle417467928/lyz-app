@@ -1543,5 +1543,81 @@ public class CommonServiceImpl implements CommonService {
         return Boolean.FALSE;
     }
 
+    @Override
+    public void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            //更新订单账单信息
+            OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
+            billingDetails.setOnlinePayType(payType);
+            billingDetails.getCollectionAmount();
+            //发送提货码给顾客,及提示导购顾客下单信息
+            String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
+            baseInfo.setPickUpCode(pickUpCode);
+
+            //修改顾客上一次下单时间
+            Long cusId = null;
+            AppCustomer customer = new AppCustomer();
+            if (baseInfo.getCreatorIdentityType() != AppIdentityType.DECORATE_MANAGER) {
+                if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                    cusId = baseInfo.getCustomerId();
+                } else {
+                    cusId = baseInfo.getCreatorId();
+                }
+            }
+            if (null != cusId) {
+                customer = customerService.findById(cusId);
+                customer.setLastConsumptionTime(new Date());
+            }
+
+            //更新顾客归属门店及导购
+            updateCustomerAttachedStoreAndSeller(baseInfo, customer);
+
+            //更新订单状态及物流状态
+            if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+
+                //物流信息初始化
+                OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+                deliveryInfoDetails.setDeliveryInfo(baseInfo.getOrderNumber(), LogisticStatus.INITIAL, LogisticStatus.INITIAL.getDescription(),
+                        null, null, null, null, null);
+                deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+
+                // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
+                //保存传wms配送单头档
+                AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
+                        baseInfo.getCreatorIdentityType().getValue());
+                List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+                int orderGoodsSize = orderGoodsInfoList.size();
+                OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
+                AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
+                        store, billingDetails, orderGoodsSize);
+                appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+                //保存传wms配送单商品信息
+                if (orderGoodsSize > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
+                    }
+                }
+
+            }
+
+            //更新订单基础信息
+            orderService.updateOrderBaseInfo(baseInfo);
+            //更新订单账单信息
+            orderService.updateOrderBillingDetails(billingDetails);
+            //更新顾客信息
+            if (customer.getCusId() != null) {
+                customerService.update(customer);
+            }
+        }
+    }
+
 }
 
