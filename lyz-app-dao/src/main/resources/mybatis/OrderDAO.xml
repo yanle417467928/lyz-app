@@ -469,6 +469,19 @@
 
     </select>
 
+    <select id="getOrderGoodsZgInfoByUserId" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsZgInfo">
+        SELECT
+        id id,
+        user_id userId,
+        gid gid,
+        sku sku,
+        ord_no orderNo,
+        goods_line_id goodsLineId,
+        create_time createTime
+        FROM ord_goods_zg_info
+        where user_id = #{userId}
+    </select>
+
     <insert id="savePaymentDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
@@ -568,6 +581,18 @@
                                          #{shippingQuantity},
                                          #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
                 #{priceItemId}, #{companyFlag}, #{coverImageUri})
+
+    </insert>
+
+    <insert id="saveOrderGoodsZgInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsZgInfo">
+        INSERT INTO ord_goods_zg_info
+        (
+          user_id,gid,sku,ord_no,goods_line_id,create_time
+        )
+        VALUES
+        (
+          #{userId},#{gid},#{sku},#{orderNo},#{goodsLineId},#{createTime}
+        )
 
     </insert>
 

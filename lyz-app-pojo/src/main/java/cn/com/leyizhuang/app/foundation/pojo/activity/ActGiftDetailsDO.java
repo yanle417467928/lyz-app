@@ -41,19 +41,19 @@ public class ActGiftDetailsDO implements Serializable{
     private Double giftPrice;
 
     // 赠品固定数量
-    private Integer giftFixedQty;
+    private Integer giftFixedQty = 0;
 
     // 产品券id
     private Long proCouponId;
 
     // 产品券数量
-    private Integer proCouponQty;
+    private Integer proCouponQty = 0;
 
     // 现金券id
     private Long cashCouponId;
 
     // 现金券数量
-    private Long cashCouponQty;
+    private Long cashCouponQty = 0L;
 
 
 }

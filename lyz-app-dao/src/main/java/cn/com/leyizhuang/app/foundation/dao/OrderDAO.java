@@ -62,6 +62,8 @@ public interface OrderDAO {
 
     OrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
+    List<OrderGoodsZgInfo> getOrderGoodsZgInfoByUserId(@Param("userId") Long userId);
+
     void savePaymentDetails(OrderBillingPaymentDetails orderBillingPaymentDetails);
 
     void updateOwnMoneyByOrderNo(OrderBillingDetails orderBillingDetails);
@@ -73,6 +75,8 @@ public interface OrderDAO {
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
 
     void saveOrderGoodsInfo(OrderGoodsInfo goodsInfo);
+
+    void saveOrderGoodsZgInfo(OrderGoodsZgInfo orderGoodsZgInfo);
 
     void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
 

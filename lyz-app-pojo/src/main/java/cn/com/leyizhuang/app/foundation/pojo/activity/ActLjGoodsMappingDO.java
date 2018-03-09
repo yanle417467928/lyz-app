@@ -2,24 +2,16 @@ package cn.com.leyizhuang.app.foundation.pojo.activity;
 
 import lombok.*;
 
-import java.io.Serializable;
-
 /**
- * 参与促销商品实体
- * Created by panjie on 2017/11/22.
+ * 累积促销产品关联表
+ * Created by panjie on 2018/3/8.
  */
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActGoodsMappingDO implements Serializable {
-
-    private static final long serialVersionUID;
-
-    static {
-        serialVersionUID = 1L;
-    }
+public class ActLjGoodsMappingDO {
 
     private Long id;
 
@@ -37,11 +29,4 @@ public class ActGoodsMappingDO implements Serializable {
 
     // 商品标题
     private String goodsTitile;
-
-    // 商品数量
-    private Integer qty = 0;
-
-
-
-
 }
