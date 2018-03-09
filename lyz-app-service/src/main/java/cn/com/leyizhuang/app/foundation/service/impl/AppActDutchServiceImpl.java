@@ -519,7 +519,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 Double returnPrice = CountUtil.sub(price , promotionPrice , lbPrice , cashCouponPrice , cashReturnPrice);
                 //goodsInfo.setReturnPrice(returnPrice);
                 // 如果推货价出现负数 则设置为0
-                if (returnPrice < 0){
+                if ( returnPrice >= -0.02 && returnPrice < 0){
                     goodsInfo.setReturnPrice(0.00);
                 }else{
                     goodsInfo.setReturnPrice(returnPrice);
