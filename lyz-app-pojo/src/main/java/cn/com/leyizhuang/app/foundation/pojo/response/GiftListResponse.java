@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,4 +25,8 @@ public class GiftListResponse {
     // 促销赠品List
     List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
 
+    /**
+     * 系统判定配送方式
+     */
+    AppDeliveryType sysDeliveryType;
 }

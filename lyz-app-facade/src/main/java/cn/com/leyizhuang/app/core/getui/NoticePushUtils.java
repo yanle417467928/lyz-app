@@ -6,8 +6,10 @@ import cn.com.leyizhuang.app.foundation.pojo.message.AppUserDevice;
 import cn.com.leyizhuang.app.foundation.pojo.message.Payload;
 import cn.com.leyizhuang.app.foundation.pojo.message.TransmissionTemplateContent;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppUserDeviceService;
+import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
 import com.alibaba.fastjson.JSON;
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
@@ -52,6 +54,40 @@ public class NoticePushUtils {
     @Autowired
     public void setOrderService(AppOrderService orderService) {
         NoticePushUtils.orderService = orderService;
+    }
+
+    private static ReturnOrderService returnOrderService;
+
+    /**
+     * 欠款审核信息推送
+     */
+    public static void pushApplyArrearageInfo(Long sellerId) {
+        IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
+        TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
+                new Payload("page/guide/debateAudit.html&", "跳转欠款审核列表"),
+                "您有新的欠款审核，请及时处理!", "欠款审核");
+        ListMessage message = new ListMessage();
+        message.setData(template);
+        // 设置消息离线，并设置离线时间
+        message.setOffline(true);
+        // 离线有效时间，单位为毫秒，可选
+        message.setOfflineExpireTime(24 * 1000 * 3600);
+        // 配置推送目标
+        List<Target> targetList = new ArrayList(5);
+        List<AppUserDevice> userDeviceList = new ArrayList<>();
+        List<AppUserDevice> sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(sellerId, AppIdentityType.SELLER);
+        userDeviceList.addAll(sellerDeviceList);
+        userDeviceList.forEach(p -> {
+            Target target = new Target();
+            target.setAppId(AppConstant.APP_ID);
+            target.setClientId(p.getClientId());
+            targetList.add(target);
+        });
+        // taskId用于在推送时去查找对应的message
+        String taskId = push.getContentId(message);
+        IPushResult ret = push.pushMessageToList(taskId, targetList);
+        System.out.println(ret.getResponse().toString());
+
     }
 
     /**
@@ -314,13 +350,15 @@ public class NoticePushUtils {
     }
 
     /**
-     * 欠款审核信息推送
+     * 退单取消失败推送
+     * @param returnNo
      */
-    public static void pushApplyArrearageInfo(Long sellerId) {
+    public static void pushApplyCancelReturnOrderInfo(String returnNo) {
         IGtPush push = new IGtPush(AppConstant.GE_TUI_HOST, AppConstant.APP_KEY, AppConstant.MASTER_SECRET);
         TransmissionTemplate template = getTransmissionTemplate(AppConstant.APP_ID, AppConstant.APP_KEY,
-                new Payload("page/guide/debateAudit.html&", "跳转欠款审核列表"),
-                "您有新的欠款审核，请及时处理!", "欠款审核");
+                // TODO(需要前后端配合)
+                new Payload("page/guide/debateAudit.html&" + returnNo, "跳转退货单详情"),
+                "您申请的退货单:" + returnNo + "取消失败了!请咨询客服人员", "取消退货");
         ListMessage message = new ListMessage();
         message.setData(template);
         // 设置消息离线，并设置离线时间
@@ -330,9 +368,13 @@ public class NoticePushUtils {
         // 配置推送目标
         List<Target> targetList = new ArrayList(5);
         List<AppUserDevice> userDeviceList = new ArrayList<>();
-        List<AppUserDevice> sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(sellerId, AppIdentityType.SELLER);
-        userDeviceList.addAll(sellerDeviceList);
-        userDeviceList.forEach(p -> {
+        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNo);
+        List<AppUserDevice> sellerDeviceList = new ArrayList<>();
+        if (AppIdentityType.SELLER.equals(returnOrderBaseInfo.getCreatorIdentityType()) ||
+                AppIdentityType.CUSTOMER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+            sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType());
+        }
+        sellerDeviceList.forEach(p -> {
             Target target = new Target();
             target.setAppId(AppConstant.APP_ID);
             target.setClientId(p.getClientId());
@@ -343,5 +385,10 @@ public class NoticePushUtils {
         IPushResult ret = push.pushMessageToList(taskId, targetList);
         System.out.println(ret.getResponse().toString());
 
+    }
+
+    @Autowired
+    public void setReturnOrderService(ReturnOrderService returnOrderService) {
+        NoticePushUtils.returnOrderService = returnOrderService;
     }
 }
