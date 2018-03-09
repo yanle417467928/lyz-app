@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,6 +32,11 @@ public class CreateOrderGoodsSupport implements Serializable {
      * 订单产品券商品信息
      */
     List<OrderGoodsInfo> productCouponGoodsList = new ArrayList<>();
+
+    /**
+     * 订单商品本品信息
+     */
+    List<OrderGoodsInfo> pureOrderGoodsInfo = new ArrayList<>();
     /**
      * 用来存放最终要检核库存的商品和商品数量的Map
      */

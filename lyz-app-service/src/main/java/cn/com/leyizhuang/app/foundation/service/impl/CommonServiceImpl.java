@@ -1084,6 +1084,10 @@ public class CommonServiceImpl implements CommonService {
                 throw new GoodsNoPriceException("id为 '" + ids + "'的商品在当前门店下没有找到价格!");
             }
         }
+        //将本品信息零存入本品商品列表
+        List<OrderGoodsInfo> pureOrderGoodsInfo = new ArrayList<>();
+        pureOrderGoodsInfo.addAll(orderGoodsInfoList);
+
         //处理订单产品券商品信息
         List<OrderGoodsInfo> productCouponGoodsList = new ArrayList<>();
         if (null != productCouponList && productCouponList.size() > 0) {
@@ -1177,6 +1181,7 @@ public class CommonServiceImpl implements CommonService {
         support.setOrderGoodsInfoList(orderGoodsInfoList);
         support.setProductCouponGoodsList(productCouponGoodsList);
         support.setPromotionDiscount(promotionDiscount);
+        support.setPureOrderGoodsInfo(pureOrderGoodsInfo);
         return support;
     }
 
@@ -1533,7 +1538,7 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("checkCashDelivery EXCEPTION,判断是否可选择货到付款,出参 resultDTO:{}", Boolean.FALSE);
             logger.warn("{}", e);
