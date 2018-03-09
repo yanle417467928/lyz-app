@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideAvailableCreditChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
@@ -122,9 +123,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsServiceImpl;
     @Resource
     private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
-
     @Resource
     private RechargeService rechargeService;
+    @Resource
+    private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
+
 
     @Resource
     private AppSeparateOrderService separateOrderService;
@@ -396,16 +399,18 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
         maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
         maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
-        if (!maOrderAmount.getCashAmount().equals(BigDecimal.ZERO)) {
+        if (maOrderAmount.getCashAmount().compareTo(BigDecimal.ZERO) != 0) {
             String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
-            receiptNumberList.add(receiptNumber);
+            if(maOrderAmount.getCashAmount().compareTo(BigDecimal.ZERO) > 0){
+                receiptNumberList.add(receiptNumber);
+            }
             maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getCashAmount());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
-        if (!maOrderAmount.getOtherAmount().equals(BigDecimal.ZERO)) {
+        if (maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO) > 0) {
             String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
             receiptNumberList.add(receiptNumber);
             maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
@@ -414,7 +419,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getOtherAmount());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
-        if (!maOrderAmount.getPosAmount().equals(BigDecimal.ZERO)) {
+        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO) > 0) {
             String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
             receiptNumberList.add(receiptNumber);
             maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
@@ -520,6 +525,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     public String auditOrderStatus(String orderNumber, String status) throws RuntimeException {
         if (ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status)) {
             Date date = new Date();
+            //获取订单基本信息
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNumber);
             MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfo(orderNumber);
             //生成收款单号
@@ -558,6 +566,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                     orderBillingDetails.setDeliveryPos(realMoney);
                 }
                 this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+
                 //获取导购信用金
                 EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
                 //返还信用金后导购信用金额度
@@ -584,11 +593,11 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), maOrderArrearsAudit.getPicture(), "", "");
             this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
             //修改订单状态
-            OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
-            orderBaseInfo.setOrderNumber(orderNumber);
-            orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
-            orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+            OrderBaseInfo orderInfo = new OrderBaseInfo();
+            orderInfo.setOrderNumber(orderNumber);
+            orderInfo.setStatus(AppOrderStatus.FINISHED);
+            orderInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
+            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderInfo);
             //修改审核状态
             this.maOrderDAO.auditOrderStatus(orderNumber, status);
             //传ebs收款接口
@@ -607,9 +616,9 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail, Date lastUpdateTime) {
+    public List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail) {
         // 更新订单支付信息
-        this.orderReceivables(maOrderAmount);
+        List<String> receiptNumberList = this.orderReceivables(maOrderAmount);
         //更新欠款审核表
         this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(), maOrderAmount.getDate());
 
@@ -623,7 +632,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
         //更改该销售的可用额度
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, lastUpdateTime);
+            int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, guideCreditMoney.getLastUpdateTime());
             if (affectLine > 0) {
                 //生成信用金额变成日志
 
@@ -647,46 +656,6 @@ public class MaOrderServiceImpl implements MaOrderService {
                     throw new SystemBusyException("系统繁忙，请稍后再试!");
                 }
             }
-        }
-        //得到订单基本信息
-        MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
-        //设置订单收款信息并存入订单账款支付明细表
-        //返回收款单号
-        List<String> receiptNumberList = new ArrayList<String>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
-        maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
-        maOrderBillingPaymentDetails.setPayTime(sdf.format(new Date()));
-        maOrderBillingPaymentDetails.setCreateTime(new Date());
-        maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
-        maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
-        maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
-        if (!maOrderAmount.getCashAmount().equals(BigDecimal.ZERO)) {
-            String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
-            receiptNumberList.add(receiptNumber);
-            maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
-            maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
-            maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
-            maOrderBillingPaymentDetails.setAmount(maOrderAmount.getCashAmount());
-            this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
-        }
-        if (!maOrderAmount.getOtherAmount().equals(BigDecimal.ZERO)) {
-            String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
-            receiptNumberList.add(receiptNumber);
-            maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
-            maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.OTHER);
-            maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.OTHER.getDescription());
-            maOrderBillingPaymentDetails.setAmount(maOrderAmount.getOtherAmount());
-            this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
-        }
-        if (!maOrderAmount.getPosAmount().equals(BigDecimal.ZERO)) {
-            String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
-            receiptNumberList.add(receiptNumber);
-            maOrderBillingPaymentDetails.setReceiptNumber(receiptNumber);
-            maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.POS);
-            maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
-            maOrderBillingPaymentDetails.setAmount(maOrderAmount.getPosAmount());
-            this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
         return receiptNumberList;
     }

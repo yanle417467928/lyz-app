@@ -88,12 +88,12 @@ public class MaOrderRestController extends BaseRestController {
     private AppActService actService;
     @Resource
     private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
-
     @Resource
     private MaSinkSender maSinkSender;
-
     @Resource
     private UserService userService;
+    @Resource
+    private AppOrderService appOrderService;
 
 
     /**
@@ -451,8 +451,8 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(orderNumber);
-        if ("SELLER".equals(maOrderTempInfo.getCreatorIdentityType())) {
-            if (null == code && "".equals(code)) {
+        if ("CUSTOMER".equals(maOrderTempInfo.getCreatorIdentityType().toString())) {
+            if (null == code || "".equals(code)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码不允许为空", null);
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -550,6 +550,16 @@ public class MaOrderRestController extends BaseRestController {
         }
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
+        }
+        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO)<0||maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO)<0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "pos或其他金额为负", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO)<=0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
         }
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
@@ -703,18 +713,25 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
-        String orderStatus = maOrderService.getArrearsAuditInfo(orderNumber).getStatus().getValue();
+        String orderStatus = maOrderService.getArrearsAuditInfo(orderNumber).getStatus().toString();
         if (StringUtils.isBlank(orderStatus) || !(orderStatus.equals(ArrearsAuditStatus.AUDITING.toString()))) {
             logger.info("欠款审核单信息错误！ 该订单不在审核状态,orderStatus{}" + orderStatus);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！",
                     null);
         }
+        //获取订单基本信息
+        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+        if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
+            logger.info("欠款审核单信息错误！ ,该订单为装饰公司审核单");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！,该订单为装饰公司审核单",
+                    null);
+        }
         try {
-          String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status);
-          if(null!=receiptNumber){
-              //将收款记录录入拆单消息队列
-              this.maSinkSender.sendOrderReceipt(receiptNumber);
-          }
+            String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status);
+            if (null != receiptNumber) {
+                //将收款记录录入拆单消息队列
+                this.maSinkSender.sendOrderReceipt(receiptNumber);
+            }
             logger.info("auditOrderStatus ,审核订单成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "审核订单成功", null);
@@ -735,7 +752,7 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PutMapping(value = "/arrearsAndAgencyOrder/arrearsOrderRepayment")
-    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request, @RequestParam String lastUpdateTime) {
+    public ResultDTO<Object> arrearsOrderRepayment(MaOrderAmount maOrderAmount, HttpServletRequest request) {
         logger.info("arrearsOrderRepayment 欠款订单还款 ,入参maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
         if (null == maOrderAmount.getCashAmount()) {
@@ -748,19 +765,20 @@ public class MaOrderRestController extends BaseRestController {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
         Double repaymentAmount = maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
+        maOrderAmount.setAllAmount(BigDecimal.valueOf(repaymentAmount));
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
-        if (null == maOrderAmount.getAllAmount()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
-            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
         if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(lastUpdateTime)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购额度上次更新时间为空", null);
+        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO)<0||maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO)<0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "pos或其他金额为负", null);
+            logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO)<=0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -769,9 +787,12 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (maOrderAmount.getDate().after(new Date())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "收款时间大于当前时间", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date lastUpdateTimeFormat = dateFormat.parse(lastUpdateTime);
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
             guideCreditChangeDetail.setOperatorId(shiroUser.getId());
@@ -780,8 +801,8 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetail.setReferenceNumber(maOrderAmount.getOrderNumber());
-            List<String> receiptNumberList =this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetail, lastUpdateTimeFormat);
-            for(String receiptNumber:receiptNumberList){
+            List<String> receiptNumberList = this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetail);
+            for (String receiptNumber : receiptNumberList) {
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
             }
             logger.warn("arrearsOrderRepayment ,后台欠款订单还款成功");

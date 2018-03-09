@@ -136,7 +136,7 @@
                                     <td>
                                         <div>
                                             <span>
-                                            <#if shippingTime??> ${shippingTime?string("yyyy-MM-dd HH:mm:ss")!""}</#if>
+                                            ${shippingTime!""}
                                             </span>
                                         </div>
                                     </td>
@@ -541,7 +541,7 @@
                             $('#confirmReceivables').modal();
                             $("#message").html(result.message);
                         } else if (result.code == -1) {
-                            $("#message").html('发生未知错误，请稍后重试或联系管理员');
+                            $("#message").html(result.message);
                         } else if (result.code == 0) {
                             $("#message").html('');
                             window.location.reload();

@@ -56,8 +56,6 @@
                     <input type="hidden" id="isPayUp" readonly value="${isPayUp?c}">
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
                     <input type="hidden" id="auditStatus" readonly value="${auditStatus!""}">
-                    <input type="hidden" id="lastUpdateTime" readonly
-                           value="<#if lastUpdateTime??>${lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>">
                 </div>
             </div>
         </div>
@@ -579,7 +577,7 @@
                     message: '现金校验失败',
                     validators: {
                         regexp: {
-                            regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
+                            regexp: /^[+-]?\d+(\.\d+)?$/,
                             message: '现金称只能输入正数'
                         }
                     }
@@ -627,7 +625,6 @@
         });
         $("#confirmSubmit").click(function () {
             var isPayUp = $('#isPayUp').val();
-            var lastUpdateTime = $("#lastUpdateTime").val();
             var allAmount = $("#allAmount").val();
             var orderNumber = $("#orderNumber").val();
             var cashAmount = $("#cashAmount").val();
@@ -641,8 +638,6 @@
             var bv = form.data('bootstrapValidator');
             bv.validate();
             var data = {
-                'lastUpdateTime': lastUpdateTime,
-                'allAmount': allAmount,
                 'orderNumber': orderNumber,
                 'cashAmount': cashAmount,
                 'posAmount': posAmount,
@@ -658,9 +653,9 @@
                     data: data,
                     success: function (result) {
                         if (result.code == 10100) {
-                            $("#message").html('所有金额之和不等于总金额');
+                            $("#message").html(result.message);
                         } else if (result.code == -1) {
-                            $("#message").html('发生未知错误，请稍后重试或联系管理员');
+                            $("#message").html(result.message);
                         } else if (result.code == 0) {
                             $("#message").html('');
                             window.location.reload();
@@ -710,7 +705,7 @@
                 if (0 === result.code) {
                     window.location.reload();
                 } else {
-                    $notify.danger('审核失败，请稍后重试或联系管理员');
+                    $notify.danger(result.message);
                 }
             }
         });
