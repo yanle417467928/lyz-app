@@ -862,83 +862,24 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<Object, Object> refusedOrder(Logger logger, Long userId, Integer identityType, String orderNumber, String reasonInfo,
-                                            String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic) {
-        Map<Object, Object> maps = new HashedMap();
+    public HashedMap refusedOrder(String orderNumber, OrderBaseInfo orderBaseInfo,
+                                            OrderBillingDetails orderBillingDetails,ReturnOrderBaseInfo returnOrderBaseInfo ,List<ReturnOrderGoodsInfo> returnOrderGoodsInfos) {
+        HashedMap maps = new HashedMap();
+        Date date = new Date();
         try {
-            //获取退单号
-            String returnNumber = OrderUtils.getReturnNumber();
-            //创建退单头
-            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
-            //记录退单头信息
-            returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
-            returnOrderBaseInfo.setOrderNo(orderNumber);
-            returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
-            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
-            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
-            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
-            returnOrderBaseInfo.setReturnTime(new Date());
-            returnOrderBaseInfo.setReturnNo(returnNumber);
-            returnOrderBaseInfo.setReturnPic(returnPic);
-            returnOrderBaseInfo.setReturnType(ReturnOrderType.REFUSED_RETURN);
-            //退款金额
-            Double returnPrice = 0.00;
             //获取订单商品
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
-            }
-            returnOrderBaseInfo.setReturnPrice(returnPrice);
-            returnOrderBaseInfo.setRemarksInfo(remarksInfo);
-            returnOrderBaseInfo.setCreatorId(userId);
-            returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-            AppEmployee employee = employeeService.findById(userId);
-            returnOrderBaseInfo.setCreatorName(employee.getName());
-            returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
-            returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
-            returnOrderBaseInfo.setCustomerName(orderBaseInfo.getCustomerName());
-            returnOrderBaseInfo.setReasonInfo(reasonInfo);
-            returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
-            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
-            //保存退单头信息
-            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
-            //获取退单头id
-            Long returnOrderId = returnOrderBaseInfo.getRoid();
-
-            Date date = new Date();
-            //创建退货商品实体类
-            ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
-            List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
-            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                //记录退单商品
-                returnGoodsInfo.setRoid(returnOrderId);
-                returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());
-                returnGoodsInfo.setReturnNo(returnNumber);
-                returnGoodsInfo.setSku(orderGoodsInfo.getSku());
-                returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
-                returnGoodsInfo.setRetailPrice(orderGoodsInfo.getRetailPrice());
-                returnGoodsInfo.setVipPrice(orderGoodsInfo.getVIPPrice());
-                returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
-                returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
-                returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
-                returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
-                returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
-                returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
-                returnOrderGoodsInfos.add(returnGoodsInfo);
-                //保存退单商品信息
-                returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
-                //更改订单头商品已退数量和可退数量
-                returnOrderService.updateReturnableQuantityAndReturnQuantityById(orderGoodsInfo.getReturnableQuantity(), 0, orderGoodsInfo.getId());
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     Integer affectLine;
                     //获取现有库存量
                     CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
                     //退还库存量
-                    if ("顾客".equals(AppIdentityType.getAppIdentityTypeByValue(identityType).getDescription())) {
-                        affectLine = cityService.updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                    if (AppIdentityType.CUSTOMER.equals(orderBaseInfo.getCreatorIdentityType())) {
+                        affectLine = cityService.updateCityInventoryByCustomerIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCreatorId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
                     } else {
-                        affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(userId, orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                        affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCreatorId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
                     }
                     if (affectLine > 0) {
                         //记录城市库存变更日志
@@ -965,20 +906,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
             }
-            //创建退单退款总记录实体
-            ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
-            returnOrderBilling.setRoid(returnOrderId);
-            returnOrderBilling.setReturnNo(returnNumber);
-            returnOrderBilling.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0.00 : orderBillingDetails.getCusPreDeposit());
-            returnOrderBilling.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0.00 : orderBillingDetails.getEmpCreditMoney());
-            returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
-            returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
-            returnOrderBilling.setStSubvention(orderBillingDetails.getStoreSubvention() == null ? 0.00 : orderBillingDetails.getStoreSubvention());
-            returnOrderBilling.setOnlinePay(orderBillingDetails.getOnlinePayAmount() == null ? 0.00 : orderBillingDetails.getOnlinePayAmount());
-            returnOrderBilling.setOnlinePayType(orderBillingDetails.getOnlinePayType());
-            returnOrderBilling.setCash(0.00);
-            //添加保存退单退款总记录
-            returnOrderService.saveReturnOrderBilling(returnOrderBilling);
 
             //********************************返还虚拟货币********************************
             if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
@@ -1030,8 +957,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.RETURN_ORDER);
                             cusPreDepositLogDO.setChangeTypeDesc("拒签退货返还");
                             cusPreDepositLogDO.setCusId(orderBaseInfo.getCreatorId());
-                            cusPreDepositLogDO.setOperatorId(userId);
-                            cusPreDepositLogDO.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            cusPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
+                            cusPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
                             cusPreDepositLogDO.setBalance(cusPreDeposit);
                             cusPreDepositLogDO.setDetailReason("拒签退货");
                             cusPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
@@ -1042,7 +969,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                            returnOrderBillingDetail.setReturnNo(returnNumber);
+                            returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CUS_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getCusPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1078,8 +1005,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setOrderNumber(orderNumber);
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
-                            stPreDepositLogDO.setOperatorId(userId);
-                            stPreDepositLogDO.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
+                            stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
                             stPreDepositLogDO.setBalance(stPreDeposit);
                             stPreDepositLogDO.setDetailReason("拒签退货");
                             stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
@@ -1089,7 +1016,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                            returnOrderBillingDetail.setReturnNo(returnNumber);
+                            returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1125,8 +1052,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             empCreditMoneyChangeLog.setReferenceNumber(orderNumber);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.RETURN_ORDER);
                             empCreditMoneyChangeLog.setChangeTypeDesc("拒签退货返还信用金");
-                            empCreditMoneyChangeLog.setOperatorId(userId);
-                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            empCreditMoneyChangeLog.setOperatorId(orderBaseInfo.getCustomerId());
+                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.CUSTOMER);
                             //保存日志
                             appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
                             break;
@@ -1158,8 +1085,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setOrderNumber(orderNumber);
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
-                            stPreDepositLogDO.setOperatorId(userId);
-                            stPreDepositLogDO.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
+                            stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
                             stPreDepositLogDO.setBalance(stPreDeposit);
                             stPreDepositLogDO.setDetailReason("取消订单");
                             stPreDepositLogDO.setTransferTime(TimeTransformUtils.UDateToLocalDateTime(date));
@@ -1169,7 +1096,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                             returnOrderBillingDetail.setCreateTime(new Date());
                             returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                            returnOrderBillingDetail.setReturnNo(returnNumber);
+                            returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
                             returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
                             returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStPreDeposit());
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
@@ -1193,7 +1120,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还后门店信用金额度
                         Double creditMoney = (storeCreditMoney.getCreditLimitAvailable() + orderBillingDetails.getStoreCreditMoney());
                         //修改门店可用信用金
-                        Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(userId, orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
+                        Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店信用金变更日志
                             StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
@@ -1204,8 +1131,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             storeCreditMoneyChangeLog.setReferenceNumber(orderNumber);
                             storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);
                             storeCreditMoneyChangeLog.setChangeTypeDesc("拒签退货返还门店信用金");
-                            storeCreditMoneyChangeLog.setOperatorId(userId);
-                            storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            storeCreditMoneyChangeLog.setOperatorId(orderBaseInfo.getCreatorId());
+                            storeCreditMoneyChangeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
                             storeCreditMoneyChangeLog.setRemark("拒签退货");
                             //保存日志
                             appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
@@ -1226,7 +1153,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //返还后门店现金返利余额
                         Double subvention = (storeSubvention.getBalance() + orderBillingDetails.getStoreSubvention());
                         //修改门店现金返利
-                        Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), userId, storeSubvention.getLastUpdateTime());
+                        Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录门店现金返利变更日志
                             StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
@@ -1237,8 +1164,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             storeSubventionChangeLog.setReferenceNumber(orderNumber);
                             storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.RETURN_ORDER);
                             storeSubventionChangeLog.setChangeTypeDesc("拒签退货返还门店现金返利");
-                            storeSubventionChangeLog.setOperatorId(userId);
-                            storeSubventionChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            storeSubventionChangeLog.setOperatorId(orderBaseInfo.getCreatorId());
+                            storeSubventionChangeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
                             storeSubventionChangeLog.setRemark("拒签退货");
                             //保存日志
                             appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
@@ -1267,18 +1194,18 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
                     //增加日志
                     CustomerProductCouponChangeLog changeLog = new CustomerProductCouponChangeLog();
-                    if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
-                        changeLog.setCusId(userId);
-                    } else if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.SELLER)) {
+                    if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.CUSTOMER)) {
+                        changeLog.setCusId(orderBaseInfo.getCreatorId());
+                    } else if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.SELLER)) {
                         changeLog.setCusId(orderBaseInfo.getCustomerId());
                     }
                     changeLog.setCouponId(orderProductCoupon.getCouponId());
                     changeLog.setChangeType(CustomerProductCouponChangeType.RETURN_ORDER);
                     changeLog.setChangeTypeDesc(CustomerProductCouponChangeType.RETURN_ORDER.getDescription());
                     changeLog.setReferenceNumber(orderNumber);
-                    changeLog.setOperatorId(userId);
+                    changeLog.setOperatorId(orderBaseInfo.getCreatorId());
                     changeLog.setOperatorIp(null);
-                    changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    changeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
                     changeLog.setUseTime(new Date());
                     // 日志变更保存
                     productCouponService.addCustomerProductCouponChangeLog(changeLog);
@@ -1321,8 +1248,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     customerCashCouponChangeLog.setReferenceNumber(orderNumber);
                     customerCashCouponChangeLog.setChangeType(CustomerCashCouponChangeType.CANCEL_ORDER);
                     customerCashCouponChangeLog.setChangeTypeDesc("拒签退单返还");
-                    customerCashCouponChangeLog.setOperatorId(userId);
-                    customerCashCouponChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                    customerCashCouponChangeLog.setOperatorId(orderBaseInfo.getCreatorId());
+                    customerCashCouponChangeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
                     customerCashCouponChangeLog.setRemark("拒签退单");
                     //保存日志
                     appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
@@ -1338,11 +1265,110 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
             //********************************退经销差价退还*************************
-            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), orderBaseInfo.getCreatorIdentityType().getValue());
 
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
+            ReturnOrderBilling returnOrderBilling = returnOrderService.getReturnOrderBillingByReturnNo(returnOrderBaseInfo.getReturnNo());
+            maps.put("returnOrderBaseInfo",returnOrderBaseInfo);
+            maps.put("returnOrderBilling",returnOrderBilling);
+            maps.put("code", "SUCCESS");
+            return maps;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("异常错误", e);
+            throw new RuntimeException();
+        }
+    }
+    //保存退货信息
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<Object, Object> saveRefusedOrder(Long userId, Integer identityType, String orderNumber, String reasonInfo,
+                                            String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic) {
+        Map<Object, Object> maps = new HashedMap();
+        try {
+            //获取退单号
+            String returnNumber = OrderUtils.getReturnNumber();
+            //创建退单头
+            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
+            //记录退单头信息
+            returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
+            returnOrderBaseInfo.setOrderNo(orderNumber);
+            returnOrderBaseInfo.setOrderTime(orderBaseInfo.getCreateTime());
+            returnOrderBaseInfo.setStoreId(orderBaseInfo.getStoreId());
+            returnOrderBaseInfo.setStoreCode(orderBaseInfo.getStoreCode());
+            returnOrderBaseInfo.setStoreStructureCode(orderBaseInfo.getStoreStructureCode());
+            returnOrderBaseInfo.setReturnTime(new Date());
+            returnOrderBaseInfo.setReturnNo(returnNumber);
+            returnOrderBaseInfo.setReturnPic(returnPic);
+            returnOrderBaseInfo.setReturnType(ReturnOrderType.REFUSED_RETURN);
+            //退款金额
+            Double returnPrice = 0.00;
+            //获取订单商品
+            List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+
+            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                returnPrice += (orderGoodsInfo.getOrderQuantity() * orderGoodsInfo.getReturnPrice());
+            }
+            returnOrderBaseInfo.setReturnPrice(returnPrice);
+            returnOrderBaseInfo.setRemarksInfo(remarksInfo);
+            returnOrderBaseInfo.setCreatorId(userId);
+            returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+            AppEmployee employee = employeeService.findById(userId);
+            returnOrderBaseInfo.setCreatorName(employee.getName());
+            returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
+            returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
+            returnOrderBaseInfo.setCustomerName(orderBaseInfo.getCustomerName());
+            returnOrderBaseInfo.setReasonInfo(reasonInfo);
+            returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
+            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
+            //保存退单头信息
+            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+            //获取退单头id
+            Long returnOrderId = returnOrderBaseInfo.getRoid();
+
+            Date date = new Date();
+            //创建退货商品实体类
+            ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
+            List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
+            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                //记录退单商品
+                returnGoodsInfo.setRoid(returnOrderId);
+                returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());
+                returnGoodsInfo.setReturnNo(returnNumber);
+                returnGoodsInfo.setSku(orderGoodsInfo.getSku());
+                returnGoodsInfo.setSkuName(orderGoodsInfo.getSkuName());
+                returnGoodsInfo.setRetailPrice(orderGoodsInfo.getRetailPrice());
+                returnGoodsInfo.setVipPrice(orderGoodsInfo.getVIPPrice());
+                returnGoodsInfo.setWholesalePrice(orderGoodsInfo.getWholesalePrice());
+                returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
+                returnGoodsInfo.setReturnPrice(orderGoodsInfo.getReturnPrice());
+                returnGoodsInfo.setReturnQty(orderGoodsInfo.getOrderQuantity());
+                returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+                returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
+                returnOrderGoodsInfos.add(returnGoodsInfo);
+                //保存退单商品信息
+                returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);
+                //更改订单头商品已退数量和可退数量
+                returnOrderService.updateReturnableQuantityAndReturnQuantityById(orderGoodsInfo.getReturnableQuantity(), 0, orderGoodsInfo.getId());
+
+            }
+            //创建退单退款总记录实体
+            ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
+            returnOrderBilling.setRoid(returnOrderId);
+            returnOrderBilling.setReturnNo(returnNumber);
+            returnOrderBilling.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0.00 : orderBillingDetails.getCusPreDeposit());
+            returnOrderBilling.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0.00 : orderBillingDetails.getEmpCreditMoney());
+            returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
+            returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
+            returnOrderBilling.setStSubvention(orderBillingDetails.getStoreSubvention() == null ? 0.00 : orderBillingDetails.getStoreSubvention());
+            returnOrderBilling.setOnlinePay(orderBillingDetails.getOnlinePayAmount() == null ? 0.00 : orderBillingDetails.getOnlinePayAmount());
+            returnOrderBilling.setOnlinePayType(orderBillingDetails.getOnlinePayType());
+            returnOrderBilling.setCash(0.00);
+            //添加保存退单退款总记录
+            returnOrderService.saveReturnOrderBilling(returnOrderBilling);
+
             //获取物流状态明细
             OrderDeliveryInfoDetails orderDeliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderNumber, LogisticStatus.SEALED_CAR);
             //记录物流明细表
@@ -1355,8 +1381,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             newOrderDeliveryInfoDetails.setOperatorNo(orderDeliveryInfoDetails.getOperatorNo());
             newOrderDeliveryInfoDetails.setWarehouseNo(orderDeliveryInfoDetails.getWarehouseNo());
             newOrderDeliveryInfoDetails.setTaskNo(orderDeliveryInfoDetails.getTaskNo());
-
             orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(newOrderDeliveryInfoDetails);
+
             //修改订单状态为拒签,物流状态拒签
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED, LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
             maps.put("returnOrderGoodsInfos",returnOrderGoodsInfos);
@@ -1365,9 +1391,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             return maps;
         } catch (Exception e) {
             e.printStackTrace();
-            maps.put("code", "FAILURE");
-
-            return maps;
+            logger.info("异常错误", e);
+            throw new RuntimeException();
         }
     }
 
