@@ -320,6 +320,8 @@ public class OrderController {
             //******** 分摊完毕 计算退货 单价 ***************************
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
+            //将产品券商品加入 分摊完毕的商品列表中
+            orderGoodsInfoList.addAll(support.getProductCouponGoodsList());
             support.setOrderGoodsInfoList(orderGoodsInfoList);
 
             //**************** 创建要检核库存的商品和商品数量的Map ***********
