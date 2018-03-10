@@ -169,4 +169,12 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
             separateOrderService.saveOrderReceiptInf(receiptInf);
         }
     }
+
+    @Override
+    public void saveOrderRefundInf(ReturnOrderRefundInf refundInf) {
+        //保存退款信息
+        if (refundInf != null) {
+            separateOrderService.saveOrderRefundInf(refundInf);
+        }
+    }
 }

@@ -119,4 +119,5 @@ public interface AppSeparateOrderService {
 
     void separateOrderRefund(String refundNumber);
 
+    void saveOrderRefundInf(ReturnOrderRefundInf refundInf);
 }

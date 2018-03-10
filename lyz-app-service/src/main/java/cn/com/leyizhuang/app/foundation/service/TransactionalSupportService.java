@@ -33,4 +33,5 @@ public interface TransactionalSupportService {
 
     void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 
+    void saveOrderRefundInf(ReturnOrderRefundInf refundInf);
 }
