@@ -59,8 +59,8 @@ public class MaOrderFreightRestController extends BaseRestController {
 
 
     /**
+     * 根据门店筛选订单
      *
-     *根据门店筛选订单
      * @param offset
      * @param size
      * @param keywords
@@ -69,7 +69,7 @@ public class MaOrderFreightRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/storeGrid")
     public GridDataVO<OrderFreightVO> queryOrderFreightVOByStoreId(Integer offset, Integer size, String keywords, @RequestParam(value = "storeId") Long storeId) {
-        logger.info("queryOrderFreightVOByStoreId 后台根据门店筛选订单 ,入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords,storeId);
+        logger.info("queryOrderFreightVOByStoreId 后台根据门店筛选订单 ,入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords, storeId);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
@@ -96,7 +96,7 @@ public class MaOrderFreightRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/cityGrid")
     public GridDataVO<OrderFreightVO> queryOrderFreightVOByCityId(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId) {
-        logger.info("queryOrderFreightVOByCityId 后台根据城市筛选订单 ,入参 offset:{},size:{},keywords:{},cityId:{}", offset, size, keywords,cityId);
+        logger.info("queryOrderFreightVOByCityId 后台根据城市筛选订单 ,入参 offset:{},size:{},keywords:{},cityId:{}", offset, size, keywords, cityId);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
@@ -151,7 +151,7 @@ public class MaOrderFreightRestController extends BaseRestController {
      */
     @GetMapping(value = "/page/infoGrid/{queryOrderInfo}")
     public GridDataVO<OrderFreightVO> queryOrderFreightVOByInfo(Integer offset, Integer size, String keywords, @PathVariable(value = "queryOrderInfo") String queryOrderInfo) {
-        logger.info("queryOrderFreightVOByInfo 后台根据搜索信息查询订单列表 ,入参 offset:{},size:{},keywords:{},queryOrderInfo:{}", offset, size, keywords,queryOrderInfo);
+        logger.info("queryOrderFreightVOByInfo 后台根据搜索信息查询订单列表 ,入参 offset:{},size:{},keywords:{},queryOrderInfo:{}", offset, size, keywords, queryOrderInfo);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
@@ -198,16 +198,21 @@ public class MaOrderFreightRestController extends BaseRestController {
     /**
      * 更新运费信息
      *
-     * @param simpleOrderBillingDetails
+     * @param
      * @param oderFreightChange
      * @return
      */
     @PutMapping(value = "/update")
-    public ResultDTO<?> updateOrderFreight(@Valid SimpleOrderBillingDetails simpleOrderBillingDetails, @Valid OrderFreightChange oderFreightChange, BindingResult result) {
-        logger.info("updateOrderFreight 后台更新运费信息 ,入参 simpleOrderBillingDetails:{},oderFreightChange:{},", simpleOrderBillingDetails,oderFreightChange);
+    public ResultDTO<?> updateOrderFreight(@Valid OrderFreightChange oderFreightChange, BindingResult result) {
+        logger.info("updateOrderFreight 后台更新运费信息 ,入参 oderFreightChange:{},", oderFreightChange);
         try {
             if (!result.hasErrors()) {
-                this.maOrderFreightService.update(simpleOrderBillingDetails, oderFreightChange);
+                logger.info("updateOrderFreight 后台更新运费信息失败 ,订单id为空");
+                if (null == oderFreightChange.getOrderId()) {
+                    return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                            "订单id为空", null);
+                }
+                this.maOrderFreightService.update(oderFreightChange);
                 logger.info("updateOrderFreight ,后台更新运费信息成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {

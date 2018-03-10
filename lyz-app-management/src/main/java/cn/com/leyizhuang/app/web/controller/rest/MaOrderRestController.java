@@ -551,12 +551,12 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
-        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO)<0||maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO)<0) {
+        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO) < 0 || maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO) < 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "pos或其他金额为负", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO)<=0) {
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -772,12 +772,12 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO)<0||maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO)<0) {
+        if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO) < 0 || maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO) < 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "pos或其他金额为负", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO)<=0) {
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) <= 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -862,9 +862,9 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,POS流水号小于6位！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "请输入POS流水号后6位数！", null);
         }
-        if (null != cashMoney && cashMoney < 0){
-            Double addCashAndPos = CountUtil.add(cashMoney,posMoney == null?0:posMoney);
-            if (addCashAndPos <= 0){
+        if (null != cashMoney && cashMoney < 0) {
+            Double addCashAndPos = CountUtil.add(cashMoney, posMoney == null ? 0 : posMoney);
+            if (addCashAndPos <= 0) {
                 logger.warn("saveMaProductCoupon OUT,保存买券信息，创建买券订单失败,当现金金额为负数时，POS金额+现金金额必须大于0！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当现金金额为负数时，POS金额+现金金额必须大于0！", null);
             }

@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -222,8 +223,17 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
                             return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
                         }
-
-                        HashedMap maps = returnOrderService.normalReturnOrderProcessing(header.getPoNo(), header.getCompanyId());
+                        HashedMap maps = new HashedMap();
+                        ReturnOrderBaseInfo returnOrder = returnOrderService.queryByReturnNo(header.getPoNo());
+                        if (returnOrder.getReturnType().equals(ReturnOrderType.CANCEL_RETURN)){
+                            OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(returnOrder.getOrderNo());
+                            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                            ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrder.getReturnNo());
+                            List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnOrder.getReturnNo());
+                            maps = returnOrderService.refusedOrder(orderBaseInfo.getOrderNumber(),orderBaseInfo,orderBillingDetails,returnOrderBaseInfo,returnOrderGoodsInfoList);
+                        }else if (ReturnOrderType.NORMAL_RETURN.equals(returnOrder.getReturnType())){
+                            maps = returnOrderService.normalReturnOrderProcessing(header.getPoNo(), header.getCompanyId());
+                        }
 
                         ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
 
