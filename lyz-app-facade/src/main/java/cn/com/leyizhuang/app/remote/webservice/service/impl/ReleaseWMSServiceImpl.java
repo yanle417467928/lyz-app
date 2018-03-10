@@ -393,16 +393,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         if ("SUCCESS".equals(maps.get("code"))) {
 
                             //如果是待收货、门店自提单则需要返回第三方支付金额
-                            if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) && orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                                 if (null != orderBillingDetails.getOnlinePayType()) {
-                                    if ("支付宝".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                                    if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //支付宝退款
                                         onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
-
-                                    } else if ("微信".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                                    } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                         //微信退款方法类
-                                        Map<String, String> map = onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo());
-                                    } else if ("银联".equals(orderBillingDetails.getOnlinePayType().getDescription())) {
+                                         onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo());
+                                    } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //创建退单退款详情实体
                                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                                         returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
@@ -417,7 +415,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                                     }
                                 }
-                            }
 
                             //发送退单拆单消息到拆单消息队列
                             sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
