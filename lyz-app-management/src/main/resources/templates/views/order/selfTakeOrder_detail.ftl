@@ -386,7 +386,6 @@
                             <div class="form-group">
                                 <label for="name">总金额(元)</label>
                                 <input type="text" class="form-control" id="count"
-                                       name="allAmount"
                                        readonly
                                        value="${orderBillingDetail.arrearage!'0.00'}">
                                 <input type="hidden" class="form-control"

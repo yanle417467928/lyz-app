@@ -563,11 +563,6 @@ public class MaOrderRestController extends BaseRestController {
         }
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
-        if (null == maOrderAmount.getAllAmount()) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "总金额为空", null);
-            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
         if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);

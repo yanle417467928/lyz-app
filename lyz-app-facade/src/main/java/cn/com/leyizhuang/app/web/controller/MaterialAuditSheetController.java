@@ -86,27 +86,27 @@ public class MaterialAuditSheetController {
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryCity())) {
+        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryCity()) || "undefined".equals(materialAuditSheetRequest.getDeliveryCity())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址（市）不能为空", null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryCounty())) {
+        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryCounty()) || "undefined".equals(materialAuditSheetRequest.getDeliveryCounty())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址（区）不能为空", null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryStreet())) {
+        if (StringUtils.isBlank(materialAuditSheetRequest.getDeliveryStreet()) || "undefined".equals(materialAuditSheetRequest.getDeliveryStreet())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址（街道）不能为空", null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(materialAuditSheetRequest.getResidenceName())) {
+        if (StringUtils.isBlank(materialAuditSheetRequest.getResidenceName()) || "undefined".equals(materialAuditSheetRequest.getResidenceName())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址（小区）不能为空", null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(materialAuditSheetRequest.getDetailedAddress())) {
+        if (StringUtils.isBlank(materialAuditSheetRequest.getDetailedAddress()) || "undefined".equals(materialAuditSheetRequest.getDetailedAddress())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货地址（详细地址）不能为空", null);
             logger.info("addMaterialAuditSheet OUT,新增物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
