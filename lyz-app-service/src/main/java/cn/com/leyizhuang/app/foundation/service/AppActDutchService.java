@@ -29,4 +29,6 @@ public interface AppActDutchService {
      * @return
      */
     List<OrderGoodsInfo> countReturnPrice(List<OrderGoodsInfo> goodsInfoList);
+
+    List<OrderGoodsInfo> countReturnPrice(List<OrderGoodsInfo> goodsInfoList,Double totalCashReturnPrice,Double totalLeBi,Double promotionDiscont);
 }
