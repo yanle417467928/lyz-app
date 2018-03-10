@@ -561,7 +561,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
-                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable() + orderBillingDetails.getStoreCreditMoney());
+                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
             default:
                 break;

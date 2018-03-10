@@ -10,15 +10,16 @@ import java.util.Objects;
  **/
 public enum OrderBillingPaymentType {
 
-    CUS_PREPAY("CUS_PREPAY","顾客预存款"),
-    ST_PREPAY("ST_PREPAY","门店预存款"),
+    CUS_PREPAY("CUS_PREPAY", "顾客预存款"),
+    ST_PREPAY("ST_PREPAY", "门店预存款"),
     ALIPAY("ALIPAY", "支付宝"),
     WE_CHAT("WE_CHAT", "微信"),
     UNION_PAY("UNION_PAY", "银联"),
     POS("POS", "POS"),
     CASH("CASH", "现金"),
     OTHER("OTHER", "门店其它（对公转账）"),
-    TRANSFER_ACCOUNTS("TRANSFER_ACCOUNTS","转账");
+    TRANSFER_ACCOUNTS("TRANSFER_ACCOUNTS", "转账"),
+    STORE_CREDIT_MONEY("STORE_CREDIT_MONEY", "门店信用金");
 
 
     private String value;
