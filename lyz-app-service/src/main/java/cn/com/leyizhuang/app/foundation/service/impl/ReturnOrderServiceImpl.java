@@ -1783,6 +1783,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             }
                         }
                     }
+                } else {
+                    maps.put("hasReturnOnlinePay", Boolean.TRUE);
                 }
             }
             //********************************退经销差价退还*************************
@@ -1795,7 +1797,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("returnOrderBilling", returnOrderBilling);
             maps.put("code", "SUCCESS");
-            maps.put("hasReturnOnlinePay", Boolean.TRUE);
             return maps;
         } catch (Exception e) {
             e.printStackTrace();
