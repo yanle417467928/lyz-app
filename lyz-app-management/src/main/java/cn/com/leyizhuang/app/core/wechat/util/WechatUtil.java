@@ -14,6 +14,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.junit.Test;
 
 import javax.net.ssl.SSLContext;
 import java.io.*;
@@ -188,6 +189,7 @@ public class WechatUtil {
      * @throws Exception 异常
      * @author Jerry.Ren
      */
+
     public static String refundBySslPost(String url, String body) throws Exception {
         String result = "";
         //商户id
