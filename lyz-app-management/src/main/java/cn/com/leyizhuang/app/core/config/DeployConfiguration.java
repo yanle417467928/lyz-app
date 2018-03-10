@@ -27,6 +27,9 @@ public class DeployConfiguration {
     @Value("${deploy.wechat.async.url}")
     private String wechatReturnUrlAsnyc;
 
+    @Value("${deploy.wechat.cert.path}")
+    private String wechatApiClinetCert;
+
     @Value("${deploy.oss.cdnHosts}")
     private String[] cdnHosts;
 
@@ -42,6 +45,7 @@ public class DeployConfiguration {
         LOG.info("alipayReturnUrl : {}", alipayReturnUrl);
         LOG.info("alipayReturnUrlAsync : {}", alipayReturnUrlAsync);
         LOG.info("wechatReturnUrlAsnyc : {}", wechatReturnUrlAsnyc);
+        LOG.info("wechatApiClinetCert : {}", wechatApiClinetCert);
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
@@ -51,10 +55,19 @@ public class DeployConfiguration {
         constant.setAlipayReturnUrl(alipayReturnUrl);
         constant.setAlipayReturnUrlAsnyc(alipayReturnUrlAsync);
         constant.setWechatReturnUrlAsnyc(wechatReturnUrlAsnyc);
+        constant.setWechatApiClinetCert(wechatApiClinetCert);
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
         return constant;
+    }
+
+    public String getWechatApiClinetCert() {
+        return wechatApiClinetCert;
+    }
+
+    public void setWechatApiClinetCert(String wechatApiClinetCert) {
+        this.wechatApiClinetCert = wechatApiClinetCert;
     }
 
     public String getImagePath() {
