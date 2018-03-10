@@ -395,42 +395,45 @@ public class OrderDeliveryInfoDetailsController {
             List<OrderBaseInfo> orderBaseInfoList = orderBaseInfoLists.getList();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
-            //循环遍历订单列表
-            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
-                //创建有个存放图片地址的list
-                List<String> goodsImgList = new ArrayList<>();
-                //创建一个返回类
-                OrderListResponse orderListResponse = new OrderListResponse();
-                //获取订单商品
-                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
-                //遍历订单商品
-                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                    goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+            if (null != orderBaseInfoList && orderBaseInfoList.size() > 0){
+
+                //循环遍历订单列表
+                for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                    //创建有个存放图片地址的list
+                    List<String> goodsImgList = new ArrayList<>();
+                    //创建一个返回类
+                    OrderListResponse orderListResponse = new OrderListResponse();
+                    //获取订单商品
+                    List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                    //遍历订单商品
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                        goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+                    }
+                    orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
+                    orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                    orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
+                    orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
+                    orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                    //获取订单物流相关信息
+                    OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                    if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                        orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
+                    } else {
+                        orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
+                    }
+                    orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                    OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                    orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                    orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                    orderListResponse.setGoodsImgList(goodsImgList);
+                    if (identityType == 0) {
+                        orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
+                        orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                        orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                    }
+                    //添加到返回类list中
+                    orderListResponses.add(orderListResponse);
                 }
-                orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
-                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
-                orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
-                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
-                //获取订单物流相关信息
-                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
-                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
-                } else {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
-                }
-                orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
-                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
-                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                orderListResponse.setGoodsImgList(goodsImgList);
-                if (identityType == 0) {
-                    orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
-                    orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
-                    orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                }
-                //添加到返回类list中
-                orderListResponses.add(orderListResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
