@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -1199,6 +1200,12 @@ public class CommonServiceImpl implements CommonService {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
+            if (null != orderBillingDetails.getStoreCreditMoney() && orderBillingDetails.getStoreCreditMoney()>AppConstant.DOUBLE_ZERO){
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY,orderBillingDetails.getStoreCreditMoney(),
+                        PaymentSubjectType.DECORATE_MANAGER,orderBaseInfo.getOrderNumber(),OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
         }

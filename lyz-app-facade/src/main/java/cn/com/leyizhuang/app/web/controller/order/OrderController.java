@@ -34,6 +34,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -117,6 +118,9 @@ public class OrderController {
 
     @Resource
     private DeliveryFeeRuleService deliveryFeeRuleService;
+
+    @Autowired
+    private GoodsPriceService goodsPriceService;
 
     /**
      * 创建订单方法
@@ -362,7 +366,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException | DutchException | OrderCreditMoneyException e) {
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -628,7 +632,21 @@ public class OrderController {
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
             goodsSettlement.put("isShowNumber", isShowSalesNumber);
-
+            List<AppDeliveryType> deliveryTypeList = new ArrayList<>();
+            goodsIds.addAll(giftIds);
+            goodsIds.addAll(couponIds);
+            List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            if (null != goodsZGList && goodsZGList.size() > 0) {
+                deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
+            } else {
+                if (AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
+                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                } else {
+                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                    deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
+                }
+            }
+            goodsSettlement.put("deliveryTypeList", deliveryTypeList);
             //非门店自提,为城市库存充足及门店库存充足
             if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
                 //判断库存的特殊处理
@@ -641,6 +659,7 @@ public class OrderController {
                     return resultDTO;
                 }
             }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
@@ -1075,50 +1094,52 @@ public class OrderController {
             List<OrderBaseInfo> orderBaseInfoList = orderBaseInfoLists.getList();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
-            //循环遍历订单列表
-            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
-                //创建有个存放图片地址的list
-                List<String> goodsImgList = new ArrayList<>();
-                //创建一个返回类
-                OrderListResponse orderListResponse = new OrderListResponse();
-                //获取订单商品
-                List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
-                //遍历订单商品
-                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                    goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
-                }
-                if ("待付款".equals(orderBaseInfo.getStatus().getDescription())) {
-                    //计算剩余过期失效时间
-                    Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
-                    //设置
-                    if (time > 0) {
-                        orderListResponse.setEndTime(time);
+            if (null != orderBaseInfoList && orderBaseInfoList.size() > 0){
+                //循环遍历订单列表
+                for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                    //创建有个存放图片地址的list
+                    List<String> goodsImgList = new ArrayList<>();
+                    //创建一个返回类
+                    OrderListResponse orderListResponse = new OrderListResponse();
+                    //获取订单商品
+                    List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                    //遍历订单商品
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                        goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
                     }
+                    if ("待付款".equals(orderBaseInfo.getStatus().getDescription())) {
+                        //计算剩余过期失效时间
+                        Long time = ((orderBaseInfo.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                        //设置
+                        if (time > 0) {
+                            orderListResponse.setEndTime(time);
+                        }
+                    }
+                    orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
+                    orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                    orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
+                    orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
+                    orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                    //获取订单物流相关信息
+                    OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
+                    if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                        orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
+                    } else {
+                        orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
+                    }
+                    orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                    OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                    orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
+                    orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
+                    orderListResponse.setGoodsImgList(goodsImgList);
+                    if (identityType == 0) {
+                        orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
+                        orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                        orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                    }
+                    //添加到返回类list中
+                    orderListResponses.add(orderListResponse);
                 }
-                orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
-                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
-                orderListResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
-                orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
-                //获取订单物流相关信息
-                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderBaseInfo.getOrderNumber());
-                if ("HOUSE_DELIVERY".equals(orderBaseInfo.getDeliveryType().getValue())) {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getShippingAddress()) ? null : orderLogisticsInfo.getShippingAddress());
-                } else {
-                    orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
-                }
-                orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
-                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
-                orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
-                orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
-                orderListResponse.setGoodsImgList(goodsImgList);
-                if (identityType == 0) {
-                    orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
-                    orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
-                    orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                }
-                //添加到返回类list中
-                orderListResponses.add(orderListResponse);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
@@ -1437,11 +1458,11 @@ public class OrderController {
     }
 
     /**
-     * @title   处理货到付款的订单业务
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 处理货到付款的订单业务
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/9
      */

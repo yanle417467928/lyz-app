@@ -16,7 +16,8 @@
                                               sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
                                               coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
                                               order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
-                                              member_discount, cash_coupon_discount, product_coupon_discount)
+                                              member_discount, cash_coupon_discount, product_coupon_discount, attribute1,
+                                              attribute2, attribute3, attribute4, attribute5, attribute6, attribute7)
         VALUES (
             #{createTime}, #{orderSubjectType}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber},
                            #{orderNumber}, #{sobId},
@@ -24,17 +25,20 @@
                            #{orderTypeId}, #{userId}, #{salesConsultId}, #{couponFlag}, #{invoiceFlag}, #{creditFlag},
                                            #{storeOrgId}, #{diySiteCode}, #{deliveryTypeTitle},
                                            #{orderAmt}, #{recAmt}, #{lebiDiscount},
-            #{storeSubventionDiscount}, #{promotionDiscount}, #{memberDiscount}, #{cashCouponDiscount},
-            #{productCouponDiscount}
+                                                                   #{storeSubventionDiscount}, #{promotionDiscount},
+                                                                   #{memberDiscount}, #{cashCouponDiscount},
+                                                                   #{productCouponDiscount}, #{attribute1},
+                                                                   #{attribute2}, #{attribute3}, #{attribute4},
+            #{attribute5}, #{attribute6}, #{attribute7}
         )
     </insert>
 
     <insert id="saveOrderGoodsInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
-        INSERT INTO inter_ate_order_goods_inf (order_header_id, create_time, send_flag, error_msg, send_time, main_order_line_id, main_order_number, order_number,
-                                               sku, goods_title, quantity, ls_price,
-                                               hy_price, jx_price, settlement_price, return_price, lebi_discount, subvention_discount,
-                                               cash_coupon_discount, promotion_discount, discount_total_price, gift_flag, promotion_id, product_type)
+        INSERT INTO inter_ate_order_goods_inf (order_header_id, create_time, send_flag, error_msg, send_time, main_order_line_id, main_order_number,
+                                               order_number, sku, goods_title, quantity, ls_price, hy_price, jx_price, settlement_price, return_price,
+                                               lebi_discount, subvention_discount, cash_coupon_discount, promotion_discount, discount_total_price,
+                                               gift_flag, promotion_id, product_type, attribute1, attribute2, attribute3, attribute4)
         VALUES
             (#{orderHeaderId}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderLineId},
                                #{mainOrderNumber},
@@ -46,7 +50,7 @@
                                                                    #{cashCouponDiscount},
                                                                    #{promotionDiscount},
                                                                    #{discountTotalPrice}, #{giftFlag},
-             #{promotionId}, #{productType})
+             #{promotionId}, #{productType}, #{attribute1}, #{attribute2}, #{attribute3}, #{attribute4})
     </insert>
 
     <insert id="saveOrderCouponInf"
@@ -1163,36 +1167,36 @@
 
     <select id="isReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT exists(SELECT 1
-        FROM inter_ate_order_receipt_inf
-        WHERE receipt_number = #{receiptNumber})
+                      FROM inter_ate_order_receipt_inf
+                      WHERE receipt_number = #{receiptNumber})
     </select>
 
     <select id="getOrderReceiptInfByReceiptNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
         SELECT
-        receipt_id,
-        create_time,
-        send_flag,
-        error_msg,
-        send_time,
-        main_order_number,
-        receipt_number,
-        receipt_type,
-        store_org_id,
-        diy_site_code,
-        receipt_date,
-        amount,
-        description,
-        sob_id,
-        user_id,
-        username,
-        user_phone,
-        guide_id,
-        attribute1,
-        attribute2,
-        attribute3,
-        attribute4,
-        attribute5
+            receipt_id,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            main_order_number,
+            receipt_number,
+            receipt_type,
+            store_org_id,
+            diy_site_code,
+            receipt_date,
+            amount,
+            description,
+            sob_id,
+            user_id,
+            username,
+            user_phone,
+            guide_id,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5
         FROM inter_ate_order_receipt_inf
         WHERE receipt_number = #{receiptNumber}
     </select>

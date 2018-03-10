@@ -1044,6 +1044,7 @@
             WHERE
             obi.customer_id = #{userId}
             AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            AND obi.delivery_type = 'HOUSE_DELIVERY'
             ORDER BY obi.create_time DESC
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
@@ -1060,6 +1061,7 @@
             AND creator_identity_type != 'CUSTOMER'
             AND creator_identity_type != 'SELLER'
             AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            AND obi.delivery_type = 'HOUSE_DELIVERY'
             ORDER BY obi.create_time DESC
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
@@ -1079,6 +1081,7 @@
             AND creator_identity_type != 'CUSTOMER'
             AND creator_identity_type != 'DECORATE_MANAGER'
             AND (obi.`status` ='PENDING_RECEIVE' OR obi.`status` = 'PENDING_SHIPMENT')
+            AND obi.delivery_type = 'HOUSE_DELIVERY'
             ORDER BY obi.create_time DESC
         </if>
     </select>

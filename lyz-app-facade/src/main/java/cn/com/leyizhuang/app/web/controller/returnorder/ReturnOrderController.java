@@ -267,6 +267,11 @@ public class ReturnOrderController {
             logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (AppIdentityType.DELIVERY_CLERK.getValue() != identityType){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此身份类型不能进行此操作", null);
+            logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             //获取订单头信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
@@ -304,6 +309,7 @@ public class ReturnOrderController {
                 //发送拆单消息到消息队列
                 sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
 
+                AppEmployee employee = appEmployeeService.findById(userId);
                 Date date = new Date();
                 //保存发送wms退货单头
                 OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
@@ -328,6 +334,7 @@ public class ReturnOrderController {
                 atwReturnOrder.setRejecter(orderLogisticsInfo.getReceiver());
                 atwReturnOrder.setRejecterPhone(orderLogisticsInfo.getReceiverPhone());
                 atwReturnOrder.setRejecterAddress(orderLogisticsInfo.getDetailedAddress());
+                atwReturnOrder.setDeliveryClerkNo(employee.getDeliveryClerkNo());
                 atwReturnOrder.setSendFlag(null);
                 atwReturnOrder.setSendTime(null);
                 appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
