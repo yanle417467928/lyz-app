@@ -34,6 +34,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -117,6 +118,9 @@ public class OrderController {
 
     @Resource
     private DeliveryFeeRuleService deliveryFeeRuleService;
+
+    @Autowired
+    private GoodsPriceService goodsPriceService;
 
     /**
      * 创建订单方法
@@ -628,7 +632,21 @@ public class OrderController {
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);
             goodsSettlement.put("promotionInfo", giftList);
             goodsSettlement.put("isShowNumber", isShowSalesNumber);
-
+            List<AppDeliveryType> deliveryTypeList = new ArrayList<>();
+            goodsIds.addAll(giftIds);
+            goodsIds.addAll(couponIds);
+            List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            if (null != goodsZGList && goodsZGList.size() > 0) {
+                deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
+            } else {
+                if (AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
+                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                } else {
+                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                    deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
+                }
+            }
+            goodsSettlement.put("deliveryTypeList", deliveryTypeList);
             //非门店自提,为城市库存充足及门店库存充足
             if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
                 //判断库存的特殊处理
@@ -641,6 +659,7 @@ public class OrderController {
                     return resultDTO;
                 }
             }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
             logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
