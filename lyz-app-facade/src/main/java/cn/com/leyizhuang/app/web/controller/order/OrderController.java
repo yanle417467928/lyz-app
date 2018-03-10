@@ -322,7 +322,8 @@ public class OrderController {
             orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
 
             //******** 分摊完毕 计算退货 单价 ***************************
-            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList,cashReturnAmount,CountUtil.div(billing.getLeBiQuantity(),10D),billing.getOrderDiscount());
+            //orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
             //将产品券商品加入 分摊完毕的商品列表中
             orderGoodsInfoList.addAll(support.getProductCouponGoodsList());
