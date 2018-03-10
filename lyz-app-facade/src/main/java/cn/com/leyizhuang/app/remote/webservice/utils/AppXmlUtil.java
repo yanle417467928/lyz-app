@@ -129,7 +129,7 @@ public class AppXmlUtil {
                 "<return_time>" + returnTime + "</return_time>" +
                 "<sort_id></sort_id>" +
                 "<status_id>" + returnOrder.getStatusId() + "</status_id>" +
-                "<username></username>" +
+                "<username>"+returnOrder.getDeliveryClerkNo()+"</username>" +
                 "<deliver_type_title>" + returnOrder.getDeliverTypeTitle() + "</deliver_type_title>" +
                 "<turn_price>" + returnOrder.getReturnPrice() + "</turn_price>" +
                 "<turn_type></turn_type>" +

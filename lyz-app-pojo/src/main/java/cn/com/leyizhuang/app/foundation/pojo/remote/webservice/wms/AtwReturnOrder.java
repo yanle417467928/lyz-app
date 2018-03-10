@@ -121,6 +121,10 @@ public class AtwReturnOrder {
      * wms收到信息时间
      */
     private Date sendTime;
+    /**
+     * 配送员编码
+     */
+    private String deliveryClerkNo;
 
     public static AtwReturnOrder transform(ReturnOrderBaseInfo baseInfo, ReturnOrderLogisticInfo logisticInfo, AppStore store,
                                            OrderBaseInfo orderBaseInfo, int goodsLineQuantity, SalesConsult salesConsult) {
