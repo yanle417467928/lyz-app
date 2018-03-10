@@ -381,6 +381,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void saveOrderRefundInf(ReturnOrderRefundInf refundInf) {
+        if (refundInf != null) {
+            separateOrderDAO.saveReturnOrderRefundInf(refundInf);
+        }
+    }
+
+    @Override
     public void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime) {
         if (null != orderNumber) {
             separateOrderDAO.updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(orderNumber, flag, errorMsg, sendTime);
@@ -1052,10 +1059,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     @Override
     public void separateOrderRefund(String refundNumber) {
         if (null != refundNumber) {
-            List<ReturnOrderRefundInf> returnOrderRefundInfList = new ArrayList<>(10);
             List<ReturnOrderBillingDetail> returnOrderBillingDetailList = returnOrderService.
                     getReturnOrderBillingDetailByRefundNumber(refundNumber);
-            if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() > 0) {
+            if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() == 1) {
                 for (ReturnOrderBillingDetail billingDetail : returnOrderBillingDetailList) {
 
                     ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(billingDetail.getReturnNo());
@@ -1068,10 +1074,10 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
                         refundInf.setMainReturnNumber(null != returnOrderBaseInfo ? returnOrderBaseInfo.getReturnNo() : null);
                         refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
-                        refundInf.setUserId(returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
+                        refundInf.setUserId(null != (returnOrderBaseInfo != null ? returnOrderBaseInfo.getCreatorIdentityType() : null) && returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
                                 returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
                         refundInf.setRefundDate(billingDetail.getIntoAmountTime());
-                        refundInf.setRefundNumber(OrderUtils.getRefundNumber());
+                        refundInf.setRefundNumber(billingDetail.getRefundNumber());
                         refundInf.setRefundType(billingDetail.getReturnPayType());
                         refundInf.setSobId(orderBaseInfo.getSobId());
                         refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
@@ -1093,7 +1099,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         if (StringUtils.isNotBlank(fxStoreCode)) {
                             refundInf.setAttribute3(fxStoreCode);
                         }
-                        returnOrderRefundInfList.add(refundInf);
+                        this.supportService.saveOrderRefundInf(refundInf);
                     }
                 }
             }

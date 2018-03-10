@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.pay.wechat.sign.WechatPrePay;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
@@ -105,7 +106,7 @@ public class OnlinePayRefundService {
                         returnOrderBillingDetail.setCreateTime(new Date());
                         returnOrderBillingDetail.setRoid(null);
                         returnOrderBillingDetail.setReturnNo(outRefundNo);
-                        returnOrderBillingDetail.setRefundNumber(refundNo);
+                        returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
                         returnOrderBillingDetail.setReplyCode(map.get("number"));
                         returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
@@ -113,7 +114,7 @@ public class OnlinePayRefundService {
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                         //发退款到EBS
-                        sinkSender.sendOrderRefund(refundNo);
+                        sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                         map.put("code", "SUCCESS");
                         map.put("number", tradeNo);
                         map.put("money", refundFee);
@@ -196,8 +197,8 @@ public class OnlinePayRefundService {
                 Date date = new Date();
                 returnOrderBillingDetail.setCreateTime(date);
                 returnOrderBillingDetail.setRoid(null);
-                returnOrderBillingDetail.setReturnNo(response.getOutTradeNo());
-                returnOrderBillingDetail.setRefundNumber(refundNo);
+                returnOrderBillingDetail.setReturnNo(refundNo);
+                returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                 returnOrderBillingDetail.setIntoAmountTime(date);
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());
                 returnOrderBillingDetail.setReturnMoney(Double.valueOf(response.getRefundFee()));
@@ -205,7 +206,7 @@ public class OnlinePayRefundService {
                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                 //发退款到EBS
-                sinkSender.sendOrderRefund(refundNo);
+                sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                 map.put("code", "SUCCESS");
 
                 return map;
