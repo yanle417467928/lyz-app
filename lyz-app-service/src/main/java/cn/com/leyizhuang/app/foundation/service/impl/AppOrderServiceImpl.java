@@ -566,6 +566,12 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
+        if (OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount()) > 0
+                && OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight()) > 0) {
+            if (OrderUtils.replaceNullWithZero(orderBillingDetails.getAmountPayable()) < OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())) {
+                throw new RuntimeException("当单已使用折扣（现金券、乐币）超过限度！");
+            }
+        }
         if (amountPayable < -AppConstant.PAY_UP_LIMIT) {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }

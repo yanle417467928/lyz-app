@@ -362,7 +362,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException | DutchException | OrderCreditMoneyException e) {
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -1437,11 +1437,11 @@ public class OrderController {
     }
 
     /**
-     * @title   处理货到付款的订单业务
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 处理货到付款的订单业务
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/9
      */
