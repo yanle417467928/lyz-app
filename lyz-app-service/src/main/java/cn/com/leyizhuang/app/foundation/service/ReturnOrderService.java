@@ -12,7 +12,6 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
-import org.slf4j.Logger;
 
 import java.util.Date;
 import java.util.List;
@@ -107,7 +106,7 @@ public interface ReturnOrderService {
 
     /**
      * 获取退货单商品详情
-     *
+     *                 注意!retailPrice字段取的returnPrice值
      * @param returnNumber 退货单号
      * @return 退货商品详细信息
      */

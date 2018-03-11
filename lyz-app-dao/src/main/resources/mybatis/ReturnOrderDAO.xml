@@ -310,7 +310,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
         ogi.return_qty qty,
-            ogi.retail_price,
+        ogi.return_price retailPrice,
         ogi.goods_line_type goodsType,
             gg.sku_name,
         gg.gid goodsId,

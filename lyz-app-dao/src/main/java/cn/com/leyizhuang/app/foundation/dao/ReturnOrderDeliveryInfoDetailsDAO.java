@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,4 +39,14 @@ public interface ReturnOrderDeliveryInfoDetailsDAO {
      * @return
      */
     List<ReturnOrderDeliveryDetail> queryListByReturnOrderNumber(String returnNumber);
+
+    /**
+     * 根据退单号和对应状态获取物流信息
+     *
+     * @param returnNo
+     * @param status
+     * @return
+     */
+    ReturnOrderDeliveryDetail getReturnOrderDeliveryDetailByReturnNoAndStatus(@Param("returnNo") String returnNo,
+                                                                              @Param("status") ReturnLogisticStatus status);
 }

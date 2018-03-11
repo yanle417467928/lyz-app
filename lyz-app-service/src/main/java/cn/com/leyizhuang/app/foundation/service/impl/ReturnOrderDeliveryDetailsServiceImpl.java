@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
@@ -39,6 +40,14 @@ public class ReturnOrderDeliveryDetailsServiceImpl implements ReturnOrderDeliver
     public List<ReturnOrderDeliveryDetail> queryListByReturnOrderNumber(String returnNumber) {
         if (StringUtils.isNotBlank(returnNumber)) {
             return returnDeliveryInfoDetailsDAO.queryListByReturnOrderNumber(returnNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public ReturnOrderDeliveryDetail getReturnOrderDeliveryDetailByReturnNoAndStatus(String returnNo, ReturnLogisticStatus status) {
+        if (StringUtils.isNotBlank(returnNo)) {
+            return returnDeliveryInfoDetailsDAO.getReturnOrderDeliveryDetailByReturnNoAndStatus(returnNo, status);
         }
         return null;
     }

@@ -15,7 +15,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -340,18 +339,26 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     if (result == 0) {
                         wmsToAppOrderService.updateWtaReturnOrderDeliveryClerk(deliveryClerk);
                     }
-                    returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
-
-                    ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
-                    returnOrderDeliveryDetail.setReturnNo(deliveryClerk.getReturnNo());
-                    returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.PICKING_GOODS);
-                    returnOrderDeliveryDetail.setDescription("配送员正在取货途中");
-                    returnOrderDeliveryDetail.setCreateTime(Calendar.getInstance().getTime());
-                    returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
-                    returnOrderDeliveryDetail.setWarehouseNo(deliveryClerk.getWarehouseNo());
+                    ReturnOrderDeliveryDetail returnOrderDeliveryDetail;
+                    returnOrderDeliveryDetail = returnOrderDeliveryDetailsService.getReturnOrderDeliveryDetailByReturnNoAndStatus(deliveryClerk.getReturnNo(), ReturnLogisticStatus.PICKING_GOODS);
+                    if (AssertUtil.isNotEmpty(returnOrderDeliveryDetail)) {
+                        returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
+                        returnOrderDeliveryDetail.setWarehouseNo(deliveryClerk.getWarehouseNo());
+                    } else {
+                        returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+                        returnOrderDeliveryDetail.setReturnNo(deliveryClerk.getReturnNo());
+                        returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.PICKING_GOODS);
+                        returnOrderDeliveryDetail.setDescription("配送员正在取货途中");
+                        returnOrderDeliveryDetail.setCreateTime(Calendar.getInstance().getTime());
+                        returnOrderDeliveryDetail.setPickersNumber(deliveryClerk.getDriver());
+                        returnOrderDeliveryDetail.setWarehouseNo(deliveryClerk.getWarehouseNo());
+                    }
+                    //已改变下面插入语句的SQL,如果存在则更新,不存在就新增
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
                     //修改配送物流信息的配送员信息
                     returnOrderService.updateReturnLogisticInfo(deliveryClerk.getDriver(), deliveryClerk.getReturnNo());
+                    //修改退单头信息
+                    returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
                 }
                 logger.info("GetWMSInfo OUT,修改配送员信息wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
