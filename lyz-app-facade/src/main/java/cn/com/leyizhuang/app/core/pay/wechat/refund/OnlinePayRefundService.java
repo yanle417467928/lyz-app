@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by caiyu on 2018/1/30.
@@ -59,12 +57,25 @@ public class OnlinePayRefundService {
      * @return
      */
     public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
-        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
-        String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
+        Map<String, String> map = new HashMap<>();
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        if (AssertUtil.isEmpty(paymentDataDOList)) {
+            map.put("code", "FAILURE");
+            map.put("msg", "未查询到支付信息");
+            return map;
+        }
+        PaymentDataDO dataDO = paymentDataDOList.get(0);
+        if (money > dataDO.getTotalFee()) {
+            map.put("code", "FAILURE");
+            map.put("msg", "退款金额不能超过订单金额");
+            return map;
+        }
+
+        String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(dataDO.getTotalFee());
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "订单退款";
 
-        Map<String, String> map = new HashMap<>();
+
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, refundNo, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, subject);
         this.paymentDataService.save(paymentDataDO);
@@ -79,7 +90,7 @@ public class OnlinePayRefundService {
                     if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
 //                        response.getWriter().write(WechatUtil.setXML("SUCCESS", null));
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("outTradeNo").toString();
+                        String outTradeNo = resultMap.get("out_trade_no").toString();
                         logger.debug("******微信返回参数订单号***** OUT, 出参 outTradeNo:{}", outTradeNo);
                         //退单号
                         String outRefundNo = resultMap.get("out_refund_no").toString();
@@ -103,13 +114,13 @@ public class OnlinePayRefundService {
 
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        returnOrderBillingDetail.setCreateTime(new Date());
+                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                         returnOrderBillingDetail.setRoid(null);
                         returnOrderBillingDetail.setReturnNo(outRefundNo);
                         returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
-                        returnOrderBillingDetail.setIntoAmountTime(new Date());
-                        returnOrderBillingDetail.setReplyCode(map.get("number"));
-                        returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
+                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                        returnOrderBillingDetail.setReplyCode(tradeNo);
+                        returnOrderBillingDetail.setReturnMoney(money);
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
@@ -117,7 +128,7 @@ public class OnlinePayRefundService {
                         sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                         map.put("code", "SUCCESS");
                         map.put("number", tradeNo);
-                        map.put("money", refundFee);
+                        map.put("money", String.valueOf(money));
                         return map;
                     }
                 }
@@ -126,8 +137,8 @@ public class OnlinePayRefundService {
             paymentDataDO.setRemarks(resultMap.get("return_msg").toString());
             paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
             this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
-            logger.warn("{}", resultMap.get("err_code").toString());
-            logger.warn("{}", resultMap.get("err_code_des").toString());
+            logger.warn("{}", resultMap.get("return_code").toString());
+            logger.warn("{}", resultMap.get("return_msg").toString());
             map.put("code", "FAILURE");
             return map;
         } catch (Exception e) {
@@ -149,9 +160,14 @@ public class OnlinePayRefundService {
      */
     public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount) {
         //取得支付宝交易流水号
-        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
-        PaymentDataDO dataDO = paymentDataDOList.get(0);
         Map<String, String> map = new HashMap<>();
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        if (AssertUtil.isEmpty(paymentDataDOList)) {
+            map.put("code", "FAILURE");
+            map.put("msg", "未查询到支付信息");
+            return map;
+        }
+        PaymentDataDO dataDO = paymentDataDOList.get(0);
         if (refundAmount > dataDO.getTotalFee()) {
             map.put("code", "FAILURE");
             map.put("msg", "退款金额不能超过订单金额");
