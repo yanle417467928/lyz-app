@@ -287,6 +287,65 @@ public class StoreController {
         }
     }
 
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取门店返利记录
+     * @descripe
+     */
+
+    @PostMapping(value = "/rebate/log", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreRebateLog(Long userId, Integer identityType,Integer page, Integer size) {
+
+        logger.info("getStoreRebateLog CALLED, 获取门店返利记录，入参 userId {},identityType{},page:{}, size:{}", userId, identityType,page,size);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreRebateLog OUT, 获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if ( null==identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！",
+                    null);
+            logger.info("getStoreRebateLog OUT,获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getStoreRebateLog OUT,获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getStoreRebateLog OUT,获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+
+            if(identityType == 0 && "SUPERVISOR".equals(appEmployeeService.isSupervisor(userId))) {
+                List<StorePreDepositChangeType> reabateTypeList = StorePreDepositChangeType.getRebateType();
+                PageInfo<PreDepositLogResponse> preDepositLogResponseList = this.storePreDepositLogService.findPreDepositChangeLog(userId, reabateTypeList,page, size);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new GridDataVO<PreDepositLogResponse>().transform(preDepositLogResponseList));
+                logger.info("getStoreRebateLog OUT, 获取门店返利记录成功，出参 resultDTO:{}", resultDTO);
+            }else{
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有权限",
+                        null);
+                logger.info("getStoreRebateLog OUT,获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            }
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取门店返利记录失败", null);
+            logger.warn("getStoreRebateLog EXCEPTION, 获取门店返利记录失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 
     /**
      * 获取门店预存款余额(无装饰公司)

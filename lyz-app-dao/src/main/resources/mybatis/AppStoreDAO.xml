@@ -487,6 +487,9 @@
         <if test="identityType != null and identityType == @cn.com.leyizhuang.app.core.constant.AppIdentityType@SELLER.getValue()">
             SELECT e.store_id FROM emp_employee e where e.emp_id = #{userId}
         </if>
+        <if test="identityType != null and identityType == @cn.com.leyizhuang.app.core.constant.AppIdentityType@DECORATE_MANAGER.getValue()">
+            SELECT e.store_id FROM emp_employee e where e.emp_id = #{userId}
+        </if>
         )
     </select>
 
