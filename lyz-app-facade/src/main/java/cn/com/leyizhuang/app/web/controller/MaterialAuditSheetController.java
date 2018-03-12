@@ -253,6 +253,23 @@ public class MaterialAuditSheetController {
                 materialAuditDetailsResponse.setTotalGoodsQty(totalGoodsQty);
                 //把物料审核单中所有的商品list放入返回值对象中
                 materialAuditDetailsResponse.setGoodsList(materialAuditGoodsInfoList);
+                if (null != materialAuditDetailsResponse){
+                    if ("undefined".equals(materialAuditDetailsResponse.getDeliveryCity())) {
+                        materialAuditDetailsResponse.setDeliveryCity("");
+                    }
+                    if ("undefined".equals(materialAuditDetailsResponse.getDeliveryCounty())) {
+                        materialAuditDetailsResponse.setDeliveryCounty("");
+                    }
+                    if ("undefined".equals(materialAuditDetailsResponse.getDeliveryStreet())) {
+                        materialAuditDetailsResponse.setDeliveryStreet("");
+                    }
+                    if ("undefined".equals(materialAuditDetailsResponse.getResidenceName())) {
+                        materialAuditDetailsResponse.setResidenceName("");
+                    }
+                    if ("undefined".equals(materialAuditDetailsResponse.getDetailedAddress())) {
+                        materialAuditDetailsResponse.setDetailedAddress("");
+                    }
+                }
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialAuditDetailsResponse);
                 logger.info("materialAuditGoodsDetails OUT,查看物料审核单详情成功，出参 resultDTO:{}", resultDTO);
@@ -322,6 +339,24 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setTotalQty(totalQty);
                 materialAuditSheetResponse.setPictureList(pictureList);
+                if (null != materialAuditSheetResponse){
+                    if ("undefined".equals(materialAuditSheetResponse.getDeliveryCity())) {
+                        materialAuditSheetResponse.setDeliveryCity("");
+                    }
+                    if ("undefined".equals(materialAuditSheetResponse.getDeliveryCounty())) {
+                        materialAuditSheetResponse.setDeliveryCounty("");
+                    }
+                    if ("undefined".equals(materialAuditSheetResponse.getDeliveryStreet())) {
+                        materialAuditSheetResponse.setDeliveryStreet("");
+                    }
+                    if ("undefined".equals(materialAuditSheetResponse.getResidenceName())) {
+                        materialAuditSheetResponse.setResidenceName("");
+                    }
+                    if ("undefined".equals(materialAuditSheetResponse.getDetailedAddress())) {
+                        materialAuditSheetResponse.setDetailedAddress("");
+                    }
+                }
+
                 newMaterialAuditSheetResponseList.add(materialAuditSheetResponse);
             }
             materialAuditSheetResponsePageInfo.setList(newMaterialAuditSheetResponseList);
@@ -388,11 +423,11 @@ public class MaterialAuditSheetController {
                 }
                 //向返回参数对象中设置
                 materialAuditSheetResponse.setAuditNo(materialAuditSheet1.getAuditNo());
-                materialAuditSheetResponse.setDeliveryCity(materialAuditSheet1.getDeliveryCity());
-                materialAuditSheetResponse.setDeliveryCounty(materialAuditSheet1.getDeliveryCounty());
-                materialAuditSheetResponse.setDeliveryStreet(materialAuditSheet1.getDeliveryStreet());
-                materialAuditSheetResponse.setResidenceName(materialAuditSheet1.getResidenceName());
-                materialAuditSheetResponse.setDetailedAddress(materialAuditSheet1.getDetailedAddress());
+                materialAuditSheetResponse.setDeliveryCity("undefined".equals(materialAuditSheet1.getDeliveryCity()) ? "" : materialAuditSheet1.getDeliveryCity());
+                materialAuditSheetResponse.setDeliveryCounty("undefined".equals(materialAuditSheet1.getDeliveryCounty()) ? "" : materialAuditSheet1.getDeliveryCounty());
+                materialAuditSheetResponse.setDeliveryStreet("undefined".equals(materialAuditSheet1.getDeliveryStreet()) ? "" : materialAuditSheet1.getDeliveryStreet());
+                materialAuditSheetResponse.setResidenceName("undefined".equals(materialAuditSheet1.getResidenceName()) ? "" : materialAuditSheet1.getResidenceName());
+                materialAuditSheetResponse.setDetailedAddress("undefined".equals(materialAuditSheet1.getDeliveryCity()) ? "" : materialAuditSheet1.getDetailedAddress());
                 materialAuditSheetResponse.setTotalQty(materialAuditGoodsInfoService.querySumQtyByAuditHeaderID(materialAuditSheet1.getAuditHeaderID()));
                 materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setIsAudited(materialAuditSheet1.getIsAudited());

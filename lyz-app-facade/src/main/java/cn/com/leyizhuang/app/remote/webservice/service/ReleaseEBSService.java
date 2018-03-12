@@ -12,12 +12,12 @@ import javax.jws.WebService;
 public interface ReleaseEBSService {
 
     /**
-     * 发布wms接口
+     * 发布ebs接口
      *
      * @param table
      * @param type
      * @param xml
-     * @return wms返回数据
+     * @return ebs返回数据
      */
     @WebMethod
     String GetEBSInfo(@WebParam(name = "STRTABLE") String table,

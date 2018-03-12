@@ -1152,18 +1152,20 @@ public class ReturnOrderController {
         try {
             //获取原订单收货/自提门店地址
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
-            //如果是门店自提，取货地址就取顾客默认地址
+            //如果是门店自提，只返回自提门店信息
             if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
-                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
-                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
-                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
-                    if (null == defaultDeliveryAddress) {
-                        defaultDeliveryAddress = deliveryAddressService.getTopDeliveryAddressByUserIdAndIdentityType
-                                (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-                    }
-                    orderLogisticsInfo = transform(orderLogisticsInfo, defaultDeliveryAddress);
-                    //如果是送货上门，退货到门店的地址就是订单门店地址
-                } else if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType())) {
+//                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
+//                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
+//                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
+//                    if (null == defaultDeliveryAddress) {
+//                        defaultDeliveryAddress = deliveryAddressService.getTopDeliveryAddressByUserIdAndIdentityType
+//                                (userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+//                    }
+//                    orderLogisticsInfo = transform(orderLogisticsInfo, defaultDeliveryAddress);
+//                    //如果是送货上门，退货到门店的地址就是订单门店地址
+//                }
+//                else
+                if (AppDeliveryType.HOUSE_DELIVERY.equals(orderLogisticsInfo.getDeliveryType())) {
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo) {

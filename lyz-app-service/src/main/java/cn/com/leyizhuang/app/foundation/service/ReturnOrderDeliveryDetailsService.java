@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 
 import java.util.List;
@@ -35,4 +36,14 @@ public interface ReturnOrderDeliveryDetailsService {
      * @return
      */
     List<ReturnOrderDeliveryDetail> queryListByReturnOrderNumber(String returnNumber);
+
+    /**
+     * 根据退单号和对应状态获取物流信息
+     *
+     * @param returnNo
+     * @param returnLogisticStatus
+     * @return
+     */
+    ReturnOrderDeliveryDetail getReturnOrderDeliveryDetailByReturnNoAndStatus(String returnNo, ReturnLogisticStatus returnLogisticStatus);
+
 }
