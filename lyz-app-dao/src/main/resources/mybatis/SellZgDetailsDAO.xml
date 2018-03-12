@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO">
+        <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+            INSERT INTO  sell_zg_details
+            (company_id, "year", "month", create_time, city_id, store_id, seller_id
+            , customer_id, number, goods_id, sku, quantity, amount, goods_line_id)
+            VALUES
+            (#{companyId},#{year},#{month},#{createTime},#{cityId},#{storeId},#{sellerId},#{customerId},#{number}
+            ,#{goodsId},#{sku},#{quantity},#{amount},#{goodsLineId})
+        </insert>
+
+        <select id="getDetailsByCusIdAndSku">
+            SELECT  * from sell_zg_details
+            where customer_id = #{CusId} and sku = #{sku}
+        </select>
+
+</mapper>
