@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -166,5 +167,10 @@ public interface GoodsDAO {
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId,@Param("queryGoodsInfo") String queryGoodsInfo);
 
     List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId, @Param("identityType") AppIdentityType identityType);
+
+    List<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(
+            @Param("keywords") String keywords,@Param("companyCode") String companyCode,@Param("brandCode") Long brandCode,
+            @Param("categoryCode") String categoryCode,@Param("storeId") Long storeId
+    );
 
 }

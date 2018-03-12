@@ -1148,5 +1148,29 @@
         </if>
     </select>
 
+    <select id="getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+        g.*
+        FROM
+        gds_goods g
+        RIGHT JOIN
+        gds_goods_price gp
+        on g.sku = gp.sku
+        WHERE
+        gp.store_id = #{storeId}
+        <if test="null != brandCode ">
+            AND g.brd_id = #{brandCode}
+        </if>
+        <if test="null != categoryCode ">
+            AND g.physical_classify = #{categoryCode}
+        </if>
+        <if test="null != companyCode ">
+            AND g.company_flag = #{companyCode}
+        </if>
+        <if test="keywords != null">
+            AND  (g.sku_name LIKE concat('%', #{keywords}, '%')
+            OR g.sku LIKE concat('%', #{keywords}, '%'))
+        </if>
+    </select>
 
 </mapper>
