@@ -633,6 +633,8 @@ public class ReturnOrderController {
                         customerPrePay = paymentDetails.getAmount();
                     } else if (OrderBillingPaymentType.ST_PREPAY.equals(paymentDetails.getPayType())) {
                         storePrePay = paymentDetails.getAmount();
+                    } else if (OrderBillingPaymentType.STORE_CREDIT_MONEY.equals(paymentDetails.getPayType())) {
+                        storeCredit = paymentDetails.getAmount();
                     }
                 }
 
@@ -665,10 +667,10 @@ public class ReturnOrderController {
                                 //导购小于门店预存款
                                 if (tempPrice <= storePrePay) {
                                     returnOrderBilling.setStPreDeposit(tempPrice);
-//                        } else {
-//                            //如果大于就判断装饰公司门店信用金
-//                            if (tempPrice <= billingDetails.getStoreCreditMoney()) {
-//                                returnOrderBilling.setStCreditMoney(tempPrice);
+                                } else {
+                                    //如果大于就判断装饰公司门店信用金
+                                    if (tempPrice <= storeCredit) {
+                                        returnOrderBilling.setStCreditMoney(tempPrice);
 //                            } else {
 //                                returnOrderBilling.setStCreditMoney(billingDetails.getStoreCreditMoney());
 //                                tempPrice = CountUtil.sub(tempPrice, billingDetails.getStoreCreditMoney());
@@ -676,7 +678,7 @@ public class ReturnOrderController {
 //                                if (tempPrice <= billingDetails.getStoreSubvention()) {
 //                                    returnOrderBilling.setStSubvention(tempPrice);
 //                                }
-//                            }
+                                    }
                                 }
                             }
                         }
