@@ -65,4 +65,11 @@ public enum StorePreDepositChangeType {
         return consumptionList;
     }
 
+    public static List<StorePreDepositChangeType> getRebateType() {
+        List<StorePreDepositChangeType> reabateTypeList = new ArrayList<>();
+        reabateTypeList.add(JX_PRICE_DIFFERENCE_RETURN);
+        reabateTypeList.add(JX_PRICE_DIFFERENCE_DEDUCTION);
+        return reabateTypeList;
+    }
+
 }

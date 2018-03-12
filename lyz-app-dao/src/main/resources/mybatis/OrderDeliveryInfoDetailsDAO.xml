@@ -188,7 +188,7 @@
 
     <select id="getWaitPickUpListByOperatorNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.WaitPickUpResponse">
-        SELECT
+        SELECT DISTINCT
             orli.return_no returnNumber,
             orli.rejecter receiver,
             orli.rejecter_phone receiverPhone,
