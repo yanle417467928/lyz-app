@@ -5,18 +5,18 @@
     <insert id="saveWtaShippingOrderHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
         INSERT INTO inter_wta_order_shipping_header (create_time, end_dt, wh_no, owner_no, task_no, c_task_type, car_no,
-        op_status, driver, order_no, send_flag, error_message, send_time)
-        SELECT
-        #{createTime},
-        #{endDt},
-        #{whNo},
-        #{ownerNo},
-        #{taskNo},
-        #{cTaskType},
-        #{carNo},
-        #{opStatus},
+                                                     op_status, driver, order_no, send_flag, error_message, send_time)
+            SELECT
+                #{createTime},
+                #{endDt},
+                #{whNo},
+                #{ownerNo},
+                #{taskNo},
+                #{cTaskType},
+                #{carNo},
+                #{opStatus},
                 #{driver},
-        #{orderNo},
+                #{orderNo},
                 #{sendFlag},
                 #{errorMessage},
                 #{sendTime}
@@ -24,14 +24,14 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_order_shipping_header
-        WHERE task_no = #{taskNo} AND order_no = #{orderNo});
+                    WHERE task_no = #{taskNo} AND order_no = #{orderNo});
     </insert>
 
     <insert id="saveWtaShippingOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
         INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
                                                     task_no, g_code, d_ack_qty, op_status, source_no)
-        SELECT (#{orderNo},
+        VALUES (#{orderNo},
         #{taskType},
         #{taskNo},
         #{gCode},
