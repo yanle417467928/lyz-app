@@ -18,6 +18,6 @@ public interface EmployeeCreditMoneyLogService {
      * @param userId
      * @return
      */
-    PageInfo<EmployeeCreditMoneyLogResponse> findAllEmployeeCreditMoneyLogByUserId(Long userId, Integer page, Integer size);
+   PageInfo<EmployeeCreditMoneyLogResponse> findAllEmployeeCreditMoneyLogByUserId(Long userId, Integer page, Integer size);
 
 }

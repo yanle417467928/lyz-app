@@ -105,6 +105,9 @@ public interface AppStoreDAO {
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(@Param(value = "storeId") Long storeId,
                                                          @Param(value = "goodsId") Long goodsId);
 
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsSku(@Param(value = "storeCode") String storeCode,
+                                                         @Param(value = "goodsSku") String goodsSku);
+
 
     StoreInventory findStoreInventoryByStoreCodeAndGoodsId(@Param(value = "storeCode") String storeCode,
                                                            @Param(value = "goodsId") Long goodsId);

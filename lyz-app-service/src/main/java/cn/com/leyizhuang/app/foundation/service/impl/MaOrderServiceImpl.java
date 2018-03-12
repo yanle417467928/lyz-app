@@ -319,7 +319,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maGoodsDAO.saveGoodsShippingInfo(goodsShippingInfo);
             //更新门店库存
             //查看门店下该商品的库存
-            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid());
+            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreIdAndGoodsId(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid());
             if (null == storeInventory || null == storeInventory.getAvailableIty()) {
                 throw new RuntimeException("该门店下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
             }

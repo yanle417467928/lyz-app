@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.DiySiteInventoryDAO">
+
+    <select id="findByTransId" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf">
+        SELECT
+            *
+        FROM inter_eta_store_goods_trans_inf WHERE trans_id = #{id}
+    </select>
+
+    <insert id="saveReturnAndRequireGoodsInf" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf">
+        INSERT INTO inter_eta_store_goods_trans_inf
+        (id,sob_id,trans_id,trans_type,trans_number,customer_id,customer_number,diy_site_code,ship_date,item_code,quantity,attribute1
+        ,attribute2,attribute3,attribute4,attribute5,ebs_to_app_flag,app_error_message,creation_date,last_updated_by,last_update_date)
+        VALUES (#{id},#{sobId},#{transId},#{transType},#{trans_number},#{customer_id},#{customer_number},#{diy_site_code},#{ship_date},#{item_code},#{quantity},#{attribute1}
+        ,#{attribute2},#{attribute3},#{attribute4},#{attribute5},#{ebs_to_app_flag},#{app_error_message},#{creation_date},#{last_updated_by},#{last_update_date})
+    </insert>
+</mapper>
