@@ -285,10 +285,6 @@ public class OrderArriveController {
         }
     }
 
-    public static void main(String[] args) {
-        OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
-        System.out.println(orderAgencyFundDO);
-    }
 
     /**
      * @param
