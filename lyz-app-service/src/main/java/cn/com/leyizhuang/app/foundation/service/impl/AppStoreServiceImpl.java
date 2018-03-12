@@ -361,8 +361,6 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     public Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version) {
         if (null != subvention && null != userId) {
-            storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
-        if (null != subvention && null != userId){
             return storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
         }
         return null;
@@ -370,7 +368,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public StorePreDeposit findStorePreDepositByStoreId(Long storeId) {
-        if (null != storeId){
+        if (null != storeId) {
             return storeDAO.findStorePreDepositByStoreId(storeId);
         }
         return null;
@@ -378,10 +376,10 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version) {
-        if(null != storeId && null != storeDeposit && null != version){
+        if (null != storeId && null != storeDeposit && null != version) {
             return storeDAO.updateStoreDepositByStoreIdAndStoreDeposit(storeId, storeDeposit, version);
         }
-        return null;
+        return 0;
     }
 
     @Override
@@ -390,14 +388,6 @@ public class AppStoreServiceImpl implements AppStoreService {
             return storeDAO.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
         }
         return null;
-    }
-
-    @Override
-    public int lockStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double stPreDeposit, Timestamp lastUpdateTime) {
-        if (null != storeId && null != stPreDeposit && null != lastUpdateTime) {
-           return storeDAO.updateStoreDepositByStoreIdAndStoreDeposit(storeId,stPreDeposit,lastUpdateTime);
-        }
-        return 0;
     }
 
 

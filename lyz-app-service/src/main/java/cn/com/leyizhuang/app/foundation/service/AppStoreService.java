@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
-import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -89,20 +88,20 @@ public interface AppStoreService {
 
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 
-    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long goodsId);
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long goodsId);
 
-    void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty);
+    void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long gid, Integer qty);
 
     Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(String storeCode, Long gid, Integer qty, Date version);
 
-    Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit,Date version);
+    Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit, Date version);
 
-    Integer updateStoreSubventionByUserIdAndVersion(Double subvention,Long userId,Timestamp version);
+    Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version);
 
     StorePreDeposit findStorePreDepositByStoreId(Long storeId);
 
     StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType);
+
     Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version);
 
-    int lockStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double stPreDeposit, Timestamp lastUpdateTime);
 }

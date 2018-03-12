@@ -455,14 +455,12 @@ public class CommonServiceImpl implements CommonService {
                 (identityType == AppIdentityType.DECORATE_MANAGER.getValue())) {
             if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                    StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(userId);
+                    StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
                     if (null != preDeposit) {
                         if (preDeposit.getBalance() < billingDetails.getStPreDeposit()) {
                             throw new LockStorePreDepositException("导购所属门店预存款余额不足!");
                         }
-                       /* int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
-                                userId, billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());*/
-                        int affectLine = storeService.lockStoreDepositByStoreIdAndStoreDeposit(
+                        int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
                                 preDeposit.getStoreId(), billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             StPreDepositLogDO log = new StPreDepositLogDO();
@@ -604,7 +602,7 @@ public class CommonServiceImpl implements CommonService {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
                 if (null != preDeposit) {
-                    int affectLine = storeService.lockStoreDepositByStoreIdAndStoreDeposit(
+                    int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
                             preDeposit.getStoreId(), billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();

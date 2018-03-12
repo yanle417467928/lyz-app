@@ -131,9 +131,9 @@ public interface AppStoreDAO {
     StorePreDeposit findStorePreDepositByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                                                @Param(value = "identityType") Integer identityType);
 
-    int updateStoreDepositByStoreIdAndStoreDeposit(@Param(value = "storeId") Long storeId,
+    /*int updateStoreDepositByStoreIdAndStoreDeposit(@Param(value = "storeId") Long storeId,
                                                     @Param(value = "stPreDeposit") Double stPreDeposit,
-                                                    @Param(value = "lastUpdateTime") Timestamp lastUpdateTime);
+                                                    @Param(value = "lastUpdateTime") Timestamp lastUpdateTime);*/
     StorePreDeposit findStorePreDepositByStoreId(@Param("storeId")Long storeId);
 
     Integer updateStoreDepositByStoreIdAndStoreDeposit(@Param("storeId") Long storeId, @Param("deposit") Double storeDeposit,

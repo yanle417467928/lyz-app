@@ -490,12 +490,6 @@
         )
     </select>
 
-    <update id="updateStoreDepositByStoreIdAndStoreDeposit">
-        UPDATE st_pre_deposit
-        SET balance = balance - #{stPreDeposit}
-        WHERE store_id = #{storeId}
-              AND last_update_time = #{lastUpdateTime}
-    </update>
 
     <update id="updateStoreDepositByStoreIdAndStoreDeposit">
         UPDATE st_pre_deposit
