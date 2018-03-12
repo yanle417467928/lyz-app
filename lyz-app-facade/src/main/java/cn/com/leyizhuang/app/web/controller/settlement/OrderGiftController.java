@@ -96,6 +96,27 @@ public class OrderGiftController {
                 }
             }
 
+            /******计算促销******/
+            List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
+            List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
+            if (identityType == 6) {
+                //取城市ID
+                AppCustomer customer = appCustomerService.findById(userId);
+                cityId = customer.getCityId();
+                //获取商品信息
+                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
+            } else if (identityType == 0) {
+                //取城市ID
+                AppEmployee employee = appEmployeeService.findById(userId);
+                cityId = employee.getCityId();
+                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
+            } else if (identityType == 2) {
+                //取城市ID
+                AppEmployee employee = appEmployeeService.findById(userId);
+                cityId = employee.getCityId();
+            }
+
+
             /********************************判断库存的特殊处理************************************/
 
             Map<Long, Integer> goodsQuantity = new HashMap<>();
@@ -152,26 +173,6 @@ public class OrderGiftController {
             }
 
             /**************************************判断库存END*******************************************/
-
-            /******计算促销******/
-            List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
-            List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
-            if (identityType == 6) {
-                //取城市ID
-                AppCustomer customer = appCustomerService.findById(userId);
-                cityId = customer.getCityId();
-                //获取商品信息
-                goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIdList);
-            } else if (identityType == 0) {
-                //取城市ID
-                AppEmployee employee = appEmployeeService.findById(userId);
-                cityId = employee.getCityId();
-                goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIdList);
-            } else if (identityType == 2) {
-                //取城市ID
-                AppEmployee employee = appEmployeeService.findById(userId);
-                cityId = employee.getCityId();
-            }
 
             if (goodsInfo != null && goodsInfo.size() > 0) {
                 //为商品设置数量
