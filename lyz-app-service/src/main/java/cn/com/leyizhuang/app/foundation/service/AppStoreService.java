@@ -88,16 +88,20 @@ public interface AppStoreService {
 
     void addStoreSubventionChangeLog(StoreSubventionChangeLog log);
 
-    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long goodsId);
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long goodsId);
 
-    void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty);
+    void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long gid, Integer qty);
 
     Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(String storeCode, Long gid, Integer qty, Date version);
 
-    Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit,Date version);
+    Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit, Date version);
 
-    Integer updateStoreSubventionByUserIdAndVersion(Double subvention,Long userId,Timestamp version);
+    Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version);
 
+    StorePreDeposit findStorePreDepositByStoreId(Long storeId);
 
+    StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType);
+
+    Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version);
 
 }

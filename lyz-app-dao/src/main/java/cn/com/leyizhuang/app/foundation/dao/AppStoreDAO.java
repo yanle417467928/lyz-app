@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import org.apache.ibatis.annotations.Param;
@@ -109,7 +107,7 @@ public interface AppStoreDAO {
 
 
     StoreInventory findStoreInventoryByStoreCodeAndGoodsId(@Param(value = "storeCode") String storeCode,
-                                                         @Param(value = "goodsId") Long goodsId);
+                                                           @Param(value = "goodsId") Long goodsId);
 
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 
@@ -128,6 +126,16 @@ public interface AppStoreDAO {
     Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(@Param("storeCode") String storeCode, @Param("gid") Long gid,
                                                                 @Param("qty") Integer qty, @Param(value = "version") Date version);
 
-    Integer updateStoreSubventionByUserIdAndVersion(@Param("subvention")Double subvention,@Param("userId")Long userId,@Param("version")Timestamp version);
+    Integer updateStoreSubventionByUserIdAndVersion(@Param("subvention") Double subvention, @Param("userId") Long userId, @Param("version") Timestamp version);
 
+    StorePreDeposit findStorePreDepositByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                               @Param(value = "identityType") Integer identityType);
+
+    /*int updateStoreDepositByStoreIdAndStoreDeposit(@Param(value = "storeId") Long storeId,
+                                                    @Param(value = "stPreDeposit") Double stPreDeposit,
+                                                    @Param(value = "lastUpdateTime") Timestamp lastUpdateTime);*/
+    StorePreDeposit findStorePreDepositByStoreId(@Param("storeId")Long storeId);
+
+    Integer updateStoreDepositByStoreIdAndStoreDeposit(@Param("storeId") Long storeId, @Param("deposit") Double storeDeposit,
+                                                  @Param(value = "version") Timestamp version);
 }

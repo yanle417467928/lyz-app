@@ -10,8 +10,10 @@ import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -453,5 +455,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType);
         return new PageInfo<>(list);
     }
+
+    @Override
+    public PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
+                                                                                                 String categoryCode, Long storeId) {
+        PageHelper.startPage(page, size);
+        List<GoodsDO> list = goodsDAO.getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(keywords,companyCode,brandCode,categoryCode,storeId);
+        return new PageInfo<>(list);
+    }
+
 
 }

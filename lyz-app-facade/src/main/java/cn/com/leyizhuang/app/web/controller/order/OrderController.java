@@ -636,7 +636,9 @@ public class OrderController {
             List<AppDeliveryType> deliveryTypeList = new ArrayList<>();
             goodsIds.addAll(giftIds);
             goodsIds.addAll(couponIds);
+            //判断商品是否有专供商品
             List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            //有专供商品只能选择送货上门
             if (null != goodsZGList && goodsZGList.size() > 0) {
                 deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
             } else {

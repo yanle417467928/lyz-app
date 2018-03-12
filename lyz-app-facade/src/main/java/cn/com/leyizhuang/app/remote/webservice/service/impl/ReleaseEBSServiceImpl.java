@@ -117,7 +117,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
 
             NodeList nodeList = document.getElementsByTagName("TABLE");
             //直营要货
-            if ("tbw_send_task_m".equalsIgnoreCase(strTable)) {
+            if ("CUXAPP_INV_STORE_TRANS_OUT".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);

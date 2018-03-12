@@ -2,8 +2,9 @@ $(function () {
     //表单验证初始化
     formValidate();
 
+    var storeId = $('#storeCode').val();
     // 初始化商品弹出框
-    $commonForm.goodsGridModal("/rest/goods/page/grid", "goodsDataGrid", "selectedGoodsTable", "chooseGoodsButton");
+    $commonForm.goodsGridModal("/rest/goods/page/grid/param?storeId="+storeId, "goodsDataGrid", "selectedGoodsTable", "chooseGoodsButton");
     $commonForm.goodsBrand("/rest/goodsBrand/page/brandGrid", "brandCode");
     $commonForm.goodsCategory("/rest/goods/page/physicalClassifyGrid", "categoryCode");
 
@@ -115,21 +116,36 @@ function findStorelist() {
 }
 
 function screenGoods() {
+    var storeCode = $('#storeCode').val();
+
+    if (storeCode == -1 || storeCode == undefined){
+        $notify.danger('请选择门店！');
+    }
+
+    var queryGoodsInfo = $("#queryGoodsInfo").val();
     var brandCode = $('#brandCode').val();
     var categoryCode = $('#categoryCode').val();
     var companyCode = $('#companyCode').val();
     $("#goodsDataGrid").bootstrapTable('destroy');
-    initGoodsGrid('/rest/goods/page/screenGoodsGrid?brandCode=' + brandCode + '&categoryCode=' + categoryCode + '&companyCode=' + companyCode, "goodsDataGrid");
+    initGoodsGrid('/rest/goods/page/grid/param?keywords='+queryGoodsInfo+'&brandCode=' + brandCode
+                                                   + '&categoryCode=' + categoryCode
+                                                   + '&companyCode=' + companyCode+'&storeId='+storeCode, 'goodsDataGrid');
 
 }
 
 function findGoodsByNameOrCode() {
+    var storeCode = $('#storeCode').val();
+
+    if (storeCode == -1 || storeCode == undefined){
+        $notify.danger('请选择门店！');
+    }
+
     var queryGoodsInfo = $("#queryGoodsInfo").val();
     $("#goodsDataGrid").bootstrapTable('destroy');
     if (null == queryGoodsInfo || "" == queryGoodsInfo) {
-        initGoodsGrid('/rest/goods/page/grid');
+        initGoodsGrid('/rest/goods/page/grid/param?keywords='+queryGoodsInfo+'&storeId='+storeCode,'goodsDataGrid');
     } else {
-        initGoodsGrid('/rest/goods/page/goodsGrid/' + queryGoodsInfo,"goodsDataGrid");
+        initGoodsGrid('/rest/goods/page/grid/param?keywords='+ queryGoodsInfo+'&storeId='+storeCode,"goodsDataGrid");
     }
 }
 

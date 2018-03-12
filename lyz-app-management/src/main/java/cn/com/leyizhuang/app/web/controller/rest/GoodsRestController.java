@@ -82,6 +82,49 @@ public class GoodsRestController extends BaseRestController {
     }
 
     /**
+     * 根据门店 和各种参数查询分页数据
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/page/grid/param")
+    public GridDataVO<MaGoodsVO> restGoodsPageGird(Integer offset, Integer size, String keywords,Long brandCode,String categoryCode,
+                                                   String companyCode,Long storeId) {
+        if (keywords != null && keywords.equals("")){
+            keywords = null;
+        }
+
+        if (brandCode != null && brandCode.equals(-1L)){
+            brandCode = null;
+        }
+
+        if (categoryCode != null && categoryCode.equals("-1")){
+            categoryCode = null;
+        }
+
+        if (companyCode != null && companyCode.equals("-1")){
+            companyCode = null;
+        }
+
+        if (storeId == null){
+            return  null;
+        }
+
+
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageInfo<GoodsDO> goodsDOPage = this.goodsService.getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(page,size,keywords,companyCode,brandCode,categoryCode,storeId);
+        List<GoodsDO> goodsDOList = goodsDOPage.getList();
+        List<MaGoodsVO> goodsVOList = MaGoodsVO.transform(goodsDOList);
+        return new GridDataVO<MaGoodsVO>().transform(goodsVOList, goodsDOPage.getTotal());
+    }
+
+    /**
      * @param id
      * @return
      * @throws

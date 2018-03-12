@@ -127,4 +127,7 @@ public interface GoodsService {
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Long storeId,String queryGoodsInfo);
 
     PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, Integer page, Integer size);
+
+    PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
+                                                                                          String categoryCode, Long storeId);
 }
