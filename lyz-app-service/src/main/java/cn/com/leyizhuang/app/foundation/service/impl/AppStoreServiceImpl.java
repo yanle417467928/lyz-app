@@ -338,13 +338,13 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode,Long gid,Integer qty) {
+    public void updateStoreInventoryByStoreCodeAndGoodsId(String storeCode, Long gid, Integer qty) {
         storeDAO.updateStoreInventoryByStoreCodeAndGoodsId(storeCode, gid, qty);
     }
 
     @Override
     public Integer updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(String storeCode, Long gid, Integer qty, Date version) {
-        if (null != storeCode && null != gid && null !=qty){
+        if (null != storeCode && null != gid && null != qty) {
             return storeDAO.updateStoreInventoryByStoreCodeAndGoodsIdAndVersion(storeCode, gid, qty, version);
         }
         return null;
@@ -352,7 +352,7 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Integer updateStoreCreditByUserIdAndVersion(Long userId, Double storeCredit, Date version) {
-        if (null != userId && null != storeCredit){
+        if (null != userId && null != storeCredit) {
             return storeDAO.updateStoreCreditByUserIdAndVersion(userId, storeCredit, version);
         }
         return null;
@@ -360,10 +360,26 @@ public class AppStoreServiceImpl implements AppStoreService {
 
     @Override
     public Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version) {
-        if (null != subvention && null != userId){
+        if (null != subvention && null != userId) {
             storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
         }
         return null;
+    }
+
+    @Override
+    public StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType) {
+        if (null != userId && null != identityType) {
+            return storeDAO.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
+        }
+        return null;
+    }
+
+    @Override
+    public int lockStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double stPreDeposit, Timestamp lastUpdateTime) {
+        if (null != storeId && null != stPreDeposit && null != lastUpdateTime) {
+           return storeDAO.updateStoreDepositByStoreIdAndStoreDeposit(storeId,stPreDeposit,lastUpdateTime);
+        }
+        return 0;
     }
 
 

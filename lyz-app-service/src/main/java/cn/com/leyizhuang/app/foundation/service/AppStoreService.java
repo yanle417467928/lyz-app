@@ -99,5 +99,7 @@ public interface AppStoreService {
     Integer updateStoreSubventionByUserIdAndVersion(Double subvention,Long userId,Timestamp version);
 
 
+    StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType);
 
+    int lockStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double stPreDeposit, Timestamp lastUpdateTime);
 }

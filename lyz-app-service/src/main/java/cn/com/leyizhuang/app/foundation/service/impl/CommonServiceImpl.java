@@ -460,8 +460,10 @@ public class CommonServiceImpl implements CommonService {
                         if (preDeposit.getBalance() < billingDetails.getStPreDeposit()) {
                             throw new LockStorePreDepositException("导购所属门店预存款余额不足!");
                         }
-                        int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
-                                userId, billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
+                       /* int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
+                                userId, billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());*/
+                        int affectLine = storeService.lockStoreDepositByStoreIdAndStoreDeposit(
+                                preDeposit.getStoreId(), billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
                             StPreDepositLogDO log = new StPreDepositLogDO();
                             log.setStoreId(preDeposit.getStoreId());
@@ -600,10 +602,10 @@ public class CommonServiceImpl implements CommonService {
         //经销差价返还
         if (null != billingDetails.getJxPriceDifferenceAmount() && billingDetails.getJxPriceDifferenceAmount() > AppConstant.DOUBLE_ZERO) {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(userId);
+                StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
                 if (null != preDeposit) {
-                    int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
-                            userId, -billingDetails.getJxPriceDifferenceAmount(), preDeposit.getLastUpdateTime());
+                    int affectLine = storeService.lockStoreDepositByStoreIdAndStoreDeposit(
+                            preDeposit.getStoreId(), billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());
