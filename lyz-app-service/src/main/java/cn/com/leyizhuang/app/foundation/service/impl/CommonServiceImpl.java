@@ -111,6 +111,12 @@ public class CommonServiceImpl implements CommonService {
     @Autowired
     private GoodsPriceService goodsPriceService;
 
+    @Autowired
+    private ArrearsAuditService arrearsAuditServiceImpl;
+
+    @Autowired
+    private OrderAgencyFundService orderAgencyFundServiceImpl;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public User saveUserAndUserRoleByUserVO(UserVO userVO) {
@@ -1553,6 +1559,7 @@ public class CommonServiceImpl implements CommonService {
         return Boolean.FALSE;
     }
 
+    @Transactional
     @Override
     public void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException {
         if (StringUtils.isNotBlank(orderNumber)) {
@@ -1626,6 +1633,62 @@ public class CommonServiceImpl implements CommonService {
             if (customer.getCusId() != null) {
                 customerService.update(customer);
             }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails,
+                                   OrderBillingDetails orderBillingDetails, EmpCreditMoneyChangeLog empCreditMoneyChangeLog,
+                                   OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
+                                   OrderBaseInfo orderBaseInfo) {
+        if (null != paymentDetails){
+            this.orderService.savePaymentDetails(paymentDetails);
+        }
+        if (null != orderBillingDetails){
+            this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
+        }
+        if (null != empCreditMoneyChangeLog){
+            this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+        }
+        if (null != orderAgencyFundDO){
+            this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+        }
+        if (null != orderDeliveryInfoDetails){
+            this.deliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+        }
+        if (null != orderBaseInfo){
+            this.orderService.updateOrderStatusByOrderNo(orderBaseInfo);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void sellerAudit(OrderAgencyFundDO orderAgencyFundDO, OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
+                            EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
+                            OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO) {
+
+        if (null != orderAgencyFundDO){
+            this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+        }
+        if (null != paymentDetails){
+            this.orderService.savePaymentDetails(paymentDetails);
+        }
+        if (null != orderBillingDetails){
+            this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
+        }
+        if (null != empCreditMoneyChangeLog){
+            this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+        }
+
+        if (null != orderDeliveryInfoDetails){
+            this.deliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+        }
+        if (null != orderBaseInfo){
+            this.orderService.updateOrderStatusByOrderNo(orderBaseInfo);
+        }
+        if (null != orderArrearsAuditDO){
+            this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
         }
     }
 

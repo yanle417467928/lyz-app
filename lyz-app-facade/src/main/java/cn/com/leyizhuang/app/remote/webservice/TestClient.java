@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelRetu
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import org.apache.cxf.endpoint.Client;
@@ -40,6 +41,8 @@ public class TestClient {
     private OnlinePayRefundService onlinePayRefundService;
     @Resource
     private AppSeparateOrderService separateOrderService;
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
     public static void main(String[] args) throws Exception {
 //        String STRTABLE = "tbw_send_task_m";
         Date date =  new Date();
@@ -186,9 +189,16 @@ public class TestClient {
 //        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
 //
 //        System.out.println(newUser);
-        onlinePayRefundService.wechatReturnMoney(1L, 0, 26D, "CD_HK20180305182238594711", "T201803101111512314");
-
-
-        separateOrderService.separateOrderRefund("TK_20180311115824685");
+        onlinePayRefundService.wechatReturnMoney(1L, 6, 26D, "CD_XN20180111095243410278", "T201803101111512678");
+//
+//
+//        separateOrderService.separateOrderRefund("TK_20180311115824685");
+        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+        returnOrderDeliveryDetail.setReturnNo("123123");
+        returnOrderDeliveryDetail.setPickersId(2L);
+        returnOrderDeliveryDetail.setCreateTime(new Date());
+        returnOrderDeliveryDetail.setWarehouseNo("123");
+        returnOrderDeliveryDetail.setPickersNumber("11111");
+//        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
     }
 }

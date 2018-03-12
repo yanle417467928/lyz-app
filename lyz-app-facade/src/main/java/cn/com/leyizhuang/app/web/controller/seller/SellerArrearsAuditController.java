@@ -66,6 +66,9 @@ public class SellerArrearsAuditController {
     @Autowired
     private SinkSender sinkSender;
 
+    @Autowired
+    private CommonService CommonServiceImpl;
+
 
     /**
      * @param
@@ -206,7 +209,7 @@ public class SellerArrearsAuditController {
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                 orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
-                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+//                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
 
                 //生成收款单号
                 String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
@@ -217,7 +220,7 @@ public class SellerArrearsAuditController {
                         orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
                         PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
                 //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
-                this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+//                this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                 //修改订单欠款
                 OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
@@ -236,7 +239,7 @@ public class SellerArrearsAuditController {
                     orderBillingDetails.setDeliveryCash(0D);
                     orderBillingDetails.setDeliveryPos(collectionAmount);
                 }
-                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+//                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
                 //获取导购信用金
                 EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
@@ -246,9 +249,10 @@ public class SellerArrearsAuditController {
 
                 //修改导购信用额度
                 Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
+                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
                 if (affectLine > 0) {
                     //记录导购信用金变更日志
-                    EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                    empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                     empCreditMoneyChangeLog.setEmpId(userId);
                     empCreditMoneyChangeLog.setCreateTime(new Date());
                     empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
@@ -259,24 +263,27 @@ public class SellerArrearsAuditController {
                     empCreditMoneyChangeLog.setOperatorId(userId);
                     empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
                     //保存日志
-                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+//                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
 
                 }
                 //生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
                 orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), orderArrearsAuditDO.getPicture(), "", "");
-                this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+//                this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
                 //修改订单状态
                 OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
                 orderBaseInfo.setOrderNumber(orderNo);
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+//                this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());
-                this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
+//                this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
+
+                this.CommonServiceImpl.sellerAudit(orderAgencyFundDO, paymentDetails, orderBillingDetails, empCreditMoneyChangeLog, orderDeliveryInfoDetails,
+                        orderBaseInfo, orderArrearsAuditDO);
 
                 //将收款记录录入拆单消息队列
                 this.sinkSender.sendOrderReceipt(receiptNumber);

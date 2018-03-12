@@ -657,7 +657,7 @@ public class OrderController {
                 if (gid != null) {
                     GoodsDO goodsDO = goodsService.queryById(gid);
                     //如果这里发现库存不足还是要返回去商品列表
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "改商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
                     logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
