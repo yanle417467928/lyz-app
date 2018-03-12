@@ -15,12 +15,11 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... var1) throws Exception{
-        String clearTempCreditCron =maClearTempCreditService.getCron((long)1);
-        if(null!=clearTempCreditCron){
+        String clearTempCreditCron =maClearTempCreditService.getCron(1L);
+        if(StringUtils.isNotBlank(clearTempCreditCron)){
             QuartzManager.addJob("clearTempCredit","jobGroup","trigger","triggerGroup", ClearTempCreditScheduleTask.class,clearTempCreditCron);
-
         }else{
-            throw new RuntimeException("clearTempCreditCron为空");
+            log.info("clearTempCreditCron为空");
         }
 
         // 获取定时器规则

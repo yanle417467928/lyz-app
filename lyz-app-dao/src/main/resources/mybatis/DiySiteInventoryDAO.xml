@@ -10,9 +10,9 @@
 
     <insert id="saveReturnAndRequireGoodsInf" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf">
         INSERT INTO inter_eta_store_goods_trans_inf
-        (id,sob_id,trans_id,trans_type,trans_number,customer_id,customer_number,diy_site_code,ship_date,item_code,quantity,attribute1
+        (sob_id,trans_id,trans_type,trans_number,customer_id,customer_number,diy_site_code,ship_date,item_code,quantity,attribute1
         ,attribute2,attribute3,attribute4,attribute5,ebs_to_app_flag,app_error_message,creation_date,last_updated_by,last_update_date)
-        VALUES (#{id},#{sobId},#{transId},#{transType},#{trans_number},#{customer_id},#{customer_number},#{diy_site_code},#{ship_date},#{item_code},#{quantity},#{attribute1}
-        ,#{attribute2},#{attribute3},#{attribute4},#{attribute5},#{ebs_to_app_flag},#{app_error_message},#{creation_date},#{last_updated_by},#{last_update_date})
+        VALUES (#{sobId},#{transId},#{transType},#{transNumber},#{customerId},#{customerNumber},#{diySiteCode},#{shipDate},#{itemCode},#{quantity},#{attribute1}
+        ,#{attribute2},#{attribute3},#{attribute4},#{attribute5},#{ebsToAppFlag},#{appErrorMessage},#{creationDate},#{lastUpdatedBy},#{lastUpdateDate})
     </insert>
 </mapper>
