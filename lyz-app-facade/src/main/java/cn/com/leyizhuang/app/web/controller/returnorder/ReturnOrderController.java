@@ -319,7 +319,7 @@ public class ReturnOrderController {
                 atwReturnOrder.setDiySiteId(null);
                 atwReturnOrder.setDiySiteTitle(null);
                 atwReturnOrder.setDiySiteTel(null);
-                atwReturnOrder.setRemarkInfo(null);
+                atwReturnOrder.setRemarkInfo("拒签退货: "+ returnOrderBaseInfo.getReasonInfo());
                 atwReturnOrder.setOrderNumber(orderNumber);
                 atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
                 atwReturnOrder.setReturnTime(date);
