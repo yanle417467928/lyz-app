@@ -22,27 +22,25 @@ import javax.xml.ws.Endpoint;
 @AutoConfigureAfter(DeployConfiguration.class)
 public class WebServiceEbsConfiguration {
 
-//    @Value("${deploy.wms.url}")
-//    private String wmsUrl;
-//
-//    @Value("${deploy.ebs.url}")
-//    private String ebsUrl;
+    @Bean
+    public SpringBus springBusEbs() {
+        SpringBus bus = new SpringBus();
+        bus.setId("ebs");
+        return bus;
+    }
 
     @Bean
-    public ServletRegistrationBean cxfServlet() {
-//        AppApplicationConstant.wmsUrl = wmsUrl;
-//        AppApplicationConstant.ebsUrl = ebsUrl;
+    public ServletRegistrationBean ebsServlet() {
         CXFServlet cxfServlet = new CXFServlet();
-        ServletRegistrationBean servletDef = new ServletRegistrationBean(
+        cxfServlet.setBus(springBusEbs());
+        ServletRegistrationBean servletBean = new ServletRegistrationBean(
                 cxfServlet, "/ebs/services/*");
-        servletDef.setLoadOnStartup(1);
-        return servletDef;
+        servletBean.setName("ebs");
+        servletBean.setLoadOnStartup(1);
+        return servletBean;
     }
 
-    @Bean(name = Bus.DEFAULT_BUS_ID)
-    public SpringBus springBus() {
-        return new SpringBus();
-    }
+
 
     @Bean
     public ReleaseEBSService ebsService() {
@@ -50,8 +48,8 @@ public class WebServiceEbsConfiguration {
     }
 
     @Bean
-    public Endpoint endpoint() {
-        EndpointImpl endpoint = new EndpointImpl(springBus(), ebsService());
+    public Endpoint endpointEBS() {
+        EndpointImpl endpoint = new EndpointImpl(springBusEbs(), ebsService());
         endpoint.publish("/webservice");
         System.out.println("ebsWebservice 发布成功！！！");
         return endpoint;

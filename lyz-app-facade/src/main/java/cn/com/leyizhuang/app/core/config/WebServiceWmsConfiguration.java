@@ -1,10 +1,7 @@
 package cn.com.leyizhuang.app.core.config;
 
-import cn.com.leyizhuang.app.remote.webservice.service.ReleaseEBSService;
 import cn.com.leyizhuang.app.remote.webservice.service.ReleaseWMSService;
-import cn.com.leyizhuang.app.remote.webservice.service.impl.ReleaseEBSServiceImpl;
 import cn.com.leyizhuang.app.remote.webservice.service.impl.ReleaseWMSServiceImpl;
-import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
@@ -20,29 +17,26 @@ import javax.xml.ws.Endpoint;
  **/
 @Configuration
 @AutoConfigureAfter(DeployConfiguration.class)
-public class WebServiceConfiguration {
-
-//    @Value("${deploy.wms.url}")
-//    private String wmsUrl;
-//
-//    @Value("${deploy.ebs.url}")
-//    private String ebsUrl;
+public class WebServiceWmsConfiguration {
 
     @Bean
-    public ServletRegistrationBean cxfServlet() {
-//        AppApplicationConstant.wmsUrl = wmsUrl;
-//        AppApplicationConstant.ebsUrl = ebsUrl;
-        CXFServlet cxfServlet = new CXFServlet();
-        ServletRegistrationBean servletDef = new ServletRegistrationBean(
-                cxfServlet, "/services/*");
-        servletDef.setLoadOnStartup(1);
-        return servletDef;
+    public SpringBus springBusWms() {
+        SpringBus bus = new SpringBus();
+        bus.setId("wms");
+        return bus;
     }
 
-    @Bean(name = Bus.DEFAULT_BUS_ID)
-    public SpringBus springBus() {
-        return new SpringBus();
+    @Bean
+    public ServletRegistrationBean wmsServlet() {
+        CXFServlet cxfServlet = new CXFServlet();
+        cxfServlet.setBus(springBusWms());
+        ServletRegistrationBean servletBean = new ServletRegistrationBean(
+                cxfServlet, "/services/*");
+        servletBean.setName("wms");
+        servletBean.setLoadOnStartup(1);
+        return servletBean;
     }
+
 
     @Bean
     public ReleaseWMSService wmsService() {
@@ -50,12 +44,11 @@ public class WebServiceConfiguration {
     }
 
     @Bean
-    public Endpoint endpoint() {
-        EndpointImpl endpoint = new EndpointImpl(springBus(), wmsService());
+    public Endpoint endpointWms() {
+        EndpointImpl endpoint = new EndpointImpl(springBusWms(), wmsService());
         endpoint.publish("/webservice");
+        System.out.println("wmsWebservice 发布成功！！！");
         return endpoint;
     }
-
-
 
 }

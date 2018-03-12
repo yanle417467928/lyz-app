@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 
 @Configuration
-@AutoConfigureBefore(WebServiceConfiguration.class)
 public class DeployConfiguration {
 
     private final Logger LOG = LoggerFactory.getLogger(DeployConfiguration.class);
