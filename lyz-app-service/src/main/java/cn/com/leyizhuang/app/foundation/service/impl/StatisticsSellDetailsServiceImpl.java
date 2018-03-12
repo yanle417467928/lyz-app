@@ -2,8 +2,10 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
+import cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
@@ -33,6 +35,9 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     @Resource
     private SellDetailsDAO sellDetailsDAO;
+
+    @Resource
+    private SellZgDetailsDAO sellZgDetailsDAO;
 
     @Resource
     private AppOrderService orderService;
@@ -156,7 +161,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
                         detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                         detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
-                        detailsDO.setNumber(orderBaseInfo.getOrderNumber());
+                        detailsDO.setNumber(returnOrderNumber);
                         detailsDO.setSku(goodsInfo.getSku());
                         detailsDO.setQuantity(goodsInfo.getReturnQty());
                         detailsDO.setAmount(-goodsInfo.getSettlementPrice());
@@ -206,4 +211,32 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
             sellDetailsDAO.recordeErrorLog(log);
         }
     }
+
+    /**
+     * 记录专供销量
+     * @param detailsDOS
+     */
+    public void addZgDetailsList(List<SellZgDetailsDO> detailsDOS){
+        if (detailsDOS != null || detailsDOS.size() > 0){
+            for (SellZgDetailsDO details : detailsDOS) {
+                sellZgDetailsDAO.addOneDetail(details);
+            }
+        }
+    }
+
+    /**
+     * 根据专供会员id和返回专供销量结果结果
+     * @param cusId
+     * @param sku
+     * @return
+     */
+    public List<SellZgDetailsDO> getZgDetailsByCusIdAndSku(Long cusId,String sku){
+        if (cusId == null || sku == null || sku.equals("")){
+            return null;
+        }
+
+        return sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId,sku);
+    }
+
+
 }

@@ -657,7 +657,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
                 totalPrice += goodsInfo.getSettlementPrice() * goodsInfo.getOrderQuantity();
             }
-            totalCashCouponPrice = CountUtil.add(totalCashCouponPrice,cashCouponPrice);
+            totalCashCouponPrice = CountUtil.add(totalCashCouponPrice,CountUtil.mul(cashCouponPrice,goodsInfo.getOrderQuantity()));
 
             if (price.equals(0.00)){
                 goodsInfo.setReturnPrice(0.00);
