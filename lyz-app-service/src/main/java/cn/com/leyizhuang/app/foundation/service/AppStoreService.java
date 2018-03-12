@@ -74,6 +74,8 @@ public interface AppStoreService {
 
     StoreInventory findStoreInventoryByStoreIdAndGoodsId(Long bookingStoreId, Long goodsId);
 
+    StoreInventory findStoreInventoryByStoreCodeAndGoodsSku(String storeCode, String goodsSku);
+
     void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log);
 
     StorePreDeposit findStorePreDepositByEmpId(Long userId);

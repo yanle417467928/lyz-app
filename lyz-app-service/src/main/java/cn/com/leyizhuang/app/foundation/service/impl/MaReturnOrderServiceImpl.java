@@ -219,7 +219,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         //门店库存,可用量及生成日志信息
         for (ReturnOrderGoodsInfo returnOrderGoodsInfo : MaOrderGoodsInfoList) {
             //查看门店下 该商品的库存
-            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid());
+            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreIdAndGoodsId(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid());
             if (null == storeInventory) {
                 throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
             }

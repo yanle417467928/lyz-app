@@ -10,7 +10,7 @@ public interface MaStoreInventoryService {
 
     void addInventoryChangeLog(MaStoreInventoryChange storeInventoryChange);
 
-    MaStoreInventory findStoreInventoryByStoreCodeAndGoodsId(Long storeId,Long goodsId);
+    MaStoreInventory findStoreInventoryByStoreIdAndGoodsId(Long storeId,Long goodsId);
 
     int updateStoreInventory(Long storeId,Long goodsId,Integer goodsQty,Date date);
 

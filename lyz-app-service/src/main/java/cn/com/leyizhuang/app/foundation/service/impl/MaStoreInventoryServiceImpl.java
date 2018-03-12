@@ -22,8 +22,8 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
     }
 
     @Override
-    public MaStoreInventory findStoreInventoryByStoreCodeAndGoodsId(Long storeId,Long goodsId){
-        return maStoreInventoryDAO.findStoreInventoryByStoreCodeAndGoodsId(storeId,goodsId);
+    public MaStoreInventory findStoreInventoryByStoreIdAndGoodsId(Long storeId,Long goodsId){
+        return maStoreInventoryDAO.findStoreInventoryByStoreIdAndGoodsId(storeId,goodsId);
     }
 
     @Override

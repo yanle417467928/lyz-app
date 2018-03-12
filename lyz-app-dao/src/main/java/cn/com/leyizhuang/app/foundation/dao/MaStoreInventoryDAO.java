@@ -16,7 +16,7 @@ import java.util.Date;
 public interface MaStoreInventoryDAO {
     void addInventoryChangeLog(MaStoreInventoryChange storeInventoryChange);
 
-    MaStoreInventory findStoreInventoryByStoreCodeAndGoodsId(@Param(value = "storeId") Long storeId,@Param(value = "goodsId")  Long goodsId);
+    MaStoreInventory findStoreInventoryByStoreIdAndGoodsId(@Param(value = "storeId") Long storeId,@Param(value = "goodsId")  Long goodsId);
 
     int updateStoreInventory (@Param(value = "storeId")Long storeId,@Param(value = "goodsId")Long goodsId,@Param(value = "goodsQty")Integer goodsQty,@Param(value = "date")Date date);
 

@@ -20,4 +20,17 @@
             order_number = #{orderNumber}
     </select>
 
+    <update id="updateTimingTaskErrorMessageByOrderNo" parameterType="cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO">
+        UPDATE timing_task_error_message
+        <set>
+            <if test="null != message">
+                message = #{message},
+            </if>
+            <if test="null != recordTime">
+                record_time = #{recordTime},
+            </if>
+        </set>
+        WHERE order_number = #{orderNumber}
+    </update>
+
 </mapper>
