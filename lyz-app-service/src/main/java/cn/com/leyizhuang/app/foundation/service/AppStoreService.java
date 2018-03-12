@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
+import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -98,6 +99,8 @@ public interface AppStoreService {
 
     Integer updateStoreSubventionByUserIdAndVersion(Double subvention,Long userId,Timestamp version);
 
+    StorePreDeposit findStorePreDepositByStoreId(Long storeId);
 
+    Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version);
 
 }

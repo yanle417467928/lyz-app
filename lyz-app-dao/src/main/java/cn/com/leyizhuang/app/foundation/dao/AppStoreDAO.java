@@ -130,4 +130,8 @@ public interface AppStoreDAO {
 
     Integer updateStoreSubventionByUserIdAndVersion(@Param("subvention")Double subvention,@Param("userId")Long userId,@Param("version")Timestamp version);
 
+    StorePreDeposit findStorePreDepositByStoreId(@Param("storeId")Long storeId);
+
+    Integer updateStoreDepositByStoreIdAndStoreDeposit(@Param("storeId") Long storeId, @Param("deposit") Double storeDeposit,
+                                                  @Param(value = "version") Timestamp version);
 }

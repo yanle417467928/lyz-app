@@ -361,7 +361,23 @@ public class AppStoreServiceImpl implements AppStoreService {
     @Override
     public Integer updateStoreSubventionByUserIdAndVersion(Double subvention, Long userId, Timestamp version) {
         if (null != subvention && null != userId){
-            storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
+            return storeDAO.updateStoreSubventionByUserIdAndVersion(subvention, userId, version);
+        }
+        return null;
+    }
+
+    @Override
+    public StorePreDeposit findStorePreDepositByStoreId(Long storeId) {
+        if (null != storeId){
+            return storeDAO.findStorePreDepositByStoreId(storeId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version) {
+        if(null != storeId && null != storeDeposit && null != version){
+            return storeDAO.updateStoreDepositByStoreIdAndStoreDeposit(storeId, storeDeposit, version);
         }
         return null;
     }
