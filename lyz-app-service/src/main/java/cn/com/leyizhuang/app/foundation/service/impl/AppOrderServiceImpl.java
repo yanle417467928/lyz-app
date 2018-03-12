@@ -360,9 +360,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                 //写入导购信息
                 if (null != appCustomer.getSalesConsultId()) {
                     AppEmployee seller = employeeService.findById(appCustomer.getSalesConsultId());
-                    tempOrder.setSalesConsultId(seller.getEmpId());
-                    tempOrder.setSalesConsultName(seller.getName());
-                    tempOrder.setSalesConsultPhone(seller.getMobile());
+                    if (null != seller) {
+                        tempOrder.setSalesConsultId(seller.getEmpId());
+                        tempOrder.setSalesConsultName(seller.getName());
+                        tempOrder.setSalesConsultPhone(seller.getMobile());
+                    }
                 }
                 //写入顾客信息
                 tempOrder.setCustomerId(appCustomer.getCusId());
