@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.settlement;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderGoodsSimpleRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
@@ -41,6 +42,9 @@ public class GetGoodsMoneyController {
 
     @Autowired
     private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private GoodsService goodsService;
 
     @PostMapping(value = "/get", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getGoodsMoney(Long userId, Integer identityType, String params) {
@@ -168,9 +172,11 @@ public class GetGoodsMoneyController {
             giftInfo = goodsServiceImpl.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
 
             //正品的数量这里需要判断是否和赠品有相同产品，然后算总数量检查库存
-            Long msg = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList, null);
-            if (msg != null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID:" + msg + ";商品库存不足！", null);
+            Long gid = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList, null);
+            if (gid != null) {
+                GoodsDO goodsDO = goodsService.queryById(gid);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "" +
+                        "库存不足,请更改购买数量!", null);
                 logger.info("getGoodsMoneyOfWorker OUT,确认商品计算工人订单总金额失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
