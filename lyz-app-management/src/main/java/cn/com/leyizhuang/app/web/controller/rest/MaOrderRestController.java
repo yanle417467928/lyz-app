@@ -585,6 +585,11 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount())!=0&&StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请填写Pos交易流水号", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             List<String> ReceiptNumberList = this.maOrderService.orderReceivables(maOrderAmount);
             for (String receiptNumber : ReceiptNumberList) {
@@ -784,6 +789,11 @@ public class MaOrderRestController extends BaseRestController {
         }
         if (maOrderAmount.getDate().after(new Date())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "收款时间大于当前时间", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount())!=0&&StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请填写Pos交易流水号", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

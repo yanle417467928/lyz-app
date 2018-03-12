@@ -223,6 +223,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         //查询该信息是否发送过
                         EtaReturnAndRequireGoodsInf etaReturnAndRequireGoodsInf = diySiteInventoryEbsService.findByTransId(transId);
                         if (null == etaReturnAndRequireGoodsInf) {
+                            etaReturnAndRequireGoodsInf = new EtaReturnAndRequireGoodsInf();
                             etaReturnAndRequireGoodsInf.setSobId(sobId);
                             etaReturnAndRequireGoodsInf.setTransId(transId);
                             etaReturnAndRequireGoodsInf.setTransType(transType);
@@ -233,16 +234,16 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
                             etaReturnAndRequireGoodsInf.setItemCode(itemCode);
                             etaReturnAndRequireGoodsInf.setQuantity(quantity);
-                            etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
-                            etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
-                            etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
-                            etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
-                            etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
                             etaReturnAndRequireGoodsInf.setAttribute1(attribute1);
                             etaReturnAndRequireGoodsInf.setAttribute2(attribute2);
                             etaReturnAndRequireGoodsInf.setAttribute3(attribute3);
                             etaReturnAndRequireGoodsInf.setAttribute4(attribute4);
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
+                            etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
+                            etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
+                            etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
+                            etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
+                            etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
 
                             //判断门店是否存在
@@ -267,7 +268,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                 if (affectLine > 0) {
                                     //新增门店库存变更日志
                                     StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
-                                    iLog.setAfterChangeQty(storeInventory.getAvailableIty());
+                                    iLog.setAfterChangeQty(goodsAvailableItyAfterChange);
                                     iLog.setChangeQty(quantity.intValue());
                                     iLog.setChangeTime(new Date());
                                     if(quantity>0){
@@ -277,6 +278,8 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                         iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                                         iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
                                     }
+                                    iLog.setCityId(storeInventory.getCityId());
+                                    iLog.setCityName(storeInventory.getCityName());
                                     iLog.setStoreId(storeInventory.getStoreId());
                                     iLog.setStoreCode(storeInventory.getStoreCode());
                                     iLog.setStoreName(storeInventory.getStoreName());

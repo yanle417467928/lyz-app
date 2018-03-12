@@ -154,8 +154,9 @@ public class MaRetrunOrderRestController extends BaseRestController {
             ShiroUser shiroUser = this.getShiroUser();
             MaOrdReturnBilling maOrdReturnBillingList = maReturnOrderService.findReturnOrderBillingList(maReturnOrderDetailInfo.getRoid());
             if (null == maOrdReturnBillingList) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "后台到店退货单收货失败,该退单支付明细为空", null);
                 logger.warn("returnOrderReceive OUT,后台到店退货单收货失败,该退单支付明细为空");
-                throw new RuntimeException("收货失败，该退单支付明细为空");
+                return resultDTO;
             }
             //后台收货并存入接口表
             HashedMap maps = maReturnOrderService.returnOrderReceive(returnNumber, maReturnOrderDetailInfo, maOrdReturnBillingList, shiroUser);
