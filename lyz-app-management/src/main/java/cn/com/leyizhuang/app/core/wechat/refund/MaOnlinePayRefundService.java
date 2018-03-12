@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.wechat.sign.WechatPrePay;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
@@ -75,7 +76,7 @@ public class MaOnlinePayRefundService {
                     if ("SUCCESS".equalsIgnoreCase(resultMap.get("result_code").toString())) {
 //                        response.getWriter().write(WechatUtil.setXML("SUCCESS", null));
                         //取出map中的参数，订单号
-                        String outTradeNo = resultMap.get("outTradeNo").toString();
+                        String outTradeNo = resultMap.get("out_trade_no").toString();
                         logger.debug("******微信返回参数订单号***** OUT, 出参 outTradeNo:{}", outTradeNo);
                         //退单号
                         String outRefundNo = resultMap.get("out_refund_no").toString();
@@ -99,13 +100,14 @@ public class MaOnlinePayRefundService {
 
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
                         returnOrderBillingDetail.setCreateTime(new Date());
-                        returnOrderBillingDetail.setRoid(null);
-                        returnOrderBillingDetail.setReturnNo(outTradeNo);
+                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                        returnOrderBillingDetail.setReturnNo(outRefundNo);
                         returnOrderBillingDetail.setRefundNumber(refundNo);
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
                         returnOrderBillingDetail.setReplyCode(map.get("number"));
-                        returnOrderBillingDetail.setReturnMoney(Double.valueOf(map.get("money")));
+                        returnOrderBillingDetail.setReturnMoney(money);
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
