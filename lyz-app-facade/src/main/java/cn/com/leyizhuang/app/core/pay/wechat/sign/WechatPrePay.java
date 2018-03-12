@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.core.pay.wechat.sign;
 import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.pay.wechat.util.WechatUtil;
 import org.jdom.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.util.TreeMap;
  */
 
 public class WechatPrePay {
+
+    private static final Logger logger = LoggerFactory.getLogger(WechatPrePay.class);
     /**
      * 微信下单参数签名
      *
@@ -118,14 +122,18 @@ public class WechatPrePay {
             result = WechatUtil.refundBySslPost("https://api.mch.weixin.qq.com/secapi/pay/refund", requestXML);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("{}", e);
         }
+        logger.info("wechatRefundSign OUT 出参,result:{}", result);
         //微信根据参数返回一个xml文件，解析成Map
         Map map = null;
         SortedMap<String, Object> secondSignMap = null;
         try {
             map = WechatUtil.doXMLParse(result);
+            logger.info("********************打印微信退款返回信息********************,map:{}", map);
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
+            logger.warn("{}", e);
         }
         //返回信息中包含微信退款成功失败信息
         return map;
