@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 @Service
 public class DiySiteInventoryEbsServiceImpl implements DiySiteInventoryEbsService {
     @Resource
-    DiySiteInventoryDAO diySiteInventoryDAO;
+    private DiySiteInventoryDAO diySiteInventoryDAO;
     @Override
     public EtaReturnAndRequireGoodsInf findByTransId(String transId) {
         return diySiteInventoryDAO.findByTransId(transId);
