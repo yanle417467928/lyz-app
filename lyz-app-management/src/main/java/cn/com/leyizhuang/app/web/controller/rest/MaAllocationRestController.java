@@ -2,13 +2,16 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationDetail;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -52,6 +55,9 @@ public class MaAllocationRestController extends BaseRestController{
 
     @Autowired
     private AdminUserStoreService adminUserStoreService;
+
+    @Autowired
+    private AppStoreService appStoreService;
 
     @GetMapping(value = "/page/grid")
     public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, AllocationQuery query) {
@@ -110,6 +116,20 @@ public class MaAllocationRestController extends BaseRestController{
             storeId = storeIds.get(0);
         }else{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "调拨单新增失败！帐号门店信息有误", allocation);
+        }
+
+        AppStore from = appStoreService.findById(allocation.getAllocationFrom());
+        // 检查调出门店下 该产品是否有库存
+        for (AllocationDetail detail : allocationDetailList){
+
+            StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(from.getStoreCode(), detail.getGoodsId());
+
+            if (storeInventory.getAvailableIty() == 0 || storeInventory.getAvailableIty() < 0 ){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "调拨单新增失败!"+from.getStoreName()+"店下"+detail.getSkuName()+"库存不足", allocation);
+            }
+            if (storeInventory.getAvailableIty() < detail.getQty() ){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "调拨单新增失败!"+from.getStoreName()+"店下"+detail.getSkuName()+"库存只有"+storeInventory.getAvailableIty()+"个可调拨", allocation);
+            }
         }
 
         ityAllocationService.addAllocation(allocation,allocationDetailList,super.getShiroUser(),storeId);

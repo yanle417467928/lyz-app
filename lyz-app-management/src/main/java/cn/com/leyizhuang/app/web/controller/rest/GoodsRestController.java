@@ -82,7 +82,7 @@ public class GoodsRestController extends BaseRestController {
     }
 
     /**
-     * 根据门店 和各种参数查询分页数据
+     * 根据门店 和各种参数查询分页数据 门店调拨时使用
      * @param offset
      * @param size
      * @param keywords

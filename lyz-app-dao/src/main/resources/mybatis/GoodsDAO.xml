@@ -1153,11 +1153,9 @@
         g.*
         FROM
         gds_goods g
-        RIGHT JOIN
-        gds_goods_price gp
-        on g.sku = gp.sku
+        RIGHT JOIN st_inventory st ON g.sku = st.sku
         WHERE
-        gp.store_id = #{storeId}
+        st.store_id = #{storeId} and st.available_ity > 0
         <if test="null != brandCode ">
             AND g.brd_id = #{brandCode}
         </if>
