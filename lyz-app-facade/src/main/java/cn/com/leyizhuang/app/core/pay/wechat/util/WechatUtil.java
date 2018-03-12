@@ -14,6 +14,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.*;
@@ -33,6 +35,8 @@ import java.util.*;
  */
 
 public class WechatUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(WechatUtil.class);
 
     /**
      * 微信参数配置
@@ -193,8 +197,10 @@ public class WechatUtil {
         //商户id
         //指定读取证书格式为PKCS12
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        logger.info("refundBySslPost OUT,出参: certPath:{}", AppApplicationConstant.wechatApiClinetCert);
         //读取本机存放的PKCS12证书文件
         FileInputStream instream = new FileInputStream(new File(AppApplicationConstant.wechatApiClinetCert));
+        logger.info("*********************refundBySslPost OUT***************************,出参: file:{}", new File(AppApplicationConstant.wechatApiClinetCert));
         try {
             //指定PKCS12的密码(商户ID)
             keyStore.load(instream, MCH_ID.toCharArray());
@@ -218,7 +224,7 @@ public class WechatUtil {
                 result = EntityUtils.toString(response.getEntity(), "UTF-8");
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("请求失败: {}" + e);
+                logger.warn("{}", e);
                 throw new RuntimeException(e);
             } finally {
                 try {
@@ -227,17 +233,19 @@ public class WechatUtil {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    logger.warn("{}", e);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("请求失败: {}" + e);
+            logger.warn("{}", e);
             throw new RuntimeException(e);
         } finally {
             try {
                 httpclient.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                logger.warn("{}", e);
             }
         }
         return result;

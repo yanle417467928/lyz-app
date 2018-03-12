@@ -22,9 +22,13 @@ public class MaOrderBillingPaymentDetailResponse {
     /**
      * 支付类型
      */
-    private OrderBillingPaymentType paymentType;
+    private String paymentType;
     /**
      * 支付金额
      */
     private Double amount;
+
+    public void setPaymentType(OrderBillingPaymentType paymentType) {
+        this.paymentType = paymentType.getDescription();
+    }
 }

@@ -189,7 +189,7 @@ public class TestClient {
 //        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
 //
 //        System.out.println(newUser);
-        onlinePayRefundService.wechatReturnMoney(1L, 6, 26D, "CD_XN20180111095243410278", "T201803101111512678");
+        onlinePayRefundService.wechatReturnMoney(1L, 6, 0.01D, "CD_XN20180111095243410278", "T201803101111512678");
 //
 //
 //        separateOrderService.separateOrderRefund("TK_20180311115824685");
