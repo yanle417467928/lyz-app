@@ -4,7 +4,9 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -99,5 +101,13 @@ public interface CommonService {
     Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType);
 
     void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException;
+
+    void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
+                            EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
+                            OrderBaseInfo orderBaseInfo);
+
+    void sellerAudit(OrderAgencyFundDO orderAgencyFundDO, OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
+                     EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
+                     OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO);
 
 }

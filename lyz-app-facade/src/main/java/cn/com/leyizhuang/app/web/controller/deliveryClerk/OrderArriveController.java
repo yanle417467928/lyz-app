@@ -58,6 +58,9 @@ public class OrderArriveController {
     @Autowired
     private SinkSender sinkSender;
 
+    @Autowired
+    private CommonService CommonServiceImpl;
+
     /**
      * @param
      * @return
@@ -154,11 +157,21 @@ public class OrderArriveController {
                 picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
                 picture += ",";
             }
+
+            OrderArrearsAuditDO orderArrearsAuditDO = null;
+            OrderBillingPaymentDetails paymentDetails = null;
+            OrderBillingDetails orderBillingDetails = null;
+            EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
+            OrderAgencyFundDO orderAgencyFundDO = null;
+            OrderDeliveryInfoDetails orderDeliveryInfoDetails = null;
+            OrderBaseInfo orderBaseInfo = null;
+            String receiptNumber = null;
+
             //判断订单是否有欠款
             if (ownManey > 0) {
                 if (ownManey > collectionAmount) {//欠款金额 > 收款金额
                     //创建欠款审核
-                    OrderArrearsAuditDO orderArrearsAuditDO = new OrderArrearsAuditDO();
+                    orderArrearsAuditDO = new OrderArrearsAuditDO();
                     orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
                     orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
@@ -174,17 +187,17 @@ public class OrderArriveController {
                 } else { //欠款金额 <= 收款金额
                     if (ownManey > 0) {
                         //生成收款单号
-                        String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
+                        receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
                         //创建收款记录
-                        OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
+                        paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
                                 Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
                                 paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
                                 PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
 
-                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+//                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                         //修改订单欠款为0
-                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails = new OrderBillingDetails();
                         orderBillingDetails.setOrderNumber(orderNo);
                         orderBillingDetails.setArrearage(0D);
                         orderBillingDetails.setIsPayUp(true);
@@ -196,7 +209,7 @@ public class OrderArriveController {
                             orderBillingDetails.setDeliveryCash(ownManey);
                             orderBillingDetails.setDeliveryPos(0D);
                         }
-                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+//                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
                         //获取导购信用金
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
@@ -208,7 +221,7 @@ public class OrderArriveController {
                         Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
-                            EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                            empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(userId);
                             empCreditMoneyChangeLog.setCreateTime(new Date());
                             empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
@@ -219,11 +232,8 @@ public class OrderArriveController {
                             empCreditMoneyChangeLog.setOperatorId(userId);
                             empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
                             //保存日志
-                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+//                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
                         }
-
-                        //将收款记录录入拆单消息队列
-                        this.sinkSender.sendOrderReceipt(receiptNumber);
                     }
                 }
             }
@@ -231,12 +241,12 @@ public class OrderArriveController {
             //判断是否有代收款
             if (collectionAmount > 0) {
                 //生成代收款记录
-                OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
+                orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                 orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, CountUtil.sub(collectionAmount - ownManey), remarks);
-                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+//                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
 
             //生成订单物流详情
@@ -245,17 +255,24 @@ public class OrderArriveController {
             if (null != appEmployee && null != appEmployee.getDeliveryClerkNo()){
                 deliveryClerkNo = appEmployee.getDeliveryClerkNo();
             }*/
-            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+            orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
             orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), picture, "", "");
-            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+//            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
             //修改订单状态
-            OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+            orderBaseInfo = new OrderBaseInfo();
             orderBaseInfo.setOrderNumber(orderNo);
             orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
             orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
-            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+//            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
+            this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
+                    orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo);
+
+            //将收款记录录入拆单消息队列
+            if (null != receiptNumber) {
+                this.sinkSender.sendOrderReceipt(receiptNumber);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("confirmOrderArrive OUT,配送员确认订单送达成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -266,6 +283,11 @@ public class OrderArriveController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
+
+    public static void main(String[] args) {
+        OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
+        System.out.println(orderAgencyFundDO);
     }
 
     /**
