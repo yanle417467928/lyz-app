@@ -20,7 +20,7 @@ import javax.xml.ws.Endpoint;
  **/
 @Configuration
 @AutoConfigureAfter(DeployConfiguration.class)
-public class WebServiceConfiguration {
+public class WebServiceEbsConfiguration {
 
 //    @Value("${deploy.wms.url}")
 //    private String wmsUrl;
@@ -34,7 +34,7 @@ public class WebServiceConfiguration {
 //        AppApplicationConstant.ebsUrl = ebsUrl;
         CXFServlet cxfServlet = new CXFServlet();
         ServletRegistrationBean servletDef = new ServletRegistrationBean(
-                cxfServlet, "/services/*");
+                cxfServlet, "/ebs/services/*");
         servletDef.setLoadOnStartup(1);
         return servletDef;
     }
@@ -45,14 +45,15 @@ public class WebServiceConfiguration {
     }
 
     @Bean
-    public ReleaseWMSService wmsService() {
-        return new ReleaseWMSServiceImpl();
+    public ReleaseEBSService ebsService() {
+        return new ReleaseEBSServiceImpl();
     }
 
     @Bean
     public Endpoint endpoint() {
-        EndpointImpl endpoint = new EndpointImpl(springBus(), wmsService());
+        EndpointImpl endpoint = new EndpointImpl(springBus(), ebsService());
         endpoint.publish("/webservice");
+        System.out.println("ebsWebservice 发布成功！！！");
         return endpoint;
     }
 

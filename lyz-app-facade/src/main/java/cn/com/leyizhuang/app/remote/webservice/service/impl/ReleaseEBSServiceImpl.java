@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.remote.webservice.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.getui.NoticePushUtils;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
@@ -13,8 +15,11 @@ import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -41,7 +46,9 @@ import javax.jws.WebService;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -56,33 +63,13 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
     private static final Logger logger = LoggerFactory.getLogger(ReleaseEBSServiceImpl.class);
 
     @Resource
-    private WmsToAppOrderService wmsToAppOrderService;
+    private DiySiteInventoryEbsService diySiteInventoryEbsService;
     @Resource
-    private OrderDeliveryInfoDetailsService orderDeliveryInfoDetailsService;
+    private AppStoreService appStoreService;
     @Resource
     private GoodsService goodsService;
     @Resource
-    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
-    @Resource
-    private StatisticsSellDetailsService statisticsSellDetailsService;
-    @Resource
-    private SellDetailsSender sellDetailsSender;
-    @Resource
-    private AppOrderService appOrderService;
-    @Resource
-    private ReturnOrderService returnOrderService;
-    @Resource
-    private SinkSender sinkSender;
-    @Resource
-    private CancelOrderParametersService cancelOrderParametersService;
-    @Resource
-    private OnlinePayRefundService onlinePayRefundService;
-    @Resource
-    private SmsAccountService smsAccountService;
-    @Resource
-    private WareHouseService wareHouseService;
-    @Resource
-    private CityService cityService;
+    private MaStoreInventoryService maStoreInventoryService;
 
     /**
      * 获取wms信息
@@ -95,15 +82,15 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
     @Override
     public String GetEBSInfo(String strTable, String strType, String xml) {
 
-        logger.info("GetEBSInfo CALLED,获取wms信息，入参 strTable:{},strType:{},xml:{}", strTable, strType, xml);
+        logger.info("GetEBSInfo CALLED,获取ebs信息，入参 strTable:{},strType:{},xml:{}", strTable, strType, xml);
 
         if (StringUtils.isBlank(strTable) || "?".equals(strTable)) {
-            logger.info("GetEBSInfo OUT,获取wms信息失败 出参 strTable:{}", strTable);
+            logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", strTable);
             return AppXmlUtil.resultStrXml(1, "STRTABLE参数错误");
         }
 
         if (StringUtils.isBlank(xml) || "?".equals(xml)) {
-            logger.info("GetEBSInfo OUT,获取wms信息失败 出参 strTable:{}", xml);
+            logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", xml);
             return AppXmlUtil.resultStrXml(1, "XML参数错误");
         }
 
@@ -111,99 +98,221 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
             Document document = AppXmlUtil.parseStrXml(xml);
 
             if (null == document) {
-                logger.info("GetEBSInfo OUT,获取wms信息失败");
+                logger.info("GetEBSInfo OUT,获取ebs信息失败");
                 return AppXmlUtil.resultStrXml(1, "解密后XML数据为空");
             }
 
             NodeList nodeList = document.getElementsByTagName("TABLE");
-            //直营要货
+            //直营要货退货
             if ("CUXAPP_INV_STORE_TRANS_OUT".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
+                    Long sobId = null;// 分公司ID
+                    String transId = null;// 事务唯一ID
+                    String transType = null;// 事务类型 "出货单","退货单","盘点入库","盘点出库"
+                    String transNumber = null;// 门店事务编号
+                    Long customerId = null;// 门店客户ID
+                    String customerNumber = null;// 门店客户编号
+                    String diySiteCode = null;// 门店编号(门店仓库)
+                    String shipDate = null;// 事务时间
+                    String itemCode = null;// 物料编号,SKU
+                    Long quantity = null;// 数量 "正数"入库，"负数"出库
+                    String ebsToAppFlag = null;//
+                    String appErrorMessage = null;//
+                    String creationDate = null;//
+                    Long lastUpdatedBy = null;//
+                    String lastUpdateDate = null;//
+                    String attribute1 = null;//
+                    String attribute2 = null;//
+                    String attribute3 = null;//
+                    String attribute4 = null;//
+                    String attribute5 = null;//
+
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
-                    WtaShippingOrderHeader header = new WtaShippingOrderHeader();
-                    for (int j = 0; j < childNodeList.getLength(); j++) {
-
-                        Node childNode = childNodeList.item(j);
-                        header = mapping(header, childNode);
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if (childNode.getNodeName().equalsIgnoreCase("SOB_ID")) {
+                                // 有值
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    sobId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("TRANS_ID")) {
+                                // 有值
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    transId = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("TRANS_TYPE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    transType = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("TRANS_NUMBER")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    transNumber = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("CUSTOMER_ID")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    customerId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("CUSTOMER_NUMBER")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    customerNumber = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("DIY_SITE_CODE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    diySiteCode = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("SHIP_DATE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    shipDate = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ITEM_CODE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    itemCode = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("QUANTITY")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    quantity = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("EBS_TO_APP_FLAG")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    ebsToAppFlag = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("APP_ERROR_MESSAGE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    appErrorMessage = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("CREATION_DATE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    creationDate = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("LAST_UPDATED_BY")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    lastUpdatedBy = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("LAST_UPDATE_DATE")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    lastUpdateDate = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE1")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    attribute1 = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    attribute2 = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE3")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    attribute3 = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE4")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    attribute4 = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE5")) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    attribute5 = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            }
+                        }
                     }
-                    if (StringUtils.isBlank(header.getDriver())) {
-                        logger.info("GetEBSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
-                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
-                    }
-                    header.setCreateTime(Calendar.getInstance().getTime());
-                    int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
-                    if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getOrderNo());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,该单已存在!");
-                    }
-                    //查询是否存在
-                    List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(header.getOrderNo());
-                    if (AssertUtil.isEmpty(deliveryInfoDetailsList)) {
-                        logger.info("GetEBSInfo OUT,获取wms信息失败,该订单不存在 出参 order_no:{}", header.getOrderNo());
-                        return AppXmlUtil.resultStrXml(1, "App没有找到该订单");
-                    }
-                    WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(header.getWhNo());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
-                        //保存物流信息
-                        OrderDeliveryInfoDetails deliveryInfoDetails = OrderDeliveryInfoDetails.transform(header,
-                                null != wareHouse ? wareHouse.getWareHouseName() : header.getWhNo());
-                        orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
-                        //修改订单配送信息加入配送员
-                        appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
-                        //修改订单头状态
-                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
+                        //查询该信息是否发送过
+                        EtaReturnAndRequireGoodsInf etaReturnAndRequireGoodsInf = diySiteInventoryEbsService.findByTransId(transId);
+                        if (null == etaReturnAndRequireGoodsInf) {
+                            etaReturnAndRequireGoodsInf.setSobId(sobId);
+                            etaReturnAndRequireGoodsInf.setTransId(transId);
+                            etaReturnAndRequireGoodsInf.setTransType(transType);
+                            etaReturnAndRequireGoodsInf.setTransNumber(transNumber);
+                            etaReturnAndRequireGoodsInf.setCustomerId(customerId);
+                            etaReturnAndRequireGoodsInf.setCustomerNumber(customerNumber);
+                            etaReturnAndRequireGoodsInf.setDiySiteCode(diySiteCode);
+                            etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
+                            etaReturnAndRequireGoodsInf.setItemCode(itemCode);
+                            etaReturnAndRequireGoodsInf.setQuantity(quantity);
+                            etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
+                            etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
+                            etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
+                            etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
+                            etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
+                            etaReturnAndRequireGoodsInf.setAttribute1(attribute1);
+                            etaReturnAndRequireGoodsInf.setAttribute2(attribute2);
+                            etaReturnAndRequireGoodsInf.setAttribute3(attribute3);
+                            etaReturnAndRequireGoodsInf.setAttribute4(attribute4);
+                            etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
+                            diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
+
+                            //判断门店是否存在
+                            AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
+                            if (appStore == null) {
+                                return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>门店编码为：" + diySiteCode
+                                        + "的门店不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+                            }
+
+                            //根据门店编码和商品sku查询门店库存
+                            StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
+                            if (null == storeInventory) {
+                                return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为：" + itemCode
+                                        + "的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+                            }
+                             GoodsDO goodsDO =goodsService.queryBySku(itemCode);
+                            //更改门店库存和可用量
+                            for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                                Integer goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
+                                Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() +quantity.intValue();
+                                Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    //新增门店库存变更日志
+                                    StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
+                                    iLog.setAfterChangeQty(storeInventory.getAvailableIty());
+                                    iLog.setChangeQty(quantity.intValue());
+                                    iLog.setChangeTime(new Date());
+                                    if(quantity>0){
+                                        iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS);
+                                        iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS.getDescription());
+                                    }else{
+                                        iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
+                                        iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                                    }
+                                    iLog.setStoreId(storeInventory.getStoreId());
+                                    iLog.setStoreCode(storeInventory.getStoreCode());
+                                    iLog.setStoreName(storeInventory.getStoreName());
+                                    iLog.setGid(goodsDO.getGid());
+                                    iLog.setSku(itemCode);
+                                    iLog.setSkuName(goodsDO.getSkuName());
+                                    iLog.setReferenceNumber(transNumber);
+                                    appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            }
+                        } else {
+                            return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>事物编码重复：" + transId
+                                    + "</MESSAGE></STATUS></RESULTS>";
+                        }
+
                     } catch (Exception e) {
-                        logger.info("GetEBSInfo OUT,获取出货单头档wms信息失败,发生未知异常 出参 e:{}", e);
+                        logger.info("GetEBSInfo OUT,直营要货退货发生未知异常 出参 e:{}", e);
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        return AppXmlUtil.resultStrXml(1, "处理出货单头档事务失败!");
+                        return AppXmlUtil.resultStrXml(1, "直营要货退货失败!");
                     }
-                    //推送物流信息
-                    NoticePushUtils.pushOrderLogisticInfo(header.getOrderNo());
-                    // rabbit 记录下单销量
-                    sellDetailsSender.sendOrderSellDetailsTOManagement(header.getOrderNo());
                 }
-                logger.info("GetEBSInfo OUT,获取wms信息成功 出参 code=0");
+                logger.info("GetEBSInfo OUT,获取ebs信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
             }
-
-            //直营退货
-            else if ("tbw_send_task_d".equalsIgnoreCase(strTable)) {
-
-                for (int i = 0; i < nodeList.getLength(); i++) {
-
-                    Node node = nodeList.item(i);
-                    NodeList childNodeList = node.getChildNodes();
-                    WtaShippingOrderGoods goods = new WtaShippingOrderGoods();
-                    for (int j = 0; j < childNodeList.getLength(); j++) {
-
-                        Node childNode = childNodeList.item(j);
-                        goods = mapping(goods, childNode);
-                    }
-                    GoodsDO goodsDO = goodsService.queryBySku(goods.getGCode());
-                    if (goodsDO == null) {
-                        logger.info("GetEBSInfo OUT,获取wms信息失败,商品不存在 出参 c_gcode:{}", goods.getGCode());
-                        return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品不存在");
-                    }
-                    int result = wmsToAppOrderService.saveWtaShippingOrderGoods(goods);
-                    if (result == 0) {
-                        logger.info("GetEBSInfo OUT,获取wms信息失败,商品已存在 出参 c_gcode:{}", goods.getGCode());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,编码为" + goods.getGCode() + "的商品已存在");
-                    }
-                    //跟新订单的出货数量
-                    appOrderService.updateOrderGoodsShippingQuantity(goods.getOrderNo(), goods.getGCode(), goods.getDAckQty());
-                }
-                logger.info("GetEBSInfo OUT,获取wms信息成功 出参 code=0");
-                return AppXmlUtil.resultStrXml(0, "NORMAL");
-            }
-        }catch (ParserConfigurationException e) {
-            logger.warn("GetWMSInfo EXCEPTION,解密后xml参数错误");
+        } catch (ParserConfigurationException e) {
+            logger.warn("GetEBSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml参数错误");
 
         } catch (IOException | SAXException e) {
-            logger.warn("GetWMSInfo EXCEPTION,解密后xml格式不对");
+            logger.warn("GetEBSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
         }
@@ -890,6 +999,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
         }
         return orderResultEnter;
     }
+
     //***************************下面是调用测试***********************************
     @Override
     public String getName(String userId) {

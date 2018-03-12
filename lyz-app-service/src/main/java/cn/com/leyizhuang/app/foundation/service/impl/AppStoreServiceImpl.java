@@ -275,6 +275,14 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    public StoreInventory findStoreInventoryByStoreCodeAndGoodsSku(String storeCode, String goodsSku) {
+        if (null != storeCode && null != goodsSku) {
+            return storeDAO.findStoreInventoryByStoreCodeAndGoodsSku(storeCode, goodsSku);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStoreInventoryAvailableQtyChangeLog(StoreInventoryAvailableQtyChangeLog log) {
         if (null != log) {

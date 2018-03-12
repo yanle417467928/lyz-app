@@ -109,7 +109,7 @@
         diy_site_title, order_number, remark_info,
         return_number, return_time, status_id, deliver_type_title, shopping_address,
         seller_real_name, goods_line_quantity, creator, creator_phone, rejecter,
-        rejecter_phone, rejecter_address)
+        rejecter_phone, rejecter_address, delivery_clerk_no)
             SELECT
                 #{createTime},
                 #{diySiteAddress},
@@ -129,7 +129,8 @@
         #{creatorPhone},
         #{rejecter},
         #{rejecterPhone},
-        #{rejecterAddress}
+        #{rejecterAddress},
+        #{deliveryClerkNo}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'

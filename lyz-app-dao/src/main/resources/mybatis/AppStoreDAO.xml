@@ -356,6 +356,27 @@
         WHERE store_id = #{storeId} AND gid = #{goodsId}
     </select>
 
+
+    <select id="findStoreInventoryByStoreCodeAndGoodsSku"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
+        SELECT
+        id,
+        city_id,
+        city_name,
+        city_code,
+        store_id,
+        store_name,
+        store_code,
+        gid,
+        sku,
+        sku_name,
+        available_ity,
+        real_ity,
+        last_update_time
+        FROM st_inventory
+        WHERE store_code = #{storeCode} AND sku = #{goodsSku}
+    </select>
+
     <select id="findStoreInventoryByStoreCodeAndGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
         SELECT

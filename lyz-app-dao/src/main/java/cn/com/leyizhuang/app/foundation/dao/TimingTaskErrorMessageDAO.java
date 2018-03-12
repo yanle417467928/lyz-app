@@ -12,4 +12,6 @@ public interface TimingTaskErrorMessageDAO {
     void saveTimingTaskErrorMessage(TimingTaskErrorMessageDO timingTaskErrorMessageDO);
 
     TimingTaskErrorMessageDO findTimingTaskErrorMessageByOrderNumber(@Param(value = "orderNumber")String orderNumber);
+
+    void updateTimingTaskErrorMessageByOrderNo(TimingTaskErrorMessageDO timingTaskErrorMessageDO);
 }

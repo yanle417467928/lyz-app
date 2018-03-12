@@ -319,7 +319,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maGoodsDAO.saveGoodsShippingInfo(goodsShippingInfo);
             //更新门店库存
             //查看门店下该商品的库存
-            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreCodeAndGoodsId(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid());
+            MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreIdAndGoodsId(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid());
             if (null == storeInventory || null == storeInventory.getAvailableIty()) {
                 throw new RuntimeException("该门店下没有该商品,商品id:" + maOrderGoodsInfo.getGid());
             }
@@ -1094,6 +1094,11 @@ public class MaOrderServiceImpl implements MaOrderService {
             ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
             //获取订单账目明细
             OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+
+
+            //获取错误信息
+            TimingTaskErrorMessageDO timingTaskErrorMessageDO = timingTaskErrorMessageDAO.findTimingTaskErrorMessageByOrderNumber(orderBaseInfo.getOrderNumber());
+
             //记录退单头信息
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
             returnOrderBaseInfo.setOrderNo(orderBaseInfo.getOrderNumber());
@@ -1178,11 +1183,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1216,11 +1227,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1268,11 +1285,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1318,11 +1341,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1369,11 +1398,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1405,11 +1440,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1456,11 +1497,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1494,11 +1541,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
@@ -1531,11 +1584,17 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-                                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
-                                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-                                timingTaskErrorMessageDO.setRecordTime(date);
-                                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                if (null  == timingTaskErrorMessageDO){
+                                    timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                                }else {
+                                    timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
+                                    timingTaskErrorMessageDO.setRecordTime(date);
+                                    timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+                                }
                                 throw new SystemBusyException("系统繁忙，请稍后再试!");
                             }
                         }
