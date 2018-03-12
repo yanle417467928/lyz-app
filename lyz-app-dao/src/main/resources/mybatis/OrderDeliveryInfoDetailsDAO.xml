@@ -299,7 +299,7 @@
                 orli.rejecter receiver,
                 orli.rejecter_phone receiverPhone,
                 ordd.task_no shipperNumber,
-                null,
+                0,
                 'n' isOrderOrReturnOrder,
                 ordd.create_time createTime
 

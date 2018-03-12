@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrde
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.webservice.ICallWms;
@@ -316,6 +317,17 @@ public class DispatchingController {
             }
             if (StringUtils.isBlank(appEmployee.getDeliveryClerkNo())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送员编号为空", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
+            if (null ==returnOrderLogisticInfo){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单物流地址信息！", null);
+                logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (!returnOrderLogisticInfo.getDeliveryClerkNo().equals(appEmployee.getDeliveryClerkNo())){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此退货单取货人员已变动，请联系管理员确认！", null);
                 logger.info("getPickUpEnter OUT,配送员取货确认失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
