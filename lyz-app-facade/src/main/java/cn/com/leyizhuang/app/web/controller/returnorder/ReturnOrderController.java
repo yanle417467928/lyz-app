@@ -807,6 +807,8 @@ public class ReturnOrderController {
                 ReturnOrderListResponse response = new ReturnOrderListResponse();
                 //获取订单商品
                 List<ReturnOrderGoodsInfo> returnGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnBaseInfo.getReturnNo());
+                //获取原订单的配送方式
+                OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(returnBaseInfo.getOrderNo());
                 //遍历订单商品
                 int count = 0;
                 for (ReturnOrderGoodsInfo returnGoodsInfo : returnGoodsInfoList) {
@@ -819,6 +821,7 @@ public class ReturnOrderController {
                 response.setCount(count);
                 response.setReturnPrice(returnBaseInfo.getReturnPrice());
                 response.setReturnType(returnBaseInfo.getReturnType().getDescription());
+                response.setOrderDeliveryType(orderBaseInfo.getDeliveryType());
                 response.setGoodsImgList(goodsImgList);
                 if (identityType == 0) {
                     CustomerSimpleInfo customer = new CustomerSimpleInfo();

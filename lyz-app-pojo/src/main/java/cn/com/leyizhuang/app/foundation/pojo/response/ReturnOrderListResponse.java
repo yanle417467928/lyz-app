@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
@@ -51,4 +52,9 @@ public class ReturnOrderListResponse {
      * 退单类型
      */
     private String returnType;
+
+    /**
+     * 原订单的物流配送方式
+     */
+    private AppDeliveryType orderDeliveryType;
 }

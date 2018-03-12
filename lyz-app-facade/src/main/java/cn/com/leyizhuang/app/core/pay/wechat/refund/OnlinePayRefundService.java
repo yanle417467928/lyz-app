@@ -83,7 +83,7 @@ public class OnlinePayRefundService {
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
                     orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money));
-            logger.debug("******微信退款签名***** OUT, 出参 sign:{}", resultMap);
+            logger.debug("******微信退款签名***** OUT, 出参 resultMap:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
                 if ("SUCCESS".equalsIgnoreCase(resultMap.get("return_code").toString())) {
