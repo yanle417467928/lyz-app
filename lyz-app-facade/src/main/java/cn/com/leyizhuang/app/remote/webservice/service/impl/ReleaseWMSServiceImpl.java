@@ -394,19 +394,17 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     //获取取消订单相关参数
                     CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderResultEnter.getOrderNo());
                     if (orderResultEnter.getIsCancel()) {
-                        //调用取消订单通用方法
-                        Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
-                        ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-                        if ("SUCCESS".equals(maps.get("code"))) {
-
-                            //如果是待收货、门店自提单则需要返回第三方支付金额
+                            //调用取消订单通用方法
+                            Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
+                            ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                                //如果是待收货、门店自提单则需要返回第三方支付金额
                                 if (null != orderBillingDetails.getOnlinePayType()) {
                                     if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //支付宝退款
                                         onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
                                     } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                         //微信退款方法类
-                                         onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo());
+                                        onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo());
                                     } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //创建退单退款详情实体
                                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -422,21 +420,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                                     }
                                 }
-
-                            //发送退单拆单消息到拆单消息队列
-                            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-                            //修改取消订单处理状态
-                            cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
-                            logger.info("cancelOrderToWms OUT,取消订单成功");
-                        } else {
-                            logger.info("getReturnOrderList OUT,取消订单失败");
-                            return AppXmlUtil.resultStrXml(1, "取消订单业务逻辑处理失败!");
-                        }
+                                //修改取消订单处理状态
+                                cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
+                                //发送退单拆单消息到拆单消息队列
+                                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                                logger.info("cancelOrderToWms OUT,取消订单成功");
+                                return AppXmlUtil.resultStrXml(0, "NORMAL");
                     } else {
-                        logger.info("cancelOrderToWms CALLED,发送提货码，入参 mobile:{}", orderBaseInfo.getCreatorPhone());
-                        if (null == orderBaseInfo.getCreatorPhone() || orderBaseInfo.getCreatorPhone().equalsIgnoreCase("") || orderBaseInfo.getCreatorPhone().trim().length() != 11) {
-                            logger.info("cancelOrderToWms OUT,发送提货码失败，出参 ResultDTO:{}");
-                        }
                         String info = "您取消的订单" + orderResultEnter.getOrderNo() + "，取消失败，请联系管理人员！";
                         logger.info("取消失败订单号:{}", orderResultEnter.getOrderNo());
                         String content = null;

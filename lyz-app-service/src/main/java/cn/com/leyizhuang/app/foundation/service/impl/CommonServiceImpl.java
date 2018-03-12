@@ -1285,10 +1285,10 @@ public class CommonServiceImpl implements CommonService {
             }
 
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                StorePreDeposit preDeposit = storeService.findStorePreDepositByEmpId(returnOrderBaseInfo.getCreatorId());
+                StorePreDeposit preDeposit = storeService.findStorePreDepositByStoreId(returnOrderBaseInfo.getStoreId());
                 if (null != preDeposit) {
-                    int affectLine = storeService.lockStoreDepositByUserIdAndStoreDeposit(
-                            returnOrderBaseInfo.getCreatorId(), jxPrice, preDeposit.getLastUpdateTime());
+                    int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
+                            returnOrderBaseInfo.getStoreId(), jxPrice, preDeposit.getLastUpdateTime());
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());

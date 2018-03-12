@@ -268,6 +268,17 @@
                WHERE emp_id = #{userId})
     </select>
 
+    <select id="findStorePreDepositByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
+        SELECT
+        store_id,
+        balance,
+        create_time,
+        last_update_time
+        FROM st_pre_deposit
+        WHERE store_id = #{storeId}
+    </select>
+
     <select id="findAppStoreByEmpId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         SELECT *
@@ -484,5 +495,12 @@
         SET balance = balance - #{stPreDeposit}
         WHERE store_id = #{storeId}
               AND last_update_time = #{lastUpdateTime}
+    </update>
+
+    <update id="updateStoreDepositByStoreIdAndStoreDeposit">
+        UPDATE st_pre_deposit
+        SET balance = balance - #{deposit}
+        WHERE store_id = #{storeId}
+        AND last_update_time = #{version}
     </update>
 </mapper>
