@@ -225,6 +225,25 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     }
 
     /**
+     * 返回会员专供产品累计桶数
+     * @return
+     */
+    public Integer getZgTsBycusIdAndsku(Long cusId,String sku){
+        Integer totalQty = 0;
+
+        List<SellZgDetailsDO> sellZgDetailsDOS = sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId,sku);
+        if (sellZgDetailsDOS == null){
+            return totalQty;
+        }
+
+        for (SellZgDetailsDO detailsDO : sellZgDetailsDOS){
+            totalQty += detailsDO.getQuantity();
+        }
+
+        return  totalQty;
+    }
+
+    /**
      * 根据专供会员id和返回专供销量结果结果
      * @param cusId
      * @param sku

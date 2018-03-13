@@ -63,7 +63,7 @@
     <#list photoOrderVO.photos as item>
         <div class="cover" id="big-img${item_index}">
 
-            <img id="big${item_index}" class="big-img" style="height: 65%;width: 80%;" onclick="outBig(${item_index})" src="${item!''}"/>
+            <img id="big${item_index}" class="big-img" style="margin-top: 20%; height: 40%;width: 80%;" onclick="outBig(${item_index})" src="${item!''}"/>
         </div>
     </#list>
 </#if>

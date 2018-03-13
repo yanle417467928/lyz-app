@@ -5,10 +5,13 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css"/>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
+    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
 </head>
 <body>
 
@@ -139,6 +142,40 @@
         </div>
     </div>
 </div>
+
+<div id="qrcodeModal" class="modal modal-info fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="user-block">
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="exampleInputFile">上传二维码</label>
+                                <input id="uploadQrcodeBtn" type="file" name="file" multiple class="file-loading">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="height: 150px">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group" id='coverImageShow'>
+                                <input name="coverImageUri" type="hidden" id="coverImg" class="form-control">
+                                <input id="empId" type="hidden">
+                                <div class="img-box" id="coverImageBox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a href="javascript:$qrcode.saveQrcodePic();" role="button" class="btn btn-primary">保存</a>
+                <a href="javascript:$qrcode.close();" role="button" class="btn btn-warning">关闭</a>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 
     $(function () {
@@ -146,6 +183,7 @@
         findStoreSelection();
         findTypeSelection();
         initDateGird('/rest/employees/page/grid');
+        initFileInput("uploadQrcodeBtn",1);
     });
 
     function initDateGird(url) {
@@ -192,17 +230,30 @@
                 title: '归属门店',
                 align: 'center'
             }, {
+                field: 'qrCode',
+                title: '二维码地址',
+                align: 'left',
+                width: '5%'
+            }, {
                 field: 'status',
                 title: '是否生效',
                 align: 'center',
                 formatter: function (value, row, index) {
                     if (true == value) {
-                        return '<span class="label label-primary">是</span>';
+                        return '<span class="label label-primary">是</span> ';
                     } else if (false == value) {
-                        return '<span class="label label-danger">否</span>';
+                        return '<span class="label label-danger">否</span> ';
                     } else {
-                        return '<span class="label label-danger">-</span>';
+                        return '<span class="label label-danger">-</span> ';
                     }
+                }
+            },
+            {
+                field: 'id',
+                title: '上传二维码',
+                align: 'center',
+                formatter: function (value, row, index) {
+                        return '<buttun class="btn-sm btn-success" onclick="$qrcode.open(' + value + ')">上传二维码</buttun>';
                 }
             },
         ]);
@@ -562,6 +613,88 @@
         });
     }
 
+    var $qrcode = {
+        open: function (id) {
+            $("#empId").val(id);
+            $("#qrcodeModal").modal();
+        },
+        close: function(){
+            $("#empId").val("");
+            $("#coverImageBox").html("");
+            $("#coverImg").val("");
+            $("#qrcodeModal").modal('hide');
+        },
+        saveQrcodePic: function () {
 
+            var empId = $("#empId").val();
+            var picUrl = $('#coverImg').val();
+
+            if (empId == null || empId == "" || empId == undefined){
+                $notify.warning("保存失败，请重新上传二维码");
+                return false;
+            }
+            if (picUrl == null || picUrl == "" || picUrl == undefined){
+                $notify.warning("保存失败，请重新上传二维码")
+                return false;
+            }
+
+            var data = {"qrcodeUrl":picUrl,"empId":empId}
+
+            $http.PUT("/rest/employees/update/qrcode",data,uploadSuccess);
+
+            $("#empId").val("");
+            $("#coverImageBox").html("");
+            $("#coverImg").val("");
+        }
+    }
+
+    function uploadSuccess(result) {
+        if (result.code == 0){
+            $notify.success("保存成功！")
+            $("#qrcodeModal").modal('hide');
+            $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/employees/page/grid');
+        }else {
+            $notify.warning(result.message);
+        }
+
+
+    }
+
+    function initFileInput(ctrlName, type) {
+        var control = $('#' + ctrlName);
+        control.fileinput({
+            language: 'zh', //设置语言
+            uploadUrl: "/rest/goods/uploadQrcode", //上传的地址
+            allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
+            //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
+            uploadAsync: true, //默认异步上传
+            showUpload: false, //是否显示上传按钮
+            showRemove: true, //显示移除按钮
+            showPreview: false, //是否显示预览
+            showCaption: true,//是否显示标题
+            browseClass: "btn btn-primary", //按钮样式
+            dropZoneEnabled: false,//是否显示拖拽区域
+            //minImageWidth: 50, //图片的最小宽度
+            //minImageHeight: 50,//图片的最小高度
+            //maxImageWidth: 1000,//图片的最大宽度
+            //maxImageHeight: 1000,//图片的最大高度
+            //maxFileSize:0,//单位为kb，如果为0表示不限制文件大小
+            maxFileCount: 1,//表示允许同时上传的最大文件个数
+            enctype: 'multipart/form-data',
+            validateInitialCount: true,
+            previewFileIcon: "<iclass='glyphicon glyphicon-king'></i>",
+            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
+        }).on('filebatchselected', function (event, data, id, index) {
+            $(this).fileinput("upload");
+        }).on("fileuploaded", function (event, data) {
+            if (data.response.code == 0) {
+                if (1 == type) {
+                    $('#coverImageBox').html('<img  src="' + data.response.content + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" />')
+                    $('#coverImg').val(data.response.content);
+                }
+            }
+        });
+    }
 </script>
 </body>

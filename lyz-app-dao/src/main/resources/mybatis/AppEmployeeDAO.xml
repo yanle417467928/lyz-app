@@ -68,6 +68,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             <if test="null != managerId">
                 manager_id = #{managerId},
             </if>
+            <if test="qrCode != null">
+                qr_code = #{qrCode}
+            </if>
         </set>
         WHERE emp_id = #{empId}
     </update>

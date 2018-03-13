@@ -168,7 +168,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
                         if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
                             maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maPaymentData.getTotalFee());
                         } else if ("WE_CHAT".equals(maPaymentData.getOnlinePayType().toString())) {
-                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
+                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(),maReturnOrderDetailInfo.getOrderNo(),returnNumber);
                         } else if ("银联".equals(maPaymentData.getOnlinePayType().toString())) {
                             //TODO
                         }

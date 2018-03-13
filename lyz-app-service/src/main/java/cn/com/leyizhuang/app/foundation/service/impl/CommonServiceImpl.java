@@ -609,7 +609,7 @@ public class CommonServiceImpl implements CommonService {
                 StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
                 if (null != preDeposit) {
                     int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
-                            preDeposit.getStoreId(), billingDetails.getStPreDeposit(), preDeposit.getLastUpdateTime());
+                            preDeposit.getStoreId(), -billingDetails.getJxPriceDifferenceAmount(), preDeposit.getLastUpdateTime());
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());

@@ -5,10 +5,10 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 
 /**
- * @author  liuh
+ * @author liuh
  * Created on 2017-12-19 11:22
  **/
-@WebService(targetNamespace="http://cn.com.leyizhuang.app.remote.webservice.service")
+@WebService(targetNamespace = "http://cn.com.leyizhuang.app.remote.webservice.service")
 public interface ReleaseEBSService {
 
     /**
@@ -24,9 +24,4 @@ public interface ReleaseEBSService {
                       @WebParam(name = "STRTYPE") String type,
                       @WebParam(name = "XML") String xml);
 
-    //***************************下面是调用测试***********************************
-    @WebMethod
-    String getName(@WebParam(name = "userId") String userId);
-    @WebMethod
-    String getUser(String userId);
 }

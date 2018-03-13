@@ -34,6 +34,7 @@ public class EmployeeVO {
     //门店id
     private SimpleStoreParam storeId;
 
+    private String qrCode;
     public static final EmployeeVO transform(EmployeeDO employeeDO) {
         if (null != employeeDO) {
             EmployeeVO employeeVO = new EmployeeVO();
@@ -54,6 +55,7 @@ public class EmployeeVO {
             employeeVO.setStatus(employeeDO.getStatus());
             employeeVO.setCityId(employeeDO.getCityId());
             employeeVO.setStoreId(employeeDO.getStoreId());
+            employeeVO.setQrCode(employeeDO.getQrCode());
             return employeeVO;
         } else {
             return null;
