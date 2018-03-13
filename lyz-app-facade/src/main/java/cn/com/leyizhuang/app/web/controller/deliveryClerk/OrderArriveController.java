@@ -232,7 +232,7 @@ public class OrderArriveController {
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                            empCreditMoneyChangeLog.setEmpId(userId);
+                            empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
                             empCreditMoneyChangeLog.setCreateTime(new Date());
                             empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
