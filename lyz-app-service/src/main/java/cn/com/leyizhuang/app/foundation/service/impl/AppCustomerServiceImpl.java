@@ -607,9 +607,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public List<FindCustomerResponse> findCustomerByCusName(Long storeId, String keywords) {
+    public List<FindCustomerResponse> findCustomerByCusNameOrPhone(Long storeId, String keywords) {
         if (null != storeId && null != keywords){
-           return customerDAO.findCustomerByCusName(storeId, keywords);
+           return customerDAO.findCustomerByCusNameOrPhone(storeId, keywords);
         }else {
             return null;
         }
