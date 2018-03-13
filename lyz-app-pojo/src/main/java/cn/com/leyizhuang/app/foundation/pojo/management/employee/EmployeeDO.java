@@ -60,7 +60,8 @@ public class EmployeeDO {
     private String deliveryClerkNo;
     //入职时间
     private Date entryTime;
-
+    //二维码
+    private String qrCode;
     public static final EmployeeDO  transform(EmployeeDetailVO employeeVO) {
         if (null != employeeVO) {
             EmployeeDO employeeDO = new EmployeeDO();
