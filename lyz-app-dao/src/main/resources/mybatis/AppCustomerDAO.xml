@@ -811,7 +811,7 @@
         AND mobile = #{mobile}
     </select>
 
-    <select id="findCustomerByCusName" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
+    <select id="findCustomerByCusNameOrPhone" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
         SELECT
         cus_id cusId,
         mobile cusPhone,
@@ -820,6 +820,6 @@
         cus_customer
         WHERE
         store_id = #{storeId}
-        AND `name` LIKE concat('%', #{keywords}, '%')
+        AND (`name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
     </select>
 </mapper>

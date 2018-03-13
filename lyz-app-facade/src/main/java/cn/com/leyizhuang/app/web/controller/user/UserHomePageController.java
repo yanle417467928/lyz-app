@@ -242,7 +242,7 @@ public class UserHomePageController {
             if (keywords.matches("[0-9]{11}")){
                 findCustomerResponseList = customerService.findCustomerByCusPhone(employee.getCityId(),keywords);
             }else {
-                findCustomerResponseList = customerService.findCustomerByCusName(employee.getStoreId(),keywords);
+                findCustomerResponseList = customerService.findCustomerByCusNameOrPhone(employee.getStoreId(),keywords);
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     (findCustomerResponseList != null && findCustomerResponseList.size() > 0) ? findCustomerResponseList : null);
