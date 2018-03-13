@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.PaymentDataDAO">
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         INSERT INTO payment_data
         (create_time, user_id, identity_type, out_trade_no,ord_no, trade_status, payment_type, payment_type_desc, total_fee,
          online_pay_type, notify_url, notify_time, trade_no, remarks)

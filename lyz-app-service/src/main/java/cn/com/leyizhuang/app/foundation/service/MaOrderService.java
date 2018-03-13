@@ -355,7 +355,7 @@ public interface MaOrderService {
      */
     void findScanningUnpaidOrder();
 
-    void scanningUnpaidOrder(OrderBaseInfo orderBaseInfo);
+    String scanningUnpaidOrder(OrderBaseInfo orderBaseInfo);
 
     /**
      * 查询该订单的支付信息

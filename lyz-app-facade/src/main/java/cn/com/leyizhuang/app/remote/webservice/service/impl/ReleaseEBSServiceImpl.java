@@ -50,7 +50,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
     private MaStoreInventoryService maStoreInventoryService;
 
     /**
-     * 获取wms信息
+     * 获取EBS信息
      *
      * @param strTable 表
      * @param strType  类型

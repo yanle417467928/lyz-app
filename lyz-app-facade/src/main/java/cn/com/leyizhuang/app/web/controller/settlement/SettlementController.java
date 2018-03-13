@@ -5,19 +5,18 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStoreResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +49,9 @@ public class SettlementController {
 
     @Resource
     private AppOrderService orderService;
+
+    @Autowired
+    private GoodsPriceService goodsPriceService;
 
 
     /**
@@ -109,6 +111,17 @@ public class SettlementController {
             List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIdList);
             SelfTakeStoreResponse response = new SelfTakeStoreResponse();
             List<SelfTakeStore> selfTakeStoreList = new ArrayList<>();
+
+            //判断商品是否有专供商品
+            List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            //有专供商品只能选择送货上门
+            if (null != goodsZGList && goodsZGList.size() > 0) {
+                response.setIsSelfTakePermitted(false);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
+                logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             if (null != companyFlag && !companyFlag.isEmpty()) {
                 for (String flag : companyFlag) {
                     if (forbiddenSelfTakeCompanyList.contains(flag)) {

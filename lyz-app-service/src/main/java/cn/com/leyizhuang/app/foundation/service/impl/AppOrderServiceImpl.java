@@ -891,14 +891,13 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo) {
-        if (StringUtils.isNotBlank(driver)) {
-            AppEmployee clerk = employeeService.findDeliveryByClerkNo(driver);
+    public void updateOrderLogisticInfoByDeliveryClerkNo(AppEmployee clerk, String warehouse, String orderNo) {
+        if (null != clerk && StringUtils.isNotBlank(warehouse) && StringUtils.isNotBlank(orderNo)) {
 
             OrderLogisticsInfo logisticsInfo = new OrderLogisticsInfo();
             logisticsInfo.setOrdNo(orderNo);
             logisticsInfo.setDeliveryClerkId(clerk.getEmpId());
-            logisticsInfo.setDeliveryClerkNo(driver);
+            logisticsInfo.setDeliveryClerkNo(clerk.getDeliveryClerkNo());
             logisticsInfo.setDeliveryClerkName(clerk.getName());
             logisticsInfo.setDeliveryClerkPhone(clerk.getMobile());
             logisticsInfo.setWarehouse(warehouse);

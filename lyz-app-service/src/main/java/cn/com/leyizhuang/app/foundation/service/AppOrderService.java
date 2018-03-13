@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
@@ -157,7 +158,7 @@ public interface AppOrderService {
 
     void saveAliPayOrderBillingPaymentDetails(String orderNumber, Double money, String replyNumber, String receiptNumber);
 
-    void updateOrderLogisticInfoByDeliveryClerkNo(String driver, String warehouse, String orderNo);
+    void updateOrderLogisticInfoByDeliveryClerkNo(AppEmployee clerk, String warehouse, String orderNo);
 
     List<OrderBillingPaymentDetails> getOrderBillingDetailListByReceiptNumber(String receiptNumber);
 

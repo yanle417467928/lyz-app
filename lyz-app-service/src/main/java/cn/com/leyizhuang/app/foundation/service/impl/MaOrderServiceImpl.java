@@ -1084,7 +1084,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Async
-    public void scanningUnpaidOrder(OrderBaseInfo orderBaseInfo) {
+    public String scanningUnpaidOrder(OrderBaseInfo orderBaseInfo) {
         Date date = new Date();
         try {
             //获取退单号
@@ -1679,6 +1679,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             }
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
+            return returnNumber;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());

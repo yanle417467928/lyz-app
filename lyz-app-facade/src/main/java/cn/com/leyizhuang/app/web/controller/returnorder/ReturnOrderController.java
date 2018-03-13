@@ -267,7 +267,7 @@ public class ReturnOrderController {
             logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (AppIdentityType.DELIVERY_CLERK.getValue() != identityType){
+        if (AppIdentityType.DELIVERY_CLERK.getValue() != identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此身份类型不能进行此操作", null);
             logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -319,7 +319,7 @@ public class ReturnOrderController {
                 atwReturnOrder.setDiySiteId(null);
                 atwReturnOrder.setDiySiteTitle(null);
                 atwReturnOrder.setDiySiteTel(null);
-                atwReturnOrder.setRemarkInfo(null);
+                atwReturnOrder.setRemarkInfo("拒签退货: "+ returnOrderBaseInfo.getReasonInfo());
                 atwReturnOrder.setOrderNumber(orderNumber);
                 atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
                 atwReturnOrder.setReturnTime(date);
@@ -594,6 +594,8 @@ public class ReturnOrderController {
             //******************* 创建退货单金额信息 ************************
             List<OrderBillingPaymentDetails> orderPaymentDetails = appOrderService.
                     getOrderBillingDetailListByOrderNo(orderNo);
+
+            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNo);
             //初始化退货账单信息
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling(
                     returnNo, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D);
@@ -611,6 +613,8 @@ public class ReturnOrderController {
             Double storePrePay = 0D;
             Double storeCredit = 0D;
             Double storeSubvention = 0D;
+            //退单扣除运费
+            Boolean hasFreight = true;
 
             if (AssertUtil.isNotEmpty(orderPaymentDetails)) {
                 for (OrderBillingPaymentDetails paymentDetails : orderPaymentDetails) {
@@ -637,12 +641,32 @@ public class ReturnOrderController {
                         storeCredit = paymentDetails.getAmount();
                     }
                 }
-
+                //整单退,不退运费
                 if (isReturnAll) {
-                    returnOrderBilling.setCash(cashPosPrice);
-                    returnOrderBilling.setOnlinePay(onlinePayPrice);
-                    returnOrderBilling.setPreDeposit(customerPrePay);
-                    returnOrderBilling.setStPreDeposit(storePrePay);
+                    if (customerPrePay > billingDetails.getFreight()) {
+                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
+                        hasFreight = false;
+                    } else {
+                        returnOrderBilling.setPreDeposit(customerPrePay);
+                    }
+                    if (storePrePay > billingDetails.getFreight()) {
+                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
+                        hasFreight = false;
+                    } else {
+                        returnOrderBilling.setStPreDeposit(storePrePay);
+                    }
+                    if (onlinePayPrice > billingDetails.getFreight()) {
+                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(onlinePayPrice, billingDetails.getFreight()) : onlinePayPrice);
+                        hasFreight = false;
+                    } else {
+                        returnOrderBilling.setOnlinePay(onlinePayPrice);
+                    }
+                    if (cashPosPrice > billingDetails.getFreight()) {
+                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, billingDetails.getFreight()) : cashPosPrice);
+                        hasFreight = false;
+                    } else {
+                        returnOrderBilling.setCash(cashPosPrice);
+                    }
                 } else {
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
@@ -890,11 +914,6 @@ public class ReturnOrderController {
 
             //获取原订单收货/自提门店地址
             ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.getReturnOrderLogisticeInfo(returnNumber);
-//            if (null == returnOrderLogisticInfo) {
-//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少收货物流信息！", null);
-//                logger.info("getReturnOrderDetail OUT,查看退货单详情失败，出参 resultDTO:{}", resultDTO);
-//                return resultDTO;
-//            }
             detailResponse = new ReturnOrderDetailResponse();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             //设置基础信息
@@ -1159,6 +1178,7 @@ public class ReturnOrderController {
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
             //如果是门店自提，只返回自提门店信息
             if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
+                orderLogisticsInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
 //                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
 //                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
 //                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
@@ -1174,16 +1194,18 @@ public class ReturnOrderController {
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo) {
-                        AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
-                        if (store != null) {
-                            orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
-                            orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
-                            orderLogisticsInfo.setBookingStoreName(store.getStoreName());
-                            orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
-                        } else {
-                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前用户未查询到门店信息！", null);
-                            logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
-                            return resultDTO;
+                        if (identityType != 2) {
+                            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                            if (store != null) {
+                                orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
+                                orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
+                                orderLogisticsInfo.setBookingStoreName(store.getStoreName());
+                                orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
+                            } else {
+                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前用户未查询到门店信息！", null);
+                                logger.info("getReturnOrderDeliveryType OUT,获取用户退货方式和取货地址失败，出参 resultDTO:{}", resultDTO);
+                                return resultDTO;
+                            }
                         }
                     }
                 }
