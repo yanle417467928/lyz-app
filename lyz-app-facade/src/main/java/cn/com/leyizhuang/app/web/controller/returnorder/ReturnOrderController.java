@@ -1194,7 +1194,7 @@ public class ReturnOrderController {
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo) {
                         if (identityType != 2) {
-                            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                            AppStore store = appStoreService.findByStoreCode(orderBaseInfo.getStoreCode());
                             if (store != null) {
                                 orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
                                 orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
