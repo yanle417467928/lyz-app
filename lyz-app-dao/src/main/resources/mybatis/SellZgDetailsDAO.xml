@@ -34,6 +34,27 @@
                 <if test="sellerId">
                     seller_id = #{sellerId},
                 </if>
+                <if test="customerId != null">
+                    customer_id = #{customer_id},
+                </if>
+                <if test="number != null">
+                    `number` = #{number},
+                </if>
+                <if test="goodsId != null">
+                    goods_id = #{goodsId},
+                </if>
+                <if test="sku != sku">
+                    sku = #{sku},
+                </if>
+                <if test="quantity != null">
+                    quantity = #{quantity},
+                </if>
+                <if test="amount != null">
+                    amount = #{amount},
+                </if>
+                <if test="goodsLineId != null">
+                    goods_line_id = #{goodsLineId}
+                </if>
             </set>
 
         </update>

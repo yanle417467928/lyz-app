@@ -237,14 +237,7 @@
                                     <#list paymentDetailList as paymentDetail>
                                     <tr>
                                         <td align="center">${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</td>
-                                        <td><#if paymentDetail.paymentType == 'CUS_PREPAY'>
-                                            顾客预存款<#elseif paymentDetail.paymentType == 'ST_PREPAY'>
-                                            门店预存款<#elseif paymentDetail.paymentType == 'ALIPAY'>
-                                            支付宝<#elseif paymentDetail.paymentType == 'WE_CHAT'>
-                                            微信<#elseif paymentDetail.paymentType == 'UNION_PAY'>
-                                            银联<#elseif paymentDetail.paymentType == 'POS'>
-                                            POS<#elseif paymentDetail.paymentType == 'CASH'>
-                                            现金<#elseif paymentDetail.paymentType == 'OTHER'>门店其它</#if></td>
+                                        <td>${paymentDetail.paymentType!"未知"}</td>
                                         <td align="center">${paymentDetail.amount!'0.00'}</td>
                                     </tr>
                                     </#list>

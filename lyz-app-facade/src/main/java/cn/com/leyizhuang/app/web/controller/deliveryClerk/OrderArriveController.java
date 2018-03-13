@@ -71,7 +71,7 @@ public class OrderArriveController {
      * @date 2017/11/23
      */
     @PostMapping(value = "/confirm", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> confirmOrderArrive(Long userId, Integer identityType, String orderNo, String pickUpCode, Double collectionAmount, String paymentMethod, String remarks, @RequestParam(value = "files", required = false) MultipartFile[] files) {
+    public ResultDTO<Object> confirmOrderArrive(Long userId, Integer identityType, String orderNo, String pickUpCode, String collectionAmount, String paymentMethod, String remarks, @RequestParam(value = "files", required = false) MultipartFile[] files) {
         logger.info("confirmOrderArrive CALLED,配送员确认订单送达，入参 userId:{} identityType:{} " +
                         "orderNo:{} pickUpCode:{} collectionAmount:{} paymentMethod:{}, remarks:{} files:{}",
                 userId, identityType, orderNo, pickUpCode, collectionAmount, paymentMethod, remarks, files);
@@ -102,6 +102,16 @@ public class OrderArriveController {
         if(paymentMethod.contains("现金")){
             paymentMethod = "现金";
         }
+        if (null == collectionAmount || "".equals(collectionAmount.trim())) {
+            collectionAmount = "0";
+        }
+        Double amount;
+        try {
+            amount = Double.parseDouble(collectionAmount);
+        }catch (Exception e){
+            amount = 0D;
+        }
+
         try {
             //根据订单号查询订单信息
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNo);
@@ -130,23 +140,23 @@ public class OrderArriveController {
                 return resultDTO;
             }
 
-            collectionAmount = null == collectionAmount ? 0D : collectionAmount;
+            amount = null == amount ? 0D : amount;
             Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
             Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
             //判断是否货到付款--如果是订单欠款必须付清
-            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails) && collectionAmount < ownManey) {
+            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails) && amount < ownManey) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
 
             //判断配送员代收金额是否大于导购输入的代收金额
-            if (collectionAmount > collectionAmountOrder) {
+            if (amount > collectionAmountOrder) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能大于代收金额！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (collectionAmount < 0) {
+            if (amount < 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能小于0！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -169,14 +179,14 @@ public class OrderArriveController {
 
             //判断订单是否有欠款
             if (ownManey > 0) {
-                if (ownManey > collectionAmount) {//欠款金额 > 收款金额
+                if (ownManey > amount) {//欠款金额 > 收款金额
                     //创建欠款审核
                     orderArrearsAuditDO = new OrderArrearsAuditDO();
                     orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
                     orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
-                    orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, collectionAmount, remarks, ArrearsAuditStatus.AUDITING);
+                    orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
                     orderArrearsAuditDO.setPicture(picture);
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
@@ -215,16 +225,16 @@ public class OrderArriveController {
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
 
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
 
                         //修改导购信用额度
-                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
+                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(userId);
                             empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                             empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
@@ -239,13 +249,13 @@ public class OrderArriveController {
             }
 
             //判断是否有代收款
-            if (collectionAmount > 0) {
+            if (amount > 0) {
                 //生成代收款记录
                 orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
                 orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
                         orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, collectionAmount, CountUtil.sub(collectionAmount - ownManey), remarks);
+                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, amount, CountUtil.sub(amount - ownManey), remarks);
 //                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
             }
 
