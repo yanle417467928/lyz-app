@@ -1177,7 +1177,6 @@ public class ReturnOrderController {
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
             //如果是门店自提，只返回自提门店信息
             if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
-                orderLogisticsInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
 //                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
 //                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
 //                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
@@ -1196,7 +1195,6 @@ public class ReturnOrderController {
                         if (identityType != 2) {
                             AppStore store = appStoreService.findByStoreCode(orderBaseInfo.getStoreCode());
                             if (store != null) {
-                                orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
                                 orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
                                 orderLogisticsInfo.setBookingStoreName(store.getStoreName());
                                 orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
