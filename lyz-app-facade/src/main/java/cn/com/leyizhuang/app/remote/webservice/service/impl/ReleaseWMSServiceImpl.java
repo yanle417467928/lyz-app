@@ -17,6 +17,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
@@ -81,7 +82,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WareHouseService wareHouseService;
     @Resource
     private CityService cityService;
-
+    @Resource
+    private AppEmployeeService appEmployeeService;
     /**
      * 获取wms信息
      *
@@ -130,6 +132,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
                         return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
                     }
+                    AppEmployee clerk = appEmployeeService.findDeliveryByClerkNo(header.getDriver());
+                    if (null == clerk) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询该配送员,配送员编号 出参 c_driver:{}", header.getDriver());
+                        return AppXmlUtil.resultStrXml(1, "未查询该配送员,配送员编号" + header.getDriver());
+                    }
                     header.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
                     if (result == 0) {
@@ -149,7 +156,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 null != wareHouse ? wareHouse.getWareHouseName() : header.getWhNo());
                         orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
                         //修改订单配送信息加入配送员
-                        appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(header.getDriver(), header.getWhNo(), header.getOrderNo());
+                        appOrderService.updateOrderLogisticInfoByDeliveryClerkNo(clerk, header.getWhNo(), header.getOrderNo());
                         //修改订单头状态
                         appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE, LogisticStatus.SEALED_CAR, header.getOrderNo());
                     } catch (Exception e) {
@@ -330,6 +337,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,配送员(c_driver)不可为空,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
                         return AppXmlUtil.resultStrXml(1, "配送员(c_driver)不可为空,退单号： " + deliveryClerk.getReturnNo() + "");
                     }
+                    AppEmployee clerk = appEmployeeService.findDeliveryByClerkNo(deliveryClerk.getDriver());
+                    if (null == clerk) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询该配送员,配送员编号 出参 c_driver:{}", deliveryClerk.getDriver());
+                        return AppXmlUtil.resultStrXml(1, "未查询该配送员,配送员编号" + deliveryClerk.getDriver());
+                    }
                     if (AssertUtil.isEmpty(deliveryClerk.getWarehouseNo())) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,仓库编号(c_whNo)不可为空,退单号 出参 return_no{}", deliveryClerk.getReturnNo());
                         return AppXmlUtil.resultStrXml(1, "仓库编号(c_whNo)不可为空,退单号： " + deliveryClerk.getReturnNo() + "");
@@ -356,7 +368,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     //已改变下面插入语句的SQL,如果存在则更新,不存在就新增
                     returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
                     //修改配送物流信息的配送员信息
-                    returnOrderService.updateReturnLogisticInfo(deliveryClerk.getDriver(), deliveryClerk.getReturnNo());
+                    returnOrderService.updateReturnLogisticInfo(clerk, deliveryClerk.getReturnNo());
                     //修改退单头信息
                     returnOrderService.updateReturnOrderStatus(deliveryClerk.getReturnNo(), AppReturnOrderStatus.RETURNING);
                 }

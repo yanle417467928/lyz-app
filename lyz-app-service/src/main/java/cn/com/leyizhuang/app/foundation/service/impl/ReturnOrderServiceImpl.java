@@ -1908,16 +1908,17 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public void updateReturnLogisticInfo(String driver, String returnNo) {
+    public void updateReturnLogisticInfo(AppEmployee employee, String returnNo) {
 
-        AppEmployee employee = employeeService.findDeliveryByClerkNo(driver);
-        ReturnOrderLogisticInfo logisticInfo = new ReturnOrderLogisticInfo();
-        logisticInfo.setDeliveryClerkId(employee.getEmpId());
-        logisticInfo.setDeliveryClerkName(employee.getName());
-        logisticInfo.setDeliveryClerkPhone(employee.getMobile());
-        logisticInfo.setDeliveryClerkNo(driver);
-        logisticInfo.setReturnNO(returnNo);
-        returnOrderDAO.updateReturnLogisticInfo(logisticInfo);
+        if (null != employee && StringUtils.isNotBlank(returnNo)) {
+            ReturnOrderLogisticInfo logisticInfo = new ReturnOrderLogisticInfo();
+            logisticInfo.setDeliveryClerkId(employee.getEmpId());
+            logisticInfo.setDeliveryClerkName(employee.getName());
+            logisticInfo.setDeliveryClerkPhone(employee.getMobile());
+            logisticInfo.setDeliveryClerkNo(employee.getDeliveryClerkNo());
+            logisticInfo.setReturnNO(returnNo);
+            returnOrderDAO.updateReturnLogisticInfo(logisticInfo);
+        }
     }
 
     @Override
