@@ -225,16 +225,16 @@ public class OrderArriveController {
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
 
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + amount);
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
 
                         //修改导购信用额度
-                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, amount, empCreditMoney.getLastUpdateTime());
+                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(userId);
                             empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(amount);
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                             empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
