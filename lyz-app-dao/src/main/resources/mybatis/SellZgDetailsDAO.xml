@@ -10,6 +10,34 @@
             ,#{goodsId},#{sku},#{quantity},#{amount},#{goodsLineId})
         </insert>
 
+        <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+            UPDATE SET
+            <set>
+                <if test="companyId != null">
+                    company_id = #{companyId},
+                </if>
+                <if test="year != null">
+                    `year` = #{year},
+                </if>
+                <if test="month != null">
+                    `month` = #{month},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="cityId">
+                    city_id = #{cityId},
+                </if>
+                <if test="storeId">
+                    store_id = #{storeId},
+                </if>
+                <if test="sellerId">
+                    seller_id = #{sellerId},
+                </if>
+            </set>
+
+        </update>
+
         <select id="getDetailsByCusIdAndSku">
             SELECT  * from sell_zg_details
             where customer_id = #{CusId} and sku = #{sku}

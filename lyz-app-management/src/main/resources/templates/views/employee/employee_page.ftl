@@ -643,8 +643,8 @@
             $http.PUT("/rest/employees/update/qrcode",data,uploadSuccess);
 
             $("#empId").val("");
-            $('#coverImageUri').val("");
-
+            $("#coverImageBox").html("");
+            $("#coverImg").val("");
         }
     }
 
@@ -652,6 +652,8 @@
         if (result.code == 0){
             $notify.success("保存成功！")
             $("#qrcodeModal").modal('hide');
+            $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/employees/page/grid');
         }else {
             $notify.warning(result.message);
         }
